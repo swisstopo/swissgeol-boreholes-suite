@@ -404,6 +404,9 @@ src/ClientApp/cypress/downloads
 src/ClientApp/cypress/videos
 src/ClientApp/cypress/screenshots
 
+# Docker data
+/data
+
 # Dependencies
 /src/ClientAppnode_modules
 
