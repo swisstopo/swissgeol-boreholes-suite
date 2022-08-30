@@ -1,0 +1,143 @@
+/* body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+} */
+.ol-popup {
+  position: absolute;
+  background-color: white;
+  -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #cccccc;
+  bottom: 12px;
+  left: -50px;
+  min-width: 70px;
+}
+.ol-popup:after, .ol-popup:before {
+  top: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.ol-popup:after {
+  border-top-color: white;
+  border-width: 10px;
+  left: 48px;
+  margin-left: -10px;
+}
+.ol-popup:before {
+  border-top-color: #cccccc;
+  border-width: 11px;
+  left: 48px;
+  margin-left: -11px;
+}
+.ol-popup-closer {
+  text-decoration: none;
+  position: absolute;
+  top: 2px;
+  right: 8px;
+}
+.ol-popup-closer:after {
+  content: "✖";
+}
+
+.stbg {
+  background: #fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAAnRSTlMAAHaTzTgAAAARSURBVHgBY3iKBFEAOp/+MgB+UQnYeBZPWAAAAABJRU5ErkJggg==)!important;
+}
+
+/* way the hell off screen */
+.scrollbar-measure {
+	width: 100px;
+	height: 100px;
+	overflow: scroll;
+	position: absolute;
+	top: -9999px;
+}
+
+.scroller {
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.scroller:hover {
+  overflow-y: auto !important;
+  margin-right: 0px !important;
+}
+
+.flex_row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex_col {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex_fill {
+  flex: 1 1 100%;
+}
+
+.bdms-padding-1 {
+  padding: 1em;
+}
+
+.bdms-padding-2 {
+  padding: 2em;
+}
+
+.bdms-padding-4 {
+  padding: 4em;
+}
+
+.bdms-margin-1 {
+  margin: 1em;
+}
+
+.bdms_bold {
+  font-weight: bold;
+}
+
+.bdms-text-small {
+  font-size: 0.8em;
+}
+
+.bdms-header {
+  font-weight: bold;
+  font-size: 1.28em;
+}
+
+.bdms-grey {
+  color: rgba(0,0,0,.4);
+}
+
+.linker {
+  cursor: pointer;
+  text-decoration: underline;
+  color: rgb(33, 133, 208);
+}
+
+.link {
+  cursor: pointer;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.selectable {
+  cursor: pointer;
+}
+
+.unselectable {
+  cursor: default !important;
+}
+
+.selectable:hover { 
+  background-color: rgb(233, 233, 233);
+}

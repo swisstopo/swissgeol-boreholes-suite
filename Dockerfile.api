@@ -1,0 +1,59 @@
+FROM python:3.7.10-slim-buster
+RUN apt-get update && apt-get install -y libsqlite3-mod-spatialite
+WORKDIR /usr/src/app
+COPY ./requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+ENV SERVICE_PORT 8888
+
+# S3 credentials based on config file
+ENV S3_CREDENTIALS_FILE none
+ENV S3_CREDENTIALS_FILE_PROFILE default
+
+# S3 credentials retrieved from iam provider 
+ENV S3_CREDENTIALS_IAM 0
+
+# SMTP Email feedback config
+ENV SMTP_CONFIG none
+ENV SMTP_RECIPIENTS none
+ENV SMTP_USERNAME none
+ENV SMTP_PASSWORD none
+ENV SMTP_URL none
+ENV SMTP_PORT 25
+ENV SMTP_TLS 0
+ENV SMTP_STARTTLS 1
+
+COPY src/api ./bms
+
+CMD python -u bms/main.py \
+    --port=${SERVICE_PORT} \
+    \
+    --pg-auto-upgrade \
+    --pg-host=${DB_HOST} \
+    --pg-port=${DB_PORT} \
+    --pg-database=${DB_DATABASE} \
+    --pg-user=${DB_USERNAME} \
+    --pg-password=${DB_PASSWORD} \
+    \
+    --s3-endpoint=${S3_ENDPOINT} \
+    --s3-region=${S3_REGION} \
+    --s3-secure=${S3_SECURE} \
+    --s3-bucket=${S3_BUCKET} \
+    \
+    --s3-credentials-file=${S3_CREDENTIALS_FILE} \
+    --s3-credentials-file-profile=${S3_CREDENTIALS_FILE_PROFILE} \
+    \
+    --s3-credentials-access-key=${S3_CREDENTIALS_ACCESS_KEY} \
+    --s3-credentials-secret-key=${S3_CREDENTIALS_SECRET_KEY} \
+    --s3-credentials-session-token=${S3_CREDENTIALS_SESSION_TOKEN} \
+    \
+    --s3-credentials-iam=${S3_CREDENTIALS_IAM} \
+    --file-repo=${FILE_STORAGE} \
+    \
+    --smtp-recipients=${SMTP_RECIPIENTS} \
+    --smtp-username=${SMTP_USERNAME} \
+    --smtp-password=${SMTP_PASSWORD} \
+    --smtp-server=${SMTP_URL} \
+    --smtp-port=${SMTP_PORT} \
+    --smtp-tls=${SMTP_TLS} \
+    --smtp-starttls=${SMTP_STARTTLS}

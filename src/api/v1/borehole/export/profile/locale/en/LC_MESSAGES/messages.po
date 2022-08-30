@@ -1,0 +1,171 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-06-17 07:14+0200\n"
+"PO-Revision-Date: 2019-06-17 09:40+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.0.6\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: \n"
+"Language: en\n"
+
+#: bdms_pdf.py:334
+msgid "description"
+msgstr "Description"
+
+#: bdms_pdf.py:335
+msgid "lithology"
+msgstr "Lithology/Petrology"
+
+#: bdms_pdf.py:336
+msgid "lithostratigraphy"
+msgstr "Lithostratigraphy"
+
+#: bdms_pdf.py:337
+msgid "notes"
+msgstr "Remarks"
+
+#: bdms_pdf.py:446
+msgid "Geological_Profile"
+msgstr "Geological profile"
+
+#: bdms_pdf.py:451
+msgid "Scale"
+msgstr "Scale"
+
+#: bdms_pdf.py:456
+msgid "Vers"
+msgstr "Version"
+
+#: bdms_pdf.py:460
+msgid "Date"
+msgstr "Date"
+
+#: bdms_pdf.py:468
+msgid "location"
+msgstr "Location"
+
+#: bdms_pdf.py:472
+msgid "country"
+msgstr "Country"
+
+#: bdms_pdf.py:477
+msgid "canton"
+msgstr "Canton"
+
+#: bdms_pdf.py:482
+msgid "city"
+msgstr "City"
+
+#: bdms_pdf.py:487
+msgid "address"
+msgstr "Address"
+
+#: bdms_pdf.py:492
+msgid "coordinates"
+msgstr "Coordinates"
+
+#: bdms_pdf.py:500 bdms_pdf.py:631
+msgid "elevation"
+msgstr "Elevation Z"
+
+#: bdms_pdf.py:503
+msgid "m.a.s.l"
+msgstr "masl"
+
+#: bdms_pdf.py:507
+msgid "reference systems"
+msgstr "SRS"
+
+#: bdms_pdf.py:518
+msgid "project"
+msgstr "Project"
+
+#: bdms_pdf.py:522
+msgid "project_name"
+msgstr "Project name"
+
+#: bdms_pdf.py:527
+msgid "auth_n"
+msgstr "N. authorization"
+
+#: bdms_pdf.py:532
+msgid "purpose"
+msgstr "Purpose"
+
+#: bdms_pdf.py:537
+msgid "status"
+msgstr "Status of borehole"
+
+#: bdms_pdf.py:542
+msgid "drilling_date"
+msgstr "Drill end date"
+
+#: bdms_pdf.py:547
+msgid "restriction"
+msgstr "Restriction"
+
+#: bdms_pdf.py:554
+msgid "logged_by"
+msgstr "Drilled by"
+
+#: bdms_pdf.py:559
+msgid "checked_by"
+msgstr "Checked by"
+
+#: bdms_pdf.py:567
+msgid "borehole"
+msgstr "Borehole"
+
+#: bdms_pdf.py:571
+msgid "kind"
+msgstr "Borehole kind"
+
+#: bdms_pdf.py:576
+msgid "drill_diameter"
+msgstr "Drill diameter "
+
+#: bdms_pdf.py:581
+msgid "length"
+msgstr "Depth (MD) [m]"
+
+#: bdms_pdf.py:586
+msgid "groundwater"
+msgstr "Groundwater"
+
+#: bdms_pdf.py:591
+msgid "cuttings"
+msgstr "Cuttings"
+
+#: bdms_pdf.py:596
+msgid "method"
+msgstr "Drilling method"
+
+#: bdms_pdf.py:601
+msgid "bore_inc"
+msgstr "Inclination"
+
+#: bdms_pdf.py:606
+msgid "bore_inc_dir"
+msgstr "Inc. Direction"
+
+#: bdms_pdf.py:638
+msgid "depth"
+msgstr "Depth"
+
+#: bdms_pdf.py:646
+msgid "material description"
+msgstr "Layer description"
+
+#: bdms_pdf.py:654
+msgid "stratigraphy"
+msgstr "Stratigraphy"
