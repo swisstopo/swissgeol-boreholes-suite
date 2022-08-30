@@ -1,0 +1,78 @@
+# By default text files use native line endings for the platform
+* text=auto
+
+# Visual Studio solution and project files
+*.sln         text
+*.csproj      text
+*.fsproj      text
+*.rptproj     text
+*.sqlproj     text
+*.wixproj     text
+
+# Source files
+*.cmd         text
+*.config      text
+*.cs          text
+*.datasource  text
+*.disco       text
+*.edmx        text
+*.fs          text
+*.html        text
+*.manifest    text
+*.md          text
+*.nuspec      text
+*.ps1         text
+*.psess       text
+*.rdl         text
+*.rds         text
+*.resx        text
+*.settings    text
+*.sql         text
+*.svc         text
+*.svcmap      text
+*.targets     text
+*.tt          text
+*.ttinclude   text
+*.t4          text
+*.txt         text
+*.wdsl        text
+*.xaml        text
+*.xml         text
+*.XML         text
+*.xsd         text
+
+# Images
+*.bmp         binary
+*.gif         binary
+*.ico         binary
+*.jpg         binary
+*.png         binary
+
+# Binaries
+*.dll         binary
+*.eap         binary
+*.exe         binary
+*.msi         binary
+*.nuget       binary
+*.pdb         binary
+*.snk         binary
+*.zip         binary
+
+# Other files, probably binary
+*.data        binary
+*.dacpac      binary
+*.map         binary
+*.tbx         binary
+*.mpkx        binary
+*.aprx        binary
+
+# Common document formats
+*.csv         text eol=crlf
+*.doc         binary
+*.docx        binary
+*.pdf         binary
+*.rtf         text eol=crlf
+*.svg         text eol=lf
+
+# *nix shell scripts always use LF (see .editorconfig)
+*.sh eol=lf
