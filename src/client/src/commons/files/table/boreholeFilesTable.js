@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import {
   getBoreholeFiles,
-} from '@ist-supsi/bmsjs';
+} from '../../../lib/index';
 
 
 import FilesTableComponent from './filesTableComponent';

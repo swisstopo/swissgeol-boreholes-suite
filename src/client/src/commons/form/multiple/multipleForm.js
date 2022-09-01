@@ -18,7 +18,7 @@ import {
 
 import {
   patchBoreholes
-} from '@ist-supsi/bmsjs';
+} from '../../../lib/index';
 
 class MultipleForm extends React.Component {
 

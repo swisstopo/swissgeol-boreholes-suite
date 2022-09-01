@@ -6,7 +6,7 @@ import MapOverlayComponent from './mapOverlayCmp';
 
 import {
   patchSettings
-} from '@ist-supsi/bmsjs';
+} from '../../../lib/index';
 
 const MapOverlay = (props) => {
   return (

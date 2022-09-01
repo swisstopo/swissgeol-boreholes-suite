@@ -1,4 +1,4 @@
-import { getProfile, patchProfile } from '@ist-supsi/bmsjs';
+import { getProfile, patchProfile } from '../../../../../../lib/index';
 
 let data = [];
 export const getData = async id => {

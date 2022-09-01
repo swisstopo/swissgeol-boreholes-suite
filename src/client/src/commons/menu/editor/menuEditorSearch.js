@@ -16,7 +16,7 @@ import {
   Modal,
 } from 'semantic-ui-react';
 
-import { createBorehole, importBoreholeList } from '@ist-supsi/bmsjs';
+import { createBorehole, importBoreholeList } from '../../../lib/index';
 
 import SearchEditorComponent from '../../search/editor/searchEditorComponent';
 let isMounted = true;

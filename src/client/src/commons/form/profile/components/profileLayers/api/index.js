@@ -1,4 +1,4 @@
-import { getProfileLayers, createLayer } from '@ist-supsi/bmsjs';
+import { getProfileLayers, createLayer } from '../../../../../../lib/index';
 
 let data = [];
 export const getData = async id => {

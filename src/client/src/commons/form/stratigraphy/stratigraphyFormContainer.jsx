@@ -26,7 +26,7 @@ import {
   patchStratigraphy,
   deleteStratigraphy,
   cloneStratigraphy
-} from '@ist-supsi/bmsjs';
+} from '../../lib/index';
 
 
 class StratigraphyFormContainer extends React.Component {

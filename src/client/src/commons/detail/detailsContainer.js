@@ -7,7 +7,7 @@ import DetailsComponent from './detailsComponent';
 import {
   getBorehole,
   getStratigraphiesByBorehole
-} from '@ist-supsi/bmsjs';
+} from '../../lib/index';
 
 class DetailsContainer extends React.Component {
   componentDidMount() {

@@ -32,7 +32,7 @@ import {
   listWorkgroups,
   getWorkgroups,
   reloadUser,
-} from '@ist-supsi/bmsjs';
+} from '../../lib/index';
 
 class DatabaseSettings extends React.Component {
   constructor(props) {

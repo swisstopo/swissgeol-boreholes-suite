@@ -5,7 +5,7 @@ import _ from 'lodash'
 
 import {
   loadProjects
-} from '@ist-supsi/bmsjs'
+} from '../../lib/index'
 
 import {
   Form,

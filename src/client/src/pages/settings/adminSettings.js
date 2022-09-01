@@ -29,7 +29,7 @@ import {
   listUsers,
   listWorkgroups,
   reloadUser,
-} from '@ist-supsi/bmsjs';
+} from '../../lib/index';
 
 import DateText from '../../commons/form/dateText';
 import TranslationText from '../../commons/form/translationText';

@@ -11,7 +11,7 @@ import wmts from '../commons/map/mapState';
 
 import {
   injectReducer, store
-} from '@ist-supsi/bmsjs';
+} from '../lib/index';
 
 
 const queryString = window.location.search;

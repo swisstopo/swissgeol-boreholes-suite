@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import {
   loadCantons
-} from '@ist-supsi/bmsjs'
+} from '../../../../lib/index'
 
 import {
   Form,

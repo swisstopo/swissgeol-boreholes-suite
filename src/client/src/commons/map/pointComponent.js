@@ -28,7 +28,7 @@ import proj4 from 'proj4';
 
 import { Segment, Button, Label, Icon } from 'semantic-ui-react';
 
-import { getHeight, getAddressByPoint } from '@ist-supsi/bmsjs';
+import { getHeight, getAddressByPoint } from '../../lib/index';
 
 const projections = {
   'EPSG:21781':

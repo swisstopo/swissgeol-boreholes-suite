@@ -5,7 +5,7 @@ import {
   getProfiles,
   createStratigraphy,
   createInstrument,
-} from '@ist-supsi/bmsjs';
+} from '../../../../../../lib/index';
 
 let stratigraphyId = null;
 export const createNewStratigraphy = async (id, kind) => {

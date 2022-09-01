@@ -14,7 +14,7 @@ import {
   Popup,
   Segment,
 } from 'semantic-ui-react';
-import { patchSettings, patchCodeConfig, getWms } from '@ist-supsi/bmsjs';
+import { patchSettings, patchCodeConfig, getWms } from '../../lib/index';
 import TranslationText from '../../commons/form/translationText';
 import WMTSCapabilities from 'ol/format/WMTSCapabilities';
 import WMSCapabilities from 'ol/format/WMSCapabilities';

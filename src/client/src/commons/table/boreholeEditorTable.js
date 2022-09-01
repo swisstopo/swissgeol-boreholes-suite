@@ -19,7 +19,7 @@ import {
   deleteBoreholes,
   exportDatabaseById,
   copyBorehole,
-} from '@ist-supsi/bmsjs';
+} from '../../lib/index';
 
 class BoreholeEditorTable extends TTable {
 

@@ -1,4 +1,4 @@
-import { getLayerAttributes, patchLayer } from '@ist-supsi/bmsjs';
+import { getLayerAttributes, patchLayer } from '../../../../../../lib/index';
 
 let data = [];
 export const getData = async id => {

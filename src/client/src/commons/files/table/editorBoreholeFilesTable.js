@@ -6,7 +6,7 @@ import {
   patchFile,
   getEditorBoreholeFiles,
   uploadBoreholeAttachment
-} from '@ist-supsi/bmsjs';
+} from '../../../lib/index';
 
 
 import FilesTableComponent from './filesTableComponent';

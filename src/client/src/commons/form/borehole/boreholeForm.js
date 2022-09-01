@@ -14,7 +14,7 @@ import {
   loadBorehole,
   checkBorehole,
   patchBorehole,
-} from '@ist-supsi/bmsjs';
+} from '../../../lib/index';
 
 import PointComponent from '../../map/pointComponent';
 import DomainDropdown from '../domain/dropdown/domainDropdown';

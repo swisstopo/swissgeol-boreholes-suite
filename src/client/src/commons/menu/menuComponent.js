@@ -6,7 +6,7 @@ import _ from "lodash";
 
 import { List, Icon, Popup } from "semantic-ui-react";
 
-import { unsetAuthentication } from "@ist-supsi/bmsjs";
+import { unsetAuthentication } from "../../lib/index";
 
 import Feedback from "../feedback/feedbackComponent";
 import TranslationText from "../form/translationText";

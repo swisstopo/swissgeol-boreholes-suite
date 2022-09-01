@@ -14,7 +14,7 @@ import {
   loadSettings,
   loadUser,
   setAuthentication,
-} from "@ist-supsi/bmsjs";
+} from "../../lib/index";
 
 class DataLoader extends React.Component {
   constructor(props) {

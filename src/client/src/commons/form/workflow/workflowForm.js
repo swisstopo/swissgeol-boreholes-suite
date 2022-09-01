@@ -23,7 +23,7 @@ import {
   submitWorkflow,
   rejectWorkflow,
   resetWorkflow
-} from '@ist-supsi/bmsjs';
+} from '../../../lib/index';
 
 import CommentArea from './commentArea';
 import DateText from '../dateText';

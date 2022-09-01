@@ -28,7 +28,7 @@ import { withTranslation } from 'react-i18next';
 
 import {
   getGeojson,
-} from '@ist-supsi/bmsjs';
+} from '../../lib/index';
 
 import {
   Button,

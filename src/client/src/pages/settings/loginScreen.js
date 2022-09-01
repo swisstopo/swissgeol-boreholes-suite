@@ -11,7 +11,7 @@ import {
   draftContent,
   getContentDraft,
   publishContent,
-} from "@ist-supsi/bmsjs";
+} from "../../lib/index";
 
 class LoginScreen extends React.Component {
   constructor(props) {

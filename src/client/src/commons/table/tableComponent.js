@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 import {
   getdBoreholeIds,
-} from '@ist-supsi/bmsjs';
+} from '../../lib/index';
 
 import { Table, Pagination } from 'semantic-ui-react';
 

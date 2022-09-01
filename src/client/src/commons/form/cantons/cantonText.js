@@ -5,7 +5,7 @@ import _ from 'lodash'
 
 import {
   loadCantons
-} from '@ist-supsi/bmsjs'
+} from '../../../lib/index'
 
 class CantonText extends React.Component {
   componentDidMount(){

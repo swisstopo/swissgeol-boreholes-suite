@@ -5,7 +5,7 @@ import _ from 'lodash'
 
 import {
   loadMunicipalities
-} from '@ist-supsi/bmsjs'
+} from '../../../../lib/index'
 
 import {
   Form,

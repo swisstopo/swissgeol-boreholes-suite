@@ -1,4 +1,4 @@
-import { getProfiles, createStratigraphy } from '@ist-supsi/bmsjs';
+import { getProfiles, createStratigraphy } from '../../../../../../lib/index';
 
 let data = [];
 export const getData = async (id, kind) => {

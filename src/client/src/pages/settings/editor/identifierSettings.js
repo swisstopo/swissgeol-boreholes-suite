@@ -16,11 +16,9 @@ import {
   listIdentifier,
   createIdentifier,
   deleteIdentifier,
-} from '@ist-supsi/bmsjs';
-
-import {
   updateIdentifier
-} from '@ist-supsi/bmsjs/build/actions/identifier';
+} from '../../../lib/index';
+
 
 import TranslationText from '../../../commons/form/translationText';
 

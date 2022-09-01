@@ -23,7 +23,7 @@ import {
   loadBorehole,
   lockBorehole,
   unlockBorehole,
-} from '@ist-supsi/bmsjs';
+} from '../../../lib/index';
 
 import Scroller from '../../scroller';
 

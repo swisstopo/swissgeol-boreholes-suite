@@ -10,7 +10,7 @@ import {
 
 import {
   loadProjects
-} from '@ist-supsi/bmsjs';
+} from '../../lib/index';
 
 class ProjectTable extends TableComponent {
   getHeader() {

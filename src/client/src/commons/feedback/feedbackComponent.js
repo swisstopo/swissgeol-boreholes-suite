@@ -9,7 +9,7 @@ import {
 
 import {
   createFeedback
-} from '@ist-supsi/bmsjs';
+} from '../../lib/index';
 
 
 class Feedback extends React.Component {

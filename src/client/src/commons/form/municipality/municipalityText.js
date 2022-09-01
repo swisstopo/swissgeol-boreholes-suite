@@ -4,7 +4,7 @@ import _ from 'lodash'
 
 import {
   getMunicipality
-} from '@ist-supsi/bmsjs'
+} from '../../../lib/index'
 
 
 class MunicipalityText extends React.Component {

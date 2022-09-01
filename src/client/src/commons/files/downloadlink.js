@@ -9,7 +9,7 @@ import {
 import {
   downloadAttachment,
   exportDownload,
-} from '@ist-supsi/bmsjs';
+} from '../../lib/index';
 
 class DownloadLink extends React.Component {
 

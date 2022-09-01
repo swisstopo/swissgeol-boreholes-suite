@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import {
   loadDomains
-} from '@ist-supsi/bmsjs';
+} from '../../../../lib/index';
 
 import {
   Dropdown,

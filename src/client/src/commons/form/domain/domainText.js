@@ -5,7 +5,7 @@ import { withTranslation } from 'react-i18next';
 
 import {
   loadDomains
-} from '@ist-supsi/bmsjs';
+} from '../../../lib/index';
 
 
 class DomainText extends React.Component {
