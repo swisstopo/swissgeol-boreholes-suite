@@ -15,7 +15,6 @@
     "Sabine Brodhag <sabine.brodhag@swisstopo.ch>"
   ],
   "dependencies": {
-    "@ist-supsi/bmsjs": "1.0.13",
     "@ist-supsi/stratigraphy": "1.0.6",
     "axios": "^0.26.0",
     "date-fns": "^2.9.0",
