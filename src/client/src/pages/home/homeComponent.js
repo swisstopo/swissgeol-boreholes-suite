@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-// import { withTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Route, Switch, withRouter } from 'react-router-dom';
 

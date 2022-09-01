@@ -8,7 +8,6 @@ import LayerGroup from 'ol/layer/Group';
 import WMTS from 'ol/source/WMTS';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-// import GeoJSON from 'ol/format/GeoJSON';
 import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
 import Style from 'ol/style/Style';

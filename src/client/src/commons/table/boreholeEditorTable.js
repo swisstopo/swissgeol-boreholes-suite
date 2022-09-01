@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-// import TableComponent from './tableComponent';
 import DomainText from '../form/domain/domainText';
 import DateText from '../form/dateText';
 import TranslationText from '../form/translationText';

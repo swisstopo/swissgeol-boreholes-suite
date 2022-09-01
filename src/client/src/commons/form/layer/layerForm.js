@@ -7,10 +7,8 @@ import _ from 'lodash';
 import {
   getLayer,
   patchLayer,
-  // createLayer
 } from '@ist-supsi/bmsjs';
 
-// import DomainText from '../domain/domainText'
 import DomainDropdown from '../domain/dropdown/domainDropdown';
 import DomainTree from '../domain/tree/domainTree';
 import TranslationText from '../translationText';

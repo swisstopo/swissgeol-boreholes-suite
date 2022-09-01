@@ -4,9 +4,6 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import _ from 'lodash';
 import DomainText from '../../../../form/domain/domainText';
-// import Scroller from '../../../../scroller';
-// import Draggable from 'react-draggable';
-// import ViewAs from '../viewas';
 import { Stratigraphy } from '@ist-supsi/stratigraphy';
 
 import { Checkbox, Icon } from 'semantic-ui-react';

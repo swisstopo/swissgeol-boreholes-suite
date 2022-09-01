@@ -16,7 +16,6 @@ import {
   listIdentifier,
   createIdentifier,
   deleteIdentifier,
-  // updateIdentifier
 } from '@ist-supsi/bmsjs';
 
 import {

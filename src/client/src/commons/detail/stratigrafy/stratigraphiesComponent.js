@@ -6,10 +6,7 @@ import ProfileContainer from './profile/profileContainer';
 import MetaComponent from './../meta/metaComponent';
 import TranslationText from '../../form/translationText';
 
-
 import BoreholeFilesTable from '../../files/table/boreholeFilesTable';
-
-// import Scroller from '../../scroller';
 
 class StratigraphiesComponent extends React.Component {
   

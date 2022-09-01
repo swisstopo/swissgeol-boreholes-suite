@@ -1,6 +1,5 @@
 import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
-// import { withTranslation } from 'react-i18next';
 import { Button, Input } from 'semantic-ui-react';
 import Markdown from 'markdown-to-jsx';
 

@@ -7,11 +7,9 @@ import LayerForm from '../layer/layerForm';
 import LayersList from '../../layers/layerList';
 import DateField from '../dateField';
 import TranslationText from '../translationText';
-// import DomainDropdown from '../domain/dropdown/domainDropdown';
 import {
   Button,
   Checkbox,
-  // Dropdown,
   Input,
   Segment,
   Form,
@@ -19,7 +17,6 @@ import {
   Popup
 } from 'semantic-ui-react';
 import {
-  // getStratigraphies,
   getStratigraphy,
   getLayers,
   deleteLayer,

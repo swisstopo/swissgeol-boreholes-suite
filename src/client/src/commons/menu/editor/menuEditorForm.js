@@ -14,7 +14,6 @@ import {
   Progress,
 } from 'semantic-ui-react';
 
-// import DomainText from '../../form/domain/domainText';
 import DateText from '../../form/dateText';
 import TranslationText from '../../form/translationText';
 import moment from 'moment';
