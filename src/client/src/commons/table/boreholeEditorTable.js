@@ -19,7 +19,7 @@ import {
   deleteBoreholes,
   exportDatabaseById,
   copyBorehole,
-} from '../../lib/index';
+} from '../../api-lib/index';
 
 class BoreholeEditorTable extends TTable {
 

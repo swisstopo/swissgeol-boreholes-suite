@@ -9,7 +9,7 @@ import {
 import {
   downloadAttachment,
   exportDownload,
-} from '../../lib/index';
+} from '../../api-lib/index';
 
 class DownloadLink extends React.Component {
 

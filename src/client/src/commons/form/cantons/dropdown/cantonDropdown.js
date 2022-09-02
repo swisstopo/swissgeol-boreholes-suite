@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import {
   loadCantons
-} from '../../../../lib/index'
+} from '../../../../api-lib/index'
 
 import {
   Form,

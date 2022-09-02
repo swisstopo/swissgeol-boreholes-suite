@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { Button, Divider, Segment } from 'semantic-ui-react';
-import { patchCodeConfig, patchSettings } from '../../lib/index';
+import { patchCodeConfig, patchSettings } from '../../api-lib/index';
 
 import IdentifierSettings from './editor/identifierSettings';
 import TranslationText from '../../commons/form/translationText';

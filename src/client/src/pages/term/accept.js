@@ -5,7 +5,7 @@ import { withTranslation } from "react-i18next";
 
 import { Button } from "semantic-ui-react";
 
-import { acceptTerms, getTerms } from "../../lib/index";
+import { acceptTerms, getTerms } from "../../api-lib/index";
 
 import Markdown from "markdown-to-jsx";
 import TranslationKeys from "../../commons/translationKeys";

@@ -6,7 +6,7 @@ import _ from "lodash";
 
 import { List, Icon, Popup } from "semantic-ui-react";
 
-import { unsetAuthentication } from "../../lib/index";
+import { unsetAuthentication } from "../../api-lib/index";
 
 import Feedback from "../feedback/feedbackComponent";
 import TranslationText from "../form/translationText";

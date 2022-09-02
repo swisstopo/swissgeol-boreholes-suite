@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import {
   loadDomains
-} from '../../../../lib/index';
+} from '../../../../api-lib/index';
 
 import {
   Dropdown,

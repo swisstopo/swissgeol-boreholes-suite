@@ -4,7 +4,7 @@ import _ from 'lodash'
 
 import {
   getMunicipality
-} from '../../../lib/index'
+} from '../../../api-lib/index'
 
 
 class MunicipalityText extends React.Component {

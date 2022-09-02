@@ -7,7 +7,7 @@ import { Button, Form, Modal, TextArea } from "semantic-ui-react";
 
 import TranslationKeys from "../../commons/translationKeys";
 
-import { draftTerms, getTermsDraft, publishTerms } from "../../lib/index";
+import { draftTerms, getTermsDraft, publishTerms } from "../../api-lib/index";
 
 class TermSettings extends React.Component {
   constructor(props) {

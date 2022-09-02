@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import {
   loadLayers,
   getLayer
-} from '../../../../lib/index';
+} from '../../../../api-lib/index';
 import ProfileView from './view/profileViewComponent';
 
 class ProfileContainer extends React.Component {

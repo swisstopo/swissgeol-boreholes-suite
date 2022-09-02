@@ -32,7 +32,7 @@ import {
   listWorkgroups,
   getWorkgroups,
   reloadUser,
-} from '../../lib/index';
+} from '../../api-lib/index';
 
 class DatabaseSettings extends React.Component {
   constructor(props) {

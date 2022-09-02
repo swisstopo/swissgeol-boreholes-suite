@@ -5,7 +5,7 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 
 import { Modal } from 'semantic-ui-react';
 
-import { loadEditingBoreholes } from '../../lib/index';
+import { loadEditingBoreholes } from '../../api-lib/index';
 
 import _ from 'lodash';
 

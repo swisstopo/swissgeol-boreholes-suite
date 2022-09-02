@@ -3,7 +3,7 @@ import * as Styled from './styles';
 import { Input, Form, Button } from 'semantic-ui-react';
 import TranslationText from '../../../../../translationText';
 import DomainDropdown from '../../../../../domain/dropdown/domainDropdown';
-import { patchLayer } from '../../../../../../../lib/index';
+import { patchLayer } from '../../../../../../../api-lib/index';
 import { InstrumentAttributes } from '../../data/InstrumentAttributes';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';

@@ -1,4 +1,4 @@
-import { getLayerAttributes, patchLayer } from '../../../../../../lib/index';
+import { getLayerAttributes, patchLayer } from '../../../../../../api-lib/index';
 
 let data = [];
 export const getData = async id => {

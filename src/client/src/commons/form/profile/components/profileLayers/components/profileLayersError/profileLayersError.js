@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as Styled from './styles';
 import { Icon, Radio, Form, Input } from 'semantic-ui-react';
 import TranslationText from '../../../../../translationText';
-import { gapLayer, addBedrock, deleteLayer } from '../../../../../../../lib/index';
+import { gapLayer, addBedrock, deleteLayer } from '../../../../../../../api-lib/index';
 import ErrorTypes from './errorTypes';
 const ProfileLayersError = props => {
   const {

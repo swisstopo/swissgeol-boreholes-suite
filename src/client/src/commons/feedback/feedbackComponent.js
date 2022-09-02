@@ -9,7 +9,7 @@ import {
 
 import {
   createFeedback
-} from '../../lib/index';
+} from '../../api-lib/index';
 
 
 class Feedback extends React.Component {

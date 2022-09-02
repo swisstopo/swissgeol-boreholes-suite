@@ -5,7 +5,7 @@ import _ from 'lodash'
 
 import {
   loadMunicipalities
-} from '../../../../lib/index'
+} from '../../../../api-lib/index'
 
 import {
   Form,

@@ -10,7 +10,7 @@ import TranslationText from '../form/translationText';
 
 import { Button, Icon, Segment, Table } from 'semantic-ui-react';
 
-import { loadBoreholes } from '../../lib/index';
+import { loadBoreholes } from '../../api-lib/index';
 
 class BoreholeTable extends TableComponent {
   reorder(orderby) {

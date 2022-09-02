@@ -11,7 +11,7 @@ import {
   draftContent,
   getContentDraft,
   publishContent,
-} from "../../lib/index";
+} from "../../api-lib/index";
 
 class LoginScreen extends React.Component {
   constructor(props) {

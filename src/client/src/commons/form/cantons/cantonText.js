@@ -5,7 +5,7 @@ import _ from 'lodash'
 
 import {
   loadCantons
-} from '../../../lib/index'
+} from '../../../api-lib/index'
 
 class CantonText extends React.Component {
   componentDidMount(){

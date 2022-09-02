@@ -6,7 +6,7 @@ import MapOverlayComponent from './mapOverlayCmp';
 
 import {
   patchSettings
-} from '../../../lib/index';
+} from '../../../api-lib/index';
 
 const MapOverlay = (props) => {
   return (

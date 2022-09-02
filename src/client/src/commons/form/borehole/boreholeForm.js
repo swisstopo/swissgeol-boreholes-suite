@@ -14,7 +14,7 @@ import {
   loadBorehole,
   checkBorehole,
   patchBorehole,
-} from '../../../lib/index';
+} from '../../../api-lib/index';
 
 import PointComponent from '../../map/pointComponent';
 import DomainDropdown from '../domain/dropdown/domainDropdown';

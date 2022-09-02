@@ -1,4 +1,4 @@
-import { getProfileLayers, createLayer } from '../../../../../../lib/index';
+import { getProfileLayers, createLayer } from '../../../../../../api-lib/index';
 
 let data = [];
 export const getData = async id => {

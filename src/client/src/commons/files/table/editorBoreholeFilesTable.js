@@ -6,7 +6,7 @@ import {
   patchFile,
   getEditorBoreholeFiles,
   uploadBoreholeAttachment
-} from '../../../lib/index';
+} from '../../../api-lib/index';
 
 
 import FilesTableComponent from './filesTableComponent';

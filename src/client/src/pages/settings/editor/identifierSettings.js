@@ -17,7 +17,7 @@ import {
   createIdentifier,
   deleteIdentifier,
   updateIdentifier
-} from '../../../lib/index';
+} from '../../../api-lib/index';
 
 
 import TranslationText from '../../../commons/form/translationText';

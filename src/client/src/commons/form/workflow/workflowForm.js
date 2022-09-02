@@ -23,7 +23,7 @@ import {
   submitWorkflow,
   rejectWorkflow,
   resetWorkflow
-} from '../../../lib/index';
+} from '../../../api-lib/index';
 
 import CommentArea from './commentArea';
 import DateText from '../dateText';

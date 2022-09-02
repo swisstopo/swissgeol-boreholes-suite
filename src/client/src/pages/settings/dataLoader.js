@@ -14,7 +14,7 @@ import {
   loadSettings,
   loadUser,
   setAuthentication,
-} from "../../lib/index";
+} from "../../api-lib/index";
 
 class DataLoader extends React.Component {
   constructor(props) {

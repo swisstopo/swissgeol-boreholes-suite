@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 
 import { Icon } from 'semantic-ui-react';
 
-import { downloadBorehole } from '../lib/index';
+import { downloadBorehole } from '../api-lib/index';
 
 class ExportLink extends React.Component {
   constructor(props) {

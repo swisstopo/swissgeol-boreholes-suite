@@ -7,7 +7,7 @@ import DetailsComponent from './detailsComponent';
 import {
   getBorehole,
   getStratigraphiesByBorehole
-} from '../../lib/index';
+} from '../../api-lib/index';
 
 class DetailsContainer extends React.Component {
   componentDidMount() {

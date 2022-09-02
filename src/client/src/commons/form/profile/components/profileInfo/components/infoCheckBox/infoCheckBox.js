@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Styled from './styles';
 import { Checkbox, Popup, Button, Icon } from 'semantic-ui-react';
-import { deleteStratigraphy, cloneStratigraphy } from '../../../../../../../lib/index';
+import { deleteStratigraphy, cloneStratigraphy } from '../../../../../../../api-lib/index';
 import TranslationText from '../../../../../translationText';
 import { profileKind } from '../../../../constance';
 

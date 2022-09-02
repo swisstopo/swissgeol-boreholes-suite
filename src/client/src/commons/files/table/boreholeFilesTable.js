@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import {
   getBoreholeFiles,
-} from '../../../lib/index';
+} from '../../../api-lib/index';
 
 
 import FilesTableComponent from './filesTableComponent';

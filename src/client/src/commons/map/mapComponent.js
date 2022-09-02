@@ -28,7 +28,7 @@ import { withTranslation } from 'react-i18next';
 
 import {
   getGeojson,
-} from '../../lib/index';
+} from '../../api-lib/index';
 
 import {
   Button,

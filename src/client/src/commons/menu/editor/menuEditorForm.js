@@ -23,7 +23,7 @@ import {
   loadBorehole,
   lockBorehole,
   unlockBorehole,
-} from '../../../lib/index';
+} from '../../../api-lib/index';
 
 import Scroller from '../../scroller';
 
