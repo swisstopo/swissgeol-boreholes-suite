@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import _ from 'lodash';
 import DomainText from '../../../../form/domain/domainText';
-import { Stratigraphy } from '@ist-supsi/stratigraphy';
+import { Stratigraphy } from '../../../../../stratigraphy';
 
 import { Checkbox, Icon } from 'semantic-ui-react';
 
