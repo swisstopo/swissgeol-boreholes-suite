@@ -1,7 +1,7 @@
 FROM node:16-alpine3.15
 RUN mkdir /app
 WORKDIR /app
-COPY ./src/client/package.json /app/
-COPY ./src/client/yarn.lock /app/
+COPY ./package.json /app/
+COPY ./yarn.lock /app/
 RUN npm install
 ENTRYPOINT npm run start

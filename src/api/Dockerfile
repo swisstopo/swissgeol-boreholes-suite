@@ -23,7 +23,7 @@ ENV SMTP_PORT 25
 ENV SMTP_TLS 0
 ENV SMTP_STARTTLS 1
 
-COPY src/api ./bms
+COPY . ./bms
 
 CMD python -u bms/main.py \
     --port=${SERVICE_PORT} \

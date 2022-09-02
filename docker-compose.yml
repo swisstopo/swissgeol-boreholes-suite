@@ -37,8 +37,7 @@ services:
         condition: service_healthy
   client:
     build:
-      context: .
-      dockerfile: Dockerfile.client
+      context: ./src/client
     restart: unless-stopped
     volumes:
       - ./src/client:/app/
@@ -50,8 +49,7 @@ services:
         condition: service_healthy
   api:
     build:
-      context: .
-      dockerfile: Dockerfile.api
+      context: ./src/api
     restart: unless-stopped
     ports:
       - 8888:8888
