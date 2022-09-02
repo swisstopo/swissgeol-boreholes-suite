@@ -1,10 +1,10 @@
 {
-  "name": "bdms",
+  "name": "suite-bdms",
   "version": "1.0.6",
   "description": "Bohrehole Data Management System",
   "private": true,
   "proxy": "http://api:8888/",
-  "author": "SUPSI <geoservice@supsi.ch> (https://github.com/ist-supsi)",
+  "author": "GeoWerkstatt <office@geowerkstatt.ch> (https://github.com/geowerkstatt)",
   "contributors": [
     "Milan Antonovic <milan.antonovic@supsi.ch> (https://github.com/mantonovic)",
     "Maliheh Ghasemian <maliheh.ghasemian@supsi.ch> (https://github.com/malihgh)",
@@ -12,7 +12,10 @@
     "Marcus Hoffmann <marcus.hoffmann@supsi.ch> (https://github.com/marcuso45)",
     "Davide Zanin <davide.zanin@supsi.ch> (https://github.com/dzanin)",
     "Nils Oesterling <nils.oesterling@swisstopo.ch> (https://github.com/nOester)",
-    "Sabine Brodhag <sabine.brodhag@swisstopo.ch>"
+    "Sabine Brodhag <sabine.brodhag@swisstopo.ch>",
+    "Michael Gysi <michael.gysi@swisstopo.ch> (https://github.com/gysimichael)",
+    "Oliver Gut <oliver.gut@geowerkstatt.ch> (https://github.com/flenny)",
+    "Daniel Jovanovic <daniel.jovanovic@geowerkstatt.ch> (https://github.com/danjov)"
   ],
   "dependencies": {
     "@ist-supsi/stratigraphy": "1.0.6",
