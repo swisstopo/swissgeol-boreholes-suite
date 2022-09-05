@@ -1,26 +1,24 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
-import PropTypes from 'prop-types';
-import _ from 'lodash';
-import DomainText from '../domain/domainText';
+import React from "react";
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
+import PropTypes from "prop-types";
+import _ from "lodash";
+import DomainText from "../domain/domainText";
 
 import {
   Button,
   // Header,
   Checkbox,
-  Modal
-} from 'semantic-ui-react';
-
+  Modal,
+} from "semantic-ui-react";
 
 class NewStratigraphy extends React.Component {
-
   constructor(props) {
     super(props);
     this.handleSelected = this.handleSelected.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.state = {
-      kinds: []
+      kinds: [],
     };
   }
 
@@ -33,86 +31,66 @@ class NewStratigraphy extends React.Component {
       tmp.push(data.kind_id);
     }
     this.setState({
-      kinds: tmp
+      kinds: tmp,
     });
   }
 
-  handleSelected () {
-    const {
-      onSelected
-    } = this.props;
-    if (_.isFunction(onSelected)){
+  handleSelected() {
+    const { onSelected } = this.props;
+    if (_.isFunction(onSelected)) {
       onSelected(this.state.kinds);
     }
   }
 
-  render () {
-    const {
-      close,
-      domains,
-      open,
-      t
-    } = this.props;
+  render() {
+    const { close, domains, open, t } = this.props;
     return (
       <Modal
         onClose={close}
-        onMount={()=>{
+        onMount={() => {
           this.setState({
-            kinds: [
-              this.props.setting.data.defaults.stratigraphy
-            ]
+            kinds: [this.props.setting.data.defaults.stratigraphy],
           });
         }}
         open={open}
-        size='mini'
-      >
+        size="mini">
         <Modal.Header>
-          {
-            t(
-              'new',
-              {
-                what: t('stratigraphy').toLowerCase()
-              }
-            )
-          }
+          {t("new", {
+            what: t("stratigraphy").toLowerCase(),
+          })}
         </Modal.Header>
         <Modal.Content>
           <Modal.Description>
-            {
-              domains.data.layer_kind.map((kind, idx) => (
-                <div
-                  key={"nsm-kds-"+idx}
-                  style={{
-                    marginBottom: '0.5em'
+            {domains.data.layer_kind.map((kind, idx) => (
+              <div
+                key={"nsm-kds-" + idx}
+                style={{
+                  marginBottom: "0.5em",
+                }}>
+                <Checkbox
+                  checked={this.state.kinds.includes(kind.id)}
+                  kind_id={kind.id}
+                  label={{
+                    children: (
+                      <DomainText geocode={kind.code} schema="layer_kind" />
+                    ),
                   }}
-                >
-                  <Checkbox
-                    checked={this.state.kinds.includes(kind.id)}
-                    kind_id={kind.id}
-                    label={{
-                      children: (
-                        <DomainText
-                          geocode={kind.code}
-                          schema='layer_kind'
-                        />
-                      )
-                    }}
-                    onChange={this.handleChange}
-                  />
-                </div>
-              ))
-            }
+                  onChange={this.handleChange}
+                />
+              </div>
+            ))}
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
           <Button
-            onClick={()=>{
+            onClick={() => {
               this.props.close();
-            }}
-          >Cancel</Button>
+            }}>
+            Cancel
+          </Button>
           <Button
-            content='Create'
-            disabled={this.state.kinds.length===0}
+            content="Create"
+            disabled={this.state.kinds.length === 0}
             onClick={this.handleSelected}
             secondary
           />
@@ -120,23 +98,23 @@ class NewStratigraphy extends React.Component {
       </Modal>
     );
   }
-};
+}
 
 NewStratigraphy.propTypes = {
   close: PropTypes.func,
   domains: PropTypes.shape({
     data: PropTypes.shape({
-      "layer_kind": PropTypes.array
-    })
+      layer_kind: PropTypes.array,
+    }),
   }),
   onSelected: PropTypes.func,
-  open: PropTypes.bool
+  open: PropTypes.bool,
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     domains: state.core_domain_list,
-    setting: state.setting
+    setting: state.setting,
   };
 };
 
@@ -147,8 +125,6 @@ const mapStateToProps = (state) => {
 // };
 
 export default connect(
-  mapStateToProps, null // mapDispatchToProps
-)(
-  withTranslation(['common'])(NewStratigraphy)
-);
-
+  mapStateToProps,
+  null, // mapDispatchToProps
+)(withTranslation(["common"])(NewStratigraphy));

@@ -1,8 +1,8 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
-import _ from 'lodash';
-import Highlight from 'react-highlighter';
+import React from "react";
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
+import _ from "lodash";
+import Highlight from "react-highlighter";
 
 import {
   Button,
@@ -13,33 +13,33 @@ import {
   Label,
   Popup,
   Segment,
-} from 'semantic-ui-react';
-import { patchSettings, patchCodeConfig, getWms } from '../../api-lib/index';
-import TranslationText from '../../commons/form/translationText';
-import WMTSCapabilities from 'ol/format/WMTSCapabilities';
-import WMSCapabilities from 'ol/format/WMSCapabilities';
-import { optionsFromCapabilities } from 'ol/source/WMTS';
-import { register } from 'ol/proj/proj4';
-import proj4 from 'proj4';
-import { locationEditorData } from './data/locationEditorData';
-import { boreholeEditorData } from './data/boreholeEditorData';
-import { stratigraphyFilterEditorData } from './data/stratigraphyFilterEditorData';
-import { casingEditorData } from './data/casingEditorData';
-import { instrumentEditorData } from './data/instrumentEditorData';
-import { fillingEditorData } from './data/fillingEditorData';
-import { stratigraphyFieldEditorData } from './data/stratigraphyFieldEditorData';
-import EditorSettingList from './components/editorSettingList/editorSettingList';
+} from "semantic-ui-react";
+import { patchSettings, patchCodeConfig, getWms } from "../../api-lib/index";
+import TranslationText from "../../commons/form/translationText";
+import WMTSCapabilities from "ol/format/WMTSCapabilities";
+import WMSCapabilities from "ol/format/WMSCapabilities";
+import { optionsFromCapabilities } from "ol/source/WMTS";
+import { register } from "ol/proj/proj4";
+import proj4 from "proj4";
+import { locationEditorData } from "./data/locationEditorData";
+import { boreholeEditorData } from "./data/boreholeEditorData";
+import { stratigraphyFilterEditorData } from "./data/stratigraphyFilterEditorData";
+import { casingEditorData } from "./data/casingEditorData";
+import { instrumentEditorData } from "./data/instrumentEditorData";
+import { fillingEditorData } from "./data/fillingEditorData";
+import { stratigraphyFieldEditorData } from "./data/stratigraphyFieldEditorData";
+import EditorSettingList from "./components/editorSettingList/editorSettingList";
 const projections = {
-  'EPSG:21781':
-    '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs',
-  'EPSG:2056':
-    '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs',
-  'EPSG:21782':
-    '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=0 +y_0=0 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs',
-  'EPSG:4149':
-    '+proj=longlat +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +no_defs',
-  'EPSG:4150':
-    '+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs',
+  "EPSG:21781":
+    "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs",
+  "EPSG:2056":
+    "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs",
+  "EPSG:21782":
+    "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=0 +y_0=0 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs",
+  "EPSG:4149":
+    "+proj=longlat +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +no_defs",
+  "EPSG:4150":
+    "+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs",
 };
 
 class ExplorerSettings extends React.Component {
@@ -58,56 +58,56 @@ class ExplorerSettings extends React.Component {
       map: false,
 
       wmtsFetch: false,
-      searchWmts: '',
-      searchWmtsUser: '',
+      searchWmts: "",
+      searchWmtsUser: "",
       wmts: null,
 
       wmsFetch: false,
-      searchWms: '',
-      searchWmsUser: '',
+      searchWms: "",
+      searchWmsUser: "",
       wms: null,
       searchList: [
         {
           id: 0,
-          name: 'location',
-          translationId: 'searchFilterLocation',
+          name: "location",
+          translationId: "searchFilterLocation",
           isSelected: false,
         },
         {
           id: 1,
-          name: 'borehole',
-          translationId: 'searchFiltersBoreholes',
+          name: "borehole",
+          translationId: "searchFiltersBoreholes",
           isSelected: false,
         },
 
         {
           id: 2,
-          name: 'stratigraphy',
-          translationId: 'searchFiltersLayers',
+          name: "stratigraphy",
+          translationId: "searchFiltersLayers",
           isSelected: false,
         },
         {
           id: 3,
-          name: 'casing',
-          translationId: 'searchFilterCasing',
+          name: "casing",
+          translationId: "searchFilterCasing",
           isSelected: false,
         },
         {
           id: 4,
-          name: 'instrument',
-          translationId: 'searchFilterInstrument',
+          name: "instrument",
+          translationId: "searchFilterInstrument",
           isSelected: false,
         },
         {
           id: 5,
-          name: 'filling',
-          translationId: 'searchFilterFilling',
+          name: "filling",
+          translationId: "searchFilterFilling",
           isSelected: false,
         },
         {
           id: 6,
-          name: 'stratigraphyfields',
-          translationId: 'stratigraphyfields',
+          name: "stratigraphyfields",
+          translationId: "stratigraphyfields",
           isSelected: false,
         },
       ],
@@ -116,7 +116,7 @@ class ExplorerSettings extends React.Component {
 
   isVisible(field) {
     const { geocode, codes } = this.props;
-    if (_.has(codes, 'data.layer_kind') && _.isArray(codes.data.layer_kind)) {
+    if (_.has(codes, "data.layer_kind") && _.isArray(codes.data.layer_kind)) {
       for (let idx = 0; idx < codes.data.layer_kind.length; idx++) {
         const element = codes.data.layer_kind[idx];
         if (element.code === geocode) {
@@ -135,19 +135,19 @@ class ExplorerSettings extends React.Component {
   }
   handleButtonSelected(name, isSelected) {
     let selectedData = null;
-    if (name === 'location' && isSelected) {
+    if (name === "location" && isSelected) {
       selectedData = locationEditorData;
-    } else if (name === 'borehole' && isSelected) {
+    } else if (name === "borehole" && isSelected) {
       selectedData = boreholeEditorData;
-    } else if (name === 'stratigraphy' && isSelected) {
+    } else if (name === "stratigraphy" && isSelected) {
       selectedData = stratigraphyFilterEditorData;
-    } else if (name === 'casing' && isSelected) {
+    } else if (name === "casing" && isSelected) {
       selectedData = casingEditorData;
-    } else if (name === 'instrument' && isSelected) {
+    } else if (name === "instrument" && isSelected) {
       selectedData = instrumentEditorData;
-    } else if (name === 'filling' && isSelected) {
+    } else if (name === "filling" && isSelected) {
       selectedData = fillingEditorData;
-    } else if (name === 'stratigraphyfields' && isSelected) {
+    } else if (name === "stratigraphyfields" && isSelected) {
       selectedData = stratigraphyFieldEditorData;
     } else {
       selectedData = null;
@@ -171,7 +171,7 @@ class ExplorerSettings extends React.Component {
     return (
       <div
         style={{
-          padding: '1em',
+          padding: "1em",
           flex: 1,
         }}>
         <div
@@ -181,25 +181,25 @@ class ExplorerSettings extends React.Component {
             });
           }}
           style={{
-            flexDirection: 'row',
-            display: 'flex',
-            cursor: 'pointer',
-            backgroundColor: this.state.appearance ? '#f5f5f5' : '#fff',
+            flexDirection: "row",
+            display: "flex",
+            cursor: "pointer",
+            backgroundColor: this.state.appearance ? "#f5f5f5" : "#fff",
             padding: 10,
           }}>
           <div
             style={{
-              display: 'flex',
-              alignItems: 'center',
+              display: "flex",
+              alignItems: "center",
               fontSize: 18,
-              fontWeight: 'bold',
+              fontWeight: "bold",
             }}>
             <TranslationText id="appearance" />
           </div>
           <div
             style={{
               flex: 1,
-              textAlign: 'right',
+              textAlign: "right",
             }}>
             <Button color="red" size="small">
               {this.state.appearance === true ? (
@@ -292,25 +292,25 @@ class ExplorerSettings extends React.Component {
             });
           }}
           style={{
-            flexDirection: 'row',
-            display: 'flex',
-            cursor: 'pointer',
-            backgroundColor: this.state.map ? '#f5f5f5' : '#fff',
+            flexDirection: "row",
+            display: "flex",
+            cursor: "pointer",
+            backgroundColor: this.state.map ? "#f5f5f5" : "#fff",
             padding: 10,
           }}>
           <div
             style={{
-              display: 'flex',
-              alignItems: 'center',
+              display: "flex",
+              alignItems: "center",
               fontSize: 18,
-              fontWeight: 'bold',
+              fontWeight: "bold",
             }}>
             <TranslationText id="map" />
           </div>
           <div
             style={{
               flex: 1,
-              textAlign: 'right',
+              textAlign: "right",
             }}>
             <Button color="red" size="small">
               {this.state.map === true ? (
@@ -326,19 +326,19 @@ class ExplorerSettings extends React.Component {
             <Segment>
               <div
                 style={{
-                  display: 'flex',
-                  flexDirection: 'row',
+                  display: "flex",
+                  flexDirection: "row",
                 }}>
                 <div
                   style={{
-                    flex: '1 1 100%',
+                    flex: "1 1 100%",
                   }}>
                   <div
                     style={{
-                      alignItems: 'center',
-                      marginBottom: '1em',
-                      display: 'flex',
-                      flexDirection: 'row',
+                      alignItems: "center",
+                      marginBottom: "1em",
+                      display: "flex",
+                      flexDirection: "row",
                     }}>
                     <div
                       style={{
@@ -421,8 +421,8 @@ class ExplorerSettings extends React.Component {
                                     wmts: null,
                                   });
                                   alert(
-                                    'Sorry, only Web Map Services (WMS) and ' +
-                                      'Web Map Tile Service (WMTS) are supported',
+                                    "Sorry, only Web Map Services (WMS) and " +
+                                      "Web Map Tile Service (WMTS) are supported",
                                   );
                                 }
                               },
@@ -444,7 +444,7 @@ class ExplorerSettings extends React.Component {
                       }}
                       secondary
                       style={{
-                        marginLeft: '1em',
+                        marginLeft: "1em",
                       }}
                       // size='mini'
                     >
@@ -479,46 +479,46 @@ class ExplorerSettings extends React.Component {
                   ) : null}
                   <div
                     style={{
-                      maxHeight: '300px',
-                      overflowY: 'auto',
+                      maxHeight: "300px",
+                      overflowY: "auto",
                       border:
                         this.state.wms === null && this.state.wmts === null
                           ? null
-                          : 'thin solid #cecece',
+                          : "thin solid #cecece",
                       marginTop:
                         this.state.wms === null && this.state.wmts === null
                           ? null
-                          : '1em',
+                          : "1em",
                     }}>
                     {this.state.wms === null
                       ? null
                       : this.state.wms.Capability.Layer.Layer.map(
                           (layer, idx) =>
-                            this.state.searchWms === '' ||
-                            (layer.hasOwnProperty('Title') &&
+                            this.state.searchWms === "" ||
+                            (layer.hasOwnProperty("Title") &&
                               layer.Title.toLowerCase().search(
                                 this.state.searchWms,
                               ) >= 0) ||
-                            (layer.hasOwnProperty('Abstract') &&
+                            (layer.hasOwnProperty("Abstract") &&
                               layer.Abstract.toLowerCase().search(
                                 this.state.searchWms,
                               ) >= 0) ||
-                            (layer.hasOwnProperty('Name') &&
+                            (layer.hasOwnProperty("Name") &&
                               layer.Name.toLowerCase().search(
                                 this.state.searchWms,
                               ) >= 0) ? (
                               <div
                                 className="selectable unselectable"
-                                key={'wmts-list-' + idx}
+                                key={"wmts-list-" + idx}
                                 style={{
-                                  padding: '0.5em',
+                                  padding: "0.5em",
                                 }}>
                                 <div
                                   style={{
-                                    fontWeight: 'bold',
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
+                                    fontWeight: "bold",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
                                   }}>
                                   <div
                                     style={{
@@ -535,16 +535,16 @@ class ExplorerSettings extends React.Component {
                                           setting.data.map.explorer,
                                           layer.Name,
                                         )
-                                          ? 'grey'
-                                          : 'blue'
+                                          ? "grey"
+                                          : "blue"
                                       }
                                       icon={
                                         _.has(
                                           setting.data.map.explorer,
                                           layer.Name,
                                         )
-                                          ? 'trash alternate outline'
-                                          : 'add'
+                                          ? "trash alternate outline"
+                                          : "add"
                                       }
                                       onClick={e => {
                                         e.stopPropagation();
@@ -558,7 +558,7 @@ class ExplorerSettings extends React.Component {
                                         } else {
                                           addExplorerMap(
                                             layer,
-                                            'WMS',
+                                            "WMS",
                                             this.state.wms,
                                             _.values(setting.data.map.explorer)
                                               .length,
@@ -571,8 +571,8 @@ class ExplorerSettings extends React.Component {
                                 </div>
                                 <div
                                   style={{
-                                    color: '#787878',
-                                    fontSize: '0.8em',
+                                    color: "#787878",
+                                    fontSize: "0.8em",
                                   }}>
                                   {layer.queryable === true ? (
                                     <Popup
@@ -585,7 +585,7 @@ class ExplorerSettings extends React.Component {
                                           empty
                                           size="tiny"
                                           style={{
-                                            marginRight: '0.5em',
+                                            marginRight: "0.5em",
                                           }}
                                         />
                                       }
@@ -597,7 +597,7 @@ class ExplorerSettings extends React.Component {
                                 </div>
                                 <div
                                   style={{
-                                    fontSize: '0.8em',
+                                    fontSize: "0.8em",
                                   }}>
                                   <Highlight search={this.state.searchWms}>
                                     {layer.Abstract}
@@ -609,31 +609,31 @@ class ExplorerSettings extends React.Component {
                     {this.state.wmts === null
                       ? null
                       : this.state.wmts.Contents.Layer.map((layer, idx) => {
-                          return this.state.searchWmts === '' ||
-                            (layer.hasOwnProperty('Title') &&
+                          return this.state.searchWmts === "" ||
+                            (layer.hasOwnProperty("Title") &&
                               layer.Title.toLowerCase().search(
                                 this.state.searchWmts,
                               ) >= 0) ||
-                            (layer.hasOwnProperty('Abstract') &&
+                            (layer.hasOwnProperty("Abstract") &&
                               layer.Abstract.toLowerCase().search(
                                 this.state.searchWmts,
                               ) >= 0) ||
-                            (layer.hasOwnProperty('Identifier') &&
+                            (layer.hasOwnProperty("Identifier") &&
                               layer.Identifier.toLowerCase().search(
                                 this.state.searchWmts,
                               ) >= 0) ? (
                             <div
                               className="selectable unselectable"
-                              key={'wmts-list-' + idx}
+                              key={"wmts-list-" + idx}
                               style={{
-                                padding: '0.5em',
+                                padding: "0.5em",
                               }}>
                               <div
                                 style={{
-                                  fontWeight: 'bold',
-                                  display: 'flex',
-                                  flexDirection: 'row',
-                                  alignItems: 'center',
+                                  fontWeight: "bold",
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  alignItems: "center",
                                 }}>
                                 <div
                                   style={{
@@ -650,16 +650,16 @@ class ExplorerSettings extends React.Component {
                                         setting.data.map.explorer,
                                         layer.Identifier,
                                       )
-                                        ? 'grey'
-                                        : 'blue'
+                                        ? "grey"
+                                        : "blue"
                                     }
                                     icon={
                                       _.has(
                                         setting.data.map.explorer,
                                         layer.Identifier,
                                       )
-                                        ? 'trash alternate outline'
-                                        : 'add'
+                                        ? "trash alternate outline"
+                                        : "add"
                                     }
                                     onClick={e => {
                                       e.stopPropagation();
@@ -673,7 +673,7 @@ class ExplorerSettings extends React.Component {
                                       } else {
                                         addExplorerMap(
                                           layer,
-                                          'WMTS',
+                                          "WMTS",
                                           this.state.wmts,
                                           _.values(setting.data.map.explorer)
                                             .length,
@@ -686,8 +686,8 @@ class ExplorerSettings extends React.Component {
                               </div>
                               <div
                                 style={{
-                                  color: '#787878',
-                                  fontSize: '0.8em',
+                                  color: "#787878",
+                                  fontSize: "0.8em",
                                 }}>
                                 <Highlight search={this.state.searchWmts}>
                                   {layer.Identifier}
@@ -695,7 +695,7 @@ class ExplorerSettings extends React.Component {
                               </div>
                               <div
                                 style={{
-                                  fontSize: '0.8em',
+                                  fontSize: "0.8em",
                                 }}>
                                 <Highlight search={this.state.searchWmts}>
                                   {layer.Abstract}
@@ -708,15 +708,15 @@ class ExplorerSettings extends React.Component {
                 </div>
                 <div
                   style={{
-                    flex: '1 1 100%',
-                    marginLeft: '1em',
+                    flex: "1 1 100%",
+                    marginLeft: "1em",
                   }}>
                   <div
                     style={{
-                      alignItems: 'center',
-                      marginBottom: '1em',
-                      display: 'flex',
-                      flexDirection: 'row',
+                      alignItems: "center",
+                      marginBottom: "1em",
+                      display: "flex",
+                      flexDirection: "row",
                     }}>
                     <div
                       style={{
@@ -738,10 +738,10 @@ class ExplorerSettings extends React.Component {
                   </div>
                   <div
                     style={{
-                      maxHeight: '300px',
-                      overflowY: 'auto',
-                      flex: '1 1 100%',
-                      border: 'thin solid #cecece',
+                      maxHeight: "300px",
+                      overflowY: "auto",
+                      flex: "1 1 100%",
+                      border: "thin solid #cecece",
                     }}>
                     {_.values(setting.data.map.explorer)
                       .sort((a, b) => {
@@ -753,31 +753,31 @@ class ExplorerSettings extends React.Component {
                         return 0;
                       })
                       .map((layer, idx) =>
-                        this.state.searchWmtsUser === '' ||
-                        (layer.hasOwnProperty('Title') &&
+                        this.state.searchWmtsUser === "" ||
+                        (layer.hasOwnProperty("Title") &&
                           layer.Title.toLowerCase().search(
                             this.state.searchWmtsUser,
                           ) >= 0) ||
-                        (layer.hasOwnProperty('Abstract') &&
+                        (layer.hasOwnProperty("Abstract") &&
                           layer.Abstract.toLowerCase().search(
                             this.state.searchWmtsUser,
                           ) >= 0) ||
-                        (layer.hasOwnProperty('Identifier') &&
+                        (layer.hasOwnProperty("Identifier") &&
                           layer.Identifier.toLowerCase().search(
                             this.state.searchWmtsUser,
                           ) >= 0) ? (
                           <div
                             className="selectable unselectable"
-                            key={'wmts-list-' + idx}
+                            key={"wmts-list-" + idx}
                             style={{
-                              padding: '0.5em',
+                              padding: "0.5em",
                             }}>
                             <div
                               style={{
-                                fontWeight: 'bold',
-                                display: 'flex',
-                                flexDirection: 'row',
-                                alignItems: 'center',
+                                fontWeight: "bold",
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
                               }}>
                               <div
                                 style={{
@@ -808,8 +808,8 @@ class ExplorerSettings extends React.Component {
                             </div>
                             <div
                               style={{
-                                color: '#787878',
-                                fontSize: '0.8em',
+                                color: "#787878",
+                                fontSize: "0.8em",
                               }}>
                               <Highlight search={this.state.searchWmtsUser}>
                                 {layer.Identifier}
@@ -817,7 +817,7 @@ class ExplorerSettings extends React.Component {
                             </div>
                             <div
                               style={{
-                                fontSize: '0.8em',
+                                fontSize: "0.8em",
                               }}>
                               <Highlight search={this.state.searchWmtsUser}>
                                 {layer.Abstract}
@@ -833,9 +833,9 @@ class ExplorerSettings extends React.Component {
             <Segment>
               <Checkbox
                 checked={setting.data.filter.mapfilter}
-                label={t('filterbymap')}
+                label={t("filterbymap")}
                 onChange={(e, d) => {
-                  toggleFilter('mapfilter', d.checked);
+                  toggleFilter("mapfilter", d.checked);
                 }}
               />
             </Segment>
@@ -860,25 +860,25 @@ class ExplorerSettings extends React.Component {
                 }));
               }}
               style={{
-                flexDirection: 'row',
-                display: 'flex',
-                cursor: 'pointer',
-                backgroundColor: filter.isSelected ? '#f5f5f5' : '#fff',
+                flexDirection: "row",
+                display: "flex",
+                cursor: "pointer",
+                backgroundColor: filter.isSelected ? "#f5f5f5" : "#fff",
                 padding: 10,
               }}>
               <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
+                  display: "flex",
+                  alignItems: "center",
                   fontSize: 18,
-                  fontWeight: 'bold',
+                  fontWeight: "bold",
                 }}>
                 <TranslationText id={filter.translationId} />
               </div>
               <div
                 style={{
                   flex: 1,
-                  textAlign: 'right',
+                  textAlign: "right",
                 }}>
                 <Button color="red" size="small">
                   {filter.isSelected === true ? (
@@ -905,7 +905,7 @@ class ExplorerSettings extends React.Component {
                 toggleFilter={toggleFilter}
                 toggleFieldArray={toggleFieldArray}
                 toggleFilterArray={toggleFilterArray}
-                type={'viewer'}
+                type={"viewer"}
               />
             ) : (
               <Divider style={{ margin: 0 }} />
@@ -926,7 +926,7 @@ const mapStateToProps = state => {
 };
 
 ExplorerSettings.defaultProps = {
-  geocode: 'Geol',
+  geocode: "Geol",
 };
 const mapDispatchToProps = (dispatch, state) => {
   return {
@@ -952,23 +952,23 @@ const mapDispatchToProps = (dispatch, state) => {
       dispatch(patchSettings(`filter.${filter}`, enabled));
     },
     patchAppearance: mode => {
-      dispatch(patchSettings('appearance.explorer', mode));
+      dispatch(patchSettings("appearance.explorer", mode));
     },
     addExplorerMap: (layer, type, result, position = 0) => {
-      if (type === 'WMS') {
-        if (!layer.CRS.includes('EPSG:2056')) {
-          alert('Only EPSG:2056 is supported');
+      if (type === "WMS") {
+        if (!layer.CRS.includes("EPSG:2056")) {
+          alert("Only EPSG:2056 is supported");
         } else {
           dispatch(
             patchSettings(
-              'map.explorer',
+              "map.explorer",
               {
                 Identifier: layer.Name,
                 Abstract: layer.Abstract,
                 position: position,
                 Title: layer.Title,
                 transparency: 0,
-                type: 'WMS',
+                type: "WMS",
                 url: result.Service.OnlineResource,
                 visibility: true,
                 queryable: layer.queryable,
@@ -977,27 +977,27 @@ const mapDispatchToProps = (dispatch, state) => {
             ),
           );
         }
-      } else if (type === 'WMTS') {
+      } else if (type === "WMTS") {
         const conf = optionsFromCapabilities(result, {
           layer: layer.Identifier,
           // projection: 'EPSG:2056'
         });
         if (
-          conf.hasOwnProperty('matrixSet') &&
-          !conf.matrixSet.includes('2056')
+          conf.hasOwnProperty("matrixSet") &&
+          !conf.matrixSet.includes("2056")
         ) {
-          alert('Only EPSG:2056 is supported');
+          alert("Only EPSG:2056 is supported");
         } else {
           dispatch(
             patchSettings(
-              'map.explorer',
+              "map.explorer",
               {
                 Identifier: layer.Identifier,
                 Abstract: layer.Abstract,
                 position: position,
                 Title: layer.Title,
                 transparency: 0,
-                type: 'WMTS',
+                type: "WMTS",
                 url: conf.urls,
                 visibility: true,
                 queryable: false,
@@ -1032,20 +1032,20 @@ const mapDispatchToProps = (dispatch, state) => {
       }
     },
     rmExplorerMap: config => {
-      dispatch(patchSettings('map.explorer', null, config.Identifier));
+      dispatch(patchSettings("map.explorer", null, config.Identifier));
     },
     patchSettings: (filter, enabled) => {
       dispatch(patchSettings(`filter.${filter}`, enabled));
     },
     handleAddItem: value => {
       dispatch({
-        type: 'WMS_ADDED',
+        type: "WMS_ADDED",
         url: value,
       });
     },
     handleOnChange: value => {
       dispatch({
-        type: 'WMS_SELECTED',
+        type: "WMS_SELECTED",
         url: value,
       });
     },
@@ -1055,4 +1055,4 @@ const mapDispatchToProps = (dispatch, state) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation('common')(ExplorerSettings));
+)(withTranslation("common")(ExplorerSettings));

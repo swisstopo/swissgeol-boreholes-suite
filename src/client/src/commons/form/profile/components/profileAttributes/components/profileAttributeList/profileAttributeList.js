@@ -1,12 +1,12 @@
-import React from 'react';
-import * as Styled from './styles';
-import { Input, TextArea, Form } from 'semantic-ui-react';
-import TranslationText from '../../../../../translationText';
-import DomainDropdown from '../../../../../domain/dropdown/domainDropdown';
-import DomainTree from '../../../../../domain/tree/domainTree';
-import DateField from '../../../../../dateField';
-import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import * as Styled from "./styles";
+import { Input, TextArea, Form } from "semantic-ui-react";
+import TranslationText from "../../../../../translationText";
+import DomainDropdown from "../../../../../domain/dropdown/domainDropdown";
+import DomainTree from "../../../../../domain/tree/domainTree";
+import DateField from "../../../../../dateField";
+import _ from "lodash";
+import { useTranslation } from "react-i18next";
 
 const ProfileAttributeList = props => {
   const { attribute, showAll, updateChange, layer, isVisibleFunction } =
@@ -25,7 +25,7 @@ const ProfileAttributeList = props => {
                 <TranslationText id={item.label} />
               </Styled.Label>
             )}
-            {item.type === 'Input' &&
+            {item.type === "Input" &&
               (item.isVisible ||
                 isVisibleFunction(item.isVisibleValue) ||
                 showAll) && (
@@ -37,59 +37,59 @@ const ProfileAttributeList = props => {
                     onChange={e =>
                       updateChange(
                         item.value,
-                        e.target.value === '' ? null : e.target.value,
+                        e.target.value === "" ? null : e.target.value,
                         item?.to,
                         item?.isNumber,
                       )
                     }
                     spellCheck="false"
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                     value={
-                      _.isNil(layer?.[item.value]) ? '' : layer[item.value]
+                      _.isNil(layer?.[item.value]) ? "" : layer[item.value]
                     }
                   />
                 </Styled.AttributesItem>
               )}
 
-            {item.type === 'TextArea' &&
+            {item.type === "TextArea" &&
               (item.isVisible ||
                 isVisibleFunction(item.isVisibleValue) ||
                 showAll) && (
                 <Styled.AttributesItem>
                   <TextArea
                     onChange={e => updateChange(item.value, e.target.value)}
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                     value={
-                      _.isNil(layer?.[item.value]) ? '' : layer[item.value]
+                      _.isNil(layer?.[item.value]) ? "" : layer[item.value]
                     }
                   />
                 </Styled.AttributesItem>
               )}
 
-            {item.type === 'Radio' &&
+            {item.type === "Radio" &&
               (item.isVisible ||
                 isVisibleFunction(item.isVisibleValue) ||
                 showAll) && (
-                <Form.Group style={{ display: 'flex', paddingTop: '5px' }}>
+                <Form.Group style={{ display: "flex", paddingTop: "5px" }}>
                   <Form.Radio
                     checked={
                       _.isNil(layer?.[item.value]) ? true : layer[item.value]
                     }
-                    label={t('yes')}
+                    label={t("yes")}
                     onChange={() => updateChange(item.value, true, item?.to)}
-                    style={{ paddingRight: '20px' }}
+                    style={{ paddingRight: "20px" }}
                   />
                   <Form.Radio
                     checked={
                       _.isNil(layer?.[item.value]) ? false : !layer[item.value]
                     }
-                    label={t('no')}
+                    label={t("no")}
                     onChange={() => updateChange(item.value, false, item?.to)}
                   />
                 </Form.Group>
               )}
 
-            {item.type === 'Dropdown' &&
+            {item.type === "Dropdown" &&
               (item.isVisible ||
                 isVisibleFunction(item.isVisibleValue) ||
                 showAll) && (
@@ -112,7 +112,7 @@ const ProfileAttributeList = props => {
                 </Styled.AttributesItem>
               )}
 
-            {item.type === 'DomainTree' &&
+            {item.type === "DomainTree" &&
               (item.isVisible ||
                 isVisibleFunction(item.isVisibleValue) ||
                 showAll) && (
@@ -129,7 +129,7 @@ const ProfileAttributeList = props => {
                 </Styled.AttributesItem>
               )}
 
-            {item.type === 'Date' &&
+            {item.type === "Date" &&
               (item.isVisible ||
                 isVisibleFunction(item.isVisibleValue) ||
                 showAll) && (

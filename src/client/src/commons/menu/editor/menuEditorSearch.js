@@ -1,10 +1,10 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import _ from 'lodash';
-import { withTranslation } from 'react-i18next';
-import { withRouter } from 'react-router-dom';
+import React from "react";
+import { connect } from "react-redux";
+import _ from "lodash";
+import { withTranslation } from "react-i18next";
+import { withRouter } from "react-router-dom";
 
-import TranslationText from '../../form/translationText';
+import TranslationText from "../../form/translationText";
 
 import {
   Button,
@@ -14,11 +14,11 @@ import {
   Input,
   Menu,
   Modal,
-} from 'semantic-ui-react';
+} from "semantic-ui-react";
 
-import { createBorehole, importBoreholeList } from '../../../api-lib/index';
+import { createBorehole, importBoreholeList } from "../../../api-lib/index";
 
-import SearchEditorComponent from '../../search/editor/searchEditorComponent';
+import SearchEditorComponent from "../../search/editor/searchEditorComponent";
 let isMounted = true;
 
 class MenuEditorSearch extends React.Component {
@@ -46,13 +46,13 @@ class MenuEditorSearch extends React.Component {
   componentDidMount() {
     if (isMounted) {
       this.updateDimensions();
-      window.addEventListener('resize', this.updateDimensions.bind(this));
+      window.addEventListener("resize", this.updateDimensions.bind(this));
     }
   }
 
   componentWillUnmount() {
     isMounted = false;
-    window.removeEventListener('resize', this.updateDimensions.bind(this));
+    window.removeEventListener("resize", this.updateDimensions.bind(this));
   }
 
   updateDimensions() {
@@ -77,13 +77,13 @@ class MenuEditorSearch extends React.Component {
         style={{
           color:
             boreholes.isFetching === false && boreholes.dlen === 0
-              ? 'red'
-              : '#767676',
+              ? "red"
+              : "#767676",
           // fontWeight: 'bold',
-          borderBottom: 'thin solid rgb(187, 187, 187)',
-          padding: '1em 1em 0px 1em',
+          borderBottom: "thin solid rgb(187, 187, 187)",
+          padding: "1em 1em 0px 1em",
         }}>
-        <TranslationText firstUpperCase id="boreholes" />:{' '}
+        <TranslationText firstUpperCase id="boreholes" />:{" "}
         {
           boreholes.isFetching ? (
             <Icon loading name="spinner" />
@@ -104,17 +104,17 @@ class MenuEditorSearch extends React.Component {
         }
       </div>,
       <div
-        className={this.state.scroller === true ? 'scroller' : null}
+        className={this.state.scroller === true ? "scroller" : null}
         key="sb-em-2"
         ref={divElement => (this.menu = divElement)}
         style={{
-          padding: '1em',
-          flex: '1 1 100%',
-          display: 'flex',
-          flexDirection: 'column',
-          overflowY: 'hidden',
+          padding: "1em",
+          flex: "1 1 100%",
+          display: "flex",
+          flexDirection: "column",
+          overflowY: "hidden",
           marginRight:
-            this.state.scroller === true ? this.props.setting.scrollbar : '0px',
+            this.state.scroller === true ? this.props.setting.scrollbar : "0px",
         }}>
         <SearchEditorComponent
           onChange={filter => {
@@ -127,8 +127,8 @@ class MenuEditorSearch extends React.Component {
         key="sb-em-3"
         size="mini"
         style={{
-          borderTop: 'thin solid rgb(187, 187, 187)',
-          margin: '0px',
+          borderTop: "thin solid rgb(187, 187, 187)",
+          margin: "0px",
         }}>
         <Menu.Item
           onClick={() => {
@@ -136,7 +136,7 @@ class MenuEditorSearch extends React.Component {
           }}
           style={{
             flex: 1,
-            padding: '1.5em',
+            padding: "1.5em",
           }}>
           <Icon loading={boreholes.isFetching} name="refresh" size="tiny" />
           <TranslationText firstUpperCase id="refresh" />
@@ -147,7 +147,7 @@ class MenuEditorSearch extends React.Component {
           }}
           style={{
             flex: 1,
-            padding: '1.5em',
+            padding: "1.5em",
           }}>
           <Icon name="undo" size="tiny" />
           <TranslationText firstUpperCase id="reset" />
@@ -158,10 +158,10 @@ class MenuEditorSearch extends React.Component {
         key="sb-em-4"
         size="mini"
         style={{
-          margin: '0px',
+          margin: "0px",
         }}>
         <Menu.Item
-          disabled={this.props.user.data.roles.indexOf('EDIT') === -1}
+          disabled={this.props.user.data.roles.indexOf("EDIT") === -1}
           onClick={() => {
             this.setState({
               modal: true,
@@ -170,13 +170,13 @@ class MenuEditorSearch extends React.Component {
           }}
           style={{
             flex: 1,
-            padding: '1.5em',
+            padding: "1.5em",
           }}>
           <Icon name="upload" size="tiny" />
           <TranslationText firstUpperCase id="upload" />
         </Menu.Item>
         <Menu.Item
-          disabled={this.props.user.data.roles.indexOf('EDIT') === -1}
+          disabled={this.props.user.data.roles.indexOf("EDIT") === -1}
           onClick={() => {
             this.setState({
               modal: true,
@@ -185,7 +185,7 @@ class MenuEditorSearch extends React.Component {
           }}
           style={{
             flex: 1,
-            padding: '1.5em',
+            padding: "1.5em",
           }}>
           <Icon name="add" size="tiny" />
 
@@ -205,24 +205,24 @@ class MenuEditorSearch extends React.Component {
         <Header
           content={<TranslationText id="newBorehole" />}
           // content={t(`common:newBorehole`)}
-          icon={this.state.upload === true ? 'upload' : 'plus'}
+          icon={this.state.upload === true ? "upload" : "plus"}
         />
         <Modal.Content>
           {this.state.upload === true ? (
             <div>
               <span
                 style={{
-                  fontWeight: 'bold',
+                  fontWeight: "bold",
                 }}>
                 <TranslationText id="csvFormat" />:
               </span>
               <div
                 style={{
-                  border: 'thin solid #787878',
-                  margin: '1em 0px',
-                  padding: '1em',
-                  overflow: 'auto',
-                  whiteSpace: 'nowrap',
+                  border: "thin solid #787878",
+                  margin: "1em 0px",
+                  padding: "1em",
+                  overflow: "auto",
+                  whiteSpace: "nowrap",
                 }}>
                 "location_east";"location_north";"original_name";"alternate_name";"project_name";"elevation_z";"drillend_date";"total_depth";"top_bedrock";"remarks"
                 <br />
@@ -231,13 +231,13 @@ class MenuEditorSearch extends React.Component {
               </div>
               <span
                 style={{
-                  fontWeight: 'bold',
+                  fontWeight: "bold",
                 }}>
                 <TranslationText id="uploadFile" />:
               </span>
               <div
                 style={{
-                  padding: '1em',
+                  padding: "1em",
                 }}>
                 <Input
                   onChange={e => {
@@ -253,13 +253,13 @@ class MenuEditorSearch extends React.Component {
           <div>
             <span
               style={{
-                fontWeight: 'bold',
+                fontWeight: "bold",
               }}>
               <TranslationText id="workgroup" />
             </span>
             <div
               style={{
-                padding: '1em',
+                padding: "1em",
               }}>
               {(() => {
                 const wg = this.state.enabledWorkgroups;
@@ -277,11 +277,11 @@ class MenuEditorSearch extends React.Component {
                       });
                     }}
                     options={wg
-                      .filter(w => w.roles.indexOf('EDIT') >= 0)
+                      .filter(w => w.roles.indexOf("EDIT") >= 0)
                       .map(wg => ({
-                        key: wg['id'],
-                        text: wg['workgroup'],
-                        value: wg['id'],
+                        key: wg["id"],
+                        text: wg["workgroup"],
+                        value: wg["id"],
                       }))}
                     simple
                     value={this.state.workgroup}
@@ -337,7 +337,7 @@ class MenuEditorSearch extends React.Component {
                             () => {
                               history.push(
                                 process.env.PUBLIC_URL +
-                                  '/editor/' +
+                                  "/editor/" +
                                   response.data.id,
                               );
                             },
@@ -363,7 +363,7 @@ class MenuEditorSearch extends React.Component {
               );
             }}
             secondary>
-            <Icon name={this.state.upload === true ? 'upload' : 'plus'} />{' '}
+            <Icon name={this.state.upload === true ? "upload" : "plus"} />{" "}
             {
               this.state.upload === true ? (
                 <TranslationText id="upload" />
@@ -398,22 +398,22 @@ const mapDispatchToProps = dispatch => {
     dispatch: dispatch,
     boreholeSelected: borehole => {
       dispatch({
-        path: '/borehole',
-        type: 'CLEAR',
+        path: "/borehole",
+        type: "CLEAR",
       });
       dispatch({
-        type: 'EDITOR_BOREHOLE_SELECTED',
+        type: "EDITOR_BOREHOLE_SELECTED",
         selected: borehole,
       });
     },
     refresh: () => {
       dispatch({
-        type: 'SEARCH_EDITOR_FILTER_REFRESH',
+        type: "SEARCH_EDITOR_FILTER_REFRESH",
       });
     },
     reset: () => {
       dispatch({
-        type: 'SEARCH_EDITOR_FILTER_RESET',
+        type: "SEARCH_EDITOR_FILTER_RESET",
       });
     },
   };
@@ -423,5 +423,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     mapDispatchToProps,
-  )(withTranslation(['common'])(MenuEditorSearch)),
+  )(withTranslation(["common"])(MenuEditorSearch)),
 );

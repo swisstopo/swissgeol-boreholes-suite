@@ -1,22 +1,22 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { Route, Switch, withRouter } from 'react-router-dom';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { Route, Switch, withRouter } from "react-router-dom";
 
-import { Modal } from 'semantic-ui-react';
+import { Modal } from "semantic-ui-react";
 
-import { loadEditingBoreholes } from '../../api-lib/index';
+import { loadEditingBoreholes } from "../../api-lib/index";
 
-import _ from 'lodash';
+import _ from "lodash";
 
-import BoreholeForm from '../../commons/form/borehole/boreholeForm';
-import MapComponent from '../../commons/map/mapComponent';
-import BoreholeEditorTable from '../../commons/table/boreholeEditorTable';
-import MenuEditorSearch from '../../commons/menu/editor/menuEditorSearch';
-import MenuEditorForm from '../../commons/menu/editor/menuEditorForm';
-import MenuContainer from '../../commons/menu/menuContainer';
-import WorkflowForm from '../../commons/form/workflow/workflowForm';
-import MultipleForm from '../../commons/form/multiple/multipleForm';
+import BoreholeForm from "../../commons/form/borehole/boreholeForm";
+import MapComponent from "../../commons/map/mapComponent";
+import BoreholeEditorTable from "../../commons/table/boreholeEditorTable";
+import MenuEditorSearch from "../../commons/menu/editor/menuEditorSearch";
+import MenuEditorForm from "../../commons/menu/editor/menuEditorForm";
+import MenuContainer from "../../commons/menu/menuContainer";
+import WorkflowForm from "../../commons/form/workflow/workflowForm";
+import MultipleForm from "../../commons/form/multiple/multipleForm";
 
 // const EditorComponent = function (props) {
 
@@ -36,61 +36,61 @@ class EditorComponent extends React.Component {
     return (
       <div
         style={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
         }}>
         <MenuContainer />
         <div
           style={{
-            flex: '1 1 100%',
-            display: 'flex',
-            flexDirection: 'row',
-            overflow: 'hidden',
+            flex: "1 1 100%",
+            display: "flex",
+            flexDirection: "row",
+            overflow: "hidden",
           }}>
           <div
             style={{
               // borderRight: 'thin solid #dfe0e0',
-              boxShadow: 'rgba(0, 0, 0, 0.17) 2px 6px 6px 0px',
-              display: 'flex',
-              flexDirection: 'column',
-              width: '250px',
+              boxShadow: "rgba(0, 0, 0, 0.17) 2px 6px 6px 0px",
+              display: "flex",
+              flexDirection: "column",
+              width: "250px",
             }}>
             <Switch>
               <Route
                 component={MenuEditorSearch}
                 exact
-                path={process.env.PUBLIC_URL + '/editor'}
+                path={process.env.PUBLIC_URL + "/editor"}
               />
               <Route
                 component={MenuEditorForm}
                 // onTimeout={()=>{
 
                 // }}
-                path={process.env.PUBLIC_URL + '/editor/:id'}
+                path={process.env.PUBLIC_URL + "/editor/:id"}
               />
             </Switch>
           </div>
 
           <div
             style={{
-              flex: '1 1 0%',
-              display: 'flex',
-              flexDirection: 'row',
-              overflow: 'hidden',
+              flex: "1 1 0%",
+              display: "flex",
+              flexDirection: "row",
+              overflow: "hidden",
             }}>
             <Switch>
               <Route
                 exact
-                path={process.env.PUBLIC_URL + '/editor'}
+                path={process.env.PUBLIC_URL + "/editor"}
                 render={() => (
                   <div
                     style={{
-                      flex: '1 1.5 100%',
+                      flex: "1 1.5 100%",
                       // padding: "1em",
                       // boxShadow: 'rgba(0, 0, 0, 0.5) 0px 0px 8px 0px inset',
-                      display: 'flex',
-                      flexDirection: 'column',
+                      display: "flex",
+                      flexDirection: "column",
                     }}>
                     <Modal
                       onUnmount={() => {
@@ -116,8 +116,8 @@ class EditorComponent extends React.Component {
 
                     <div
                       style={{
-                        flex: '1 1 50%',
-                        height: '50%',
+                        flex: "1 1 50%",
+                        height: "50%",
                       }}>
                       <MapComponent
                         // centerto={
@@ -156,8 +156,8 @@ class EditorComponent extends React.Component {
                     </div>
                     <div
                       style={{
-                        flex: '1 0 50%',
-                        overflowY: 'auto',
+                        flex: "1 0 50%",
+                        overflowY: "auto",
                       }}>
                       <BoreholeEditorTable
                         activeItem={
@@ -202,16 +202,16 @@ class EditorComponent extends React.Component {
               />
               <Route
                 exact={false}
-                path={process.env.PUBLIC_URL + '/editor/:id'}
+                path={process.env.PUBLIC_URL + "/editor/:id"}
                 render={() => (
                   <div
                     style={{
-                      overflow: 'hidden',
-                      height: '100%',
-                      display: 'flex',
-                      flex: '1 1 100%',
-                      flexDirection: 'column',
-                      padding: '1em',
+                      overflow: "hidden",
+                      height: "100%",
+                      display: "flex",
+                      flex: "1 1 100%",
+                      flexDirection: "column",
+                      padding: "1em",
                     }}>
                     <BoreholeForm />
                   </div>
@@ -225,14 +225,14 @@ class EditorComponent extends React.Component {
               component={({ match }) => (
                 <div
                   style={{
-                    width: '300px',
-                    boxShadow: 'rgba(0, 0, 0, 0.17) -2px 6px 6px 0px',
-                    padding: '1em',
+                    width: "300px",
+                    boxShadow: "rgba(0, 0, 0, 0.17) -2px 6px 6px 0px",
+                    padding: "1em",
                   }}>
                   <WorkflowForm id={parseInt(match.params.id, 10)} />
                 </div>
               )}
-              path={process.env.PUBLIC_URL + '/editor/:id'}
+              path={process.env.PUBLIC_URL + "/editor/:id"}
             />
           </Switch>
         </div>
@@ -274,39 +274,39 @@ const mapDispatchToProps = (dispatch, ownprops) => {
     dispatch: dispatch,
     projectSelected: project => {
       dispatch({
-        type: 'EDITOR_PROJECT_SELECTED',
+        type: "EDITOR_PROJECT_SELECTED",
         selected: project,
       });
     },
     boreholeSelected: borehole => {
       dispatch({
-        type: 'EDITOR_BOREHOLE_SELECTED',
+        type: "EDITOR_BOREHOLE_SELECTED",
         selected: borehole,
       });
     },
     lock: id => {
       dispatch({
-        type: 'CLEAR',
-        path: '/borehole',
+        type: "CLEAR",
+        path: "/borehole",
       });
-      ownprops.history.push(process.env.PUBLIC_URL + '/editor/' + id);
+      ownprops.history.push(process.env.PUBLIC_URL + "/editor/" + id);
     },
     multipleSelected: (selection, filter = null) => {
       dispatch({
-        type: 'EDITOR_MULTIPLE_SELECTED',
+        type: "EDITOR_MULTIPLE_SELECTED",
         selection: selection,
         filter: filter,
       });
     },
     delete: (selection, filter = null) => {
       dispatch({
-        type: 'EDITOR_MULTIPLE_DELETION',
+        type: "EDITOR_MULTIPLE_DELETION",
         selection: selection,
         filter: filter,
       });
     },
     loadEditingBoreholes: (page, filter = {}, direction = null) => {
-      dispatch(loadEditingBoreholes(page, 100, filter, 'creation', direction));
+      dispatch(loadEditingBoreholes(page, 100, filter, "creation", direction));
     },
   };
 };

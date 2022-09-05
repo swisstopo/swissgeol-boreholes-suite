@@ -1,10 +1,5 @@
-import {
-  combineReducers,
-  createStore,
-  applyMiddleware,
-  compose
-} from 'redux';
-import thunkMiddleware from 'redux-thunk';
+import { combineReducers, createStore, applyMiddleware, compose } from "redux";
+import thunkMiddleware from "redux-thunk";
 
 export function user() {
   const initialState = {
@@ -13,83 +8,75 @@ export function user() {
     fcnt: 0,
     rtime: 0, // fetch time
     data: null,
-    authentication: null
+    authentication: null,
   };
   return function _user(state = initialState, action) {
     const { path } = action;
-    if (path !== '/user'){
+    if (path !== "/user") {
       return state;
     }
     switch (action.type) {
-      case 'SET_AUTHENTICATION': {
+      case "SET_AUTHENTICATION": {
         return {
           ...state,
           authentication: {
             username: action.username,
             password: action.password,
-            type: action.authentication
-          }
+            type: action.authentication,
+          },
         };
       }
-      case 'UNSET_AUTHENTICATION': {
+      case "UNSET_AUTHENTICATION": {
         return {
           ...initialState,
-          data: null
+          data: null,
         };
       }
-      case 'GET': {
+      case "GET": {
         return {
           ...initialState,
           authentication: {
-            ...state.authentication
+            ...state.authentication,
           },
           error: false,
-          rtime: (
-            new Date()
-          ).getTime(),
-          isFetching: true
+          rtime: new Date().getTime(),
+          isFetching: true,
         };
       }
-      case 'GET_OK': {
+      case "GET_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isFetching: false,
           error: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
-          data: action.json.data
+          rtime: new Date().getTime() - state.rtime,
+          data: action.json.data,
         };
         return copy;
       }
-      case 'GET_ERROR': {
+      case "GET_ERROR": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isFetching: false,
           error: true,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime
+          rtime: new Date().getTime() - state.rtime,
         };
         return copy;
       }
-      case 'GET_CONNECTION_ERROR': {
+      case "GET_CONNECTION_ERROR": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime
+          rtime: new Date().getTime() - state.rtime,
         };
         return copy;
       }
-      case 'RELOAD_OK': {
+      case "RELOAD_OK": {
         let copy = {
           ...state,
-          data: action.json.data
+          data: action.json.data,
         };
         return copy;
       }
@@ -99,7 +86,6 @@ export function user() {
     }
   };
 }
-
 
 export function users() {
   const initialState = {
@@ -111,29 +97,25 @@ export function users() {
   };
   return function _users(state = { ...initialState }, action) {
     const { path } = action;
-    if (path !== '/user/edit'){
+    if (path !== "/user/edit") {
       return state;
     }
     switch (action.type) {
-      case 'LIST': {
+      case "LIST": {
         return {
           ...initialState,
           id: action.id,
-          rtime: (
-            new Date()
-          ).getTime(),
-          isFetching: true
+          rtime: new Date().getTime(),
+          isFetching: true,
         };
       }
-      case 'LIST_OK': {
+      case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
-          data: action.json.data
+          rtime: new Date().getTime() - state.rtime,
+          data: action.json.data,
         };
         return copy;
       }
@@ -154,29 +136,25 @@ export function workgroups() {
   };
   return function _workgroups(state = { ...initialState }, action) {
     const { path } = action;
-    if (path !== '/user/workgroup/edit'){
+    if (path !== "/user/workgroup/edit") {
       return state;
     }
     switch (action.type) {
-      case 'LIST': {
+      case "LIST": {
         return {
           ...initialState,
           id: action.id,
-          rtime: (
-            new Date()
-          ).getTime(),
-          isFetching: true
+          rtime: new Date().getTime(),
+          isFetching: true,
         };
       }
-      case 'LIST_OK': {
+      case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
-          data: action.json.data
+          rtime: new Date().getTime() - state.rtime,
+          data: action.json.data,
         };
         return copy;
       }
@@ -199,73 +177,59 @@ export function workflows() {
   };
   return function _workflows(state = { ...initialState }, action) {
     const { path } = action;
-    if (path !== '/workflow/edit'){
+    if (path !== "/workflow/edit") {
       return state;
     }
     switch (action.type) {
-      case 'LIST': {
+      case "LIST": {
         return {
           ...initialState,
           id: action.id,
-          rtime: (
-            new Date()
-          ).getTime(),
-          isFetching: true
+          rtime: new Date().getTime(),
+          isFetching: true,
         };
       }
-      case 'LIST_OK': {
+      case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
-          data: action.json.data
+          rtime: new Date().getTime() - state.rtime,
+          data: action.json.data,
         };
         return copy;
       }
-      case 'SUBMIT': {
+      case "SUBMIT": {
         return {
           ...state,
-          rtime: (
-            new Date()
-          ).getTime(),
-          isSubmitting: true
+          rtime: new Date().getTime(),
+          isSubmitting: true,
         };
       }
-      case 'SUBMIT_OK': {
+      case "SUBMIT_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isSubmitting: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
-          data: action.json.data.length > 1?
-            action.json.data: []
+          rtime: new Date().getTime() - state.rtime,
+          data: action.json.data.length > 1 ? action.json.data : [],
         };
         return copy;
       }
-      case 'REJECT': {
+      case "REJECT": {
         return {
           ...state,
-          rtime: (
-            new Date()
-          ).getTime(),
-          isRejecting: true
+          rtime: new Date().getTime(),
+          isRejecting: true,
         };
       }
-      case 'REJECT_OK': {
+      case "REJECT_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isRejecting: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
-          data: action.json.data.length > 1?
-            action.json.data: []
+          rtime: new Date().getTime() - state.rtime,
+          data: action.json.data.length > 1 ? action.json.data : [],
         };
         return copy;
       }
@@ -280,7 +244,7 @@ export function workflow() {
   const initialState = {
     isFetching: false,
     isPatching: false,
-    error: '',
+    error: "",
     fcnt: 0,
     rtime: 0, // fetch time
     id: null,
@@ -289,106 +253,98 @@ export function workflow() {
   };
   return function _workflow(state = { ...initialState }, action) {
     const { path } = action;
-    if (path !== '/workflow/edit'){
+    if (path !== "/workflow/edit") {
       return state;
     }
     switch (action.type) {
-      case 'LIST': {
+      case "LIST": {
         return {
           ...initialState,
           id: action.id,
-          rtime: (
-            new Date()
-          ).getTime(),
-          isFetching: true
+          rtime: new Date().getTime(),
+          isFetching: true,
         };
       }
-      case 'LIST_OK': {
+      case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
-          previous: action.json.data.length > 1?
-            action.json.data[
-              action.json.data.length - 2
-            ]: null,
-          data: action.json.data.length > 0?
-            action.json.data[
-              action.json.data.length - 1
-            ]: null
+          rtime: new Date().getTime() - state.rtime,
+          previous:
+            action.json.data.length > 1
+              ? action.json.data[action.json.data.length - 2]
+              : null,
+          data:
+            action.json.data.length > 0
+              ? action.json.data[action.json.data.length - 1]
+              : null,
         };
         return copy;
       }
-      case 'SUBMIT_OK': {
+      case "SUBMIT_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
-          previous: action.json.data.length > 1?
-            action.json.data[
-              action.json.data.length - 2
-            ]: null,
-          data: action.json.data.length > 0?
-            action.json.data[
-              action.json.data.length - 1
-            ]: null
+          rtime: new Date().getTime() - state.rtime,
+          previous:
+            action.json.data.length > 1
+              ? action.json.data[action.json.data.length - 2]
+              : null,
+          data:
+            action.json.data.length > 0
+              ? action.json.data[action.json.data.length - 1]
+              : null,
         };
         return copy;
       }
-      case 'REJECT_OK': {
+      case "REJECT_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
-          previous: action.json.data.length > 1?
-            action.json.data[
-              action.json.data.length - 2
-            ]: null,
-          data: action.json.data.length > 0?
-            action.json.data[
-              action.json.data.length - 1
-            ]: null
+          rtime: new Date().getTime() - state.rtime,
+          previous:
+            action.json.data.length > 1
+              ? action.json.data[action.json.data.length - 2]
+              : null,
+          data:
+            action.json.data.length > 0
+              ? action.json.data[action.json.data.length - 1]
+              : null,
         };
         return copy;
       }
-      case 'UPDATE': {
+      case "UPDATE": {
         let copy = {
           ...state,
-          isPatching: true
+          isPatching: true,
         };
         copy.data[action.field] = action.value;
         return copy;
       }
-      case 'PATCH': {
+      case "PATCH": {
         return {
           ...state,
-          isPatching: true
+          isPatching: true,
         };
       }
-      case 'PATCH_OK': {
+      case "PATCH_OK": {
         return {
           ...state,
           data: {
             ...state.data,
-            mentions: action.json.data.mentions
+            mentions: action.json.data.mentions,
           },
-          isPatching: false
+          isPatching: false,
         };
       }
-      case 'PATCH_ERROR': {
+      case "PATCH_ERROR": {
         return {
           ...state,
           error: action.json.message,
-          isPatching: false
+          isPatching: false,
         };
       }
       default: {
@@ -414,11 +370,11 @@ export function borehole() {
         kind: null,
         restriction: null,
         restriction_until: null,
-        location_x: '',
-        location_y: '',
+        location_x: "",
+        location_y: "",
         srs: null,
         qt_location: null,
-        elevation_z: '',
+        elevation_z: "",
         hrs: null,
         qt_elevation: null,
         drilling_date: null,
@@ -427,79 +383,75 @@ export function borehole() {
         length: null,
         ...{
           extended: {
-            original_name: '',
+            original_name: "",
             method: null,
             purpose: null,
             status: null,
             top_bedrock: null,
-            groundwater: null
-          }
+            groundwater: null,
+          },
         },
         ...{
           custom: {
             identifiers: null,
-            public_name: '',
-            project_name: '',
-            country: 'Switzerland',
+            public_name: "",
+            project_name: "",
+            country: "Switzerland",
             canton: null,
             city: null,
-            address: '',
+            address: "",
             landuse: null,
             cuttings: null,
-            drill_diameter: '',
+            drill_diameter: "",
             qt_bore_inc_dir: null,
             qt_depth: null,
             qt_top_bedrock: null,
             lithology_top_bedrock: null,
             lit_str_top_bedrock: null,
             chro_str_top_bedrock: null,
-            remarks: '',
-            national_relevance: null
-          }
+            remarks: "",
+            national_relevance: null,
+          },
         },
         ...{
-          updater: {
-          
-          }
+          updater: {},
         },
         workgroup: null,
         workflow: null,
-        role: null
-      }
-    }
+        role: null,
+      },
+    },
   };
   return function _borehole(state = initialState, action) {
     const { path } = action;
     if (
-      path !== '/borehole/edit'
-      && path !== '/borehole'
-      && path !== '/workflow/edit'
-    ){
+      path !== "/borehole/edit" &&
+      path !== "/borehole" &&
+      path !== "/workflow/edit"
+    ) {
       return state;
     }
 
-    if (path === '/workflow/edit'){
-      
+    if (path === "/workflow/edit") {
       switch (action.type) {
-        
-        case 'SUBMIT_OK': {
+        case "SUBMIT_OK": {
           return {
             ...state,
             isLocking: false,
             data: {
               ...state.data,
-              lock: null
-            }
+              lock: null,
+            },
           };
         }
-        case 'REJECT_OK': {
+        case "REJECT_OK": {
           return {
             ...state,
             isLocking: false,
             data: {
               ...state.data,
-              lock: null
-            }
+              lock: null,
+            },
           };
         }
         default: {
@@ -507,129 +459,118 @@ export function borehole() {
         }
       }
     } else {
-
       switch (action.type) {
-        case 'CLEAR': {
-          return {
-            ...initialState,
-            fcnt: state.fcnt
-          };
-        }
-        case 'GET': {
+        case "CLEAR": {
           return {
             ...initialState,
             fcnt: state.fcnt,
-            rtime: (
-              new Date()
-            ).getTime(),
-            isFetching: true
           };
         }
-        case 'GET_OK': {
+        case "GET": {
+          return {
+            ...initialState,
+            fcnt: state.fcnt,
+            rtime: new Date().getTime(),
+            isFetching: true,
+          };
+        }
+        case "GET_OK": {
           let copy = {
             ...state,
-            fcnt: (state.fcnt + 1),
+            fcnt: state.fcnt + 1,
             isFetching: false,
-            rtime: (
-              new Date()
-            ).getTime() - state.rtime,
+            rtime: new Date().getTime() - state.rtime,
             data: {
               ...initialState.data,
               ...action.json.data,
               extended: {
                 ...initialState.data.extended,
-                ...action.json.data.extended
+                ...action.json.data.extended,
               },
               custom: {
                 ...initialState.data.custom,
-                ...action.json.data.custom
-              }
-            }
+                ...action.json.data.custom,
+              },
+            },
           };
           return copy;
         }
-        case 'EDIT': {
+        case "EDIT": {
           return {
             ...initialState,
             fcnt: state.fcnt,
-            rtime: (
-              new Date()
-            ).getTime(),
-            isFetching: true
+            rtime: new Date().getTime(),
+            isFetching: true,
           };
         }
-        case 'EDIT_OK': {
+        case "EDIT_OK": {
           let copy = {
             ...state,
-            fcnt: (state.fcnt + 1),
+            fcnt: state.fcnt + 1,
             isFetching: false,
-            rtime: (
-              new Date()
-            ).getTime() - state.rtime,
+            rtime: new Date().getTime() - state.rtime,
             data: {
               ...initialState.data,
               ...action.json.data,
               extended: {
                 ...initialState.data.extended,
-                ...action.json.data.extended
+                ...action.json.data.extended,
               },
               custom: {
                 ...initialState.data.custom,
-                ...action.json.data.custom
-              }
-            }
+                ...action.json.data.custom,
+              },
+            },
           };
           return copy;
         }
-        case 'EDIT_ERROR': {
+        case "EDIT_ERROR": {
           let copy = {
             ...state,
-            fcnt: (state.fcnt + 1),
+            fcnt: state.fcnt + 1,
             isFetching: false,
-            rtime: (
-              new Date()
-            ).getTime() - state.rtime,
+            rtime: new Date().getTime() - state.rtime,
             data: action.json.data,
-            error: action.json.error
+            error: action.json.error,
           };
           return copy;
         }
-        case 'UPDATE': {
+        case "UPDATE": {
           return {
             ...state,
-            data: action.data
+            data: action.data,
           };
         }
-        case 'LOCK': {
+        case "LOCK": {
           return {
             ...state,
-            isLocking: true
+            isLocking: true,
           };
         }
-        case 'LOCK_OK': {
+        case "LOCK_OK": {
           return {
             ...state,
             isLocking: false,
             data: {
               ...state.data,
-              lock: action.json.data
-            }
+              lock: action.json.data,
+            },
           };
         }
-        case 'UNLOCK': {
+        case "UNLOCK": {
           return {
             ...state,
-            isLocking: true
+            isLocking: true,
           };
         }
-        case 'UNLOCK_OK': {
+        case "UNLOCK_OK": {
           return {
             ...state,
             isLocking: false,
             data: {
               ...state.data,
-              lock: null
-            }
+              lock: null,
+            },
           };
         }
         default: {
@@ -650,45 +591,41 @@ export function boreholeList() {
     direction: null,
     orderby: null,
     page: 1,
-    pages: 0
+    pages: 0,
   };
   return function boreholes(state = initialState, action) {
     const { path } = action;
-    if (path !== '/borehole') {
+    if (path !== "/borehole") {
       return state;
     }
     switch (action.type) {
-      case 'LIST': {
+      case "LIST": {
         return {
           ...initialState,
-          rtime: (
-            new Date()
-          ).getTime(),
+          rtime: new Date().getTime(),
           page: state.page,
           pages: state.pages,
           direction: state.direction,
           orderby: state.orderby,
-          isFetching: true
+          isFetching: true,
         };
       }
-      case 'LIST_OK': {
+      case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           dlen: action.json.rows,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
+          rtime: new Date().getTime() - state.rtime,
           data: action.json.data,
-          pages: action.json.hasOwnProperty('pages') ?
-            action.json.pages : null,
-          page: action.json.hasOwnProperty('page') ?
-            action.json.page : null,
-          direction: action.json.hasOwnProperty('direction') ?
-            action.json.direction : null,
-          orderby: action.json.hasOwnProperty('orderby') ?
-            action.json.orderby : null
+          pages: action.json.hasOwnProperty("pages") ? action.json.pages : null,
+          page: action.json.hasOwnProperty("page") ? action.json.page : null,
+          direction: action.json.hasOwnProperty("direction")
+            ? action.json.direction
+            : null,
+          orderby: action.json.hasOwnProperty("orderby")
+            ? action.json.orderby
+            : null,
         };
         return copy;
       }
@@ -709,45 +646,41 @@ export function boreholeEditorList() {
     direction: null,
     orderby: null,
     page: 1,
-    pages: 0
+    pages: 0,
   };
   return function boreholesEditor(state = initialState, action) {
     const { path } = action;
-    if (path !== '/borehole/edit') {
+    if (path !== "/borehole/edit") {
       return state;
     }
     switch (action.type) {
-      case 'LIST': {
+      case "LIST": {
         return {
           ...initialState,
-          rtime: (
-            new Date()
-          ).getTime(),
+          rtime: new Date().getTime(),
           page: state.page,
           pages: state.pages,
           direction: state.direction,
           orderby: state.orderby,
-          isFetching: true
+          isFetching: true,
         };
       }
-      case 'LIST_OK': {
+      case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           dlen: action.json.rows,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
+          rtime: new Date().getTime() - state.rtime,
           data: action.json.data,
-          pages: action.json.hasOwnProperty('pages') ?
-            action.json.pages : null,
-          page: action.json.hasOwnProperty('page') ?
-            action.json.page : null,
-          direction: action.json.hasOwnProperty('direction') ?
-            action.json.direction : null,
-          orderby: action.json.hasOwnProperty('orderby') ?
-            action.json.orderby : null
+          pages: action.json.hasOwnProperty("pages") ? action.json.pages : null,
+          page: action.json.hasOwnProperty("page") ? action.json.page : null,
+          direction: action.json.hasOwnProperty("direction")
+            ? action.json.direction
+            : null,
+          orderby: action.json.hasOwnProperty("orderby")
+            ? action.json.orderby
+            : null,
         };
         return copy;
       }
@@ -766,39 +699,33 @@ export function projectList() {
     dlen: 0, // data counter
     data: [],
     page: 1,
-    pages: 0
+    pages: 0,
   };
   return function projects(state = initialState, action) {
     const { path } = action;
-    if (path !== '/borehole/project'){
+    if (path !== "/borehole/project") {
       return state;
     }
     switch (action.type) {
-      case 'LIST': {
+      case "LIST": {
         return {
           ...initialState,
-          rtime: (
-            new Date()
-          ).getTime(),
+          rtime: new Date().getTime(),
           page: state.page,
           pages: state.pages,
-          isFetching: true
+          isFetching: true,
         };
       }
-      case 'LIST_OK': {
+      case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           dlen: action.json.rows,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
+          rtime: new Date().getTime() - state.rtime,
           data: action.json.data,
-          pages: action.json.hasOwnProperty('pages') ?
-            action.json.pages : null,
-          page: action.json.hasOwnProperty('page') ?
-            action.json.page : null
+          pages: action.json.hasOwnProperty("pages") ? action.json.pages : null,
+          page: action.json.hasOwnProperty("page") ? action.json.page : null,
         };
         return copy;
       }
@@ -817,39 +744,33 @@ export function stratigraphyList() {
     dlen: 0, // data counter
     data: [],
     page: 1,
-    pages: 0
+    pages: 0,
   };
   return function stratigraphy(state = initialState, action) {
     const { path } = action;
-    if (path !== '/borehole/stratigraphy'){
+    if (path !== "/borehole/stratigraphy") {
       return state;
     }
     switch (action.type) {
-      case 'LIST': {
+      case "LIST": {
         return {
           ...initialState,
-          rtime: (
-            new Date()
-          ).getTime(),
+          rtime: new Date().getTime(),
           page: state.page,
           pages: state.pages,
-          isFetching: true
+          isFetching: true,
         };
       }
-      case 'LIST_OK': {
+      case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           dlen: action.json.rows,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
+          rtime: new Date().getTime() - state.rtime,
           data: action.json.data,
-          pages: action.json.hasOwnProperty('pages') ?
-            action.json.pages : null,
-          page: action.json.hasOwnProperty('page') ?
-            action.json.page : null
+          pages: action.json.hasOwnProperty("pages") ? action.json.pages : null,
+          page: action.json.hasOwnProperty("page") ? action.json.page : null,
         };
         return copy;
       }
@@ -865,45 +786,39 @@ export function domainsList() {
     isFetching: false,
     rtime: 0, // fetch time
     fcnt: 0, // fetch counter
-    data: {}
+    data: {},
   };
   return function domains(state = initialState, action) {
     const { path } = action;
-    if (path === '/borehole/codes'){
+    if (path === "/borehole/codes") {
       switch (action.type) {
-        case 'LIST': {
+        case "LIST": {
           return {
             ...initialState,
-            rtime: (
-              new Date()
-            ).getTime(),
+            rtime: new Date().getTime(),
             data: {},
-            isFetching: true
+            isFetching: true,
           };
         }
-        case 'LIST_OK': {
+        case "LIST_OK": {
           let copy = {
             ...state,
-            fcnt: (state.fcnt + 1),
+            fcnt: state.fcnt + 1,
             isFetching: false,
-            rtime: (
-              new Date()
-            ).getTime() - state.rtime,
-            data: action.json.data
+            rtime: new Date().getTime() - state.rtime,
+            data: action.json.data,
           };
           return copy;
         }
-        case 'PATCH_OK': {
+        case "PATCH_OK": {
           let copy = {
-            ...state
+            ...state,
           };
-          if (copy.data.hasOwnProperty(
-            action.json.schema
-          )){
+          if (copy.data.hasOwnProperty(action.json.schema)) {
             const data = copy.data[action.json.schema];
             for (let idx = 0; idx < data.length; idx++) {
               const element = data[idx];
-              if (element.id === action.json.code_id){
+              if (element.id === action.json.code_id) {
                 element.conf = action.json.data;
                 break;
               }
@@ -915,29 +830,25 @@ export function domainsList() {
           return state;
         }
       }
-    } else if (path === '/borehole/identifier'){
+    } else if (path === "/borehole/identifier") {
       switch (action.type) {
-        case 'LIST': {
+        case "LIST": {
           return {
             ...state,
-            rtime: (
-              new Date()
-            ).getTime(),
-            isFetching: true
+            rtime: new Date().getTime(),
+            isFetching: true,
           };
         }
-        case 'LIST_OK': {
+        case "LIST_OK": {
           let copy = {
             ...state,
-            fcnt: (state.fcnt + 1),
+            fcnt: state.fcnt + 1,
             isFetching: false,
-            rtime: (
-              new Date()
-            ).getTime() - state.rtime,
+            rtime: new Date().getTime() - state.rtime,
             data: {
               ...state.data,
-              ...action.json.data
-            }
+              ...action.json.data,
+            },
           };
           return copy;
         }
@@ -955,33 +866,29 @@ export function municipalityList() {
     isFetching: false,
     rtime: 0, // fetch time
     fcnt: 0, // fetch counter
-    data: []
+    data: [],
   };
   return function municipality(state = initialState, action) {
     const { path } = action;
-    if (path !== '/geoapi/municipality'){
+    if (path !== "/geoapi/municipality") {
       return state;
     }
     switch (action.type) {
-      case 'LIST': {
+      case "LIST": {
         return {
           ...initialState,
-          rtime: (
-            new Date()
-          ).getTime(),
+          rtime: new Date().getTime(),
           data: [],
-          isFetching: true
+          isFetching: true,
         };
       }
-      case 'LIST_OK': {
+      case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
-          data: action.json.data
+          rtime: new Date().getTime() - state.rtime,
+          data: action.json.data,
         };
         return copy;
       }
@@ -997,33 +904,29 @@ export function cantonList() {
     isFetching: false,
     rtime: 0, // fetch time
     fcnt: 0, // fetch counter
-    data: []
+    data: [],
   };
   return function canton(state = initialState, action) {
     const { path } = action;
-    if (path !== '/geoapi/canton'){
+    if (path !== "/geoapi/canton") {
       return state;
     }
     switch (action.type) {
-      case 'LIST': {
+      case "LIST": {
         return {
           ...initialState,
-          rtime: (
-            new Date()
-          ).getTime(),
+          rtime: new Date().getTime(),
           data: [],
-          isFetching: true
+          isFetching: true,
         };
       }
-      case 'LIST_OK': {
+      case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
-          data: action.json.data
+          rtime: new Date().getTime() - state.rtime,
+          data: action.json.data,
         };
         return copy;
       }
@@ -1039,33 +942,29 @@ export function layersList() {
     isFetching: false,
     rtime: 0, // fetch time
     fcnt: 0, // fetch counter
-    data: []
+    data: [],
   };
   return function layers(state = initialState, action) {
     const { path } = action;
-    if (path !== '/borehole/stratigraphy/layer'){
+    if (path !== "/borehole/stratigraphy/layer") {
       return state;
     }
     switch (action.type) {
-      case 'LIST': {
+      case "LIST": {
         return {
           ...initialState,
-          rtime: (
-            new Date()
-          ).getTime(),
+          rtime: new Date().getTime(),
           data: [],
-          isFetching: true
+          isFetching: true,
         };
       }
-      case 'LIST_OK': {
+      case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: (state.fcnt + 1),
+          fcnt: state.fcnt + 1,
           isFetching: false,
-          rtime: (
-            new Date()
-          ).getTime() - state.rtime,
-          data: action.json.data
+          rtime: new Date().getTime() - state.rtime,
+          data: action.json.data,
         };
         return copy;
       }
@@ -1075,7 +974,6 @@ export function layersList() {
     }
   };
 }
-
 
 // Function that add dynamically reducers to the store
 // Inspired by: https://stackoverflow.com/a/33044701
@@ -1095,7 +993,7 @@ export function createReducer(pluginsReducers) {
     core_municipality_list: municipalityList(),
     core_canton_list: cantonList(),
     core_layers_list: layersList(),
-    ...pluginsReducers
+    ...pluginsReducers,
   });
   return combinedReducers;
 }
@@ -1105,9 +1003,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 export function configureStore() {
   const store = createStore(
     createReducer(),
-    composeEnhancers(
-      applyMiddleware(thunkMiddleware)
-    )
+    composeEnhancers(applyMiddleware(thunkMiddleware)),
   );
   store.pluginsReducers = {};
   return store;
@@ -1116,7 +1012,7 @@ export function configureStore() {
 export function injectReducer(store, reducer) {
   store.pluginsReducers = {
     ...store.pluginsReducers,
-    ...reducer
+    ...reducer,
   };
   store.replaceReducer(createReducer(store.pluginsReducers));
 }

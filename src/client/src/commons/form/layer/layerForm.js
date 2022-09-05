@@ -1,17 +1,14 @@
-import React, { createRef } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
-import _ from 'lodash';
+import React, { createRef } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
+import _ from "lodash";
 
-import {
-  getLayer,
-  patchLayer,
-} from '../../lib/index';
+import { getLayer, patchLayer } from "../../lib/index";
 
-import DomainDropdown from '../domain/dropdown/domainDropdown';
-import DomainTree from '../domain/tree/domainTree';
-import TranslationText from '../translationText';
+import DomainDropdown from "../domain/dropdown/domainDropdown";
+import DomainTree from "../domain/tree/domainTree";
+import TranslationText from "../translationText";
 
 import {
   // Segment,
@@ -21,7 +18,7 @@ import {
   Input,
   TextArea,
   Checkbox,
-} from 'semantic-ui-react';
+} from "semantic-ui-react";
 
 class LayerForm extends React.Component {
   constructor(props) {
@@ -33,12 +30,12 @@ class LayerForm extends React.Component {
     this.patch = this.patch.bind(this);
     this.depthToRef = createRef();
     this.empty = {
-      id: props.hasOwnProperty('id') ? props.id : null,
+      id: props.hasOwnProperty("id") ? props.id : null,
       kind: null,
       depth_from: null,
       depth_to: null,
-      description: '',
-      geology: '',
+      description: "",
+      geology: "",
       last: null,
       qt_description: null,
       lithology: null,
@@ -65,14 +62,14 @@ class LayerForm extends React.Component {
       uscs_1: null,
       uscs_2: null,
       uscs_3: [],
-      uscs_original: '',
+      uscs_original: "",
       uscs_determination: [],
       unconrocks: null,
       debris: [],
       lithology_top_bedrock: [],
       lithok: null,
       kirost: null,
-      notes: '',
+      notes: "",
     };
     this.checkattribute = false;
     this.updateAttributeDelay = {};
@@ -132,15 +129,15 @@ class LayerForm extends React.Component {
   }
 
   checkLock() {
-    if (this.props.borehole.data.role !== 'EDIT') {
-      alert('Borehole status not editable');
+    if (this.props.borehole.data.role !== "EDIT") {
+      alert("Borehole status not editable");
       return false;
     }
     if (
       this.props.borehole.data.lock === null ||
       this.props.borehole.data.lock.username !== this.props.user.data.username
     ) {
-      alert('Borehole not locked');
+      alert("Borehole not locked");
       return false;
     }
     return true;
@@ -243,7 +240,7 @@ class LayerForm extends React.Component {
 
   render() {
     const { t } = this.props;
-    const size = 'small';
+    const size = "small";
     // let fields = false;
     // if (conf!==null && conf.hasOwnProperty('fields')){
     //   fields = conf.fields;
@@ -255,21 +252,21 @@ class LayerForm extends React.Component {
           <Loader>
             {(() => {
               if (this.state.loading_fetch === true) {
-                return t('loading_fetch');
+                return t("loading_fetch");
               } else if (this.state.creation_fetch === true) {
-                return t('creation_fetch');
+                return t("creation_fetch");
               }
             })()}
           </Loader>
         </Dimmer>
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            textAlign: 'right',
-            whiteSpace: 'nowrap',
-            justifyContent: 'space-between',
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            textAlign: "right",
+            whiteSpace: "nowrap",
+            justifyContent: "space-between",
           }}>
           <TranslationText id="showallfields" />
           <Checkbox
@@ -294,14 +291,14 @@ class LayerForm extends React.Component {
               autoCorrect="off"
               onChange={e => {
                 this.updateNumber(
-                  'depth_from',
-                  e.target.value === '' ? null : e.target.value,
+                  "depth_from",
+                  e.target.value === "" ? null : e.target.value,
                 );
               }}
               spellCheck="false"
               value={
                 _.isNil(this.state.layer.depth_from)
-                  ? ''
+                  ? ""
                   : this.state.layer.depth_from
               }
             />
@@ -322,21 +319,21 @@ class LayerForm extends React.Component {
               autoCorrect="off"
               onChange={e => {
                 this.updateNumber(
-                  'depth_to',
-                  e.target.value === '' ? null : e.target.value,
+                  "depth_to",
+                  e.target.value === "" ? null : e.target.value,
                 );
               }}
               ref={this.depthToRef}
               spellCheck="false"
               value={
                 _.isNil(this.state.layer.depth_to)
-                  ? ''
+                  ? ""
                   : this.state.layer.depth_to
               }
             />
           </Form.Field>
           {this.isVisible(
-            'description',
+            "description",
             <Form.Field>
               <label>
                 <TranslationText id="description" />
@@ -344,14 +341,14 @@ class LayerForm extends React.Component {
               <TextArea
                 // autoHeight
                 onChange={e => {
-                  this.updateChange('description', e.target.value);
+                  this.updateChange("description", e.target.value);
                 }}
                 value={this.state.layer.description}
               />
             </Form.Field>,
           )}
           {this.isVisible(
-            'geology',
+            "geology",
             <Form.Field>
               <label>
                 <TranslationText id="layer_geology" />
@@ -359,14 +356,14 @@ class LayerForm extends React.Component {
               <TextArea
                 // autoHeight
                 onChange={e => {
-                  this.updateChange('geology', e.target.value);
+                  this.updateChange("geology", e.target.value);
                 }}
                 value={this.state.layer.geology}
               />
             </Form.Field>,
           )}
           {this.isVisible(
-            'last',
+            "last",
             <Form.Field>
               <label>
                 <TranslationText id="layer_last" />
@@ -374,29 +371,29 @@ class LayerForm extends React.Component {
               <Form.Group inline>
                 <Form.Radio
                   checked={this.state.layer.last === true}
-                  label={t('common:yes')}
+                  label={t("common:yes")}
                   onChange={(e, d) => {
-                    this.updateChange('last', true, false);
+                    this.updateChange("last", true, false);
                   }}
                 />
                 <Form.Radio
                   checked={this.state.layer.last === false}
-                  label={t('common:no')}
+                  label={t("common:no")}
                   onChange={(e, d) => {
-                    this.updateChange('last', false, false);
+                    this.updateChange("last", false, false);
                   }}
                 />
                 {this.props.developer.debug === true ? (
                   <div>
                     <div
                       style={{
-                        color: 'red',
+                        color: "red",
                       }}>
                       trans=yes
                     </div>
                     <div
                       style={{
-                        color: 'red',
+                        color: "red",
                       }}>
                       trans=no
                     </div>
@@ -406,14 +403,14 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'qt_description',
+            "qt_description",
             <Form.Field>
               <label>
                 <TranslationText id="layer_qt_description" />
               </label>
               <DomainDropdown
                 onSelected={selected => {
-                  this.updateChange('qt_description', selected.id, false);
+                  this.updateChange("qt_description", selected.id, false);
                 }}
                 schema="qt_description"
                 selected={this.state.layer.qt_description}
@@ -421,19 +418,19 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'lithology',
+            "lithology",
             <Form.Field required>
               <label>
                 <TranslationText id="layer_lithology" />
               </label>
               <DomainTree
                 levels={{
-                  1: 'rock',
-                  2: 'process',
-                  3: 'type',
+                  1: "rock",
+                  2: "process",
+                  3: "type",
                 }}
                 onSelected={selected => {
-                  this.updateChange('lithology', selected.id, false);
+                  this.updateChange("lithology", selected.id, false);
                 }}
                 schema="custom.lithology_top_bedrock"
                 selected={this.state.layer.lithology}
@@ -442,21 +439,21 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'lithostratigraphy',
+            "lithostratigraphy",
             <Form.Field required>
               <label>
                 <TranslationText id="layer_lithostratigraphy" />
               </label>
               <DomainTree
                 levels={{
-                  1: 'super',
-                  2: 'group',
-                  3: 'subgroup',
-                  4: 'superformation',
-                  5: 'formation',
+                  1: "super",
+                  2: "group",
+                  3: "subgroup",
+                  4: "superformation",
+                  5: "formation",
                 }}
                 onSelected={selected => {
-                  this.updateChange('lithostratigraphy', selected.id, false);
+                  this.updateChange("lithostratigraphy", selected.id, false);
                 }}
                 schema="custom.lithostratigraphy_top_bedrock"
                 selected={this.state.layer.lithostratigraphy}
@@ -465,7 +462,7 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'chronostratigraphy',
+            "chronostratigraphy",
             <Form.Field>
               <label>
                 <TranslationText id="layer_chronostratigraphy" />
@@ -481,15 +478,15 @@ class LayerForm extends React.Component {
                 /> */}
               <DomainTree
                 levels={{
-                  1: '1st_order_eon',
-                  2: '2nd_order_era',
-                  3: '3rd_order_period',
-                  4: '4th_order_epoch',
-                  5: '5th_order_sub_epoch',
-                  6: '6th_order_sub_stage',
+                  1: "1st_order_eon",
+                  2: "2nd_order_era",
+                  3: "3rd_order_period",
+                  4: "4th_order_epoch",
+                  5: "5th_order_sub_epoch",
+                  6: "6th_order_sub_stage",
                 }}
                 onSelected={selected => {
-                  this.updateChange('chronostratigraphy', selected.id, false);
+                  this.updateChange("chronostratigraphy", selected.id, false);
                 }}
                 schema="custom.chronostratigraphy_top_bedrock"
                 selected={this.state.layer.chronostratigraphy}
@@ -515,7 +512,7 @@ class LayerForm extends React.Component {
             // )
           }
           {this.isVisible(
-            'color',
+            "color",
             <Form.Field>
               <label>
                 <TranslationText id="layer_color" />
@@ -524,7 +521,7 @@ class LayerForm extends React.Component {
                 multiple
                 onSelected={selected => {
                   this.updateChange(
-                    'color',
+                    "color",
                     selected.map(mlpr => mlpr.id),
                     false,
                   );
@@ -536,14 +533,14 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'plasticity',
+            "plasticity",
             <Form.Field>
               <label>
                 <TranslationText id="layer_plasticity" />
               </label>
               <DomainDropdown
                 onSelected={selected => {
-                  this.updateChange('plasticity', selected.id, false);
+                  this.updateChange("plasticity", selected.id, false);
                 }}
                 schema="mlpr101"
                 selected={this.state.layer.plasticity}
@@ -551,14 +548,14 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'humidity',
+            "humidity",
             <Form.Field>
               <label>
                 <TranslationText id="layer_humidity" />
               </label>
               <DomainDropdown
                 onSelected={selected => {
-                  this.updateChange('humidity', selected.id, false);
+                  this.updateChange("humidity", selected.id, false);
                 }}
                 schema="mlpr105"
                 selected={this.state.layer.humidity}
@@ -566,14 +563,14 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'consistance',
+            "consistance",
             <Form.Field>
               <label>
                 <TranslationText id="layer_consistance" />
               </label>
               <DomainDropdown
                 onSelected={selected => {
-                  this.updateChange('consistance', selected.id, false);
+                  this.updateChange("consistance", selected.id, false);
                 }}
                 schema="mlpr103"
                 selected={this.state.layer.consistance}
@@ -581,14 +578,14 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'alteration',
+            "alteration",
             <Form.Field>
               <label>
                 <TranslationText id="layer_alteration" />
               </label>
               <DomainDropdown
                 onSelected={selected => {
-                  this.updateChange('alteration', selected.id, false);
+                  this.updateChange("alteration", selected.id, false);
                 }}
                 schema="mlpr106"
                 selected={this.state.layer.alteration}
@@ -596,14 +593,14 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'compactness',
+            "compactness",
             <Form.Field>
               <label>
                 <TranslationText id="layer_compactness" />
               </label>
               <DomainDropdown
                 onSelected={selected => {
-                  this.updateChange('compactness', selected.id, false);
+                  this.updateChange("compactness", selected.id, false);
                 }}
                 schema="mlpr102"
                 selected={this.state.layer.compactness}
@@ -649,7 +646,7 @@ class LayerForm extends React.Component {
             // )
           }
           {this.isVisible(
-            'organic_component',
+            "organic_component",
             <Form.Field>
               <label>
                 <TranslationText id="layer_organic_component" />
@@ -658,7 +655,7 @@ class LayerForm extends React.Component {
                 multiple
                 onSelected={selected => {
                   this.updateChange(
-                    'organic_component',
+                    "organic_component",
                     selected.map(jng => jng.id),
                     false,
                   );
@@ -670,7 +667,7 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'striae',
+            "striae",
             <Form.Field>
               <label>
                 <TranslationText id="layer_striae" />
@@ -678,29 +675,29 @@ class LayerForm extends React.Component {
               <Form.Group inline>
                 <Form.Radio
                   checked={this.state.layer.striae === true}
-                  label={t('common:yes')}
+                  label={t("common:yes")}
                   onChange={(e, d) => {
-                    this.updateChange('striae', true, false);
+                    this.updateChange("striae", true, false);
                   }}
                 />
                 <Form.Radio
                   checked={this.state.layer.striae === false}
-                  label={t('common:no')}
+                  label={t("common:no")}
                   onChange={(e, d) => {
-                    this.updateChange('striae', false, false);
+                    this.updateChange("striae", false, false);
                   }}
                 />
                 {this.props.developer.debug === true ? (
                   <div>
                     <div
                       style={{
-                        color: 'red',
+                        color: "red",
                       }}>
                       trans=yes
                     </div>
                     <div
                       style={{
-                        color: 'red',
+                        color: "red",
                       }}>
                       trans=no
                     </div>
@@ -710,14 +707,14 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'grain_size_1',
+            "grain_size_1",
             <Form.Field>
               <label>
                 <TranslationText id="layer_grain_size_1" />
               </label>
               <DomainDropdown
                 onSelected={selected => {
-                  this.updateChange('grain_size_1', selected.id, false);
+                  this.updateChange("grain_size_1", selected.id, false);
                 }}
                 schema="mlpr109"
                 selected={this.state.layer.grain_size_1}
@@ -725,14 +722,14 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'grain_size_2',
+            "grain_size_2",
             <Form.Field>
               <label>
                 <TranslationText id="layer_grain_size_2" />
               </label>
               <DomainDropdown
                 onSelected={selected => {
-                  this.updateChange('grain_size_2', selected.id, false);
+                  this.updateChange("grain_size_2", selected.id, false);
                 }}
                 schema="mlpr109"
                 selected={this.state.layer.grain_size_2}
@@ -740,7 +737,7 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'grain_shape',
+            "grain_shape",
             <Form.Field>
               <label>
                 <TranslationText id="layer_grain_shape" />
@@ -749,7 +746,7 @@ class LayerForm extends React.Component {
                 multiple
                 onSelected={selected => {
                   this.updateChange(
-                    'grain_shape',
+                    "grain_shape",
                     selected.map(gsh => gsh.id),
                     false,
                   );
@@ -761,7 +758,7 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'grain_granularity',
+            "grain_granularity",
             <Form.Field>
               <label>
                 <TranslationText id="layer_grain_granularity" />
@@ -770,7 +767,7 @@ class LayerForm extends React.Component {
                 multiple
                 onSelected={selected => {
                   this.updateChange(
-                    'grain_granularity',
+                    "grain_granularity",
                     selected.map(ggr => ggr.id),
                     false,
                   );
@@ -782,14 +779,14 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'cohesion',
+            "cohesion",
             <Form.Field>
               <label>
                 <TranslationText id="layer_cohesion" />
               </label>
               <DomainDropdown
                 onSelected={selected => {
-                  this.updateChange('cohesion', selected.id, false);
+                  this.updateChange("cohesion", selected.id, false);
                 }}
                 schema="mlpr116"
                 selected={this.state.layer.cohesion}
@@ -797,7 +794,7 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'further_properties',
+            "further_properties",
             <Form.Field>
               <label>
                 <TranslationText id="layer_further_properties" />
@@ -806,7 +803,7 @@ class LayerForm extends React.Component {
                 multiple
                 onSelected={selected => {
                   this.updateChange(
-                    'further_properties',
+                    "further_properties",
                     selected.map(ftp => ftp.id),
                     false,
                   );
@@ -818,14 +815,14 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'uscs_1',
+            "uscs_1",
             <Form.Field>
               <label>
                 <TranslationText id="layer_uscs_1" />
               </label>
               <DomainDropdown
                 onSelected={selected => {
-                  this.updateChange('uscs_1', selected.id, false);
+                  this.updateChange("uscs_1", selected.id, false);
                 }}
                 schema="mcla101"
                 selected={this.state.layer.uscs_1}
@@ -833,14 +830,14 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'uscs_2',
+            "uscs_2",
             <Form.Field>
               <label>
                 <TranslationText id="layer_uscs_2" />
               </label>
               <DomainDropdown
                 onSelected={selected => {
-                  this.updateChange('uscs_2', selected.id, false);
+                  this.updateChange("uscs_2", selected.id, false);
                 }}
                 schema="mcla101"
                 selected={this.state.layer.uscs_2}
@@ -848,7 +845,7 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'uscs_3',
+            "uscs_3",
             <Form.Field>
               <label>
                 <TranslationText id="layer_uscs_3" />
@@ -857,7 +854,7 @@ class LayerForm extends React.Component {
                 multiple
                 onSelected={selected => {
                   this.updateChange(
-                    'uscs_3',
+                    "uscs_3",
                     selected.map(ftp => ftp.id),
                     false,
                   );
@@ -869,7 +866,7 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'uscs_original',
+            "uscs_original",
             <Form.Field>
               <label>
                 <TranslationText id="layer_uscs_original" />
@@ -879,7 +876,7 @@ class LayerForm extends React.Component {
                 autoComplete="off"
                 autoCorrect="off"
                 onChange={e => {
-                  this.updateChange('uscs_original', e.target.value);
+                  this.updateChange("uscs_original", e.target.value);
                 }}
                 spellCheck="false"
                 value={this.state.layer.uscs_original}
@@ -887,7 +884,7 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'uscs_determination',
+            "uscs_determination",
             <Form.Field>
               <label>
                 <TranslationText id="layer_uscs_determination" />
@@ -896,7 +893,7 @@ class LayerForm extends React.Component {
                 multiple
                 onSelected={selected => {
                   this.updateChange(
-                    'uscs_determination',
+                    "uscs_determination",
                     selected.map(ftp => ftp.id),
                     false,
                   );
@@ -920,7 +917,7 @@ class LayerForm extends React.Component {
           </Form.Field>
           */}
           {this.isVisible(
-            'debris',
+            "debris",
             <Form.Field>
               <label>
                 <TranslationText id="layer_debris" />
@@ -929,7 +926,7 @@ class LayerForm extends React.Component {
                 multiple
                 onSelected={selected => {
                   this.updateChange(
-                    'debris',
+                    "debris",
                     selected.map(gsh => gsh.id),
                     false,
                   );
@@ -941,7 +938,7 @@ class LayerForm extends React.Component {
             </Form.Field>,
           )}
           {this.isVisible(
-            'lithology_top_bedrock',
+            "lithology_top_bedrock",
             <Form.Field>
               <label>
                 <TranslationText id="layer_lithology_top_bedrock" />
@@ -950,7 +947,7 @@ class LayerForm extends React.Component {
                 multiple
                 onSelected={selected => {
                   this.updateChange(
-                    'lithology_top_bedrock',
+                    "lithology_top_bedrock",
                     selected.map(gsh => gsh.id),
                     false,
                   );
@@ -986,7 +983,7 @@ class LayerForm extends React.Component {
             </Form.Field>
             */}
           {this.isVisible(
-            'notes',
+            "notes",
             <Form.Field>
               <label>
                 <TranslationText id="remarks" />
@@ -994,7 +991,7 @@ class LayerForm extends React.Component {
               <TextArea
                 // autoHeight
                 onChange={e => {
-                  this.updateChange('notes', e.target.value);
+                  this.updateChange("notes", e.target.value);
                 }}
                 value={this.state.layer.notes}
               />
@@ -1031,4 +1028,4 @@ const mapStateToProps = state => {
 export default connect(
   mapStateToProps,
   null,
-)(withTranslation('common')(LayerForm));
+)(withTranslation("common")(LayerForm));

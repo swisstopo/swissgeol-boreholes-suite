@@ -3,7 +3,7 @@ import * as Styled from "./styles";
 import PropTypes from "prop-types";
 import Draggable from "react-draggable";
 
-const Stratigraphy = (props) => {
+const Stratigraphy = props => {
   const {
     data,
     mapping,
@@ -45,47 +45,47 @@ const Stratigraphy = (props) => {
       // eslint-disable-next-line
       window.removeEventListener("resize", updateDimensions);
     };
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    setState((prevState) => ({
+    setState(prevState => ({
       ...prevState,
       selected,
     }));
   }, [selected]);
 
-  const handleTitle = (layer) => {
+  const handleTitle = layer => {
     if (getTitle !== undefined && typeof getTitle === "function") {
       return getTitle(layer);
     }
     return layer[mapping.title];
   };
-  const handleSubTitle = (layer) => {
+  const handleSubTitle = layer => {
     if (getSubTitle !== undefined && typeof getSubTitle === "function") {
       return getSubTitle(layer);
     }
     return layer[mapping.subtitle];
   };
-  const handleMouseEnter = (layer) => {
-    setState((prevState) => ({
+  const handleMouseEnter = layer => {
+    setState(prevState => ({
       ...prevState,
       over: layer,
     }));
   };
   const handleMouseLeave = () => {
-    setState((prevState) => ({
+    setState(prevState => ({
       ...prevState,
       over: null,
     }));
   };
-  const handleColor = (layer) => {
+  const handleColor = layer => {
     if (typeof getColor === "function") {
       return getColor(layer[mapping.color]);
     }
     return layer[mapping.color];
   };
-  const handleOnWheel = (event) => {
+  const handleOnWheel = event => {
     event.stopPropagation();
 
     let scale = state?.scale;
@@ -115,20 +115,20 @@ const Stratigraphy = (props) => {
       topOfLense = state?.top - (state?.top + rangeHeight - state?.height);
     }
 
-    setState((prevState) => ({
+    setState(prevState => ({
       ...prevState,
       scale: Math.min(Math.max(0.02, scale), 1),
       top: topOfLense < 0 ? 0 : topOfLense,
     }));
   };
-  const handlePattern = (layer) => {
+  const handlePattern = layer => {
     if (typeof getPattern === "function") {
       return getPattern(layer[mapping.pattern]);
     }
     return `url('${layer[mapping.pattern]}')`;
   };
   const handleStart = (e, data) => {
-    setState((prevState) => ({
+    setState(prevState => ({
       ...prevState,
       minimapCursor: "grabbing",
     }));
@@ -136,12 +136,12 @@ const Stratigraphy = (props) => {
 
   const handleDrag = (e, data) => {
     if (data.y !== state?.top) {
-      setState((prevState) => ({ ...prevState, top: data.y }));
+      setState(prevState => ({ ...prevState, top: data.y }));
     }
   };
 
   const handleStop = (e, data) => {
-    setState((prevState) => ({
+    setState(prevState => ({
       ...prevState,
       minimapCursor: "grab",
     }));
@@ -152,7 +152,7 @@ const Stratigraphy = (props) => {
     if (element !== undefined && element !== null) {
       if (data.length > 0) {
       }
-      setState((prevState) => ({
+      setState(prevState => ({
         ...prevState,
         height: element.current?.clientHeight,
         // add const 1.5 to show the red line in last layer when its selected
@@ -166,15 +166,15 @@ const Stratigraphy = (props) => {
     }
   };
 
-  const handleLayerClick = (layer) => {
+  const handleLayerClick = layer => {
     if (onSelected !== undefined && typeof onSelected === "function") {
       onSelected(
         state?.selected === null || state?.selected.id !== layer[mapping.id]
           ? layer
-          : null
+          : null,
       );
     }
-    setState((prevState) => ({
+    setState(prevState => ({
       ...prevState,
       selected:
         state?.selected === null || state?.selected.id !== layer[mapping.id]
@@ -200,8 +200,7 @@ const Stratigraphy = (props) => {
       ref={element}
       style={{
         ...props.style,
-      }}
-    >
+      }}>
       <Styled.FirstColumn>
         {data?.map((layer, idx) => (
           <div key={"stratigraphy-minimap-layer-" + idx}>
@@ -238,12 +237,10 @@ const Stratigraphy = (props) => {
           position={{
             y: state.top,
             x: 0,
-          }}
-        >
+          }}>
           <Styled.LensContainer
             cursor={state.minimapCursor}
-            height={rangeHeight + "px"}
-          >
+            height={rangeHeight + "px"}>
             {rangeHeight >= 40 && (
               <>
                 <Styled.LensNumber>
@@ -286,12 +283,10 @@ const Stratigraphy = (props) => {
                     ? overLayerStyle
                     : null),
                   // until here
-                }}
-              >
+                }}>
                 <Styled.SecondLayerList
                   backgroundColor={handleColor(layer)}
-                  backgroundImage={handlePattern(layer)}
-                >
+                  backgroundImage={handlePattern(layer)}>
                   {layerHeight > titleLimit && (
                     <Styled.LayerLength isBig={layerHeight > subTitleLimit}>
                       {layer[mapping.to]} {unit}

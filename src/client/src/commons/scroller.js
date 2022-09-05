@@ -1,25 +1,20 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import _ from 'lodash';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import _ from "lodash";
 
 class Scroller extends React.Component {
-
   constructor(props) {
     super(props);
     this.updateDimensions = this.updateDimensions.bind(this);
     this.state = {
-      scroller: false
+      scroller: false,
     };
   }
 
   componentDidMount() {
     this.updateDimensions();
-    window.addEventListener(
-      "resize",
-      this.updateDimensions,
-      { passive: true }
-    );
+    window.addEventListener("resize", this.updateDimensions, { passive: true });
   }
 
   componentWillUnmount() {
@@ -35,11 +30,11 @@ class Scroller extends React.Component {
       const childrenHeight = this.cntnr.children[0].clientHeight;
 
       this.setState({
-        scroller: childrenHeight > height
+        scroller: childrenHeight > height,
       });
     } else {
       this.setState({
-        scroller: true
+        scroller: true,
       });
     }
   }
@@ -47,18 +42,14 @@ class Scroller extends React.Component {
   render() {
     return (
       <div
-        className={
-          this.state.scroller === true ?
-            'scroller' : null
-        }
-        ref={divElement => this.cntnr = divElement}
+        className={this.state.scroller === true ? "scroller" : null}
+        ref={divElement => (this.cntnr = divElement)}
         style={{
-          overflowY: 'hidden',
-          marginRight: this.state.scroller === true ?
-            this.props.setting.scrollbar : '0px',
-          ...this.props.style
-        }}
-      >
+          overflowY: "hidden",
+          marginRight:
+            this.state.scroller === true ? this.props.setting.scrollbar : "0px",
+          ...this.props.style,
+        }}>
         {this.props.children}
       </div>
     );
@@ -69,22 +60,19 @@ Scroller.propTypes = {
   children: PropTypes.node,
   debug: PropTypes.bool,
   setting: PropTypes.shape({
-    scrollbar: PropTypes.string
+    scrollbar: PropTypes.string,
   }),
-  style: PropTypes.object
+  style: PropTypes.object,
 };
 
 Scroller.defaultProps = {
-  debug: false
+  debug: false,
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
-    setting: state.setting
+    setting: state.setting,
   };
 };
 
-export default connect(
-  mapStateToProps,
-  null
-)(Scroller);
+export default connect(mapStateToProps, null)(Scroller);

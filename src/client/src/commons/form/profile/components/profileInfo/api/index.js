@@ -1,4 +1,4 @@
-import { getProfile, patchProfile } from '../../../../../../api-lib/index';
+import { getProfile, patchProfile } from "../../../../../../api-lib/index";
 
 let data = [];
 export const getData = async id => {

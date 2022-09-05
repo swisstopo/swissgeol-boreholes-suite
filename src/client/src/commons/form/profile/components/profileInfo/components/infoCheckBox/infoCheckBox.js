@@ -1,9 +1,12 @@
-import React from 'react';
-import * as Styled from './styles';
-import { Checkbox, Popup, Button, Icon } from 'semantic-ui-react';
-import { deleteStratigraphy, cloneStratigraphy } from '../../../../../../../api-lib/index';
-import TranslationText from '../../../../../translationText';
-import { profileKind } from '../../../../constance';
+import React from "react";
+import * as Styled from "./styles";
+import { Checkbox, Popup, Button, Icon } from "semantic-ui-react";
+import {
+  deleteStratigraphy,
+  cloneStratigraphy,
+} from "../../../../../../../api-lib/index";
+import TranslationText from "../../../../../translationText";
+import { profileKind } from "../../../../constance";
 
 const InfoCheckBox = props => {
   const { kind, profileInfo, updateChange, isEditable, onUpdated } = props.data;
@@ -18,7 +21,7 @@ const InfoCheckBox = props => {
               label=""
               onChange={(ev, data) => {
                 if (data.checked === true) {
-                  updateChange('primary', data.checked, false);
+                  updateChange("primary", data.checked, false);
                 }
               }}
               toggle
@@ -33,13 +36,13 @@ const InfoCheckBox = props => {
         )}
       </Styled.FormContainer>
       {isEditable && (
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: "flex" }}>
           <Button
             // disabled={!_.isEmpty(consistency)}
             icon
             onClick={() => {
               cloneStratigraphy(profileInfo?.id).then(response => {
-                onUpdated('cloneStratigraphy');
+                onUpdated("cloneStratigraphy");
               });
             }}
             size="tiny">
@@ -61,7 +64,7 @@ const InfoCheckBox = props => {
               icon
               onClick={() => {
                 deleteStratigraphy(profileInfo?.id).then(response => {
-                  onUpdated('deleteStratigraphy');
+                  onUpdated("deleteStratigraphy");
                 });
               }}
               secondary

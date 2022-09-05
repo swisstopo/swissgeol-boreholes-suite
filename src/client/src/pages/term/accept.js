@@ -25,7 +25,7 @@ class AcceptTerms extends React.Component {
   }
 
   componentDidMount() {
-    getTerms().then((r) => {
+    getTerms().then(r => {
       this.setState({
         isFetching: false,
         id: r.data.data.id,
@@ -51,8 +51,7 @@ class AcceptTerms extends React.Component {
           // flexDirection: 'column',
           justifyContent: "center",
           height: "100%",
-        }}
-      >
+        }}>
         <div
           style={{
             backgroundColor: "#fff",
@@ -65,15 +64,13 @@ class AcceptTerms extends React.Component {
             height: "60%",
             overflowY: "hidden",
             width: "600px",
-          }}
-        >
+          }}>
           <div
             style={{
               display: "flex",
               justifyContent: "flex-end",
               margin: "10px",
-            }}
-          >
+            }}>
             <TranslationKeys />
           </div>
 
@@ -83,13 +80,11 @@ class AcceptTerms extends React.Component {
               overflowY: "auto",
               paddingRight: "2em",
               margin: "0px 0px 0px 2em",
-            }}
-          >
+            }}>
             <Markdown
               style={{
                 marginBottom: "1em",
-              }}
-            >
+              }}>
               {this.props.i18n.language}
             </Markdown>
           </div>
@@ -100,8 +95,7 @@ class AcceptTerms extends React.Component {
               padding: "1em",
               display: "flex",
               flexDirection: "row",
-            }}
-          >
+            }}>
             {/* <Button
               secondary
               style={{
@@ -124,14 +118,13 @@ class AcceptTerms extends React.Component {
                   },
                   () => {
                     this.props.acceptTerms(this.state.id).then();
-                  }
+                  },
                 );
               }}
               primary
               style={{
                 whiteSpace: "nowrap",
-              }}
-            >
+              }}>
               {this.props.t("iagree")}
             </Button>
           </div>
@@ -150,16 +143,16 @@ AcceptTerms.propTypes = {
   t: PropTypes.func,
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     user: state.core_user,
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
-    acceptTerms: async (id) => {
+    acceptTerms: async id => {
       return dispatch(acceptTerms(id));
     },
   };
@@ -167,5 +160,5 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(withTranslation("common")(AcceptTerms));

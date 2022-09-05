@@ -1,11 +1,11 @@
-import React from 'react';
-import * as Styled from './styles';
-import { Input, Form } from 'semantic-ui-react';
-import TranslationText from '../../../../../translationText';
-import DomainDropdown from '../../../../../domain/dropdown/domainDropdown';
-import DateField from '../../../../../dateField';
-import _ from 'lodash';
-import CasingList from '../../../casingList';
+import React from "react";
+import * as Styled from "./styles";
+import { Input, Form } from "semantic-ui-react";
+import TranslationText from "../../../../../translationText";
+import DomainDropdown from "../../../../../domain/dropdown/domainDropdown";
+import DateField from "../../../../../dateField";
+import _ from "lodash";
+import CasingList from "../../../casingList";
 
 const InfoList = props => {
   const { attribute, profileInfo, updateChange, casing } = props.data;
@@ -20,7 +20,7 @@ const InfoList = props => {
                 <TranslationText id={item.label} />
               </Styled.Label>
 
-              {item.type === 'Input' && (
+              {item.type === "Input" && (
                 <Styled.AttributesItem>
                   <Input
                     autoCapitalize="off"
@@ -29,22 +29,22 @@ const InfoList = props => {
                     onChange={e =>
                       updateChange(
                         item.value,
-                        e.target.value === '' ? null : e.target.value,
+                        e.target.value === "" ? null : e.target.value,
                         item?.to,
                         item?.isNumber,
                       )
                     }
                     spellCheck="false"
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                     value={
                       _.isNil(profileInfo?.[item.value])
-                        ? ''
+                        ? ""
                         : profileInfo[item.value]
                     }
                   />
                 </Styled.AttributesItem>
               )}
-              {item.type === 'Dropdown' && (
+              {item.type === "Dropdown" && (
                 <Styled.AttributesItem>
                   <DomainDropdown
                     multiple={item.multiple}
@@ -66,7 +66,7 @@ const InfoList = props => {
                 </Styled.AttributesItem>
               )}
 
-              {item.type === 'Date' && (
+              {item.type === "Date" && (
                 <Styled.AttributesItem>
                   <DateField
                     date={
@@ -79,7 +79,7 @@ const InfoList = props => {
                 </Styled.AttributesItem>
               )}
 
-              {item.type === 'CasingDropdown' && (
+              {item.type === "CasingDropdown" && (
                 <Styled.AttributesItem>
                   <CasingList
                     data={casing}

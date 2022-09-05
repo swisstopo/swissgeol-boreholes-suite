@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Icon, Popup } from 'semantic-ui-react';
-import TranslationText from '../../../../../translationText';
-import * as Styled from './styles';
+import React, { useCallback, useEffect, useState } from "react";
+import { Icon, Popup } from "semantic-ui-react";
+import TranslationText from "../../../../../translationText";
+import * as Styled from "./styles";
 
 const ProfileLayersList = props => {
   const {
@@ -68,7 +68,7 @@ const ProfileLayersList = props => {
       <Styled.MyCard
         onClick={() => setSelectedLayer(item)}
         style={{
-          backgroundColor: selectedLayer?.id === item?.id && 'lightgrey',
+          backgroundColor: selectedLayer?.id === item?.id && "lightgrey",
         }}>
         <Styled.CardPattern
           b={item?.rgb?.[2]}
@@ -78,10 +78,10 @@ const ProfileLayersList = props => {
             backgroundImage: item?.pattern
               ? 'url("' +
                 process.env.PUBLIC_URL +
-                '/img/lit/' +
+                "/img/lit/" +
                 item?.pattern +
                 '")'
-              : '',
+              : "",
           }}
         />
         {showDelete !== item?.id && (
@@ -89,7 +89,7 @@ const ProfileLayersList = props => {
             <Styled.CardInfo>
               <Styled.Text warning={isTopHasWarning}>
                 {isTopHasWarning && (
-                  <Icon name="warning sign" style={{ color: 'red' }} />
+                  <Icon name="warning sign" style={{ color: "red" }} />
                 )}
                 {showTopPopup ? (
                   <Popup
@@ -109,7 +109,7 @@ const ProfileLayersList = props => {
                     }
                   />
                 ) : (
-                  item?.depth_from + ' m'
+                  item?.depth_from + " m"
                 )}
               </Styled.Text>
               <Styled.Text
@@ -121,7 +121,7 @@ const ProfileLayersList = props => {
                     schema={layers?.config.title}
                   />
                 ) : (
-                  '-'
+                  "-"
                 )}
               </Styled.Text>
               <Styled.Text warning={item?.validation?.bedrockChronoWrong}>
@@ -131,7 +131,7 @@ const ProfileLayersList = props => {
                     schema={layers?.config.subtitle}
                   />
                 ) : (
-                  '-'
+                  "-"
                 )}
               </Styled.Text>
               <Styled.Text small warning={item?.validation?.bedrockLitPetWrong}>
@@ -141,12 +141,12 @@ const ProfileLayersList = props => {
                     schema={layers?.config.description}
                   />
                 ) : (
-                  '-'
+                  "-"
                 )}
               </Styled.Text>
               <Styled.Text warning={isBottomHasWarning}>
                 {isBottomHasWarning && (
-                  <Icon name="warning sign" style={{ color: 'red' }} />
+                  <Icon name="warning sign" style={{ color: "red" }} />
                 )}
                 {showBottomPopup ? (
                   <Popup
@@ -167,7 +167,7 @@ const ProfileLayersList = props => {
                     }
                   />
                 ) : (
-                  item?.depth_to + ' m'
+                  item?.depth_to + " m"
                 )}
               </Styled.Text>
             </Styled.CardInfo>

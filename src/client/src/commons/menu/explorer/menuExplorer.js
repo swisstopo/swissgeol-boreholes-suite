@@ -1,12 +1,12 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import _ from 'lodash';
-import { Route, Switch, withRouter } from 'react-router-dom';
+import React from "react";
+import { connect } from "react-redux";
+import _ from "lodash";
+import { Route, Switch, withRouter } from "react-router-dom";
 
-import { Button, Header, Icon, Menu, Segment } from 'semantic-ui-react';
-import DateText from '../../form/dateText';
-import SearchComponent from '../../search/searchComponent';
-import TranslationText from '../../form/translationText';
+import { Button, Header, Icon, Menu, Segment } from "semantic-ui-react";
+import DateText from "../../form/dateText";
+import SearchComponent from "../../search/searchComponent";
+import TranslationText from "../../form/translationText";
 let isMounted = true;
 
 class MenuExplorer extends React.Component {
@@ -20,13 +20,13 @@ class MenuExplorer extends React.Component {
   componentDidMount() {
     if (isMounted) {
       this.updateDimensions();
-      window.addEventListener('resize', this.updateDimensions.bind(this));
+      window.addEventListener("resize", this.updateDimensions.bind(this));
     }
   }
 
   componentWillUnmount() {
     isMounted = false;
-    window.removeEventListener('resize', this.updateDimensions.bind(this));
+    window.removeEventListener("resize", this.updateDimensions.bind(this));
   }
 
   updateDimensions() {
@@ -49,11 +49,11 @@ class MenuExplorer extends React.Component {
       <Switch>
         <Route
           exact
-          path={process.env.PUBLIC_URL + '/:id'}
+          path={process.env.PUBLIC_URL + "/:id"}
           render={() => (
             <div
               style={{
-                padding: '1em',
+                padding: "1em",
               }}>
               <Button
                 fluid
@@ -68,45 +68,45 @@ class MenuExplorer extends React.Component {
               <Segment loading={detail.isFetching}>
                 <span
                   style={{
-                    color: '#787878',
-                    fontSize: '0.8em',
+                    color: "#787878",
+                    fontSize: "0.8em",
                   }}>
                   <TranslationText id="name" />:
                 </span>
-                <Header style={{ margin: 'auto' }}>
-                  {_.hasIn(detail.borehole, 'extended.original_name')
+                <Header style={{ margin: "auto" }}>
+                  {_.hasIn(detail.borehole, "extended.original_name")
                     ? detail.borehole.extended.original_name
                     : null}
                 </Header>
                 <div
                   style={{
-                    marginTop: '0.5em',
+                    marginTop: "0.5em",
                   }}>
                   <span
                     style={{
-                      color: '#787878',
-                      fontSize: '0.8em',
+                      color: "#787878",
+                      fontSize: "0.8em",
                     }}>
                     <TranslationText id="createdBy" />:
                   </span>
                   <br />
-                  {_.hasIn(detail.borehole, 'creator.username')
+                  {_.hasIn(detail.borehole, "creator.username")
                     ? detail.borehole.creator.username
                     : null}
                 </div>
                 <div
                   style={{
-                    marginTop: '0.5em',
+                    marginTop: "0.5em",
                   }}>
                   <span
                     style={{
-                      color: '#787878',
-                      fontSize: '0.8em',
+                      color: "#787878",
+                      fontSize: "0.8em",
                     }}>
                     <TranslationText id="creationdate" />:
                   </span>
                   <br />
-                  {_.hasIn(detail.borehole, 'creator.date') ? (
+                  {_.hasIn(detail.borehole, "creator.date") ? (
                     <DateText date={detail.borehole.creator.date} hours />
                   ) : null}
                 </div>
@@ -121,11 +121,11 @@ class MenuExplorer extends React.Component {
             <div
               key="sb-em-1"
               style={{
-                color: '#767676',
+                color: "#767676",
                 // fontWeight: 'bold',
-                padding: '1em 1em 0px 1em',
+                padding: "1em 1em 0px 1em",
               }}>
-              <TranslationText firstUpperCase id="boreholes" />:{' '}
+              <TranslationText firstUpperCase id="boreholes" />:{" "}
               {
                 boreholes.isFetching ? (
                   <Icon loading name="spinner" />
@@ -146,19 +146,19 @@ class MenuExplorer extends React.Component {
               }
             </div>,
             <div
-              className={this.state.scroller === true ? 'scroller' : null}
+              className={this.state.scroller === true ? "scroller" : null}
               key="sb-em-2"
               ref={divElement => (this.menu = divElement)}
               style={{
-                padding: '1em',
-                flex: '1 1 100%',
-                display: 'flex',
-                flexDirection: 'column',
-                overflowY: 'hidden',
+                padding: "1em",
+                flex: "1 1 100%",
+                display: "flex",
+                flexDirection: "column",
+                overflowY: "hidden",
                 marginRight:
                   this.state.scroller === true
                     ? this.props.setting.scrollbar
-                    : '0px',
+                    : "0px",
               }}>
               <SearchComponent />
             </div>,
@@ -167,7 +167,7 @@ class MenuExplorer extends React.Component {
               key="sb-em-3"
               size="mini"
               style={{
-                margin: '0px',
+                margin: "0px",
               }}>
               <Menu.Item
                 onClick={() => {
@@ -214,18 +214,18 @@ const mapDispatchToProps = dispatch => {
     dispatch: dispatch,
     boreholeSeleced: () => {
       dispatch({
-        type: 'HOME_BOREHOLE_SELECTED',
+        type: "HOME_BOREHOLE_SELECTED",
         id: null,
       });
     },
     refresh: () => {
       dispatch({
-        type: 'SEARCH_FILTER_REFRESH',
+        type: "SEARCH_FILTER_REFRESH",
       });
     },
     reset: () => {
       dispatch({
-        type: 'SEARCH_FILTER_RESET',
+        type: "SEARCH_FILTER_RESET",
       });
     },
   };

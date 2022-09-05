@@ -1,24 +1,19 @@
-import {
-  fetch
-} from './index';
+import { fetch } from "./index";
 
-export function loadDomains(){
-  return fetch(
-    '/borehole/codes',
-    {
-      type: 'LIST'
-    }
-  );
+export function loadDomains() {
+  return fetch("/borehole/codes", {
+    type: "LIST",
+  });
 }
 
-export function patchCodeConfig(tree, value, key=null){
+export function patchCodeConfig(tree, value, key = null) {
   const payload = {
-    type: 'PATCH',
+    type: "PATCH",
     tree: tree,
-    value: value
+    value: value,
   };
-  if (key !== null){
+  if (key !== null) {
     payload.key = key;
   }
-  return fetch('/borehole/codes', payload);
+  return fetch("/borehole/codes", payload);
 }

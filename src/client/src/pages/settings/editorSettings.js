@@ -1,20 +1,20 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
-import { Button, Divider, Segment } from 'semantic-ui-react';
-import { patchCodeConfig, patchSettings } from '../../api-lib/index';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { withTranslation } from "react-i18next";
+import { Button, Divider, Segment } from "semantic-ui-react";
+import { patchCodeConfig, patchSettings } from "../../api-lib/index";
 
-import IdentifierSettings from './editor/identifierSettings';
-import TranslationText from '../../commons/form/translationText';
-import EditorSettingList from './components/editorSettingList/editorSettingList';
-import { boreholeEditorData } from './data/boreholeEditorData';
-import { stratigraphyFilterEditorData } from './data/stratigraphyFilterEditorData';
-import { stratigraphyFieldEditorData } from './data/stratigraphyFieldEditorData';
-import { casingEditorData } from './data/casingEditorData';
-import { locationEditorData } from './data/locationEditorData';
-import { instrumentEditorData } from './data/instrumentEditorData';
-import { fillingEditorData } from './data/fillingEditorData';
+import IdentifierSettings from "./editor/identifierSettings";
+import TranslationText from "../../commons/form/translationText";
+import EditorSettingList from "./components/editorSettingList/editorSettingList";
+import { boreholeEditorData } from "./data/boreholeEditorData";
+import { stratigraphyFilterEditorData } from "./data/stratigraphyFilterEditorData";
+import { stratigraphyFieldEditorData } from "./data/stratigraphyFieldEditorData";
+import { casingEditorData } from "./data/casingEditorData";
+import { locationEditorData } from "./data/locationEditorData";
+import { instrumentEditorData } from "./data/instrumentEditorData";
+import { fillingEditorData } from "./data/fillingEditorData";
 
 export const fields = [];
 
@@ -27,45 +27,45 @@ class EditorSettings extends React.Component {
       searchList: [
         {
           id: 0,
-          name: 'location',
-          translationId: 'searchFilterLocation',
+          name: "location",
+          translationId: "searchFilterLocation",
           isSelected: false,
         },
         {
           id: 1,
-          name: 'borehole',
-          translationId: 'searchFiltersBoreholes',
+          name: "borehole",
+          translationId: "searchFiltersBoreholes",
           isSelected: false,
         },
 
         {
           id: 2,
-          name: 'stratigraphy',
-          translationId: 'searchFiltersLayers',
+          name: "stratigraphy",
+          translationId: "searchFiltersLayers",
           isSelected: false,
         },
         {
           id: 3,
-          name: 'casing',
-          translationId: 'searchFilterCasing',
+          name: "casing",
+          translationId: "searchFilterCasing",
           isSelected: false,
         },
         {
           id: 4,
-          name: 'instrument',
-          translationId: 'searchFilterInstrument',
+          name: "instrument",
+          translationId: "searchFilterInstrument",
           isSelected: false,
         },
         {
           id: 5,
-          name: 'filling',
-          translationId: 'searchFilterFilling',
+          name: "filling",
+          translationId: "searchFilterFilling",
           isSelected: false,
         },
         {
           id: 6,
-          name: 'stratigraphyfields',
-          translationId: 'stratigraphyfields',
+          name: "stratigraphyfields",
+          translationId: "stratigraphyfields",
           isSelected: false,
         },
       ],
@@ -73,19 +73,19 @@ class EditorSettings extends React.Component {
   }
   handleButtonSelected(name, isSelected) {
     let selectedData = null;
-    if (name === 'location' && isSelected) {
+    if (name === "location" && isSelected) {
       selectedData = locationEditorData;
-    } else if (name === 'borehole' && isSelected) {
+    } else if (name === "borehole" && isSelected) {
       selectedData = boreholeEditorData;
-    } else if (name === 'stratigraphy' && isSelected) {
+    } else if (name === "stratigraphy" && isSelected) {
       selectedData = stratigraphyFilterEditorData;
-    } else if (name === 'casing' && isSelected) {
+    } else if (name === "casing" && isSelected) {
       selectedData = casingEditorData;
-    } else if (name === 'instrument' && isSelected) {
+    } else if (name === "instrument" && isSelected) {
       selectedData = instrumentEditorData;
-    } else if (name === 'filling' && isSelected) {
+    } else if (name === "filling" && isSelected) {
       selectedData = fillingEditorData;
-    } else if (name === 'stratigraphyfields' && isSelected) {
+    } else if (name === "stratigraphyfields" && isSelected) {
       selectedData = stratigraphyFieldEditorData;
     } else {
       selectedData = null;
@@ -103,7 +103,7 @@ class EditorSettings extends React.Component {
     return (
       <div
         style={{
-          padding: '1em',
+          padding: "1em",
           flex: 1,
         }}>
         {this.state?.searchList?.map((filter, idx) => (
@@ -123,25 +123,25 @@ class EditorSettings extends React.Component {
                 }));
               }}
               style={{
-                flexDirection: 'row',
-                display: 'flex',
-                cursor: 'pointer',
-                backgroundColor: filter.isSelected ? '#f5f5f5' : '#fff',
+                flexDirection: "row",
+                display: "flex",
+                cursor: "pointer",
+                backgroundColor: filter.isSelected ? "#f5f5f5" : "#fff",
                 padding: 10,
               }}>
               <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
+                  display: "flex",
+                  alignItems: "center",
                   fontSize: 18,
-                  fontWeight: 'bold',
+                  fontWeight: "bold",
                 }}>
                 <TranslationText id={filter.translationId} />
               </div>
               <div
                 style={{
                   flex: 1,
-                  textAlign: 'right',
+                  textAlign: "right",
                 }}>
                 <Button color="red" size="small">
                   {filter.isSelected === true ? (
@@ -168,7 +168,7 @@ class EditorSettings extends React.Component {
                 toggleFilter={toggleFilter}
                 toggleFieldArray={toggleFieldArray}
                 toggleFilterArray={toggleFilterArray}
-                type={'editor'}
+                type={"editor"}
               />
             ) : (
               <Divider style={{ margin: 0 }} />
@@ -185,25 +185,25 @@ class EditorSettings extends React.Component {
                 });
               }}
               style={{
-                flexDirection: 'row',
-                display: 'flex',
-                cursor: 'pointer',
-                backgroundColor: this.state.identifiers ? '#f5f5f5' : '#fff',
+                flexDirection: "row",
+                display: "flex",
+                cursor: "pointer",
+                backgroundColor: this.state.identifiers ? "#f5f5f5" : "#fff",
                 padding: 10,
               }}>
               <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
+                  display: "flex",
+                  alignItems: "center",
                   fontSize: 18,
-                  fontWeight: 'bold',
+                  fontWeight: "bold",
                 }}>
                 <TranslationText id="identifierManager" />
               </div>
               <div
                 style={{
                   flex: 1,
-                  textAlign: 'right',
+                  textAlign: "right",
                 }}>
                 <Button color="red" size="small">
                   {this.state.identifiers === true ? (
@@ -240,7 +240,7 @@ EditorSettings.propTypes = {
 };
 
 EditorSettings.defaultProps = {
-  geocode: 'Geol',
+  geocode: "Geol",
 };
 
 const mapStateToProps = state => {
@@ -280,4 +280,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation('common')(EditorSettings));
+)(withTranslation("common")(EditorSettings));

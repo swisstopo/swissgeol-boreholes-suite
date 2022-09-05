@@ -1,9 +1,9 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
-import { withRouter } from 'react-router-dom';
-import ListItem from '../components/listItem';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { withTranslation } from "react-i18next";
+import { withRouter } from "react-router-dom";
+import ListItem from "../components/listItem";
 
 const MenuSettings = props => {
   const { history, t, location } = props;
@@ -27,7 +27,7 @@ const MenuSettings = props => {
         icon="binoculars"
       />
 
-      {props.user.data !== null && props.user.data.roles.indexOf('EDIT') >= 0 && (
+      {props.user.data !== null && props.user.data.roles.indexOf("EDIT") >= 0 && (
         <>
           <ListItem
             path="/setting/editor"
@@ -115,8 +115,8 @@ const mapDispatchToProps = dispatch => {
     dispatch: dispatch,
     boreholeSelected: borehole => {
       dispatch({
-        path: '/borehole',
-        type: 'CLEAR',
+        path: "/borehole",
+        type: "CLEAR",
       });
     },
   };
@@ -126,5 +126,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     mapDispatchToProps,
-  )(withTranslation(['common'])(MenuSettings)),
+  )(withTranslation(["common"])(MenuSettings)),
 );

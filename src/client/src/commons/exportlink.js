@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import React from "react";
+import PropTypes from "prop-types";
+import { withTranslation } from "react-i18next";
 
-import { Icon } from 'semantic-ui-react';
+import { Icon } from "semantic-ui-react";
 
-import { downloadBorehole } from '../api-lib/index';
+import { downloadBorehole } from "../api-lib/index";
 
 class ExportLink extends React.Component {
   constructor(props) {
@@ -23,27 +23,27 @@ class ExportLink extends React.Component {
 
     let frmt = [];
     if (props.pdf === true) {
-      frmt.push('pdf');
+      frmt.push("pdf");
     }
     if (props.shp === true) {
-      frmt.push('shape');
+      frmt.push("shape");
     }
     if (props.csv === true) {
-      frmt.push('csv');
+      frmt.push("csv");
     }
     if (props.fullcsv === true) {
-      frmt.push('fullcsv');
+      frmt.push("fullcsv");
     }
 
     return (
       <span
         style={{
-          color: 'rgb(33, 133, 208)',
-          display: 'ruby',
+          color: "rgb(33, 133, 208)",
+          display: "ruby",
           ...props.style,
         }}>
         <span
-          className={this.state.downloading === false ? 'link linker' : null}
+          className={this.state.downloading === false ? "link linker" : null}
           onClick={() => {
             if (this.state.downloading === false) {
               this.setState(
@@ -53,8 +53,8 @@ class ExportLink extends React.Component {
                 () => {
                   downloadBorehole({
                     lang: props.i18n.language,
-                    format: frmt.join(','),
-                    id: props.id.join(','),
+                    format: frmt.join(","),
+                    id: props.id.join(","),
                   }).then(() => {
                     this.setState({
                       downloading: false,

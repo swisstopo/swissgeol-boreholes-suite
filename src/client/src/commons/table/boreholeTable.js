@@ -1,33 +1,33 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
-import _ from 'lodash';
+import React from "react";
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
+import _ from "lodash";
 
-import TableComponent from './tableComponent';
-import DomainText from '../form/domain/domainText';
-import DateText from '../form/dateText';
-import TranslationText from '../form/translationText';
+import TableComponent from "./tableComponent";
+import DomainText from "../form/domain/domainText";
+import DateText from "../form/dateText";
+import TranslationText from "../form/translationText";
 
-import { Button, Icon, Segment, Table } from 'semantic-ui-react';
+import { Button, Icon, Segment, Table } from "semantic-ui-react";
 
-import { loadBoreholes } from '../../api-lib/index';
+import { loadBoreholes } from "../../api-lib/index";
 
 class BoreholeTable extends TableComponent {
   reorder(orderby) {
     const { filter, loadData, store } = this.props;
-    let dir = store.direction === 'DESC' ? 'ASC' : 'DESC';
+    let dir = store.direction === "DESC" ? "ASC" : "DESC";
     loadData(store.page, filter, orderby, dir);
   }
   getIcon(orderby, sub = false) {
     const { store } = this.props;
     let style = {
-      cursor: 'pointer',
+      cursor: "pointer",
     };
     if (sub === true) {
       style = {
         ...style,
-        color: '#787878',
-        fontSize: '0.8em',
+        color: "#787878",
+        fontSize: "0.8em",
       };
     }
     return (
@@ -37,7 +37,7 @@ class BoreholeTable extends TableComponent {
         }}
         style={style}>
         {store.orderby === orderby ? (
-          <Icon name={store.direction === 'DESC' ? 'sort down' : 'sort up'} />
+          <Icon name={store.direction === "DESC" ? "sort down" : "sort up"} />
         ) : null}
         <TranslationText id={orderby} />
       </div>
@@ -64,12 +64,12 @@ class BoreholeTable extends TableComponent {
           />
         </Table.HeaderCell> */}
         <Table.HeaderCell verticalAlign="top">
-          {this.getIcon('original_name')}
-          {this.getIcon('kind', true)}
+          {this.getIcon("original_name")}
+          {this.getIcon("kind", true)}
         </Table.HeaderCell>
         <Table.HeaderCell verticalAlign="top">
-          {this.getIcon('restriction')}
-          {this.getIcon('restriction_until', true)}
+          {this.getIcon("restriction")}
+          {this.getIcon("restriction_until", true)}
         </Table.HeaderCell>
         {/*<Table.HeaderCell
           verticalAlign='top'>
@@ -84,15 +84,15 @@ class BoreholeTable extends TableComponent {
           </span>
         </Table.HeaderCell>*/}
         <Table.HeaderCell verticalAlign="top">
-          {this.getIcon('totaldepth')}
-          {this.getIcon('top_bedrock', true)}
+          {this.getIcon("totaldepth")}
+          {this.getIcon("top_bedrock", true)}
         </Table.HeaderCell>
         <Table.HeaderCell verticalAlign="top">
-          {this.getIcon('drilling_end_date')}
-          {this.getIcon('purpose', true)}
+          {this.getIcon("drilling_end_date")}
+          {this.getIcon("purpose", true)}
         </Table.HeaderCell>
         <Table.HeaderCell
-          style={{ width: '4em' }}
+          style={{ width: "4em" }}
           verticalAlign="top"></Table.HeaderCell>
       </Table.Row>
     );
@@ -100,28 +100,28 @@ class BoreholeTable extends TableComponent {
   getCols(item, idx) {
     let colIdx = 0;
     return [
-      <Table.Cell key={this.uid + '_' + idx + '_' + colIdx++}>
+      <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         {(() => {
-          if (!this.props.domains.data.hasOwnProperty('kind')) {
+          if (!this.props.domains.data.hasOwnProperty("kind")) {
             return null;
           }
 
-          const kind = this.props.domains.data['kind'].find(function (element) {
+          const kind = this.props.domains.data["kind"].find(function (element) {
             return element.id === item.kind;
           });
 
-          const restriction = this.props.domains.data['restriction'].find(
+          const restriction = this.props.domains.data["restriction"].find(
             function (element) {
               return element.id === item.restriction;
             },
           );
 
-          let color = 'black';
+          let color = "black";
           if (restriction !== undefined) {
-            if (restriction.code === 'f') {
-              color = 'green';
-            } else if (['b', 'g'].indexOf(restriction.code) >= 0) {
-              color = 'red';
+            if (restriction.code === "f") {
+              color = "green";
+            } else if (["b", "g"].indexOf(restriction.code) >= 0) {
+              color = "red";
             }
           }
 
@@ -131,16 +131,16 @@ class BoreholeTable extends TableComponent {
                 alt=""
                 src={
                   process.env.PUBLIC_URL +
-                  '/img/' +
+                  "/img/" +
                   kind.code +
-                  '-' +
+                  "-" +
                   color +
-                  '.svg'
+                  ".svg"
                 }
                 style={{
-                  height: '0.6em',
-                  marginRight: '0.5em',
-                  width: '0.6em',
+                  height: "0.6em",
+                  marginRight: "0.5em",
+                  width: "0.6em",
                 }}
               />
             );
@@ -148,33 +148,33 @@ class BoreholeTable extends TableComponent {
             return (
               <img
                 alt=""
-                src={process.env.PUBLIC_URL + '/img/a-' + color + '.svg'}
+                src={process.env.PUBLIC_URL + "/img/a-" + color + ".svg"}
                 style={{
-                  height: '0.6em',
-                  marginRight: '0.5em',
-                  width: '0.6em',
+                  height: "0.6em",
+                  marginRight: "0.5em",
+                  width: "0.6em",
                 }}
               />
             );
           }
-        })()}{' '}
+        })()}{" "}
         {item.original_name}
         <br />
         <span
           style={{
-            color: '#787878',
-            fontSize: '0.8em',
+            color: "#787878",
+            fontSize: "0.8em",
           }}>
           <DomainText id={item.kind} schema="kind" />
         </span>
       </Table.Cell>,
-      <Table.Cell key={this.uid + '_' + idx + '_' + colIdx++}>
+      <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         <DomainText id={item.restriction} schema="restriction" />
         <br />
         <span
           style={{
-            color: '#787878',
-            fontSize: '0.8em',
+            color: "#787878",
+            fontSize: "0.8em",
           }}>
           <DateText date={item.restriction_until} />
         </span>
@@ -190,7 +190,7 @@ class BoreholeTable extends TableComponent {
       //     <DomainText id={item.srs} schema='srs'/>
       //   </span>
       // </Table.Cell>,
-      <Table.Cell key={this.uid + '_' + idx + '_' + colIdx++}>
+      <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         {/* {
           _.isNil(item.extended.top_bedrock) ?
             null :
@@ -203,30 +203,30 @@ class BoreholeTable extends TableComponent {
                 schema='hrs'
               />)</span>
         } */}
-        {_.isNil(item.length) ? 'n/p' : item.length + ' m'}
+        {_.isNil(item.length) ? "n/p" : item.length + " m"}
         <br />
         <span
           style={{
-            color: '#787878',
-            fontSize: '0.8em',
+            color: "#787878",
+            fontSize: "0.8em",
           }}>
           {
             _.isNil(item.extended.top_bedrock)
-              ? ''
-              : item.extended.top_bedrock + ' m'
+              ? ""
+              : item.extended.top_bedrock + " m"
             // _.isNil(item.extended.top_bedrock)?
             //   <span>&nbsp;</span>:
             //   item.extended.top_bedrock
           }
         </span>
       </Table.Cell>,
-      <Table.Cell key={this.uid + '_' + idx + '_' + colIdx++}>
+      <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         <DateText date={item.drilling_date} />
         <br />
         <span
           style={{
-            color: '#787878',
-            fontSize: '0.8em',
+            color: "#787878",
+            fontSize: "0.8em",
           }}>
           {_.isNil(item.extended.purpose) ? null : (
             <span>
@@ -241,10 +241,10 @@ class BoreholeTable extends TableComponent {
         </span>
       </Table.Cell>,
       <Table.Cell
-        key={this.uid + '_' + idx + '_' + colIdx++}
+        key={this.uid + "_" + idx + "_" + colIdx++}
         style={{
-          width: '4em',
-          textAlign: 'center',
+          width: "4em",
+          textAlign: "center",
         }}>
         {
           // this.props.home.hover !== null
@@ -263,14 +263,14 @@ class BoreholeTable extends TableComponent {
         }
         <Button
           color={
-            _.findIndex(this.props.checkout.cart, ['id', item.id]) >= 0
-              ? 'grey'
-              : 'black'
+            _.findIndex(this.props.checkout.cart, ["id", item.id]) >= 0
+              ? "grey"
+              : "black"
           }
           icon={
-            _.findIndex(this.props.checkout.cart, ['id', item.id]) >= 0
-              ? 'minus'
-              : 'plus'
+            _.findIndex(this.props.checkout.cart, ["id", item.id]) >= 0
+              ? "minus"
+              : "plus"
           }
           onClick={e => {
             e.stopPropagation();
@@ -291,11 +291,11 @@ class BoreholeTable extends TableComponent {
         basic
         loading={this.props.store.isFetching}
         style={{
-          flex: '1 1 100%',
-          display: 'flex',
-          flexDirection: 'column',
+          flex: "1 1 100%",
+          display: "flex",
+          flexDirection: "column",
           // height: '100%',
-          overflow: 'hidden',
+          overflow: "hidden",
         }}>
         {super.render()}
       </Segment>
@@ -320,7 +320,7 @@ const mapDispatchToProps = dispatch => {
     },
     toggleCart: item => {
       dispatch({
-        type: 'CHECKOUT_TOGGLE_CART',
+        type: "CHECKOUT_TOGGLE_CART",
         item: item,
       });
     },
@@ -330,4 +330,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation('common')(BoreholeTable));
+)(withTranslation("common")(BoreholeTable));

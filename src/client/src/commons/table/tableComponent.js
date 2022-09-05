@@ -1,12 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import _ from 'lodash';
+import React from "react";
+import PropTypes from "prop-types";
+import _ from "lodash";
 
-import {
-  getdBoreholeIds,
-} from '../../api-lib/index';
+import { getdBoreholeIds } from "../../api-lib/index";
 
-import { Table, Pagination } from 'semantic-ui-react';
+import { Table, Pagination } from "semantic-ui-react";
 
 class TableComponent extends React.Component {
   constructor(props) {
@@ -48,7 +46,7 @@ class TableComponent extends React.Component {
           activeItem: activeItem,
         };
       } else {
-        state['activeItem'] = activeItem;
+        state["activeItem"] = activeItem;
       }
     }
 
@@ -177,11 +175,11 @@ class TableComponent extends React.Component {
   }
 
   getHeader() {
-    console.error('Please overwrite getHeader method');
+    console.error("Please overwrite getHeader method");
   }
 
   getCols(item, idx) {
-    console.error('Please overwrite getCols method');
+    console.error("Please overwrite getCols method");
   }
 
   render() {
@@ -190,14 +188,14 @@ class TableComponent extends React.Component {
     return (
       <div
         style={{
-          flex: '1 1 100%',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
+          flex: "1 1 100%",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
         }}>
         <div
           style={{
-            textAlign: 'center',
+            textAlign: "center",
           }}>
           {/* {
             all === true || selected.length > 0 ?
@@ -275,8 +273,8 @@ class TableComponent extends React.Component {
         </div>
         <div
           style={{
-            flex: '1 1 0%',
-            overflowY: 'auto',
+            flex: "1 1 0%",
+            overflowY: "auto",
             // border: 'thin solid #d2d2d2',
             // padding: '0px 1em'
           }}>
@@ -287,7 +285,7 @@ class TableComponent extends React.Component {
                   // active={
                   //   activeItem === item.id || this.props.highlight === item.id
                   // }
-                  key={this.uid + '_' + idx}
+                  key={this.uid + "_" + idx}
                   onClick={e => {
                     if (all === true || selected.length > 0) {
                       this.add2selection(item.id);
@@ -298,13 +296,13 @@ class TableComponent extends React.Component {
                   onMouseEnter={e => this.handleHover(item)}
                   onMouseLeave={e => this.handleHover(null)}
                   style={{
-                    cursor: 'pointer',
+                    cursor: "pointer",
                     backgroundColor:
                       activeItem === item.id
-                        ? 'gray'
+                        ? "gray"
                         : this.props.highlight === item.id
-                        ? 'lightgrey'
-                        : 'white',
+                        ? "lightgrey"
+                        : "white",
                     // cursor: all === true || selected.length > 0 ?
                     //   'copy' : 'pointer'
                   }}>
@@ -317,8 +315,8 @@ class TableComponent extends React.Component {
         {store.pages > 1 ? (
           <div
             style={{
-              textAlign: 'center',
-              padding: '1em 0px 0px 1em',
+              textAlign: "center",
+              padding: "1em 0px 0px 1em",
             }}>
             <Pagination
               activePage={store.page}
@@ -347,7 +345,7 @@ TableComponent.propTypes = {
 };
 
 TableComponent.defaultProps = {
-  name: 'Stranger',
+  name: "Stranger",
   setting: {
     orderby: null,
     direction: null,

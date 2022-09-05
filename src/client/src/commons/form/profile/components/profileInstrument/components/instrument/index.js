@@ -1,1 +1,1 @@
-export { default } from './Instrument';
+export { default } from "./Instrument";

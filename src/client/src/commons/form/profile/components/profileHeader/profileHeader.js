@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import * as Styled from './styles';
-import { Button } from 'semantic-ui-react';
-import TranslationText from './../../../translationText';
-import { getData, createNewStratigraphy } from './api';
-import { profileKind } from '../../constance';
-import ProfileHeaderList from './components/profileHeaderList';
+import React, { useState, useEffect, useCallback } from "react";
+import * as Styled from "./styles";
+import { Button } from "semantic-ui-react";
+import TranslationText from "./../../../translationText";
+import { getData, createNewStratigraphy } from "./api";
+import { profileKind } from "../../constance";
+import ProfileHeaderList from "./components/profileHeaderList";
 
 const ProfileHeader = props => {
   const { boreholeID, kind, isEditable, reloadHeader } = props.data;
@@ -85,7 +85,7 @@ const ProfileHeader = props => {
       )) ||
         (kind === profileKind.CASING && <TranslationText id="casing" />) ||
         (kind === profileKind.FILLING && <TranslationText id="filling" />) ||
-        ''}
+        ""}
     </>
   );
 

@@ -1,29 +1,22 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import React from "react";
+import PropTypes from "prop-types";
+import { withTranslation } from "react-i18next";
 
-import {
-  Icon
-} from 'semantic-ui-react';
+import { Icon } from "semantic-ui-react";
 
-import {
-  downloadAttachment,
-  exportDownload,
-} from '../../api-lib/index';
+import { downloadAttachment, exportDownload } from "../../api-lib/index";
 
 class DownloadLink extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
-      downloading: false
+      downloading: false,
     };
   }
 
   render() {
-
     const props = this.props;
-      
+
     if (props.id.lenght === 0) {
       return null;
     }
@@ -31,58 +24,51 @@ class DownloadLink extends React.Component {
     return (
       <span
         style={{
-          color: 'rgb(33, 133, 208)',
-          ...props.style
-        }}
-      >
+          color: "rgb(33, 133, 208)",
+          ...props.style,
+        }}>
         <span
-          className={
-            this.state.downloading === false?
-              'link linker': null
-          }
-          onClick={()=>{
-            if (this.state.downloading === false){
-              this.setState({
-                downloading: true
-              }, ()=>{
-                if (this.props.type === 'attachment'){
-                  downloadAttachment({
-                    id: props.id
-                  }).then(()=>{
-                    this.setState({
-                      downloading: false
+          className={this.state.downloading === false ? "link linker" : null}
+          onClick={() => {
+            if (this.state.downloading === false) {
+              this.setState(
+                {
+                  downloading: true,
+                },
+                () => {
+                  if (this.props.type === "attachment") {
+                    downloadAttachment({
+                      id: props.id,
+                    }).then(() => {
+                      this.setState({
+                        downloading: false,
+                      });
                     });
-                  });
-                } else if (this.props.type === 'export') {
-                  exportDownload({
-                    id: props.id
-                  }).then(()=>{
-                    this.setState({
-                      downloading: false
+                  } else if (this.props.type === "export") {
+                    exportDownload({
+                      id: props.id,
+                    }).then(() => {
+                      this.setState({
+                        downloading: false,
+                      });
                     });
-                  });
-                }
-              });
+                  }
+                },
+              );
             }
-          }}
-        >
+          }}>
           {this.props.caption}
         </span>
         &nbsp;
-        {
-          this.state.downloading === true?
-            <Icon
-              loading
-              name='spinner'
-            />:
-            <Icon
-              name='arrow circle down'
-            />
-        } 
+        {this.state.downloading === true ? (
+          <Icon loading name="spinner" />
+        ) : (
+          <Icon name="arrow circle down" />
+        )}
       </span>
     );
   }
-};
+}
 
 DownloadLink.propTypes = {
   caption: PropTypes.string,
@@ -93,8 +79,8 @@ DownloadLink.propTypes = {
 
 DownloadLink.defaultProps = {
   id: null,
-  caption: 'Download',
-  type: 'attachment'
+  caption: "Download",
+  type: "attachment",
 };
 
 export default withTranslation()(DownloadLink);

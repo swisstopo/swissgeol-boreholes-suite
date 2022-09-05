@@ -1,64 +1,64 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import {
-  loadLayers,
-  getLayer
-} from '../../../../api-lib/index';
-import ProfileView from './view/profileViewComponent';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { loadLayers, getLayer } from "../../../../api-lib/index";
+import ProfileView from "./view/profileViewComponent";
 
 class ProfileContainer extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       layer: null,
-      isFetchingLayer: false
+      isFetchingLayer: false,
     };
   }
-  componentDidMount(){
-    const {
-      id
-    } = this.props;
-    if (id !== null){
+  componentDidMount() {
+    const { id } = this.props;
+    if (id !== null) {
       this.props.loadLayers(id);
     }
   }
   componentDidUpdate(prevProps) {
     if (this.props.id !== prevProps.id) {
-      this.setState({
-        layer: null
-      }, () => {
-        this.props.loadLayers(this.props.id);
-      });
+      this.setState(
+        {
+          layer: null,
+        },
+        () => {
+          this.props.loadLayers(this.props.id);
+        },
+      );
     }
   }
   render() {
-    const {
-      layers,
-      stratigraphy
-    } = this.props;
-    if (layers.data.length === 0){
+    const { layers, stratigraphy } = this.props;
+    if (layers.data.length === 0) {
       return null;
     }
     return (
       <ProfileView
         data={layers.data}
-        handleSelected={(selected)=>{
-          this.setState({
-            isFetchingLayer: true,
-            layer: null
-          }, ()=>{
-            if (selected !== null){
-              getLayer(selected.id).then((result) => {
-                this.setState({
-                  isFetchingLayer: false,
-                  layer: result.data.data
-                });
-              }).catch((err) => {
-                // handling error
-              });
-            }
-          });
+        handleSelected={selected => {
+          this.setState(
+            {
+              isFetchingLayer: true,
+              layer: null,
+            },
+            () => {
+              if (selected !== null) {
+                getLayer(selected.id)
+                  .then(result => {
+                    this.setState({
+                      isFetchingLayer: false,
+                      layer: result.data.data,
+                    });
+                  })
+                  .catch(err => {
+                    // handling error
+                  });
+              }
+            },
+          );
         }}
         isFetchingLayer={this.state.isFetchingLayer}
         kind={stratigraphy.kind}
@@ -72,7 +72,7 @@ class ProfileContainer extends React.Component {
 ProfileContainer.propTypes = {
   id: PropTypes.number,
   layers: PropTypes.shape({
-    data: PropTypes.array
+    data: PropTypes.array,
   }),
   loadLayers: PropTypes.func,
   stratigraphy: PropTypes.object,
@@ -81,20 +81,17 @@ ProfileContainer.propTypes = {
 const mapStateToProps = (state, ownProps) => {
   return {
     layers: state.core_layers_list,
-    ...ownProps
+    ...ownProps,
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
-    loadLayers: (id) => {
+    loadLayers: id => {
       dispatch(loadLayers(id));
-    }
+    },
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ProfileContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileContainer);

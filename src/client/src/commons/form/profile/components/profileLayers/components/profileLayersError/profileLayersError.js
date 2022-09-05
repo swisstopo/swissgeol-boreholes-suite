@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import * as Styled from './styles';
-import { Icon, Radio, Form, Input } from 'semantic-ui-react';
-import TranslationText from '../../../../../translationText';
-import { gapLayer, addBedrock, deleteLayer } from '../../../../../../../api-lib/index';
-import ErrorTypes from './errorTypes';
+import React, { useState, useEffect } from "react";
+import * as Styled from "./styles";
+import { Icon, Radio, Form, Input } from "semantic-ui-react";
+import TranslationText from "../../../../../translationText";
+import {
+  gapLayer,
+  addBedrock,
+  deleteLayer,
+} from "../../../../../../../api-lib/index";
+import ErrorTypes from "./errorTypes";
 const ProfileLayersError = props => {
   const {
     title,
@@ -25,31 +29,31 @@ const ProfileLayersError = props => {
     let e;
 
     switch (title) {
-      case 'missingBedrock':
+      case "missingBedrock":
         e = ErrorTypes[0];
         break;
-      case 'wrongDepth':
+      case "wrongDepth":
         e = ErrorTypes[5];
         break;
-      case 'invertedDepth':
+      case "invertedDepth":
         e = ErrorTypes[1];
         break;
-      case 'topOverlap':
+      case "topOverlap":
         e = ErrorTypes[2];
         break;
       // case 'bottomOverlap':
       //   e = ErrorTypes[2];
       //   break;
-      case 'topDisjoint':
+      case "topDisjoint":
         e = ErrorTypes[3];
         break;
       // case 'bottomDisjoint':
       //   e = ErrorTypes[3];
       //   break;
-      case 'missingLayers':
+      case "missingLayers":
         e = ErrorTypes[4];
         break;
-      case 'delete':
+      case "delete":
         e = ErrorTypes[6];
         break;
       default:
@@ -63,15 +67,15 @@ const ProfileLayersError = props => {
   }, [title, id]);
 
   const resolving = title => {
-    if (title === 'errorGapSolution1' || title === 'deletelayer') return 0;
-    if (title === 'errorGapSolution2' || title === 'extendupper') return 1;
+    if (title === "errorGapSolution1" || title === "deletelayer") return 0;
+    if (title === "errorGapSolution2" || title === "extendupper") return 1;
     if (
-      title === 'errorGapSolution3' ||
-      title === 'errorGapSolution4' ||
-      title === 'extendlower'
+      title === "errorGapSolution3" ||
+      title === "errorGapSolution4" ||
+      title === "extendlower"
     )
       return 2;
-    if (title === 'setmanually') return 3;
+    if (title === "setmanually") return 3;
   };
   const handleResolvingAction = (e, { value }) => {
     e.stopPropagation();
@@ -89,11 +93,11 @@ const ProfileLayersError = props => {
   const sendDataToServer = () => {
     onCancelClicked();
 
-    if ((isInside && !isDelete) || title === 'missingLayers') {
+    if ((isInside && !isDelete) || title === "missingLayers") {
       gapLayer(id, resolvingAction)
         .then(response => {
           if (response.data.success) {
-            onUpdated('fixErrors');
+            onUpdated("fixErrors");
           } else {
             alert(response.data.message);
           }
@@ -101,11 +105,11 @@ const ProfileLayersError = props => {
         .catch(error => {
           console.error(error);
         });
-    } else if (title === 'missingBedrock') {
+    } else if (title === "missingBedrock") {
       addBedrock(id)
         .then(response => {
           if (response.data.success) {
-            onUpdated('fixErrors');
+            onUpdated("fixErrors");
           } else {
             alert(response.data.message);
           }
@@ -117,7 +121,7 @@ const ProfileLayersError = props => {
       deleteLayer(id, resolvingAction, +value)
         .then(response => {
           if (response.data.success) {
-            onUpdated('deleteLayer');
+            onUpdated("deleteLayer");
           } else {
             alert(response.data.message);
           }
@@ -130,7 +134,7 @@ const ProfileLayersError = props => {
   return (
     <Styled.ErrorCard
       isDelete={isDelete}
-      isFirstInList={error?.messageId === 'errorStartWrong'}
+      isFirstInList={error?.messageId === "errorStartWrong"}
       isInside={isInside}>
       {!isDelete && (
         <Styled.Row

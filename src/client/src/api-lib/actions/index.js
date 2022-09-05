@@ -1,260 +1,240 @@
-import axios from 'axios';
-import store from '../reducers';
+import axios from "axios";
+import store from "../reducers";
 
-function getAuthorizationHeaders(headers = {}){
+function getAuthorizationHeaders(headers = {}) {
   if (
     store.getState() &&
-    store.getState().hasOwnProperty('core_user') &&
+    store.getState().hasOwnProperty("core_user") &&
     store.getState().core_user.authentication !== null
   ) {
     const a = store.getState().core_user.authentication;
     headers.Authorization = `Basic ${btoa(`${a.username}:${a.password}`)}`;
-    headers['bdms-authorization'] = "bdms-v1";
+    headers["bdms-authorization"] = "bdms-v1";
   }
   return headers;
 }
 
 export function getHeight(easting, northing) {
-  return axios.get(
-    'https://api3.geo.admin.ch/rest/services/height',
-    {
-      params: {
-        easting: easting,
-        northing: northing,
-        sr: 2056
-      },
-      // headers: {
-      //   "Access-Control-Allow-Origin": "*",
-      //   "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
-      //   "Access-Control-Allow-Headers": "Origin, Content-Type, X-Auth-Token"
-      // },
-      // withCredentials: true 
-    }
-  );
-};
+  return axios.get("https://api3.geo.admin.ch/rest/services/height", {
+    params: {
+      easting: easting,
+      northing: northing,
+      sr: 2056,
+    },
+    // headers: {
+    //   "Access-Control-Allow-Origin": "*",
+    //   "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+    //   "Access-Control-Allow-Headers": "Origin, Content-Type, X-Auth-Token"
+    // },
+    // withCredentials: true
+  });
+}
 
 export function getAddressByPoint(easting, northing) {
-
   return axios({
-    url: process.env.PUBLIC_URL + '/api/v1/geoapi/location',
+    url: process.env.PUBLIC_URL + "/api/v1/geoapi/location",
     timeout: 120000,
-    method: 'post',
-    responseType: 'json',
+    method: "post",
+    responseType: "json",
     headers: getAuthorizationHeaders(),
     data: {
-      action: 'LOCATION',
+      action: "LOCATION",
       easting: easting,
-      northing: northing
-    }
+      northing: northing,
+    },
   });
-};
+}
 
 export function downloadFile(path, params) {
   return new Promise((resolve, reject) => {
-    return axios(
-      process.env.PUBLIC_URL + path,
-      {
-        timeout: 120000,
-        responseType: 'blob',
-        headers: getAuthorizationHeaders(),
-        params: params,
-        // onDownloadProgress: function(progressEvent) {
-        //   var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-        //   console.info("Progress: ", percentCompleted);
-        // }
-      }
-    ).then((response) => {
-      const fileName = response.headers[
-        'content-disposition'
-      ].split("; ")[1].replace("filename=", "");
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', fileName);
-      document.body.appendChild(link);
-      link.click();
-      resolve(response);
-    }).catch(function (error) {
-      debugger;
-      reject(error);
-    });
+    return axios(process.env.PUBLIC_URL + path, {
+      timeout: 120000,
+      responseType: "blob",
+      headers: getAuthorizationHeaders(),
+      params: params,
+      // onDownloadProgress: function(progressEvent) {
+      //   var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+      //   console.info("Progress: ", percentCompleted);
+      // }
+    })
+      .then(response => {
+        const fileName = response.headers["content-disposition"]
+          .split("; ")[1]
+          .replace("filename=", "");
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        resolve(response);
+      })
+      .catch(function (error) {
+        debugger;
+        reject(error);
+      });
   });
-};
+}
 
 export function downloadFilePost(path, action) {
   return new Promise((resolve, reject) => {
     return axios(
-      (
-        path.includes("http://") || path.includes("https://") ?
-          path : process.env.PUBLIC_URL + '/api/v1' + path
-      ),
+      path.includes("http://") || path.includes("https://")
+        ? path
+        : process.env.PUBLIC_URL + "/api/v1" + path,
       {
         timeout: 120000,
-        responseType: 'blob',
+        responseType: "blob",
         headers: getAuthorizationHeaders(),
         data: action,
-        method: 'POST',
+        method: "POST",
         // onDownloadProgress: function(progressEvent) {
         //   var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
         //   console.info("Progress: ", percentCompleted);
         // }
-      }
-    ).then(
-      response => {
-        if (
-          response.headers[
-            'content-type'
-          ].includes("application/json")
-        ){
+      },
+    )
+      .then(response => {
+        if (response.headers["content-type"].includes("application/json")) {
           let fileReader = new FileReader();
           fileReader.onload = function () {
-            resolve(
-              JSON.parse(this.result)
-            );
+            resolve(JSON.parse(this.result));
           };
-          fileReader.readAsText(
-            new Blob([response.data])
-          );
+          fileReader.readAsText(new Blob([response.data]));
         } else {
-          const fileName = response.headers[
-            'content-disposition'
-          ].split("; ")[1].replace("filename=", "");
+          const fileName = response.headers["content-disposition"]
+            .split("; ")[1]
+            .replace("filename=", "");
           const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = url;
-          link.setAttribute('download', fileName);
+          link.setAttribute("download", fileName);
           document.body.appendChild(link);
           link.click();
           resolve(response);
         }
       })
-      .catch(
-        error => {
-          reject(error);
-        }
-      );
+      .catch(error => {
+        reject(error);
+      });
   });
-};
+}
 
 export function downloadBorehole(params) {
-  return downloadFile(
-    '/api/v1/borehole/download', params
-  );
-};
+  return downloadFile("/api/v1/borehole/download", params);
+}
 
 export function downloadAttachment(params) {
-  return downloadFile(
-    '/api/v1/borehole/edit/files', params
-  );
-};
+  return downloadFile("/api/v1/borehole/edit/files", params);
+}
 
-export function fetch(path, action, method = 'post', auth = null) {
+export function fetch(path, action, method = "post", auth = null) {
   const conf = {
-    url: (
-      path.includes("http://") || path.includes("https://") ?
-        path : process.env.PUBLIC_URL + '/api/v1' + path
-    ),
+    url:
+      path.includes("http://") || path.includes("https://")
+        ? path
+        : process.env.PUBLIC_URL + "/api/v1" + path,
     headers: getAuthorizationHeaders(),
     timeout: 120000,
-    method: method
+    method: method,
   };
   if (auth !== null) {
     conf["auth"] = auth;
   }
-  if (action.hasOwnProperty('action')) {
-    if (method === 'post') {
-      conf['responseType'] = 'json';
-      conf['data'] = action;
-    } else if (method === 'get') {
-      conf['responseType'] = 'xml';
-      if (action.hasOwnProperty('params')) {
-        conf['params'] = action.params;
+  if (action.hasOwnProperty("action")) {
+    if (method === "post") {
+      conf["responseType"] = "json";
+      conf["data"] = action;
+    } else if (method === "get") {
+      conf["responseType"] = "xml";
+      if (action.hasOwnProperty("params")) {
+        conf["params"] = action.params;
       }
     }
     return axios(conf);
   } else {
-    return function (dispatch = function () { }) {
+    return function (dispatch = function () {}) {
       dispatch({
         path: path,
-        ...action
+        ...action,
       });
-      if (method === 'post') {
-        conf['responseType'] = 'json';
+      if (method === "post") {
+        conf["responseType"] = "json";
         const json = {};
         for (var key in action) {
-          if (key === 'type') {
+          if (key === "type") {
             json.action = action[key];
           } else {
             json[key] = action[key];
           }
         }
-        conf['data'] = json;
-      } else if (method === 'get') {
-        conf['responseType'] = 'xml';
-        if (action.hasOwnProperty('params')) {
-          conf['params'] = action.params;
+        conf["data"] = json;
+      } else if (method === "get") {
+        conf["responseType"] = "xml";
+        if (action.hasOwnProperty("params")) {
+          conf["params"] = action.params;
         }
       }
       return new Promise((resolve, reject) => {
-        return axios(conf).then((response) => {
-          if (response.data.success === true) {
-            dispatch({
-              type: action.type + "_OK",
-              path: path,
-              json: response.data,
-              status: response.status,
-              message: response.statusText
-            });
-          } else {
-            if (
-              action.type !== 'GET' &&
-              path !== '/user'
-            ){
-              alert(response.data.message);
+        return axios(conf)
+          .then(response => {
+            if (response.data.success === true) {
+              dispatch({
+                type: action.type + "_OK",
+                path: path,
+                json: response.data,
+                status: response.status,
+                message: response.statusText,
+              });
+            } else {
+              if (action.type !== "GET" && path !== "/user") {
+                alert(response.data.message);
+              }
+              dispatch({
+                type: action.type + "_ERROR",
+                path: path,
+                json: response.data,
+                status: response.status,
+                message: response.statusText,
+              });
             }
+            resolve(response.data, dispatch);
+          })
+          .catch(function (error) {
+            debugger;
             dispatch({
-              type: action.type + "_ERROR",
+              type: action.type + "_CONNECTION_ERROR",
               path: path,
-              json: response.data,
-              status: response.status,
-              message: response.statusText
+              error: error,
+              // json: error.response.data,
+              // status: error.response.status,
+              // message: error.response.statusText
             });
-          }
-          resolve(response.data, dispatch);
-        }).catch(function (error) {
-          debugger;
-          dispatch({
-            type: action.type + "_CONNECTION_ERROR",
-            path: path,
-            error: error
-            // json: error.response.data,
-            // status: error.response.status,
-            // message: error.response.statusText
+            reject(error, dispatch);
           });
-          reject(error, dispatch);
-        });
       });
     };
   }
-};
+}
 
 export function uploadFile(path, action, file) {
   const data = new FormData();
-  data.append('file', file);
+  data.append("file", file);
   for (var property in action) {
     if (action.hasOwnProperty(property)) {
       data.append(property, action[property]);
     }
   }
   return axios.post(
-    path.includes("http://") || path.includes("https://") ?
-      path: process.env.PUBLIC_URL + '/api/v1' + path,
+    path.includes("http://") || path.includes("https://")
+      ? path
+      : process.env.PUBLIC_URL + "/api/v1" + path,
     data,
     {
       // merge headers
       headers: getAuthorizationHeaders({
-        'content-type': 'multipart/form-data'
-      })
-    }
+        "content-type": "multipart/form-data",
+      }),
+    },
   );
-};
+}

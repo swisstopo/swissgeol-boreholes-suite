@@ -1,64 +1,64 @@
-import _ from 'lodash';
+import _ from "lodash";
 
 const initialState = {
   isFetching: false,
   filter: {
     refresh: 1,
     borehole_identifier: null,
-    identifier_value: '',
-    role: 'all',
-    workgroup: 'all',
-    original_name: '',
-    alternate_name: '',
+    identifier_value: "",
+    role: "all",
+    workgroup: "all",
+    original_name: "",
+    alternate_name: "",
     kind: null,
     method: null,
     restriction: null,
-    project_name: '',
+    project_name: "",
     landuse: null,
-    restriction_until_from: '',
-    restriction_until_to: '',
-    elevation_z_from: '',
-    elevation_z_to: '',
-    length_from: '',
-    length_to: '',
+    restriction_until_from: "",
+    restriction_until_to: "",
+    elevation_z_from: "",
+    elevation_z_to: "",
+    length_from: "",
+    length_to: "",
     groundwater: -1,
-    top_bedrock_from: '',
-    top_bedrock_to: '',
+    top_bedrock_from: "",
+    top_bedrock_to: "",
     status: null,
     purpose: null,
     cuttings: null,
-    drilling_date_from: '',
-    drilling_date_to: '',
-    drill_diameter_from: '',
-    drill_diameter_to: '',
-    bore_inc_from: '',
-    bore_inc_to: '',
-    bore_inc_dir_from: '',
-    bore_inc_dir_to: '',
+    drilling_date_from: "",
+    drilling_date_to: "",
+    drill_diameter_from: "",
+    drill_diameter_to: "",
+    bore_inc_from: "",
+    bore_inc_to: "",
+    bore_inc_dir_from: "",
+    bore_inc_dir_to: "",
     lithology_top_bedrock: null,
     lithostratigraphy_top_bedrock: null,
     chronostratigraphy_top_bedrock: null,
     canton: null,
     municipality: null,
-    address: '',
+    address: "",
 
     project: null,
-    last_update: '',
-    creation: '',
-    completness: 'all',
+    last_update: "",
+    creation: "",
+    completness: "all",
 
     // Layers filter
-    layer_depth_from: '',
-    layer_depth_to: '',
+    layer_depth_from: "",
+    layer_depth_to: "",
 
-    layer_depth_from_from: '',
-    layer_depth_from_to: '',
+    layer_depth_from_from: "",
+    layer_depth_from_to: "",
 
-    layer_depth_to_from: '',
-    layer_depth_to_to: '',
+    layer_depth_to_from: "",
+    layer_depth_to_to: "",
 
-    layer_description: '',
-    layer_geology: '',
+    layer_description: "",
+    layer_geology: "",
 
     layer_lithology: null,
     layer_lithostratigraphy: null,
@@ -85,14 +85,14 @@ const initialState = {
     layer_debris: null,
     layer_lithology_top_bedrock: null,
 
-    casing_name: '',
+    casing_name: "",
     date_abd_from: null,
     date_abd_to: null,
     casing_id: null,
-    casing_depth_from_from: '',
-    casing_depth_from_to: '',
-    casing_depth_to_from: '',
-    casing_depth_to_to: '',
+    casing_depth_from_from: "",
+    casing_depth_from_to: "",
+    casing_depth_to_from: "",
+    casing_depth_to_to: "",
     casing_kind: null,
     casing_material: null,
     casing_date_spud_from: null,
@@ -104,33 +104,33 @@ const initialState = {
     casing_outer_diameter_from: null,
     casing_outer_diameter_to: null,
 
-    instrument_depth_from_from: '',
-    instrument_depth_from_to: '',
-    instrument_depth_to_from: '',
-    instrument_depth_to_to: '',
+    instrument_depth_from_from: "",
+    instrument_depth_from_to: "",
+    instrument_depth_to_from: "",
+    instrument_depth_to_to: "",
     instrument_kind: null,
     instrument_status: null,
-    instrument_id: '',
+    instrument_id: "",
 
-    fill_name: '',
+    fill_name: "",
     fill_kind: null,
-    backfill_depth_from_from: '',
-    backfill_depth_from_to: '',
-    backfill_depth_to_from: '',
-    backfill_depth_to_to: '',
+    backfill_depth_from_from: "",
+    backfill_depth_from_to: "",
+    backfill_depth_to_from: "",
+    backfill_depth_to_to: "",
     fill_material: null,
 
     layer_qt_description: null,
-    layer_uscs_original: '',
+    layer_uscs_original: "",
     layer_gradation: null,
 
-    spud_date_from: '',
-    spud_date_to: '',
+    spud_date_from: "",
+    spud_date_to: "",
     qt_inclination_direction: null,
-    total_depth_tvd_from: '',
-    total_depth_tvd_to: '',
-    top_bedrock_tvd_from: '',
-    top_bedrock_tvd_to: '',
+    total_depth_tvd_from: "",
+    total_depth_tvd_to: "",
+    top_bedrock_tvd_from: "",
+    top_bedrock_tvd_to: "",
     qt_depth: null,
     qt_total_depth_tvd: null,
     qt_top_bedrock: null,
@@ -140,8 +140,8 @@ const initialState = {
     qt_reference_evelation: null,
     qt_elevation: null,
     qt_location: null,
-    reference_elevation_from: '',
-    reference_elevation_to: '',
+    reference_elevation_from: "",
+    reference_elevation_to: "",
   },
 };
 
@@ -155,13 +155,13 @@ const searchEditor = (
   action,
 ) => {
   switch (action.type) {
-    case 'SEARCH_EDITOR_FILTER_CHANGED': {
+    case "SEARCH_EDITOR_FILTER_CHANGED": {
       const copy = { ...state };
       const path = `filter.${action.key}`;
       if (_.has(copy, path)) {
-        if (_.isNil(action.value) || action.value === '') {
+        if (_.isNil(action.value) || action.value === "") {
           if (_.isString(action.value)) {
-            _.set(copy, path, '');
+            _.set(copy, path, "");
           } else {
             _.set(copy, path, null);
           }
@@ -171,67 +171,67 @@ const searchEditor = (
       }
       return copy;
     }
-    case 'SEARCH_EDITOR_FILTER_RESET_IDENTIFIER': {
+    case "SEARCH_EDITOR_FILTER_RESET_IDENTIFIER": {
       const copy = { ...state };
       copy.filter.borehole_identifier = null;
-      copy.filter.identifier_value = '';
+      copy.filter.identifier_value = "";
       return copy;
     }
-    case 'SEARCH_EDITOR_FILTER_RESET_RESTRICTION': {
+    case "SEARCH_EDITOR_FILTER_RESET_RESTRICTION": {
       const copy = { ...state };
-      copy.filter.restriction_until_from = '';
-      copy.filter.restriction_until_to = '';
+      copy.filter.restriction_until_from = "";
+      copy.filter.restriction_until_to = "";
       return copy;
     }
-    case 'SEARCH_EDITOR_FILTER_RESET_ELEVATION': {
+    case "SEARCH_EDITOR_FILTER_RESET_ELEVATION": {
       const copy = { ...state };
-      copy.filter.elevation_z_from = '';
-      copy.filter.elevation_z_to = '';
+      copy.filter.elevation_z_from = "";
+      copy.filter.elevation_z_to = "";
       return copy;
     }
-    case 'SEARCH_EDITOR_FILTER_RESET_TOP_BEDROCK': {
+    case "SEARCH_EDITOR_FILTER_RESET_TOP_BEDROCK": {
       const copy = { ...state };
-      copy.filter.top_bedrock_from = '';
-      copy.filter.top_bedrock_to = '';
+      copy.filter.top_bedrock_from = "";
+      copy.filter.top_bedrock_to = "";
       return copy;
     }
-    case 'SEARCH_EDITOR_FILTER_REFRESH': {
+    case "SEARCH_EDITOR_FILTER_REFRESH": {
       const copy = { ...state };
       copy.filter.refresh = copy.filter.refresh + 1;
       return copy;
     }
-    case 'SEARCH_EDITOR_FILTER_RESET_DRILLING': {
+    case "SEARCH_EDITOR_FILTER_RESET_DRILLING": {
       const copy = { ...state };
-      copy.filter.drilling_date_from = '';
-      copy.filter.drilling_date_to = '';
+      copy.filter.drilling_date_from = "";
+      copy.filter.drilling_date_to = "";
       return copy;
     }
-    case 'SEARCH_EDITOR_FILTER_RESET_DRILL_DIAMETER': {
+    case "SEARCH_EDITOR_FILTER_RESET_DRILL_DIAMETER": {
       const copy = { ...state };
-      copy.filter.drill_diameter_from = '';
-      copy.filter.drill_diameter_to = '';
+      copy.filter.drill_diameter_from = "";
+      copy.filter.drill_diameter_to = "";
       return copy;
     }
-    case 'SEARCH_EDITOR_FILTER_RESET_BORE_INC': {
+    case "SEARCH_EDITOR_FILTER_RESET_BORE_INC": {
       const copy = { ...state };
-      copy.filter.bore_inc_from = '';
-      copy.filter.bore_inc_to = '';
+      copy.filter.bore_inc_from = "";
+      copy.filter.bore_inc_to = "";
       return copy;
     }
-    case 'SEARCH_EDITOR_FILTER_RESET_BORE_INC_DIR': {
+    case "SEARCH_EDITOR_FILTER_RESET_BORE_INC_DIR": {
       const copy = { ...state };
-      copy.filter.bore_inc_dir_from = '';
-      copy.filter.bore_inc_dir_to = '';
+      copy.filter.bore_inc_dir_from = "";
+      copy.filter.bore_inc_dir_to = "";
       return copy;
     }
-    case 'SEARCH_EDITOR_FILTER_RESET_DEPTH': {
+    case "SEARCH_EDITOR_FILTER_RESET_DEPTH": {
       const copy = { ...state };
-      copy.filter.length_from = '';
-      copy.filter.length_to = '';
+      copy.filter.length_from = "";
+      copy.filter.length_to = "";
       return copy;
     }
 
-    case 'SEARCH_EDITOR_FILTER_RESET': {
+    case "SEARCH_EDITOR_FILTER_RESET": {
       return {
         ...state,
         filter: {
@@ -239,7 +239,7 @@ const searchEditor = (
         },
       };
     }
-    case 'SEARCH_EDITOR_COMPLETNESS_CHANGED': {
+    case "SEARCH_EDITOR_COMPLETNESS_CHANGED": {
       return {
         ...state,
         filter: {
@@ -248,7 +248,7 @@ const searchEditor = (
         },
       };
     }
-    case 'SEARCH_EDITOR_PROJECT_CHANGED': {
+    case "SEARCH_EDITOR_PROJECT_CHANGED": {
       return {
         ...state,
         filter: {
@@ -257,7 +257,7 @@ const searchEditor = (
         },
       };
     }
-    case 'SEARCH_EDITOR_LASTUPDATE_CHANGED': {
+    case "SEARCH_EDITOR_LASTUPDATE_CHANGED": {
       return {
         ...state,
         filter: {
@@ -266,7 +266,7 @@ const searchEditor = (
         },
       };
     }
-    case 'SEARCH_EDITOR_CREATION_CHANGED': {
+    case "SEARCH_EDITOR_CREATION_CHANGED": {
       return {
         ...state,
         filter: {

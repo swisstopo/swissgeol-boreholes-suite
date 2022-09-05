@@ -1,21 +1,21 @@
 /* eslint-disable indent */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-indent */
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
-import _ from 'lodash';
-import { Icon, Form, Checkbox } from 'semantic-ui-react';
-import TranslationText from '../form/translationText';
-import { LocationSearchData } from './data/LocationSearchData';
-import { boreholeSearchData } from './data/boreholeSearchData';
-import { stratigraphySearchData } from './data/stratigraphySearchData';
-import { casingSearchData } from './data/casingSearchData';
-import { InstrumentSearchData } from './data/InstrumentSearchData';
-import { fillingSearchData } from './data/fillingSearchData';
-import * as Styled from './editor/searchEditorStyles.js';
-import ListFilter from './components/listFilter';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
+import _ from "lodash";
+import { Icon, Form, Checkbox } from "semantic-ui-react";
+import TranslationText from "../form/translationText";
+import { LocationSearchData } from "./data/LocationSearchData";
+import { boreholeSearchData } from "./data/boreholeSearchData";
+import { stratigraphySearchData } from "./data/stratigraphySearchData";
+import { casingSearchData } from "./data/casingSearchData";
+import { InstrumentSearchData } from "./data/InstrumentSearchData";
+import { fillingSearchData } from "./data/fillingSearchData";
+import * as Styled from "./editor/searchEditorStyles.js";
+import ListFilter from "./components/listFilter";
 class SearchComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -25,38 +25,38 @@ class SearchComponent extends React.Component {
       searchList: [
         {
           id: 0,
-          name: 'location',
-          translationId: 'location',
+          name: "location",
+          translationId: "location",
           isSelected: false,
         },
         {
           id: 1,
-          name: 'borehole',
-          translationId: 'borehole',
+          name: "borehole",
+          translationId: "borehole",
           isSelected: false,
         },
         {
           id: 2,
-          name: 'stratigraphy',
-          translationId: 'stratigraphy',
+          name: "stratigraphy",
+          translationId: "stratigraphy",
           isSelected: false,
         },
         {
           id: 3,
-          name: 'casing',
-          translationId: 'casing',
+          name: "casing",
+          translationId: "casing",
           isSelected: false,
         },
         {
           id: 4,
-          name: 'instrument',
-          translationId: 'instrument',
+          name: "instrument",
+          translationId: "instrument",
           isSelected: false,
         },
         {
           id: 5,
-          name: 'filling',
-          translationId: 'filling',
+          name: "filling",
+          translationId: "filling",
           isSelected: false,
         },
       ],
@@ -87,32 +87,32 @@ class SearchComponent extends React.Component {
   handleButtonSelected() {
     let selectedData = null;
     if (
-      this.state?.searchList?.[0]?.name === 'location' &&
+      this.state?.searchList?.[0]?.name === "location" &&
       this.state?.searchList?.[0]?.isSelected
     ) {
       selectedData = LocationSearchData;
     } else if (
-      this.state?.searchList?.[1]?.name === 'borehole' &&
+      this.state?.searchList?.[1]?.name === "borehole" &&
       this.state?.searchList?.[1]?.isSelected
     ) {
       selectedData = boreholeSearchData;
     } else if (
-      this.state?.searchList?.[2]?.name === 'stratigraphy' &&
+      this.state?.searchList?.[2]?.name === "stratigraphy" &&
       this.state?.searchList?.[2]?.isSelected
     ) {
       selectedData = stratigraphySearchData;
     } else if (
-      this.state?.searchList?.[3]?.name === 'casing' &&
+      this.state?.searchList?.[3]?.name === "casing" &&
       this.state?.searchList?.[3]?.isSelected
     ) {
       selectedData = casingSearchData;
     } else if (
-      this.state?.searchList?.[4]?.name === 'instrument' &&
+      this.state?.searchList?.[4]?.name === "instrument" &&
       this.state?.searchList?.[4]?.isSelected
     ) {
       selectedData = InstrumentSearchData;
     } else if (
-      this.state?.searchList?.[5]?.name === 'filling' &&
+      this.state?.searchList?.[5]?.name === "filling" &&
       this.state?.searchList?.[5]?.isSelected
     ) {
       selectedData = fillingSearchData;
@@ -127,7 +127,7 @@ class SearchComponent extends React.Component {
     return (
       <Styled.Container>
         <Styled.SearchFilterLabel>
-          <TranslationText id={'searchfilters'} />:
+          <TranslationText id={"searchfilters"} />:
         </Styled.SearchFilterLabel>
         <div style={{ padding: 10 }}>
           <Form size="tiny">
@@ -139,9 +139,9 @@ class SearchComponent extends React.Component {
                     style={{
                       display:
                         search.advanced === true || filter.mapfilter === true
-                          ? 'flex'
-                          : 'none',
-                      justifyContent: 'space-between',
+                          ? "flex"
+                          : "none",
+                      justifyContent: "space-between",
                     }}>
                     <label>
                       <TranslationText id="filterbymap" />
@@ -161,13 +161,13 @@ class SearchComponent extends React.Component {
                         search.advanced === true ||
                         filter.zoom2selected === true
                           ? null
-                          : 'none',
+                          : "none",
                     }}
                     widths="equal">
                     <Form.Field>
                       <label
                         style={{
-                          whiteSpace: 'nowrap',
+                          whiteSpace: "nowrap",
                         }}>
                         <TranslationText id="centerselected" />
                       </label>
@@ -181,9 +181,9 @@ class SearchComponent extends React.Component {
                     </Form.Field>
                     <Form.Field
                       style={{
-                        textAlign: 'right',
-                        opacity: !search.center2selected && '0.5',
-                        pointerEvents: !search.center2selected && 'none',
+                        textAlign: "right",
+                        opacity: !search.center2selected && "0.5",
+                        pointerEvents: !search.center2selected && "none",
                       }}>
                       <label>
                         <TranslationText id="andzoom" />
@@ -219,7 +219,7 @@ class SearchComponent extends React.Component {
                 }}>
                 <div>
                   <Icon
-                    name={`caret ${filter?.isSelected ? 'down' : 'right'}`}
+                    name={`caret ${filter?.isSelected ? "down" : "right"}`}
                   />
                   <span>
                     <TranslationText id={filter?.translationId} />
@@ -247,13 +247,13 @@ class SearchComponent extends React.Component {
                 }}>
                 <div>
                   <Icon
-                    name={`caret ${filter?.isSelected ? 'down' : 'right'}`}
-                  />{' '}
+                    name={`caret ${filter?.isSelected ? "down" : "right"}`}
+                  />{" "}
                   <span>
                     <TranslationText id={filter?.translationId} />
                   </span>
                 </div>
-                <Icon name={'close'} />
+                <Icon name={"close"} />
               </Styled.FilterButton>
             )}
           </Styled.FilterContainer>
@@ -304,73 +304,73 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     dispatch: dispatch,
     setmapfilter: active => {
       dispatch({
-        type: 'SEARCH_MAPFILTER_CHANGED',
+        type: "SEARCH_MAPFILTER_CHANGED",
         active: active,
       });
     },
     setzoom2filter: active => {
       dispatch({
-        type: 'SEARCH_ZOOM2_CHANGED',
+        type: "SEARCH_ZOOM2_CHANGED",
         active: active,
       });
     },
     setcenter2filter: active => {
       dispatch({
-        type: 'SEARCH_CENTER2_CHANGED',
+        type: "SEARCH_CENTER2_CHANGED",
         active: active,
       });
     },
     // Borehole filtering
     setFilter: (key, value) => {
       dispatch({
-        type: 'SEARCH_FILTER_CHANGED',
+        type: "SEARCH_FILTER_CHANGED",
         key: key,
         value: value,
       });
     },
     resetIdentifier: () => {
       dispatch({
-        type: 'SEARCH_FILTER_RESET_IDENTIFIER',
+        type: "SEARCH_FILTER_RESET_IDENTIFIER",
       });
     },
     resetRestriction: () => {
       dispatch({
-        type: 'SEARCH_FILTER_RESET_RESTRICTION',
+        type: "SEARCH_FILTER_RESET_RESTRICTION",
       });
     },
     resetElevation: () => {
       dispatch({
-        type: 'SEARCH_FILTER_RESET_ELEVATION',
+        type: "SEARCH_FILTER_RESET_ELEVATION",
       });
     },
     resetDepth: () => {
       dispatch({
-        type: 'SEARCH_FILTER_RESET_DEPTH',
+        type: "SEARCH_FILTER_RESET_DEPTH",
       });
     },
     resetTotBedrock: () => {
       dispatch({
-        type: 'SEARCH_FILTER_RESET_TOP_BEDROCK',
+        type: "SEARCH_FILTER_RESET_TOP_BEDROCK",
       });
     },
     resetDrilling: () => {
       dispatch({
-        type: 'SEARCH_FILTER_RESET_DRILLING',
+        type: "SEARCH_FILTER_RESET_DRILLING",
       });
     },
     resetDrillDiameter: () => {
       dispatch({
-        type: 'SEARCH_FILTER_RESET_DRILL_DIAMETER',
+        type: "SEARCH_FILTER_RESET_DRILL_DIAMETER",
       });
     },
     resetBoreInc: () => {
       dispatch({
-        type: 'SEARCH_FILTER_RESET_BORE_INC',
+        type: "SEARCH_FILTER_RESET_BORE_INC",
       });
     },
     resetBoreIncDir: () => {
       dispatch({
-        type: 'SEARCH_FILTER_RESET_BORE_INC_DIR',
+        type: "SEARCH_FILTER_RESET_BORE_INC_DIR",
       });
     },
   };
@@ -379,4 +379,4 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation(['common'])(SearchComponent));
+)(withTranslation(["common"])(SearchComponent));

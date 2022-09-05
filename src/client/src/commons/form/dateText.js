@@ -1,18 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import moment from 'moment';
-import 'moment/locale/en-gb';
-import 'moment/locale/it';
-import 'moment/locale/fr';
-import 'moment/locale/de-ch';
-import { withTranslation } from 'react-i18next';
+import React from "react";
+import PropTypes from "prop-types";
+import moment from "moment";
+import "moment/locale/en-gb";
+import "moment/locale/it";
+import "moment/locale/fr";
+import "moment/locale/de-ch";
+import { withTranslation } from "react-i18next";
 
-const getFromNow = (props) => {
+const getFromNow = props => {
   const { date, i18n } = props;
-  if (i18n.language === 'de') {
-    moment.locale('de-ch');
-  } else if (i18n.language === 'en') {
-    moment.locale('en-gb');
+  if (i18n.language === "de") {
+    moment.locale("de-ch");
+  } else if (i18n.language === "en") {
+    moment.locale("en-gb");
   } else {
     moment.locale(i18n.language);
   }
@@ -24,32 +24,29 @@ const getFromNow = (props) => {
 };
 
 class DateText extends React.Component {
-
   constructor(props) {
     super(props);
     this.countdown = this.countdown.bind(this);
 
     this.state = {
-      fromnow: props.fromnow === true?
-        getFromNow(props): '',
-      intervalId: null
+      fromnow: props.fromnow === true ? getFromNow(props) : "",
+      intervalId: null,
     };
-    
+
     if (props.fromnow === true) {
       this.state.intervalId = window.setInterval(
         this.countdown,
-        this.props.timer * 1000
+        this.props.timer * 1000,
       );
     }
-
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     const fromnow = getFromNow(nextProps);
-    if (fromnow !== prevState.fromnow){
+    if (fromnow !== prevState.fromnow) {
       return {
         ...prevState,
-        fromnow: fromnow
+        fromnow: fromnow,
       };
     }
     return null;
@@ -62,19 +59,22 @@ class DateText extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.state.intervalId !== null){
+    if (this.state.intervalId !== null) {
       window.clearInterval(this.state.intervalId);
     }
   }
 
   countdown() {
-    this.setState({
-      fromnow: getFromNow(this.props)
-    }, () => {
-      if (this.props.onTick !== undefined) {
-        this.props.onTick(this.props.date, moment(this.props.date));
-      }
-    });
+    this.setState(
+      {
+        fromnow: getFromNow(this.props),
+      },
+      () => {
+        if (this.props.onTick !== undefined) {
+          this.props.onTick(this.props.date, moment(this.props.date));
+        }
+      },
+    );
   }
 
   render() {
@@ -83,18 +83,14 @@ class DateText extends React.Component {
       if (fromnow === true) {
         return this.state.fromnow;
       }
-      if (i18n.language === 'de') {
-        moment.locale('de-ch');
-      } else if (i18n.language === 'en') {
-        moment.locale('en-gb');
+      if (i18n.language === "de") {
+        moment.locale("de-ch");
+      } else if (i18n.language === "en") {
+        moment.locale("en-gb");
       } else {
         moment.locale(i18n.language);
       }
-      return moment(date).format(
-        'DD.MM.YYYY' + (
-          hours ? ' HH:mm' : ''
-        )
-      );
+      return moment(date).format("DD.MM.YYYY" + (hours ? " HH:mm" : ""));
     } else if (date === null) {
       return this.props.nullValue;
     }
@@ -107,7 +103,7 @@ DateText.propTypes = {
   fromnow: PropTypes.bool,
   hours: PropTypes.bool,
   i18n: PropTypes.shape({
-    locale: PropTypes.func
+    locale: PropTypes.func,
   }),
   nullValue: PropTypes.string,
   onTick: PropTypes.func,
@@ -118,8 +114,8 @@ DateText.defaultProps = {
   date: null,
   hours: false,
   fromnow: false,
-  nullValue: '',
-  timer: 60 // seconds
+  nullValue: "",
+  timer: 60, // seconds
 };
 
 export default withTranslation()(DateText);

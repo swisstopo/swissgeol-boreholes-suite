@@ -1,7 +1,7 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { withTranslation } from "react-i18next";
 
 import {
   Button,
@@ -10,20 +10,18 @@ import {
   // Popup,
   Modal,
   Header,
-} from 'semantic-ui-react';
+} from "semantic-ui-react";
 
 import {
   listIdentifier,
   createIdentifier,
   deleteIdentifier,
-  updateIdentifier
-} from '../../../api-lib/index';
+  updateIdentifier,
+} from "../../../api-lib/index";
 
-
-import TranslationText from '../../../commons/form/translationText';
+import TranslationText from "../../../commons/form/translationText";
 
 class IdentifierSettings extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -37,11 +35,11 @@ class IdentifierSettings extends React.Component {
     this.reset = this.reset.bind(this);
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.props.listIdentifier();
   }
 
-  reset(){
+  reset() {
     this.setState({
       id: "",
       de: "",
@@ -53,178 +51,125 @@ class IdentifierSettings extends React.Component {
 
   handleOpenConfirmDelete = () => {
     this.setState({ isOpenConfirmDelete: true });
-  }
+  };
 
   handleCloseConfirmDelete = () => {
     this.setState({ isOpenConfirmDelete: false });
-  }
+  };
 
   render() {
-    const {
-      t,
-      domains
-    } = this.props;
+    const { t, domains } = this.props;
     return (
       <div
         style={{
-          padding: '2em'
-        }}
-      >
+          padding: "2em",
+        }}>
         <div
           style={{
             flex: 1,
-            display: 'flex',
-            flexDirection: 'row'
-          }}
-        >
+            display: "flex",
+            flexDirection: "row",
+          }}>
           <Form
             style={{
-              flex: 1
-            }}
-          >
-            <Form.Group
-              widths='equal'
-            >
+              flex: 1,
+            }}>
+            <Form.Group widths="equal">
               <Form.Input
                 fluid
-                label={
-                  <TranslationText
-                    id='german'
-                  />
-                }
-                onChange={(e)=>{
+                label={<TranslationText id="german" />}
+                onChange={e => {
                   this.setState({
-                    de: e.target.value
+                    de: e.target.value,
                   });
                 }}
-                placeholder={t('borehole_identifier')}
+                placeholder={t("borehole_identifier")}
                 value={this.state.de}
               />
               <Form.Input
                 fluid
-                label={
-                  <TranslationText
-                    id='french'
-                  />
-                }
-                onChange={(e)=>{
+                label={<TranslationText id="french" />}
+                onChange={e => {
                   this.setState({
-                    fr: e.target.value
+                    fr: e.target.value,
                   });
                 }}
-                placeholder={t('borehole_identifier')}
+                placeholder={t("borehole_identifier")}
                 value={this.state.fr}
               />
               <Form.Input
                 fluid
-                label={
-                  <TranslationText
-                    id='italian'
-                  />
-                }
-                onChange={(e)=>{
+                label={<TranslationText id="italian" />}
+                onChange={e => {
                   this.setState({
-                    it: e.target.value
+                    it: e.target.value,
                   });
                 }}
-                placeholder={t('borehole_identifier')}
+                placeholder={t("borehole_identifier")}
                 value={this.state.it}
               />
               <Form.Input
                 fluid
-                label={
-                  <TranslationText
-                    id='english'
-                  />
-                }
-                onChange={(e)=>{
+                label={<TranslationText id="english" />}
+                onChange={e => {
                   this.setState({
-                    en: e.target.value
+                    en: e.target.value,
                   });
                 }}
-                placeholder={t('borehole_identifier')}
+                placeholder={t("borehole_identifier")}
                 value={this.state.en}
               />
               <div
                 style={{
-                  flex: '0 0 0% !important'
-                }}
-              >
+                  flex: "0 0 0% !important",
+                }}>
                 <Form.Button
                   // disabled={this.state.identifier===''}
                   icon
-                  label='&nbsp;'
-                  onClick={(e)=>{
+                  label="&nbsp;"
+                  onClick={e => {
                     e.stopPropagation();
-                    if (
-                      this.state.id !== null &&
-                      this.state.id !== ''
-                    ) {
-                      updateIdentifier(
-                        this.state.id,
-                        {
-                          "de": this.state.de,
-                          "fr": this.state.fr,
-                          "it": this.state.it,
-                          "en": this.state.en,
-                        }
-                      ).then(
-                        (response) => {
-                          // this.reset();
-                          this.props.listIdentifier();
-                        }
-                      );
+                    if (this.state.id !== null && this.state.id !== "") {
+                      updateIdentifier(this.state.id, {
+                        de: this.state.de,
+                        fr: this.state.fr,
+                        it: this.state.it,
+                        en: this.state.en,
+                      }).then(response => {
+                        // this.reset();
+                        this.props.listIdentifier();
+                      });
                     } else {
-                      createIdentifier(
-                        {
-                          "de": this.state.de,
-                          "fr": this.state.fr,
-                          "it": this.state.it,
-                          "en": this.state.en,
-                        }  
-                      ).then(
-                        (response) => {
-                          this.reset();
-                          this.props.listIdentifier();
-                        }
-                      );
+                      createIdentifier({
+                        de: this.state.de,
+                        fr: this.state.fr,
+                        it: this.state.it,
+                        en: this.state.en,
+                      }).then(response => {
+                        this.reset();
+                        this.props.listIdentifier();
+                      });
                     }
-                  }}
-                >
+                  }}>
                   <span
                     style={{
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    {
-                      (
-                        this.state.id !== null &&
-                        this.state.id !== ''
-                      )?
-                        <Icon name='save' />: 
-                        <Icon name='plus' />
-                    } {
-                      (
-                        this.state.id !== null &&
-                        this.state.id !== ''
-                      )?
-                        <TranslationText
-                          id='save'
-                        />:
-                        <TranslationText
-                          id='add'
-                        />
-                    }
+                      whiteSpace: "nowrap",
+                    }}>
+                    {this.state.id !== null && this.state.id !== "" ? (
+                      <Icon name="save" />
+                    ) : (
+                      <Icon name="plus" />
+                    )}{" "}
+                    {this.state.id !== null && this.state.id !== "" ? (
+                      <TranslationText id="save" />
+                    ) : (
+                      <TranslationText id="add" />
+                    )}
                   </span>
                 </Form.Button>
 
-                <div
-                  className='linker link'
-                  onClick={() => this.reset()}
-                >
-                  <TranslationText
-                    id='reset'
-                  />
+                <div className="linker link" onClick={() => this.reset()}>
+                  <TranslationText id="reset" />
                 </div>
               </div>
             </Form.Group>
@@ -232,80 +177,67 @@ class IdentifierSettings extends React.Component {
         </div>
         <hr />
         <div>
-          {
-            (
-              domains.data.hasOwnProperty('borehole_identifier')
-              && domains.data['borehole_identifier'].length > 0 
-            )?
-              domains.data['borehole_identifier'].map((val, idx) => (
+          {domains.data.hasOwnProperty("borehole_identifier") &&
+          domains.data["borehole_identifier"].length > 0
+            ? domains.data["borehole_identifier"].map((val, idx) => (
                 <div
-                  className='selectable'
-                  key={'bisp-'+idx}
-                  onClick={
-                    () => {
-                      if (
-                        this.state.id === val.id
-                      ) {
-                        this.reset();
-                      } else {
-                        this.setState({
-                          id: val.id,
-                          de: val.de.text,
-                          fr: val.fr.text,
-                          it: val.it.text,
-                          en: val.de.text,
-                        });
-                      }
+                  className="selectable"
+                  key={"bisp-" + idx}
+                  onClick={() => {
+                    if (this.state.id === val.id) {
+                      this.reset();
+                    } else {
+                      this.setState({
+                        id: val.id,
+                        de: val.de.text,
+                        fr: val.fr.text,
+                        it: val.it.text,
+                        en: val.de.text,
+                      });
                     }
-                  }
-                  style={{
-                    alignItems: 'center',
-                    display: 'flex',
-                    flex: 1,
-                    flexDirection: 'row',
-                    paddingBottom: '0.5em',
-                    backgroundColor: this.state.id === val.id?
-                      '#595959': null,
-                    color: this.state.id === val.id?
-                      'white': null
                   }}
-                >
+                  style={{
+                    alignItems: "center",
+                    display: "flex",
+                    flex: 1,
+                    flexDirection: "row",
+                    paddingBottom: "0.5em",
+                    backgroundColor:
+                      this.state.id === val.id ? "#595959" : null,
+                    color: this.state.id === val.id ? "white" : null,
+                  }}>
                   <div
                     style={{
-                      marginLeft: '1em',
-                      flex: '1 1 100%',
-                    }}
-                  >
+                      marginLeft: "1em",
+                      flex: "1 1 100%",
+                    }}>
                     {val.de.text}
                   </div>
                   <div
                     style={{
-                      marginLeft: '1em',
-                      flex: '1 1 100%',
-                    }}
-                  >
+                      marginLeft: "1em",
+                      flex: "1 1 100%",
+                    }}>
                     {val.fr.text}
                   </div>
                   <div
                     style={{
-                      marginLeft: '1em',
-                      flex: '1 1 100%',
-                    }}
-                  >
+                      marginLeft: "1em",
+                      flex: "1 1 100%",
+                    }}>
                     {val.it.text}
                   </div>
                   <div
                     style={{
-                      marginLeft: '1em',
-                      flex: '1 1 100%',
-                    }}
-                  >
+                      marginLeft: "1em",
+                      flex: "1 1 100%",
+                    }}>
                     {val.en.text}
                   </div>
                   <Button
-                    color='red'
+                    color="red"
                     icon
-                    onClick={e=>{
+                    onClick={e => {
                       e.stopPropagation();
                       this.setState({
                         id: val.id,
@@ -316,102 +248,78 @@ class IdentifierSettings extends React.Component {
                         en: val.de.text,
                       });
                     }}
-                    size='tiny'
-                  >
-                    <Icon
-                      name='trash alternate outline'
-                    />
+                    size="tiny">
+                    <Icon name="trash alternate outline" />
                   </Button>
                 </div>
-              )):
-              'Empty'
-          }
+              ))
+            : "Empty"}
         </div>
         <Modal
           closeIcon
           onClose={this.handleCloseConfirmDelete}
           // onOpen={this.handleOpenConfirmDelete}
           open={this.state.isOpenConfirmDelete}
-          size='mini'
-        >
+          size="mini">
           <Header
-            content={
-              <TranslationText
-                id='deleteForever'
-              />
-            }
+            content={<TranslationText id="deleteForever" />}
             // icon='archive'
           />
           <Modal.Content>
             <p>
-              <TranslationText
-                id='sure'
-              />
+              <TranslationText id="sure" />
             </p>
           </Modal.Content>
           <Modal.Actions>
             <Button
               icon
               negative
-              onClick={
-                e => {
-                  e.stopPropagation();
-                  deleteIdentifier(this.state.id).then(
-                    r => {
-                      if (r.data.success === true) {
-                        this.props.listIdentifier();
-                      } else if (
-                        r.data.error === 'E-205'
-                      ){
-                        alert(
-                          t('messages:identifierDeletionAlreadyUsed')
-                        );
-                      }
-                      this.reset();
-                      this.handleCloseConfirmDelete();
-                    }
-                  );
-                }
-              }
-              size='tiny'
-            >
-              <TranslationText
-                id='confirm'
-              />
+              onClick={e => {
+                e.stopPropagation();
+                deleteIdentifier(this.state.id).then(r => {
+                  if (r.data.success === true) {
+                    this.props.listIdentifier();
+                  } else if (r.data.error === "E-205") {
+                    alert(t("messages:identifierDeletionAlreadyUsed"));
+                  }
+                  this.reset();
+                  this.handleCloseConfirmDelete();
+                });
+              }}
+              size="tiny">
+              <TranslationText id="confirm" />
             </Button>
           </Modal.Actions>
         </Modal>
       </div>
     );
   }
-};
+}
 
 IdentifierSettings.propTypes = {
   domains: PropTypes.shape({
-    data: PropTypes.object
+    data: PropTypes.object,
   }),
   listIdentifier: PropTypes.func,
   t: PropTypes.func,
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
-    domains: state.core_domain_list
+    domains: state.core_domain_list,
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
     listIdentifier: () => {
-      return dispatch(
-        listIdentifier()
-      );
-    }
+      return dispatch(listIdentifier());
+    },
   };
 };
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
-)(withTranslation(['common', 'messages'])(IdentifierSettings));
+  mapDispatchToProps,
+)(withTranslation(["common", "messages"])(IdentifierSettings));

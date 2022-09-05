@@ -1,11 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
-import _ from 'lodash';
-import moment from 'moment';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
+import _ from "lodash";
+import moment from "moment";
 
-import { Route, Switch, withRouter } from 'react-router-dom';
+import { Route, Switch, withRouter } from "react-router-dom";
 
 import {
   addIdentifier,
@@ -14,16 +14,16 @@ import {
   loadBorehole,
   checkBorehole,
   patchBorehole,
-} from '../../../api-lib/index';
+} from "../../../api-lib/index";
 
-import PointComponent from '../../map/pointComponent';
-import DomainDropdown from '../domain/dropdown/domainDropdown';
-import DomainTree from '../domain/tree/domainTree';
-import MunicipalityDropdown from '../municipality/dropdown/municipalityDropdown';
-import DateField from '../dateField';
-import DomainText from '../domain/domainText';
-import EditorBoreholeFilesTable from '../../files/table/editorBoreholeFilesTable';
-import TranslationText from '../translationText';
+import PointComponent from "../../map/pointComponent";
+import DomainDropdown from "../domain/dropdown/domainDropdown";
+import DomainTree from "../domain/tree/domainTree";
+import MunicipalityDropdown from "../municipality/dropdown/municipalityDropdown";
+import DateField from "../dateField";
+import DomainText from "../domain/domainText";
+import EditorBoreholeFilesTable from "../../files/table/editorBoreholeFilesTable";
+import TranslationText from "../translationText";
 
 import {
   Form,
@@ -35,8 +35,8 @@ import {
   // Progress,
   TextArea,
   Icon,
-} from 'semantic-ui-react';
-import Profile from '../profile';
+} from "semantic-ui-react";
+import Profile from "../profile";
 
 class BoreholeForm extends React.Component {
   constructor(props) {
@@ -48,13 +48,13 @@ class BoreholeForm extends React.Component {
       loadingFetch: false,
       patchFetch: false,
       creationFetch: false,
-      'extended.original_name_check': true,
-      'extended.original_name_fetch': false,
-      'custom.alternate_name_check': true,
-      'custom.alternate_name_fetch': false,
+      "extended.original_name_check": true,
+      "extended.original_name_fetch": false,
+      "custom.alternate_name_check": true,
+      "custom.alternate_name_fetch": false,
 
       identifier: null,
-      identifierValue: '',
+      identifierValue: "",
 
       // Stratigraphy
       newStartModal: false,
@@ -64,7 +64,7 @@ class BoreholeForm extends React.Component {
       layerUpdated: null,
 
       // Finish
-      note: '',
+      note: "",
     };
     this.loadOrCreate = this.loadOrCreate.bind(this);
     this.check = this.check.bind(this);
@@ -142,7 +142,7 @@ class BoreholeForm extends React.Component {
   }
 
   check(attribute, value) {
-    if (this.props.borehole.data.role !== 'EDIT') {
+    if (this.props.borehole.data.role !== "EDIT") {
       alert(`Borehole status (${this.props.borehole.data.role}) not editable`);
       return;
     }
@@ -150,7 +150,7 @@ class BoreholeForm extends React.Component {
       this.props.borehole.data.lock === null ||
       this.props.borehole.data.lock.username !== this.props.user.data.username
     ) {
-      alert('Borehole not locked');
+      alert("Borehole not locked");
       return;
     }
     // Check for uniqueness and patch
@@ -163,7 +163,7 @@ class BoreholeForm extends React.Component {
       ...this.props.borehole.data,
     };
     _.set(borehole, attribute, value);
-    state[attribute + '_fetch'] = true;
+    state[attribute + "_fetch"] = true;
 
     // update state
     this.setState(state, () => {
@@ -178,8 +178,8 @@ class BoreholeForm extends React.Component {
           .then(response => {
             if (response.data.success) {
               let state = {};
-              state[attribute + '_check'] = response.data.check;
-              state[attribute + '_fetch'] = false;
+              state[attribute + "_check"] = response.data.check;
+              state[attribute + "_fetch"] = false;
               this.setState(state);
               if (response.data.check) {
                 // patch attribute
@@ -199,7 +199,7 @@ class BoreholeForm extends React.Component {
                       );
                     } else if (response.status === 200) {
                       alert(response.data.message);
-                      if (response.data.error === 'E-900') {
+                      if (response.data.error === "E-900") {
                         this.setState(
                           {
                             patchFetch: false,
@@ -228,15 +228,15 @@ class BoreholeForm extends React.Component {
   }
 
   checkLock() {
-    if (this.props.borehole.data.role !== 'EDIT') {
-      alert('Borehole status not editable');
+    if (this.props.borehole.data.role !== "EDIT") {
+      alert("Borehole status not editable");
       return false;
     }
     if (
       this.props.borehole.data.lock === null ||
       this.props.borehole.data.lock.username !== this.props.user.data.username
     ) {
-      alert('Borehole not locked');
+      alert("Borehole not locked");
       return false;
     }
     return true;
@@ -281,26 +281,26 @@ class BoreholeForm extends React.Component {
     const borehole = {
       ...this.props.borehole,
     };
-    if (attribute === 'location') {
+    if (attribute === "location") {
       if (!this.isNumber(value[0])) {
         return;
       }
       if (!this.isNumber(value[1])) {
         return;
       }
-      _.set(borehole.data, 'location_x', value[0]);
-      _.set(borehole.data, 'location_y', value[1]);
-      _.set(borehole.data, 'custom.canton', value[2]);
-      _.set(borehole.data, 'custom.city', value[3]);
+      _.set(borehole.data, "location_x", value[0]);
+      _.set(borehole.data, "location_y", value[1]);
+      _.set(borehole.data, "custom.canton", value[2]);
+      _.set(borehole.data, "custom.city", value[3]);
       if (value[4] !== null) {
         if (!this.isNumber(value[4])) {
           return;
         }
-        _.set(borehole.data, 'elevation_z', value[4]);
+        _.set(borehole.data, "elevation_z", value[4]);
       }
-    } else if (attribute === 'geocoding') {
-      _.set(borehole.data, 'custom.canton', value[0]);
-      _.set(borehole.data, 'custom.city', value[1]);
+    } else if (attribute === "geocoding") {
+      _.set(borehole.data, "custom.canton", value[0]);
+      _.set(borehole.data, "custom.city", value[1]);
     } else {
       _.set(borehole.data, attribute, value);
     }
@@ -340,7 +340,7 @@ class BoreholeForm extends React.Component {
               );
             } else if (response.status === 200) {
               alert(response.data.message);
-              if (response.data.error === 'errorLocked') {
+              if (response.data.error === "errorLocked") {
                 this.setState(
                   {
                     patchFetch: false,
@@ -381,7 +381,7 @@ class BoreholeForm extends React.Component {
 
     return (
       <Dimmer.Dimmable
-        as={'div'}
+        as={"div"}
         dimmed={
           this.props.borehole.isFetching === true ||
           this.state.loadingFetch === true ||
@@ -389,9 +389,9 @@ class BoreholeForm extends React.Component {
         }
         style={{
           flex: 1,
-          overflowY: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
+          overflowY: "hidden",
+          display: "flex",
+          flexDirection: "column",
         }}>
         <Dimmer
           active={
@@ -416,22 +416,22 @@ class BoreholeForm extends React.Component {
         <Switch>
           <Route
             exact
-            path={process.env.PUBLIC_URL + '/editor/:id'}
+            path={process.env.PUBLIC_URL + "/editor/:id"}
             render={() => (
               <div
                 style={{
-                  flex: '1 1 0%',
-                  padding: '1em',
-                  overflowY: 'auto',
-                  display: 'flex',
-                  flexDirection: 'column',
+                  flex: "1 1 0%",
+                  padding: "1em",
+                  overflowY: "auto",
+                  display: "flex",
+                  flexDirection: "column",
                 }}>
                 <Segment>
                   <div
                     className="flex_row bdms_bold"
                     style={{
-                      borderBottom: 'thin solid #d2d2d2',
-                      paddingBottom: '0.4em',
+                      borderBottom: "thin solid #d2d2d2",
+                      paddingBottom: "0.4em",
                     }}>
                     <div className="flex_fill">
                       <TranslationText id="borehole_identifier" />
@@ -449,9 +449,9 @@ class BoreholeForm extends React.Component {
                     ? borehole.custom.identifiers.map((identifier, idx) => (
                         <div
                           className="flex_row"
-                          key={'bhfbi-' + idx}
+                          key={"bhfbi-" + idx}
                           style={{
-                            paddingTop: '0.5em',
+                            paddingTop: "0.5em",
                           }}>
                           <div className="flex_fill">
                             <DomainText
@@ -515,7 +515,7 @@ class BoreholeForm extends React.Component {
                         </Form.Field>
                         <Form.Field
                           error={
-                            this.state.identifierValue === '' &&
+                            this.state.identifierValue === "" &&
                             borehole?.custom?.identifiers?.length === 0
                           }>
                           <label>&nbsp;</label>
@@ -529,17 +529,17 @@ class BoreholeForm extends React.Component {
                               });
                             }}
                             spellCheck="false"
-                            value={this.state.identifierValue ?? ''}
+                            value={this.state.identifierValue ?? ""}
                           />
                         </Form.Field>
                         <div
                           style={{
-                            flex: '0 0 0% !important',
+                            flex: "0 0 0% !important",
                           }}>
                           <Form.Button
                             disabled={
                               this.state.identifier === null ||
-                              this.state.identifierValue === ''
+                              this.state.identifierValue === ""
                             }
                             icon
                             label="&nbsp;"
@@ -550,7 +550,7 @@ class BoreholeForm extends React.Component {
                                 : [];
 
                               if (alreadySet.includes(this.state.identifier)) {
-                                alert(t('msgIdentifierAlreadyUsed'));
+                                alert(t("msgIdentifierAlreadyUsed"));
                               } else {
                                 addIdentifier(
                                   borehole.id,
@@ -561,7 +561,7 @@ class BoreholeForm extends React.Component {
                                     this.setState(
                                       {
                                         identifier: null,
-                                        identifierValue: '',
+                                        identifierValue: "",
                                       },
                                       () => {
                                         const tmp = _.cloneDeep(borehole);
@@ -592,12 +592,12 @@ class BoreholeForm extends React.Component {
                     <Form.Group widths="equal">
                       <Form.Field
                         error={
-                          borehole.extended.original_name === '' ||
-                          (this.state['extended.original_name_check'] ===
+                          borehole.extended.original_name === "" ||
+                          (this.state["extended.original_name_check"] ===
                             false &&
-                            this.state['extended.original_name_fetch'] ===
+                            this.state["extended.original_name_fetch"] ===
                               false) ||
-                          mentions.indexOf('original_name') >= 0
+                          mentions.indexOf("original_name") >= 0
                         }
                         required>
                         <label>
@@ -608,25 +608,25 @@ class BoreholeForm extends React.Component {
                           autoComplete="off"
                           autoCorrect="off"
                           icon={
-                            this.state['extended.original_name_check'] ===
+                            this.state["extended.original_name_check"] ===
                               true &&
-                            this.state['extended.original_name_fetch'] === false
-                              ? 'check'
-                              : 'delete'
+                            this.state["extended.original_name_fetch"] === false
+                              ? "check"
+                              : "delete"
                           }
                           iconPosition="left"
-                          loading={this.state['extended.original_name_fetch']}
+                          loading={this.state["extended.original_name_fetch"]}
                           onChange={e => {
                             this.check(
-                              'extended.original_name',
+                              "extended.original_name",
                               e.target.value,
                             );
                           }}
                           spellCheck="false"
-                          value={borehole.extended.original_name ?? ''}
+                          value={borehole.extended.original_name ?? ""}
                         />
                       </Form.Field>
-                      <Form.Field error={mentions.indexOf('project_name') >= 0}>
+                      <Form.Field error={mentions.indexOf("project_name") >= 0}>
                         <label>
                           <TranslationText id="project_name" />
                         </label>
@@ -636,22 +636,22 @@ class BoreholeForm extends React.Component {
                           autoCorrect="off"
                           onChange={e => {
                             this.updateChange(
-                              'custom.project_name',
+                              "custom.project_name",
                               e.target.value,
                             );
                           }}
                           spellCheck="false"
-                          value={borehole.custom.project_name ?? ''}
+                          value={borehole.custom.project_name ?? ""}
                         />
                       </Form.Field>
                     </Form.Group>
-                    {this.state['extended.original_name_check'] === false &&
-                    this.state['extended.original_name_fetch'] === false ? (
+                    {this.state["extended.original_name_check"] === false &&
+                    this.state["extended.original_name_fetch"] === false ? (
                       <Message
                         content={
                           <div>
                             <TranslationText id="original_name" />
-                            {', '}
+                            {", "}
                             <TranslationText id="duplicate" />
                           </div>
                         }
@@ -669,19 +669,19 @@ class BoreholeForm extends React.Component {
                           autoComplete="off"
                           autoCorrect="off"
                           icon={
-                            this.state['custom.alternate_name_check'] ===
+                            this.state["custom.alternate_name_check"] ===
                               true &&
-                            this.state['custom.alternate_name_fetch'] === false
-                              ? 'check'
-                              : 'delete'
+                            this.state["custom.alternate_name_fetch"] === false
+                              ? "check"
+                              : "delete"
                           }
                           iconPosition="left"
                           loading={this.state.alternate_name_fetch}
                           onChange={e => {
-                            this.check('custom.alternate_name', e.target.value);
+                            this.check("custom.alternate_name", e.target.value);
                           }}
                           spellCheck="false"
-                          value={borehole.custom.alternate_name ?? ''}
+                          value={borehole.custom.alternate_name ?? ""}
                         />
                       </Form.Field>
                       {/* drilling type in Location */}
@@ -710,7 +710,7 @@ class BoreholeForm extends React.Component {
                     <Form.Group widths="equal">
                       <Form.Field
                         error={
-                          mentions.indexOf('restriction') >= 0 ||
+                          mentions.indexOf("restriction") >= 0 ||
                           borehole.restriction === null
                         }
                         required>
@@ -720,7 +720,7 @@ class BoreholeForm extends React.Component {
                         <DomainDropdown
                           onSelected={selected => {
                             this.updateChange(
-                              'restriction',
+                              "restriction",
                               selected.id,
                               false,
                             );
@@ -735,9 +735,9 @@ class BoreholeForm extends React.Component {
                             !moment(borehole.restriction_until).isValid()) ||
                           (borehole.restriction !== 20111003 &&
                             _.isString(borehole.restriction_until) &&
-                            borehole.restriction_until !== '' &&
+                            borehole.restriction_until !== "" &&
                             moment(borehole.restriction_until).isValid()) ||
-                          mentions.indexOf('restriction_until') >= 0
+                          mentions.indexOf("restriction_until") >= 0
                         }
                         required={borehole.restriction === 20111003}>
                         <label>
@@ -747,7 +747,7 @@ class BoreholeForm extends React.Component {
                           date={borehole.restriction_until}
                           onChange={selected => {
                             this.updateChange(
-                              'restriction_until',
+                              "restriction_until",
                               selected,
                               false,
                             );
@@ -759,18 +759,18 @@ class BoreholeForm extends React.Component {
                 </Segment>
                 <div
                   style={{
-                    display: 'flex',
-                    flexDirection: 'row',
+                    display: "flex",
+                    flexDirection: "row",
                   }}>
                   <div
                     style={{
-                      flex: '1',
+                      flex: "1",
                     }}>
                     <Segment>
                       <Form size={size}>
                         <Form.Group widths="equal">
                           <Form.Field
-                            error={mentions.indexOf('srs') >= 0}
+                            error={mentions.indexOf("srs") >= 0}
                             // required
                           >
                             <label>
@@ -778,9 +778,9 @@ class BoreholeForm extends React.Component {
                             </label>
                             <div
                               style={{
-                                height: '36px',
-                                display: 'flex',
-                                alignItems: 'center',
+                                height: "36px",
+                                display: "flex",
+                                alignItems: "center",
                               }}>
                               <div>
                                 <DomainText id={borehole.srs} schema="srs" />
@@ -788,7 +788,7 @@ class BoreholeForm extends React.Component {
                             </div>
                           </Form.Field>
                           <Form.Field
-                            error={mentions.indexOf('qt_location') >= 0}
+                            error={mentions.indexOf("qt_location") >= 0}
                             required>
                             <label>
                               <TranslationText id="qt_location" />
@@ -796,7 +796,7 @@ class BoreholeForm extends React.Component {
                             <DomainDropdown
                               onSelected={selected => {
                                 this.updateChange(
-                                  'qt_location',
+                                  "qt_location",
                                   selected.id,
                                   false,
                                 );
@@ -809,7 +809,7 @@ class BoreholeForm extends React.Component {
                         <Form.Group widths="equal">
                           <Form.Field
                             error={
-                              mentions.indexOf('location_x') >= 0 ||
+                              mentions.indexOf("location_x") >= 0 ||
                               borehole.location_x < 2485869.5728 ||
                               borehole.location_x > 2837076.5648
                             }
@@ -824,21 +824,21 @@ class BoreholeForm extends React.Component {
                               disabled={borehole.srs === null}
                               onChange={e => {
                                 this.updateNumber(
-                                  'location_x',
-                                  e.target.value === '' ? null : e.target.value,
+                                  "location_x",
+                                  e.target.value === "" ? null : e.target.value,
                                 );
                               }}
                               spellCheck="false"
                               value={
                                 _.isNil(borehole.location_x)
-                                  ? ''
+                                  ? ""
                                   : borehole.location_x
                               }
                             />
                           </Form.Field>
                           <Form.Field
                             error={
-                              mentions.indexOf('location_y') >= 0 ||
+                              mentions.indexOf("location_y") >= 0 ||
                               borehole.location_y < 1076443.1884 ||
                               borehole.location_y > 1299941.7864
                             }
@@ -853,8 +853,8 @@ class BoreholeForm extends React.Component {
                               disabled={borehole.srs === null}
                               onChange={e => {
                                 this.updateNumber(
-                                  'location_y',
-                                  e.target.value === '' ? null : e.target.value,
+                                  "location_y",
+                                  e.target.value === "" ? null : e.target.value,
                                 );
                                 // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
                                 //   this.updateChange(
@@ -867,7 +867,7 @@ class BoreholeForm extends React.Component {
                               spellCheck="false"
                               value={
                                 _.isNil(borehole.location_y)
-                                  ? ''
+                                  ? ""
                                   : borehole.location_y
                               }
                             />
@@ -876,7 +876,7 @@ class BoreholeForm extends React.Component {
                         <Form.Group widths="equal">
                           <Form.Field
                             error={
-                              mentions.indexOf('elevation_z') >= 0 ||
+                              mentions.indexOf("elevation_z") >= 0 ||
                               _.isNil(borehole.elevation_z)
                             }
                             required>
@@ -889,8 +889,8 @@ class BoreholeForm extends React.Component {
                               autoCorrect="off"
                               onChange={e => {
                                 this.updateNumber(
-                                  'elevation_z',
-                                  e.target.value === '' ? null : e.target.value,
+                                  "elevation_z",
+                                  e.target.value === "" ? null : e.target.value,
                                 );
 
                                 // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
@@ -904,14 +904,14 @@ class BoreholeForm extends React.Component {
                               spellCheck="false"
                               value={
                                 _.isNil(borehole.elevation_z)
-                                  ? ''
-                                  : '' + borehole.elevation_z
+                                  ? ""
+                                  : "" + borehole.elevation_z
                               }
                             />
                           </Form.Field>
 
                           <Form.Field
-                            error={mentions.indexOf('qt_elevation') >= 0}
+                            error={mentions.indexOf("qt_elevation") >= 0}
                             required>
                             <label>
                               <TranslationText id="qt_elevation" />
@@ -919,7 +919,7 @@ class BoreholeForm extends React.Component {
                             <DomainDropdown
                               onSelected={selected => {
                                 this.updateChange(
-                                  'qt_elevation',
+                                  "qt_elevation",
                                   selected.id,
                                   false,
                                 );
@@ -932,7 +932,7 @@ class BoreholeForm extends React.Component {
                         <Form.Group widths="equal">
                           <Form.Field
                             error={
-                              mentions.indexOf('reference_elevation') >= 0 ||
+                              mentions.indexOf("reference_elevation") >= 0 ||
                               _.isNil(borehole.reference_elevation)
                             }
                             required>
@@ -945,14 +945,14 @@ class BoreholeForm extends React.Component {
                               autoCorrect="off"
                               onChange={e => {
                                 this.updateNumber(
-                                  'reference_elevation',
-                                  e.target.value === '' ? null : e.target.value,
+                                  "reference_elevation",
+                                  e.target.value === "" ? null : e.target.value,
                                 );
 
                                 if (/^-?\d*[.,]?\d*$/.test(e.target.value)) {
                                   this.updateChange(
-                                    'reference_elevation',
-                                    e.target.value === ''
+                                    "reference_elevation",
+                                    e.target.value === ""
                                       ? null
                                       : _.toNumber(e.target.value),
                                   );
@@ -961,14 +961,14 @@ class BoreholeForm extends React.Component {
                               spellCheck="false"
                               value={
                                 _.isNil(borehole.reference_elevation)
-                                  ? ''
-                                  : '' + borehole.reference_elevation
+                                  ? ""
+                                  : "" + borehole.reference_elevation
                               }
                             />
                           </Form.Field>
                           <Form.Field
                             error={
-                              mentions.indexOf('qt_reference_elevation') >= 0
+                              mentions.indexOf("qt_reference_elevation") >= 0
                             }
                             required>
                             <label>
@@ -977,7 +977,7 @@ class BoreholeForm extends React.Component {
                             <DomainDropdown
                               onSelected={selected => {
                                 this.updateChange(
-                                  'qt_reference_elevation',
+                                  "qt_reference_elevation",
                                   selected.id,
                                   false,
                                 );
@@ -990,7 +990,7 @@ class BoreholeForm extends React.Component {
                         <Form.Group widths="equal">
                           <Form.Field
                             error={
-                              mentions.indexOf('reference_elevation_type') >=
+                              mentions.indexOf("reference_elevation_type") >=
                                 0 || borehole.reference_elevation_type === null
                             }
                             required>
@@ -1000,7 +1000,7 @@ class BoreholeForm extends React.Component {
                             <DomainDropdown
                               onSelected={selected => {
                                 this.updateChange(
-                                  'reference_elevation_type',
+                                  "reference_elevation_type",
                                   selected.id,
                                   false,
                                 );
@@ -1010,7 +1010,7 @@ class BoreholeForm extends React.Component {
                             />
                           </Form.Field>
                           <Form.Field
-                            error={mentions.indexOf('hrs') >= 0}
+                            error={mentions.indexOf("hrs") >= 0}
                             required>
                             <label>
                               <TranslationText id="hrs" />
@@ -1024,9 +1024,9 @@ class BoreholeForm extends React.Component {
                             /> */}
                             <div
                               style={{
-                                height: '36px',
-                                display: 'flex',
-                                alignItems: 'center',
+                                height: "36px",
+                                display: "flex",
+                                alignItems: "center",
                               }}>
                               <div>
                                 <DomainText id={borehole.hrs} schema="hrs" />
@@ -1046,15 +1046,15 @@ class BoreholeForm extends React.Component {
                         spellCheck="false">
                         <Form.Group widths="equal">
                           <Form.Field
-                            error={mentions.indexOf('country') >= 0}
+                            error={mentions.indexOf("country") >= 0}
                             required>
                             <label>
                               <TranslationText id="country" />
                             </label>
-                            <Input value={'Switzerland'} />
+                            <Input value={"Switzerland"} />
                           </Form.Field>
                           <Form.Field
-                            error={mentions.indexOf('canton') >= 0}
+                            error={mentions.indexOf("canton") >= 0}
                             required>
                             <label>
                               <TranslationText id="canton" />
@@ -1104,12 +1104,12 @@ class BoreholeForm extends React.Component {
                               value={
                                 this.props.cantons.filter(
                                   e => e.id === borehole.custom.canton,
-                                )?.[0]?.name ?? ''
+                                )?.[0]?.name ?? ""
                               }
                             />
                           </Form.Field>
                           <Form.Field
-                            error={mentions.indexOf('city') >= 0}
+                            error={mentions.indexOf("city") >= 0}
                             required>
                             <label>
                               <TranslationText id="city" />
@@ -1150,7 +1150,7 @@ class BoreholeForm extends React.Component {
                                 </span>
                               ) : null}
                             </label>
-                            <div style={{ display: 'none' }}>
+                            <div style={{ display: "none" }}>
                               <MunicipalityDropdown
                                 canton={borehole.custom.canton}
                                 disabled={borehole.custom.canton === null}
@@ -1174,7 +1174,7 @@ class BoreholeForm extends React.Component {
                                   )
                                   ?.filter(
                                     e => e.id === borehole.custom.city,
-                                  )?.[0]?.name ?? ''
+                                  )?.[0]?.name ?? ""
                               }
                             />
                           </Form.Field>
@@ -1184,13 +1184,13 @@ class BoreholeForm extends React.Component {
                   </div>
                   <div
                     style={{
-                      flex: '1',
-                      marginLeft: '1em',
+                      flex: "1",
+                      marginLeft: "1em",
                     }}>
                     <PointComponent
                       applyChange={(x, y, height, cid, mid) => {
                         this.updateChange(
-                          'location',
+                          "location",
                           [x, y, cid, mid, height],
                           false,
                         );
@@ -1199,7 +1199,7 @@ class BoreholeForm extends React.Component {
                       ref={pmap => (this.map = pmap)}
                       srs={
                         borehole.srs !== null &&
-                        this.props.domains.data.hasOwnProperty('srs')
+                        this.props.domains.data.hasOwnProperty("srs")
                           ? (() => {
                               const code = this.props.domains.data.srs.find(
                                 element => {
@@ -1207,7 +1207,7 @@ class BoreholeForm extends React.Component {
                                 },
                               );
                               if (code !== undefined) {
-                                return 'EPSG:' + code['code'];
+                                return "EPSG:" + code["code"];
                               }
                               return null;
                             })()
@@ -1231,24 +1231,24 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={process.env.PUBLIC_URL + '/editor/:id/borehole'}
+            path={process.env.PUBLIC_URL + "/editor/:id/borehole"}
             render={() => (
               <div
                 style={{
-                  flex: '1 1 0%',
-                  padding: '1em',
-                  overflowY: 'auto',
+                  flex: "1 1 0%",
+                  padding: "1em",
+                  overflowY: "auto",
                 }}>
                 <Segment>
                   <div
                     style={{
-                      display: 'flex',
-                      flexDirection: 'row',
+                      display: "flex",
+                      flexDirection: "row",
                     }}>
                     <div
                       style={{
-                        flex: '1 1 100%',
-                        minWidth: '600px',
+                        flex: "1 1 100%",
+                        minWidth: "600px",
                       }}>
                       <Form autoComplete="off" error size={size}>
                         <Form.Group widths="equal">
@@ -1256,7 +1256,7 @@ class BoreholeForm extends React.Component {
                           <Form.Field
                             error={
                               borehole.kind === null ||
-                              mentions.indexOf('kind') >= 0
+                              mentions.indexOf("kind") >= 0
                             }
                             required>
                             <label>
@@ -1264,14 +1264,14 @@ class BoreholeForm extends React.Component {
                             </label>
                             <DomainDropdown
                               onSelected={selected => {
-                                this.updateChange('kind', selected.id, false);
+                                this.updateChange("kind", selected.id, false);
                               }}
                               schema="kind"
                               selected={borehole.kind}
                             />
                           </Form.Field>
                           <Form.Field
-                            error={mentions.indexOf('method') >= 0}
+                            error={mentions.indexOf("method") >= 0}
                             required>
                             <label>
                               <TranslationText id="drilling_method" />
@@ -1279,7 +1279,7 @@ class BoreholeForm extends React.Component {
                             <DomainDropdown
                               onSelected={selected => {
                                 this.updateChange(
-                                  'extended.drilling_method',
+                                  "extended.drilling_method",
                                   selected.id,
                                   false,
                                 );
@@ -1289,7 +1289,7 @@ class BoreholeForm extends React.Component {
                             />
                           </Form.Field>
                           <Form.Field
-                            error={mentions.indexOf('purpose') >= 0}
+                            error={mentions.indexOf("purpose") >= 0}
                             required>
                             <label>
                               <TranslationText id="purpose" />
@@ -1297,7 +1297,7 @@ class BoreholeForm extends React.Component {
                             <DomainDropdown
                               onSelected={selected => {
                                 this.updateChange(
-                                  'extended.purpose',
+                                  "extended.purpose",
                                   selected.id,
                                   false,
                                 );
@@ -1310,12 +1310,12 @@ class BoreholeForm extends React.Component {
                         <Form.Group widths="equal">
                           <div
                             style={{
-                              width: '34%',
-                              paddingRight: '2%',
-                              paddingLeft: '1%',
+                              width: "34%",
+                              paddingRight: "2%",
+                              paddingLeft: "1%",
                             }}>
                             <Form.Field
-                              error={mentions.indexOf('cuttings') >= 0}
+                              error={mentions.indexOf("cuttings") >= 0}
                               required>
                               <label>
                                 <TranslationText id="cuttings" />
@@ -1323,7 +1323,7 @@ class BoreholeForm extends React.Component {
                               <DomainDropdown
                                 onSelected={selected => {
                                   this.updateChange(
-                                    'custom.cuttings',
+                                    "custom.cuttings",
                                     selected.id,
                                     false,
                                   );
@@ -1333,7 +1333,7 @@ class BoreholeForm extends React.Component {
                               />
                             </Form.Field>
                           </div>
-                          <div style={{ width: '33%', paddingRight: '1%' }}>
+                          <div style={{ width: "33%", paddingRight: "1%" }}>
                             <Form.Field
                               // error={
                               //   (_.isString(borehole.drilling_date) &&
@@ -1349,7 +1349,7 @@ class BoreholeForm extends React.Component {
                                 date={borehole.spud_date}
                                 onChange={selected => {
                                   this.updateChange(
-                                    'spud_date',
+                                    "spud_date",
                                     selected,
                                     false,
                                   );
@@ -1357,13 +1357,13 @@ class BoreholeForm extends React.Component {
                               />
                             </Form.Field>
                           </div>
-                          <div style={{ width: '33%', paddingLeft: '1%' }}>
+                          <div style={{ width: "33%", paddingLeft: "1%" }}>
                             <Form.Field
                               error={
                                 (_.isString(borehole.drilling_date) &&
-                                  borehole.drilling_date !== '' &&
+                                  borehole.drilling_date !== "" &&
                                   !moment(borehole.drilling_date).isValid()) ||
-                                mentions.indexOf('method') >= 0
+                                mentions.indexOf("method") >= 0
                               }
                               required>
                               <label>
@@ -1373,7 +1373,7 @@ class BoreholeForm extends React.Component {
                                 date={borehole.drilling_date}
                                 onChange={selected => {
                                   this.updateChange(
-                                    'drilling_date',
+                                    "drilling_date",
                                     selected,
                                     false,
                                   );
@@ -1387,7 +1387,7 @@ class BoreholeForm extends React.Component {
                           a hidden input */}
                           <Form.Field
                             style={{
-                              display: 'none',
+                              display: "none",
                             }}>
                             <label>
                               <TranslationText id="drill_diameter" />
@@ -1397,13 +1397,13 @@ class BoreholeForm extends React.Component {
                               type="number"
                               value={
                                 _.isNil(borehole.custom.drill_diameter)
-                                  ? ''
+                                  ? ""
                                   : borehole.custom.drill_diameter
                               }
                             />
                           </Form.Field>
                           <Form.Field
-                            error={mentions.indexOf('drill_diameter') >= 0}
+                            error={mentions.indexOf("drill_diameter") >= 0}
                             required>
                             <label>
                               <TranslationText id="drill_diameter" />
@@ -1411,8 +1411,8 @@ class BoreholeForm extends React.Component {
                             <Input
                               onChange={e => {
                                 this.updateNumber(
-                                  'custom.drill_diameter',
-                                  e.target.value === '' ? null : e.target.value,
+                                  "custom.drill_diameter",
+                                  e.target.value === "" ? null : e.target.value,
                                 );
                                 // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
                                 //   this.updateChange(
@@ -1427,14 +1427,14 @@ class BoreholeForm extends React.Component {
                                 const r = _.isNil(
                                   borehole.custom.drill_diameter,
                                 )
-                                  ? ''
+                                  ? ""
                                   : borehole.custom.drill_diameter;
                                 return r;
                               })()}
                             />
                           </Form.Field>
                           <Form.Field
-                            error={mentions.indexOf('status') >= 0}
+                            error={mentions.indexOf("status") >= 0}
                             required>
                             <label>
                               <TranslationText
@@ -1445,7 +1445,7 @@ class BoreholeForm extends React.Component {
                             <DomainDropdown
                               onSelected={selected => {
                                 this.updateChange(
-                                  'extended.status',
+                                  "extended.status",
                                   selected.id,
                                   false,
                                 );
@@ -1457,7 +1457,7 @@ class BoreholeForm extends React.Component {
                         </Form.Group>
                         <Form.Group widths="equal">
                           <Form.Field
-                            error={mentions.indexOf('inclination') >= 0}
+                            error={mentions.indexOf("inclination") >= 0}
                             required>
                             <label>
                               <TranslationText
@@ -1471,8 +1471,8 @@ class BoreholeForm extends React.Component {
                               autoCorrect="off"
                               onChange={e => {
                                 this.updateNumber(
-                                  'inclination',
-                                  e.target.value === '' ? null : e.target.value,
+                                  "inclination",
+                                  e.target.value === "" ? null : e.target.value,
                                 );
                                 // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
                                 //   this.updateChange(
@@ -1485,14 +1485,14 @@ class BoreholeForm extends React.Component {
                               spellCheck="false"
                               value={
                                 _.isNil(borehole.inclination)
-                                  ? ''
+                                  ? ""
                                   : borehole.inclination
                               }
                             />
                           </Form.Field>
                           <Form.Field
                             error={
-                              mentions.indexOf('inclination_direction') >= 0
+                              mentions.indexOf("inclination_direction") >= 0
                             }
                             required>
                             <label>
@@ -1507,8 +1507,8 @@ class BoreholeForm extends React.Component {
                               autoCorrect="off"
                               onChange={e => {
                                 this.updateNumber(
-                                  'inclination_direction',
-                                  e.target.value === '' ? null : e.target.value,
+                                  "inclination_direction",
+                                  e.target.value === "" ? null : e.target.value,
                                 );
                                 // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
                                 //   this.updateChange(
@@ -1521,13 +1521,13 @@ class BoreholeForm extends React.Component {
                               spellCheck="false"
                               value={
                                 _.isNil(borehole.inclination_direction)
-                                  ? ''
+                                  ? ""
                                   : borehole.inclination_direction
                               }
                             />
                           </Form.Field>
                           <Form.Field
-                            error={mentions.indexOf('qt_bore_inc_dir') >= 0}
+                            error={mentions.indexOf("qt_bore_inc_dir") >= 0}
                             required>
                             <label>
                               <TranslationText
@@ -1538,7 +1538,7 @@ class BoreholeForm extends React.Component {
                             <DomainDropdown
                               onSelected={selected => {
                                 this.updateChange(
-                                  'custom.qt_bore_inc_dir',
+                                  "custom.qt_bore_inc_dir",
                                   selected.id,
                                   false,
                                 );
@@ -1552,9 +1552,9 @@ class BoreholeForm extends React.Component {
                     </div>
                     <div
                       style={{
-                        flex: '1 1 100%',
-                        minWidth: '200px',
-                        paddingLeft: '1em',
+                        flex: "1 1 100%",
+                        minWidth: "200px",
+                        paddingLeft: "1em",
                       }}>
                       <Form autoComplete="off" error size={size}>
                         <Form.Field>
@@ -1562,7 +1562,7 @@ class BoreholeForm extends React.Component {
                           <TextArea
                             onChange={(e, data) => {
                               this.updateChange(
-                                'custom.remarks',
+                                "custom.remarks",
                                 e.target.value,
                               );
                             }}
@@ -1578,7 +1578,7 @@ class BoreholeForm extends React.Component {
                   <Form autoComplete="off" error size={size}>
                     <Form.Group widths="equal">
                       <Form.Field
-                        error={mentions.indexOf('total_depth') >= 0}
+                        error={mentions.indexOf("total_depth") >= 0}
                         required>
                         <label>
                           <TranslationText id="totaldepth" />
@@ -1589,8 +1589,8 @@ class BoreholeForm extends React.Component {
                           autoCorrect="off"
                           onChange={e => {
                             this.updateNumber(
-                              'total_depth',
-                              e.target.value === '' ? null : e.target.value,
+                              "total_depth",
+                              e.target.value === "" ? null : e.target.value,
                             );
                             // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
                             //   this.updateChange(
@@ -1603,13 +1603,13 @@ class BoreholeForm extends React.Component {
                           spellCheck="false"
                           value={
                             _.isNil(borehole.total_depth)
-                              ? ''
+                              ? ""
                               : borehole.total_depth
                           }
                         />
                       </Form.Field>
                       <Form.Field
-                        error={mentions.indexOf('qt_depth') >= 0}
+                        error={mentions.indexOf("qt_depth") >= 0}
                         required>
                         <label>
                           <TranslationText id="qt_depth" />
@@ -1617,7 +1617,7 @@ class BoreholeForm extends React.Component {
                         <DomainDropdown
                           onSelected={selected => {
                             this.updateChange(
-                              'custom.qt_depth',
+                              "custom.qt_depth",
                               selected.id,
                               false,
                             );
@@ -1640,8 +1640,8 @@ class BoreholeForm extends React.Component {
                           autoCorrect="off"
                           onChange={e => {
                             this.updateNumber(
-                              'total_depth_tvd',
-                              e.target.value === '' ? null : e.target.value,
+                              "total_depth_tvd",
+                              e.target.value === "" ? null : e.target.value,
                             );
                             // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
                             //   this.updateChange(
@@ -1654,7 +1654,7 @@ class BoreholeForm extends React.Component {
                           spellCheck="false"
                           value={
                             _.isNil(borehole.total_depth_tvd)
-                              ? ''
+                              ? ""
                               : borehole.total_depth_tvd
                           }
                         />
@@ -1669,7 +1669,7 @@ class BoreholeForm extends React.Component {
                         <DomainDropdown
                           onSelected={selected => {
                             this.updateChange(
-                              'qt_total_depth_tvd',
+                              "qt_total_depth_tvd",
                               selected.id,
                               false,
                             );
@@ -1682,7 +1682,7 @@ class BoreholeForm extends React.Component {
                     <Form.Group widths="equal">
                       <Form.Field
                         error={
-                          mentions.indexOf('top_bedrock') >= 0
+                          mentions.indexOf("top_bedrock") >= 0
                           // || _.isNil(borehole.extended.top_bedrock)
                         }
                         required>
@@ -1695,8 +1695,8 @@ class BoreholeForm extends React.Component {
                           autoCorrect="off"
                           onChange={e => {
                             this.updateNumber(
-                              'extended.top_bedrock',
-                              e.target.value === '' ? null : e.target.value,
+                              "extended.top_bedrock",
+                              e.target.value === "" ? null : e.target.value,
                             );
                             // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
                             //   this.updateChange(
@@ -1709,13 +1709,13 @@ class BoreholeForm extends React.Component {
                           spellCheck="false"
                           value={
                             _.isNil(borehole.extended.top_bedrock)
-                              ? ''
+                              ? ""
                               : borehole.extended.top_bedrock
                           }
                         />
                       </Form.Field>
                       <Form.Field
-                        error={mentions.indexOf('qt_top_bedrock') >= 0}
+                        error={mentions.indexOf("qt_top_bedrock") >= 0}
                         required>
                         <label>
                           <TranslationText id="qt_top_bedrock" />
@@ -1723,7 +1723,7 @@ class BoreholeForm extends React.Component {
                         <DomainDropdown
                           onSelected={selected => {
                             this.updateChange(
-                              'custom.qt_top_bedrock',
+                              "custom.qt_top_bedrock",
                               selected.id,
                               false,
                             );
@@ -1746,8 +1746,8 @@ class BoreholeForm extends React.Component {
                           autoCorrect="off"
                           onChange={e => {
                             this.updateNumber(
-                              'extended.top_bedrock_tvd',
-                              e.target.value === '' ? null : e.target.value,
+                              "extended.top_bedrock_tvd",
+                              e.target.value === "" ? null : e.target.value,
                             );
                             // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
                             //   this.updateChange(
@@ -1760,7 +1760,7 @@ class BoreholeForm extends React.Component {
                           spellCheck="false"
                           value={
                             _.isNil(borehole.extended.top_bedrock_tvd)
-                              ? ''
+                              ? ""
                               : borehole.extended.top_bedrock_tvd
                           }
                         />
@@ -1775,7 +1775,7 @@ class BoreholeForm extends React.Component {
                         <DomainDropdown
                           onSelected={selected => {
                             this.updateChange(
-                              'custom.qt_top_bedrock_tvd',
+                              "custom.qt_top_bedrock_tvd",
                               selected.id,
                               false,
                             );
@@ -1786,7 +1786,7 @@ class BoreholeForm extends React.Component {
                       </Form.Field>
                     </Form.Group>
                     <Form.Field
-                      error={mentions.indexOf('groundwater') >= 0}
+                      error={mentions.indexOf("groundwater") >= 0}
                       required>
                       <label>
                         <TranslationText id="groundwater" />
@@ -1794,10 +1794,10 @@ class BoreholeForm extends React.Component {
                       <Form.Group inline>
                         <Form.Radio
                           checked={borehole.extended.groundwater === true}
-                          label={t('yes')}
+                          label={t("yes")}
                           onChange={(e, d) => {
                             this.updateChange(
-                              'extended.groundwater',
+                              "extended.groundwater",
                               true,
                               false,
                             );
@@ -1805,10 +1805,10 @@ class BoreholeForm extends React.Component {
                         />
                         <Form.Radio
                           checked={borehole.extended.groundwater === false}
-                          label={t('no')}
+                          label={t("no")}
                           onChange={(e, d) => {
                             this.updateChange(
-                              'extended.groundwater',
+                              "extended.groundwater",
                               false,
                               false,
                             );
@@ -1816,10 +1816,10 @@ class BoreholeForm extends React.Component {
                         />
                         <Form.Radio
                           checked={borehole.extended.groundwater === null}
-                          label={t('np')}
+                          label={t("np")}
                           onChange={(e, d) => {
                             this.updateChange(
-                              'extended.groundwater',
+                              "extended.groundwater",
                               null,
                               false,
                             );
@@ -1829,19 +1829,19 @@ class BoreholeForm extends React.Component {
                           <div>
                             <div
                               style={{
-                                color: 'red',
+                                color: "red",
                               }}>
                               trans=yes
                             </div>
                             <div
                               style={{
-                                color: 'red',
+                                color: "red",
                               }}>
                               trans=no
                             </div>
                             <div
                               style={{
-                                color: 'red',
+                                color: "red",
                               }}>
                               trans=np
                             </div>
@@ -1850,21 +1850,21 @@ class BoreholeForm extends React.Component {
                       </Form.Group>
                     </Form.Field>
                     <Form.Field
-                      error={mentions.indexOf('lithology_top_bedrock') >= 0}
+                      error={mentions.indexOf("lithology_top_bedrock") >= 0}
                       required>
                       <label>
                         <TranslationText id="lithology_top_bedrock" />
                       </label>
                       <DomainTree
                         levels={{
-                          1: 'rock',
-                          2: 'process',
-                          3: 'type',
+                          1: "rock",
+                          2: "process",
+                          3: "type",
                           // 4: 'specification',
                         }}
                         onSelected={selected => {
                           this.updateChange(
-                            'custom.lithology_top_bedrock',
+                            "custom.lithology_top_bedrock",
                             selected.id,
                             false,
                           );
@@ -1876,7 +1876,7 @@ class BoreholeForm extends React.Component {
                     </Form.Field>
                     <Form.Field
                       error={
-                        mentions.indexOf('lithostratigraphy_top_bedrock') >= 0
+                        mentions.indexOf("lithostratigraphy_top_bedrock") >= 0
                       }
                       required>
                       <label>
@@ -1884,15 +1884,15 @@ class BoreholeForm extends React.Component {
                       </label>
                       <DomainTree
                         levels={{
-                          1: 'super',
-                          2: 'group',
-                          3: 'subgroup',
-                          4: 'superformation',
-                          5: 'formation',
+                          1: "super",
+                          2: "group",
+                          3: "subgroup",
+                          4: "superformation",
+                          5: "formation",
                         }}
                         onSelected={selected => {
                           this.updateChange(
-                            'custom.lithostratigraphy_top_bedrock',
+                            "custom.lithostratigraphy_top_bedrock",
                             selected.id,
                             false,
                           );
@@ -1906,7 +1906,7 @@ class BoreholeForm extends React.Component {
                     </Form.Field>
                     <Form.Field
                       error={
-                        mentions.indexOf('chronostratigraphy_top_bedrock') >= 0
+                        mentions.indexOf("chronostratigraphy_top_bedrock") >= 0
                       }
                       required>
                       <label>
@@ -1925,16 +1925,16 @@ class BoreholeForm extends React.Component {
                       /> */}
                       <DomainTree
                         levels={{
-                          1: '1st_order_eon',
-                          2: '2nd_order_era',
-                          3: '3rd_order_period',
-                          4: '4th_order_epoch',
-                          5: '5th_order_sub_epoch',
-                          6: '6th_order_sub_stage',
+                          1: "1st_order_eon",
+                          2: "2nd_order_era",
+                          3: "3rd_order_period",
+                          4: "4th_order_epoch",
+                          5: "5th_order_sub_epoch",
+                          6: "6th_order_sub_stage",
                         }}
                         onSelected={selected => {
                           this.updateChange(
-                            'custom.chronostratigraphy_top_bedrock',
+                            "custom.chronostratigraphy_top_bedrock",
                             selected.id,
                             false,
                           );
@@ -1955,14 +1955,14 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={process.env.PUBLIC_URL + '/editor/:id/stratigraphy'}
+            path={process.env.PUBLIC_URL + "/editor/:id/stratigraphy"}
             render={() => (
               <Profile
                 id={parseInt(this.props.match.params.id, 10)}
                 kind="stratigraphy"
                 unlocked={
                   !(
-                    this.props.borehole.data.role !== 'EDIT' ||
+                    this.props.borehole.data.role !== "EDIT" ||
                     this.props.borehole.data.lock === null ||
                     this.props.borehole.data.lock.username !==
                       this.props.user.data.username
@@ -1974,13 +1974,13 @@ class BoreholeForm extends React.Component {
 
           <Route
             exact
-            path={process.env.PUBLIC_URL + '/editor/:id/attachments'}
+            path={process.env.PUBLIC_URL + "/editor/:id/attachments"}
             render={() => (
               <EditorBoreholeFilesTable
                 id={parseInt(this.props.match.params.id, 10)}
                 unlocked={
                   !(
-                    this.props.borehole.data.role !== 'EDIT' ||
+                    this.props.borehole.data.role !== "EDIT" ||
                     this.props.borehole.data.lock === null ||
                     this.props.borehole.data.lock.username !==
                       this.props.user.data.username
@@ -1991,14 +1991,14 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={process.env.PUBLIC_URL + '/editor/:id/hydrogeology'}
+            path={process.env.PUBLIC_URL + "/editor/:id/hydrogeology"}
             render={() => (
               <Profile
                 id={parseInt(this.props.match.params.id, 10)}
                 kind="hydrogeology"
                 unlocked={
                   !(
-                    this.props.borehole.data.role !== 'EDIT' ||
+                    this.props.borehole.data.role !== "EDIT" ||
                     this.props.borehole.data.lock === null ||
                     this.props.borehole.data.lock.username !==
                       this.props.user.data.username
@@ -2009,14 +2009,14 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={process.env.PUBLIC_URL + '/editor/:id/completion/casing'}
+            path={process.env.PUBLIC_URL + "/editor/:id/completion/casing"}
             render={() => (
               <Profile
                 id={parseInt(this.props.match.params.id, 10)}
                 kind="casing"
                 unlocked={
                   !(
-                    this.props.borehole.data.role !== 'EDIT' ||
+                    this.props.borehole.data.role !== "EDIT" ||
                     this.props.borehole.data.lock === null ||
                     this.props.borehole.data.lock.username !==
                       this.props.user.data.username
@@ -2027,14 +2027,14 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={process.env.PUBLIC_URL + '/editor/:id/completion/instruments'}
+            path={process.env.PUBLIC_URL + "/editor/:id/completion/instruments"}
             render={() => (
               <Profile
                 id={parseInt(this.props.match.params.id, 10)}
                 kind="instruments"
                 unlocked={
                   !(
-                    this.props.borehole.data.role !== 'EDIT' ||
+                    this.props.borehole.data.role !== "EDIT" ||
                     this.props.borehole.data.lock === null ||
                     this.props.borehole.data.lock.username !==
                       this.props.user.data.username
@@ -2045,14 +2045,14 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={process.env.PUBLIC_URL + '/editor/:id/completion/filling'}
+            path={process.env.PUBLIC_URL + "/editor/:id/completion/filling"}
             render={() => (
               <Profile
                 id={parseInt(this.props.match.params.id, 10)}
                 kind="filling"
                 unlocked={
                   !(
-                    this.props.borehole.data.role !== 'EDIT' ||
+                    this.props.borehole.data.role !== "EDIT" ||
                     this.props.borehole.data.lock === null ||
                     this.props.borehole.data.lock.username !==
                       this.props.user.data.username
@@ -2122,5 +2122,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     mapDispatchToProps,
-  )(withTranslation(['common'])(BoreholeForm)),
+  )(withTranslation(["common"])(BoreholeForm)),
 );

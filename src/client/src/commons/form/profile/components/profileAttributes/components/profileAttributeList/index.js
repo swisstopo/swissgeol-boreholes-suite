@@ -1,1 +1,1 @@
-export { default } from './profileAttributeList';
+export { default } from "./profileAttributeList";

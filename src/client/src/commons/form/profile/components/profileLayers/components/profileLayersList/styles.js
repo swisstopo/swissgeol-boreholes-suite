@@ -1,10 +1,10 @@
-import styled from 'styled-components';
-import DomainText from '../../../../../domain/domainText';
-import { Button } from 'semantic-ui-react';
+import styled from "styled-components";
+import DomainText from "../../../../../domain/domainText";
+import { Button } from "semantic-ui-react";
 
 export const Layer = styled.div`
   border: 1px solid lightgrey;
-  border-top: ${props => !props.isFirst && '0px'};
+  border-top: ${props => !props.isFirst && "0px"};
 `;
 
 export const MyCard = styled.div`
@@ -46,9 +46,9 @@ export const CardButton = styled(Button)`
 
 export const Text = styled.div`
   display: flex;
-  font-weight: ${props => (props.bold ? 'bold' : '100')};
-  font-size: ${props => (props.bold ? '14px' : props.small ? '10px' : '13px')};
-  color: ${props => (props.warning ? 'red' : props.small ? 'grey' : 'black')};
+  font-weight: ${props => (props.bold ? "bold" : "100")};
+  font-size: ${props => (props.bold ? "14px" : props.small ? "10px" : "13px")};
+  color: ${props => (props.warning ? "red" : props.small ? "grey" : "black")};
 `;
 
 export const DomainTxt = styled(DomainText)``;

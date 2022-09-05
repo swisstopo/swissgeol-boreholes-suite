@@ -1,29 +1,29 @@
-import _ from 'lodash';
+import _ from "lodash";
 
 const initialState = {
   isFetching: false,
   pathching: [],
   rtime: 0, // fetch time
   fcnt: 0, // fetch counter
-  scrollbar: '10px',
+  scrollbar: "10px",
   page: 0,
-  selectedWMS: 'https://wms.geo.admin.ch?request=getCapabilities&service=WMS',
+  selectedWMS: "https://wms.geo.admin.ch?request=getCapabilities&service=WMS",
   WMS: [
     {
-      key: 'https://wms.geo.admin.ch?request=getCapabilities&service=WMS',
-      text: 'https://wms.geo.admin.ch?request=getCapabilities&service=WMS',
-      value: 'https://wms.geo.admin.ch?request=getCapabilities&service=WMS',
+      key: "https://wms.geo.admin.ch?request=getCapabilities&service=WMS",
+      text: "https://wms.geo.admin.ch?request=getCapabilities&service=WMS",
+      value: "https://wms.geo.admin.ch?request=getCapabilities&service=WMS",
     },
     {
-      key: 'https://wms-inspire.geo.admin.ch/?SERVICE=WMS&request=getCapabilities',
-      text: 'https://wms-inspire.geo.admin.ch/?SERVICE=WMS&request=getCapabilities',
+      key: "https://wms-inspire.geo.admin.ch/?SERVICE=WMS&request=getCapabilities",
+      text: "https://wms-inspire.geo.admin.ch/?SERVICE=WMS&request=getCapabilities",
       value:
-        'https://wms-inspire.geo.admin.ch/?SERVICE=WMS&request=getCapabilities',
+        "https://wms-inspire.geo.admin.ch/?SERVICE=WMS&request=getCapabilities",
     },
     {
-      key: 'https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml',
-      text: 'https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml',
-      value: 'https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml',
+      key: "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
+      text: "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
+      value: "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
     },
   ],
   data: {
@@ -40,7 +40,7 @@ const initialState = {
       editor: {},
     },
     appearance: {
-      explorer: 'mode-1',
+      explorer: "mode-1",
     },
     filter: {
       mapfilter: true,
@@ -182,16 +182,16 @@ const initialState = {
 
 const setting = (state = initialState, action) => {
   const { path } = action;
-  if (path === '/setting') {
+  if (path === "/setting") {
     switch (action.type) {
-      case 'GET': {
+      case "GET": {
         return {
           ...initialState,
           rtime: new Date().getTime(),
           isFetching: true,
         };
       }
-      case 'GET_OK': {
+      case "GET_OK": {
         let copy = {
           ...state,
           fcnt: state.fcnt + 1,
@@ -201,7 +201,7 @@ const setting = (state = initialState, action) => {
         };
         return copy;
       }
-      case 'PATCH': {
+      case "PATCH": {
         const copy = {
           ...state,
           isFetching: action.disableFetching === true ? false : true,
@@ -212,14 +212,14 @@ const setting = (state = initialState, action) => {
           for (let i = 0; i < action.tree.length; i++) {
             let element = action.tree[i];
 
-            if (_.has(action, 'key')) {
+            if (_.has(action, "key")) {
               path = _.union(
-                ['data'],
-                element.split('.'),
+                ["data"],
+                element.split("."),
                 Array.isArray(action.key) === true ? action.key : [action.key],
               );
             } else {
-              path = _.union(['data'], element.split('.'));
+              path = _.union(["data"], element.split("."));
             }
             if (action.value === null) {
               _.unset(copy, path, action.value);
@@ -228,14 +228,14 @@ const setting = (state = initialState, action) => {
             }
           }
         } else {
-          if (_.has(action, 'key')) {
+          if (_.has(action, "key")) {
             path = _.union(
-              ['data'],
-              action.tree.split('.'),
+              ["data"],
+              action.tree.split("."),
               Array.isArray(action.key) === true ? action.key : [action.key],
             );
           } else {
-            path = _.union(['data'], action.tree.split('.'));
+            path = _.union(["data"], action.tree.split("."));
           }
           if (action.value === null) {
             _.unset(copy, path, action.value);
@@ -245,7 +245,7 @@ const setting = (state = initialState, action) => {
         }
         return copy;
       }
-      case 'PATCH_OK': {
+      case "PATCH_OK": {
         let copy = {
           ...state,
           fcnt: state.fcnt + 1,
@@ -260,24 +260,24 @@ const setting = (state = initialState, action) => {
     }
   }
   switch (action.type) {
-    case 'SETTING_TOGGLE_FILTER': {
+    case "SETTING_TOGGLE_FILTER": {
       const copy = { ...state };
       _.set(copy, `data.filter.${action.filter}`, action.enabled);
       return copy;
     }
-    case 'SETTING_SCROLLBAR_WIDTH': {
+    case "SETTING_SCROLLBAR_WIDTH": {
       return {
         ...state,
         scrollbar: action.width,
       };
     }
-    case 'SETTING_SET_PAGE': {
+    case "SETTING_SET_PAGE": {
       return {
         ...state,
         page: action.page,
       };
     }
-    case 'WMS_ADDED': {
+    case "WMS_ADDED": {
       return {
         ...state,
         selectedWMS: action.url,
@@ -291,7 +291,7 @@ const setting = (state = initialState, action) => {
         ],
       };
     }
-    case 'WMS_SELECTED': {
+    case "WMS_SELECTED": {
       return {
         ...state,
         selectedWMS: action.url,

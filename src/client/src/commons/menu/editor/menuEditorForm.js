@@ -1,8 +1,8 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
-import { withRouter } from 'react-router-dom';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { withTranslation } from "react-i18next";
+import { withRouter } from "react-router-dom";
 
 import {
   Button,
@@ -12,20 +12,20 @@ import {
   Menu,
   Modal,
   Progress,
-} from 'semantic-ui-react';
+} from "semantic-ui-react";
 
-import DateText from '../../form/dateText';
-import TranslationText from '../../form/translationText';
-import moment from 'moment';
+import DateText from "../../form/dateText";
+import TranslationText from "../../form/translationText";
+import moment from "moment";
 
 import {
   deleteBorehole,
   loadBorehole,
   lockBorehole,
   unlockBorehole,
-} from '../../../api-lib/index';
+} from "../../../api-lib/index";
 
-import Scroller from '../../scroller';
+import Scroller from "../../scroller";
 
 const timeout = 10;
 
@@ -64,7 +64,7 @@ class MenuEditorForm extends React.Component {
       user.data.workgroups.find(
         workgroup => workgroup.id === borehole.data.workgroup.id,
       );
-    if (wg !== undefined && wg.hasOwnProperty('roles')) {
+    if (wg !== undefined && wg.hasOwnProperty("roles")) {
       editableByCurrentUser = wg.roles.indexOf(borehole.data.role) === -1;
     }
 
@@ -72,10 +72,10 @@ class MenuEditorForm extends React.Component {
       <Scroller
         key="sb-em-2"
         style={{
-          flex: '1 1 100%',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'auto',
+          flex: "1 1 100%",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "auto",
         }}>
         <List divided relaxed selection>
           <List.Item
@@ -85,12 +85,12 @@ class MenuEditorForm extends React.Component {
                   delete: false,
                 },
                 () => {
-                  history.push(process.env.PUBLIC_URL + '/editor');
+                  history.push(process.env.PUBLIC_URL + "/editor");
                 },
               );
             }}
             style={{
-              padding: '1em',
+              padding: "1em",
             }}>
             <List.Icon name="arrow left" size="large" verticalAlign="middle" />
             <List.Content>
@@ -102,19 +102,19 @@ class MenuEditorForm extends React.Component {
           <List.Item
             active={
               location.pathname ===
-              process.env.PUBLIC_URL + '/editor/' + match.params.id
+              process.env.PUBLIC_URL + "/editor/" + match.params.id
             }
             onClick={() => {
               history.push(
-                process.env.PUBLIC_URL + '/editor/' + match.params.id,
+                process.env.PUBLIC_URL + "/editor/" + match.params.id,
               );
             }}
             style={{
-              padding: '1em',
+              padding: "1em",
               borderLeft:
                 location.pathname ===
-                process.env.PUBLIC_URL + '/editor/' + match.params.id
-                  ? '0.25em solid rgb(237, 29, 36)'
+                process.env.PUBLIC_URL + "/editor/" + match.params.id
+                  ? "0.25em solid rgb(237, 29, 36)"
                   : null,
             }}>
             <List.Icon name="map marker" size="large" verticalAlign="middle" />
@@ -128,27 +128,27 @@ class MenuEditorForm extends React.Component {
             active={
               location.pathname ===
               process.env.PUBLIC_URL +
-                '/editor/' +
+                "/editor/" +
                 match.params.id +
-                '/borehole'
+                "/borehole"
             }
             onClick={() => {
               history.push(
                 process.env.PUBLIC_URL +
-                  '/editor/' +
+                  "/editor/" +
                   match.params.id +
-                  '/borehole',
+                  "/borehole",
               );
             }}
             style={{
-              padding: '1em',
+              padding: "1em",
               borderLeft:
                 location.pathname ===
                 process.env.PUBLIC_URL +
-                  '/editor/' +
+                  "/editor/" +
                   match.params.id +
-                  '/borehole'
-                  ? '0.25em solid rgb(237, 29, 36)'
+                  "/borehole"
+                  ? "0.25em solid rgb(237, 29, 36)"
                   : null,
             }}>
             <List.Icon name="info" size="large" verticalAlign="middle" />
@@ -162,27 +162,27 @@ class MenuEditorForm extends React.Component {
             active={
               location.pathname ===
               process.env.PUBLIC_URL +
-                '/editor/' +
+                "/editor/" +
                 match.params.id +
-                '/stratigraphy'
+                "/stratigraphy"
             }
             onClick={() => {
               history.push(
                 process.env.PUBLIC_URL +
-                  '/editor/' +
+                  "/editor/" +
                   match.params.id +
-                  '/stratigraphy',
+                  "/stratigraphy",
               );
             }}
             style={{
-              padding: '1em',
+              padding: "1em",
               borderLeft:
                 location.pathname ===
                 process.env.PUBLIC_URL +
-                  '/editor/' +
+                  "/editor/" +
                   match.params.id +
-                  '/stratigraphy'
-                  ? '0.25em solid rgb(237, 29, 36)'
+                  "/stratigraphy"
+                  ? "0.25em solid rgb(237, 29, 36)"
                   : null,
             }}>
             <List.Icon
@@ -204,31 +204,31 @@ class MenuEditorForm extends React.Component {
               });
             }}
             style={{
-              padding: '0.9em',
-              display: 'flex',
+              padding: "0.9em",
+              display: "flex",
               borderLeft: [
                 process.env.PUBLIC_URL +
-                  '/editor/' +
+                  "/editor/" +
                   match.params.id +
-                  '/completion/casing',
+                  "/completion/casing",
                 process.env.PUBLIC_URL +
-                  '/editor/' +
+                  "/editor/" +
                   match.params.id +
-                  '/completion/filling',
+                  "/completion/filling",
                 process.env.PUBLIC_URL +
-                  '/editor/' +
+                  "/editor/" +
                   match.params.id +
-                  '/completion/instruments',
+                  "/completion/instruments",
               ].includes(location.pathname)
-                ? '0.25em solid rgb(237, 29, 36)'
+                ? "0.25em solid rgb(237, 29, 36)"
                 : null,
             }}>
             <img
               alt="Completion"
-              src={process.env.PUBLIC_URL + '/img/Completion.png'}
+              src={process.env.PUBLIC_URL + "/img/Completion.png"}
               style={{
-                height: '21px',
-                paddingRight: '1em',
+                height: "21px",
+                paddingRight: "1em",
                 opacity: this.state.hydrogeologyIsVisible ? 1 : 0.5,
               }}
             />
@@ -237,7 +237,7 @@ class MenuEditorForm extends React.Component {
                 <TranslationText firstUpperCase id="completion" />
               </List.Header>
             </List.Content>
-            <div style={{ marginLeft: '2em' }}>
+            <div style={{ marginLeft: "2em" }}>
               {!this.state.hydrogeologyIsVisible && (
                 <List.Icon
                   name="angle down"
@@ -256,43 +256,43 @@ class MenuEditorForm extends React.Component {
                 active={
                   location.pathname ===
                   process.env.PUBLIC_URL +
-                    '/editor/' +
+                    "/editor/" +
                     match.params.id +
-                    '/completion/casing'
+                    "/completion/casing"
                 }
                 onClick={() => {
                   history.push(
                     process.env.PUBLIC_URL +
-                      '/editor/' +
+                      "/editor/" +
                       match.params.id +
-                      '/completion/casing',
+                      "/completion/casing",
                   );
                 }}
                 style={{
-                  padding: '1em',
+                  padding: "1em",
                   paddingLeft: 40,
-                  display: 'flex',
+                  display: "flex",
                   borderLeft:
                     location.pathname ===
                     process.env.PUBLIC_URL +
-                      '/editor/' +
+                      "/editor/" +
                       match.params.id +
-                      '/completion/casing'
-                      ? '0.25em solid rgb(237, 29, 36)'
+                      "/completion/casing"
+                      ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
                 <img
                   alt="casing"
-                  src={process.env.PUBLIC_URL + '/img/Casing.png'}
+                  src={process.env.PUBLIC_URL + "/img/Casing.png"}
                   style={{
-                    height: '19px',
-                    paddingRight: '1em',
+                    height: "19px",
+                    paddingRight: "1em",
                     opacity:
                       location.pathname ===
                       process.env.PUBLIC_URL +
-                        '/editor/' +
+                        "/editor/" +
                         match.params.id +
-                        '/completion/casing'
+                        "/completion/casing"
                         ? 1
                         : 0.5,
                   }}
@@ -307,43 +307,43 @@ class MenuEditorForm extends React.Component {
                 active={
                   location.pathname ===
                   process.env.PUBLIC_URL +
-                    '/editor/' +
+                    "/editor/" +
                     match.params.id +
-                    '/completion/instruments'
+                    "/completion/instruments"
                 }
                 onClick={() => {
                   history.push(
                     process.env.PUBLIC_URL +
-                      '/editor/' +
+                      "/editor/" +
                       match.params.id +
-                      '/completion/instruments',
+                      "/completion/instruments",
                   );
                 }}
                 style={{
-                  padding: '1em',
+                  padding: "1em",
                   paddingLeft: 40,
-                  display: 'flex',
+                  display: "flex",
                   borderLeft:
                     location.pathname ===
                     process.env.PUBLIC_URL +
-                      '/editor/' +
+                      "/editor/" +
                       match.params.id +
-                      '/completion/instruments'
-                      ? '0.25em solid rgb(237, 29, 36)'
+                      "/completion/instruments"
+                      ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
                 <img
                   alt="Instruments"
-                  src={process.env.PUBLIC_URL + '/img/Instruments.png'}
+                  src={process.env.PUBLIC_URL + "/img/Instruments.png"}
                   style={{
-                    height: '19px',
-                    paddingRight: '1em',
+                    height: "19px",
+                    paddingRight: "1em",
                     opacity:
                       location.pathname ===
                       process.env.PUBLIC_URL +
-                        '/editor/' +
+                        "/editor/" +
                         match.params.id +
-                        '/completion/instruments'
+                        "/completion/instruments"
                         ? 1
                         : 0.5,
                   }}
@@ -358,43 +358,43 @@ class MenuEditorForm extends React.Component {
                 active={
                   location.pathname ===
                   process.env.PUBLIC_URL +
-                    '/editor/' +
+                    "/editor/" +
                     match.params.id +
-                    '/completion/filling'
+                    "/completion/filling"
                 }
                 onClick={() => {
                   history.push(
                     process.env.PUBLIC_URL +
-                      '/editor/' +
+                      "/editor/" +
                       match.params.id +
-                      '/completion/filling',
+                      "/completion/filling",
                   );
                 }}
                 style={{
-                  padding: '1em',
+                  padding: "1em",
                   paddingLeft: 40,
-                  display: 'flex',
+                  display: "flex",
                   borderLeft:
                     location.pathname ===
                     process.env.PUBLIC_URL +
-                      '/editor/' +
+                      "/editor/" +
                       match.params.id +
-                      '/completion/filling'
-                      ? '0.25em solid rgb(237, 29, 36)'
+                      "/completion/filling"
+                      ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
                 <img
                   alt="Filling"
-                  src={process.env.PUBLIC_URL + '/img/Filling.png'}
+                  src={process.env.PUBLIC_URL + "/img/Filling.png"}
                   style={{
-                    height: '19px',
-                    paddingRight: '1em',
+                    height: "19px",
+                    paddingRight: "1em",
                     opacity:
                       location.pathname ===
                       process.env.PUBLIC_URL +
-                        '/editor/' +
+                        "/editor/" +
                         match.params.id +
-                        '/completion/filling'
+                        "/completion/filling"
                         ? 1
                         : 0.5,
                   }}
@@ -462,27 +462,27 @@ class MenuEditorForm extends React.Component {
             active={
               location.pathname ===
               process.env.PUBLIC_URL +
-                '/editor/' +
+                "/editor/" +
                 match.params.id +
-                '/attachments'
+                "/attachments"
             }
             onClick={() => {
               history.push(
                 process.env.PUBLIC_URL +
-                  '/editor/' +
+                  "/editor/" +
                   match.params.id +
-                  '/attachments',
+                  "/attachments",
               );
             }}
             style={{
-              padding: '1em',
+              padding: "1em",
               borderLeft:
                 location.pathname ===
                 process.env.PUBLIC_URL +
-                  '/editor/' +
+                  "/editor/" +
                   match.params.id +
-                  '/attachments'
-                  ? '0.25em solid rgb(237, 29, 36)'
+                  "/attachments"
+                  ? "0.25em solid rgb(237, 29, 36)"
                   : null,
             }}>
             <List.Icon name="attach" size="large" verticalAlign="middle" />
@@ -497,19 +497,19 @@ class MenuEditorForm extends React.Component {
       <div
         key="medf-prps"
         style={{
-          padding: '1em',
+          padding: "1em",
           paddingTop: 0,
-          border: '1px solid lightgray',
+          border: "1px solid lightgray",
           borderBottomWidth: 0,
           borderRadius: 5,
         }}>
         <div
           style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
           }}
           onClick={() =>
             this.setState({ detailsIsVisible: !this.state.detailsIsVisible })
@@ -525,18 +525,18 @@ class MenuEditorForm extends React.Component {
         <div>
           <div
             style={{
-              fontSize: '0.7em',
-              color: '#787878',
+              fontSize: "0.7em",
+              color: "#787878",
             }}>
             <TranslationText id="locked_status" />
           </div>
           <div
             style={{
-              fontWeight: 'bold',
+              fontWeight: "bold",
             }}>
             <span
               style={{
-                color: 'red',
+                color: "red",
               }}>
               {borehole.data.lock !== null || borehole.data.role === null ? (
                 <TranslationText id="editingEnabled" />
@@ -552,8 +552,8 @@ class MenuEditorForm extends React.Component {
         {borehole.data.imported === true ? (
           <div
             style={{
-              fontSize: '0.7em',
-              color: 'rgb(33, 133, 208)',
+              fontSize: "0.7em",
+              color: "rgb(33, 133, 208)",
             }}>
             <TranslationText id="importedData" />
           </div>
@@ -563,8 +563,8 @@ class MenuEditorForm extends React.Component {
           <div>
             <div
               style={{
-                fontSize: '0.7em',
-                color: '#787878',
+                fontSize: "0.7em",
+                color: "#787878",
               }}>
               {borehole.data.workgroup &&
               borehole.data.workgroup.supplier === true ? (
@@ -575,15 +575,15 @@ class MenuEditorForm extends React.Component {
             </div>
             <div
               style={{
-                fontWeight: 'bold',
+                fontWeight: "bold",
               }}>
               {borehole.data.workgroup && borehole.data.workgroup.name}
             </div>
             <div>
               <div
                 style={{
-                  fontSize: '0.7em',
-                  color: '#787878',
+                  fontSize: "0.7em",
+                  color: "#787878",
                 }}>
                 {borehole.data.imported === true ? (
                   <TranslationText id="importedBy" />
@@ -594,23 +594,23 @@ class MenuEditorForm extends React.Component {
               </div>
               <div
                 style={{
-                  fontWeight: 'bold',
+                  fontWeight: "bold",
                 }}>
                 {borehole.data.creator !== undefined
                   ? borehole.data.creator.username ===
                     this.props.user.data.username
                     ? borehole.data.creator.fullname +
-                      ' (' +
-                      t('common:you') +
-                      ')'
+                      " (" +
+                      t("common:you") +
+                      ")"
                     : borehole.data.creator.fullname
-                  : '-'}
+                  : "-"}
               </div>
             </div>
             <div
               style={{
-                fontSize: '0.7em',
-                color: '#787878',
+                fontSize: "0.7em",
+                color: "#787878",
               }}>
               {borehole.data.imported === true ? (
                 <TranslationText id="importDate" />
@@ -621,7 +621,7 @@ class MenuEditorForm extends React.Component {
             </div>
             <div
               style={{
-                fontWeight: 'bold',
+                fontWeight: "bold",
               }}>
               {borehole.data.creator && (
                 <DateText date={borehole.data.creator.date} hours />
@@ -629,13 +629,13 @@ class MenuEditorForm extends React.Component {
             </div>
             <div
               style={{
-                fontSize: '0.8em',
-                marginBottom: '0.25em',
+                fontSize: "0.8em",
+                marginBottom: "0.25em",
               }}>
               {borehole.data.creator !== undefined ? (
                 <DateText date={borehole.data.creator.date} fromnow />
               ) : (
-                '-'
+                "-"
               )}
             </div>
           </div>
@@ -646,8 +646,8 @@ class MenuEditorForm extends React.Component {
             <div>
               <div
                 style={{
-                  fontSize: '0.7em',
-                  color: '#787878',
+                  fontSize: "0.7em",
+                  color: "#787878",
                 }}>
                 {borehole.data.lock !== null ? (
                   <TranslationText id="locked_by" />
@@ -658,28 +658,28 @@ class MenuEditorForm extends React.Component {
               </div>
               <div
                 style={{
-                  fontWeight: 'bold',
+                  fontWeight: "bold",
                 }}>
                 {borehole.data.lock !== null
                   ? borehole.data.lock.username ===
                     this.props.user.data.username
                     ? borehole.data.updater.fullname +
-                      ' (' +
-                      t('common:you') +
-                      ')'
+                      " (" +
+                      t("common:you") +
+                      ")"
                     : borehole.data.lock.fullname
                   : borehole.data.updater.username ===
                     this.props.user.data.username
                   ? borehole.data.updater.fullname +
-                    ' (' +
-                    t('common:you') +
-                    ')'
+                    " (" +
+                    t("common:you") +
+                    ")"
                   : borehole.data.updater.fullname}
               </div>
               <div
                 style={{
-                  fontSize: '0.7em',
-                  color: '#787878',
+                  fontSize: "0.7em",
+                  color: "#787878",
                 }}>
                 {borehole.data.lock !== null ? (
                   <TranslationText id="locked_at" />
@@ -690,7 +690,7 @@ class MenuEditorForm extends React.Component {
               </div>
               <div
                 style={{
-                  fontWeight: 'bold',
+                  fontWeight: "bold",
                 }}>
                 {borehole.data.lock !== null ? (
                   <DateText date={borehole.data.lock.date} hours />
@@ -703,13 +703,13 @@ class MenuEditorForm extends React.Component {
           {/* end */}
           <div
             style={{
-              fontSize: '0.8em',
-              marginBottom: '0.25em',
+              fontSize: "0.8em",
+              marginBottom: "0.25em",
             }}>
             {borehole.data.lock !== null ? (
               <span
                 style={{
-                  color: this.state.timeout >= 90 ? 'red' : null,
+                  color: this.state.timeout >= 90 ? "red" : null,
                 }}>
                 <DateText
                   date={borehole.data.lock.date}
@@ -718,7 +718,7 @@ class MenuEditorForm extends React.Component {
                     this.setState(
                       {
                         timeout:
-                          (moment().diff(m, 'seconds') / (timeout * 60)) * 100,
+                          (moment().diff(m, "seconds") / (timeout * 60)) * 100,
                       },
                       () => {
                         if (this.state.timeout > 100) {
@@ -738,15 +738,15 @@ class MenuEditorForm extends React.Component {
             <Progress
               color={
                 this.state.timeout >= 90
-                  ? 'red'
+                  ? "red"
                   : this.state.timeout >= 80
-                  ? 'orange'
-                  : 'black'
+                  ? "orange"
+                  : "black"
               }
               percent={this.state.timeout}
               size="tiny"
               style={{
-                margin: '0.5em 0em 0.2em',
+                margin: "0.5em 0em 0.2em",
               }}
             />
           ) : null}
@@ -754,21 +754,21 @@ class MenuEditorForm extends React.Component {
             <div
               style={{
                 // textAlign: 'right'
-                display: 'flex',
-                flexDirection: 'row',
-                fontSize: '0.8em',
+                display: "flex",
+                flexDirection: "row",
+                fontSize: "0.8em",
               }}>
-              <div style={{ flex: '1 1 100%' }}>
+              <div style={{ flex: "1 1 100%" }}>
                 {(() => {
                   let d = moment.duration(
                     moment(borehole.data.lock.date)
-                      .add(10, 'minutes')
+                      .add(10, "minutes")
                       .diff(moment()),
                   );
                   return (
-                    d.minutes().toString().padStart(2, '0') +
-                    ':' +
-                    d.seconds().toString().padStart(2, '0')
+                    d.minutes().toString().padStart(2, "0") +
+                    ":" +
+                    d.seconds().toString().padStart(2, "0")
                   );
                 })()}
               </div>
@@ -790,8 +790,8 @@ class MenuEditorForm extends React.Component {
         key="sb-em-3"
         size="mini"
         style={{
-          margin: '0px',
-          minHeight: '70px',
+          margin: "0px",
+          minHeight: "70px",
         }}>
         {editableByCurrentUser === true ? null : (
           <Modal
@@ -844,7 +844,7 @@ class MenuEditorForm extends React.Component {
                     },
                     () => {
                       deleteBorehole(borehole.data.id).then(function () {
-                        history.push(process.env.PUBLIC_URL + '/editor');
+                        history.push(process.env.PUBLIC_URL + "/editor");
                       });
                     },
                   );
@@ -878,14 +878,14 @@ class MenuEditorForm extends React.Component {
             <Icon
               name={
                 borehole.data.lock !== null &&
-                moment().diff(moment(borehole.data.lock.date), 'seconds') <
+                moment().diff(moment(borehole.data.lock.date), "seconds") <
                   timeout * 60
-                  ? 'stop'
-                  : 'play'
+                  ? "stop"
+                  : "play"
               }
             />
             {borehole.data.lock !== null &&
-            moment().diff(moment(borehole.data.lock.date), 'seconds') <
+            moment().diff(moment(borehole.data.lock.date), "seconds") <
               timeout * 60 ? (
               <TranslationText id="editingStop" />
             ) : (
@@ -903,7 +903,7 @@ class MenuEditorForm extends React.Component {
               flex: 1,
             }}>
             <Icon loading={borehole.isFetching === true} name="refresh" />
-            {t('common:refresh')}
+            {t("common:refresh")}
           </Menu.Item>
         ) : null}
       </Menu>,
@@ -944,11 +944,11 @@ const mapDispatchToProps = dispatch => {
     dispatch: dispatch,
     boreholeSelected: borehole => {
       dispatch({
-        path: '/borehole',
-        type: 'CLEAR',
+        path: "/borehole",
+        type: "CLEAR",
       });
       dispatch({
-        type: 'EDITOR_BOREHOLE_SELECTED',
+        type: "EDITOR_BOREHOLE_SELECTED",
         selected: borehole,
       });
     },
@@ -962,7 +962,7 @@ const mapDispatchToProps = dispatch => {
     // },
     reset: () => {
       dispatch({
-        type: 'SEARCH_EDITOR_FILTER_RESET',
+        type: "SEARCH_EDITOR_FILTER_RESET",
       });
     },
     unlock: id => {
@@ -978,5 +978,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     mapDispatchToProps,
-  )(withTranslation(['common'])(MenuEditorForm)),
+  )(withTranslation(["common"])(MenuEditorForm)),
 );

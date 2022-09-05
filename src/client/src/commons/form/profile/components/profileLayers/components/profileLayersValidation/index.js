@@ -1,1 +1,1 @@
-export { default } from './profileLayersValidation';
+export { default } from "./profileLayersValidation";

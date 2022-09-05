@@ -1,7 +1,7 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { withTranslation } from "react-i18next";
 
 class TranslationText extends React.Component {
   render() {
@@ -11,25 +11,25 @@ class TranslationText extends React.Component {
       return (
         <span
           style={{
-            backgroundColor: '#ececec',
-            color: 'black',
-            lineHeight: '1.2em',
-            margin: '5px',
-            padding: '5px',
+            backgroundColor: "#ececec",
+            color: "black",
+            lineHeight: "1.2em",
+            margin: "5px",
+            padding: "5px",
             ...this.props.style,
           }}
-          title={`trans=${ns !== 'common' ? ns + '.' : ''}${id}`}>
+          title={`trans=${ns !== "common" ? ns + "." : ""}${id}`}>
           {prepend}
           {t(`${ns}:${id}`, extra)}
           {append}
           <br />
           <span
             style={{
-              color: 'red',
-              margin: '5px',
+              color: "red",
+              margin: "5px",
             }}
-            title={`trans=${ns !== 'common' ? ns + '.' : ''}${id}`}>
-            trans={`${ns !== 'common' ? ns + '.' : ''}${id}`}
+            title={`trans=${ns !== "common" ? ns + "." : ""}${id}`}>
+            trans={`${ns !== "common" ? ns + "." : ""}${id}`}
           </span>
         </span>
       );
@@ -64,14 +64,14 @@ TranslationText.propTypes = {
 };
 
 TranslationText.defaultProps = {
-  append: '',
+  append: "",
   firstUpperCase: false,
   extra: null,
-  ns: 'common',
-  prepend: '',
+  ns: "common",
+  prepend: "",
   style: {},
 };
 export default connect(
   mapStateToProps,
   null,
-)(withTranslation(['common'])(TranslationText));
+)(withTranslation(["common"])(TranslationText));

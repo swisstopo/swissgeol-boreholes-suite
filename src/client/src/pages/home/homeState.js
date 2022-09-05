@@ -2,29 +2,29 @@ const initialState = {
   cnt: 0,
   selected: null,
   hover: null,
-  maphover: null
+  maphover: null,
 };
 
 const home = (state = initialState, action) => {
   switch (action.type) {
-    case 'HOME_BOREHOLE_SELECTED': {
+    case "HOME_BOREHOLE_SELECTED": {
       return {
         ...state,
         selected: action.id,
         maphover: null,
-        hover: null
+        hover: null,
       };
     }
-    case 'HOME_BOREHOLE_HOVER': {
+    case "HOME_BOREHOLE_HOVER": {
       return {
         ...state,
-        hover: action.borehole
+        hover: action.borehole,
       };
     }
-    case 'HOME_MAP_HOVER': {
+    case "HOME_MAP_HOVER": {
       return {
         ...state,
-        maphover: action.id
+        maphover: action.id,
       };
     }
     default:

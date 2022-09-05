@@ -1,6 +1,6 @@
-import React from 'react';
-import * as Styled from './styles';
-import { List } from 'semantic-ui-react';
+import React from "react";
+import * as Styled from "./styles";
+import { List } from "semantic-ui-react";
 
 const ListItem = props => {
   const { path, name, location, history, icon, t, hasTranslation } = props;
@@ -13,11 +13,11 @@ const ListItem = props => {
             history.push(process.env.PUBLIC_URL + path);
           }}
           style={{
-            padding: '1em',
-            borderRadius: 'inherit',
+            padding: "1em",
+            borderRadius: "inherit",
             borderLeft:
-              location.pathname.indexOf(path) >= 0 && name !== 'done'
-                ? '0.25em solid rgb(237, 29, 36)'
+              location.pathname.indexOf(path) >= 0 && name !== "done"
+                ? "0.25em solid rgb(237, 29, 36)"
                 : null,
           }}>
           <List.Icon name={icon} size="large" verticalAlign="middle" />

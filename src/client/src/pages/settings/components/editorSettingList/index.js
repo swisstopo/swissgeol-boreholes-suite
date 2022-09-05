@@ -1,1 +1,1 @@
-export { default } from './editorSettingList';
+export { default } from "./editorSettingList";

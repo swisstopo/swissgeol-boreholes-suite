@@ -1,8 +1,8 @@
-import React from 'react';
-import * as Styled from './styles';
-import { Button, Segment } from 'semantic-ui-react';
-import TranslationText from '../../../../commons/form/translationText';
-import _ from 'lodash';
+import React from "react";
+import * as Styled from "./styles";
+import { Button, Segment } from "semantic-ui-react";
+import TranslationText from "../../../../commons/form/translationText";
+import _ from "lodash";
 
 const EditorSettingList = props => {
   const {
@@ -19,27 +19,27 @@ const EditorSettingList = props => {
   } = props;
 
   const isChecked = item => {
-    return listName === 'stratigraphyfields'
+    return listName === "stratigraphyfields"
       ? isVisible(item.value)
-      : item.value.split('.').length > 1
-      ? data?.[item.value.split('.')[0]]?.[item.value.split('.')[1]]
+      : item.value.split(".").length > 1
+      ? data?.[item.value.split(".")[0]]?.[item.value.split(".")[1]]
       : data?.[item.value];
   };
   const isVisible = field => {
-    if (_.has(codes, 'data.layer_kind') && _.isArray(codes.data.layer_kind)) {
+    if (_.has(codes, "data.layer_kind") && _.isArray(codes.data.layer_kind)) {
       for (let idx = 0; idx < codes.data.layer_kind.length; idx++) {
         const element = codes.data.layer_kind[idx];
 
         if (element.code === geocode) {
           if (
-            type === 'editor' &&
+            type === "editor" &&
             _.isObject(element.conf) &&
             _.has(element.conf, `fields.${field}`)
           ) {
             return element.conf.fields[field];
           }
           if (
-            type === 'viewer' &&
+            type === "viewer" &&
             _.isObject(element.conf) &&
             _.has(element.conf, `viewerFields.${field}`)
           ) {
@@ -59,7 +59,7 @@ const EditorSettingList = props => {
       newData.push(element.value);
     });
 
-    if (listName === 'stratigraphyfields') {
+    if (listName === "stratigraphyfields") {
       toggleFieldArray(newData, value);
     } else toggleFilterArray(newData, value);
   };
@@ -86,7 +86,7 @@ const EditorSettingList = props => {
           <Styled.CheckboxContainer
             checked={isChecked(item)}
             onChange={(e, d) => {
-              if (listName === 'stratigraphyfields') {
+              if (listName === "stratigraphyfields") {
                 toggleField(item.value, d.checked);
               } else {
                 toggleFilter(item.value, d.checked);

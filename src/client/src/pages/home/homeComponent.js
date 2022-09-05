@@ -1,16 +1,16 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import _ from 'lodash';
-import { Route, Switch, withRouter } from 'react-router-dom';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import _ from "lodash";
+import { Route, Switch, withRouter } from "react-router-dom";
 
-import ExportLink from '../../commons/exportlink';
-import BoreholeTable from '../../commons/table/boreholeTable';
-import DetailsContainer from '../../commons/detail/detailsContainer';
-import MapComponent from '../../commons/map/mapComponent';
-import MenuExplorer from '../../commons/menu/explorer/menuExplorer';
-import MenuContainer from '../../commons/menu/menuContainer';
-import { Checkbox } from 'semantic-ui-react';
+import ExportLink from "../../commons/exportlink";
+import BoreholeTable from "../../commons/table/boreholeTable";
+import DetailsContainer from "../../commons/detail/detailsContainer";
+import MapComponent from "../../commons/map/mapComponent";
+import MenuExplorer from "../../commons/menu/explorer/menuExplorer";
+import MenuContainer from "../../commons/menu/menuContainer";
+import { Checkbox } from "semantic-ui-react";
 
 class HomeComponent extends React.Component {
   constructor(props) {
@@ -33,14 +33,14 @@ class HomeComponent extends React.Component {
       <div
         className="stbg"
         style={{
-          flex: '1 1 100%',
-          display: 'flex',
-          flexDirection: 'row',
-          border: '1px solid rgb(204, 204, 204)',
+          flex: "1 1 100%",
+          display: "flex",
+          flexDirection: "row",
+          border: "1px solid rgb(204, 204, 204)",
           // border: setting.data.appearance.explorer === 1?
           //   '1px solid #787878': '1px solid #cccccc',
-          position: 'relative',
-          overflow: 'hidden',
+          position: "relative",
+          overflow: "hidden",
           zIndex: 1,
         }}>
         <MapComponent
@@ -75,7 +75,7 @@ class HomeComponent extends React.Component {
             if (id === null) {
               history.push(process.env.PUBLIC_URL);
             } else {
-              history.push(process.env.PUBLIC_URL + '/' + id);
+              history.push(process.env.PUBLIC_URL + "/" + id);
             }
           }}
           zoomto={
@@ -91,37 +91,37 @@ class HomeComponent extends React.Component {
     return (
       <div
         style={{
-          flex: '1 1 100%',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
+          flex: "1 1 100%",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
           zIndex: 1,
         }}>
         {checkout.cart.length > 0 ? (
           <div
             style={{
-              backgroundColor: '#ececec',
-              borderBottom: 'thin solid #c5c5c5',
-              color: 'black',
-              textAlign: 'center',
-              padding: '0.5em',
+              backgroundColor: "#ececec",
+              borderBottom: "thin solid #c5c5c5",
+              color: "black",
+              textAlign: "center",
+              padding: "0.5em",
             }}>
             <span
               style={{
-                fontWeight: 'bold',
+                fontWeight: "bold",
               }}>
-              {checkout.cart.length === 1 ? 'One' : checkout.cart.length}{' '}
-              borehole{checkout.cart.length > 1 ? 's' : null} selected.
-            </span>{' '}
+              {checkout.cart.length === 1 ? "One" : checkout.cart.length}{" "}
+              borehole{checkout.cart.length > 1 ? "s" : null} selected.
+            </span>{" "}
             (
             <span
               onClick={() => {
                 this.props.resetCart();
               }}
               style={{
-                color: '#f2711c',
-                textDecoration: 'underline',
-                cursor: 'pointer',
+                color: "#f2711c",
+                textDecoration: "underline",
+                cursor: "pointer",
               }}>
               Reset selection
             </span>
@@ -134,7 +134,7 @@ class HomeComponent extends React.Component {
                   pdf: !this.state.pdf,
                 });
               }}
-            />{' '}
+            />{" "}
             &nbsp;&nbsp;
             <Checkbox
               checked={this.state.csv}
@@ -144,7 +144,7 @@ class HomeComponent extends React.Component {
                   csv: !this.state.csv,
                 });
               }}
-            />{' '}
+            />{" "}
             &nbsp;&nbsp;
             <Checkbox
               checked={this.state.fullcsv}
@@ -154,7 +154,7 @@ class HomeComponent extends React.Component {
                   fullcsv: !this.state.fullcsv,
                 });
               }}
-            />{' '}
+            />{" "}
             &nbsp;&nbsp;
             <Checkbox
               checked={this.state.shp}
@@ -164,7 +164,7 @@ class HomeComponent extends React.Component {
                   shp: !this.state.shp,
                 });
               }}
-            />{' '}
+            />{" "}
             &nbsp;&nbsp;
             <ExportLink
               csv={this.state.csv}
@@ -175,7 +175,7 @@ class HomeComponent extends React.Component {
               pdf={this.state.pdf}
               shp={this.state.shp}
               style={{
-                fontSize: '0.8em',
+                fontSize: "0.8em",
               }}
             />
           </div>
@@ -201,7 +201,7 @@ class HomeComponent extends React.Component {
             if (borehole === null) {
               history.push(process.env.PUBLIC_URL);
             } else {
-              history.push(process.env.PUBLIC_URL + '/' + borehole.id);
+              history.push(process.env.PUBLIC_URL + "/" + borehole.id);
             }
           }}
         />
@@ -214,25 +214,25 @@ class HomeComponent extends React.Component {
     return (
       <div
         style={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
         }}>
         <MenuContainer />
         <div
           style={{
-            flex: '1 1 100%',
-            display: 'flex',
-            flexDirection: 'row',
-            overflow: 'hidden',
+            flex: "1 1 100%",
+            display: "flex",
+            flexDirection: "row",
+            overflow: "hidden",
           }}>
           <div
             style={{
-              boxShadow: 'rgba(0, 0, 0, 0.17) 2px 6px 6px 0px',
-              display: 'flex',
-              flexDirection: 'column',
-              width: '250px',
-              minWidth: '250px',
+              boxShadow: "rgba(0, 0, 0, 0.17) 2px 6px 6px 0px",
+              display: "flex",
+              flexDirection: "column",
+              width: "250px",
+              minWidth: "250px",
             }}>
             <MenuExplorer />
           </div>
@@ -242,15 +242,15 @@ class HomeComponent extends React.Component {
                 return (
                   <div
                     style={{
-                      flex: '1 1 100%',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      overflow: 'hidden',
+                      flex: "1 1 100%",
+                      display: "flex",
+                      flexDirection: "row",
+                      overflow: "hidden",
                     }}>
                     <Switch>
                       <Route
                         exact
-                        path={process.env.PUBLIC_URL + '/:id'}
+                        path={process.env.PUBLIC_URL + "/:id"}
                         render={props => {
                           return (
                             <DetailsContainer
@@ -269,38 +269,38 @@ class HomeComponent extends React.Component {
                 return (
                   <div
                     style={{
-                      flex: '1 1 100%',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      overflow: 'hidden',
+                      flex: "1 1 100%",
+                      display: "flex",
+                      flexDirection: "row",
+                      overflow: "hidden",
                     }}>
                     <div
                       style={{
                         boxShadow: !_.isNil(detail.borehole)
-                          ? 'rgba(0, 0, 0, 0.17) 2px 6px 6px 0px'
+                          ? "rgba(0, 0, 0, 0.17) 2px 6px 6px 0px"
                           : null,
-                        display: 'flex',
-                        flex: '1 1 100%',
-                        flexDirection: 'column',
-                        overflow: 'hidden',
+                        display: "flex",
+                        flex: "1 1 100%",
+                        flexDirection: "column",
+                        overflow: "hidden",
                       }}>
                       <div
                         style={{
-                          flex: '1 1 75%',
-                          overflow: 'hidden',
-                          display: 'flex',
-                          flexDirection: 'column',
+                          flex: "1 1 75%",
+                          overflow: "hidden",
+                          display: "flex",
+                          flexDirection: "column",
                           // margin: '1em',
-                          minHeight: '300px',
+                          minHeight: "300px",
                         }}>
                         {this.getMap()}
                       </div>
                       <div
                         style={{
-                          flex: '1 1 100%',
-                          overflow: 'hidden',
-                          display: 'flex',
-                          flexDirection: 'column',
+                          flex: "1 1 100%",
+                          overflow: "hidden",
+                          display: "flex",
+                          flexDirection: "column",
                         }}>
                         <Switch>
                           <Route
@@ -317,7 +317,7 @@ class HomeComponent extends React.Component {
                     <Switch>
                       <Route
                         exact
-                        path={process.env.PUBLIC_URL + '/:id'}
+                        path={process.env.PUBLIC_URL + "/:id"}
                         render={props => {
                           return (
                             <DetailsContainer
@@ -332,10 +332,10 @@ class HomeComponent extends React.Component {
                         render={() => (
                           <div
                             style={{
-                              flex: '1 1 100%',
-                              overflow: 'hidden',
-                              display: 'flex',
-                              flexDirection: 'column',
+                              flex: "1 1 100%",
+                              overflow: "hidden",
+                              display: "flex",
+                              flexDirection: "column",
                             }}
                           />
                         )}
@@ -348,31 +348,31 @@ class HomeComponent extends React.Component {
                 return (
                   <div
                     style={{
-                      flex: '1 1 100%',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      overflow: 'hidden',
+                      flex: "1 1 100%",
+                      display: "flex",
+                      flexDirection: "row",
+                      overflow: "hidden",
                     }}>
                     <div
                       style={{
-                        display: 'flex',
-                        flex: '1 1 100%',
-                        flexDirection: 'column',
-                        overflow: 'hidden',
+                        display: "flex",
+                        flex: "1 1 100%",
+                        flexDirection: "column",
+                        overflow: "hidden",
                       }}>
                       {this.getMap()}
                     </div>
                     <div
                       style={{
-                        flex: '1 1 100%',
-                        overflow: 'hidden',
-                        display: 'flex',
-                        flexDirection: 'column',
+                        flex: "1 1 100%",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
                       }}>
                       <Switch>
                         <Route
                           exact
-                          path={process.env.PUBLIC_URL + '/:id'}
+                          path={process.env.PUBLIC_URL + "/:id"}
                           render={props => {
                             return (
                               <DetailsContainer
@@ -400,17 +400,17 @@ class HomeComponent extends React.Component {
                 return (
                   <div
                     style={{
-                      flex: '1 1 100%',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      overflow: 'hidden',
+                      flex: "1 1 100%",
+                      display: "flex",
+                      flexDirection: "row",
+                      overflow: "hidden",
                     }}>
                     <div
                       style={{
-                        display: 'flex',
-                        flex: '1 1 100%',
-                        flexDirection: 'column',
-                        overflow: 'hidden',
+                        display: "flex",
+                        flex: "1 1 100%",
+                        flexDirection: "column",
+                        overflow: "hidden",
                       }}>
                       <Switch>
                         <Route
@@ -425,15 +425,15 @@ class HomeComponent extends React.Component {
                     </div>
                     <div
                       style={{
-                        flex: '1 1 100%',
-                        overflow: 'hidden',
-                        display: 'flex',
-                        flexDirection: 'column',
+                        flex: "1 1 100%",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
                       }}>
                       <Switch>
                         <Route
                           exact
-                          path={process.env.PUBLIC_URL + '/:id'}
+                          path={process.env.PUBLIC_URL + "/:id"}
                           render={props => {
                             return (
                               <DetailsContainer
@@ -456,22 +456,22 @@ class HomeComponent extends React.Component {
                 return (
                   <div
                     style={{
-                      flex: '1 1 100%',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      overflow: 'hidden',
+                      flex: "1 1 100%",
+                      display: "flex",
+                      flexDirection: "row",
+                      overflow: "hidden",
                     }}>
                     <div
                       style={{
-                        display: 'flex',
-                        flex: '1 1 100%',
-                        flexDirection: 'column',
-                        overflow: 'hidden',
+                        display: "flex",
+                        flex: "1 1 100%",
+                        flexDirection: "column",
+                        overflow: "hidden",
                       }}>
                       <Switch>
                         <Route
                           exact
-                          path={process.env.PUBLIC_URL + '/:id'}
+                          path={process.env.PUBLIC_URL + "/:id"}
                           render={h => {
                             return (
                               <DetailsContainer
@@ -489,10 +489,10 @@ class HomeComponent extends React.Component {
                     </div>
                     <div
                       style={{
-                        flex: '1 1 100%',
-                        overflow: 'hidden',
-                        display: 'flex',
-                        flexDirection: 'column',
+                        flex: "1 1 100%",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
                       }}>
                       <Switch>
                         <Route
@@ -512,22 +512,22 @@ class HomeComponent extends React.Component {
                 return (
                   <div
                     style={{
-                      flex: '1 1 100%',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      overflow: 'hidden',
+                      flex: "1 1 100%",
+                      display: "flex",
+                      flexDirection: "row",
+                      overflow: "hidden",
                     }}>
                     <div
                       style={{
-                        display: 'flex',
-                        flex: '1 1 100%',
-                        flexDirection: 'column',
-                        overflow: 'hidden',
+                        display: "flex",
+                        flex: "1 1 100%",
+                        flexDirection: "column",
+                        overflow: "hidden",
                       }}>
                       <Switch>
                         <Route
                           exact
-                          path={process.env.PUBLIC_URL + '/:id'}
+                          path={process.env.PUBLIC_URL + "/:id"}
                           render={props => {
                             return (
                               <DetailsContainer
@@ -550,10 +550,10 @@ class HomeComponent extends React.Component {
                     </div>
                     <div
                       style={{
-                        flex: '1 1 100%',
-                        overflow: 'hidden',
-                        display: 'flex',
-                        flexDirection: 'column',
+                        flex: "1 1 100%",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
                       }}>
                       {this.getMap()}
                     </div>
@@ -594,37 +594,37 @@ const mapDispatchToProps = dispatch => {
     setIndex: (e, titleProps) => {
       const { index } = titleProps;
       dispatch({
-        type: 'LFMSELECTED',
+        type: "LFMSELECTED",
         index: index,
       });
     },
     boreholeSeleced: id => {
       dispatch({
-        type: 'HOME_BOREHOLE_SELECTED',
+        type: "HOME_BOREHOLE_SELECTED",
         id: id,
       });
     },
     boreholeHover: borehole => {
       dispatch({
-        type: 'HOME_BOREHOLE_HOVER',
+        type: "HOME_BOREHOLE_HOVER",
         borehole: borehole,
       });
     },
     mapHover: id => {
       dispatch({
-        type: 'HOME_MAP_HOVER',
+        type: "HOME_MAP_HOVER",
         id: id,
       });
     },
     filterByExtent: extent => {
       dispatch({
-        type: 'SEARCH_EXTENT_CHANGED',
+        type: "SEARCH_EXTENT_CHANGED",
         extent: extent,
       });
     },
     resetCart: () => {
       dispatch({
-        type: 'CHECKOUT_RESET_CART',
+        type: "CHECKOUT_RESET_CART",
       });
     },
   };

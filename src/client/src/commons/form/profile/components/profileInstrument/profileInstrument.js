@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import * as Styled from './styles';
-import Instrument from './components/instrument';
-import { Button } from 'semantic-ui-react';
-import TranslationText from '../../../translationText';
-import { profileKind } from '../../constance';
+import React, { useCallback, useEffect, useState } from "react";
+import * as Styled from "./styles";
+import Instrument from "./components/instrument";
+import { Button } from "semantic-ui-react";
+import TranslationText from "../../../translationText";
+import { profileKind } from "../../constance";
 import {
   createNewInstrument,
   createNewLayer,
@@ -11,8 +11,8 @@ import {
   deletingLayer,
   getData,
   getProfile,
-} from './api';
-import useCasingList from '../../hooks/useCasingList';
+} from "./api";
+import useCasingList from "../../hooks/useCasingList";
 
 const ProfileInstrument = props => {
   const {
@@ -88,12 +88,12 @@ const ProfileInstrument = props => {
       if (selectedStratigraphyID) {
         createNewInstrument(state.instrumentID, selectedStratigraphyID).then(
           response => {
-            if (response) onUpdated('newLayer');
+            if (response) onUpdated("newLayer");
           },
         );
       } else {
         createNewLayer(state.instrumentID).then(response => {
-          if (response) onUpdated('newLayer');
+          if (response) onUpdated("newLayer");
         });
       }
     }
@@ -101,7 +101,7 @@ const ProfileInstrument = props => {
 
   const deleteLayer = id => {
     deletingLayer(id).then(response => {
-      if (response) onUpdated('deleteLayer');
+      if (response) onUpdated("deleteLayer");
     });
   };
 

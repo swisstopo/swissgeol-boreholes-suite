@@ -1,14 +1,12 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
 
-import MapOverlayComponent from './mapOverlayCmp';
+import MapOverlayComponent from "./mapOverlayCmp";
 
-import {
-  patchSettings
-} from '../../../api-lib/index';
+import { patchSettings } from "../../../api-lib/index";
 
-const MapOverlay = (props) => {
+const MapOverlay = props => {
   return (
     <MapOverlayComponent
       isFetching={props.setting.isFetching}
@@ -30,68 +28,65 @@ MapOverlay.propTypes = {
   setSelectedLayer: PropTypes.func,
   setTransparency: PropTypes.func,
   setting: PropTypes.object,
-  toggleVisibility: PropTypes.func
+  toggleVisibility: PropTypes.func,
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     setting: state.setting,
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
-    toggleVisibility: (layer) => {
+    toggleVisibility: layer => {
       dispatch(
         patchSettings(
           "map.explorer",
-          layer.visibility !== undefined? !layer.visibility: true,
-          [layer.Identifier, 'visibility']
-        )
+          layer.visibility !== undefined ? !layer.visibility : true,
+          [layer.Identifier, "visibility"],
+        ),
       );
     },
     setTransparency: (layer, value) => {
       dispatch({
         disableFetching: true,
-        path: '/setting',
-        type: 'PATCH',
+        path: "/setting",
+        type: "PATCH",
         tree: "map.explorer",
         value: value,
-        key: [layer.Identifier, 'transparency']
+        key: [layer.Identifier, "transparency"],
       });
     },
     saveTransparency: (layer, index) => {
       dispatch(
         patchSettings(
           "map.explorer",
-          layer.transparency !== undefined? layer.transparency: 0,
-          [layer.Identifier, 'transparency']
-        )
+          layer.transparency !== undefined ? layer.transparency : 0,
+          [layer.Identifier, "transparency"],
+        ),
       );
     },
-    moveDown: (layer) => {
+    moveDown: layer => {
       dispatch(
         patchSettings(
           "map.explorer",
-          layer.position !== undefined? (layer.position - 1): 0,
-          [layer.Identifier, 'position']
-        )
+          layer.position !== undefined ? layer.position - 1 : 0,
+          [layer.Identifier, "position"],
+        ),
       );
     },
-    moveUp: (layer) => {
+    moveUp: layer => {
       dispatch(
         patchSettings(
           "map.explorer",
-          layer.position !== undefined? (layer.position + 1): 0,
-          [layer.Identifier, 'position']
-        )
+          layer.position !== undefined ? layer.position + 1 : 0,
+          [layer.Identifier, "position"],
+        ),
       );
-    }
+    },
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MapOverlay);
+export default connect(mapStateToProps, mapDispatchToProps)(MapOverlay);

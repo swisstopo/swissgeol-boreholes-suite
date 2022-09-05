@@ -51,7 +51,7 @@ class LoginScreen extends React.Component {
   }
 
   componentDidMount() {
-    getContentDraft("login").then((r) => {
+    getContentDraft("login").then(r => {
       if (r.data.data !== null) {
         this.setState({
           isFetching: false,
@@ -73,7 +73,7 @@ class LoginScreen extends React.Component {
         draftContent("login", {
           body: this.state.body,
           title: this.state.title,
-        }).then((r) => {
+        }).then(r => {
           if (r.data.success === true) {
             this.setState({
               dirty: false,
@@ -87,12 +87,12 @@ class LoginScreen extends React.Component {
             });
           }
         });
-      }
+      },
     );
   }
 
   publishContent() {
-    publishContent("login").then((r) => {
+    publishContent("login").then(r => {
       if (r.data.success === true) {
         this.setState({
           draft: false,
@@ -117,38 +117,33 @@ class LoginScreen extends React.Component {
           flex: 1,
           display: "flex",
           flexDirection: "row",
-        }}
-      >
+        }}>
         <div
           style={{
             flex: "1 1 60%",
             padding: "1em",
             margin: "1em",
-          }}
-        >
+          }}>
           <div
             style={{
               // alignItems: 'center',
               display: "flex",
               flexDirection: "row",
               paddingBottom: "1em",
-            }}
-          >
+            }}>
             <div
               style={{
                 color: "rgb(237, 29, 36)",
                 fontStyle: "italic",
                 whiteSpace: "nowrap",
-              }}
-            >
+              }}>
               {this.state.draft === true ? t("draft") : t("loginScreen")}
             </div>
             <div
               style={{
                 flex: "1 1 100%",
                 textAlign: "right",
-              }}
-            >
+              }}>
               <Button
                 onClick={() => {
                   this.setState({
@@ -162,8 +157,7 @@ class LoginScreen extends React.Component {
                       ? null
                       : "none",
                   textTransform: "capitalize",
-                }}
-              >
+                }}>
                 {t("publish")}
               </Button>
               <Modal open={this.state.confirmPublication} size="mini">
@@ -183,8 +177,7 @@ class LoginScreen extends React.Component {
                     }}
                     style={{
                       textTransform: "capitalize",
-                    }}
-                  >
+                    }}>
                     {t("cancel")}
                   </Button>
                   <Button
@@ -192,8 +185,7 @@ class LoginScreen extends React.Component {
                     primary
                     style={{
                       textTransform: "capitalize",
-                    }}
-                  >
+                    }}>
                     {t("publish")}
                   </Button>
                 </Modal.Actions>
@@ -209,8 +201,7 @@ class LoginScreen extends React.Component {
                   marginLeft: "1em",
                   textTransform: "capitalize",
                   display: this.state.dirty === true ? null : "none",
-                }}
-              >
+                }}>
                 {t("save")}
               </Button>
             </div>
@@ -219,8 +210,7 @@ class LoginScreen extends React.Component {
             style={{
               display: "flex",
               justifyContent: "flex-end",
-            }}
-          >
+            }}>
             <TranslationKeys
               ignori18n
               handleSelectedLanguage={this.changeLanguage}
@@ -262,23 +252,20 @@ class LoginScreen extends React.Component {
             flex: "1 1 100%",
             padding: "1em",
             margin: "1em",
-          }}
-        >
+          }}>
           <div
             style={{
               alignItems: "center",
               display: "flex",
               flexDirection: "row",
               paddingBottom: "1em",
-            }}
-          >
+            }}>
             <div
               style={{
                 color: "rgb(237, 29, 36)",
                 fontStyle: "italic",
                 textTransform: "capitalize",
-              }}
-            >
+              }}>
               {t("preview")}
             </div>
           </div>
@@ -290,13 +277,11 @@ class LoginScreen extends React.Component {
               flex: "1 1 100%",
               justifyContent: "center",
               height: "100%",
-            }}
-          >
+            }}>
             <div
               style={{
                 transform: "scale(0.80)",
-              }}
-            >
+              }}>
               <Login
                 body={this.state.body[this.state.lang]}
                 title={this.state.title[this.state.lang]}
@@ -325,13 +310,13 @@ LoginScreen.propTypes = {
 // LoginScreen.defaultProps = {
 // };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     user: state.core_user,
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
   };
@@ -339,5 +324,5 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(withTranslation(["common", "messages"])(LoginScreen));

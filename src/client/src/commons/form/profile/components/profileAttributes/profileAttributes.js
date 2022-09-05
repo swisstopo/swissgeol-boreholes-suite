@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import * as Styled from './styles';
-import { Checkbox } from 'semantic-ui-react';
-import TranslationText from '../../../translationText';
-import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
-import { getData, sendAttribute } from './api';
-import ProfileAttributeList from './components/profileAttributeList/profileAttributeList';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import * as Styled from "./styles";
+import { Checkbox } from "semantic-ui-react";
+import TranslationText from "../../../translationText";
+import _ from "lodash";
+import { useTranslation } from "react-i18next";
+import { getData, sendAttribute } from "./api";
+import ProfileAttributeList from "./components/profileAttributeList/profileAttributeList";
+import { useSelector } from "react-redux";
 
 const ProfileAttributes = props => {
   const { id, isEditable, onUpdated, attribute, reloadAttribute } = props.data;
   const { codes, geocode } = useSelector(state => ({
     codes: state.core_domain_list,
-    geocode: 'Geol',
+    geocode: "Geol",
   }));
 
   const { t } = useTranslation();
@@ -24,12 +24,12 @@ const ProfileAttributes = props => {
     allfields: false,
     updateAttributeDelay: {},
     layer: {
-      id: id?.hasOwnProperty('id') ? id : null,
+      id: id?.hasOwnProperty("id") ? id : null,
       kind: null,
       depth_from: null,
       depth_to: null,
-      lithological_description: '',
-      facies_description: '',
+      lithological_description: "",
+      facies_description: "",
       last: null,
       qt_description: null,
       lithology: null,
@@ -55,7 +55,7 @@ const ProfileAttributes = props => {
       uscs_1: null,
       uscs_2: null,
       uscs_3: [],
-      uscs_original: '',
+      uscs_original: "",
       uscs_determination: [],
       unconrocks: null,
       debris: [],
@@ -63,7 +63,7 @@ const ProfileAttributes = props => {
       gradation: null,
       lithok: null,
       kirost: null,
-      notes: '',
+      notes: "",
       fill_material: null,
       casing_id: null,
       casing_kind: null,
@@ -105,7 +105,7 @@ const ProfileAttributes = props => {
 
   const updateChange = (attribute, value, to = true, isNumber = false) => {
     if (!isEditable) {
-      alert(t('common:errorStartEditing'));
+      alert(t("common:errorStartEditing"));
       return;
     }
 
@@ -144,7 +144,7 @@ const ProfileAttributes = props => {
   };
 
   const isVisibleFunction = field => {
-    if (_.has(codes, 'data.layer_kind') && _.isArray(codes.data.layer_kind)) {
+    if (_.has(codes, "data.layer_kind") && _.isArray(codes.data.layer_kind)) {
       for (let idx = 0; idx < codes.data.layer_kind.length; idx++) {
         const element = codes.data.layer_kind[idx];
         if (element.code === geocode) {

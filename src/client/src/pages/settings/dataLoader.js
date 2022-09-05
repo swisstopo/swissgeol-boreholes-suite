@@ -88,8 +88,7 @@ class DataLoader extends React.Component {
           flex: "1 1 0%",
           justifyContent: "center",
           height: "100%",
-        }}
-      >
+        }}>
         <div
           style={{
             backgroundColor: "#fff",
@@ -97,27 +96,23 @@ class DataLoader extends React.Component {
             boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
             display: "flex",
             flexDirection: "column",
-          }}
-        >
+          }}>
           <div
             style={{
               display: "flex",
               flexDirection: "row",
               padding: "2em",
-            }}
-          >
+            }}>
             <div
               style={{
                 width: "300px",
                 paddingRight: "1em",
-              }}
-            >
+              }}>
               <div
                 style={{
                   display: "flex",
                   flexDirection: "row",
-                }}
-              >
+                }}>
                 <img
                   alt="Swiss Logo"
                   src={process.env.PUBLIC_URL + "/logo.svg"}
@@ -129,21 +124,18 @@ class DataLoader extends React.Component {
                   style={{
                     marginLeft: "1em",
                     textAlign: "left",
-                  }}
-                >
+                  }}>
                   <div>
                     <div
                       style={{
                         fontSize: "1.2em",
-                      }}
-                    >
+                      }}>
                       {this.state.title[this.props.i18n.language]}
                     </div>
                     <div
                       style={{
                         fontSize: "0.8em",
-                      }}
-                    >
+                      }}>
                       Borehole Data Management System
                     </div>
                   </div>
@@ -153,8 +145,7 @@ class DataLoader extends React.Component {
               <div
                 style={{
                   paddingTop: "2em",
-                }}
-              >
+                }}>
                 {this.state.body.hasOwnProperty(this.props.i18n.language) ? (
                   <Markdown>
                     {this.state.body[this.props.i18n.language]}
@@ -175,15 +166,13 @@ class DataLoader extends React.Component {
               style={{
                 width: "300px",
                 padding: "0px 1em 0px 2em",
-              }}
-            >
+              }}>
               <div
                 style={{
                   fontSize: "1.2em",
                   paddingBottom: "2em",
                   textAlign: "center",
-                }}
-              >
+                }}>
                 Sign in
               </div>
               {/** Trick to disable autofill in chrome */}
@@ -198,22 +187,21 @@ class DataLoader extends React.Component {
                 style={{
                   fontSize: "0.8em",
                   paddingBottom: "4px",
-                }}
-              >
+                }}>
                 Username
               </div>
               <Input
                 autoComplete="off"
                 fluid
-                onChange={(e) => {
+                onChange={e => {
                   this.props.setAuthentication(
                     e.target.value,
                     this.props.user.authentication !== null
                       ? this.props.user.authentication.password
-                      : ""
+                      : "",
                   );
                 }}
-                onKeyPress={(e) => {
+                onKeyPress={e => {
                   if (e.key === "Enter") {
                     this.props.loadUser();
                   }
@@ -231,22 +219,21 @@ class DataLoader extends React.Component {
                 style={{
                   fontSize: "0.8em",
                   padding: "8px 0px 4px 0px",
-                }}
-              >
+                }}>
                 Password
               </div>
               <Input
                 autoComplete="off"
                 fluid
-                onChange={(e) => {
+                onChange={e => {
                   this.props.setAuthentication(
                     this.props.user.authentication !== null
                       ? this.props.user.authentication.username
                       : "",
-                    e.target.value
+                    e.target.value,
                   );
                 }}
-                onKeyPress={(e) => {
+                onKeyPress={e => {
                   if (e.key === "Enter") {
                     this.props.loadUser();
                   }
@@ -278,8 +265,7 @@ class DataLoader extends React.Component {
                 style={{
                   color: "red",
                   fontSize: "0.8em",
-                }}
-              >
+                }}>
                 {this.props.user.error === false ? (
                   <span>&nbsp;</span>
                 ) : (
@@ -305,8 +291,7 @@ class DataLoader extends React.Component {
               display: "flex",
               justifyContent: "center",
               paddingBottom: "10px",
-            }}
-          >
+            }}>
             <TranslationKeys />
           </div>
         </div>
@@ -326,13 +311,13 @@ DataLoader.propTypes = {
   user: PropTypes.object,
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     user: state.core_user,
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
     loadDomains: () => {
@@ -362,5 +347,5 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(withTranslation("common")(DataLoader));

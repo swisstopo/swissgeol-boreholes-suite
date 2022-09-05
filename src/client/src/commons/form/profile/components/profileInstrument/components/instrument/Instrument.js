@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import * as Styled from './styles';
-import { Input, Form, Button } from 'semantic-ui-react';
-import TranslationText from '../../../../../translationText';
-import DomainDropdown from '../../../../../domain/dropdown/domainDropdown';
-import { patchLayer } from '../../../../../../../api-lib/index';
-import { InstrumentAttributes } from '../../data/InstrumentAttributes';
-import { useTranslation } from 'react-i18next';
-import _ from 'lodash';
-import CasingList from '../../../casingList';
+import React, { useState, useEffect } from "react";
+import * as Styled from "./styles";
+import { Input, Form, Button } from "semantic-ui-react";
+import TranslationText from "../../../../../translationText";
+import DomainDropdown from "../../../../../domain/dropdown/domainDropdown";
+import { patchLayer } from "../../../../../../../api-lib/index";
+import { InstrumentAttributes } from "../../data/InstrumentAttributes";
+import { useTranslation } from "react-i18next";
+import _ from "lodash";
+import CasingList from "../../../casingList";
 
 const Instrument = props => {
   const { index, info, deleting, isEditable, update, casing } = props.data;
@@ -36,7 +36,7 @@ const Instrument = props => {
 
   const updateChange = (attribute, value, to = true, isNumber = false) => {
     if (!isEditable) {
-      alert(t('common:errorStartEditing'));
+      alert(t("common:errorStartEditing"));
       return;
     }
 
@@ -63,7 +63,7 @@ const Instrument = props => {
           .then(response => {
             if (response.data.success) {
               setState(prevState => ({ ...prevState, isPatching: false }));
-              if (attribute === 'instrument_casing_id') {
+              if (attribute === "instrument_casing_id") {
                 update();
               }
             } else {
@@ -96,7 +96,7 @@ const Instrument = props => {
               </Styled.Label>
             )}
 
-            {item.type === 'Input' && (
+            {item.type === "Input" && (
               <Styled.AttributesItem>
                 <Input
                   autoCapitalize="off"
@@ -105,22 +105,22 @@ const Instrument = props => {
                   onChange={e => {
                     updateChange(
                       item.value,
-                      e.target.value === '' ? null : e.target.value,
+                      e.target.value === "" ? null : e.target.value,
                       item?.to,
                       item?.isNumber,
                     );
                   }}
                   spellCheck="false"
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                   value={
                     _.isNil(state?.instrument?.[item.value])
-                      ? ''
+                      ? ""
                       : state.instrument[item.value]
                   }
                 />
               </Styled.AttributesItem>
             )}
-            {item.type === 'Dropdown' && (
+            {item.type === "Dropdown" && (
               <Styled.AttributesItem>
                 <DomainDropdown
                   multiple={item.multiple}
@@ -143,7 +143,7 @@ const Instrument = props => {
               </Styled.AttributesItem>
             )}
 
-            {item.type === 'CasingDropdown' && (
+            {item.type === "CasingDropdown" && (
               <Styled.AttributesItem>
                 <CasingList
                   data={casing}
@@ -158,7 +158,7 @@ const Instrument = props => {
               </Styled.AttributesItem>
             )}
 
-            {item.type === 'Button' && (
+            {item.type === "Button" && (
               <Button
                 disabled={!isEditable}
                 icon="close"

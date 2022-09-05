@@ -32,8 +32,7 @@ class MenuComponent extends React.Component {
           height: "5em",
           padding: "0px 1em",
           zIndex: 10,
-        }}
-      >
+        }}>
         <img
           alt="ch logo"
           src={process.env.PUBLIC_URL + "/logo.svg"}
@@ -45,22 +44,19 @@ class MenuComponent extends React.Component {
         <div
           style={{
             marginLeft: "1em",
-          }}
-        >
+          }}>
           <div
             style={{
               fontSize: "1.2em",
               fontWeight: "bold",
-            }}
-          >
+            }}>
             swissforages.ch
           </div>
           <div
             style={{
               color: "#787878",
               fontSize: "0.8em",
-            }}
-          >
+            }}>
             {(() => {
               switch (mode) {
                 case "viewer":
@@ -100,8 +96,7 @@ class MenuComponent extends React.Component {
             flexDirection: "column",
             padding: "1em",
             textAlign: "right",
-          }}
-        >
+          }}>
           <Popup
             content={
               <Feedback
@@ -139,33 +134,28 @@ class MenuComponent extends React.Component {
                 cursor: "pointer",
               }}
             />
-          }
-        >
+          }>
           <div
             style={{
               minWidth: "200px",
-            }}
-          >
+            }}>
             {this.props.user.data !== null ? (
               <div
                 style={{
                   padding: "0.5em",
-                }}
-              >
+                }}>
                 <div>{this.props.user.data.name}</div>
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "row",
                     fontSize: "0.8em",
-                  }}
-                >
+                  }}>
                   <div
                     style={{
                       color: "#787878",
                       flex: "1 1 100%",
-                    }}
-                  >
+                    }}>
                     {this.props.user.data.username}
                   </div>
                   <div>
@@ -178,8 +168,7 @@ class MenuComponent extends React.Component {
                         }
                         // Clear cache
                         // window.location.reload(true);
-                      }}
-                    >
+                      }}>
                       Logout
                     </span>
                   </div>
@@ -194,8 +183,7 @@ class MenuComponent extends React.Component {
               selection
               style={{
                 marginTop: "0px",
-              }}
-            >
+              }}>
               <List.Item
                 onClick={() => {
                   if (_.isFunction(handleModeChange)) {
@@ -204,8 +192,7 @@ class MenuComponent extends React.Component {
                 }}
                 style={{
                   padding: "0.5em",
-                }}
-              >
+                }}>
                 <List.Icon name="binoculars" verticalAlign="middle" />
                 <List.Content>
                   <List.Header as="h4">Viewer</List.Header>
@@ -228,8 +215,7 @@ class MenuComponent extends React.Component {
                   }}
                   style={{
                     padding: "0.5em",
-                  }}
-                >
+                  }}>
                   <List.Icon name="edit" verticalAlign="middle" />
                   <List.Content>
                     <List.Header as="h4">Editor</List.Header>
@@ -247,8 +233,7 @@ class MenuComponent extends React.Component {
                 }}
                 style={{
                   padding: "0.5em",
-                }}
-              >
+                }}>
                 <List.Icon name="cog" verticalAlign="middle" />
                 <List.Content>
                   <List.Header as="h4">
@@ -268,8 +253,7 @@ class MenuComponent extends React.Component {
                   }}
                   style={{
                     padding: "0.5em",
-                  }}
-                >
+                  }}>
                   <List.Icon name="edit" verticalAlign="middle" />
                   <List.Content>
                     <List.Header as="h4">Debug</List.Header>
@@ -289,8 +273,7 @@ class MenuComponent extends React.Component {
               style={{
                 display: "flex",
                 justifyContent: "center",
-              }}
-            >
+              }}>
               <TranslationKeys />
             </div>
           </div>
@@ -300,7 +283,7 @@ class MenuComponent extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     checkout: state.checkout,
     developer: state.developer,
@@ -308,7 +291,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
     unsetAuthentication: (username, password) => {
@@ -330,5 +313,5 @@ MenuComponent.propTypes = {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(withTranslation(["common"])(MenuComponent));

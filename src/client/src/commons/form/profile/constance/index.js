@@ -1,4 +1,4 @@
-import { profileKinds } from '../data/profileKinds';
+import { profileKinds } from "../data/profileKinds";
 
 export const profileKind = {
   STRATIGRAPHY: profileKinds[0].kindNumber,

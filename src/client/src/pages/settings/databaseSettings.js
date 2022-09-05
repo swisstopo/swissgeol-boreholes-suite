@@ -1,7 +1,7 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { withTranslation } from "react-i18next";
 
 import {
   Button,
@@ -11,15 +11,15 @@ import {
   Segment,
   Form,
   Radio,
-} from 'semantic-ui-react';
+} from "semantic-ui-react";
 
-import WorkgroupRadioGroup from '../../commons/form/workgroup/radio';
-import WorkgroupMultiselect from '../../commons/form/workgroup/multi';
-import SupplierRadioGroup from '../../commons/form/supplier/radio';
-import TranslationText from '../../commons/form/translationText';
-import DateText from '../../commons/form/dateText';
+import WorkgroupRadioGroup from "../../commons/form/workgroup/radio";
+import WorkgroupMultiselect from "../../commons/form/workgroup/multi";
+import SupplierRadioGroup from "../../commons/form/supplier/radio";
+import TranslationText from "../../commons/form/translationText";
+import DateText from "../../commons/form/dateText";
 
-import DownloadLink from '../../commons/files/downloadlink';
+import DownloadLink from "../../commons/files/downloadlink";
 
 import {
   // exportDatabase,
@@ -32,7 +32,7 @@ import {
   listWorkgroups,
   getWorkgroups,
   reloadUser,
-} from '../../api-lib/index';
+} from "../../api-lib/index";
 
 class DatabaseSettings extends React.Component {
   constructor(props) {
@@ -47,9 +47,9 @@ class DatabaseSettings extends React.Component {
       enabledWorkgroups: [],
       importWorkgroup: null,
       importSupplier: null,
-      importType: 'existingWorkgroup',
+      importType: "existingWorkgroup",
       file: null,
-      supplierName: '',
+      supplierName: "",
       suppliers: [],
       supplier: null,
 
@@ -85,7 +85,7 @@ class DatabaseSettings extends React.Component {
             const status = r.data.data.status;
 
             // No exports have been done so far
-            if (status === 'empty') {
+            if (status === "empty") {
               this.setState(
                 {
                   fetchingStatus: false,
@@ -100,7 +100,7 @@ class DatabaseSettings extends React.Component {
               );
 
               // an export is currently running
-            } else if (status === 'running') {
+            } else if (status === "running") {
               this.setState(
                 {
                   fetchingStatus: true,
@@ -116,7 +116,7 @@ class DatabaseSettings extends React.Component {
               );
 
               // an export is finished and ready to be downloaded
-            } else if (status === 'done') {
+            } else if (status === "done") {
               this.setState(
                 {
                   fetchingStatus: false,
@@ -148,9 +148,9 @@ class DatabaseSettings extends React.Component {
             enabledWorkgroups: enabledWorkgroups,
             importWorkgroup: null,
             importSupplier: null,
-            importType: 'existingWorkgroup',
+            importType: "existingWorkgroup",
             file: null,
-            supplierName: '',
+            supplierName: "",
             suppliers: suppliers,
             supplier: null,
 
@@ -172,9 +172,9 @@ class DatabaseSettings extends React.Component {
             enabledWorkgroups: [],
             importWorkgroup: null,
             importSupplier: null,
-            importType: 'existingWorkgroup',
+            importType: "existingWorkgroup",
             file: null,
-            supplierName: '',
+            supplierName: "",
             suppliers: [],
             supplier: null,
 
@@ -213,7 +213,7 @@ class DatabaseSettings extends React.Component {
     return (
       <div
         style={{
-          padding: '2em',
+          padding: "2em",
           flex: 1,
         }}>
         <div
@@ -223,19 +223,19 @@ class DatabaseSettings extends React.Component {
             });
           }}
           style={{
-            flexDirection: 'row',
-            display: 'flex',
-            cursor: 'pointer',
-            backgroundColor: this.state.export ? '#f5f5f5' : '#fff',
+            flexDirection: "row",
+            display: "flex",
+            cursor: "pointer",
+            backgroundColor: this.state.export ? "#f5f5f5" : "#fff",
             padding: 10,
           }}>
           <div>
             <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
+                display: "flex",
+                alignItems: "center",
                 fontSize: 18,
-                fontWeight: 'bold',
+                fontWeight: "bold",
               }}>
               <TranslationText id="export" />
             </div>
@@ -244,10 +244,10 @@ class DatabaseSettings extends React.Component {
           <div
             style={{
               flex: 1,
-              textAlign: 'right',
+              textAlign: "right",
             }}>
             <Button color="red" size="small">
-              {this.state.export === true ? t('collapse') : t('expand')}
+              {this.state.export === true ? t("collapse") : t("expand")}
             </Button>
           </div>
         </div>
@@ -266,7 +266,7 @@ class DatabaseSettings extends React.Component {
             <div
               key="web-bdms-db-setting-2"
               style={{
-                marginTop: '1.5em',
+                marginTop: "1.5em",
               }}>
               <Button
                 disabled={
@@ -325,9 +325,9 @@ class DatabaseSettings extends React.Component {
                     exportDatabaseCancel();
                   }}
                   style={{
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                    color: 'rgb(33, 133, 208)',
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    color: "rgb(33, 133, 208)",
                   }}>
                   <TranslationText id="cancel" />
                 </span>
@@ -361,19 +361,19 @@ class DatabaseSettings extends React.Component {
             });
           }}
           style={{
-            flexDirection: 'row',
-            display: 'flex',
-            cursor: 'pointer',
-            backgroundColor: this.state.restore ? '#f5f5f5' : '#fff',
+            flexDirection: "row",
+            display: "flex",
+            cursor: "pointer",
+            backgroundColor: this.state.restore ? "#f5f5f5" : "#fff",
             padding: 10,
           }}>
           <div>
             <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
+                display: "flex",
+                alignItems: "center",
                 fontSize: 18,
-                fontWeight: 'bold',
+                fontWeight: "bold",
               }}>
               <TranslationText id="import" />
             </div>
@@ -382,10 +382,10 @@ class DatabaseSettings extends React.Component {
           <div
             style={{
               flex: 1,
-              textAlign: 'right',
+              textAlign: "right",
             }}>
             <Button color="red" size="small">
-              {this.state.restore === true ? t('collapse') : t('expand')}
+              {this.state.restore === true ? t("collapse") : t("expand")}
             </Button>
           </div>
         </div>
@@ -394,28 +394,28 @@ class DatabaseSettings extends React.Component {
             <div
               // style={{ margin: 0 }}
               style={{
-                marginBottom: '1em',
-                padding: '1em',
+                marginBottom: "1em",
+                padding: "1em",
               }}>
               <Form>
                 <Form.Field>
                   <Radio
-                    checked={this.state.importType === 'existingWorkgroup'}
+                    checked={this.state.importType === "existingWorkgroup"}
                     label="Add to an existing regular workgroup (data can be edited later):"
                     name="radioGroup"
                     onChange={() =>
-                      this.setState({ importType: 'existingWorkgroup' })
+                      this.setState({ importType: "existingWorkgroup" })
                     }
                     value="existingWorkgroup"
                   />
                 </Form.Field>
                 <Form.Field>
                   <Radio
-                    checked={this.state.importType === 'newSupplier'}
+                    checked={this.state.importType === "newSupplier"}
                     label='Import into a new "supplier" workgroup:'
                     name="radioGroup"
                     onChange={() =>
-                      this.setState({ importType: 'newSupplier' })
+                      this.setState({ importType: "newSupplier" })
                     }
                     value="newSupplier"
                   />
@@ -423,18 +423,18 @@ class DatabaseSettings extends React.Component {
                 {this.state.suppliers.length > 0 ? (
                   <Form.Field>
                     <Radio
-                      checked={this.state.importType === 'existingSupplier'}
+                      checked={this.state.importType === "existingSupplier"}
                       label='⚠️ Delete and rewrite the data into an existing "supplier" workgroup:'
                       name="radioGroup"
                       onChange={() =>
-                        this.setState({ importType: 'existingSupplier' })
+                        this.setState({ importType: "existingSupplier" })
                       }
                       value="existingSupplier"
                     />
                   </Form.Field>
                 ) : null}
               </Form>
-              {this.state.importType === 'newSupplier' ? (
+              {this.state.importType === "newSupplier" ? (
                 <Message info>
                   <Message.Header>Information</Message.Header>
                   <p>
@@ -444,7 +444,7 @@ class DatabaseSettings extends React.Component {
                   </p>
                 </Message>
               ) : null}
-              {this.state.importType === 'existingSupplier' ? (
+              {this.state.importType === "existingSupplier" ? (
                 <Message warning>
                   <Message.Header>Warning!</Message.Header>
                   <p>
@@ -453,7 +453,7 @@ class DatabaseSettings extends React.Component {
                   </p>
                 </Message>
               ) : null}
-              {this.state.importType === 'existingWorkgroup' ? (
+              {this.state.importType === "existingWorkgroup" ? (
                 <Message info>
                   <Message.Header>Information</Message.Header>
                   <p>
@@ -463,7 +463,7 @@ class DatabaseSettings extends React.Component {
                 </Message>
               ) : null}
               <Segment>
-                {this.state.importType === 'newSupplier' ? (
+                {this.state.importType === "newSupplier" ? (
                   <div>
                     <Form.Input
                       fluid
@@ -473,17 +473,17 @@ class DatabaseSettings extends React.Component {
                           supplierName: e.target.value,
                         });
                       }}
-                      placeholder={t('workgroup')}
+                      placeholder={t("workgroup")}
                       value={this.state.supplierName}
                     />
                   </div>
                 ) : null}
-                {this.state.importType === 'existingSupplier' ? (
+                {this.state.importType === "existingSupplier" ? (
                   <div>
                     <div
                       className="flex_fill"
                       style={{
-                        paddingLeft: '1em',
+                        paddingLeft: "1em",
                       }}>
                       <SupplierRadioGroup
                         filter={this.state.importSupplier}
@@ -497,12 +497,12 @@ class DatabaseSettings extends React.Component {
                     </div>
                   </div>
                 ) : null}
-                {this.state.importType === 'existingWorkgroup' ? (
+                {this.state.importType === "existingWorkgroup" ? (
                   <div>
                     <div
                       className="flex_fill"
                       style={{
-                        paddingLeft: '1em',
+                        paddingLeft: "1em",
                       }}>
                       <WorkgroupRadioGroup
                         all={false}
@@ -528,35 +528,35 @@ class DatabaseSettings extends React.Component {
                   }}
                   ref={e => (this.input = e)}
                   style={{
-                    fontFamily: 'inherit',
+                    fontFamily: "inherit",
                   }}
                   type="file"
                 />
                 <div
                   style={{
                     // textAlign: 'center'
-                    marginTop: '1.5em',
+                    marginTop: "1.5em",
                   }}>
                   <Button
                     disabled={
                       this.state.importing === true ||
                       !this.state.file ||
-                      (this.state.importType === 'newSupplier' &&
+                      (this.state.importType === "newSupplier" &&
                         !this.state.supplierName) ||
-                      (this.state.importType === 'existingSupplier' &&
+                      (this.state.importType === "existingSupplier" &&
                         !this.state.importSupplier) ||
-                      (this.state.importType === 'existingWorkgroup' &&
+                      (this.state.importType === "existingWorkgroup" &&
                         !this.state.importWorkgroup)
                     }
                     loading={this.state.importing === true}
-                    negative={this.state.importType === 'existingSupplier'}
+                    negative={this.state.importType === "existingSupplier"}
                     onClick={() => {
                       this.setState(
                         {
                           importing: true,
                         },
                         () => {
-                          if (this.state.importType === 'newSupplier') {
+                          if (this.state.importType === "newSupplier") {
                             importDatabaseNewSupplier(
                               this.state.supplierName,
                               this.state.file,
@@ -565,7 +565,7 @@ class DatabaseSettings extends React.Component {
                               this.props.reloadUser();
                             });
                           } else if (
-                            this.state.importType === 'existingSupplier'
+                            this.state.importType === "existingSupplier"
                           ) {
                             importDatabaseSupplier(
                               this.state.importSupplier,
@@ -574,7 +574,7 @@ class DatabaseSettings extends React.Component {
                               this.reset();
                             });
                           } else if (
-                            this.state.importType === 'existingWorkgroup'
+                            this.state.importType === "existingWorkgroup"
                           ) {
                             importDatabaseWorkgroup(
                               this.state.importWorkgroup,
@@ -586,7 +586,7 @@ class DatabaseSettings extends React.Component {
                         },
                       );
                     }}
-                    primary={this.state.importType !== 'existingSupplier'}
+                    primary={this.state.importType !== "existingSupplier"}
                     size="small">
                     Import
                   </Button>
@@ -634,4 +634,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation(['common'])(DatabaseSettings));
+)(withTranslation(["common"])(DatabaseSettings));

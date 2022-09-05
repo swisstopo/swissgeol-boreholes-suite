@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const Container = styled.div``;
 export const LayerContainer = styled.div`
@@ -8,5 +8,5 @@ export const LayerContainer = styled.div`
 
 export const Layer = styled.div`
   border: 1px solid lightgrey;
-  border-top: ${props => !props.isFirst && '0px'};
+  border-top: ${props => !props.isFirst && "0px"};
 `;

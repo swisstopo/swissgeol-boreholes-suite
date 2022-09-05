@@ -1,8 +1,8 @@
-import React from 'react';
-import * as Styled from './styles';
-import DateText from '../../../../../dateText';
-import { Icon } from 'semantic-ui-react';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import * as Styled from "./styles";
+import DateText from "../../../../../dateText";
+import { Icon } from "semantic-ui-react";
+import { useTranslation } from "react-i18next";
 
 const ProfileHeaderList = props => {
   const { profiles, selectedStratigraphy, setSelectedStratigraphy } = props;
@@ -18,12 +18,12 @@ const ProfileHeaderList = props => {
           }}
           style={{
             borderBottom:
-              item.id === selectedStratigraphy?.id && '2px solid black',
+              item.id === selectedStratigraphy?.id && "2px solid black",
           }}>
           <Styled.ItemName>
             {item.primary && <Icon name="check" />}
-            {item.name === null || item.name === ''
-              ? t('common:np')
+            {item.name === null || item.name === ""
+              ? t("common:np")
               : item.name}
           </Styled.ItemName>
           <Styled.ItemDate>

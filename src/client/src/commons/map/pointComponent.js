@@ -1,46 +1,46 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import _ from 'lodash';
-import { Map, View } from 'ol';
-import TileLayer from 'ol/layer/Tile';
-import WMTSTileGrid from 'ol/tilegrid/WMTS';
-import LayerGroup from 'ol/layer/Group';
-import WMTS from 'ol/source/WMTS';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import Stroke from 'ol/style/Stroke';
-import Fill from 'ol/style/Fill';
-import Style from 'ol/style/Style';
-import Circle from 'ol/style/Circle';
+import React from "react";
+import PropTypes from "prop-types";
+import _ from "lodash";
+import { Map, View } from "ol";
+import TileLayer from "ol/layer/Tile";
+import WMTSTileGrid from "ol/tilegrid/WMTS";
+import LayerGroup from "ol/layer/Group";
+import WMTS from "ol/source/WMTS";
+import VectorLayer from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
+import Stroke from "ol/style/Stroke";
+import Fill from "ol/style/Fill";
+import Style from "ol/style/Style";
+import Circle from "ol/style/Circle";
 
-import Draw from 'ol/interaction/Draw';
-import Modify from 'ol/interaction/Modify';
-import Point from 'ol/geom/Point';
-import Polygon from 'ol/geom/Polygon';
-import Feature from 'ol/Feature';
-import { defaults as defaultControls } from 'ol/control/util';
+import Draw from "ol/interaction/Draw";
+import Modify from "ol/interaction/Modify";
+import Point from "ol/geom/Point";
+import Polygon from "ol/geom/Polygon";
+import Feature from "ol/Feature";
+import { defaults as defaultControls } from "ol/control/util";
 
-import { get as getProjection, getTransform } from 'ol/proj';
+import { get as getProjection, getTransform } from "ol/proj";
 
-import { register } from 'ol/proj/proj4';
+import { register } from "ol/proj/proj4";
 
-import proj4 from 'proj4';
+import proj4 from "proj4";
 
-import { Segment, Button, Label, Icon } from 'semantic-ui-react';
+import { Segment, Button, Label, Icon } from "semantic-ui-react";
 
-import { getHeight, getAddressByPoint } from '../../api-lib/index';
+import { getHeight, getAddressByPoint } from "../../api-lib/index";
 
 const projections = {
-  'EPSG:21781':
-    '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs',
-  'EPSG:2056':
-    '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs',
-  'EPSG:21782':
-    '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=0 +y_0=0 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs',
-  'EPSG:4149':
-    '+proj=longlat +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +no_defs',
-  'EPSG:4150':
-    '+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs',
+  "EPSG:21781":
+    "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs",
+  "EPSG:2056":
+    "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs",
+  "EPSG:21782":
+    "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=0 +y_0=0 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs",
+  "EPSG:4149":
+    "+proj=longlat +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +no_defs",
+  "EPSG:4150":
+    "+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs",
 };
 
 class PointComponent extends React.Component {
@@ -52,7 +52,7 @@ class PointComponent extends React.Component {
     this.getAddress = this.getAddress.bind(this);
     this.transform = this.transform.bind(this);
     this.zoomtopoly = this.zoomtopoly.bind(this);
-    this.srs = 'EPSG:2056';
+    this.srs = "EPSG:2056";
 
     _.forEach(projections, function (proj, srs) {
       proj4.defs(srs, proj);
@@ -142,26 +142,26 @@ class PointComponent extends React.Component {
               minResolution: 2.5,
               // preload: Infinity,
               source: new WMTS({
-                crossOrigin: 'anonymous',
+                crossOrigin: "anonymous",
                 attributions: attribution,
-                url: 'https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.jpeg',
+                url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.jpeg",
                 tileGrid: tileGrid,
                 projection: getProjection(this.srs),
-                layer: 'ch.swisstopo.pixelkarte-farbe',
-                requestEncoding: 'REST',
+                layer: "ch.swisstopo.pixelkarte-farbe",
+                requestEncoding: "REST",
               }),
             }),
             new TileLayer({
               maxResolution: 2.5,
               // preload: Infinity,
               source: new WMTS({
-                crossOrigin: 'anonymous',
+                crossOrigin: "anonymous",
                 attributions: attribution,
-                url: 'https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png',
+                url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
                 tileGrid: tileGrid,
                 projection: getProjection(this.srs),
-                layer: 'ch.swisstopo.swisstlm3d-karte-farbe',
-                requestEncoding: 'REST',
+                layer: "ch.swisstopo.swisstlm3d-karte-farbe",
+                requestEncoding: "REST",
               }),
             }),
           ],
@@ -169,17 +169,17 @@ class PointComponent extends React.Component {
         new TileLayer({
           visible: this.state.satellite,
           source: new WMTS({
-            crossOrigin: 'anonymous',
+            crossOrigin: "anonymous",
             attributions: attribution,
-            url: 'https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.jpeg',
+            url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.jpeg",
             tileGrid: tileGrid,
             projection: getProjection(this.srs),
-            layer: 'ch.swisstopo.swissimage',
-            requestEncoding: 'REST',
+            layer: "ch.swisstopo.swissimage",
+            requestEncoding: "REST",
           }),
         }),
       ],
-      target: 'point',
+      target: "point",
       view: new View({
         /*maxResolution: 340,
         minResolution: 1,*/
@@ -202,7 +202,7 @@ class PointComponent extends React.Component {
 
     // ol Drawing point interaction declaration
     this.draw = new Draw({
-      type: 'Point',
+      type: "Point",
       source: this.position,
     });
     this.map.addInteraction(this.draw);
@@ -215,7 +215,7 @@ class PointComponent extends React.Component {
 
     if (this.state.point !== null) {
       this.centerFeature = new Feature({
-        name: 'Center',
+        name: "Center",
         geometry: new Point(this.state.point),
       });
       this.position.addFeature(this.centerFeature);
@@ -224,8 +224,8 @@ class PointComponent extends React.Component {
       this.draw.setActive(true);
     }
 
-    this.position.on('addfeature', this.changefeature, this);
-    this.position.on('changefeature', this.changefeature, this);
+    this.position.on("addfeature", this.changefeature, this);
+    this.position.on("changefeature", this.changefeature, this);
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -248,13 +248,13 @@ class PointComponent extends React.Component {
           },
         );
         this.draw.setActive(false);
-        this.position.un('changefeature', this.changefeature, this);
-        this.position.un('addfeature', this.changefeature, this);
+        this.position.un("changefeature", this.changefeature, this);
+        this.position.un("addfeature", this.changefeature, this);
         if (this.centerFeature) {
           this.centerFeature.getGeometry().setCoordinates(point);
         } else {
           this.centerFeature = new Feature({
-            name: 'Center',
+            name: "Center",
             geometry: new Point(point),
           });
           this.position.addFeature(this.centerFeature);
@@ -263,8 +263,8 @@ class PointComponent extends React.Component {
           //padding: [170, 100, 30, 100],
           minResolution: 1,
         });
-        this.position.on('changefeature', this.changefeature, this);
-        this.position.on('addfeature', this.changefeature, this);
+        this.position.on("changefeature", this.changefeature, this);
+        this.position.on("addfeature", this.changefeature, this);
       }
     }
   }
@@ -360,15 +360,15 @@ class PointComponent extends React.Component {
     const { highlighted } = this.props;
 
     let selected =
-      highlighted !== undefined && highlighted.indexOf(feature.get('id')) > -1;
+      highlighted !== undefined && highlighted.indexOf(feature.get("id")) > -1;
 
     let conf = {
       image: new Circle({
         radius: selected ? 10 : 6,
         fill: selected
-          ? new Fill({ color: 'rgba(255, 0, 0, 0.8)' })
-          : new Fill({ color: 'rgba(0, 255, 0, 1)' }),
-        stroke: new Stroke({ color: 'black', width: 1 }),
+          ? new Fill({ color: "rgba(255, 0, 0, 0.8)" })
+          : new Fill({ color: "rgba(0, 255, 0, 1)" }),
+        stroke: new Stroke({ color: "black", width: 1 }),
       }),
     };
 
@@ -393,16 +393,16 @@ class PointComponent extends React.Component {
         style={{
           // display: 'flex',
           // flexDirection: 'column',
-          padding: '0px',
-          flex: '1 1 100%',
+          padding: "0px",
+          flex: "1 1 100%",
           // border: 'thin solid #cccccc'
         }}>
         <div
           style={{
-            position: 'absolute',
-            top: '6px',
-            right: '6px',
-            zIndex: '1',
+            position: "absolute",
+            top: "6px",
+            right: "6px",
+            zIndex: "1",
           }}>
           <Button
             active={satellite}
@@ -430,8 +430,8 @@ class PointComponent extends React.Component {
           style={{
             // width: '100%',
             // height: '100%',
-            padding: '0px',
-            flex: '1 1 100%',
+            padding: "0px",
+            flex: "1 1 100%",
             height: 450,
 
             // border: 'thin solid #cccccc'
@@ -439,26 +439,26 @@ class PointComponent extends React.Component {
         />
         <div
           style={{
-            bottom: '0px',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            padding: '0.5em',
-            color: 'white',
-            backgroundColor: '#3e3e3e',
+            bottom: "0px",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            padding: "0.5em",
+            color: "white",
+            backgroundColor: "#3e3e3e",
           }}>
           <div
             style={{
-              flex: '1 1 100%',
+              flex: "1 1 100%",
             }}>
             <Label color="black">
               <Icon name="map marker" />
               {_.isArray(this.state.toPoint)
-                ? 'E' +
+                ? "E" +
                   _.round(this.state.toPoint[0], 2).toLocaleString() +
-                  ' N' +
+                  " N" +
                   _.round(this.state.toPoint[1], 2).toLocaleString()
-                : 'n/p'}
+                : "n/p"}
               <Label.Detail>
                 {
                   // _.compact([
@@ -473,7 +473,7 @@ class PointComponent extends React.Component {
             0 ? (
               <Label color="black">
                 {_.compact([this.state.municipality, this.state.canton]).join(
-                  ', ',
+                  ", ",
                 )}
               </Label>
             ) : null}

@@ -1,7 +1,7 @@
-import React from 'react';
-import { withTranslation } from 'react-i18next';
+import React from "react";
+import { withTranslation } from "react-i18next";
 
-import { Header } from 'semantic-ui-react';
+import { Header } from "semantic-ui-react";
 
 // eslint-disable-next-line react/prefer-stateless-function
 class ResourcesSettings extends React.Component {
@@ -9,20 +9,20 @@ class ResourcesSettings extends React.Component {
     return (
       <div
         style={{
-          padding: '2em',
+          padding: "2em",
           flex: 1,
         }}>
         <Header
           as="h3"
           style={{
-            margin: '0px',
-            textDecoration: 'none',
+            margin: "0px",
+            textDecoration: "none",
           }}>
-          {this.props.t('common:resources')}
+          {this.props.t("common:resources")}
         </Header>
         <div
           style={{
-            paddingTop: '1em',
+            paddingTop: "1em",
           }}>
           Documentation:
           <br />
@@ -35,7 +35,7 @@ class ResourcesSettings extends React.Component {
         </div>
         <div
           style={{
-            paddingTop: '1em',
+            paddingTop: "1em",
           }}>
           Python web Service (source code):
           <br />
@@ -48,7 +48,7 @@ class ResourcesSettings extends React.Component {
         </div>
         <div
           style={{
-            paddingTop: '1em',
+            paddingTop: "1em",
           }}>
           Web Application (source code):
           <br />
@@ -61,7 +61,7 @@ class ResourcesSettings extends React.Component {
         </div>
         <div
           style={{
-            paddingTop: '1em',
+            paddingTop: "1em",
           }}>
           Swissforages JavaScript API (source code):
           <br />
@@ -74,7 +74,7 @@ class ResourcesSettings extends React.Component {
         </div>
         <div
           style={{
-            paddingTop: '1em',
+            paddingTop: "1em",
           }}>
           React Stratigraphy library (source code):
           <br />
@@ -90,4 +90,4 @@ class ResourcesSettings extends React.Component {
   }
 }
 
-export default withTranslation(['common'])(ResourcesSettings);
+export default withTranslation(["common"])(ResourcesSettings);

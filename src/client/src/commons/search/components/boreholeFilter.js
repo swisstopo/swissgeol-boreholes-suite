@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
-import _ from 'lodash';
-import { Form, Input } from 'semantic-ui-react';
-import TranslationText from '../../form/translationText';
-import LabelReset from '../../form/labelReset';
-import DomainDropdown from '../../form/domain/dropdown/domainDropdown';
-import MunicipalityDropdown from '../../form/municipality/dropdown/municipalityDropdown';
-import CantonDropdown from '../../form/cantons/dropdown/cantonDropdown';
-import DateField from '../../form/dateField';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
+import _ from "lodash";
+import { Form, Input } from "semantic-ui-react";
+import TranslationText from "../../form/translationText";
+import LabelReset from "../../form/labelReset";
+import DomainDropdown from "../../form/domain/dropdown/domainDropdown";
+import MunicipalityDropdown from "../../form/municipality/dropdown/municipalityDropdown";
+import CantonDropdown from "../../form/cantons/dropdown/cantonDropdown";
+import DateField from "../../form/dateField";
 
 class BoreholeFilter extends Component {
   isVisible(filter) {
@@ -73,23 +73,23 @@ class BoreholeFilter extends Component {
           <DateField
             date={search.filter.creation}
             onChange={selected => {
-              this.props.setFilter('creation', selected);
+              this.props.setFilter("creation", selected);
             }}
           />
           <LabelReset
             onClick={() => {
-              this.props.setFilter('creation', '');
+              this.props.setFilter("creation", "");
             }}
           />
         </Form.Field>
-        {this.isVisible('custom.borehole_identifier') ? (
+        {this.isVisible("custom.borehole_identifier") ? (
           <Form.Field>
             <label>
               <TranslationText id="borehole_identifier" />
             </label>
             <DomainDropdown
               onSelected={selected => {
-                this.props.setFilter('borehole_identifier', selected.id);
+                this.props.setFilter("borehole_identifier", selected.id);
               }}
               reset={false}
               schema="borehole_identifier"
@@ -97,7 +97,7 @@ class BoreholeFilter extends Component {
             />
             <Input
               onChange={eve => {
-                this.props.setFilter('identifier_value', eve.target.value);
+                this.props.setFilter("identifier_value", eve.target.value);
               }}
               value={search.filter.identifier_value}
             />
@@ -108,68 +108,68 @@ class BoreholeFilter extends Component {
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('extended.original_name') ? (
+        {this.isVisible("extended.original_name") ? (
           <Form.Field>
             <label>
               <TranslationText id="original_name" />
             </label>
             <Input
               onChange={e => {
-                this.props.setFilter('original_name', e.target.value);
+                this.props.setFilter("original_name", e.target.value);
               }}
-              placeholder={t('original_name')}
+              placeholder={t("original_name")}
               value={search.filter.original_name}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
+                  color: "red",
                 }}>
                 trans=original_name
               </div>
             ) : null}
             <LabelReset
               onClick={() => {
-                this.props.setFilter('original_name', '');
+                this.props.setFilter("original_name", "");
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('custom.alternate_name') ? (
+        {this.isVisible("custom.alternate_name") ? (
           <Form.Field>
             <label>
               <TranslationText id="alternate_name" />
             </label>
             <Input
               onChange={eve => {
-                this.props.setFilter('alternate_name', eve.target.value);
+                this.props.setFilter("alternate_name", eve.target.value);
               }}
-              placeholder={t('alternate_name')}
+              placeholder={t("alternate_name")}
               value={search.filter.alternate_name}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
+                  color: "red",
                 }}>
                 trans=alternate_name
               </div>
             ) : null}
             <LabelReset
               onClick={() => {
-                this.props.setFilter('alternate_name', '');
+                this.props.setFilter("alternate_name", "");
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('kind') ? (
+        {this.isVisible("kind") ? (
           <Form.Field>
             <label>
               <TranslationText id="kind" />
             </label>
             <DomainDropdown
               onSelected={selected => {
-                this.props.setFilter('kind', selected.id);
+                this.props.setFilter("kind", selected.id);
               }}
               reset={false}
               schema="kind"
@@ -177,19 +177,19 @@ class BoreholeFilter extends Component {
             />
             <LabelReset
               onClick={() => {
-                this.props.setFilter('kind', null);
+                this.props.setFilter("kind", null);
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('extended..drilling_method') ? (
+        {this.isVisible("extended..drilling_method") ? (
           <Form.Field>
             <label>
               <TranslationText id="drilling_method" />
             </label>
             <DomainDropdown
               onSelected={selected => {
-                this.props.setFilter('method', selected.id);
+                this.props.setFilter("method", selected.id);
               }}
               reset={false}
               schema="extended.drilling_method"
@@ -197,46 +197,46 @@ class BoreholeFilter extends Component {
             />
             <LabelReset
               onClick={() => {
-                this.props.setFilter('method', null);
+                this.props.setFilter("method", null);
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('custom.project_name') ? (
+        {this.isVisible("custom.project_name") ? (
           <Form.Field>
             <label>
               <TranslationText id="project_name" />
             </label>
             <Input
               onChange={eve => {
-                this.props.setFilter('project_name', eve.target.value);
+                this.props.setFilter("project_name", eve.target.value);
               }}
-              placeholder={t('project_name')}
+              placeholder={t("project_name")}
               value={search.filter.project_name}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
+                  color: "red",
                 }}>
                 trans=project_name
               </div>
             ) : null}
             <LabelReset
               onClick={() => {
-                this.props.setFilter('project_name', '');
+                this.props.setFilter("project_name", "");
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('restriction') ? (
+        {this.isVisible("restriction") ? (
           <Form.Field>
             <label>
               <TranslationText id="restriction" />
             </label>
             <DomainDropdown
               onSelected={selected => {
-                this.props.setFilter('restriction', selected.id);
+                this.props.setFilter("restriction", selected.id);
               }}
               reset={false}
               schema="restriction"
@@ -244,12 +244,12 @@ class BoreholeFilter extends Component {
             />
             <LabelReset
               onClick={() => {
-                this.props.setFilter('restriction', null);
+                this.props.setFilter("restriction", null);
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('restriction') ? (
+        {this.isVisible("restriction") ? (
           <Form.Field>
             <label>
               <TranslationText id="restriction_until" />
@@ -257,30 +257,30 @@ class BoreholeFilter extends Component {
             <DateField
               date={search.filter.restriction_until_from}
               onChange={selected => {
-                this.props.setFilter('restriction_until_from', selected);
+                this.props.setFilter("restriction_until_from", selected);
               }}
-              placeholder={t('afterdate')}
+              placeholder={t("afterdate")}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
+                  color: "red",
                 }}>
                 trans=afterdate
               </div>
             ) : null}
-            <div style={{ margin: '1em' }} />
+            <div style={{ margin: "1em" }} />
             <DateField
               date={search.filter.restriction_until_to}
               onChange={selected => {
-                this.props.setFilter('restriction_until_to', selected);
+                this.props.setFilter("restriction_until_to", selected);
               }}
-              placeholder={t('beforedate')}
+              placeholder={t("beforedate")}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
+                  color: "red",
                 }}>
                 trans=beforedate
               </div>
@@ -292,40 +292,40 @@ class BoreholeFilter extends Component {
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('elevation_z') ? (
+        {this.isVisible("elevation_z") ? (
           <Form.Field>
             <label>
               <TranslationText id="elevation_z" />
             </label>
             <Input
               onChange={eve => {
-                this.props.setFilter('elevation_z_from', eve.target.value);
+                this.props.setFilter("elevation_z_from", eve.target.value);
               }}
-              placeholder={t('fromelevation')}
+              placeholder={t("fromelevation")}
               type="number"
               value={search.filter.elevation_z_from}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
+                  color: "red",
                 }}>
                 trans=fromelevation
               </div>
             ) : null}
-            <div style={{ margin: '1em' }} />
+            <div style={{ margin: "1em" }} />
             <Input
               onChange={eve => {
-                this.props.setFilter('elevation_z_to', eve.target.value);
+                this.props.setFilter("elevation_z_to", eve.target.value);
               }}
-              placeholder={t('toelevation')}
+              placeholder={t("toelevation")}
               type="number"
               value={search.filter.elevation_z_to}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
+                  color: "red",
                 }}>
                 trans=toelevation
               </div>
@@ -337,40 +337,40 @@ class BoreholeFilter extends Component {
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('length') ? (
+        {this.isVisible("length") ? (
           <Form.Field>
             <label>
               <TranslationText id="totaldepth" />
             </label>
             <Input
               onChange={eve => {
-                this.props.setFilter('length_from', eve.target.value);
+                this.props.setFilter("length_from", eve.target.value);
               }}
-              placeholder={t('fromdepth')}
+              placeholder={t("fromdepth")}
               type="number"
               value={search.filter.length_from}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
+                  color: "red",
                 }}>
                 trans=fromdepth
               </div>
             ) : null}
-            <div style={{ margin: '1em' }} />
+            <div style={{ margin: "1em" }} />
             <Input
               onChange={eve => {
-                this.props.setFilter('length_to', eve.target.value);
+                this.props.setFilter("length_to", eve.target.value);
               }}
-              placeholder={t('todepth')}
+              placeholder={t("todepth")}
               type="number"
               value={search.filter.length_to}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
+                  color: "red",
                 }}>
                 trans=todepth
               </div>
@@ -382,7 +382,7 @@ class BoreholeFilter extends Component {
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('extended.groundwater') ? (
+        {this.isVisible("extended.groundwater") ? (
           <Form.Field>
             <label>
               <TranslationText id="groundwater" />
@@ -390,43 +390,43 @@ class BoreholeFilter extends Component {
             <Form.Group inline>
               <Form.Radio
                 checked={search.filter.groundwater === true}
-                label={t('yes')}
+                label={t("yes")}
                 onChange={(e, d) => {
-                  this.props.setFilter('groundwater', true);
+                  this.props.setFilter("groundwater", true);
                 }}
               />
               <Form.Radio
                 checked={search.filter.groundwater === false}
-                label={t('no')}
+                label={t("no")}
                 onChange={(e, d) => {
-                  this.props.setFilter('groundwater', false);
+                  this.props.setFilter("groundwater", false);
                 }}
               />
             </Form.Group>
             <Form.Radio
               checked={search.filter.groundwater === null}
-              label={t('np')}
+              label={t("np")}
               onChange={(e, d) => {
-                this.props.setFilter('groundwater', null);
+                this.props.setFilter("groundwater", null);
               }}
             />
             {this.props.developer.debug === true ? (
               <div>
                 <div
                   style={{
-                    color: 'red',
+                    color: "red",
                   }}>
                   trans=yes
                 </div>
                 <div
                   style={{
-                    color: 'red',
+                    color: "red",
                   }}>
                   trans=no
                 </div>
                 <div
                   style={{
-                    color: 'red',
+                    color: "red",
                   }}>
                   trans=np
                 </div>
@@ -434,45 +434,45 @@ class BoreholeFilter extends Component {
             ) : null}
             <LabelReset
               onClick={() => {
-                this.props.setFilter('groundwater', -1);
+                this.props.setFilter("groundwater", -1);
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('extended.top_bedrock') ? (
+        {this.isVisible("extended.top_bedrock") ? (
           <Form.Field>
             <label>
               <TranslationText id="top_bedrock" />
             </label>
             <Input
               onChange={eve => {
-                this.props.setFilter('top_bedrock_from', eve.target.value);
+                this.props.setFilter("top_bedrock_from", eve.target.value);
               }}
-              placeholder={t('fromdepth')}
+              placeholder={t("fromdepth")}
               type="number"
               value={search.filter.top_bedrock_from}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
+                  color: "red",
                 }}>
                 trans=fromdepth
               </div>
             ) : null}
-            <div style={{ margin: '1em' }} />
+            <div style={{ margin: "1em" }} />
             <Input
               onChange={eve => {
-                this.props.setFilter('top_bedrock_to', eve.target.value);
+                this.props.setFilter("top_bedrock_to", eve.target.value);
               }}
-              placeholder={t('todepth')}
+              placeholder={t("todepth")}
               type="number"
               value={search.filter.top_bedrock_to}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
+                  color: "red",
                 }}>
                 trans=todepth
               </div>
@@ -484,14 +484,14 @@ class BoreholeFilter extends Component {
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('extended.status') ? (
+        {this.isVisible("extended.status") ? (
           <Form.Field>
             <label>
               <TranslationText id="boreholestatus" />
             </label>
             <DomainDropdown
               onSelected={selected => {
-                this.props.setFilter('status', selected.id);
+                this.props.setFilter("status", selected.id);
               }}
               reset={false}
               schema="extended.status"
@@ -499,19 +499,19 @@ class BoreholeFilter extends Component {
             />
             <LabelReset
               onClick={() => {
-                this.props.setFilter('status', null);
+                this.props.setFilter("status", null);
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('extended.purpose') ? (
+        {this.isVisible("extended.purpose") ? (
           <Form.Field>
             <label>
               <TranslationText id="purpose" />
             </label>
             <DomainDropdown
               onSelected={selected => {
-                this.props.setFilter('purpose', selected.id);
+                this.props.setFilter("purpose", selected.id);
               }}
               reset={false}
               schema="extended.purpose"
@@ -519,19 +519,19 @@ class BoreholeFilter extends Component {
             />
             <LabelReset
               onClick={() => {
-                this.props.setFilter('purpose', null);
+                this.props.setFilter("purpose", null);
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('custom.cuttings') ? (
+        {this.isVisible("custom.cuttings") ? (
           <Form.Field>
             <label>
               <TranslationText id="cuttings" />
             </label>
             <DomainDropdown
               onSelected={selected => {
-                this.props.setFilter('cuttings', selected.id);
+                this.props.setFilter("cuttings", selected.id);
               }}
               reset={false}
               schema="custom.cuttings"
@@ -539,12 +539,12 @@ class BoreholeFilter extends Component {
             />
             <LabelReset
               onClick={() => {
-                this.props.setFilter('cuttings', null);
+                this.props.setFilter("cuttings", null);
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('drilling_date') ? (
+        {this.isVisible("drilling_date") ? (
           <Form.Field>
             <label>
               <TranslationText id="drilling_end_date" />
@@ -552,32 +552,32 @@ class BoreholeFilter extends Component {
             <DateField
               date={search.filter.drilling_date_from}
               onChange={selected => {
-                this.props.setFilter('drilling_date_from', selected);
+                this.props.setFilter("drilling_date_from", selected);
               }}
-              placeholder={t('afterdate')}
+              placeholder={t("afterdate")}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
-                  margin: '5px',
+                  color: "red",
+                  margin: "5px",
                 }}>
                 trans=afterdate
               </div>
             ) : null}
-            <div style={{ margin: '1em' }} />
+            <div style={{ margin: "1em" }} />
             <DateField
               date={search.filter.drilling_date_to}
               onChange={selected => {
-                this.props.setFilter('drilling_date_to', selected);
+                this.props.setFilter("drilling_date_to", selected);
               }}
-              placeholder={t('beforedate')}
+              placeholder={t("beforedate")}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
-                  margin: '5px',
+                  color: "red",
+                  margin: "5px",
                 }}>
                 trans=beforedate
               </div>
@@ -589,42 +589,42 @@ class BoreholeFilter extends Component {
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('custom.drill_diameter') ? (
+        {this.isVisible("custom.drill_diameter") ? (
           <Form.Field>
             <label>
               <TranslationText id="drill_diameter" />
             </label>
             <Input
               onChange={eve => {
-                this.props.setFilter('drill_diameter_from', eve.target.value);
+                this.props.setFilter("drill_diameter_from", eve.target.value);
               }}
-              placeholder={t('fromdiameter')}
+              placeholder={t("fromdiameter")}
               type="number"
               value={search.filter.drill_diameter_from}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
-                  margin: '5px',
+                  color: "red",
+                  margin: "5px",
                 }}>
                 trans=fromdiameter
               </div>
             ) : null}
-            <div style={{ margin: '1em' }} />
+            <div style={{ margin: "1em" }} />
             <Input
               onChange={eve => {
-                this.props.setFilter('drill_diameter_to', eve.target.value);
+                this.props.setFilter("drill_diameter_to", eve.target.value);
               }}
-              placeholder={t('todiameter')}
+              placeholder={t("todiameter")}
               type="number"
               value={search.filter.drill_diameter_to}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
-                  margin: '5px',
+                  color: "red",
+                  margin: "5px",
                 }}>
                 trans=todiameter
               </div>
@@ -636,42 +636,42 @@ class BoreholeFilter extends Component {
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('bore_inc') ? (
+        {this.isVisible("bore_inc") ? (
           <Form.Field>
             <label>
               <TranslationText id="inclination" />
             </label>
             <Input
               onChange={eve => {
-                this.props.setFilter('bore_inc_from', eve.target.value);
+                this.props.setFilter("bore_inc_from", eve.target.value);
               }}
-              placeholder={t('from') + ' ' + t('degree')}
+              placeholder={t("from") + " " + t("degree")}
               type="number"
               value={search.filter.bore_inc_from}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
-                  margin: '5px',
+                  color: "red",
+                  margin: "5px",
                 }}>
                 trans=from + degree
               </div>
             ) : null}
-            <div style={{ margin: '1em' }} />
+            <div style={{ margin: "1em" }} />
             <Input
               onChange={eve => {
-                this.props.setFilter('bore_inc_to', eve.target.value);
+                this.props.setFilter("bore_inc_to", eve.target.value);
               }}
-              placeholder={t('to') + ' ' + t('degree')}
+              placeholder={t("to") + " " + t("degree")}
               type="number"
               value={search.filter.bore_inc_to}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
-                  margin: '5px',
+                  color: "red",
+                  margin: "5px",
                 }}>
                 trans=to + degree
               </div>
@@ -683,42 +683,42 @@ class BoreholeFilter extends Component {
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('bore_inc_dir') ? (
+        {this.isVisible("bore_inc_dir") ? (
           <Form.Field>
             <label>
               <TranslationText id="inclination_direction" />
             </label>
             <Input
               onChange={eve => {
-                this.props.setFilter('bore_inc_dir_from', eve.target.value);
+                this.props.setFilter("bore_inc_dir_from", eve.target.value);
               }}
-              placeholder={t('from') + ' ' + t('degree')}
+              placeholder={t("from") + " " + t("degree")}
               type="number"
               value={search.filter.bore_inc_dir_from}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
-                  margin: '5px',
+                  color: "red",
+                  margin: "5px",
                 }}>
                 trans=from + degree
               </div>
             ) : null}
-            <div style={{ margin: '1em' }} />
+            <div style={{ margin: "1em" }} />
             <Input
               onChange={eve => {
-                this.props.setFilter('bore_inc_dir_to', eve.target.value);
+                this.props.setFilter("bore_inc_dir_to", eve.target.value);
               }}
-              placeholder={t('to') + ' ' + t('degree')}
+              placeholder={t("to") + " " + t("degree")}
               type="number"
               value={search.filter.bore_inc_dir_to}
             />
             {this.props.developer.debug === true ? (
               <div
                 style={{
-                  color: 'red',
-                  margin: '5px',
+                  color: "red",
+                  margin: "5px",
                 }}>
                 trans=to + degree
               </div>
@@ -730,14 +730,14 @@ class BoreholeFilter extends Component {
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('custom.lit_pet_top_bedrock') ? (
+        {this.isVisible("custom.lit_pet_top_bedrock") ? (
           <Form.Field>
             <label>
               <TranslationText id="lit_pet_top_bedrock" />
             </label>
             <DomainDropdown
               onSelected={selected => {
-                this.props.setFilter('lit_pet_top_bedrock', selected.id);
+                this.props.setFilter("lit_pet_top_bedrock", selected.id);
               }}
               reset={false}
               schema="custom.lit_pet_top_bedrock"
@@ -745,19 +745,19 @@ class BoreholeFilter extends Component {
             />
             <LabelReset
               onClick={() => {
-                this.props.setFilter('lit_pet_top_bedrock', null);
+                this.props.setFilter("lit_pet_top_bedrock", null);
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('custom.lit_str_top_bedrock') ? (
+        {this.isVisible("custom.lit_str_top_bedrock") ? (
           <Form.Field>
             <label>
               <TranslationText id="lit_str_top_bedrock" />
             </label>
             <DomainDropdown
               onSelected={selected => {
-                this.props.setFilter('lit_str_top_bedrock', selected.id);
+                this.props.setFilter("lit_str_top_bedrock", selected.id);
               }}
               reset={false}
               schema="custom.lit_str_top_bedrock"
@@ -765,19 +765,19 @@ class BoreholeFilter extends Component {
             />
             <LabelReset
               onClick={() => {
-                this.props.setFilter('lit_str_top_bedrock', null);
+                this.props.setFilter("lit_str_top_bedrock", null);
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('custom.chro_str_top_bedrock') ? (
+        {this.isVisible("custom.chro_str_top_bedrock") ? (
           <Form.Field>
             <label>
               <TranslationText id="chro_str_top_bedrock" />
             </label>
             <DomainDropdown
               onSelected={selected => {
-                this.props.setFilter('chro_str_top_bedrock', selected.id);
+                this.props.setFilter("chro_str_top_bedrock", selected.id);
               }}
               reset={false}
               schema="custom.chro_str_top_bedrock"
@@ -785,12 +785,12 @@ class BoreholeFilter extends Component {
             />
             <LabelReset
               onClick={() => {
-                this.props.setFilter('chro_str_top_bedrock', null);
+                this.props.setFilter("chro_str_top_bedrock", null);
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('custom.canton') ? (
+        {this.isVisible("custom.canton") ? (
           <Form.Field>
             <label>
               <TranslationText id="canton" />
@@ -798,20 +798,20 @@ class BoreholeFilter extends Component {
             <CantonDropdown
               onSelected={selected => {
                 if (search.filter.municipality !== null) {
-                  this.props.setFilter('municipality', null);
+                  this.props.setFilter("municipality", null);
                 }
-                this.props.setFilter('canton', selected.id);
+                this.props.setFilter("canton", selected.id);
               }}
               selected={search.filter.canton}
             />
             <LabelReset
               onClick={() => {
-                this.props.setFilter('canton', null);
+                this.props.setFilter("canton", null);
               }}
             />
           </Form.Field>
         ) : null}
-        {this.isVisible('custom.canton') ? (
+        {this.isVisible("custom.canton") ? (
           <Form.Field>
             <label>
               <TranslationText id="municipality" />
@@ -820,13 +820,13 @@ class BoreholeFilter extends Component {
               canton={search.filter.canton}
               disabled={search.filter.canton === null}
               onSelected={selected => {
-                this.props.setFilter('municipality', selected.id);
+                this.props.setFilter("municipality", selected.id);
               }}
               selected={search.filter.municipality}
             />
             <LabelReset
               onClick={() => {
-                this.props.setFilter('municipality', null);
+                this.props.setFilter("municipality", null);
               }}
             />
           </Form.Field>
@@ -857,4 +857,4 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation(['common'])(BoreholeFilter));
+)(withTranslation(["common"])(BoreholeFilter));

@@ -1,23 +1,13 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
-import DatePicker, {
-  registerLocale,
-  setDefaultLocale
-} from 'react-datepicker';
-import moment from 'moment';
-import 'react-datepicker/dist/react-datepicker.css';
+import React from "react";
+import PropTypes from "prop-types";
+import { withTranslation } from "react-i18next";
+import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
+import moment from "moment";
+import "react-datepicker/dist/react-datepicker.css";
 
-import {
-  enGB,
-  fr,
-  it,
-  de
-} from "date-fns/esm/locale";
+import { enGB, fr, it, de } from "date-fns/esm/locale";
 
-import {
-  Input
-} from 'semantic-ui-react';
+import { Input } from "semantic-ui-react";
 
 registerLocale("en", enGB);
 registerLocale("fr", fr);
@@ -29,25 +19,20 @@ class DateField extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      date: this.props.date
+      date: this.props.date,
     };
   }
-  static getDerivedStateFromProps(nextProps, prevState){
-    if (nextProps.date !== prevState.date){
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.date !== prevState.date) {
       return {
-        date: nextProps.date
+        date: nextProps.date,
       };
-    }
-    else {
+    } else {
       return null;
     }
   }
   render() {
-    const {
-      i18n,
-      onChange,
-      placeholder
-    } = this.props;
+    const { i18n, onChange, placeholder } = this.props;
 
     let locale = i18n.language;
 
@@ -59,35 +44,35 @@ class DateField extends React.Component {
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              icon='calendar alternate outline'
-              iconPosition='left'
+              icon="calendar alternate outline"
+              iconPosition="left"
               placeholder={placeholder}
               spellCheck="false"
               value={
-                moment(this.state.date).isValid()?
-                  moment(this.state.date).format('DD.MM.YYYY'): ''
+                moment(this.state.date).isValid()
+                  ? moment(this.state.date).format("DD.MM.YYYY")
+                  : ""
               }
             />
           </div>
         }
-        dateFormat='dd.MM.yyyy'
+        dateFormat="dd.MM.yyyy"
         dropdownMode="select"
         locale={locale}
-        onChange={(date)=>{
-          if (onChange!==undefined){
-            onChange(
-              date? moment(date).format('YYYY-MM-DD'): ''
-            );
+        onChange={date => {
+          if (onChange !== undefined) {
+            onChange(date ? moment(date).format("YYYY-MM-DD") : "");
           }
         }}
         selected={
-          moment(this.state.date).isValid()?
-            moment(this.state.date).toDate(): null
+          moment(this.state.date).isValid()
+            ? moment(this.state.date).toDate()
+            : null
         }
         showMonthDropdown
         showYearDropdown
         style={{
-          width: '100%'
+          width: "100%",
         }}
       />
     );
@@ -97,16 +82,14 @@ class DateField extends React.Component {
 DateField.propTypes = {
   date: PropTypes.string,
   i18n: PropTypes.shape({
-    language: PropTypes.string
+    language: PropTypes.string,
   }),
   onChange: PropTypes.func,
-  placeholder: PropTypes.string
+  placeholder: PropTypes.string,
 };
 
 DateField.defaultProps = {
-  placeholder: null
+  placeholder: null,
 };
-
-
 
 export default withTranslation()(DateField);

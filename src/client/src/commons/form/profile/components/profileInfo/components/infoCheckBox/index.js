@@ -1,1 +1,1 @@
-export { default } from './infoCheckBox';
+export { default } from "./infoCheckBox";

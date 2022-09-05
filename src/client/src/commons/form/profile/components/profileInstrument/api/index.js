@@ -5,7 +5,7 @@ import {
   getProfiles,
   createStratigraphy,
   createInstrument,
-} from '../../../../../../api-lib/index';
+} from "../../../../../../api-lib/index";
 
 let stratigraphyId = null;
 export const createNewStratigraphy = async (id, kind) => {

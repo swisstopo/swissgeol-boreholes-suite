@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
-import { Checkbox, Segment } from 'semantic-ui-react';
+import { Checkbox, Segment } from "semantic-ui-react";
 
-import TranslationText from '../../commons/form/translationText';
+import TranslationText from "../../commons/form/translationText";
 
 function SearchFiltersLayers(props) {
   return (
@@ -12,7 +12,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.depth}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.depth', d.checked);
+            props.toggleFilter("layer.depth", d.checked);
           }}
         />
         <TranslationText id="layer_depth" />
@@ -22,7 +22,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.depth_from}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.depth_from', d.checked);
+            props.toggleFilter("layer.depth_from", d.checked);
           }}
         />
         <TranslationText id="layer_depth_from" />
@@ -32,7 +32,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.depth_to}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.depth_to', d.checked);
+            props.toggleFilter("layer.depth_to", d.checked);
           }}
         />
         <TranslationText id="layer_depth_to" />
@@ -42,7 +42,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.description}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.description', d.checked);
+            props.toggleFilter("layer.description", d.checked);
           }}
         />
         <TranslationText id="description" />
@@ -52,7 +52,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.geology}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.geology', d.checked);
+            props.toggleFilter("layer.geology", d.checked);
           }}
         />
         <TranslationText id="layer_geology" />
@@ -62,7 +62,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.lithology}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.lithology', d.checked);
+            props.toggleFilter("layer.lithology", d.checked);
           }}
         />
         <TranslationText id="layer_lithology" />
@@ -72,7 +72,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.lithostratigraphy}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.lithostratigraphy', d.checked);
+            props.toggleFilter("layer.lithostratigraphy", d.checked);
           }}
         />
         <TranslationText id="layer_lithostratigraphy" />
@@ -82,7 +82,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.chronostratigraphy}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.chronostratigraphy', d.checked);
+            props.toggleFilter("layer.chronostratigraphy", d.checked);
           }}
         />
         <TranslationText id="layer_chronostratigraphy" />
@@ -92,7 +92,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.color}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.color', d.checked);
+            props.toggleFilter("layer.color", d.checked);
           }}
         />
         <TranslationText id="layer_color" />
@@ -102,7 +102,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.plasticity}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.plasticity', d.checked);
+            props.toggleFilter("layer.plasticity", d.checked);
           }}
         />
         <TranslationText id="layer_plasticity" />
@@ -112,7 +112,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.humidity}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.humidity', d.checked);
+            props.toggleFilter("layer.humidity", d.checked);
           }}
         />
         <TranslationText id="layer_humidity" />
@@ -122,7 +122,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.consistance}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.consistance', d.checked);
+            props.toggleFilter("layer.consistance", d.checked);
           }}
         />
         <TranslationText id="layer_consistance" />
@@ -132,7 +132,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.alteration}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.alteration', d.checked);
+            props.toggleFilter("layer.alteration", d.checked);
           }}
         />
         <TranslationText id="layer_alteration" />
@@ -142,7 +142,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.compactness}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.compactness', d.checked);
+            props.toggleFilter("layer.compactness", d.checked);
           }}
         />
         <TranslationText id="layer_compactness" />
@@ -152,7 +152,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.organic_component}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.organic_component', d.checked);
+            props.toggleFilter("layer.organic_component", d.checked);
           }}
         />
         <TranslationText id="layer_organic_component" />
@@ -162,7 +162,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.striae}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.striae', d.checked);
+            props.toggleFilter("layer.striae", d.checked);
           }}
         />
         <TranslationText id="layer_striae" />
@@ -172,7 +172,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.grain_size_1}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.grain_size_1', d.checked);
+            props.toggleFilter("layer.grain_size_1", d.checked);
           }}
         />
         <TranslationText id="layer_grain_size_1" />
@@ -182,7 +182,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.grain_size_2}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.grain_size_2', d.checked);
+            props.toggleFilter("layer.grain_size_2", d.checked);
           }}
         />
         <TranslationText id="layer_grain_size_2" />
@@ -192,7 +192,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.grain_shape}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.grain_shape', d.checked);
+            props.toggleFilter("layer.grain_shape", d.checked);
           }}
         />
         <TranslationText id="layer_grain_shape" />
@@ -202,7 +202,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.grain_granularity}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.grain_granularity', d.checked);
+            props.toggleFilter("layer.grain_granularity", d.checked);
           }}
         />
         <TranslationText id="layer_grain_granularity" />
@@ -212,7 +212,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.cohesion}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.cohesion', d.checked);
+            props.toggleFilter("layer.cohesion", d.checked);
           }}
         />
         <TranslationText id="layer_cohesion" />
@@ -222,7 +222,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.further_properties}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.further_properties', d.checked);
+            props.toggleFilter("layer.further_properties", d.checked);
           }}
         />
         <TranslationText id="layer_further_properties" />
@@ -232,7 +232,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.uscs_1}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.uscs_1', d.checked);
+            props.toggleFilter("layer.uscs_1", d.checked);
           }}
         />
         <TranslationText id="layer_uscs_1" />
@@ -242,7 +242,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.uscs_3}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.uscs_3', d.checked);
+            props.toggleFilter("layer.uscs_3", d.checked);
           }}
         />
         <TranslationText id="layer_uscs_3" />
@@ -252,7 +252,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.uscs_determination}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.uscs_determination', d.checked);
+            props.toggleFilter("layer.uscs_determination", d.checked);
           }}
         />
         <TranslationText id="layer_uscs_determination" />
@@ -262,7 +262,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.debris}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.debris', d.checked);
+            props.toggleFilter("layer.debris", d.checked);
           }}
         />
         <TranslationText id="layer_debris" />
@@ -272,7 +272,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.lithology_top_bedrock}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.lithology_top_bedrock', d.checked);
+            props.toggleFilter("layer.lithology_top_bedrock", d.checked);
           }}
         />
         <TranslationText id="layer_lithology_top_bedrock" />
@@ -282,7 +282,7 @@ function SearchFiltersLayers(props) {
           checked={props.layer.lithology_top_bedrock}
           label=""
           onChange={(e, d) => {
-            props.toggleFilter('layer.lithology_top_bedrock', d.checked);
+            props.toggleFilter("layer.lithology_top_bedrock", d.checked);
           }}
         />
         <TranslationText id="layer_lithology_top_bedrock" />

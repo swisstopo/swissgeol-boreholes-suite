@@ -37,7 +37,7 @@ class TermSettings extends React.Component {
     });
   }
   componentDidMount() {
-    getTermsDraft(true).then((r) => {
+    getTermsDraft(true).then(r => {
       if (r.data.data !== null) {
         this.setState({
           isFetching: false,
@@ -72,7 +72,7 @@ class TermSettings extends React.Component {
             saving: false,
           });
         });
-      }
+      },
     );
   }
 
@@ -98,39 +98,34 @@ class TermSettings extends React.Component {
           flex: 1,
           display: "flex",
           flexDirection: "row",
-        }}
-      >
+        }}>
         <div
           style={{
             flex: "1 1 100%",
             padding: "1em",
             margin: "1em",
-          }}
-        >
+          }}>
           <div
             style={{
               // alignItems: 'center',
               display: "flex",
               flexDirection: "row",
               paddingBottom: "1em",
-            }}
-          >
+            }}>
             <div
               style={{
                 color: "rgb(237, 29, 36)",
                 fontStyle: "italic",
                 textTransform: "capitalize",
                 whiteSpace: "nowrap",
-              }}
-            >
+              }}>
               {this.state.draft === true ? t("draft") : t("terms")}
             </div>
             <div
               style={{
                 flex: "1 1 100%",
                 textAlign: "right",
-              }}
-            >
+              }}>
               <Button
                 onClick={() => {
                   this.setState({
@@ -144,8 +139,7 @@ class TermSettings extends React.Component {
                       ? null
                       : "none",
                   textTransform: "capitalize",
-                }}
-              >
+                }}>
                 {t("publish")}
               </Button>
               <Modal open={this.state.confirmPublication} size="mini">
@@ -166,8 +160,7 @@ class TermSettings extends React.Component {
                     }}
                     style={{
                       textTransform: "capitalize",
-                    }}
-                  >
+                    }}>
                     {t("cancel")}
                   </Button>
                   <Button
@@ -175,8 +168,7 @@ class TermSettings extends React.Component {
                     primary
                     style={{
                       textTransform: "capitalize",
-                    }}
-                  >
+                    }}>
                     {t("publish")}
                   </Button>
                 </Modal.Actions>
@@ -192,8 +184,7 @@ class TermSettings extends React.Component {
                   marginLeft: "1em",
                   textTransform: "capitalize",
                   display: this.state.dirty === true ? null : "none",
-                }}
-              >
+                }}>
                 {t("save")}
               </Button>
             </div>
@@ -204,8 +195,7 @@ class TermSettings extends React.Component {
               display: "flex",
               justifyContent: "flex-end",
               paddingBottom: "10px",
-            }}
-          >
+            }}>
             <TranslationKeys
               ignori18n
               handleSelectedLanguage={this.changeLanguage}
@@ -231,23 +221,20 @@ class TermSettings extends React.Component {
             flex: "1 1 100%",
             padding: "1em",
             margin: "1em",
-          }}
-        >
+          }}>
           <div
             style={{
               alignItems: "center",
               display: "flex",
               flexDirection: "row",
               paddingBottom: "1em",
-            }}
-          >
+            }}>
             <div
               style={{
                 color: "rgb(237, 29, 36)",
                 fontStyle: "italic",
                 textTransform: "capitalize",
-              }}
-            >
+              }}>
               {t("preview")}
             </div>
           </div>
@@ -266,13 +253,13 @@ TermSettings.propTypes = {
 // TermSettings.defaultProps = {
 // };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     user: state.core_user,
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
   };
@@ -280,5 +267,5 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(withTranslation(["common"])(TermSettings));

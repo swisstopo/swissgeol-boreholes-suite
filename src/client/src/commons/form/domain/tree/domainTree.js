@@ -1,12 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
-import _ from 'lodash';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
+import _ from "lodash";
 
-import {
-  loadDomains
-} from '../../../../api-lib/index';
+import { loadDomains } from "../../../../api-lib/index";
 
 import {
   Dropdown,
@@ -16,13 +14,12 @@ import {
   List,
   Modal,
   Form,
-} from 'semantic-ui-react';
+} from "semantic-ui-react";
 
-import TranslationText from '../../translationText';
-import DomainText from '../domainText';
+import TranslationText from "../../translationText";
+import DomainText from "../domainText";
 
 class DomainTree extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -33,9 +30,9 @@ class DomainTree extends React.Component {
       selectedFilters: {},
       parent: {},
       levels: [],
-      search: '',
+      search: "",
       selected: this.props.selected,
-      language: this.props.i18n.language
+      language: this.props.i18n.language,
     };
 
     const levels = _.keys(this.props.levels);
@@ -47,7 +44,7 @@ class DomainTree extends React.Component {
       this.state.selectedFiltersTmpl[level] = null;
       this.state.levels.push(level);
       if (index > 0) {
-        this.state.parent[level] = levels[(index - 1)];
+        this.state.parent[level] = levels[index - 1];
       }
     }
 
@@ -78,10 +75,7 @@ class DomainTree extends React.Component {
   }
 
   componentDidMount() {
-    const {
-      domains,
-      schema
-    } = this.props;
+    const { domains, schema } = this.props;
     if (!domains.data.hasOwnProperty(schema) && domains.isFetching === false) {
       this.props.loadDomains();
     }
@@ -92,113 +86,94 @@ class DomainTree extends React.Component {
       return true;
     } else if (this.state.language !== nextProps.i18n.language) {
       return true;
-    } else if (
-      !_.isEqual(this.state.search, nextState.search)
-    ) {
+    } else if (!_.isEqual(this.state.search, nextState.search)) {
       return true;
-    } else if (
-      !_.isEqual(this.state.filter, nextState.filter)
-    ) {
+    } else if (!_.isEqual(this.state.filter, nextState.filter)) {
       return true;
-    } else if (
-      !_.isEqual(this.state.modalOpen, nextState.modalOpen)
-    ) {
+    } else if (!_.isEqual(this.state.modalOpen, nextState.modalOpen)) {
       return true;
     }
     return false;
   }
 
   handleChange(event, data) {
-    const {
-      onSelected,
-      domains,
-      schema
-    } = this.props;
+    const { onSelected, domains, schema } = this.props;
     if (data.value === null) {
-      this.setState({
-        selected: null,
-        search: '',
-        modalOpen: false
-      }, ()=>{
-        if (onSelected !== undefined) {
-          onSelected({
-            id: null
-          });
-        }
-      });
+      this.setState(
+        {
+          selected: null,
+          search: "",
+          modalOpen: false,
+        },
+        () => {
+          if (onSelected !== undefined) {
+            onSelected({
+              id: null,
+            });
+          }
+        },
+      );
     } else {
       for (let i = 0; i < domains.data[schema].length; i++) {
         let h = domains.data[schema][i];
         if (h.id === data.id) {
-          this.setState({
-            selected: h.id,
-            modalOpen: false
-          }, ()=>{
-            if (onSelected !== undefined) {
-              onSelected({ ...h });
-            }
-          });
+          this.setState(
+            {
+              selected: h.id,
+              modalOpen: false,
+            },
+            () => {
+              if (onSelected !== undefined) {
+                onSelected({ ...h });
+              }
+            },
+          );
           break;
         }
       }
     }
   }
 
-  handleOpen(){
+  handleOpen() {
     this.setState({ modalOpen: true });
   }
 
-  handleClose(){
+  handleClose() {
     this.setState({ modalOpen: false });
   }
 
-  getDomainText(id){
-    const {
-      domains,
-      i18n,
-      schema,
-    } = this.props;
+  getDomainText(id) {
+    const { domains, i18n, schema } = this.props;
     if (id === null) {
-      return '';
+      return "";
     }
     if (!domains.data.hasOwnProperty(schema)) {
       if (domains.isFetching === true) {
-        return 'loading translations';
+        return "loading translations";
       }
-      console.debug(
-        `asked domain (${schema}:${id}) but still loading..`
-      );
-      return '';
+      console.debug(`asked domain (${schema}:${id}) but still loading..`);
+      return "";
     }
     let found = domains.data[schema].find(function (element) {
       return element.id === id;
     });
-    if (found === undefined){
+    if (found === undefined) {
       console.error(
-        `asked domain (${schema}:${id}:${i18n.language}) but not found.`
+        `asked domain (${schema}:${id}:${i18n.language}) but not found.`,
       );
       return null;
     }
 
-    return (
-      found[i18n.language].text
-    );
+    return found[i18n.language].text;
   }
 
   render() {
-    const {
-      domains,
-      schema,
-    } = this.props;
+    const { domains, schema } = this.props;
     if (!domains.data.hasOwnProperty(schema)) {
       if (domains.isFetching === true) {
-        return 'loading translations';
+        return "loading translations";
       }
-      return (
-        <div style={{ color: 'red' }}>
-          "{schema}" not in codelist
-        </div>
-      );
+      return <div style={{ color: "red" }}>"{schema}" not in codelist</div>;
     }
     let options = [
       {
@@ -207,76 +182,60 @@ class DomainTree extends React.Component {
         content: (
           <span
             style={{
-              color: 'red'
-            }}
-          >
-            <TranslationText
-              id='reset'
-            />
+              color: "red",
+            }}>
+            <TranslationText id="reset" />
           </span>
-        )
-      }
+        ),
+      },
     ];
 
     let filters = {};
 
-    let currentFilter = this.state.filter.join('.');
+    let currentFilter = this.state.filter.join(".");
 
     for (let index = 0, l = domains.data[schema].length; index < l; index++) {
       const domain = domains.data[schema][index];
       if (
-        domain.level !== null
+        domain.level !== null &&
         // is needed
-        && domain.level <= (this.state.filter.length + 1)
+        domain.level <= this.state.filter.length + 1 &&
         // is one of the selected levels
-        && this.state.levels.includes(domain.level)
+        this.state.levels.includes(domain.level)
       ) {
         if (
           // Level 0 is always unfiltered
-          domain.level === this.state.levels[0]
-
-          // 
-          || (
-            // Parent is selected
-            this.state.selectedFilters.hasOwnProperty(
-              this.state.parent[domain.level]
-            )
+          domain.level === this.state.levels[0] ||
+          //
+          // Parent is selected
+          (this.state.selectedFilters.hasOwnProperty(
+            this.state.parent[domain.level],
+          ) &&
             // And is not null
-            && this.state.selectedFilters[
-              this.state.parent[domain.level]
-            ] !== null
-            // This element is child of selected parent 
-            && _.startsWith(
+            this.state.selectedFilters[this.state.parent[domain.level]] !==
+              null &&
+            // This element is child of selected parent
+            _.startsWith(
               domain.path,
-              this.state.selectedFilters[
-                this.state.parent[domain.level]
-              ].path
-            )
-          )
+              this.state.selectedFilters[this.state.parent[domain.level]].path,
+            ))
         ) {
-          if (
-            !filters.hasOwnProperty(
-              this.props.levels[domain.level]
-            )
-          ) {
+          if (!filters.hasOwnProperty(this.props.levels[domain.level])) {
             filters[this.props.levels[domain.level]] = [
               {
                 key: "dom-opt-lev-z-" + this.props.levels[domain.level],
                 path: null,
                 value: null,
-                text: '',
+                text: "",
                 content: (
                   <span
                     style={{
-                      color: 'red'
-                    }}
-                  >
-                    <TranslationText
-                      id='reset'
-                    />
+                      color: "red",
+                    }}>
+                    <TranslationText id="reset" />
                   </span>
-                )
-              }
+                ),
+              },
             ];
           }
           filters[this.props.levels[domain.level]].push({
@@ -296,10 +255,7 @@ class DomainTree extends React.Component {
             //     domain.code,
             // content: domain[this.state.language].text
             content: (
-              <DomainText
-                id={domain.id}
-                schema={schema}
-              />
+              <DomainText id={domain.id} schema={schema} />
               // <span
               //   style={{
               //     color: 'red'
@@ -314,7 +270,7 @@ class DomainTree extends React.Component {
               //     id='reset'
               //   />
               // </span>
-            )
+            ),
             // content: domain.code === '' ?
             //   domain[this.state.language].text :
             //   domain.code !== domain[this.state.language].text ?
@@ -326,17 +282,13 @@ class DomainTree extends React.Component {
       }
 
       if (
-        domain.level !== null
-        && (
-          this.state.filter.length === 0
-          || _.startsWith(domain.path, currentFilter)
-        )
-        && (
-          this.state.search === ''
-          || domain[
-            this.state.language
-          ].text.toUpperCase().includes(this.state.search.toUpperCase())
-        )
+        domain.level !== null &&
+        (this.state.filter.length === 0 ||
+          _.startsWith(domain.path, currentFilter)) &&
+        (this.state.search === "" ||
+          domain[this.state.language].text
+            .toUpperCase()
+            .includes(this.state.search.toUpperCase()))
       ) {
         options.push({
           active: this.state.selected === domain.id,
@@ -348,89 +300,89 @@ class DomainTree extends React.Component {
               content={
                 <div
                   style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    marginLeft: (
-                      0.5 * (domain.level - this.state.filter.length)
-                    ) + 'em'
-                  }}
-                >
-                  {
-                    domain.conf !== null && domain.conf.hasOwnProperty('color')?
-                      <div
-                        style={{
-                          backgroundColor: (
-                            'rgb(' +
-                              domain.conf.color[0] + ", " +
-                              domain.conf.color[1] + ", " +
-                              domain.conf.color[2] + ")"
-                          ),
-                          border: 'thin solid #b9b9b9',
-                          marginRight: '0.5em',
-                          width: '1em',
-                        }}
-                      />: null
-                  }
+                    display: "flex",
+                    flexDirection: "row",
+                    marginLeft:
+                      0.5 * (domain.level - this.state.filter.length) + "em",
+                  }}>
+                  {domain.conf !== null &&
+                  domain.conf.hasOwnProperty("color") ? (
+                    <div
+                      style={{
+                        backgroundColor:
+                          "rgb(" +
+                          domain.conf.color[0] +
+                          ", " +
+                          domain.conf.color[1] +
+                          ", " +
+                          domain.conf.color[2] +
+                          ")",
+                        border: "thin solid #b9b9b9",
+                        marginRight: "0.5em",
+                        width: "1em",
+                      }}
+                    />
+                  ) : null}
                   <div
                     style={{
-                      flex: (
-                        domain.conf !== null && domain.conf.hasOwnProperty('image')?
-                          null: '1 1 100%'
-                      )
-                    }}
-                  >
+                      flex:
+                        domain.conf !== null &&
+                        domain.conf.hasOwnProperty("image")
+                          ? null
+                          : "1 1 100%",
+                    }}>
                     {domain[this.state.language].text}
-                    {
-                      this.props.developer.debug === true?
-                        <span
-                          style={{
-                            color: 'red',
-                            margin: '5px'
-                          }}
-                          title={`gcode=${domain.id}`}
-                        >
-                          gcode={domain.id}
-                        </span>: null
-                    }
-                  </div>
-                  {
-                    domain.conf !== null && domain.conf.hasOwnProperty('image')?
-                      <div
+                    {this.props.developer.debug === true ? (
+                      <span
                         style={{
-                          flex: '1 1 100%',
-                          marginLeft: '1em',
-                          backgroundImage: (
-                            'url("' + process.env.PUBLIC_URL + '/img/lit/' +
-                              domain.conf.image + '")'
-                          )
+                          color: "red",
+                          margin: "5px",
                         }}
-                      />: null
-                  }
+                        title={`gcode=${domain.id}`}>
+                        gcode={domain.id}
+                      </span>
+                    ) : null}
+                  </div>
+                  {domain.conf !== null &&
+                  domain.conf.hasOwnProperty("image") ? (
+                    <div
+                      style={{
+                        flex: "1 1 100%",
+                        marginLeft: "1em",
+                        backgroundImage:
+                          'url("' +
+                          process.env.PUBLIC_URL +
+                          "/img/lit/" +
+                          domain.conf.image +
+                          '")',
+                      }}
+                    />
+                  ) : null}
                 </div>
               }
               style={{
-                backgroundImage: domain.conf !== null ?
-                  domain.conf.hasOwnProperty('img') ?
-                    'url("' + process.env.PUBLIC_URL + '/img/lit/' +
-                    domain.conf.img + '")' : null
-                  : null
+                backgroundImage:
+                  domain.conf !== null
+                    ? domain.conf.hasOwnProperty("img")
+                      ? 'url("' +
+                        process.env.PUBLIC_URL +
+                        "/img/lit/" +
+                        domain.conf.img +
+                        '")'
+                      : null
+                    : null,
               }}
               subheader={
                 <div
                   style={{
-                    color: '#787878',
-                    marginLeft: (
-                      0.5 * (domain.level - this.state.filter.length)
-                    ) + 'em'
-                  }}
-                >
-                  <span
-                    style={{ fontSize: '0.8em' }}
-                  >
-                    {
-                      !_.isNil(domain[this.state.language].descr)?
-                        domain[this.state.language].descr: null
-                    }
+                    color: "#787878",
+                    marginLeft:
+                      0.5 * (domain.level - this.state.filter.length) + "em",
+                  }}>
+                  <span style={{ fontSize: "0.8em" }}>
+                    {!_.isNil(domain[this.state.language].descr)
+                      ? domain[this.state.language].descr
+                      : null}
                     {
                       // domain[
                       //   this.state.language
@@ -447,7 +399,7 @@ class DomainTree extends React.Component {
                 </div>
               }
             />
-          )
+          ),
         });
       }
     }
@@ -459,191 +411,168 @@ class DomainTree extends React.Component {
         trigger={
           <Input
             fluid
-            icon='sitemap'
+            icon="sitemap"
             onClick={this.handleOpen}
             value={this.getDomainText(this.state.selected)}
           />
-        }
-      >
+        }>
         <Modal.Header>
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'row'
-            }}
-          >
+              display: "flex",
+              flexDirection: "row",
+            }}>
             <div
               style={{
-                flex: '1 1 100%'
-              }}
-            >
+                flex: "1 1 100%",
+              }}>
               {this.props.title}
             </div>
-            {
-              this.props.schema === "custom.lithostratigraphy_top_bedrock"?
-                <div>
-                  <a
-                    className='link'
-                    href='https://www.strati.ch/'
-                    rel="noopener noreferrer"
-                    target='_BLANK'
-                  >
-                    strati.ch
-                  </a>
-                </div>: null
-            }
+            {this.props.schema === "custom.lithostratigraphy_top_bedrock" ? (
+              <div>
+                <a
+                  className="link"
+                  href="https://www.strati.ch/"
+                  rel="noopener noreferrer"
+                  target="_BLANK">
+                  strati.ch
+                </a>
+              </div>
+            ) : null}
           </div>
         </Modal.Header>
         <Modal.Content>
           <div
             style={{
-              minHeight: '200px',
-              maxHeight: '400px',
-              display: 'flex',
-              flexDirection: 'row'
-            }}
-          >
+              minHeight: "200px",
+              maxHeight: "400px",
+              display: "flex",
+              flexDirection: "row",
+            }}>
             <div
               style={{
-                minWidth: '300px'
-              }}
-            >
+                minWidth: "300px",
+              }}>
               <Form
                 style={{
-                  flex: '1 1 100%'
-                }}
-              >
+                  flex: "1 1 100%",
+                }}>
                 <Form.Field>
                   <label>
-                    <TranslationText
-                      id='filterByHierarchicalUnits'
-                    />
+                    <TranslationText id="filterByHierarchicalUnits" />
                   </label>
                 </Form.Field>
               </Form>
-              {
-                this.state.levels.map((lev, idx) => {
-                  return (
-                    lev <= (this.state.filter.length + 1) ?
-                      <div
-                        key={'dt-lf-' + idx}
+              {this.state.levels.map((lev, idx) => {
+                return lev <= this.state.filter.length + 1 ? (
+                  <div
+                    key={"dt-lf-" + idx}
+                    style={{
+                      alignItems: "center",
+                      padding: "0px 0.5em 0.5em 0px",
+                      display: "flex",
+                      flexDirection: "row",
+                    }}>
+                    {idx > 0 ? (
+                      <Icon
+                        name="caret right"
                         style={{
-                          alignItems: 'center',
-                          padding: '0px 0.5em 0.5em 0px',
-                          display: 'flex',
-                          flexDirection: 'row'
+                          marginLeft: 14 * (idx - 1) + "px",
                         }}
-                      >
-                        {
-                          idx > 0 ?
-                            <Icon
-                              name='caret right'
-                              style={{
-                                marginLeft: (14 * (idx - 1)) + 'px'
-                              }}
-                            /> : null
-                        }
-                        <Dropdown
-                          //inline
-                          color='grey'
-                          fluid
-                          onChange={(ev, data) => {
+                      />
+                    ) : null}
+                    <Dropdown
+                      //inline
+                      color="grey"
+                      fluid
+                      onChange={(ev, data) => {
+                        // Remove childs if necessary
 
-                            // Remove childs if necessary
-
-                            const selectedFilters = {
-                              ...this.state.selectedFilters
-                            };
-                            const filter = [];
-                            for (
-                              let index2 = 0, l = this.state.levels.length;
-                              index2 < l;
-                              index2++
-                            ) {
-                              const lev2 = this.state.levels[index2];
-                              if (
-                                lev2 >= lev
-                                && selectedFilters.hasOwnProperty(lev)
-                              ){
-                                selectedFilters[lev2] = null;
-                              } else {
-                                filter.push(this.state.filter[index2]);
-                              }
-                            }
-
-                            const option = _.find(
-                              data.options, { 'value': data.value }
-                            );
-
-                            if (data.value === null) {
-
-                              this.setState({
-                                filter: filter,
-                                selectedFilters: {
-                                  ...selectedFilters
-                                }
-                              });
-
-                            } else {
-
-                              selectedFilters[lev] = {
-                                path: option.path,
-                                id: data.value
-                              };
-
-                              this.setState({
-                                filter: option.path.split('.'),
-                                selectedFilters: {
-                                  ...selectedFilters
-                                }
-                              });
-                            }
-
-                          }}
-                          options={filters[this.props.levels[lev]]}
-                          placeholder='Filter by units'
-                          selection
-                          value={
-                            this.state.selectedFilters.hasOwnProperty(lev)
-                              && this.state.selectedFilters[lev] !== null ?
-                              this.state.selectedFilters[lev].id : null
+                        const selectedFilters = {
+                          ...this.state.selectedFilters,
+                        };
+                        const filter = [];
+                        for (
+                          let index2 = 0, l = this.state.levels.length;
+                          index2 < l;
+                          index2++
+                        ) {
+                          const lev2 = this.state.levels[index2];
+                          if (
+                            lev2 >= lev &&
+                            selectedFilters.hasOwnProperty(lev)
+                          ) {
+                            selectedFilters[lev2] = null;
+                          } else {
+                            filter.push(this.state.filter[index2]);
                           }
-                        />
-                      </div> : null
-                  );
-                })
-              }
+                        }
+
+                        const option = _.find(data.options, {
+                          value: data.value,
+                        });
+
+                        if (data.value === null) {
+                          this.setState({
+                            filter: filter,
+                            selectedFilters: {
+                              ...selectedFilters,
+                            },
+                          });
+                        } else {
+                          selectedFilters[lev] = {
+                            path: option.path,
+                            id: data.value,
+                          };
+
+                          this.setState({
+                            filter: option.path.split("."),
+                            selectedFilters: {
+                              ...selectedFilters,
+                            },
+                          });
+                        }
+                      }}
+                      options={filters[this.props.levels[lev]]}
+                      placeholder="Filter by units"
+                      selection
+                      value={
+                        this.state.selectedFilters.hasOwnProperty(lev) &&
+                        this.state.selectedFilters[lev] !== null
+                          ? this.state.selectedFilters[lev].id
+                          : null
+                      }
+                    />
+                  </div>
+                ) : null;
+              })}
             </div>
             <div
               style={{
-                padding: '0px 0.5em 0px 0px',
-                flex: '1 1 100%',
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden'
-              }}
-            >
+                padding: "0px 0.5em 0px 0px",
+                flex: "1 1 100%",
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+              }}>
               <div>
                 <Form
                   style={{
-                    flex: '1 1 100%'
-                  }}
-                >
+                    flex: "1 1 100%",
+                  }}>
                   <Form.Field>
                     <label>
-                      <TranslationText
-                        id='filterByName'
-                      />
+                      <TranslationText id="filterByName" />
                     </label>
                     <Input
                       fluid
-                      icon='search'
-                      onChange={(e) => {
+                      icon="search"
+                      onChange={e => {
                         this.setState({
-                          search: e.target.value
+                          search: e.target.value,
                         });
                       }}
-                      placeholder="Search..." 
+                      placeholder="Search..."
                       value={this.state.search}
                     />
                   </Form.Field>
@@ -651,12 +580,11 @@ class DomainTree extends React.Component {
               </div>
               <div
                 style={{
-                  border: '1px solid rgb(160, 160, 160)',
-                  marginTop: '0.5em',
-                  flex: '1 1 100%',
-                  overflowY: 'auto'
-                }}
-              >
+                  border: "1px solid rgb(160, 160, 160)",
+                  marginTop: "0.5em",
+                  flex: "1 1 100%",
+                  overflowY: "auto",
+                }}>
                 <List
                   items={options}
                   onItemClick={this.handleChange}
@@ -669,8 +597,7 @@ class DomainTree extends React.Component {
       </Modal>
     );
   }
-
-};
+}
 
 DomainTree.propTypes = {
   domains: PropTypes.object,
@@ -682,12 +609,9 @@ DomainTree.propTypes = {
   search: PropTypes.bool,
   selected: PropTypes.oneOfType([
     PropTypes.number,
-    PropTypes.arrayOf(PropTypes.number)
+    PropTypes.arrayOf(PropTypes.number),
   ]),
-  title: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.node
-  ])
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
 };
 
 DomainTree.defaultProps = {
@@ -695,13 +619,13 @@ DomainTree.defaultProps = {
   search: true,
   multiple: false,
   reset: true,
-  title: null
+  title: null,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
     developer: state.developer,
-    domains: state.core_domain_list
+    domains: state.core_domain_list,
   };
 };
 
@@ -710,13 +634,11 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     dispatch: dispatch,
     loadDomains: () => {
       dispatch(loadDomains());
-    }
+    },
   };
 };
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
-)((
-  withTranslation('common')(DomainTree)
-));
+  mapDispatchToProps,
+)(withTranslation("common")(DomainTree));

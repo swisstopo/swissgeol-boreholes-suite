@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
-import { Form, Checkbox, Divider } from 'semantic-ui-react';
-import TranslationText from '../translationText';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import { withTranslation } from "react-i18next";
+import { Form, Checkbox, Divider } from "semantic-ui-react";
+import TranslationText from "../translationText";
 
 const WorkgroupMultiselect = props => {
   const [filter, setFilter] = useState(() => {
@@ -33,7 +33,7 @@ const WorkgroupMultiselect = props => {
     <Form
       size="tiny"
       style={{
-        marginBottom: '1em',
+        marginBottom: "1em",
       }}>
       <Form.Field>
         <label>
@@ -47,13 +47,13 @@ const WorkgroupMultiselect = props => {
             }
             disabled={props.allDisabled === true}
             label={
-              props.t('common:alls').charAt(0).toUpperCase() +
+              props.t("common:alls").charAt(0).toUpperCase() +
               // + props.t('common:alls').slice(1)
               // + " (x" + total() + ")"
-              props.t('common:alls').slice(1) +
-              (' (x' +
+              props.t("common:alls").slice(1) +
+              (" (x" +
                 props.workgroups.map(w => w.boreholes).reduce((s, v) => s + v) +
-                ')')
+                ")")
             }
             name="radioGroup"
             onChange={(evt, { checked }) => {
@@ -73,21 +73,21 @@ const WorkgroupMultiselect = props => {
       </Form.Field>
       <Divider />
       {props.workgroups.map(workgroup => (
-        <Form.Field key={'sec-' + workgroup.id}>
+        <Form.Field key={"sec-" + workgroup.id}>
           <Checkbox
             checked={filter.indexOf(workgroup.id) > -1}
             disabled={props.allDisabled === true || workgroup.boreholes === 0}
             label={
               workgroup[props.nameKey] +
-              (workgroup.supplier === true ? ' (supplier)' : '') +
+              (workgroup.supplier === true ? " (supplier)" : "") +
               (workgroup.disabled !== null
-                ? ' ( ' + props.t('common:disabled') + ')'
-                : '') +
-              (' (x' + workgroup.boreholes + ')')
+                ? " ( " + props.t("common:disabled") + ")"
+                : "") +
+              (" (x" + workgroup.boreholes + ")")
             }
             name="radioGroup"
             onChange={(evt, { checked }) => {
-              console.log('onChange..');
+              console.log("onChange..");
               const tmp = [...filter];
               const index = tmp.indexOf(workgroup.id);
               if (index >= 0) {
@@ -117,7 +117,7 @@ WorkgroupMultiselect.propTypes = {
 WorkgroupMultiselect.defaultProps = {
   all: true,
   allDisabled: false,
-  nameKey: 'workgroup',
+  nameKey: "workgroup",
 };
 
-export default withTranslation(['common'])(WorkgroupMultiselect);
+export default withTranslation(["common"])(WorkgroupMultiselect);

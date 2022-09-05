@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import * as Styled from './styles';
-import { useSelector } from 'react-redux';
-import ProfileHeader from './components/profileHeader';
-import ProfileInfo from './components/profileInfo';
-import ProfileLayers from './components/profileLayers';
-import ProfileAttributes from './components/profileAttributes';
-import { casingData } from './data/casingdata';
-import { fillingData } from './data/fillingdata';
-import { stratigraphyData } from './data/stratigraphydata';
-import ProfileInstrument from './components/profileInstrument/profileInstrument';
-import TranslationText from '../translationText';
-import { profileKind } from './constance';
+import React, { useState, useEffect, useCallback } from "react";
+import * as Styled from "./styles";
+import { useSelector } from "react-redux";
+import ProfileHeader from "./components/profileHeader";
+import ProfileInfo from "./components/profileInfo";
+import ProfileLayers from "./components/profileLayers";
+import ProfileAttributes from "./components/profileAttributes";
+import { casingData } from "./data/casingdata";
+import { fillingData } from "./data/fillingdata";
+import { stratigraphyData } from "./data/stratigraphydata";
+import ProfileInstrument from "./components/profileInstrument/profileInstrument";
+import TranslationText from "../translationText";
+import { profileKind } from "./constance";
 
 const Profile = props => {
   const { user, borehole } = useSelector(state => ({
@@ -30,63 +30,63 @@ const Profile = props => {
 
   const onUpdated = attribute => {
     if (
-      attribute === 'depth_to' ||
-      attribute === 'depth_from' ||
-      attribute === 'lithostratigraphy' ||
-      attribute === 'lithology' ||
-      attribute === 'chronostratigraphy' ||
-      attribute === 'newLayer' ||
-      attribute === 'casing_kind' ||
-      attribute === 'casing_material' ||
-      attribute === 'casing_drilling' ||
-      attribute === 'fill_material' ||
-      attribute === 'fill_kind'
+      attribute === "depth_to" ||
+      attribute === "depth_from" ||
+      attribute === "lithostratigraphy" ||
+      attribute === "lithology" ||
+      attribute === "chronostratigraphy" ||
+      attribute === "newLayer" ||
+      attribute === "casing_kind" ||
+      attribute === "casing_material" ||
+      attribute === "casing_drilling" ||
+      attribute === "fill_material" ||
+      attribute === "fill_kind"
     ) {
       setReloadLayer(reloadLayer => reloadLayer + 1);
     }
 
-    if (attribute === 'deleteLayer' || attribute === 'fixErrors') {
+    if (attribute === "deleteLayer" || attribute === "fixErrors") {
       setSelectedLayer(null);
       setReloadLayer(reloadLayer => reloadLayer + 1);
     }
 
     if (
-      attribute === 'primary' ||
-      attribute === 'name' ||
-      attribute === 'date' ||
-      attribute === 'cloneStratigraphy' ||
-      attribute === 'fill_name'
+      attribute === "primary" ||
+      attribute === "name" ||
+      attribute === "date" ||
+      attribute === "cloneStratigraphy" ||
+      attribute === "fill_name"
     )
       setReloadHeader(reloadHeader => reloadHeader + 1);
 
-    if (attribute === 'deleteStratigraphy' || attribute === 'newAttribute') {
+    if (attribute === "deleteStratigraphy" || attribute === "newAttribute") {
       setSelectedStratigraphy(null);
       setReloadHeader(reloadHeader => reloadHeader + 1);
       setReloadLayer(reloadLayer => reloadLayer + 1);
     }
 
-    if (attribute === 'newAttribute')
+    if (attribute === "newAttribute")
       setReloadAttribute(reloadAttribute => reloadAttribute + 1);
   };
 
   const setKind = useCallback(kind => {
     switch (kind) {
-      case 'instruments':
+      case "instruments":
         setStratigraphyKind(profileKind.INSTRUMENT);
         break;
-      case 'stratigraphy':
+      case "stratigraphy":
         setAttributesBasedKind(stratigraphyData);
         setStratigraphyKind(profileKind.STRATIGRAPHY);
         break;
-      case 'hydrogeology':
+      case "hydrogeology":
         setAttributesBasedKind(stratigraphyData);
         setStratigraphyKind(profileKind.HYDROGEOLOGY);
         break;
-      case 'casing':
+      case "casing":
         setAttributesBasedKind(casingData);
         setStratigraphyKind(profileKind.CASING);
         break;
-      case 'filling':
+      case "filling":
         setAttributesBasedKind(fillingData);
         setStratigraphyKind(profileKind.FILLING);
         break;
@@ -94,7 +94,7 @@ const Profile = props => {
         setAttributesBasedKind(stratigraphyData);
         setStratigraphyKind(profileKind.STRATIGRAPHY);
     }
-    onUpdated('newAttribute');
+    onUpdated("newAttribute");
   }, []);
 
   useEffect(() => {
@@ -102,7 +102,7 @@ const Profile = props => {
       !(
         borehole?.data?.lock === null ||
         borehole?.data?.lock.username !== user?.data?.username ||
-        borehole?.data?.role !== 'EDIT'
+        borehole?.data?.role !== "EDIT"
       )
     ) {
       setIsEditable(true);

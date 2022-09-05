@@ -3,7 +3,7 @@ import { fetch } from "./index";
 export function loadStratigraphies(
   page = undefined,
   limit = undefined,
-  filter = undefined
+  filter = undefined,
 ) {
   return fetch("/borehole/stratigraphy", {
     type: "LIST",

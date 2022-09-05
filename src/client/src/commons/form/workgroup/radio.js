@@ -1,42 +1,42 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
-import { Form, Radio } from 'semantic-ui-react';
+import React from "react";
+import PropTypes from "prop-types";
+import { withTranslation } from "react-i18next";
+import { Form, Radio } from "semantic-ui-react";
 
 const WorkgroupRadioGroup = props => {
   return (
     <Form
       size="tiny"
       style={{
-        marginBottom: '1em',
-        border: '1px solid #e0e0e0',
-        padding: '0.5em',
+        marginBottom: "1em",
+        border: "1px solid #e0e0e0",
+        padding: "0.5em",
       }}>
       <Form.Field>
         {props.all === true ? (
           <Radio
-            checked={props.filter === 'all'}
+            checked={props.filter === "all"}
             label={
-              props.t('common:alls').charAt(0).toUpperCase() +
-              props.t('common:alls').slice(1)
+              props.t("common:alls").charAt(0).toUpperCase() +
+              props.t("common:alls").slice(1)
             }
             name="radioGroup"
             onChange={() => {
-              props.onChange('all');
+              props.onChange("all");
             }}
           />
         ) : null}
       </Form.Field>
       {props.workgroups.map(workgroup => (
-        <Form.Field key={'sec-' + workgroup.id}>
+        <Form.Field key={"sec-" + workgroup.id}>
           <Radio
             checked={props.filter === workgroup.id}
             label={
               workgroup[props.nameKey] +
-              (workgroup.supplier === true ? ' (supplier)' : '') +
+              (workgroup.supplier === true ? " (supplier)" : "") +
               (workgroup.disabled !== null
-                ? ' ( ' + props.t('common:disabled') + ')'
-                : '')
+                ? " ( " + props.t("common:disabled") + ")"
+                : "")
             }
             name="radioGroup"
             onChange={() => {
@@ -60,7 +60,7 @@ WorkgroupRadioGroup.propTypes = {
 
 WorkgroupRadioGroup.defaultProps = {
   all: true,
-  nameKey: 'workgroup',
+  nameKey: "workgroup",
 };
 
-export default withTranslation(['common'])(WorkgroupRadioGroup);
+export default withTranslation(["common"])(WorkgroupRadioGroup);

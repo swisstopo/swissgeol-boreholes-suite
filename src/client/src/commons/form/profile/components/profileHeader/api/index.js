@@ -1,4 +1,7 @@
-import { getProfiles, createStratigraphy } from '../../../../../../api-lib/index';
+import {
+  getProfiles,
+  createStratigraphy,
+} from "../../../../../../api-lib/index";
 
 let data = [];
 export const getData = async (id, kind) => {

@@ -1,20 +1,20 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
-import _ from 'lodash';
-import { Icon } from 'semantic-ui-react';
-import TranslationText from '../../form/translationText';
-import WorkgroupRadioGroup from '../../form/workgroup/radio';
-import * as Styled from './searchEditorStyles';
-import ListFilter from '../components/listFilter';
-import StatusFilter from '../components/statusFilter';
-import { casingSearchData } from '../data/casingSearchData';
-import { InstrumentSearchData } from '../data/InstrumentSearchData';
-import { fillingSearchData } from '../data/fillingSearchData';
-import { LocationSearchData } from '../data/LocationSearchData';
-import { boreholeSearchData } from '../data/boreholeSearchData';
-import { stratigraphySearchData } from '../data/stratigraphySearchData';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
+import _ from "lodash";
+import { Icon } from "semantic-ui-react";
+import TranslationText from "../../form/translationText";
+import WorkgroupRadioGroup from "../../form/workgroup/radio";
+import * as Styled from "./searchEditorStyles";
+import ListFilter from "../components/listFilter";
+import StatusFilter from "../components/statusFilter";
+import { casingSearchData } from "../data/casingSearchData";
+import { InstrumentSearchData } from "../data/InstrumentSearchData";
+import { fillingSearchData } from "../data/fillingSearchData";
+import { LocationSearchData } from "../data/LocationSearchData";
+import { boreholeSearchData } from "../data/boreholeSearchData";
+import { stratigraphySearchData } from "../data/stratigraphySearchData";
 
 class SearchEditorComponent extends React.Component {
   constructor(props) {
@@ -26,50 +26,50 @@ class SearchEditorComponent extends React.Component {
       searchList: [
         {
           id: 0,
-          name: 'workgroup',
-          translationId: 'workgroup',
+          name: "workgroup",
+          translationId: "workgroup",
           isSelected: false,
         },
         {
           id: 1,
-          name: 'status',
-          translationId: 'status',
+          name: "status",
+          translationId: "status",
           isSelected: false,
         },
         {
           id: 2,
-          name: 'location',
-          translationId: 'location',
+          name: "location",
+          translationId: "location",
           isSelected: false,
         },
         {
           id: 3,
-          name: 'borehole',
-          translationId: 'borehole',
+          name: "borehole",
+          translationId: "borehole",
           isSelected: false,
         },
         {
           id: 4,
-          name: 'stratigraphy',
-          translationId: 'stratigraphy',
+          name: "stratigraphy",
+          translationId: "stratigraphy",
           isSelected: false,
         },
         {
           id: 5,
-          name: 'casing',
-          translationId: 'casing',
+          name: "casing",
+          translationId: "casing",
           isSelected: false,
         },
         {
           id: 6,
-          name: 'instrument',
-          translationId: 'instrument',
+          name: "instrument",
+          translationId: "instrument",
           isSelected: false,
         },
         {
           id: 7,
-          name: 'filling',
-          translationId: 'filling',
+          name: "filling",
+          translationId: "filling",
           isSelected: false,
         },
       ],
@@ -98,32 +98,32 @@ class SearchEditorComponent extends React.Component {
   handleButtonSelected() {
     let selectedData = null;
     if (
-      this.state?.searchList?.[2]?.name === 'location' &&
+      this.state?.searchList?.[2]?.name === "location" &&
       this.state?.searchList?.[2]?.isSelected
     ) {
       selectedData = LocationSearchData;
     } else if (
-      this.state?.searchList?.[3]?.name === 'borehole' &&
+      this.state?.searchList?.[3]?.name === "borehole" &&
       this.state?.searchList?.[3]?.isSelected
     ) {
       selectedData = boreholeSearchData;
     } else if (
-      this.state?.searchList?.[4]?.name === 'stratigraphy' &&
+      this.state?.searchList?.[4]?.name === "stratigraphy" &&
       this.state?.searchList?.[4]?.isSelected
     ) {
       selectedData = stratigraphySearchData;
     } else if (
-      this.state?.searchList?.[5]?.name === 'casing' &&
+      this.state?.searchList?.[5]?.name === "casing" &&
       this.state?.searchList?.[5]?.isSelected
     ) {
       selectedData = casingSearchData;
     } else if (
-      this.state?.searchList?.[6]?.name === 'instrument' &&
+      this.state?.searchList?.[6]?.name === "instrument" &&
       this.state?.searchList?.[6]?.isSelected
     ) {
       selectedData = InstrumentSearchData;
     } else if (
-      this.state?.searchList?.[7]?.name === 'filling' &&
+      this.state?.searchList?.[7]?.name === "filling" &&
       this.state?.searchList?.[7]?.isSelected
     ) {
       selectedData = fillingSearchData;
@@ -137,7 +137,7 @@ class SearchEditorComponent extends React.Component {
     return (
       <Styled.Container>
         <Styled.SearchFilterLabel>
-          <TranslationText id={'searchfilters'} />:
+          <TranslationText id={"searchfilters"} />:
         </Styled.SearchFilterLabel>
         <div>
           {this.state?.searchList?.map((filter, idx) => (
@@ -159,7 +159,7 @@ class SearchEditorComponent extends React.Component {
                   }}>
                   <div>
                     <Icon
-                      name={`caret ${filter?.isSelected ? 'down' : 'right'}`}
+                      name={`caret ${filter?.isSelected ? "down" : "right"}`}
                     />
                     <span>
                       <TranslationText id={filter?.translationId} />
@@ -187,29 +187,29 @@ class SearchEditorComponent extends React.Component {
                   }}>
                   <div>
                     <Icon
-                      name={`caret ${filter?.isSelected ? 'down' : 'right'}`}
-                    />{' '}
+                      name={`caret ${filter?.isSelected ? "down" : "right"}`}
+                    />{" "}
                     <span>
                       <TranslationText id={filter?.translationId} />
                     </span>
                   </div>
-                  <Icon name={'close'} />
+                  <Icon name={"close"} />
                 </Styled.FilterButton>
               )}
             </Styled.FilterContainer>
           ))}
 
-          {this.state?.searchList?.[0]?.name === 'workgroup' &&
+          {this.state?.searchList?.[0]?.name === "workgroup" &&
             this.state?.searchList?.[0]?.isSelected && (
               <WorkgroupRadioGroup
                 filter={search.filter.workgroup}
                 onChange={workgroup => {
-                  this.props.setFilter('workgroup', workgroup);
+                  this.props.setFilter("workgroup", workgroup);
                 }}
                 workgroups={user.data.workgroups}
               />
             )}
-          {this.state?.searchList?.[1]?.name === 'status' &&
+          {this.state?.searchList?.[1]?.name === "status" &&
             this.state?.searchList?.[1]?.isSelected && (
               <StatusFilter
                 onChange={this.props.onChange}
@@ -278,79 +278,79 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     dispatch: dispatch,
     setFilter: (key, value) => {
       dispatch({
-        type: 'SEARCH_EDITOR_FILTER_CHANGED',
+        type: "SEARCH_EDITOR_FILTER_CHANGED",
         key: key,
         value: value,
       });
     },
     resetIdentifier: () => {
       dispatch({
-        type: 'SEARCH_EDITOR_FILTER_RESET_IDENTIFIER',
+        type: "SEARCH_EDITOR_FILTER_RESET_IDENTIFIER",
       });
     },
     resetRestriction: () => {
       dispatch({
-        type: 'SEARCH_EDITOR_FILTER_RESET_RESTRICTION',
+        type: "SEARCH_EDITOR_FILTER_RESET_RESTRICTION",
       });
     },
     resetElevation: () => {
       dispatch({
-        type: 'SEARCH_EDITOR_FILTER_RESET_ELEVATION',
+        type: "SEARCH_EDITOR_FILTER_RESET_ELEVATION",
       });
     },
     resetTotBedrock: () => {
       dispatch({
-        type: 'SEARCH_EDITOR_FILTER_RESET_TOP_BEDROCK',
+        type: "SEARCH_EDITOR_FILTER_RESET_TOP_BEDROCK",
       });
     },
     resetDrilling: () => {
       dispatch({
-        type: 'SEARCH_EDITOR_FILTER_RESET_DRILLING',
+        type: "SEARCH_EDITOR_FILTER_RESET_DRILLING",
       });
     },
     resetDrillDiameter: () => {
       dispatch({
-        type: 'SEARCH_EDITOR_FILTER_RESET_DRILL_DIAMETER',
+        type: "SEARCH_EDITOR_FILTER_RESET_DRILL_DIAMETER",
       });
     },
     resetBoreInc: () => {
       dispatch({
-        type: 'SEARCH_EDITOR_FILTER_RESET_BORE_INC',
+        type: "SEARCH_EDITOR_FILTER_RESET_BORE_INC",
       });
     },
     resetBoreIncDir: () => {
       dispatch({
-        type: 'SEARCH_EDITOR_FILTER_RESET_BORE_INC_DIR',
+        type: "SEARCH_EDITOR_FILTER_RESET_BORE_INC_DIR",
       });
     },
 
     setCompletness: completness => {
       dispatch({
-        type: 'SEARCH_EDITOR_COMPLETNESS_CHANGED',
+        type: "SEARCH_EDITOR_COMPLETNESS_CHANGED",
         completness: completness,
       });
     },
     setProject: id => {
       dispatch({
-        type: 'SEARCH_EDITOR_PROJECT_CHANGED',
+        type: "SEARCH_EDITOR_PROJECT_CHANGED",
         id: id,
       });
     },
     setLastUpdate: date => {
       dispatch({
-        type: 'SEARCH_EDITOR_LASTUPDATE_CHANGED',
+        type: "SEARCH_EDITOR_LASTUPDATE_CHANGED",
         date: date,
       });
     },
     setCreation: date => {
       dispatch({
-        type: 'SEARCH_EDITOR_CREATION_CHANGED',
+        type: "SEARCH_EDITOR_CREATION_CHANGED",
         date: date,
       });
     },
     resetDepth: () => {
       dispatch({
-        type: 'SEARCH_EDITOR_FILTER_RESET_DEPTH',
+        type: "SEARCH_EDITOR_FILTER_RESET_DEPTH",
       });
     },
   };
@@ -359,4 +359,4 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation(['common'])(SearchEditorComponent));
+)(withTranslation(["common"])(SearchEditorComponent));

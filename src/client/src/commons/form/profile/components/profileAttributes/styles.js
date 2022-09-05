@@ -1,13 +1,13 @@
-import styled from 'styled-components';
-import { Form } from 'semantic-ui-react';
+import styled from "styled-components";
+import { Form } from "semantic-ui-react";
 
 export const Container = styled.div`
   overflow-y: auto;
   flex: 1 1 100%;
   padding: 10px 10px 0px 15px;
-  opacity: ${props => props.disable && '0.5'};
-  pointer-events: ${props => props.disable && 'none'};
-  background-color: ${props => !props.disable && 'lightgray'};
+  opacity: ${props => props.disable && "0.5"};
+  pointer-events: ${props => props.disable && "none"};
+  background-color: ${props => !props.disable && "lightgray"};
 `;
 
 export const CheckboxContainer = styled.div`

@@ -1,1 +1,1 @@
-export { default } from './profileInstrument';
+export { default } from "./profileInstrument";

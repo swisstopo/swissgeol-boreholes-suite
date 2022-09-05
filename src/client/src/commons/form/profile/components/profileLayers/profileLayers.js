@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
-import * as Styled from './styles';
-import { Button } from 'semantic-ui-react';
-import TranslationText from '../../../translationText';
-import { createLayerApi, getData } from './api';
-import ProfileLayersValidation from './components/profileLayersValidation';
+import React, { useCallback, useEffect, useState, useRef } from "react";
+import * as Styled from "./styles";
+import { Button } from "semantic-ui-react";
+import TranslationText from "../../../translationText";
+import { createLayerApi, getData } from "./api";
+import ProfileLayersValidation from "./components/profileLayersValidation";
 
 const ProfileLayers = props => {
   const {
@@ -43,7 +43,7 @@ const ProfileLayers = props => {
   const createNewLayer = () => {
     createLayerApi(selectedStratigraphyID).then(res => {
       if (res) {
-        onUpdated('newLayer');
+        onUpdated("newLayer");
       }
     });
   };
@@ -61,7 +61,7 @@ const ProfileLayers = props => {
             onClick={createNewLayer}
             secondary
             size="small"
-            style={{ marginBottom: '10px', padding: '13px 20px' }}
+            style={{ marginBottom: "10px", padding: "13px 20px" }}
           />
         </div>
       )}

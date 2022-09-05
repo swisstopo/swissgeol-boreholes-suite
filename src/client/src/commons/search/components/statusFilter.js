@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
-import _ from 'lodash';
-import { Form, Radio } from 'semantic-ui-react';
-import TranslationText from '../../form/translationText';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
+import _ from "lodash";
+import { Form, Radio } from "semantic-ui-react";
+import TranslationText from "../../form/translationText";
 
 class StatusFilter extends Component {
   isVisible(filter) {
@@ -15,53 +15,53 @@ class StatusFilter extends Component {
     return false;
   }
   render() {
-    const { search} = this.props;
+    const { search } = this.props;
     return (
       <Form
         size="tiny"
         style={{
-          border: '1px solid #e0e0e0',
-          padding: '0.5em',
+          border: "1px solid #e0e0e0",
+          padding: "0.5em",
         }}>
         <Form.Field>
           <Radio
-            checked={search.filter.role === 'all'}
-            label={''}
+            checked={search.filter.role === "all"}
+            label={""}
             name="radioGroup"
             onChange={() => {
-              this.props.setFilter('role', 'all');
+              this.props.setFilter("role", "all");
             }}
           />
           <span
             style={{
-              color: 'black',
-              fontSize: '1.1em',
-              fontWeight: 'bold',
+              color: "black",
+              fontSize: "1.1em",
+              fontWeight: "bold",
             }}>
             <TranslationText firstUpperCase id="alls" />
           </span>
         </Form.Field>
-        {['statusedit', 'statuscontrol', 'statusvalid', 'statuspublic'].map(
+        {["statusedit", "statuscontrol", "statusvalid", "statuspublic"].map(
           (role, idx) => (
-            <Form.Field key={'sec-' + role}>
+            <Form.Field key={"sec-" + role}>
               <Radio
                 checked={
                   search.filter.role ===
-                  role.replace('status', '').toUpperCase()
+                  role.replace("status", "").toUpperCase()
                 }
-                label={''}
+                label={""}
                 name="radioGroup"
                 onChange={() => {
                   this.props.setFilter(
-                    'role',
-                    role.replace('status', '').toUpperCase(),
+                    "role",
+                    role.replace("status", "").toUpperCase(),
                   );
                 }}
               />
               <span
                 style={{
-                  color: 'black',
-                  fontSize: '1.1em',
+                  color: "black",
+                  fontSize: "1.1em",
                 }}>
                 <TranslationText firstUpperCase id={role} />
               </span>
@@ -94,4 +94,4 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation(['common'])(StatusFilter));
+)(withTranslation(["common"])(StatusFilter));

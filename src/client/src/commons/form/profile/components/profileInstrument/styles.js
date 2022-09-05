@@ -1,12 +1,12 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const Container = styled.div`
   flex: 1 1 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  opacity: ${props => props.disable && '0.5'};
-  pointer-events: ${props => props.disable && 'none'};
+  opacity: ${props => props.disable && "0.5"};
+  pointer-events: ${props => props.disable && "none"};
 `;
 
 export const ButtonContainer = styled.div`

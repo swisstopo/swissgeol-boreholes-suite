@@ -1,5 +1,5 @@
-import React from 'react';
-import { Dropdown } from 'semantic-ui-react';
+import React from "react";
+import { Dropdown } from "semantic-ui-react";
 
 const CasingList = props => {
   const { dropDownValue, handleCasing, ItemValue, data } = props;

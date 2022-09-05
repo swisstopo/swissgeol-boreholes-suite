@@ -1,59 +1,46 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
-import { Form, Radio } from 'semantic-ui-react';
-import TranslationText from '../translationText';
+import React from "react";
+import PropTypes from "prop-types";
+import { withTranslation } from "react-i18next";
+import { Form, Radio } from "semantic-ui-react";
+import TranslationText from "../translationText";
 
 const SupplierRadioGroup = props => {
   return (
     <Form
-      size='tiny'
+      size="tiny"
       style={{
-        marginBottom: '1em'
-      }}
-    >
+        marginBottom: "1em",
+      }}>
       <Form.Field>
         <label>
-          <TranslationText
-            firstUpperCase
-            id='workgroup'
-          />
+          <TranslationText firstUpperCase id="workgroup" />
         </label>
-        {
-          props.all === true?
-            <Radio
-              checked={props.filter === 'all'}
-              label={
-                props.t('common:alls').charAt(0).toUpperCase()
-                + props.t('common:alls').slice(1)
-              }
-              name='radioGroup'
-              onChange={()=>{
-                props.onChange('all');
-              }}
-            />: null
-        }
+        {props.all === true ? (
+          <Radio
+            checked={props.filter === "all"}
+            label={
+              props.t("common:alls").charAt(0).toUpperCase() +
+              props.t("common:alls").slice(1)
+            }
+            name="radioGroup"
+            onChange={() => {
+              props.onChange("all");
+            }}
+          />
+        ) : null}
       </Form.Field>
-      {
-        props.suppliers.map(
-          supplier=>(
-            <Form.Field
-              key={"sec-" + supplier.id}
-            >
-              <Radio
-                checked={props.filter === supplier.id}
-                label={
-                  supplier.name
-                }
-                name='radioGroup'
-                onChange={()=>{
-                  props.onChange(supplier.id);
-                }}
-              />
-            </Form.Field>
-          )
-        )
-      }
+      {props.suppliers.map(supplier => (
+        <Form.Field key={"sec-" + supplier.id}>
+          <Radio
+            checked={props.filter === supplier.id}
+            label={supplier.name}
+            name="radioGroup"
+            onChange={() => {
+              props.onChange(supplier.id);
+            }}
+          />
+        </Form.Field>
+      ))}
     </Form>
   );
 };
@@ -67,7 +54,7 @@ SupplierRadioGroup.propTypes = {
 };
 
 SupplierRadioGroup.defaultProps = {
-  all: false
+  all: false,
 };
 
-export default withTranslation(['common'])(SupplierRadioGroup);
+export default withTranslation(["common"])(SupplierRadioGroup);

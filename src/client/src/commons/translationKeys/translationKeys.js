@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as Styled from "./styles";
 import { withTranslation } from "react-i18next";
 
-const TranslationKeys = (prop) => {
+const TranslationKeys = prop => {
   const [selectedLanguage, setSelectedLanguage] = useState();
 
   const languages = [
@@ -55,8 +55,7 @@ const TranslationKeys = (prop) => {
               selectedLanguage?.language === item.language
                 ? "underline"
                 : "none",
-          }}
-        >
+          }}>
           {item.language.toUpperCase()}
         </Styled.Keys>
       ))}
