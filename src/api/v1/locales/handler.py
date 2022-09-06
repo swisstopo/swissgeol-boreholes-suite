@@ -52,7 +52,7 @@ class LocalesHandler(web.RequestHandler):
             print(traceback.print_exc())
             self.write({
                 "success": False,
-                "message": str(ex)
+                "message": "An internal error has occurred!"
             })
 
         self.finish()

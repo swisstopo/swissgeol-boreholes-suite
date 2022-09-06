@@ -285,7 +285,7 @@ class BaseHandler(web.RequestHandler):
             print(traceback.print_exc())
             self.write({
                 "success": False,
-                "message": str(bex),
+                "message": "An internal error has occurred!",
                 "error": bex.code,
                 "data": bex.data
             })
@@ -294,7 +294,7 @@ class BaseHandler(web.RequestHandler):
             print(traceback.print_exc())
             self.write({
                 "success": False,
-                "message": str(ex)
+                "message": "An internal error has occurred!"
             })
 
         self.finish()
