@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    name: Build and run tests
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Start db and api
+        run: docker-compose up -d db api
+
+      - name: Setup Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - working-directory: ./src/client
+        run: yarn install --immutable --immutable-cache --check-cache
+
+      - working-directory: ./src/client
+        run: npm run build --if-present
+
+      - working-directory: ./src/client
+        run: npm run lint
+
+      - working-directory: ./src/client
+        run: npm run start & npm test
