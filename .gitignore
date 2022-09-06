@@ -399,27 +399,30 @@ FodyWeavers.xsd
 *.sln.iml
 
 # Cypress test output
-src/ClientApp/cypress/screenshot
-src/ClientApp/cypress/downloads
-src/ClientApp/cypress/videos
-src/ClientApp/cypress/screenshots
+src/client/cypress/screenshot
+src/client/cypress/downloads
+src/client/cypress/videos
+src/client/cypress/screenshots
+
+# Docker data
+/data
 
 # Dependencies
-/src/ClientAppnode_modules
+/src/client/node_modules
 
 # Testing
-src/ClientApp/coverage
+src/client/coverage
 
 # Production
-src/ClientApp/build
+src/client/build
 
 # Misc
-src/ClientApp/.DS_Store
-src/ClientApp/.env.local
-src/ClientApp/.env.development.local
-src/ClientApp/.env.test.local
-src/ClientApp/.env.production.local
+src/client/.DS_Store
+src/client/.env.local
+src/client/.env.development.local
+src/client/.env.test.local
+src/client/.env.production.local
 
-src/ClientApp/npm-debug.log*
-src/ClientApp/yarn-debug.log*
-src/ClientApp/yarn-error.log*
+src/client/npm-debug.log*
+src/client/yarn-debug.log*
+src/client/yarn-error.log*

@@ -1,0 +1,72 @@
+version: '3'
+
+services:
+  minio:
+    image: minio/minio
+    environment:
+      MINIO_ROOT_USER: REDSQUIRREL
+      MINIO_ROOT_PASSWORD: YELLOWMONKEY
+    volumes:
+      - ./data/minio:/data
+    command: server /data -console-address ":9002"
+  db:
+    image: postgis/postgis:12-2.5-alpine
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: SPAWNPLOW
+      POSTGRES_PASSWORD: YELLOWSPATULA
+      POSTGRES_DB: bdms
+    healthcheck:
+      test: "pg_isready -U SPAWNPLOW -d bdms -h db"
+      interval: 3s
+      timeout: 1s
+      retries: 20
+      start_period: 25s
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 3001:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@example.com
+      PGADMIN_DEFAULT_PASSWORD: PEEVEDWATER
+    volumes:
+      - ./config/pgadmin4-servers.json:/pgadmin4/servers.json
+    depends_on:
+      db:
+        condition: service_healthy
+  client:
+    build:
+      context: ./src/client
+    restart: unless-stopped
+    volumes:
+      - ./src/client:/app/
+      - /app/node_modules
+    ports:
+      - 3000:3000
+    depends_on:
+      db:
+        condition: service_healthy
+  api:
+    build:
+      context: ./src/api
+    restart: unless-stopped
+    ports:
+      - 8888:8888
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      FILE_STORAGE: s3
+      S3_REGION: none
+      S3_ENDPOINT: minio:9000
+      S3_SECURE: 0
+      S3_BUCKET: swissforages
+      S3_CREDENTIALS_ACCESS_KEY: REDSQUIRREL
+      S3_CREDENTIALS_SECRET_KEY: YELLOWMONKEY
+      S3_CREDENTIALS_SESSION_TOKEN: none
+      DB_USERNAME: SPAWNPLOW
+      DB_PASSWORD: YELLOWSPATULA
+      DB_DATABASE: bdms
+      DB_HOST: db
+      DB_PORT: 5432

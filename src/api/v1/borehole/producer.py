@@ -1,0 +1,285 @@
+# -*- coding: utf-8 -*-
+import os
+from io import BytesIO
+from io import StringIO
+import traceback
+from bms import (
+    # Locked,
+    # EDIT,
+    AuthenticationException,
+    AuthorizationException,
+    WorkgroupFreezed,
+    MissingParameter,
+    BmsException
+)
+from bms.v1.handlers import Producer
+from bms.v1.borehole import (
+    CheckBorehole,
+    StartEditing,
+    Lock,
+    Unlock,
+    CreateBorehole,
+    ImportCsv,
+    DeleteBorehole,
+    DeleteBoreholes,
+    ListEditingBorehole,
+    MultiPatchBorehole,
+    PatchBorehole,
+    BoreholeIds,
+    EditingListFilesBorehole,
+    CopyBorehole
+)
+from bms.v1.setting import (
+    PatchSetting
+)
+
+
+class BoreholeProducerHandler(Producer):
+
+    async def post(self, *args, **kwargs):
+        if (
+            'Content-Type' in self.request.headers and
+            'multipart/form-data' in self.request.headers['Content-Type']
+        ):
+            try:
+                self.set_header("Content-Type", "application/json; charset=utf-8")
+                if self.user is None:
+                    raise AuthenticationException()
+
+                self.authorize()
+                action = self.get_argument('action', None)
+                
+                if action in [
+                    'IMPORTCSV'
+                ]:
+                    request = {"action": action}
+                    if action == 'IMPORTCSV':
+                        request['id'] = self.get_argument('id', None)
+                        if request['id'] is None:
+                            raise MissingParameter("id")
+
+                        request['id'] = int(request['id'])
+
+                # Putting the uploaded file in memory
+                fileinfo = self.request.files['file'][0]
+                
+                request['file'] = StringIO(
+                    fileinfo['body'].decode('utf-8')
+                )
+
+                response = await self.execute(request)
+
+                if response is None:
+                    response = {}
+
+                self.write(
+                    {
+                        **{
+                            "success": True
+                        },
+                        **response
+                    }
+                )
+
+            except BmsException as bex:
+                print(traceback.print_exc())
+                self.write({
+                    "success": False,
+                    "message": str(bex),
+                    "error": bex.code,
+                    "data": bex.data
+                })
+
+            except Exception as ex:
+                print(traceback.print_exc())
+                self.write({
+                    "success": False,
+                    "message": str(ex)
+                })
+
+            self.finish()
+
+        else:
+            await super(
+                BoreholeProducerHandler, self
+            ).post(*args, **kwargs)
+
+    async def execute(self, request):
+        action = request.pop('action', None)
+
+        if action in [
+            'CREATE',
+            'COPY',
+            'LOCK',
+            'UNLOCK',
+            'EDIT',
+            'DELETE',
+            'DELETELIST',
+            'PATCH',
+            'MULTIPATCH',
+            'CHECK',
+            'LIST',
+            'IDS',
+            'IMPORTCSV',
+            'LISTFILES'
+        ]:
+
+            async with self.pool.acquire() as conn:
+
+                exe = None
+
+                # Check concurrent lock if an editing action requested for an
+                #  exisitng element
+                if action in [
+                    'LOCK',
+                    'UNLOCK',
+                    'EDIT',
+                    'DELETE',
+                    'PATCH',
+                ]:
+                    # Lock check
+                    res = await self.check_lock(
+                        request['id'], self.user, conn
+                    )
+
+                    if (
+                        action in [
+                            'CHECK',
+                            'PATCH',
+                            'DELETE'
+                        ]
+                    ):
+                        # add supplier exception
+                        await self.check_edit(
+                            request['id'], self.user, conn
+                        )
+                        if res['role'] != 'EDIT' and res['supplier'] is False:
+                            raise AuthorizationException() 
+
+                if (
+                    action in [
+                        'CREATE',
+                        'IMPORTCSV'
+                    ]
+                ):
+                    # Check if Workgroup is not freezed
+                    for w in self.user['workgroups']:
+                        if w['id'] == request['id']:
+
+                            if w['disabled'] is not None:
+                                raise WorkgroupFreezed()
+
+                            elif 'EDIT' not in w['roles']:
+                                raise AuthorizationException() 
+
+                if (
+                    action in [
+                        'COPY',
+                    ]
+                ):
+                    # Check if Workgroup is not freezed
+                    for w in self.user['workgroups']:
+                        if w['id'] == request['workgroup']:
+
+                            if w['disabled'] is not None:
+                                raise WorkgroupFreezed()
+
+                            elif 'EDIT' not in w['roles']:
+                                raise AuthorizationException() 
+
+                if action == 'CREATE':
+                    exe = CreateBorehole(conn)
+                    request['user'] = self.user
+
+                elif action == 'COPY':
+                    exe = CopyBorehole(conn)
+                    request['user'] = self.user
+
+                elif action == 'IMPORTCSV':
+                    exe = ImportCsv(conn)
+                    request['user'] = self.user
+
+                elif action == 'LOCK':
+                    exe = Lock(conn)
+                    request['user'] = self.user
+
+                elif action == 'UNLOCK':
+                    exe = Unlock(conn)
+
+                elif action == 'EDIT':
+                    exe = StartEditing(conn)
+                    request['user'] = self.user
+
+                elif action == 'DELETE':
+                    exe = DeleteBorehole(conn)
+
+                elif action == 'DELETELIST':
+                    exe = DeleteBoreholes(conn)
+
+                elif action == 'PATCH':
+                    exe = PatchBorehole(conn)
+                    request['user'] = self.user
+
+                elif action == 'MULTIPATCH':
+                    exe = MultiPatchBorehole(conn)
+                    request['user'] = self.user
+
+                elif action == 'CHECK':
+                    exe = CheckBorehole(conn)
+
+                elif action == 'IDS':
+                    exe = BoreholeIds(conn)
+                    request['user'] = self.user
+
+                elif action == 'LISTFILES':
+                    exe = EditingListFilesBorehole(conn)
+                    request['user'] = self.user
+                
+                elif action == 'LIST':
+                    exe = ListEditingBorehole(conn)
+                    request['user'] = self.user
+
+                    # update only if ordering changed
+                    if 'orderby' in request and (
+                        request['orderby'] is not None
+                    ) and (
+                        'orderby' in self.user['setting']['eboreholetable'] and
+                        self.user[
+                            'setting'
+                        ]['eboreholetable']['orderby'] != request['orderby']
+                    ):
+                        await (PatchSetting(conn)).execute(
+                            self.user['id'],
+                            'eboreholetable.orderby',
+                            request['orderby']
+                        )
+                    else:
+                        request['orderby'] = self.user[
+                            'setting'
+                        ]['eboreholetable']['orderby']
+
+                    if 'direction' in request and (
+                        request['direction'] is not None
+                    ) and (
+                        self.user[
+                            'setting'
+                        ]['eboreholetable']['direction'] != request['direction']
+                    ):
+                        await (PatchSetting(conn)).execute(
+                            self.user['id'],
+                            'eboreholetable.direction',
+                            request['direction']
+                        )
+                    else:
+                        request['direction'] = self.user[
+                            'setting'
+                        ]['eboreholetable']['direction']
+
+                request.pop('lang', None)
+
+                if exe is not None:
+                    return (
+                        await exe.execute(**request)
+                    )
+
+        raise Exception("Action '%s' unknown" % action)
