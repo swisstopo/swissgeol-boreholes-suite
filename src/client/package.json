@@ -3,7 +3,6 @@
   "version": "1.0.6",
   "description": "Bohrehole Data Management System",
   "private": true,
-  "proxy": "http://api:8888/",
   "author": "GeoWerkstatt <office@geowerkstatt.ch> (https://github.com/geowerkstatt)",
   "contributors": [
     "Milan Antonovic <milan.antonovic@supsi.ch> (https://github.com/mantonovic)",
@@ -20,6 +19,7 @@
   "dependencies": {
     "axios": "^0.26.0",
     "date-fns": "^2.9.0",
+    "http-proxy-middleware": "^2.0.6",
     "i18next": "^19.1.0",
     "i18next-browser-languagedetector": "^4.0.1",
     "i18next-http-backend": "^1.0.21",

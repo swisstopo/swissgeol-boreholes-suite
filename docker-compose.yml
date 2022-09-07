@@ -47,6 +47,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      REACT_APP_PROXY_HOST: http://api:8888/
   api:
     build:
       context: ./src/api
