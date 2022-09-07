@@ -26,10 +26,10 @@ jobs:
         run: npm run lint
 
       - name: Cypress run
-        working-directory: ./src/client
         uses: cypress-io/github-action@v4
         with:
           build: npm run build --if-present
           start: npm start
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
+          working-directory: ./src/client
