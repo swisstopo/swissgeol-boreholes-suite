@@ -10,7 +10,7 @@ ENV SERVICE_PORT 8888
 ENV S3_CREDENTIALS_FILE none
 ENV S3_CREDENTIALS_FILE_PROFILE default
 
-# S3 credentials retrieved from iam provider 
+# S3 credentials retrieved from iam provider
 ENV S3_CREDENTIALS_IAM 0
 
 # SMTP Email feedback config
