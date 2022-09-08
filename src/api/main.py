@@ -341,7 +341,6 @@ if __name__ == "__main__":
 
     AsyncIOMainLoop().install()
     ioloop = asyncio.get_event_loop()
-    ioloop.set_debug(enabled=True)
 
     settings = dict(
         debug=True
