@@ -341,7 +341,6 @@ if __name__ == "__main__":
 
     AsyncIOMainLoop().install()
     ioloop = asyncio.get_event_loop()
-    ioloop.set_debug(enabled=True)
 
     settings = dict(
         debug=True
@@ -426,7 +425,7 @@ if __name__ == "__main__":
         try:
             fileBase = FileBase()
             green("Connection to S3 (compatible) object storage: Ok")
-        
+
         except S3Error as e:
 
             red("S3 Configuration error:\n{}".format(e))
@@ -437,7 +436,7 @@ if __name__ == "__main__":
         options.smtp_config is not None
         and options.smtp_config != 'none' # Handling 'none' docker env variable
     ):
-        
+
         config.read(options.smtp_config)
 
         if (
@@ -524,7 +523,7 @@ if __name__ == "__main__":
         http_server = HTTPServer(application)
         http_server.listen(options.port, '0.0.0.0')
         blue(f"\n🤖 Server ready: http://0.0.0.0:{options.port}\n")
-        
+
         ioloop.run_forever()
 
     except DatabaseVersionMissmatch as dvm:
