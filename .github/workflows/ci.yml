@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Start db and api
-        run: docker-compose up -d db api
+        run: docker-compose up -d minio db api
 
       - name: Setup Node.js 16
         uses: actions/setup-node@v3
@@ -23,10 +23,13 @@ jobs:
         run: yarn install --immutable --immutable-cache --check-cache
 
       - working-directory: ./src/client
-        run: npm run build --if-present
-
-      - working-directory: ./src/client
         run: npm run lint
 
-      - working-directory: ./src/client
-        run: npm run start & npm test
+      - name: Cypress run
+        uses: cypress-io/github-action@v4
+        with:
+          build: npm run build --if-present
+          start: npm start
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
+          working-directory: ./src/client
