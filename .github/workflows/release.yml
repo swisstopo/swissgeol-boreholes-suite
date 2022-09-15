@@ -1,18 +1,22 @@
-name: Pre-release
+name: Release
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [released]
   workflow_dispatch:
+    inputs:
+      TAG_NAME:
+        description: "Tag name"
+        required: true
 
 env:
   REGISTRY: ghcr.io
+  TAG_NAME: ${{ github.event.inputs.TAG_NAME || github.event.release.tag_name }}
 
 jobs:
-  create-pre-release:
+  retag-docker-image:
     runs-on: ubuntu-latest
-    name: Build and push Docker image and create a new GitHub pre-release
+    name: Push updated Docker image
 
     steps:
       - name: Checkout repository
@@ -20,7 +24,7 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo VERSION=$(cat VERSION).$GITHUB_RUN_NUMBER >> $GITHUB_ENV
+          echo VERSION=${TAG_NAME#v} >> $GITHUB_ENV
           echo BASE_IMAGE_NAME=$REGISTRY/$(echo ${GITHUB_REPOSITORY,,}) >> $GITHUB_ENV
           echo COMMITED_AT=$(git show -s --format=%cI `git rev-parse HEAD`) >> $GITHUB_ENV
           echo REVISION=$(git rev-parse --short HEAD) >> $GITHUB_ENV
@@ -35,7 +39,7 @@ jobs:
             org.opencontainers.image.version=v${{ env.VERSION }}
             org.opencontainers.image.maintainer=GeoWerkstatt GmbH <support@geowerkstatt.ch>
           tags: |
-            type=edge
+            type=semver,pattern=v{{version}}
 
       - name: Collect Docker image metadata
         id: meta-client
@@ -47,7 +51,7 @@ jobs:
             org.opencontainers.image.version=v${{ env.VERSION }}
             org.opencontainers.image.maintainer=GeoWerkstatt GmbH <support@geowerkstatt.ch>
           tags: |
-            type=edge
+            type=semver,pattern=v{{version}}
 
       - name: Log in to the GitHub container registry
         uses: docker/login-action@v2
@@ -82,11 +86,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-client:edge
           cache-to: type=inline
-
-      - name: Create GitHub pre-release
-        uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: v${{ env.VERSION }}
-          prerelease: true
-          title: ${{ env.VERSION }}
