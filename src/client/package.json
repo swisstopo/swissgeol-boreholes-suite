@@ -54,8 +54,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.31.7",
     "minimist": "^1.2.6",
-    "prettier": "^2.7.1",
-    "wget-improved": "^3.2.1"
+    "prettier": "^2.7.1"
   },
   "scripts": {
     "start": "CHOKIDAR_USEPOLLING=true react-scripts start",
