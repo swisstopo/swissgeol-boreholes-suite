@@ -3,7 +3,7 @@ const { exception } = require('console');
 const csv = require('csv-parser');
 const fs = require('fs');
 
-let csvfile = '../doc-bdms/i18n/web-bdms-translations.csv'; 
+let csvfile = '../doc-bdms/i18n/web-bdms-translations.csv';
 const output = './public/locale';
 
 /**
@@ -12,20 +12,6 @@ const output = './public/locale';
  */
 
 if ('git' in argv) {
-  // const wget = require('wget-improved');
-  // const src = 'http://nodejs.org/images/logo.svg';
-  // const output = './translations.csv';
-  // const options = {};
-  // let download = wget.download(src, output, options);
-  // download.on('error', function(err) {
-  //   console.log(err);
-  // });
-  // download.on('start', function(fileSize) {
-  //   console.log(fileSize);
-  // });
-  // download.on('end', function(output) {
-  //   console.log(output);
-  // });
   throw new Error("Not yet implemented.");
 }
 else if ('csv' in argv) {
@@ -35,7 +21,7 @@ else if ('csv' in argv) {
 const results = [];
 const languages = [];
 const resources = {};
- 
+
 fs.createReadStream(csvfile)
   .pipe(csv())
   .on('headers', (headers) => {
