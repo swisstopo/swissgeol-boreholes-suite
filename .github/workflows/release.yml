@@ -68,8 +68,8 @@ jobs:
           build-args: |
             VERSION=${{ env.VERSION }}
             REVISION=${{ env.REVISION }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta-api.outputs.tags }}
+          labels: ${{ steps.meta-api.outputs.labels }}
           cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-api:edge
           cache-to: type=inline
 
@@ -82,7 +82,7 @@ jobs:
           build-args: |
             VERSION=${{ env.VERSION }}
             REVISION=${{ env.REVISION }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta-client.outputs.tags }}
+          labels: ${{ steps.meta-client.outputs.labels }}
           cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-client:edge
           cache-to: type=inline
