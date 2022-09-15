@@ -1,5 +1,4 @@
 FROM cypress/base:16 AS development
-ENV NODE_ENV=development
 RUN apt-get -y update
 RUN apt-get -y install git
 RUN mkdir -p /app/src/client
@@ -8,10 +7,13 @@ COPY ./package.json ./yarn.lock ./
 RUN yarn install
 ENTRYPOINT npm run start
 
-FROM node:16-alpine AS deploy
-ENV NODE_ENV=production
+FROM node:16-buster-slim AS deploy
+RUN apt-get -y update
+RUN apt-get -y install git
+RUN npm install -g serve
 RUN mkdir /app
 WORKDIR /app
+COPY --from=development /app/src/client/node_modules /app/node_modules
 COPY . .
-RUN yarn install && yarn build
-ENTRYPOINT npm run start
+RUN npm run build
+ENTRYPOINT serve -s build --listen 3000
