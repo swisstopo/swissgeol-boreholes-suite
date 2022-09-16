@@ -25,3 +25,6 @@ trim_trailing_whitespace = false
 
 [*.{json,yml}]
 indent_size = 2
+
+[VERSION]
+insert_final_newline = false
