@@ -11,8 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Start db and api
-        run: docker-compose up -d minio db api
+      - name: Start db and legacy api
+        run: docker-compose up -d minio db api-legacy
 
       - name: Setup Node.js 16
         uses: actions/setup-node@v3

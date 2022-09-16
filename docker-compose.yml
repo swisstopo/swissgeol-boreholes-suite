@@ -50,15 +50,15 @@ services:
       db:
         condition: service_healthy
     environment:
-      REACT_APP_PROXY_HOST: http://api:8888/
-  api:
+      REACT_APP_PROXY_HOST: http://api-legacy:8888/
+  api-legacy:
     build:
-      context: ./src/api
+      context: ./src/api-legacy
     restart: unless-stopped
     ports:
       - 8888:8888
     volumes:
-      - ./src/api:/usr/src/app/bms
+      - ./src/api-legacy:/usr/src/app/bms
     depends_on:
       db:
         condition: service_healthy

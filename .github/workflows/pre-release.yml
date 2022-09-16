@@ -26,10 +26,10 @@ jobs:
           echo REVISION=$(git rev-parse --short HEAD) >> $GITHUB_ENV
 
       - name: Collect Docker image metadata
-        id: meta-api
+        id: meta-api-legacy
         uses: docker/metadata-action@v3
         with:
-          images: ${{ env.BASE_IMAGE_NAME }}-api
+          images: ${{ env.BASE_IMAGE_NAME }}-api-legacy
           labels: |
             org.opencontainers.image.created=${{ env.COMMITED_AT }}
             org.opencontainers.image.version=v${{ env.VERSION }}
@@ -56,17 +56,17 @@ jobs:
           username: ${{ github.repository_owner  }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image (api)
+      - name: Build and push Docker image (api-legacy)
         uses: docker/build-push-action@v2
         with:
-          context: ./src/api
+          context: ./src/api-legacy
           push: true
           build-args: |
             VERSION=${{ env.VERSION }}
             REVISION=${{ env.REVISION }}
-          tags: ${{ steps.meta-api.outputs.tags }}
-          labels: ${{ steps.meta-api.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-api:edge
+          tags: ${{ steps.meta-api-legacy.outputs.tags }}
+          labels: ${{ steps.meta-api-legacy.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-api-legacy:edge
           cache-to: type=inline
 
       - name: Build and push Docker image (client)
