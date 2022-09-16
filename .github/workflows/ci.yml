@@ -20,7 +20,7 @@ jobs:
           node-version: 16
 
       - working-directory: ./src/client
-        run: yarn install --immutable --immutable-cache --check-cache
+        run: npm ci
 
       - working-directory: ./src/client
         run: npm run lint
