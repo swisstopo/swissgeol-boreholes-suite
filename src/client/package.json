@@ -57,7 +57,7 @@
     "prettier": "^2.7.1"
   },
   "scripts": {
-    "start": "CHOKIDAR_USEPOLLING=true react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "cypress run",
     "eject": "react-scripts eject",

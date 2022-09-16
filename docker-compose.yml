@@ -51,6 +51,7 @@ services:
         condition: service_healthy
     environment:
       REACT_APP_PROXY_HOST: http://api-legacy:8888/
+      WATCHPACK_POLLING: 'true'
   api-legacy:
     build:
       context: ./src/api-legacy
