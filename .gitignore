@@ -424,5 +424,3 @@ src/client/.env.test.local
 src/client/.env.production.local
 
 src/client/npm-debug.log*
-src/client/yarn-debug.log*
-src/client/yarn-error.log*

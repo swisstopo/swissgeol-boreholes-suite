@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-import Highlight from "react-highlighter";
+import Highlighter from "react-highlight-words";
 
 import {
   Button,
@@ -524,9 +524,10 @@ class ExplorerSettings extends React.Component {
                                     style={{
                                       flex: 1,
                                     }}>
-                                    <Highlight search={this.state.searchWms}>
-                                      {layer.Title}
-                                    </Highlight>
+                                    <Highlighter
+                                      searchWords={[this.state.searchWms]}
+                                      textToHighlight={layer.Title}
+                                    />
                                   </div>
                                   <div>
                                     <Button
@@ -591,17 +592,19 @@ class ExplorerSettings extends React.Component {
                                       }
                                     />
                                   ) : null}
-                                  <Highlight search={this.state.searchWms}>
-                                    {layer.Name}
-                                  </Highlight>
+                                  <Highlighter
+                                    searchWords={[this.state.searchWms]}
+                                    textToHighlight={layer.Name}
+                                  />
                                 </div>
                                 <div
                                   style={{
                                     fontSize: "0.8em",
                                   }}>
-                                  <Highlight search={this.state.searchWms}>
-                                    {layer.Abstract}
-                                  </Highlight>
+                                  <Highlighter
+                                    searchWords={[this.state.searchWms]}
+                                    textToHighlight={layer.Abstract}
+                                  />
                                 </div>
                               </div>
                             ) : null,
@@ -639,9 +642,10 @@ class ExplorerSettings extends React.Component {
                                   style={{
                                     flex: 1,
                                   }}>
-                                  <Highlight search={this.state.searchWmts}>
-                                    {layer.Title}
-                                  </Highlight>
+                                  <Highlighter
+                                    searchWords={[this.state.searchWmts]}
+                                    textToHighlight={layer.Title}
+                                  />
                                 </div>
                                 <div>
                                   <Button
@@ -689,17 +693,19 @@ class ExplorerSettings extends React.Component {
                                   color: "#787878",
                                   fontSize: "0.8em",
                                 }}>
-                                <Highlight search={this.state.searchWmts}>
-                                  {layer.Identifier}
-                                </Highlight>
+                                <Highlighter
+                                  searchWords={[this.state.searchWmts]}
+                                  textToHighlight={layer.Identifier}
+                                />
                               </div>
                               <div
                                 style={{
                                   fontSize: "0.8em",
                                 }}>
-                                <Highlight search={this.state.searchWmts}>
-                                  {layer.Abstract}
-                                </Highlight>
+                                <Highlighter
+                                  searchWords={[this.state.searchWmts]}
+                                  textToHighlight={layer.Abstract}
+                                />
                               </div>
                             </div>
                           ) : null;
@@ -783,9 +789,10 @@ class ExplorerSettings extends React.Component {
                                 style={{
                                   flex: 1,
                                 }}>
-                                <Highlight search={this.state.searchWmtsUser}>
-                                  {layer.Title}
-                                </Highlight>
+                                <Highlighter
+                                  searchWords={[this.state.searchWmtsUser]}
+                                  textToHighlight={layer.Title}
+                                />
                               </div>
                               <div>
                                 <Button
@@ -811,17 +818,19 @@ class ExplorerSettings extends React.Component {
                                 color: "#787878",
                                 fontSize: "0.8em",
                               }}>
-                              <Highlight search={this.state.searchWmtsUser}>
-                                {layer.Identifier}
-                              </Highlight>
+                              <Highlighter
+                                searchWords={[this.state.searchWmtsUser]}
+                                textToHighlight={layer.Identifier}
+                              />
                             </div>
                             <div
                               style={{
                                 fontSize: "0.8em",
                               }}>
-                              <Highlight search={this.state.searchWmtsUser}>
-                                {layer.Abstract}
-                              </Highlight>
+                              <Highlighter
+                                searchWords={[this.state.searchWmtsUser]}
+                                textToHighlight={layer.Abstract}
+                              />
                             </div>
                           </div>
                         ) : null,
