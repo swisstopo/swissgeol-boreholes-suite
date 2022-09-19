@@ -37,6 +37,19 @@ class ResourcesSettings extends React.Component {
           style={{
             paddingTop: "1em",
           }}>
+          Source code:
+          <br />
+          <a
+            href="https://github.com/geoadmin/suite-bdms"
+            rel="noopener noreferrer"
+            target="_BLANK">
+            https://github.com/geoadmin/suite-bdms
+          </a>
+        </div>
+        <div
+          style={{
+            paddingTop: "1em",
+          }}>
           Python web Service (source code):
           <br />
           <a
