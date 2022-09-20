@@ -51,7 +51,7 @@ const Stratigraphy = props => {
   useEffect(() => {
     setState(prevState => ({
       ...prevState,
-      selected,
+      selected: selected ?? null,
     }));
   }, [selected]);
 
