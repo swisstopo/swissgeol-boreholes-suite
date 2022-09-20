@@ -24,65 +24,13 @@ class ResourcesSettings extends React.Component {
           style={{
             paddingTop: "1em",
           }}>
-          Documentation:
+          Source code:
           <br />
           <a
-            href="https://geoservice2.ist.supsi.ch/docs/bdms"
+            href="https://github.com/geoadmin/suite-bdms"
             rel="noopener noreferrer"
             target="_BLANK">
-            https://geoservice2.ist.supsi.ch/docs/bdms
-          </a>
-        </div>
-        <div
-          style={{
-            paddingTop: "1em",
-          }}>
-          Python web Service (source code):
-          <br />
-          <a
-            href="https://github.com/geoadmin/service-bdms"
-            rel="noopener noreferrer"
-            target="_BLANK">
-            https://github.com/geoadmin/service-bdms
-          </a>
-        </div>
-        <div
-          style={{
-            paddingTop: "1em",
-          }}>
-          Web Application (source code):
-          <br />
-          <a
-            href="https://github.com/geoadmin/web-bdms"
-            rel="noopener noreferrer"
-            target="_BLANK">
-            https://github.com/geoadmin/web-bdms
-          </a>
-        </div>
-        <div
-          style={{
-            paddingTop: "1em",
-          }}>
-          Swissforages JavaScript API (source code):
-          <br />
-          <a
-            href="https://github.com/geoadmin/js-bdms"
-            rel="noopener noreferrer"
-            target="_BLANK">
-            https://github.com/geoadmin/js-bdms
-          </a>
-        </div>
-        <div
-          style={{
-            paddingTop: "1em",
-          }}>
-          React Stratigraphy library (source code):
-          <br />
-          <a
-            href="https://github.com/ist-supsi/react-stratigraphy"
-            rel="noopener noreferrer"
-            target="_BLANK">
-            https://github.com/ist-supsi/react-stratigraphy
+            https://github.com/geoadmin/suite-bdms
           </a>
         </div>
       </div>
