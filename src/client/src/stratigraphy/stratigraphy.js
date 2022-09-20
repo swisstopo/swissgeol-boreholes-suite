@@ -51,7 +51,7 @@ const Stratigraphy = props => {
   useEffect(() => {
     setState(prevState => ({
       ...prevState,
-      selected,
+      selected: selected ?? null,
     }));
   }, [selected]);
 
@@ -158,9 +158,8 @@ const Stratigraphy = props => {
         // add const 1.5 to show the red line in last layer when its selected
         pxm:
           data.length > 0
-            ? element.current?.clientHeight /
-                data[data.length - 1][mapping.to] -
-              1.5
+            ? (element.current?.clientHeight - 1.5) /
+              data[data.length - 1][mapping.to]
             : 0,
       }));
     }
