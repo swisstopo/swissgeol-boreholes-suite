@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDMS", "src\api\BDMS.csproj", "{539FBB46-14A6-4DC0-9236-00F8C0F4778F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A22DE3B-5FFB-4D89-BBD5-1BB12CA07A36}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDMS.Test", "tests\BDMS.Test.csproj", "{4981EB19-F2EE-4F45-A6DD-ED21B61CB3C6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{539FBB46-14A6-4DC0-9236-00F8C0F4778F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{539FBB46-14A6-4DC0-9236-00F8C0F4778F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{539FBB46-14A6-4DC0-9236-00F8C0F4778F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{539FBB46-14A6-4DC0-9236-00F8C0F4778F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4981EB19-F2EE-4F45-A6DD-ED21B61CB3C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4981EB19-F2EE-4F45-A6DD-ED21B61CB3C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4981EB19-F2EE-4F45-A6DD-ED21B61CB3C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4981EB19-F2EE-4F45-A6DD-ED21B61CB3C6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {15484E86-3692-4F73-A2A5-EF02EAC0367A}
+	EndGlobalSection
+EndGlobal

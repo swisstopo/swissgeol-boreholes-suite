@@ -11,8 +11,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Start db and legacy api
-        run: docker-compose up -d minio db api-legacy
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+
+      - run: dotnet build BDMS.sln /warnaserror
+      - run: dotnet test BDMS.sln --no-build --verbosity normal
+
+      - name: Start db and api's
+        run: docker-compose up -d minio db api-legacy api
 
       - name: Setup Node.js 16
         uses: actions/setup-node@v3
