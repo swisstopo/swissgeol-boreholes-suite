@@ -158,7 +158,7 @@
   "kind": "Bohrtyp",
   "kindCasing": "Ausbautyp",
   "kindCasingLayer": "Rohrtyp",
-  "kindFilling": "Hinterfüllungstyp",
+  "kindFilling": "Hinterfüllungs-/Verfüllungstyp",
   "kindInstrument": "Instrumentierungstyp",
   "lastExport": "Hier ist der letzte Export",
   "lastname": "Nachname",
