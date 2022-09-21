@@ -208,7 +208,7 @@
   "mainStratigraphy": "This is the main stratigraphy",
   "map": "Map",
   "materialCasingLayer": "Casing material",
-  "materialFilling": "Backfill material",
+  "materialFilling": "Backfill/Sealing material",
   "meter": "Meter",
   "msgCasingEmpty": "For a casing profile please click the plus symbol at the top left",
   "msgDeleteUser": "The selected user can be deleted permanantly because currently there is no trace of activity in the database.",

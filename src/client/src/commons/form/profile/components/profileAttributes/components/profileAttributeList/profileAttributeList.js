@@ -73,7 +73,7 @@ const ProfileAttributeList = props => {
                 <Form.Group style={{ display: "flex", paddingTop: "5px" }}>
                   <Form.Radio
                     checked={
-                      _.isNil(layer?.[item.value]) ? true : layer[item.value]
+                      _.isNil(layer?.[item.value]) ? false : layer[item.value]
                     }
                     label={t("yes")}
                     onChange={() => updateChange(item.value, true, item?.to)}
@@ -85,6 +85,11 @@ const ProfileAttributeList = props => {
                     }
                     label={t("no")}
                     onChange={() => updateChange(item.value, false, item?.to)}
+                  />
+                  <Form.Radio
+                    checked={_.isNil(layer?.[item.value])}
+                    label={t("np")}
+                    onChange={() => updateChange(item.value, null, item?.to)}
                   />
                 </Form.Group>
               )}
