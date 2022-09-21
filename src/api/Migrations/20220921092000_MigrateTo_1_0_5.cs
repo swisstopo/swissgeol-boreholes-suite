@@ -352,10 +352,10 @@ INSERT INTO bdms.codelist (
     default_cli, path_cli
 ) VALUES (
     25000100, 25000100,
-    'casi200', '',
+    'casi200', 'BC',
     'Vollrohr', '',
-    'tube plain', '',
-    NULL, '',
+    'tubage non perforé', '',
+    'tubazione', '',
     'blank casing', '',
     1, NULL,
     false, ''
@@ -371,11 +371,11 @@ INSERT INTO bdms.codelist (
     default_cli, path_cli
 ) VALUES (
     25000101, 25000101,
-    'casi200', '',
+    'casi200', 'Scr',
     'Filterrohr', '',
-    'crépine', '',
-    'filtro', '',
-    'screen', '',
+    'tubage crépine', '',
+    'tubo filtrante', '',
+    'screen and casing pipe', '',
     2, NULL,
     false, ''
 );
@@ -390,10 +390,10 @@ INSERT INTO bdms.codelist (
     default_cli, path_cli
 ) VALUES (
     25000102, 25000102,
-    'casi200', '',
+    'casi200', 'CP',
     'Standrohr', '',
-    'tube conducteur', '',
-    NULL, '',
+    'tubage conducteur', '',
+    'tubo guida', '',
     'conductor pipe', '',
     3, NULL,
     false, ''
@@ -466,12 +466,12 @@ INSERT INTO bdms.codelist (
     default_cli, path_cli
 ) VALUES (
     25000106, 25000106,
-    'casi200', '',
-    'anderes', '',
+    'casi200', 'a',
+    'anderer', '',
     'autre', '',
     'altro', '',
     'other ', '',
-    7, NULL,
+    4, NULL,
     false, ''
 );
 INSERT INTO bdms.codelist (
@@ -490,7 +490,7 @@ INSERT INTO bdms.codelist (
     'sans indication', '',
     'senza indicazioni', '',
     'not specified', '',
-    8, NULL,
+    5, NULL,
     false, ''
 );
 INSERT INTO bdms.codelist (
@@ -507,10 +507,10 @@ INSERT INTO bdms.codelist (
     'casi201', '',
     'PVC (Polyvinylchlorid)', '',
     'PVC (chlorure de polyvinyle)', '',
-    'PVC (Polivinile cloruro)', '',
+    'PVC (Polivinilcloruro)', '',
     'PVC (polyvinyl chloride)', '',
     1, NULL,
-    false, ''
+    False, ''
 );
 INSERT INTO bdms.codelist (
     id_cli, geolcode,
@@ -527,9 +527,9 @@ INSERT INTO bdms.codelist (
     'HDPE (Polyethylen mit hoher Dichte)', '',
     'HDPE (polyéthylène à haute densité)', '',
     'HDPE (Polietilene ad alta densità)', '',
-    'HDPE (high density polyethylene', '',
+    'HDPE (high density polyethylene)', '',
     2, NULL,
-    false, ''
+    False, ''
 );
 INSERT INTO bdms.codelist (
     id_cli, geolcode,
@@ -543,12 +543,12 @@ INSERT INTO bdms.codelist (
 ) VALUES (
     25000110, 25000110,
     'casi201', '',
-    'Kunstoff unspezifiziert', '',
+    'Kunstoff (nicht spezifiziert)', '',
     'plastique non spécifié', '',
     'plastica non specificata', '',
-    'plastic unspecified', '',
+    'plastic (unspecified)', '',
     3, NULL,
-    false, ''
+    False, ''
 );
 INSERT INTO bdms.codelist (
     id_cli, geolcode,
@@ -600,12 +600,12 @@ INSERT INTO bdms.codelist (
 ) VALUES (
     25000113, 25000113,
     'casi201', '',
-    'Beton/Mörtel/Zement', '',
-    'béton/mortier/ciment', '',
-    'calcestruzzo/malta/cemento', '',
-    'concrete/mortar/cement', '',
+    'Beton', '',
+    'béton', '',
+    'calcestruzzo', '',
+    'concrete', '',
     6, NULL,
-    false, ''
+    False, ''
 );
 INSERT INTO bdms.codelist (
     id_cli, geolcode,
@@ -717,7 +717,7 @@ INSERT INTO bdms.codelist (
     'Drucksonde', '',
     'sonde de pression', '',
     'sonda di pressione', '',
-    'pressure probe', '',
+    'pressure sensor', '',
     4, NULL,
     false, ''
 );
@@ -774,7 +774,7 @@ INSERT INTO bdms.codelist (
     'Temperatursonde', '',
     'sonde de température', '',
     'sonda di temperatura', '',
-    'temperature probe', '',
+    'temperature sensor', '',
     7, NULL,
     false, ''
 );
@@ -866,12 +866,12 @@ INSERT INTO bdms.codelist (
 ) VALUES (
     25000211, 25000211,
     'inst100', '',
-    'anderes', '',
+    'anderer', '',
     'autre', '',
     'altro', '',
     'other ', '',
     12, NULL,
-    false, ''
+    False, ''
 );
 INSERT INTO bdms.codelist (
     id_cli, geolcode,
@@ -961,12 +961,12 @@ INSERT INTO bdms.codelist (
 ) VALUES (
     25000216, 25000216,
     'inst101', '',
-    'anderes', '',
+    'anderer', '',
     'autre', '',
     'altro', '',
     'other ', '',
     4, NULL,
-    false, ''
+    False, ''
 );
 INSERT INTO bdms.codelist (
     id_cli, geolcode,
@@ -1001,8 +1001,8 @@ INSERT INTO bdms.codelist (
     'fill100', '',
     'Bohrlochverfüllung', '',
     'remplissage du trou de forage', '',
-    'riempimento del foro', '',
-    'borehole filling', '',
+    'riempimento del foro di perforazione', '',
+    'borehole plugging', '',
     1, NULL,
     false, ''
 );
@@ -1021,7 +1021,7 @@ INSERT INTO bdms.codelist (
     'Ringraumverfüllung', '',
     'remplissage de l''espace annulaire', '',
     'riempimento dello spazio anulare', '',
-    'annular space filling', '',
+    'annular sealing', '',
     2, NULL,
     false, ''
 );
@@ -1037,10 +1037,10 @@ INSERT INTO bdms.codelist (
 ) VALUES (
     25000302, 25000302,
     'fill100', '',
-    'Hinterfüllung', '',
+    'Rohrverfüllung', '',
     'remblaiement', '',
     'riempimento', '',
-    'backfilling', '',
+    'casing plugging', '',
     3, NULL,
     false, ''
 );
@@ -1056,12 +1056,12 @@ INSERT INTO bdms.codelist (
 ) VALUES (
     25000303, 25000303,
     'fill100', '',
-    'anderes', '',
+    'anderer', '',
     'autre', '',
     'altro', '',
     'other ', '',
     4, NULL,
-    false, ''
+    False, ''
 );
 INSERT INTO bdms.codelist (
     id_cli, geolcode,
@@ -1094,10 +1094,10 @@ INSERT INTO bdms.codelist (
 ) VALUES (
     25000305, 25000305,
     'fill200', '',
-    'Bohrgut', '',
-    'débris de forage', '',
-    'materiale da taglio dei pozzi', '',
-    'borehole cuttings', '',
+    'Bohrklein', '',
+    'matériel de forage (cuttings)', '',
+    'detriti di perforazione generati dallo scalpello (cuttings)', '',
+    'cuttings', '',
     1, NULL,
     false, ''
 );
@@ -1170,10 +1170,10 @@ INSERT INTO bdms.codelist (
 ) VALUES (
     25000309, 25000309,
     'fill200', '',
-    'Compacktonit', '',
-    'compactonite', '',
-    'compactonite', '',
-    'compactonite', '',
+    'Ton Pellets', '',
+    'pellets d''argile', '',
+    'pellet di argilla', '',
+    'clay pellets', '',
     5, NULL,
     false, ''
 );
@@ -1443,6 +1443,5 @@ ALTER TABLE bdms.stratigraphy
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-
     }
 }

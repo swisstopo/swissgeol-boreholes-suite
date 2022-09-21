@@ -232,7 +232,7 @@ INSERT INTO bdms.codelist (
     'sehr gut sortiert', '',
     'très bien trié', '',
     'molto ben classato', '',
-    'moderately sorted', '',
+    'very well-sorted', '',
     1, NULL,
     false, ''
 );
