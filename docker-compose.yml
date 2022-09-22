@@ -13,6 +13,8 @@ services:
     image: postgis/postgis:12-2.5-alpine
     volumes:
       - ./db:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_USER: SPAWNPLOW
       POSTGRES_PASSWORD: YELLOWSPATULA
@@ -38,7 +40,6 @@ services:
   client:
     build:
       context: ./src/client
-      dockerfile: Dockerfile
       target: development
     restart: unless-stopped
     volumes:
@@ -50,7 +51,8 @@ services:
       db:
         condition: service_healthy
     environment:
-      REACT_APP_PROXY_HOST: http://api-legacy:8888/
+      REACT_APP_PROXY_HOST_API_v1: http://api-legacy:8888/
+      REACT_APP_PROXY_HOST_API_v2: http://api:5000/
       WATCHPACK_POLLING: 'true'
   api-legacy:
     build:
@@ -83,3 +85,18 @@ services:
       SMTP_PORT: 25
       SMTP_TLS: 0
       SMTP_STARTTLS: 0
+  api:
+    build:
+      context: ./src/api
+      args:
+        - VERSION=0.1.100
+        - REVISION=abcdefg
+    restart: unless-stopped
+    ports:
+      - 5000:80
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      CONNECTIONSTRINGS__BdmsContext: Host=db;Username=SPAWNPLOW;Password=YELLOWSPATULA;Database=bdms

@@ -42,6 +42,18 @@ jobs:
             type=semver,pattern=v{{version}}
 
       - name: Collect Docker image metadata
+        id: meta-api
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.BASE_IMAGE_NAME }}-api
+          labels: |
+            org.opencontainers.image.created=${{ env.COMMITED_AT }}
+            org.opencontainers.image.version=v${{ env.VERSION }}
+            org.opencontainers.image.maintainer=GeoWerkstatt GmbH <support@geowerkstatt.ch>
+          tags: |
+            type=semver,pattern=v{{version}}
+
+      - name: Collect Docker image metadata
         id: meta-client
         uses: docker/metadata-action@v3
         with:
@@ -71,6 +83,19 @@ jobs:
           tags: ${{ steps.meta-api-legacy.outputs.tags }}
           labels: ${{ steps.meta-api-legacy.outputs.labels }}
           cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-api-legacy:edge
+          cache-to: type=inline
+
+      - name: Build and push Docker image (api)
+        uses: docker/build-push-action@v2
+        with:
+          context: ./src/api
+          push: true
+          build-args: |
+            VERSION=${{ env.VERSION }}
+            REVISION=${{ env.REVISION }}
+          tags: ${{ steps.meta-api.outputs.tags }}
+          labels: ${{ steps.meta-api.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-api:edge
           cache-to: type=inline
 
       - name: Build and push Docker image (client)
