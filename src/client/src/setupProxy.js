@@ -6,7 +6,7 @@ module.exports = function (app) {
     createProxyMiddleware({
       target: process.env.REACT_APP_PROXY_HOST_API_v1,
       changeOrigin: true,
-    })
+    }),
   );
 
   app.use(
@@ -14,6 +14,6 @@ module.exports = function (app) {
     createProxyMiddleware({
       target: process.env.REACT_APP_PROXY_HOST_API_v2,
       changeOrigin: true,
-    })
+    }),
   );
 };
