@@ -6,6 +6,7 @@ import {
   Switch,
   Redirect,
 } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 import HomeComponent from "./pages/home/homeComponent";
 import EditorComponent from "./pages/editor/editorComponent";
@@ -29,6 +30,7 @@ const cpaths = [
     body: HomeComponent,
   },
 ];
+const queryClient = new QueryClient();
 
 class App extends React.Component {
   componentDidMount() {
@@ -49,29 +51,31 @@ class App extends React.Component {
     ) : loader.terms === false ? (
       <AcceptTerms />
     ) : (
-      <Router>
-        <Switch>
-          {cpaths.map((route, index) => {
-            return (
-              <Route
-                component={route.body}
-                exact={route.exact}
-                key={index}
-                path={route.path}
-              />
-            );
-          })}
-          <Route
-            component={r => (
-              <Redirect
-                to={{
-                  pathname: process.env.PUBLIC_URL + "/",
-                }}
-              />
-            )}
-          />
-        </Switch>
-      </Router>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <Switch>
+            {cpaths.map((route, index) => {
+              return (
+                <Route
+                  component={route.body}
+                  exact={route.exact}
+                  key={index}
+                  path={route.path}
+                />
+              );
+            })}
+            <Route
+              component={r => (
+                <Redirect
+                  to={{
+                    pathname: process.env.PUBLIC_URL + "/",
+                  }}
+                />
+              )}
+            />
+          </Switch>
+        </Router>
+      </QueryClientProvider>
     );
   }
 }

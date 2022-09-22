@@ -24,7 +24,7 @@ class PatchIdentifier(Action):
             id
         )
 
-        if check != 'borehole_identifier':
+        if not check:
             raise NotFound()
 
         # validate text dict
