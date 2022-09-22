@@ -151,7 +151,7 @@ const Stratigraphy = props => {
         pxm:
           data.length > 0
             ? (element.current?.clientHeight - 1.5) /
-              data[data.length - 1][mapping.to]
+              Math.max(...data.map(l => l[mapping.to]).filter(l => l !== null))
             : 0,
       }));
     }
