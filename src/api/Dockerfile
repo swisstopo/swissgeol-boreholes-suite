@@ -3,6 +3,13 @@ WORKDIR /src
 ARG VERSION
 ARG REVISION
 
+# Install missing packages
+RUN \
+  DEBIAN_FRONTEND=noninteractive && \
+  apt-get update && \
+  apt-get install -y curl && \
+  rm -rf /var/lib/apt/lists/*
+
 # Set default shell
 SHELL ["/bin/bash", "-c"]
 
