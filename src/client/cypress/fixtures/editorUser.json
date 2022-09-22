@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "data": {
+    "admin": false,
+    "name": "editor user",
+    "roles": ["EDIT"],
+    "terms": true,
+    "username": "editor",
+    "viewer": true,
+    "workgroups": [
+      {
+        "id": 1,
+        "workgroup": "Default",
+        "roles": ["EDIT"],
+        "disabled": null,
+        "supplier": false
+      }
+    ]
+  }
+}
