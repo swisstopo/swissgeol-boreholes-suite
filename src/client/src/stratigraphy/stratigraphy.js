@@ -17,12 +17,11 @@ const Stratigraphy = props => {
     selectedLayerStyle,
     unselectedLayerStyle,
     overLayerStyle,
-    selected,
   } = props;
 
   const element = useRef(null);
   const [state, setState] = useState({
-    selected: selected ?? null,
+    selected: null,
     over: null,
     minimapCursor: "grab",
     scale: 1,
@@ -47,13 +46,6 @@ const Stratigraphy = props => {
     };
     // eslint-disable-next-line
   }, []);
-
-  useEffect(() => {
-    setState(prevState => ({
-      ...prevState,
-      selected: selected ?? null,
-    }));
-  }, [selected]);
 
   const handleTitle = layer => {
     if (getTitle !== undefined && typeof getTitle === "function") {
