@@ -203,7 +203,7 @@ class BoreholeTable extends TableComponent {
                 schema='hrs'
               />)</span>
         } */}
-        {_.isNil(item.length) ? "n/p" : item.length + " m"}
+        {_.isNil(item.total_depth) ? "n/p" : item.total_depth + " m"}
         <br />
         <span
           style={{
