@@ -29,6 +29,7 @@ Damit auf dem Entwicklungsrechner keine Frameworks (Python, .NET, Node) installi
 
 🚀 Hot Reload bei Änderungen im JavaScript Code der React Web-Applikation  
 🚀 Hot Reload bei Änderungen im Python Code der Tornado REST API (`v1`)  
-❌ Hot Reload bei Änderungen im C# Code der .NET REST API (`v2`)  
+🚀 Hot Reload bei Änderungen im C# Code der .NET REST API (`v2`)
+
 ❌ Breakpoints im JavaScript in VSCode funktionieren (noch) nicht. Bitte vorerst die Dev Tools im Chrome benutzen  
 ❌ Der Debug Output der Tornado REST API ist aktuell in VSCode nicht sichtbar. Bitte vorerst den Container Log benutzen `docker-compose logs api --follow`

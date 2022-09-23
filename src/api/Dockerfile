@@ -10,7 +10,7 @@ RUN apt-get -y install git vim curl htop
 COPY BDMS.csproj .
 RUN dotnet restore
 
-ENTRYPOINT dotnet watch
+ENTRYPOINT dotnet watch run --no-launch-profile
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG VERSION
