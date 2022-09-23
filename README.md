@@ -16,15 +16,19 @@ Damit auf dem Entwicklungsrechner keine Frameworks (Python, .NET, Node) installi
 
 **Folgende Dienste/Anwendungen sind anschliessend wie folgt verfügbar**
 
-🔖 http://localhost:3000/ (Boreholes of Switzerland) 🧞 `admin` 🔐 `swissforages`  
-🔖 http://localhost:3001/ (pgAdmin) 🧞 `pgadmin@example.com` 🔐 `PEEVEDWATER`  
-🔖 http://localhost:8888/ (Tornado REST API), Authentifizierung via `Authorization` Header und Basic Authentication, Benutzername und Passwort im Base64 Format `Basic YWRtaW46c3dpc3Nmb3JhZ2Vz`  
-🔖 http://localhost:5000/ (.NET REST API)  
+| Dienst/Anwendung 🔖  | Adresse | Benutzername 🧞 | Passwort 🔐  |
+|---|---|---|---|
+| Boreholes of Switzerland | [localhost:3000](http://localhost:3000/) |`admin`  |`swissforages`  |
+| pgAdmin | [localhost:3001](http://localhost:3001/) |`pgadmin@example.com`  |`PEEVEDWATER`  |
+| Tornado REST API (`v1`)[^1] | [localhost:8888](http://localhost:8888/) [localhost:3000/api/v1](http://localhost:3000/api/v1)  | `Authorization`| `Basic YWRtaW46c3dpc3Nmb3JhZ2Vz` |
+| .NET REST API (`v2`) | [localhost:5000](http://localhost:5000/) [localhost:3000/api/v2](http://localhost:3000/api/v2) | n/a | n/a |
+
+[^1] : Authentifizierung via `Authorization` Header und Basic Authentication, Benutzername und Passwort im Base64 Format
 
 **Features (was funktioniert und was noch nicht)**
 
 🚀 Hot Reload bei Änderungen im JavaScript Code der React Web-Applikation  
-🚀 Hot Reload bei Änderungen im Python Code der Tornado REST API  
-❌ Hot Reload bei Änderungen im C# Code der .NET REST API  
+🚀 Hot Reload bei Änderungen im Python Code der Tornado REST API (`v1`)  
+❌ Hot Reload bei Änderungen im C# Code der .NET REST API (`v2`)  
 ❌ Breakpoints im JavaScript in VSCode funktionieren (noch) nicht. Bitte vorerst die Dev Tools im Chrome benutzen  
 ❌ Der Debug Output der Tornado REST API ist aktuell in VSCode nicht sichtbar. Bitte vorerst den Container Log benutzen `docker-compose logs api --follow`
