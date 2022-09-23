@@ -18,3 +18,5 @@
 - Add missing option _Keine Angabe_ for layer_striae.
 - Fix blank screen in viewer mode.
 - Add missing package to fix Docker health check in production.
+- Fix broken total_depth attribute reference in table.
+- Improve stratigraphy viewer.
