@@ -12,6 +12,7 @@ on:
 env:
   REGISTRY: ghcr.io
   TAG_NAME: ${{ github.event.inputs.TAG_NAME || github.event.release.tag_name }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   retag-docker-image:
@@ -111,3 +112,27 @@ jobs:
           labels: ${{ steps.meta-client.outputs.labels }}
           cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-client:edge
           cache-to: type=inline
+
+  patch-changelog:
+    runs-on: ubuntu-latest
+    name: Patch CHANGELOG.md
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set environment variables
+        run: |
+          echo GIT_BRANCH_NAME=mark-version-${TAG_NAME#v}-as-released >> $GITHUB_ENV
+          echo GIT_COMMIT_MESSAGE=Mark version ${TAG_NAME#v} as released >> $GITHUB_ENV
+
+      - name: Checkout new branch and patch changelog
+        run: |
+          git checkout -b $GIT_BRANCH_NAME
+          sed -i "/^\#\# \[Unreleased\]$/a \\\n\#\# $TAG_NAME - $(date '+%Y-%m-%d')" CHANGELOG.md
+
+      - name: Commit, push and create pull request
+        run: |
+          git commit -am "$GIT_COMMIT_MESSAGE"
+          git push --set-upstream origin $GIT_BRANCH_NAME
+          gh pr create --title "$GIT_COMMIT_MESSAGE" --body ""
