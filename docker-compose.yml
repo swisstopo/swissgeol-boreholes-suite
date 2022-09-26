@@ -88,15 +88,18 @@ services:
   api:
     build:
       context: ./src/api
-      args:
-        - VERSION=0.1.100
-        - REVISION=abcdefg
+      target: development
     restart: unless-stopped
     ports:
-      - 5000:80
+      - 5000:5000
+    volumes:
+      - ./src/api:/src
+      - /src/bin
+      - /src/obj
     depends_on:
       db:
         condition: service_healthy
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5000
+      DOTNET_USE_POLLING_FILE_WATCHER: 1
       CONNECTIONSTRINGS__BdmsContext: Host=db;Username=SPAWNPLOW;Password=YELLOWSPATULA;Database=bdms
