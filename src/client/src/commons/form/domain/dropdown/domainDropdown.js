@@ -46,17 +46,6 @@ class DomainDropdown extends React.Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.selected !== nextProps.selected) {
-      return true;
-    } else if (this.state.language !== nextProps.i18n.language) {
-      return true;
-    } else if (this.props.developer.debug !== nextProps.developer.debug) {
-      return true;
-    }
-    return false;
-  }
-
   handleChange(event, data) {
     const { onSelected, domains, schema, multiple } = this.props;
     if (multiple === true) {

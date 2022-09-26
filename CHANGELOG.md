@@ -22,3 +22,4 @@
 - Improve stratigraphy viewer.
 - Fix terms of service.
 - Always show up to date login screen text.
+- Fix filter dropdowns not updating
