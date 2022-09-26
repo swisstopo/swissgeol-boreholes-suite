@@ -38,8 +38,6 @@ class AcceptTerms extends React.Component {
     });
   }
 
-  componentDidUpdate(prevProps) {}
-
   render() {
     return (
       <div
@@ -117,7 +115,7 @@ class AcceptTerms extends React.Component {
                     isAccepting: true,
                   },
                   () => {
-                    this.props.acceptTerms(this.state.id).then();
+                    this.props.acceptTerms(this.state.id);
                   },
                 );
               }}
