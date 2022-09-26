@@ -19,7 +19,7 @@ Damit auf dem Entwicklungsrechner keine Frameworks (Python, .NET, Node) installi
 | 🔖Dienst/Anwendung | 🔗Adresse | 🧞Benutzername | 🔐Passwort |
 | :--- | :--- | :--- | :--- |
 | Boreholes of Switzerland | [localhost:3000](http://localhost:3000/) | `admin`| `swissforages`|
-| pgAdmin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | [localhost:3001](http://localhost:3001/) | `pgadmin@example.com` | `PEEVEDWATER` |
+| pgAdmin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | [localhost:3001](http://localhost:3001/) | n/a | n/a |
 | Tornado REST API (`v1`)[^1] | [localhost:8888](http://localhost:8888/) [localhost:3000/api/v1](http://localhost:3000/api/v1) | `Authorization` | `Basic YWRtaW46c3dpc3Nmb3JhZ2Vz` |
 | .NET REST API (`v2`) | [localhost:5000](http://localhost:5000/) [localhost:3000/api/v2](http://localhost:3000/api/v2) | n/a | n/a |
 
