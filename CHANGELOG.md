@@ -21,3 +21,4 @@
 - Fix broken total_depth attribute reference in table.
 - Improve stratigraphy viewer.
 - Fix terms of service.
+- Always show up to date login screen text.

@@ -14,6 +14,7 @@ import {
   loadSettings,
   loadUser,
   setAuthentication,
+  getContent,
 } from "../../api-lib/index";
 
 class DataLoader extends React.Component {
@@ -22,24 +23,20 @@ class DataLoader extends React.Component {
     this.fieldToRef = createRef();
     this.state = {
       isFetching: true,
-      title: window.loginContent
-        ? window.loginContent.title
-        : {
-            en: "",
-            de: "",
-            fr: "",
-            it: "",
-            ro: "",
-          },
-      body: window.loginContent
-        ? window.loginContent.body
-        : {
-            en: "",
-            de: "",
-            fr: "",
-            it: "",
-            ro: "",
-          },
+      title: {
+        en: "",
+        de: "",
+        fr: "",
+        it: "",
+        ro: "",
+      },
+      body: {
+        en: "",
+        de: "",
+        fr: "",
+        it: "",
+        ro: "",
+      },
     };
   }
 
@@ -51,22 +48,15 @@ class DataLoader extends React.Component {
     }
     this.fieldToRef.current.focus();
 
-    // setTimeout(
-    //   () => {
-    //     getContent('login')
-    //       .then(
-    //         r => {
-    //           if (r.data.data !== null) {
-    //             this.setState({
-    //               isFetching: false,
-    //               title: r.data.data.title,
-    //               body: r.data.data.body,
-    //             });
-    //           }
-    //         }
-    //       );
-    //   }, 500
-    // );
+    getContent("login").then(r => {
+      if (r.data.data !== null) {
+        this.setState({
+          isFetching: false,
+          title: r.data.data.title,
+          body: r.data.data.body,
+        });
+      }
+    });
   }
 
   componentDidUpdate(prevProps) {
