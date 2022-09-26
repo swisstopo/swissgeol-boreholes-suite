@@ -83,7 +83,7 @@ class AcceptTerms extends React.Component {
               style={{
                 marginBottom: "1em",
               }}>
-              {this.props.i18n.language}
+              {this.state[this.props.i18n.language]}
             </Markdown>
           </div>
           <div
