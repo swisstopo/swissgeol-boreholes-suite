@@ -20,3 +20,4 @@
 - Add missing package to fix Docker health check in production.
 - Fix broken total_depth attribute reference in table.
 - Improve stratigraphy viewer.
+- Fix terms of service.

@@ -38,8 +38,6 @@ class AcceptTerms extends React.Component {
     });
   }
 
-  componentDidUpdate(prevProps) {}
-
   render() {
     return (
       <div
@@ -85,7 +83,7 @@ class AcceptTerms extends React.Component {
               style={{
                 marginBottom: "1em",
               }}>
-              {this.props.i18n.language}
+              {this.state[this.props.i18n.language]}
             </Markdown>
           </div>
           <div
@@ -117,7 +115,7 @@ class AcceptTerms extends React.Component {
                     isAccepting: true,
                   },
                   () => {
-                    this.props.acceptTerms(this.state.id).then();
+                    this.props.acceptTerms(this.state.id);
                   },
                 );
               }}
