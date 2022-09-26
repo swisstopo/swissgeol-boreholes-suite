@@ -32,8 +32,17 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: pgadmin@example.com
       PGADMIN_DEFAULT_PASSWORD: PEEVEDWATER
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     volumes:
       - ./config/pgadmin4-servers.json:/pgadmin4/servers.json
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        /bin/echo '*:*:bdms:SPAWNPLOW:YELLOWSPATULA' > /tmp/.pgpass
+        chmod 0600 /tmp/.pgpass
+        /entrypoint.sh
     depends_on:
       db:
         condition: service_healthy
