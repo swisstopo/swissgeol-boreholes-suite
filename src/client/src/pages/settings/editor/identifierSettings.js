@@ -192,7 +192,7 @@ class IdentifierSettings extends React.Component {
                         de: val.de.text,
                         fr: val.fr.text,
                         it: val.it.text,
-                        en: val.de.text,
+                        en: val.en.text,
                       });
                     }
                   }}

@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "data": {
+    "admin": true,
+    "name": "admin user",
+    "roles": ["VIEW", "EDIT", "CONTROL", "VALID", "PUBLIC"],
+    "terms": true,
+    "username": "admin",
+    "viewer": true,
+    "workgroups": [
+      {
+        "id": 1,
+        "workgroup": "Default",
+        "roles": ["VIEW", "EDIT", "CONTROL", "VALID", "PUBLIC"],
+        "disabled": null,
+        "supplier": false
+      }
+    ]
+  }
+}
