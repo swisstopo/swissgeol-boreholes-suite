@@ -1,32 +1,47 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS development
+ENV ASPNETCORE_ENVIRONMENT=Development
 WORKDIR /src
-ARG VERSION
-ARG REVISION
 
-# Set default shell
-SHELL ["/bin/bash", "-c"]
+# Install missing packages
+RUN apt-get -y update
+RUN apt-get -y install git vim curl htop
+RUN dotnet tool install --global dotnet-ef
+ENV PATH $PATH:/root/.dotnet/tools
 
 # Restore dependencies and tools
 COPY BDMS.csproj .
-RUN dotnet restore "BDMS.csproj"
+RUN dotnet restore
 
-# Set environment variables
-ENV PUBLISH_DIR=/app/publish
+ENTRYPOINT dotnet watch run --no-launch-profile
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+ARG VERSION
+ARG REVISION
+WORKDIR /src
+
+# Restore dependencies and tools
+COPY BDMS.csproj .
+RUN dotnet restore
 
 # Create optimized production build
 COPY . .
-RUN dotnet publish "BDMS.csproj" \
+RUN dotnet publish \
   -c Release \
   -p:UseAppHost=false \
   -p:VersionPrefix=${VERSION} \
   -p:SourceRevisionId=${REVISION} \
-  -o ${PUBLISH_DIR}
+  -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS deploy
-ENV HOME=/app
-ENV TZ=Europe/Zurich
 ENV ASPNETCORE_ENVIRONMENT=Production
-WORKDIR ${HOME}
+WORKDIR /app
+
+# Install missing packages
+RUN \
+  DEBIAN_FRONTEND=noninteractive && \
+  apt-get update && \
+  apt-get install -y curl && \
+  rm -rf /var/lib/apt/lists/*
 
 EXPOSE 80
 
@@ -34,8 +49,8 @@ EXPOSE 80
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
-COPY --from=development /app/publish $HOME
+COPY --from=build /app/publish .
 
 HEALTHCHECK CMD curl --fail http://localhost/ || exit 1
 
-ENTRYPOINT ["dotnet", "BDMS.dll"]
+ENTRYPOINT dotnet "BDMS.dll"

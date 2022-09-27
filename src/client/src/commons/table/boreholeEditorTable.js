@@ -373,7 +373,7 @@ class BoreholeEditorTable extends TTable {
         <DomainText id={item.extended.status} schema="extended.status" />
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
-        {_.isNil(item.length) ? null : item.length + " m"}
+        {_.isNil(item.total_depth) ? null : item.total_depth + " m"}
       </Table.Cell>,
     ];
   }

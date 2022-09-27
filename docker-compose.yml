@@ -32,8 +32,17 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: pgadmin@example.com
       PGADMIN_DEFAULT_PASSWORD: PEEVEDWATER
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     volumes:
       - ./config/pgadmin4-servers.json:/pgadmin4/servers.json
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        /bin/echo '*:*:bdms:SPAWNPLOW:YELLOWSPATULA' > /tmp/.pgpass
+        chmod 0600 /tmp/.pgpass
+        /entrypoint.sh
     depends_on:
       db:
         condition: service_healthy
@@ -88,15 +97,18 @@ services:
   api:
     build:
       context: ./src/api
-      args:
-        - VERSION=0.1.100
-        - REVISION=abcdefg
+      target: development
     restart: unless-stopped
     ports:
-      - 5000:80
+      - 5000:5000
+    volumes:
+      - ./src/api:/src
+      - /src/bin
+      - /src/obj
     depends_on:
       db:
         condition: service_healthy
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5000
+      DOTNET_USE_POLLING_FILE_WATCHER: 1
       CONNECTIONSTRINGS__BdmsContext: Host=db;Username=SPAWNPLOW;Password=YELLOWSPATULA;Database=bdms
