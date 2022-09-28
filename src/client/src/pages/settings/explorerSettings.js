@@ -272,7 +272,7 @@ class ExplorerSettings extends React.Component {
               <div>
                 <Checkbox
                   checked={setting.data.appearance.explorer === 5}
-                  label="List/Details + Map"
+                  label=""
                   onChange={(e, d) => {
                     patchAppearance(5);
                   }}
