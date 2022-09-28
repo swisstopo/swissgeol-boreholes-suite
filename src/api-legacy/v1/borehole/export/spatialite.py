@@ -37,13 +37,13 @@ class NotifyExportSpatialLiteAsync(Action):
             "status": "running"
         }
 
-        # Check if an EXPORT event is already running 
+        # Check if an EXPORT event is already running
         # and throw and exception if there is.
         row = await self.conn.fetchrow(
             """
                 SELECT
                     id_evs,
-                    id_usr_fk, 
+                    id_usr_fk,
                     topic_evs,
                     created_evs,
                     payload_evs
@@ -66,10 +66,10 @@ class NotifyExportSpatialLiteAsync(Action):
         return
 
 class ExportSpatiaLite(Action):
-    
+
     async def execute(self, workgroup=None, ids=None):
 
-        # Creating a temporary file where the 
+        # Creating a temporary file where the
         # SpatialLite DB will be populated
         spatia_lite_file = tempfile.NamedTemporaryFile(
             suffix='.gpkg',
@@ -86,7 +86,7 @@ class ExportSpatiaLite(Action):
                 # conn.execute("SELECT load_extension('mod_spatialite')")
                 conn.execute('SELECT gpkgCreateBaseTables()')
                 conn.execute('SELECT EnableGpkgMode();')
-                
+
                 # Create the Borehole table
                 cur.execute("""
                     CREATE TABLE boreholes (
@@ -161,7 +161,7 @@ class ExportSpatiaLite(Action):
                         2056
                     );
                 """)
-                
+
                 cur.execute("""
                     SELECT gpkgAddGeometryColumn(
                         'boreholes', 'the_geom', 'POINT', 0, 0, 2056
@@ -262,48 +262,6 @@ class ExportSpatiaLite(Action):
                         notes TEXT
                     )
                 """)
-
-                geolcode_version = await self.conn.fetchval(f"""
-                    SELECT
-                        value_cfg
-                    FROM
-                        bdms.config
-                    WHERE
-                        name_cfg = 'GEOLCODES'
-                """)
-
-                cur.execute(
-                    """
-                        INSERT INTO config (
-                            name,
-                            value
-                        ) VALUES (
-                            'GEOLCODES',?
-                        )
-                    """, (
-                    geolcode_version,
-                ))
-
-                bdms_version = await self.conn.fetchval(f"""
-                    SELECT
-                        value_cfg
-                    FROM
-                        bdms.config
-                    WHERE
-                        name_cfg = 'VERSION'
-                """)
-
-                cur.execute(
-                    """
-                        INSERT INTO config (
-                            name,
-                            value
-                        ) VALUES (
-                            'VERSION',?
-                        )
-                    """, (
-                    bdms_version,
-                ))
 
                 where = []
                 arguments = []
@@ -560,7 +518,7 @@ class ExportSpatiaLite(Action):
 
                             FROM
                                 bdms.borehole_files
-                            
+
                             WHERE
                                 id_bho_fk = $1
                         ) t
@@ -758,7 +716,7 @@ class ExportSpatiaLite(Action):
 
 
 class ImportSpatiaLite(Action):
-    
+
     async def execute(self, user, workgroup_id, spatia_lite_file):
 
         result = {
@@ -767,7 +725,7 @@ class ImportSpatiaLite(Action):
 
         try:
             with spatialite.connect(spatia_lite_file) as conn:
-                
+
                 # Import files
                 rows = conn.execute("""
                     SELECT
@@ -828,7 +786,7 @@ class ImportSpatiaLite(Action):
                         "type": ftype,
                         "conf": self.decode(fconf),
                         "id": id_fil,
-                        "present": present 
+                        "present": present
                     }
 
                 # << End of files db importation
@@ -845,7 +803,7 @@ class ImportSpatiaLite(Action):
                         qt_elevation, --7
                         drilling_date, --8
                         bore_inc, --9
-                        bore_inc_dir, --10 
+                        bore_inc_dir, --10
                         length, --11
 
                         extended_original_name, --12
@@ -1030,7 +988,7 @@ class ImportSpatiaLite(Action):
                             files
                         ON
                             files.id = bfiles.file
-                            
+
                         AND
                             borehole = ?
                     """, (
@@ -1107,7 +1065,7 @@ class ImportSpatiaLite(Action):
                                 to_date($8, 'YYYY-MM-DD'),
                                 to_date($9, 'YYYY-MM-DD')
                             ) RETURNING id_sty
-                        """, 
+                        """,
                             bid['id'],
                             strat[0],
                             True if strat[2] == 1 else False,
@@ -1197,7 +1155,7 @@ class ImportSpatiaLite(Action):
                                     uscs_original_lay, lithok_id_cli,
 
                                     kirost_id_cli, notes_lay,
-                                    
+
                                     gradation_id_cli, uscs_3_id_cli,
                                     uscs_determination_id_cli,
                                     lithology_top_bedrock_id_cli
@@ -1211,7 +1169,7 @@ class ImportSpatiaLite(Action):
 
                                     $9, $10,
                                     $11, $12,
-                                    
+
                                     $13, $14,
                                     $15, $16,
                                     $17, $18,
@@ -1224,9 +1182,9 @@ class ImportSpatiaLite(Action):
 
                                     $31, $32,
                                     $33, $34
-                                    
+
                                 ) RETURNING id_lay
-                            """, 
+                            """,
                                 sty_id, layer[0],
                                 user['id'], user['id'],
 
@@ -1249,15 +1207,15 @@ class ImportSpatiaLite(Action):
                                 layer[26], layer[27],
 
                                 layer[28], layer[29],
-                                
+
                                 layer[38], layer[34],
                                 layer[32], layer[31]
-                                
+
                             )
 
                             # color
                             if layer[30]:
-                                
+
                                 await self.conn.executemany("""
                                     INSERT INTO
                                         bdms.layer_codelist (
@@ -1269,7 +1227,7 @@ class ImportSpatiaLite(Action):
 
                             # debris
                             if layer[33]:
-                                
+
                                 await self.conn.executemany("""
                                     INSERT INTO
                                         bdms.layer_codelist (
@@ -1283,7 +1241,7 @@ class ImportSpatiaLite(Action):
 
                             # grain_granularity
                             if layer[35]:
-                                
+
                                 await self.conn.executemany("""
                                     INSERT INTO
                                         bdms.layer_codelist (
@@ -1297,7 +1255,7 @@ class ImportSpatiaLite(Action):
 
                             # grain_shape
                             if layer[36]:
-                                
+
                                 await self.conn.executemany("""
                                     INSERT INTO
                                         bdms.layer_codelist (
@@ -1311,7 +1269,7 @@ class ImportSpatiaLite(Action):
 
                             # organic_component
                             if layer[37]:
-                                
+
                                 await self.conn.executemany("""
                                     INSERT INTO
                                         bdms.layer_codelist (
