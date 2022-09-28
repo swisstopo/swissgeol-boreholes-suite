@@ -17,7 +17,7 @@ describe("Tests for 'Location' edit page.", () => {
     // login
     cy.visit("/");
     cy.contains("button", "Login").click();
-    cy.wait(["@geoapi", "@borehole"]);
+    cy.wait("@geoapi");
 
     // go to edit
     cy.get('[data-cy="menu"]').click();
@@ -57,8 +57,8 @@ describe("Tests for 'Location' edit page.", () => {
     newBohrung();
 
     // initial state
-    cy.get('[data-cy="identifier-dropdown"]').should("not.have.class", "error");
-    cy.get('[data-cy="identifier-value"]').should("not.have.class", "error");
+    cy.get('[data-cy="identifier-dropdown"]').should("have.class", "error");
+    cy.get('[data-cy="identifier-value"]').should("have.class", "error");
 
     // add identifier
     cy.get('[data-cy="identifier-dropdown"]').click();
@@ -67,7 +67,7 @@ describe("Tests for 'Location' edit page.", () => {
       .contains("Unique id")
       .click();
     cy.get('[data-cy="identifier-dropdown"]').should("not.have.class", "error");
-    cy.get('[data-cy="identifier-value"]').should("not.have.class", "error");
+    cy.get('[data-cy="identifier-value"]').should("have.class", "error");
 
     cy.get('[data-cy="identifier-value"]').type("ECKLERTA");
     cy.get('[data-cy="identifier-dropdown"]').should("not.have.class", "error");

@@ -498,7 +498,8 @@ class BoreholeForm extends React.Component {
                           data-cy="identifier-dropdown"
                           error={
                             this.state.identifier === null &&
-                            borehole?.custom?.identifiers?.length === 0
+                            (borehole?.custom?.identifiers === null ||
+                              borehole.custom.identifiers.length === 0)
                           }>
                           <label>&nbsp;</label>
                           <DomainDropdown
@@ -519,7 +520,8 @@ class BoreholeForm extends React.Component {
                           data-cy="identifier-value"
                           error={
                             this.state.identifierValue === "" &&
-                            borehole?.custom?.identifiers?.length === 0
+                            (borehole?.custom?.identifiers === null ||
+                              borehole.custom.identifiers.length === 0)
                           }>
                           <label>&nbsp;</label>
                           <Input
