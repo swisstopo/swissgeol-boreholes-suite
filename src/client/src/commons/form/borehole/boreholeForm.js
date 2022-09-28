@@ -450,6 +450,7 @@ class BoreholeForm extends React.Component {
                         <div
                           className="flex_row"
                           key={"bhfbi-" + idx}
+                          data-cy="identifier"
                           style={{
                             paddingTop: "0.5em",
                           }}>
@@ -494,6 +495,7 @@ class BoreholeForm extends React.Component {
                     <Form autoComplete="off" size="tiny">
                       <Form.Group widths="equal">
                         <Form.Field
+                          data-cy="identifier-dropdown"
                           error={
                             this.state.identifier === null &&
                             borehole?.custom?.identifiers?.length === 0
@@ -514,6 +516,7 @@ class BoreholeForm extends React.Component {
                           />
                         </Form.Field>
                         <Form.Field
+                          data-cy="identifier-value"
                           error={
                             this.state.identifierValue === "" &&
                             borehole?.custom?.identifiers?.length === 0
@@ -537,6 +540,7 @@ class BoreholeForm extends React.Component {
                             flex: "0 0 0% !important",
                           }}>
                           <Form.Button
+                            data-cy="identifier-add"
                             disabled={
                               this.state.identifier === null ||
                               this.state.identifierValue === ""

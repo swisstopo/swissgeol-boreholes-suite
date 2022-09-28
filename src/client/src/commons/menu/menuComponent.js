@@ -130,6 +130,7 @@ class MenuComponent extends React.Component {
             <Icon
               name="th"
               size="big"
+              data-cy="menu"
               style={{
                 cursor: "pointer",
               }}
