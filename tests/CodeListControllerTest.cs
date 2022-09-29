@@ -35,14 +35,14 @@ public class CodeListControllerTest
     }
 
     [TestMethod]
-    public async Task GetEntriesByInexistantSchemaCli()
+    public async Task GetEntriesByInexistantSchema()
     {
         var codeLists = await controller.GetAsync("not-a-valid-name");
         Assert.AreEqual(0, codeLists.Count());
     }
 
     [TestMethod]
-    public async Task GetEntriesBySchemaCli()
+    public async Task GetEntriesBySchema()
     {
         var codeLists = await controller.GetAsync("custom.chronostratigraphy_top_bedrock");
         Assert.AreEqual(149, codeLists.Count());

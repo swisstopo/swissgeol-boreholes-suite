@@ -17,17 +17,17 @@ public class CodeListController : ControllerBase
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Codelist"/>s, optionally filtered by <paramref name= "schemaCli"/>.
+    /// Asynchronously gets the <see cref="Codelist"/>s, optionally filtered by <paramref name= "schema"/>.
     /// </summary>
-    /// <param name = "schemaCli">The schemaCli of the codeLists to get.</param>
+    /// <param name = "schema">The schema of the codeLists to get.</param>
     [HttpGet]
-    public async Task<IEnumerable<Codelist>> GetAsync(string? schemaCli = null)
+    public async Task<IEnumerable<Codelist>> GetAsync(string? schema = null)
     {
         var codeLists = Context.Codelists.AsQueryable();
 
-        if (!string.IsNullOrEmpty(schemaCli))
+        if (!string.IsNullOrEmpty(schema))
         {
-            codeLists = codeLists.Where(c => c.Schema == schemaCli);
+            codeLists = codeLists.Where(c => c.Schema == schema);
         }
 
         return await codeLists.AsNoTracking().ToListAsync().ConfigureAwait(false);
