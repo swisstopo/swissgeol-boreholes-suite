@@ -2,6 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BDMS;
+
+[TestClass]
 public sealed class Initialize
 {
     [AssemblyInitialize]
