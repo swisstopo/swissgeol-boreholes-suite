@@ -384,6 +384,7 @@ class BoreholeEditorTable extends TTable {
       <Segment
         basic
         loading={this.props.store.isFetching}
+        data-cy="borehole-table"
         style={{
           flex: "1 1 100%",
           width: "100%",
