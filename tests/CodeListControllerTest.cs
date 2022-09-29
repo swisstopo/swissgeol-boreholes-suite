@@ -119,7 +119,7 @@ public class CodeListControllerTest
             Conf = null,
             Default = false,
             DescriptionDe = "",
-            DescriptionEn = "New Description",
+            DescriptionEn = "",
             DescriptionFr = "",
             DescriptionIt = "",
             DescriptionRo = null,
@@ -140,7 +140,7 @@ public class CodeListControllerTest
             Conf = null,
             Default = true,
             DescriptionDe = "",
-            DescriptionEn = "New Description",
+            DescriptionEn = "",
             DescriptionFr = "",
             DescriptionIt = "",
             DescriptionRo = null,
@@ -158,7 +158,7 @@ public class CodeListControllerTest
         Assert.AreEqual("cuttings", codeListToEdit.Code);
         Assert.AreEqual(null, codeListToEdit.Conf);
         Assert.AreEqual(false, codeListToEdit.Default);
-        Assert.AreEqual("New Description", codeListToEdit.DescriptionEn);
+        Assert.AreEqual("", codeListToEdit.DescriptionEn);
         Assert.AreEqual("", codeListToEdit.DescriptionFr);
         Assert.AreEqual("", codeListToEdit.DescriptionIt);
         Assert.AreEqual("", codeListToEdit.DescriptionDe);
@@ -184,7 +184,7 @@ public class CodeListControllerTest
         Assert.AreEqual("cuttings", updatedCodelist.Code);
         Assert.AreEqual(null, updatedCodelist.Conf);
         Assert.AreEqual(true, updatedCodelist.Default);
-        Assert.AreEqual("New Description", updatedCodelist.DescriptionEn);
+        Assert.AreEqual("", updatedCodelist.DescriptionEn);
         Assert.AreEqual("", updatedCodelist.DescriptionFr);
         Assert.AreEqual("", updatedCodelist.DescriptionIt);
         Assert.AreEqual("", updatedCodelist.DescriptionDe);
