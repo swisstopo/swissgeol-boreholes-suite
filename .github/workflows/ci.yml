@@ -17,13 +17,13 @@ jobs:
           dotnet-version: 6.0.x
 
       - name: Build solution
-      - run: dotnet build BDMS.sln /warnaserror
+        run: dotnet build BDMS.sln /warnaserror
       
       - name: Start db and api's
         run: docker-compose up -d minio db api-legacy api
 
       - name: Run dotnet tests
-      - run: dotnet test BDMS.sln --no-build --verbosity normal
+        run: dotnet test BDMS.sln --no-build --verbosity normal
 
       - name: Setup Node.js 16
         uses: actions/setup-node@v3
