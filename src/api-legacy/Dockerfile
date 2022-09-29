@@ -28,7 +28,6 @@ COPY . ./bms
 CMD python -u bms/main.py \
     --port=${SERVICE_PORT} \
     \
-    --pg-auto-upgrade \
     --pg-host=${DB_HOST} \
     --pg-port=${DB_PORT} \
     --pg-database=${DB_DATABASE} \

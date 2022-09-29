@@ -30,7 +30,6 @@ define("pg_password", default="postgres", help="PostgrSQL user password")
 define("pg_host", default="localhost", help="PostgrSQL database host")
 define("pg_port", default="5432", help="PostgrSQL database port")
 define("pg_database", default="bms", help="PostgrSQL database name")
-define("pg_auto_upgrade", default=False, help="Upgrade PostgrSQL schema", type=bool)
 
 define("file_repo", default='s3', help="Select the file repository", type=str)
 
@@ -153,92 +152,6 @@ def green(message):
 
 def blue(message):
     print(f"\033[94m{message}\033[0m")
-
-async def upgrade_database(pool):
-    async with pool.acquire() as conn:
-        try:
-            await conn.execute("BEGIN;")
-            current_db_version = await conn.fetchval("""
-                SELECT
-                    value_cfg
-                FROM
-                    bdms.config
-                WHERE
-                    name_cfg = 'VERSION';
-            """)
-
-            print("\nUpgrading database:")
-            for idx in range(
-                versions.index(current_db_version),
-                len(versions)
-            ):
-                version = versions[idx]
-                with open(sql_files[version]) as sql_file:
-                    print(f" - Executing: {sql_files[version]}")
-                    await conn.execute(sql_file.read())
-
-            # Update current datetime of this upgrade
-            await conn.execute("""
-                UPDATE
-                    bdms.config
-                SET
-                    value_cfg = to_char(
-                        now(), 'YYYY-MM-DD"T"HH24:MI:SSOF'
-                    )
-                WHERE
-                    name_cfg = 'PG_UPGRADE';
-            """)
-            print(f" - Updated upgrade date")
-
-            # Update previous version
-            await conn.execute("""
-                UPDATE
-                    bdms.config
-                SET
-                    value_cfg = $1
-                WHERE
-                    name_cfg = 'PREVIOUS';
-            """, current_db_version)
-
-            # Update current version
-            await conn.execute("""
-                UPDATE
-                    bdms.config
-                SET
-                    value_cfg = $1
-                WHERE
-                    name_cfg = 'VERSION';
-            """, __version__)
-
-            await conn.execute("COMMIT;")
-
-            print(f"\n 😃 \033[92mDatabase upgraded to latest version (v{__version__})\033[0m\n")
-
-        except Exception as ex:
-            red("\n 😞 Sorry, an error occured during the upgrade process.\n")
-            await conn.execute("ROLLBACK;")
-            raise ex
-
-async def system_check(pool):
-    async with pool.acquire() as conn:
-        # Checking database version
-        current_db_version = await conn.fetchval("""
-            SELECT
-                value_cfg
-            FROM
-                bdms.config
-            WHERE
-                name_cfg = 'VERSION';
-        """)
-
-    if current_db_version != __version__:
-        # Raise exception if database version missmatch
-        #   with service-bdms requirements
-        from bms import DatabaseVersionMissmatch
-        raise DatabaseVersionMissmatch(
-            __version__,
-            current_db_version
-        )
 
 async def close(application):
     # Remove all listeners
@@ -502,39 +415,11 @@ if __name__ == "__main__":
     ioloop.run_until_complete(application.listener.start())
 
     try:
-        # Check system before startup
-        try:
-            ioloop.run_until_complete(
-                system_check(application.pool)
-            )
-
-        except DatabaseVersionMissmatch as dvm:
-
-            # Upgrade the database automatically
-            if options.pg_auto_upgrade is True:
-
-                ioloop.run_until_complete(
-                    upgrade_database(application.pool)
-                )
-
-            else:
-                raise dvm
-
         http_server = HTTPServer(application)
         http_server.listen(options.port, '0.0.0.0')
         blue(f"\n🤖 Server ready: http://0.0.0.0:{options.port}\n")
 
         ioloop.run_forever()
-
-    except DatabaseVersionMissmatch as dvm:
-        print(f"""
-\033[91m{dvm}\033[0m
-
-Run this main.py script adding the --pg-auto-upgrade parameter
-to upgrade your database automatically.
-
-Be sure to have a backup of your data before proceding.
-""")
 
     except BmsDatabaseException as du:
         print(f"\n 😃 \033[92m{du}\033[0m\n")
