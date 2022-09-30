@@ -15,12 +15,20 @@ import { Icon, Form } from "semantic-ui-react";
 import { loadDomains } from "../../../api-lib/index";
 import TranslationText from "../../../commons/form/translationText";
 import produce from "immer";
+import store from "../../../reducers";
 
 const CodeListSettings = () => {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
+  const credentials = store.getState().core_user.authentication;
   const getAllCodeLists = async () => {
-    return await fetch("/api/v2/codelist");
+    return await fetch("/api/v2/codelist", {
+      headers: {
+        Authorization: `Basic ${btoa(
+          `${credentials.username}:${credentials.password}`,
+        )}`,
+      },
+    });
   };
 
   const updateCodeLists = async codelist => {
@@ -30,6 +38,9 @@ const CodeListSettings = () => {
       credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Basic ${btoa(
+          `${credentials.username}:${credentials.password}`,
+        )}`,
       },
       body: JSON.stringify(codelist),
     });
