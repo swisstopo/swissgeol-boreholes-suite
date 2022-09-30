@@ -37,7 +37,7 @@ public class User
     /// <summary>
     /// Gets the value whether the <see cref="User"/> is disabled or not.
     /// </summary>
-    public bool IsDisabled => DisabledAt != null;
+    public bool IsDisabled => DisabledAt.HasValue;
 
     /// <summary>
     /// Gets or sets the timestamp from the moment a <see cref="User"/> got disabled.
