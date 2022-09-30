@@ -39,6 +39,7 @@ builder.Services.AddNpgsql<BdmsContext>(connectionString, options =>
     options.MigrationsHistoryTable("__EFMigrationsHistory", "bdms");
 });
 
+builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 builder.Services.AddSwaggerGen(options =>
 {
     // Include existing documentation in Swagger UI.
