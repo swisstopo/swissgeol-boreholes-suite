@@ -1,0 +1,55 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BDMS.Models;
+
+/// <summary>
+/// Represents a user entity in the database.
+/// </summary>
+[Table("users")]
+public class User
+{
+    /// <summary>
+    /// Gets or sets the <see cref="User"/> id.
+    /// </summary>
+    [Key]
+    [Column("id_usr")]
+    public int Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="User"/> name.
+    /// </summary>
+    [Column("username")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the <see cref="User"/> has admin privileges.
+    /// </summary>
+    [Column("admin_usr")]
+    public bool IsAdmin { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the <see cref="User"/> has viewer privileges.
+    /// </summary>
+    [Column("viewer_usr")]
+    public bool IsViewer { get; set; }
+
+    /// <summary>
+    /// Gets the value whether the <see cref="User"/> is disabled or not.
+    /// </summary>
+    public bool IsDisabled => DisabledAt != null;
+
+    /// <summary>
+    /// Gets or sets the timestamp from the moment a <see cref="User"/> got disabled.
+    /// </summary>
+    [Column("disabled_usr")]
+    public DateTime? DisabledAt { get; set; }
+
+    /// <summary>
+    /// Gets the WorkgroupRoles.
+    /// </summary>
+    public IEnumerable<UserWorkgroupRole> WorkgroupRoles { get; }
+
+    /// <inheritdoc/>
+    public override string ToString() => Name;
+}
