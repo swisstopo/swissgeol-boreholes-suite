@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BDMS.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Reflection;
 
@@ -9,6 +11,7 @@ namespace BDMS.Controllers;
 public class VersionController : ControllerBase
 {
     [HttpGet]
+    [AllowAnonymous]
     [SwaggerResponse(StatusCodes.Status200OK, "The current version of the BDMS application.")]
     public string Get()
     {
