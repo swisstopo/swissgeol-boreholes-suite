@@ -12,6 +12,9 @@ public class BdmsContextTest
     [TestInitialize]
     public void TestInitialize() => context = ContextFactory.CreateContext();
 
+    [TestCleanup]
+    public void TestCleanup() => context.Dispose();
+
     [TestMethod]
     public void CanFetchUsersFromDatabase()
     {
