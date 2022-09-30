@@ -9,21 +9,23 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class CodeListController : ControllerBase
 {
-    public BdmsContext Context { get; }
+    private readonly BdmsContext context;
+    private readonly ILogger logger;
 
-    public CodeListController(BdmsContext context)
+    public CodeListController(BdmsContext context, ILogger<CodeListController> logger)
     {
-        Context = context;
+        this.context = context;
+        this.logger = logger;
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Codelist"/>s, optionally filtered by <paramref name= "schema"/>.
+    /// Asynchronously gets the <see cref="Codelist"/>s, optionally filtered by <paramref name="schema"/>.
     /// </summary>
-    /// <param name = "schema">The schema of the codeLists to get.</param>
+    /// <param name="schema">The schema of the codelists to get.</param>
     [HttpGet]
     public async Task<IEnumerable<Codelist>> GetAsync(string? schema = null)
     {
-        var codeLists = Context.Codelists.AsQueryable();
+        var codeLists = context.Codelists.AsQueryable();
 
         if (!string.IsNullOrEmpty(schema))
         {
@@ -37,7 +39,7 @@ public class CodeListController : ControllerBase
     /// Asynchronously updates the <see cref="Codelist"/> corresponding to
     /// the <paramref name="codelist"/> with the values to update.
     /// </summary>
-    /// <param name ="codelist"> The <see cref="Codelist"/> to update.</param>
+    /// <param name="codelist"> The <see cref="Codelist"/> to update.</param>
     [HttpPut]
     public async Task<IActionResult> EditAsync(Codelist codelist)
     {
@@ -46,14 +48,14 @@ public class CodeListController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var codeListToUpdate = await Context.Codelists.SingleOrDefaultAsync(c => c.Id == codelist.Id).ConfigureAwait(false);
+        var codeListToUpdate = await context.Codelists.SingleOrDefaultAsync(c => c.Id == codelist.Id).ConfigureAwait(false);
 
         if (codeListToUpdate == null)
         {
             return NotFound();
         }
 
-        // update properties if presernt in codelist parameter
+        // Update properties if present in codelist parameter
         foreach (PropertyInfo propertyInfo in codelist.GetType().GetProperties())
         {
             if (propertyInfo != null)
@@ -66,19 +68,15 @@ public class CodeListController : ControllerBase
             }
         }
 
-        return await SaveChangesAsync(() => new OkObjectResult(codeListToUpdate)).ConfigureAwait(false);
-    }
-
-    private async Task<IActionResult> SaveChangesAsync(Func<IActionResult> successResult)
-    {
         try
         {
-            await Context.SaveChangesAsync().ConfigureAwait(false);
-            return successResult();
+            await context.SaveChangesAsync().ConfigureAwait(false);
+            return Ok(codeListToUpdate);
         }
         catch (Exception ex)
         {
-            var errorMessage = $"An error occurred while saving the entity changes : {ex}";
+            var errorMessage = "An error occurred while saving the entity changes.";
+            logger.LogError(ex, errorMessage);
             return Problem(errorMessage, statusCode: StatusCodes.Status400BadRequest);
         }
     }

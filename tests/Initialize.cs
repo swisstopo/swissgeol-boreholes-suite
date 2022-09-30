@@ -7,7 +7,7 @@ namespace BDMS;
 public sealed class Initialize
 {
     [AssemblyInitialize]
-    public static void AssemblyInitialize()
+    public static void AssemblyInitialize(TestContext testContext)
     {
         using var context = ContextFactory.CreateContext();
         context.Database.Migrate();

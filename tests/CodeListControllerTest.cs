@@ -1,29 +1,28 @@
 ﻿using BDMS.Controllers;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace BDMS;
 
 [TestClass]
 public class CodeListControllerTest
 {
-    private HttpClient httpClient;
     private BdmsContext context;
     private CodeListController controller;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        httpClient = new HttpClient();
         context = ContextFactory.CreateContext();
-        controller = new CodeListController(ContextFactory.CreateContext());
+        controller = new CodeListController(ContextFactory.CreateContext(), new Mock<ILogger<CodeListController>>().Object);
     }
 
     [TestCleanup]
     public async Task TestCleanup()
     {
-        httpClient.Dispose();
         await context.DisposeAsync();
     }
 
@@ -270,7 +269,7 @@ public class CodeListControllerTest
     }
 
     [TestMethod]
-    public async Task EditWithoutCodelistRetursBadRequest()
+    public async Task EditWithoutCodelistReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
         var badRequestResult = response as BadRequestObjectResult;
