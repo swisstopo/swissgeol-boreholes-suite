@@ -66,11 +66,21 @@ public class CodeListControllerTest
         var originalCodeList = new Codelist
         {
             Id = id,
+            Geolcode = id,
+            Schema = "borehole_form",
             TextDe = "Ansatzhöhe Z [müM]",
             Code = "elevation_z",
             TextEn = "Elevation Z [masl]",
             TextFr = "Altitude Z [MsM]",
+            TextIt = "altitudine (quota)",
             DescriptionEn = "",
+            DescriptionDe = "",
+            DescriptionFr = "",
+            DescriptionIt = "",
+            DescriptionRo = "",
+            Order = 11,
+            Conf = null,
+            Default = false,
         };
 
         var codeList = new Codelist
