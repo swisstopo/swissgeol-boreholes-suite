@@ -51,7 +51,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
             if ((authenticatedUser == null || authenticatedUser.IsDisabled) &&
                 !credentialstring.Equals(GuestCredentials, StringComparison.OrdinalIgnoreCase))
             {
-                return Task.FromResult(AuthenticateResult.Fail("No valid authentication credentials has been provided."));
+                return Task.FromResult(AuthenticateResult.Fail("No valid authentication credentials have been provided."));
             }
 
             var claimsIdentity = new ClaimsIdentity();
