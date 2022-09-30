@@ -2,6 +2,7 @@
 using BDMS.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.HttpSys;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -49,6 +50,26 @@ builder.Services.AddSwaggerGen(options =>
     {
         Version = "v2",
         Title = "BDMS REST API v2",
+    });
+    options.AddSecurityDefinition("Basic", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = nameof(AuthenticationSchemes.Basic),
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = nameof(AuthenticationSchemes.Basic),
+                },
+            },
+            Array.Empty<string>()
+        },
     });
 });
 
