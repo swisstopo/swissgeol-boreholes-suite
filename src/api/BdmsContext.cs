@@ -12,6 +12,7 @@ public class BdmsContext : DbContext
     public DbSet<Codelist> Codelists { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<UserWorkgroupRole> UserWorkgroupRoles { get; set; }
+    public DbSet<Workgroup> Workgroups { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)
