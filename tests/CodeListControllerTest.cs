@@ -101,6 +101,7 @@ public class CodeListControllerTest
         Assert.AreEqual("Neuer deutscher Text", updatedCodelist.TextDe);
         Assert.AreEqual("New english text", updatedCodelist.TextEn);
         Assert.AreEqual("elevation_z", updatedCodelist.Code);
+
         // Emtpy values are deleted
         Assert.AreEqual(null, updatedCodelist.TextFr);
         Assert.AreEqual("", updatedCodelist.DescriptionEn);
