@@ -185,6 +185,32 @@ class MultipleForm extends React.Component {
     );
   }
 
+  getDate(field) {
+    const { t } = this.props;
+    if (!this.isActive(field)) {
+      return null;
+    }
+    return (
+      <Form.Field>
+        <label>{t(field)}</label>
+        <DateField
+          date={this.state.data[field]}
+          onChange={selected => {
+            let tmp = {};
+            tmp[field] = selected.id;
+            this.setState({
+              ...this.state,
+              data: {
+                ...this.state.data,
+                ...tmp,
+              },
+            });
+          }}
+        />
+      </Form.Field>
+    );
+  }
+
   render() {
     const { t } = this.props;
     return (
@@ -304,23 +330,7 @@ class MultipleForm extends React.Component {
             {this.getDomain("landuse", "custom.landuse")}
             <Form.Group widths="equal">
               {this.getDomain("method", "extended.method")}
-              {this.isActive("drilling_date") ? (
-                <Form.Field>
-                  <label>{t("drilling_date")}</label>
-                  <DateField
-                    date={this.state.data.drilling_date}
-                    onChange={selected => {
-                      this.setState({
-                        ...this.state,
-                        data: {
-                          ...this.state.data,
-                          drilling_date: selected,
-                        },
-                      });
-                    }}
-                  />
-                </Form.Field>
-              ) : null}
+              {this.getDate("drilling_date")}
             </Form.Group>
             <Form.Group widths="equal">
               {this.getDomain("cuttings", "custom.cuttings")}
