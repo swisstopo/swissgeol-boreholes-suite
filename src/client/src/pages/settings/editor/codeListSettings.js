@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
+import { useDispatch } from "react-redux";
 import {
   Accordion,
   AccordionSummary,
@@ -11,48 +12,53 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Icon, Form } from "semantic-ui-react";
-import { loadDomains, updateIdentifier } from "../../../api-lib/index";
+import { loadDomains } from "../../../api-lib/index";
 import TranslationText from "../../../commons/form/translationText";
 import produce from "immer";
 
 const CodeListSettings = () => {
+  const dispatch = useDispatch();
   const queryClient = useQueryClient();
+  const getAllCodeLists = async () => {
+    return await fetch("/api/v2/codelist");
+  };
 
-  // Can be simplified once the new c# api is called.
+  const updateCodeLists = async codelist => {
+    const response = await fetch("/api/v2/codelist", {
+      method: "PUT",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(codelist),
+    });
+    // update redux store.
+    dispatch(loadDomains());
+    return await response.json();
+  };
+
   const domains = useQuery("domains", async () => {
-    const resultFunction = await loadDomains();
-    const result = await resultFunction();
-    const domains = [];
-    Object.entries(result.data)
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([key, values]) => domains.push({ name: key, values: values }));
+    const response = await getAllCodeLists();
+    const domains = await response.json();
     return domains;
   });
 
-  //Can be simplified once the new c# api is called.
   const mutation = useMutation(
     async params => {
-      const result = await updateIdentifier(params.id, params.data);
-      return result.data;
+      const result = await updateCodeLists(params);
+      return result;
     },
     {
       onSuccess: (data, variables) => {
-        // Invalidate and refetch
-        // Variant 1 refetch whole domains object from server, with invalidate query
-        // queryClient.invalidateQueries("domains");
-        // Variant 2 update cached domains object with setQueryData and immer.js
         queryClient.setQueryData(["domains"], oldDomains =>
           produce(oldDomains, draft => {
-            const list = draft.find(d => d.name === variables.codeList);
-            const index = list.values.findIndex(
-              code => code.id === variables.id,
-            );
-            if (index !== -1) {
-              const code = list.values[index];
-              code.de.text = variables.data.de;
-              code.en.text = variables.data.en;
-              code.fr.text = variables.data.fr;
-              code.it.text = variables.data.it;
+            const code = draft.find(d => d.id === data.id);
+            if (code) {
+              code.textDe = data.textDe;
+              code.textEn = data.textEn;
+              code.textFr = data.textFr;
+              code.textIt = data.textIt;
             }
           }),
         );
@@ -65,7 +71,7 @@ const CodeListSettings = () => {
   const [fr, setFr] = useState("");
   const [it, setIt] = useState("");
   const [en, setEn] = useState("");
-  const [codeList, setCodeList] = useState("");
+  const [code, setCode] = useState({});
 
   const reset = () => {
     setId("");
@@ -73,10 +79,11 @@ const CodeListSettings = () => {
     setFr("");
     setIt("");
     setEn("");
-    setCodeList("");
+    setCode({});
   };
 
   if (domains.isLoading) return <LinearProgress />;
+  const schemas = [...new Set(domains.data.map(d => d.schema))];
   return (
     <Box sx={{ padding: "2em" }}>
       <Stack direction="row" spacing={2}>
@@ -126,16 +133,14 @@ const CodeListSettings = () => {
                 label="&nbsp;"
                 onClick={e => {
                   e.preventDefault();
-                  mutation.mutate({
-                    id: id,
-                    codeList: codeList,
-                    data: {
-                      de: de,
-                      fr: fr,
-                      it: it,
-                      en: en,
-                    },
-                  });
+                  mutation.mutate(
+                    produce(code, draft => {
+                      draft.textDe = de;
+                      draft.textFr = fr;
+                      draft.textEn = en;
+                      draft.textIt = it;
+                    }),
+                  );
                 }}>
                 <span
                   style={{
@@ -154,46 +159,48 @@ const CodeListSettings = () => {
       </Stack>
       <Stack>
         {domains.data &&
-          domains.data.map(d => (
-            <Accordion key={d.name}>
+          schemas.map(s => (
+            <Accordion key={s}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>{d.name}</Typography>
+                <Typography>{s}</Typography>
               </AccordionSummary>
-              <AccordionDetails name={d.name}>
-                {d.values.length > 0 &&
-                  d.values.map((val, idx) => (
-                    <Box
-                      className="selectable"
-                      key={idx}
-                      onClick={() => {
-                        if (id === val.id) {
-                          reset();
-                        } else {
-                          setId(val.id);
-                          setDe(val.de.text);
-                          setFr(val.fr.text);
-                          setIt(val.it.text);
-                          setEn(val.en.text);
-                          setCodeList(d.name);
-                        }
-                      }}
-                      sx={{
-                        pb: 0.5,
-                        backgroundColor: id === val.id ? "#595959" : null,
-                        color: id === val.id ? "white" : null,
-                      }}>
-                      <Stack
-                        direction="row"
-                        justifyContent="space-evenly"
-                        alignItems="flex-start"
-                        spacing={2}>
-                        <div style={{ flex: "1 1 0" }}>{val.de.text}</div>
-                        <div style={{ flex: "1 1 0" }}>{val.fr.text}</div>
-                        <div style={{ flex: "1 1 0" }}>{val.it.text}</div>
-                        <div style={{ flex: "1 1 0" }}>{val.en.text}</div>
-                      </Stack>
-                    </Box>
-                  ))}
+              <AccordionDetails name={s}>
+                {domains.data.length > 0 &&
+                  domains.data
+                    .filter(d => d.schema === s)
+                    .map((val, idx) => (
+                      <Box
+                        className="selectable"
+                        key={idx}
+                        onClick={() => {
+                          if (id === val.id) {
+                            reset();
+                          } else {
+                            setId(val.id);
+                            setDe(val.textDe);
+                            setFr(val.textFr);
+                            setIt(val.textIt);
+                            setEn(val.textEn);
+                            setCode(val);
+                          }
+                        }}
+                        sx={{
+                          pb: 0.5,
+                          backgroundColor: id === val.id ? "#595959" : null,
+                          color: id === val.id ? "white" : null,
+                        }}>
+                        <Stack
+                          direction="row"
+                          justifyContent="space-evenly"
+                          alignItems="flex-start"
+                          spacing={2}>
+                          <div style={{ flex: "1 1 0" }}>{val.textDe}</div>
+                          <div style={{ flex: "1 1 0" }}>{val.textFr}</div>
+                          <div style={{ flex: "1 1 0" }}>{val.textIt}</div>
+                          <div style={{ flex: "1 1 0" }}>{val.textEn}</div>
+                        </Stack>
+                      </Box>
+                    ))}
               </AccordionDetails>
             </Accordion>
           ))}

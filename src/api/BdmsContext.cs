@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using BDMS.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BDMS;
 
@@ -8,6 +8,8 @@ namespace BDMS;
 /// </summary>
 public class BdmsContext : DbContext
 {
+    public DbSet<Codelist> Codelists { get; set; }
+
     public BdmsContext(DbContextOptions options)
         : base(options)
     {
