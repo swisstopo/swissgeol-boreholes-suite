@@ -69,6 +69,7 @@ public class CodeListControllerTest
             TextDe = "Ansatzhöhe Z [müM]",
             Code = "elevation_z",
             TextEn = "Elevation Z [masl]",
+            TextFr = "Altitude Z [MsM]",
             DescriptionEn = "",
         };
 
@@ -93,14 +94,15 @@ public class CodeListControllerTest
         var okResult = response as OkObjectResult;
         Assert.AreEqual(200, okResult.StatusCode);
 
-        // Assert Updates and unchanged values
+        // Assert Updates
         var updatedContext = ContextFactory.CreateContext();
         var updatedCodelist = updatedContext.Codelists.Single(c => c.Id == id);
 
         Assert.AreEqual("Neuer deutscher Text", updatedCodelist.TextDe);
         Assert.AreEqual("New english text", updatedCodelist.TextEn);
         Assert.AreEqual("elevation_z", updatedCodelist.Code);
-        Assert.AreEqual("Altitude Z [MsM]", updatedCodelist.TextFr);
+        // Emtpy values are deleted
+        Assert.AreEqual(null, updatedCodelist.TextFr);
         Assert.AreEqual("", updatedCodelist.DescriptionEn);
 
         // Reset edits
@@ -196,54 +198,6 @@ public class CodeListControllerTest
         Assert.AreEqual("Matière forée ", updatedCodelist.TextFr);
         Assert.AreEqual("materiale perforato", updatedCodelist.TextIt);
         Assert.AreEqual(null, updatedCodelist.TextRo);
-
-        // Reset edits
-        _ = await controller.EditAsync(originalCodeList);
-    }
-
-    [TestMethod]
-    public async Task EditCodelistDoesNotUpdateEmptyStrings()
-    {
-        var id = 1010;
-        var originalCodeList = new Codelist
-        {
-            Id = id,
-            TextDe = "Ansatzhöhe Z [müM]",
-            Code = "elevation_z",
-            TextEn = "Elevation Z [masl]",
-            DescriptionEn = "",
-        };
-
-        var codeList = new Codelist
-        {
-            Id = id,
-            TextDe = "",
-            Code = "",
-            TextEn = "",
-            DescriptionEn = "",
-        };
-
-        var codeListToEdit = context.Codelists.Single(c => c.Id == id);
-        Assert.AreEqual("Ansatzhöhe Z [müM]", codeListToEdit.TextDe);
-        Assert.AreEqual("Elevation Z [masl]", codeListToEdit.TextEn);
-        Assert.AreEqual("elevation_z", codeListToEdit.Code);
-        Assert.AreEqual("Altitude Z [MsM]", codeListToEdit.TextFr);
-        Assert.AreEqual("", codeListToEdit.DescriptionEn);
-
-        // Upate CodeList
-        var response = await controller.EditAsync(codeList);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
-
-        // Assert nothing was updated
-        var updatedContext = ContextFactory.CreateContext();
-        var updatedCodelist = updatedContext.Codelists.Single(c => c.Id == id);
-
-        Assert.AreEqual("Ansatzhöhe Z [müM]", updatedCodelist.TextDe);
-        Assert.AreEqual("Elevation Z [masl]", updatedCodelist.TextEn);
-        Assert.AreEqual("elevation_z", updatedCodelist.Code);
-        Assert.AreEqual("Altitude Z [MsM]", updatedCodelist.TextFr);
-        Assert.AreEqual("", updatedCodelist.DescriptionEn);
 
         // Reset edits
         _ = await controller.EditAsync(originalCodeList);

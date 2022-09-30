@@ -1,7 +1,6 @@
 ﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
 namespace BDMS.Controllers;
 
@@ -55,18 +54,7 @@ public class CodeListController : ControllerBase
             return NotFound();
         }
 
-        // Update properties if present in codelist parameter
-        foreach (PropertyInfo propertyInfo in codelist.GetType().GetProperties())
-        {
-            if (propertyInfo != null)
-            {
-                var value = propertyInfo.GetValue(codelist);
-                if (value != null && !string.IsNullOrEmpty(value.ToString()))
-                {
-                    propertyInfo.SetValue(codeListToUpdate, propertyInfo.GetValue(codelist));
-                }
-            }
-        }
+        context.Entry(codeListToUpdate).CurrentValues.SetValues(codelist);
 
         try
         {
