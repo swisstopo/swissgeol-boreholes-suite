@@ -2,6 +2,7 @@
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
 
@@ -29,5 +30,5 @@ public class UserController : ControllerBase
     [Authorize(Policy = PolicyNames.Guest)]
     [SwaggerResponse(StatusCodes.Status204NoContent, "If logged in with the default guest user.")]
     public async Task<ActionResult<User?>> GetUserInformationAsync() =>
-        await HttpContext.User.GetAuthenticatedUserAsync(context).ConfigureAwait(false);
+        await context.Users.SingleOrDefaultAsync(u => u.Name == HttpContext.User.FindFirst(ClaimTypes.Name).Value).ConfigureAwait(false);
 }
