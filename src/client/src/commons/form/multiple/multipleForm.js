@@ -6,8 +6,6 @@ import _ from "lodash";
 
 import DomainDropdown from "../domain/dropdown/domainDropdown";
 import DateField from "../dateField";
-import MunicipalityDropdown from "../municipality/dropdown/municipalityDropdown";
-import CantonDropdown from "../cantons/dropdown/cantonDropdown";
 
 import { Header, Input, Button, Form } from "semantic-ui-react";
 
@@ -27,9 +25,6 @@ class MultipleForm extends React.Component {
         project_name: "",
         restriction: null,
         restriction_until: null,
-        canton: null,
-        city: null,
-        address: "",
         landuse: null,
         method: null,
         drilling_date: null,
@@ -73,9 +68,6 @@ class MultipleForm extends React.Component {
     const { undo } = this.props;
     const voca = {
       project_name: "custom.project_name",
-      canton: "custom.canton",
-      city: "custom.city",
-      address: "custom.address",
       landuse: "custom.landuse",
       method: "extended.method",
       cuttings: "custom.cuttings",
@@ -229,9 +221,6 @@ class MultipleForm extends React.Component {
           {this.getToggle("kind")}
           {this.getToggle("project_name")}
           {this.getToggle("restriction")}
-          {this.getToggle("canton")}
-          {this.getToggle("city")}
-          {this.getToggle("address")}
           {this.getToggle("landuse")}
           {this.getToggle("method")}
           {this.getToggle("drilling_date")}
@@ -285,48 +274,6 @@ class MultipleForm extends React.Component {
                 </Form.Field>
               </Form.Group>
             ) : null}
-            {this.isActive("canton") ? (
-              <Form.Group widths="equal">
-                <Form.Field required>
-                  <label>{t("canton")}</label>
-                  <CantonDropdown
-                    onSelected={selected => {
-                      this.setState({
-                        ...this.state,
-                        data: {
-                          ...this.state.data,
-                          canton: selected.id,
-                          city: null,
-                        },
-                      });
-                    }}
-                    selected={this.state.data.canton}
-                  />
-                </Form.Field>
-              </Form.Group>
-            ) : null}
-            {this.isActive("city") ? (
-              <Form.Group widths="equal">
-                <Form.Field required>
-                  <label>{t("city")}</label>
-                  <MunicipalityDropdown
-                    canton={this.state.data.canton}
-                    disabled={this.state.data.canton === null}
-                    onSelected={selected => {
-                      this.setState({
-                        ...this.state,
-                        data: {
-                          ...this.state.data,
-                          city: selected.id,
-                        },
-                      });
-                    }}
-                    selected={this.state.data.city}
-                  />
-                </Form.Field>
-              </Form.Group>
-            ) : null}
-            {this.getInput("address")}
             {this.getDomain("landuse", "custom.landuse")}
             <Form.Group widths="equal">
               {this.getDomain("method", "extended.method")}
