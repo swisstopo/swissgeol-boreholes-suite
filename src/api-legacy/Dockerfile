@@ -13,6 +13,11 @@ ENV S3_CREDENTIALS_IAM 0
 
 COPY . ./bms
 
+ARG VERSION
+ARG REVISION
+ENV APP_VERSION ${VERSION}
+ENV APP_REVISION ${REVISION}
+
 CMD python -u bms/main.py \
     --pg-host=${DB_HOST} \
     --pg-port=${DB_PORT} \

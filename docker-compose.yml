@@ -66,6 +66,9 @@ services:
   api-legacy:
     build:
       context: ./src/api-legacy
+      args:
+        - VERSION=0.0.99
+        - REVISION=dev
     restart: unless-stopped
     ports:
       - 8888:8888
@@ -91,6 +94,7 @@ services:
       SMTP_SENDER: WRONGAUTO@example.com
       SMTP_SERVER: mailhog.geow.cloud
       SMTP_RECIPIENTS: ORANGEPHOTO@example.com
+      APP_BASE_DOMAIN: CHEFCHASER.example.com
   api:
     build:
       context: ./src/api
