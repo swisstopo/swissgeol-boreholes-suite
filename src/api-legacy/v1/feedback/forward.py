@@ -10,7 +10,7 @@ class ForwardFeedback(Action):
     async def execute(
         self,
         feb_id,
-        username,
+        sender,
         password,
         recipients,
         server,
@@ -44,11 +44,11 @@ MESSAGE:
                 f"[SWISSFORAGE][{feedback['tag']}] Feedback",
                 message,
                 server,
-                port=port,
-                username=username,
-                password=password,
-                tls=tls,
-                starttls=starttls
+                port,
+                sender,
+                password,
+                tls,
+                starttls
             )
 
             await self.conn.execute("""

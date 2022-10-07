@@ -48,54 +48,13 @@ define("s3_credentials_session_token", default=None, help="S3 session token", ty
 define("s3_credentials_iam", default=False, help="Credential provider using IAM roles for Amazon EC2/ECS.", type=bool)
 
 # SMTP send mail configuration
-define(
-    "smtp_config",
-    default=None,
-    help="SMTP configuration file location",
-    type=str
-)
-define(
-    "smtp_recipients",
-    default=None,
-    help="SMTP comma separated recipients email addresses",
-    type=str
-)
-define(
-    "smtp_username",
-    default=None,
-    help="SMTP username",
-    type=str
-)
-define(
-    "smtp_password",
-    default=None,
-    help="SMTP password",
-    type=str
-)
-define(
-    "smtp_server",
-    default=None,
-    help="SMTP server address",
-    type=str
-)
-define(
-    "smtp_port",
-    default=587,
-    help="SMTP server port",
-    type=int
-)
-define(
-    "smtp_tls",
-    default=False,
-    help="SMTP server supports direct connection via TLS/SSL",
-    type=bool
-)
-define(
-    "smtp_starttls",
-    default=True,
-    help="SMTP servers support the STARTTLS extension",
-    type=bool
-)
+define("smtp_recipients", default=None, help="SMTP comma separated recipients email addresses", type=str)
+define("smtp_sender", default=None, help="SMTP sender respectively username", type=str)
+define("smtp_password", default=None, help="SMTP password", type=str)
+define("smtp_server", default=None, help="SMTP server address", type=str)
+define("smtp_port", default=25, help="SMTP server port", type=int)
+define("smtp_tls", default=False, help="SMTP server supports direct connection via TLS/SSL", type=bool)
+define("smtp_starttls", default=False, help="SMTP servers support the STARTTLS extension", type=bool)
 
 # Ordered list of upgradable versions
 versions = [
@@ -330,27 +289,15 @@ if __name__ == "__main__":
             red("S3 Configuration error:\n{}".format(e))
             sys.exit(1)
 
-    # Configuring SMTP credentials
-    # Handling 'none' docker env variable
+    # Check for missing SMTP environment configuration options
     if (
-        options.smtp_recipients == 'none'
+        not options.smtp_sender or
+        not options.smtp_server or
+        not options.smtp_recipients
     ):
-        options.smtp_recipients = None
-
-    if (
-        options.smtp_username == 'none'
-    ):
-        options.smtp_username = None
-
-    if (
-        options.smtp_password == 'none'
-    ):
-        options.smtp_password = None
-
-    if (
-        options.smtp_server == 'none'
-    ):
-        options.smtp_server = None
+        raise Exception(
+            "Missing mandatory SMTP environment configuration options (SMTP_SENDER|SMTP_SERVER|SMTP_RECIPIENTS)"
+        )
 
     # Init database postgresql connection pool
     application.pool = ioloop.run_until_complete(get_conn())

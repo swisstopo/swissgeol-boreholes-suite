@@ -46,7 +46,7 @@ class EventListener():
                 # Prepare request
                 request = {
                     "feb_id": id,
-                    "username": options.smtp_username,
+                    "sender": options.smtp_sender,
                     "password": options.smtp_password,
                     "recipients": options.smtp_recipients,
                     "server": options.smtp_server,
