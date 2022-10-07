@@ -16,8 +16,7 @@ class ForwardFeedback(Action):
         server,
         port,
         tls,
-        starttls,
-        sender=None
+        starttls
     ):
         try:
             # Getting the feedback from the db
@@ -49,8 +48,7 @@ MESSAGE:
                 username=username,
                 password=password,
                 tls=tls,
-                starttls=starttls,
-                sender=username
+                starttls=starttls
             )
 
             await self.conn.execute("""

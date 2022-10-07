@@ -17,17 +17,16 @@ class SendMail(Action):
         username=None,
         password=None,
         tls=False,
-        starttls=False,  # usually on port 587
-        sender=None
+        starttls=False  # usually on port 587
     ):
         
         try:
 
-            if username is None and sender is None:
-                raise Exception("One of sender or username are mandatory")
+            if username is None:
+                raise Exception("Uusername is mandatory")
 
             msg = EmailMessage()
-            msg["From"] = sender if sender is not None else username
+            msg["From"] = username
             msg["To"] = recipients
             msg["Subject"] = subject
             msg.set_content(message)
