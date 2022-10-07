@@ -1,0 +1,472 @@
+﻿using NetTopologySuite.Geometries;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BDMS.Models;
+
+/// <summary>
+/// Represents a borehole entity in the database.
+/// </summary>
+[Table("borehole")]
+public class Borehole
+{
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/> id.
+    /// </summary>
+    [Column("id_bho")]
+    public int Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the id of the <see cref="User"/> who created the <see cref="Borehole"/>.
+    /// </summary>
+    [Column("created_by_bho")]
+    public int? CreatorId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="User"/> who created the <see cref="Borehole"/>.
+    /// </summary>
+    public User? Creator { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/> contact id.
+    /// </summary>
+    [Column("contact_id")]
+    public int? ContactId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/> created date.
+    /// </summary>
+    [Column("created_bho")]
+    public DateTime? Created { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/> updated date.
+    /// </summary>
+    [Column("updated_bho")]
+    public DateTime? Updated { get; set; }
+
+    /// <summary>
+    /// Gets or sets the id of the <see cref="User"/> who updated the <see cref="Borehole"/>.
+    /// </summary>
+    [Column("updated_by_bho")]
+    public int? UpdaterId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="User"/> who updated the <see cref="Borehole"/>.
+    /// </summary>
+    public User? Updater { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/> locked date.
+    /// </summary>
+    [Column("locked_bho")]
+    public DateTime? Locked { get; set; }
+
+    /// <summary>
+    /// Gets or sets the id of the <see cref="User"/> who locked the <see cref="Borehole"/>.
+    /// </summary>
+    [Column("locked_by_bho")]
+    public int? LockedById { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="User"/> who locked the <see cref="Borehole"/>.
+    /// </summary>
+    public User? LockedBy { get; set; }
+
+    /// <summary>
+    /// Gets or sets the foreign key to the <see cref="Workgroup"/> entity.
+    /// </summary>
+    [Column("id_wgp_fk")]
+    public int? WorkgroupId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Workgroup"/>.
+    /// </summary>
+    public Workgroup? Workgroup { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the <see cref="Borehole"/> is public.
+    /// </summary>
+    [Column("public_bho")]
+    public bool? IsPublic { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s kind id.
+    /// </summary>
+    [Column("kind_id_cli")]
+    public int? KindId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s kind.
+    /// </summary>
+    public Codelist? Kind { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s X-location.
+    /// </summary>
+    [Column("location_x_bho")]
+    public double? LocationX { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s Y-location.
+    /// </summary>
+    [Column("location_y_bho")]
+    public double? LocationY { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s Elevation(Z).
+    /// </summary>
+    [Column("elevation_z_bho")]
+    public double? ElevationZ { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s SrsId.
+    /// </summary>
+    [Column("srs_id_cli")]
+    public int? SrsId { get; set; }
+
+    public Codelist? Srs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s HrsId.
+    /// </summary>
+    [Column("hrs_id_cli")]
+    public int? HrsId { get; set; }
+
+    public Codelist? Hrs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s total depth.
+    /// </summary>
+    [Column("total_depth_bho")]
+    public double? TotalDepth { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date of the <see cref="Borehole"/>.
+    /// </summary>
+    [Column("date_bho")]
+    public DateTime? Date { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s restriction id.
+    /// </summary>
+    [Column("restriction_id_cli")]
+    public int? RestrictionId { get; set; }
+    public Codelist? Restriction { get; set; }
+
+    /// <summary>
+    /// Gets or sets the timestamp until when a <see cref="Borehole"/> is restricted.
+    /// </summary>
+    [Column("restriction_until_bho")]
+    public DateOnly? RestrictionUntil { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s original name.
+    /// </summary>
+    [Column("original_name_bho")]
+    public string? OriginalName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s alternate name.
+    /// </summary>
+    [Column("alternate_name_bho")]
+    public string? AlternateName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s QTLocationId.
+    /// </summary>
+    [Column("qt_location_id_cli")]
+    public int? QtLocationId { get; set; }
+    public Codelist? QtLocation { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s QTElevationId.
+    /// </summary>
+    [Column("qt_elevation_id_cli")]
+    public int? QtElevationId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s QTElevation.
+    /// </summary>
+    public Codelist? QtElevation { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s project name.
+    /// </summary>
+    [Column("project_name_bho")]
+    public string? ProjectName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s canton id.
+    /// </summary>
+    [Column("canton_bho")]
+    public int? CantonId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s canton.
+    /// </summary>
+    public Canton Canton { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s city.
+    /// </summary>
+    [Column("city_bho")]
+    public int? CityId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s city.
+    /// </summary>
+    public Municipality City { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s drilling method Id.
+    /// </summary>
+    [Column("drilling_method_id_cli")]
+    public int? DrillingMethodId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s drilling method.
+    /// </summary>
+    public Codelist? DrillingMethod { get; set; }
+
+    /// <summary>
+    /// Gets or sets the timestamp from the drilling date of the  <see cref="Borehole"/>.
+    /// </summary>
+    [Column("drilling_date_bho")]
+    public DateOnly? DrillingDate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s cuttings id.
+    /// </summary>
+    [Column("cuttings_id_cli")]
+    public int? CuttingsId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s cuttings id.
+    /// </summary>
+    public Codelist? Cuttings { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s purpose id.
+    /// </summary>
+    [Column("purpose_id_cli")]
+    public int? PurposeId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s purpose.
+    /// </summary>
+    public Codelist? Purpose { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s drilling diameter.
+    /// </summary>
+    [Column("drilling_diameter_bho")]
+    public double? DrillingDiameter { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s status id.
+    /// </summary>
+    [Column("status_id_cli")]
+    public int? StatusId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s status.
+    /// </summary>
+    public Codelist? Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s inclination.
+    /// </summary>
+    [Column("inclination_bho")]
+    public double? Inclination { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s inclinationdirection.
+    /// </summary>
+    [Column("inclination_direction_bho")]
+    public double? InclinationDirection { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s QtInclinationDirection id.
+    /// </summary>
+    [Column("qt_inclination_direction_id_cli")]
+    public int? QtInclinationDirectionId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s QtInclinationDirection.
+    /// </summary>
+    public Codelist? QtInclinationDirection { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s QtDepth id.
+    /// </summary>
+    [Column("qt_depth_id_cli")]
+    public int? QtDepthId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s QtDepth.
+    /// </summary>
+    public Codelist? QtDepth { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s top bedrock.
+    /// </summary>
+    [Column("top_bedrock_bho")]
+    public double? TopBedrock { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s QtTopBedrock id.
+    /// </summary>
+    [Column("qt_top_bedrock_id_cli")]
+    public int? QtTopBedrockId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s QtTopBedrock.
+    /// </summary>
+    public Codelist? QtTopBedrock { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the <see cref="Borehole"/> has groundwater.
+    /// </summary>
+    [Column("groundwater_bho")]
+    public bool? HasGroundwater { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s geometry.
+    /// </summary>
+    [Column("geom_bho")]
+    public Point? Geometry { get; set; }
+
+    /// <summary>
+    /// Gets or sets remarks for  the <see cref="Borehole"/>.
+    /// </summary>
+    [Column("remarks_bho")]
+    public string? Remarks { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s lithology top bedrock id.
+    /// </summary>
+    [Column("lithology_top_bedrock_id_cli")]
+    public int? LithologyTopBedrockId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s lithology top bedrock.
+    /// </summary>
+    public Codelist? LithologyTopBedrock { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s lithostratigraphy id.
+    /// </summary>
+    [Column("lithostrat_id_cli")]
+    public int? LithostratigraphyId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s lithostratigraphy.
+    /// </summary>
+    public Codelist? Lithostratigraphy { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s chronostratigraphy id.
+    /// </summary>
+    [Column("chronostrat_id_cli")]
+    public int? ChronostratigraphyId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s chronostratigraphy.
+    /// </summary>
+    public Codelist? Chronostratigraphy { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s tectonic id.
+    /// </summary>
+    [Column("tecto_id_cli")]
+    public int? TectonicId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s tectonic.
+    /// </summary>
+    public Codelist? Tectonic { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s import id.
+    /// </summary>
+    [Column("import_id")]
+    public int? ImportId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the timestamp from the spud date of the  <see cref="Borehole"/>.
+    /// </summary>
+    [Column("spud_date_bho")]
+    public DateTime? SpudDate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s top bedrock tvd.
+    /// </summary>
+    [Column("top_bedrock_tvd_bho")]
+    public double? TopBedrockTvd { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s Qt top bedrock tvd id.
+    /// </summary>
+    [Column("qt_top_bedrock_tvd_id_cli")]
+    public int? QtTopBedrockTvdId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s Qt top bedrock tvd.
+    /// </summary>
+    public Codelist? QtTopBedrockTvd { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s reference elevation.
+    /// </summary>
+    [Column("reference_elevation_bho")]
+    public double? ReferenceElevation { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s Qt reference elevation id.
+    /// </summary>
+    [Column("qt_reference_elevation_id_cli")]
+    public int? QtReferenceElevationId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s Qt reference elevation.
+    /// </summary>
+    public Codelist? QtReferenceElevation { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s reference elevation type id.
+    /// </summary>
+    [Column("reference_elevation_type_id_cli")]
+    public int? ReferenceElevationTypeId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s reference elevation type.
+    /// </summary>
+    public Codelist? ReferenceElevationType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s total depth tvd.
+    /// </summary>
+    [Column("total_depth_tvd_bho")]
+    public double? TotalDepthTvd { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s Qt total depth tvd id.
+    /// </summary>
+    [Column("qt_total_depth_tvd_id_cli")]
+    public int? QtTotalDepthTvdId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s Qt total depth tvd.
+    /// </summary>
+    public Codelist? QtTotalDepthTvd { get; set; }
+
+    /// <summary>
+    /// Gets  the <see cref="Borehole"/>'s stratigraphies.
+    /// </summary>
+    public ICollection<Stratigraphy> Stratigraphies { get; }
+
+    /// <summary>
+    /// Gets  the <see cref="Borehole"/>'s workflows.
+    /// </summary>
+    public ICollection<Workflow> Workflows { get; }
+}

@@ -49,7 +49,7 @@ public class CodeListControllerTest
         Assert.AreEqual(15001168, codeListToTest.Id);
         Assert.AreEqual(15001168, codeListToTest.Geolcode);
         Assert.AreEqual(null, codeListToTest.Conf);
-        Assert.AreEqual(false, codeListToTest.Default);
+        Assert.AreEqual(false, codeListToTest.IsDefault);
         Assert.AreEqual("custom.chronostratigraphy_top_bedrock", codeListToTest.Schema);
         Assert.AreEqual("Mittlerer Jura undifferenziert", codeListToTest.TextDe);
         Assert.AreEqual("Middle Jurassic undifferenciated", codeListToTest.TextEn);
@@ -80,7 +80,7 @@ public class CodeListControllerTest
             DescriptionRo = "",
             Order = 11,
             Conf = null,
-            Default = false,
+            IsDefault = false,
         };
 
         var codeList = new Codelist
@@ -129,7 +129,7 @@ public class CodeListControllerTest
             Id = id,
             Code = "cuttings",
             Conf = null,
-            Default = false,
+            IsDefault = false,
             DescriptionDe = "",
             DescriptionEn = "",
             DescriptionFr = "",
@@ -150,7 +150,7 @@ public class CodeListControllerTest
             Id = id,
             Code = "cuttings",
             Conf = null,
-            Default = true,
+            IsDefault = true,
             DescriptionDe = "",
             DescriptionEn = "",
             DescriptionFr = "",
@@ -169,7 +169,7 @@ public class CodeListControllerTest
         var codeListToEdit = context.Codelists.Single(c => c.Id == id);
         Assert.AreEqual("cuttings", codeListToEdit.Code);
         Assert.AreEqual(null, codeListToEdit.Conf);
-        Assert.AreEqual(false, codeListToEdit.Default);
+        Assert.AreEqual(false, codeListToEdit.IsDefault);
         Assert.AreEqual("", codeListToEdit.DescriptionEn);
         Assert.AreEqual("", codeListToEdit.DescriptionFr);
         Assert.AreEqual("", codeListToEdit.DescriptionIt);
@@ -195,7 +195,7 @@ public class CodeListControllerTest
 
         Assert.AreEqual("cuttings", updatedCodelist.Code);
         Assert.AreEqual(null, updatedCodelist.Conf);
-        Assert.AreEqual(true, updatedCodelist.Default);
+        Assert.AreEqual(true, updatedCodelist.IsDefault);
         Assert.AreEqual("", updatedCodelist.DescriptionEn);
         Assert.AreEqual("", updatedCodelist.DescriptionFr);
         Assert.AreEqual("", updatedCodelist.DescriptionIt);

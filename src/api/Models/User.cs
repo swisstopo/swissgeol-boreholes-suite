@@ -50,6 +50,11 @@ public class User
     /// </summary>
     public IEnumerable<UserWorkgroupRole> WorkgroupRoles { get; }
 
+    /// <summary>
+    /// Gets the events.
+    /// </summary>
+    public IEnumerable<BoringEvent> BoringEvents { get; }
+
     /// <inheritdoc/>
     public override string ToString() => Name;
 }
