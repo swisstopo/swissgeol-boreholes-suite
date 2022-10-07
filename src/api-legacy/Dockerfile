@@ -4,8 +4,6 @@ WORKDIR /usr/src/app
 COPY ./requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-ENV SERVICE_PORT 8888
-
 # S3 credentials based on config file
 ENV S3_CREDENTIALS_FILE none
 ENV S3_CREDENTIALS_FILE_PROFILE default
@@ -16,8 +14,6 @@ ENV S3_CREDENTIALS_IAM 0
 COPY . ./bms
 
 CMD python -u bms/main.py \
-    --port=${SERVICE_PORT} \
-    \
     --pg-host=${DB_HOST} \
     --pg-port=${DB_PORT} \
     --pg-database=${DB_DATABASE} \
