@@ -16,7 +16,6 @@ from minio.error import S3Error
 from tornado.httpserver import HTTPServer
 import sys
 from pathlib import Path
-import configparser
 import traceback
 
 sys.path.append('.')
@@ -319,9 +318,6 @@ if __name__ == "__main__":
 
     ], **settings)
 
-    # Init config file parser
-    config = configparser.ConfigParser()
-
     # Check S3 configuration
     if options.file_repo == 's3':
 
@@ -335,66 +331,26 @@ if __name__ == "__main__":
             sys.exit(1)
 
     # Configuring SMTP credentials
+    # Handling 'none' docker env variable
     if (
-        options.smtp_config is not None
-        and options.smtp_config != 'none' # Handling 'none' docker env variable
+        options.smtp_recipients == 'none'
     ):
+        options.smtp_recipients = None
 
-        config.read(options.smtp_config)
+    if (
+        options.smtp_username == 'none'
+    ):
+        options.smtp_username = None
 
-        if (
-            'SMTP' not in config or
-            'smtp_recipients' not in config['SMTP'] or
-            'smtp_username' not in config['SMTP'] or
-            'smtp_password' not in config['SMTP'] or
-            'smtp_server' not in config['SMTP']
-        ):
-            raise Exception("SMTP config file wrong")
+    if (
+        options.smtp_password == 'none'
+    ):
+        options.smtp_password = None
 
-        options.smtp_recipients = config['SMTP']['smtp_recipients']
-        options.smtp_username = config['SMTP']['smtp_username']
-        options.smtp_password = config['SMTP']['smtp_password']
-        options.smtp_server = config['SMTP']['smtp_server']
-
-        if 'smtp_port' in config['SMTP']:
-            options.smtp_port = int(config['SMTP']['smtp_port'])
-
-        if 'smtp_tls' in config['SMTP']:
-            options.smtp_tls = (
-                True
-                if config['SMTP']['smtp_tls'] == '1'
-                else False
-            )
-
-        if 'smtp_starttls' in config['SMTP']:
-            options.smtp_starttls = (
-                True
-                if config['SMTP']['smtp_starttls'] == '1'
-                else False
-            )
-
-    else:
-        # Handling 'none' docker env variable
-        if (
-            options.smtp_recipients == 'none'
-        ):
-            options.smtp_recipients = None
-
-        if (
-            options.smtp_username == 'none'
-        ):
-            options.smtp_username = None
-
-        if (
-            options.smtp_password == 'none'
-        ):
-            options.smtp_password = None
-
-        if (
-            options.smtp_server == 'none'
-        ):
-            options.smtp_server = None
-
+    if (
+        options.smtp_server == 'none'
+    ):
+        options.smtp_server = None
 
     # Init database postgresql connection pool
     application.pool = ioloop.run_until_complete(get_conn())
