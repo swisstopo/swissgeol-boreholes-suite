@@ -9,6 +9,7 @@
 - Added new API endpoint (_/v2/version_).
 - Added stable Docker image tags for testing environment.
 - Added UI for updating translations of codelists in editor settings.
+- Added fake data for development.
 
 ### Changed
 
