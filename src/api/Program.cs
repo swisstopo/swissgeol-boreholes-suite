@@ -39,7 +39,6 @@ builder.Services.AddNpgsql<BdmsContext>(connectionString, options =>
     options.UseNetTopologySuite();
     options.MigrationsHistoryTable("__EFMigrationsHistory", "bdms");
 });
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 builder.Services.AddSwaggerGen(options =>

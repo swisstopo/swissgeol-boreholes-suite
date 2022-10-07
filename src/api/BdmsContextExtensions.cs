@@ -29,8 +29,8 @@ public static class BdmsContextExtensions
            .StrictMode(true)
            .RuleFor(o => o.Id, f => workgroup_ids++)
            .RuleFor(o => o.Name, f => f.Music.Genre())
-           .RuleFor(o => o.Created, f => f.Date.Past().OrNull(f, .1f))
-           .RuleFor(o => o.Disabled, f => f.Date.Past().OrNull(f, .1f))
+           .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .1f))
+           .RuleFor(o => o.Disabled, f => f.Date.Past().ToUniversalTime().OrNull(f, .1f))
            .RuleFor(o => o.IsSupplier, f => f.Random.Bool().OrNull(f, .1f))
            .RuleFor(o => o.Settings, f => null)
            .RuleFor(o => o.Boreholes, _ => default!);
@@ -40,9 +40,8 @@ public static class BdmsContextExtensions
 
         // ranges for exsiting tables
         var userRange = Enumerable.Range(1, 5);
-
         var cantonRange = Enumerable.Range(1, 51);
-        var municipalitieRange = Enumerable.Range(1, 2371);
+        var municipalityRange = Enumerable.Range(1, 2371);
 
         // Seed Boreholes
         var borehole_ids = 1000;
@@ -57,9 +56,9 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Updater, _ => default!)
            .RuleFor(o => o.LockedById, f => f.PickRandom(userRange).OrNull(f, .9f))
            .RuleFor(o => o.LockedBy, _ => default!)
-           .RuleFor(o => o.Created, f => f.Date.Past())
-           .RuleFor(o => o.Updated, f => f.Date.Past())
-           .RuleFor(o => o.Locked, f => f.Date.Past().OrNull(f, .9f))
+           .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+           .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+           .RuleFor(o => o.Locked, f => f.Date.Past().ToUniversalTime().OrNull(f, .9f))
            .RuleFor(o => o.WorkgroupId, f => f.PickRandom(workgroupRange).OrNull(f, .2f))
            .RuleFor(o => o.Workgroup, _ => default!)
            .RuleFor(o => o.IsPublic, f => { if (borehole_ids % 10 < 9) return true; else return false; }) // Generate mostly public records.
@@ -73,7 +72,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.HrsId, f => f.PickRandom(context.Codelists.Where(c => c.Schema == "hrs").Select(s => s.Id).ToList()).OrNull(f, .1f))
            .RuleFor(o => o.Hrs, _ => default!)
            .RuleFor(o => o.TotalDepth, f => f.Random.Double(0, 2000))
-           .RuleFor(o => o.Date, f => f.Date.Past())
+           .RuleFor(o => o.Date, f => f.Date.Past().ToUniversalTime())
            .RuleFor(o => o.RestrictionId, f => f.PickRandom(context.Codelists.Where(c => c.Schema == "restriction").Select(s => s.Id).ToList()).OrNull(f, .5f))
            .RuleFor(o => o.Restriction, _ => default!)
            .RuleFor(o => o.RestrictionUntil, f => DateOnly.FromDateTime(f.Date.Future()).OrNull(f, .9f))
@@ -86,11 +85,11 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.ProjectName, f => f.Company.CatchPhrase().OrNull(f, .1f))
            .RuleFor(o => o.CantonId, f => f.PickRandom(cantonRange))
            .RuleFor(o => o.Canton, _ => default!)
-           .RuleFor(o => o.CityId, f => f.PickRandom(municipalitieRange).OrNull(f, .05f))
+           .RuleFor(o => o.CityId, f => f.PickRandom(municipalityRange).OrNull(f, .05f))
            .RuleFor(o => o.City, _ => default!)
            .RuleFor(o => o.DrillingMethodId, f => f.PickRandom(context.Codelists.Where(c => c.Schema == "extended.drilling_method").Select(s => s.Id).ToList()).OrNull(f, .05f))
            .RuleFor(o => o.DrillingMethod, _ => default!)
-           .RuleFor(o => o.DrillingDate, f => DateOnly.FromDateTime(f.Date.Past()))
+           .RuleFor(o => o.DrillingDate, f => DateOnly.FromDateTime(f.Date.Past().ToUniversalTime()))
            .RuleFor(o => o.DrillingDiameter, f => f.Random.Double(0, 20))
            .RuleFor(o => o.CuttingsId, f => f.PickRandom(context.Codelists.Where(c => c.Schema == "custom.cuttings").Select(s => s.Id).ToList()).OrNull(f, .05f))
            .RuleFor(o => o.Cuttings, _ => default!)
@@ -116,7 +115,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TectonicId, f => f.PickRandom(context.Codelists.Where(c => c.Schema == "inst101").Select(s => s.Id).ToList()).OrNull(f, .05f)) // unclear which codelist
            .RuleFor(o => o.Tectonic, _ => default!)
            .RuleFor(o => o.ImportId, f => f.Random.Int().OrNull(f, .05f))
-           .RuleFor(o => o.SpudDate, f => f.Date.Past().OrNull(f, .05f))
+           .RuleFor(o => o.SpudDate, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
            .RuleFor(o => o.TopBedrockTvd, f => f.Random.Double(0, 1000).OrNull(f, .05f))
            .RuleFor(o => o.QtTopBedrockTvdId, f => f.PickRandom(context.Codelists.Where(c => c.Schema == "custom.qt_top_bedrock").Select(s => s.Id).ToList()).OrNull(f, .05f))
            .RuleFor(o => o.QtTopBedrockTvd, _ => default!)
@@ -150,7 +149,7 @@ public static class BdmsContextExtensions
                .RuleFor(o => o.UserId, f => f.PickRandom(userRange))
                .RuleFor(o => o.User, _ => default!)
                .RuleFor(o => o.Topic, f => f.Company.CompanyName())
-               .RuleFor(o => o.Created, f => f.Date.Past().OrNull(f, .05f))
+               .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
                .RuleFor(o => o.Payload, f => null);
 
         BoringEvent SeededEvents(int seed) => fakeEvents.UseSeed(seed).Generate();
@@ -164,7 +163,7 @@ public static class BdmsContextExtensions
                .StrictMode(true)
                .RuleFor(o => o.Id, f => feedback_ids++)
                .RuleFor(o => o.User, f => f.Person.FullName)
-               .RuleFor(o => o.Created, f => f.Date.Past().OrNull(f, .05f))
+               .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
                .RuleFor(o => o.Message, f => f.Rant.Review())
                .RuleFor(o => o.Tag, f => f.Company.CompanySuffix())
                .RuleFor(o => o.IsFrw, f => f.Random.Bool().OrNull(f, .1f));
@@ -184,7 +183,7 @@ public static class BdmsContextExtensions
                .RuleFor(o => o.Name, f => f.Random.Word())
                .RuleFor(o => o.Hash, f => f.Random.Hash())
                .RuleFor(o => o.Type, f => f.Random.Word())
-               .RuleFor(o => o.Uploaded, f => f.Date.Past().OrNull(f, .05f))
+               .RuleFor(o => o.Uploaded, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
                .RuleFor(o => o.Conf, f => null);
 
         Models.File Seededfiles(int seed) => fakefiles.UseSeed(seed).Generate();
@@ -203,7 +202,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Borehole, _ => default!)
             .RuleFor(o => o.Casng, f => f.Random.Words(2))
             .RuleFor(o => o.CasngDate, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .05f))
-            .RuleFor(o => o.Creation, f => f.Date.Past().OrNull(f, .05f))
+            .RuleFor(o => o.Creation, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
             .RuleFor(o => o.Date, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .05f))
             .RuleFor(o => o.FillCasngId, f => f.Random.Int())
             .RuleFor(o => o.ImportId, f => f.Random.Int().OrNull(f, .05f))
@@ -212,7 +211,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Name, f => f.Name.FullName())
             .RuleFor(o => o.Notes, f => f.Rant.Review())
             .RuleFor(o => o.IsPrimary, f => f.Random.Bool())
-            .RuleFor(o => o.Update, f => f.Date.Past())
+            .RuleFor(o => o.Update, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.UpdaterId, f => f.PickRandom(userRange))
             .RuleFor(o => o.Updater, _ => default!)
             .RuleFor(o => o.Layers, _ => default!);
@@ -227,7 +226,7 @@ public static class BdmsContextExtensions
 
         var fakelayers = new Faker<Layer>()
             .StrictMode(true)
-            .RuleFor(o => o.FromDepth, f => (layer_ids % 10) * 10)
+            .RuleFor(o => o.FromDepth, f => layer_ids % 10 * 10)
             .RuleFor(o => o.ToDepth, f => ((layer_ids % 10) + 1) * 10)
             .RuleFor(o => o.AlterationId, f => f.PickRandom(context.Codelists.Where(c => c.Schema == "mlpr106").Select(s => s.Id).ToList()).OrNull(f, .6f))
             .RuleFor(o => o.Alteration, _ => default!)
@@ -248,7 +247,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Compactness, _ => default!)
             .RuleFor(o => o.ConsistanceId, f => f.PickRandom(context.Codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList()).OrNull(f, .05f))
             .RuleFor(o => o.Consistance, _ => default!)
-            .RuleFor(o => o.Creation, f => f.Date.Past().OrNull(f, .05f))
+            .RuleFor(o => o.Creation, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
             .RuleFor(o => o.CreatorId, f => f.PickRandom(userRange))
             .RuleFor(o => o.Creator, _ => default!)
             .RuleFor(o => o.UpdaterId, f => f.PickRandom(userRange))
@@ -292,7 +291,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.TectonicUnitId, f => f.PickRandom(context.Codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList()).OrNull(f, .05f)) // unclear which codelist
             .RuleFor(o => o.TectonicUnit, _ => default!)
             .RuleFor(o => o.IsUndefined, f => f.Random.Bool())
-            .RuleFor(o => o.Update, f => f.Date.Past())
+            .RuleFor(o => o.Update, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.Uscs1Id, f => f.PickRandom(context.Codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList()).OrNull(f, .05f))
             .RuleFor(o => o.Uscs1, _ => default!)
             .RuleFor(o => o.Uscs2Id, f => f.PickRandom(context.Codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList()).OrNull(f, .05f))
@@ -337,14 +336,14 @@ public static class BdmsContextExtensions
                .RuleFor(o => o.Notes, f => f.Random.Words(4))
                .RuleFor(o => o.Mentions, f => new[] { f.Random.Word(), f.Random.Word(), f.Random.Word(), f.Random.Word() })
                .RuleFor(o => o.Role, f => f.PickRandom<Role>())
-               .RuleFor(o => o.Started, f => f.Date.Between(new DateTime(1990, 1, 1), new DateTime(2005, 1, 1)))
-               .RuleFor(o => o.Finished, f => f.Date.Between(new DateTime(2005, 2, 1), new DateTime(2022, 1, 1)));
+               .RuleFor(o => o.Started, f => f.Date.Between(new DateTime(1990, 1, 1).ToUniversalTime(), new DateTime(2005, 1, 1).ToUniversalTime()))
+               .RuleFor(o => o.Finished, f => f.Date.Between(new DateTime(2005, 2, 1).ToUniversalTime(), new DateTime(2022, 1, 1).ToUniversalTime()));
 
         Workflow SeededWorkflows(int seed) => fakeWorkflows.UseSeed(seed).Generate();
         context.Workflows.AddRange(workflowRange.Select(SeededWorkflows));
         context.SaveChanges();
 
-        //// Sync all database sequences
+        // Sync all database sequences
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.workgroups', 'id_wgp'), {workgroup_ids - 1})");
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.borehole', 'id_bho'), {borehole_ids - 1})");
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.events', 'id_evs'), {event_ids - 1})");
