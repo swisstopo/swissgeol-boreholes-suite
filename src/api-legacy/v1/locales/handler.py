@@ -13,16 +13,8 @@ class LocalesHandler(web.RequestHandler):
     ]
     async def get(self, lng, ns):
         try:
-
-            # if self.user is None:
-            #     raise AuthenticationException()
-
-            # self.authorize()
-
             if lng not in self.supported:
                 raise Exception(f"Language {lng} not supported.")
-
-            # async with self.pool.acquire() as conn:
 
             if lng == 'en':
                 self.write(
@@ -37,16 +29,6 @@ class LocalesHandler(web.RequestHandler):
                         "welcome": "Benvenuti nella giungla!"
                     }
                 )
-
-            # self.write(
-            #     {
-            #         "en" : {
-            #             "commons": {
-            #                 "welcome": "Welcome to the Jungles!"
-            #             }
-            #         }
-            #     }
-            # )
 
         except Exception as ex:
             print(traceback.print_exc())

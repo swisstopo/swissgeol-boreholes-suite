@@ -36,12 +36,6 @@ define("file_repo", default='s3', help="Select the file repository", type=str)
 # Local storage for files configuration
 define("local_path", default=str(Path.home()), help="Select local path", type=str)
 
-# AWS S3 storage for files configuration (deprecated)
-# define("aws_bucket", default=None, help="Select AWS Bucket name", type=str)
-# define("aws_credentials", default=None, help="AWS S3 credential file location (overwrite aws_access_key_id and aws_secret_access_key)", type=str)
-# define("aws_access_key_id", default=None, help="AWS S3 access key id", type=str)
-# define("aws_secret_access_key", default=None, help="AWS S3 secret access key", type=str)
-
 # Generic S3 storage for files configuration
 define("s3_endpoint", default='s3.amazonaws.com', help="Select S3 Bucket name", type=str)
 define("s3_region", default=None, help="(Optional, default null) Region name of buckets in S3 service.", type=str)
@@ -201,7 +195,6 @@ if __name__ == "__main__":
         # Borehole handlers
         BoreholeViewerHandler,
         BoreholeProducerHandler,
-        # BoreholeExporterHandler,
         ExportHandler,
         ExportAdminHandler,
         ImportAdminHandler,
@@ -249,7 +242,6 @@ if __name__ == "__main__":
         CantonHandler,
         Wmts,
         Wms,
-        # GetFeature
     )
 
     AsyncIOMainLoop().install()
@@ -318,14 +310,12 @@ if __name__ == "__main__":
         (r'/api/v1/borehole/profile/layer/edit', ProfileProducerHandler),
 
         # Other handlers
-        # (r'/api/v1/borehole/project', ProjectHandler),
         (r'/api/v1/borehole/codes', CodeListHandler),
         (r'/api/v1/geoapi/municipality', MunicipalityHandler),
         (r'/api/v1/geoapi/canton', CantonHandler),
         (r'/api/v1/geoapi/location', GeoapiHandler),
         (r"/api/v1/geoapi/wmts", Wmts),
         (r"/api/v1/geoapi/wms/swisstopo", Wms),
-        # (r"/api/v1/geoapi/getfeature", GetFeature)
 
     ], **settings)
 
