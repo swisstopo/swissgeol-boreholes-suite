@@ -11,6 +11,7 @@
 - Added UI for updating translations of codelists in editor settings.
 - Added fake data for development.
 - Added version/environment information in feedback e-mail.
+- Added version number in web client.
 
 ### Changed
 

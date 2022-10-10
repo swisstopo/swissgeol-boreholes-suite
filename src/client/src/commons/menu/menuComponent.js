@@ -91,7 +91,6 @@ class MenuComponent extends React.Component {
         />
         <div
           style={{
-            // alignItems: 'end',
             display: "flex",
             flexDirection: "column",
             padding: "1em",
@@ -268,6 +267,24 @@ class MenuComponent extends React.Component {
                   </List.Content>
                 </List.Item>
               ) : null}
+              <List.Item>
+                <List.Content
+                  style={{
+                    fontSize: "smaller",
+                  }}>
+                  <List.Description>
+                    Version: {process.env.REACT_APP_VERSION}
+                  </List.Description>
+                  {process.env.NODE_ENV !== "production" && (
+                    <List.Description
+                      style={{
+                        color: "darkred",
+                      }}>
+                      Environment: {process.env.NODE_ENV}
+                    </List.Description>
+                  )}
+                </List.Content>
+              </List.Item>
             </List>
 
             <div
@@ -303,10 +320,6 @@ const mapDispatchToProps = dispatch => {
 
 MenuComponent.propTypes = {
   handleModeChange: PropTypes.func,
-  // i18n: PropTypes.shape({
-  //   changeLanguage: PropTypes.func,
-  //   language: PropTypes.string,
-  // }),
   mode: PropTypes.string,
   unsetAuthentication: PropTypes.func,
   user: PropTypes.object,

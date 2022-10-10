@@ -1,4 +1,7 @@
 FROM cypress/base:16 AS development
+ARG VERSION
+ARG REVISION
+ENV REACT_APP_VERSION ${VERSION}+${REVISION}
 RUN apt-get -y update
 RUN apt-get -y install git vim curl htop
 RUN mkdir -p /app/src/client
@@ -8,6 +11,9 @@ RUN npm install
 ENTRYPOINT npm run start
 
 FROM node:16-buster-slim AS deploy
+ARG VERSION
+ARG REVISION
+ENV REACT_APP_VERSION ${VERSION}+${REVISION}
 RUN apt-get -y update
 RUN apt-get -y install git
 RUN npm install -g serve
