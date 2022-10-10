@@ -7,7 +7,7 @@ namespace BDMS.Models;
 /// Represents a config entity in the database.
 /// </summary>
 [Table("config")]
-public partial class Config
+public class Config
 {
     /// <summary>
     /// Gets or sets the <see cref="Config"/>'s name.

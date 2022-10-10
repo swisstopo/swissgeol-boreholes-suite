@@ -7,7 +7,7 @@ namespace BDMS.Models;
 /// Represents a codelist entity in the database.
 /// </summary>
 [Table("codelist")]
-public partial class Codelist
+public class Codelist
 {
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s id.
