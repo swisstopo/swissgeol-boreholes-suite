@@ -269,7 +269,7 @@ public static class BdmsContextExtensions
 
         var fakelayers = new Faker<Layer>()
             .StrictMode(true)
-            .RuleFor(o => o.FromDepth, f => layer_ids % 10 * 10)
+            .RuleFor(o => o.FromDepth, f => (layer_ids % 10) * 10)
             .RuleFor(o => o.ToDepth, f => ((layer_ids % 10) + 1) * 10)
             .RuleFor(o => o.AlterationId, f => f.PickRandom(alterationIds).OrNull(f, .6f))
             .RuleFor(o => o.Alteration, _ => default!)
