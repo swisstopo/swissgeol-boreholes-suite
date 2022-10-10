@@ -36,6 +36,7 @@ var connectionString = builder.Configuration.GetConnectionString("BdmsContext");
 builder.Services.AddNpgsql<BdmsContext>(connectionString, options =>
 {
     options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+    options.UseNetTopologySuite();
     options.MigrationsHistoryTable("__EFMigrationsHistory", "bdms");
 });
 
@@ -87,6 +88,12 @@ var app = builder.Build();
 using var scope = app.Services.CreateScope();
 using var context = scope.ServiceProvider.GetRequiredService<BdmsContext>();
 context.Database.Migrate();
+
+if (app.Environment.IsDevelopment())
+{
+    // Only seed if no borehole data.
+    if (!context.Boreholes.Any()) context.SeedData();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI(options =>

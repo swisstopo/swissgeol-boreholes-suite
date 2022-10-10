@@ -18,6 +18,7 @@ internal static class ContextFactory
                 options =>
                 {
                     options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    options.UseNetTopologySuite();
                     options.MigrationsHistoryTable("__EFMigrationsHistory", "bdms");
                 }).Options);
     }
