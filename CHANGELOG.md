@@ -26,3 +26,4 @@
 - Fix filter dropdowns not updating.
 - Fix appearance setting label.
 - Fix error highlight of identifier fields.
+- Fix bulk edit.
