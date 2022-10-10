@@ -16,7 +16,6 @@ from minio.error import S3Error
 from tornado.httpserver import HTTPServer
 import sys
 from pathlib import Path
-import configparser
 import traceback
 
 sys.path.append('.')
@@ -36,12 +35,6 @@ define("file_repo", default='s3', help="Select the file repository", type=str)
 # Local storage for files configuration
 define("local_path", default=str(Path.home()), help="Select local path", type=str)
 
-# AWS S3 storage for files configuration (deprecated)
-# define("aws_bucket", default=None, help="Select AWS Bucket name", type=str)
-# define("aws_credentials", default=None, help="AWS S3 credential file location (overwrite aws_access_key_id and aws_secret_access_key)", type=str)
-# define("aws_access_key_id", default=None, help="AWS S3 access key id", type=str)
-# define("aws_secret_access_key", default=None, help="AWS S3 secret access key", type=str)
-
 # Generic S3 storage for files configuration
 define("s3_endpoint", default='s3.amazonaws.com', help="Select S3 Bucket name", type=str)
 define("s3_region", default=None, help="(Optional, default null) Region name of buckets in S3 service.", type=str)
@@ -55,54 +48,13 @@ define("s3_credentials_session_token", default=None, help="S3 session token", ty
 define("s3_credentials_iam", default=False, help="Credential provider using IAM roles for Amazon EC2/ECS.", type=bool)
 
 # SMTP send mail configuration
-define(
-    "smtp_config",
-    default=None,
-    help="SMTP configuration file location",
-    type=str
-)
-define(
-    "smtp_recipients",
-    default=None,
-    help="SMTP comma separated recipients email addresses",
-    type=str
-)
-define(
-    "smtp_username",
-    default=None,
-    help="SMTP username",
-    type=str
-)
-define(
-    "smtp_password",
-    default=None,
-    help="SMTP password",
-    type=str
-)
-define(
-    "smtp_server",
-    default=None,
-    help="SMTP server address",
-    type=str
-)
-define(
-    "smtp_port",
-    default=587,
-    help="SMTP server port",
-    type=int
-)
-define(
-    "smtp_tls",
-    default=False,
-    help="SMTP server supports direct connection via TLS/SSL",
-    type=bool
-)
-define(
-    "smtp_starttls",
-    default=True,
-    help="SMTP servers support the STARTTLS extension",
-    type=bool
-)
+define("smtp_recipients", default=None, help="SMTP comma separated recipients email addresses", type=str)
+define("smtp_sender", default=None, help="SMTP sender respectively username", type=str)
+define("smtp_password", default=None, help="SMTP password", type=str)
+define("smtp_server", default=None, help="SMTP server address", type=str)
+define("smtp_port", default=25, help="SMTP server port", type=int)
+define("smtp_tls", default=False, help="SMTP server supports direct connection via TLS/SSL", type=bool)
+define("smtp_starttls", default=False, help="SMTP servers support the STARTTLS extension", type=bool)
 
 # Ordered list of upgradable versions
 versions = [
@@ -201,7 +153,6 @@ if __name__ == "__main__":
         # Borehole handlers
         BoreholeViewerHandler,
         BoreholeProducerHandler,
-        # BoreholeExporterHandler,
         ExportHandler,
         ExportAdminHandler,
         ImportAdminHandler,
@@ -249,7 +200,6 @@ if __name__ == "__main__":
         CantonHandler,
         Wmts,
         Wms,
-        # GetFeature
     )
 
     AsyncIOMainLoop().install()
@@ -318,19 +268,14 @@ if __name__ == "__main__":
         (r'/api/v1/borehole/profile/layer/edit', ProfileProducerHandler),
 
         # Other handlers
-        # (r'/api/v1/borehole/project', ProjectHandler),
         (r'/api/v1/borehole/codes', CodeListHandler),
         (r'/api/v1/geoapi/municipality', MunicipalityHandler),
         (r'/api/v1/geoapi/canton', CantonHandler),
         (r'/api/v1/geoapi/location', GeoapiHandler),
         (r"/api/v1/geoapi/wmts", Wmts),
         (r"/api/v1/geoapi/wms/swisstopo", Wms),
-        # (r"/api/v1/geoapi/getfeature", GetFeature)
 
     ], **settings)
-
-    # Init config file parser
-    config = configparser.ConfigParser()
 
     # Check S3 configuration
     if options.file_repo == 's3':
@@ -344,67 +289,15 @@ if __name__ == "__main__":
             red("S3 Configuration error:\n{}".format(e))
             sys.exit(1)
 
-    # Configuring SMTP credentials
+    # Check for missing SMTP environment configuration options
     if (
-        options.smtp_config is not None
-        and options.smtp_config != 'none' # Handling 'none' docker env variable
+        not options.smtp_sender or
+        not options.smtp_server or
+        not options.smtp_recipients
     ):
-
-        config.read(options.smtp_config)
-
-        if (
-            'SMTP' not in config or
-            'smtp_recipients' not in config['SMTP'] or
-            'smtp_username' not in config['SMTP'] or
-            'smtp_password' not in config['SMTP'] or
-            'smtp_server' not in config['SMTP']
-        ):
-            raise Exception("SMTP config file wrong")
-
-        options.smtp_recipients = config['SMTP']['smtp_recipients']
-        options.smtp_username = config['SMTP']['smtp_username']
-        options.smtp_password = config['SMTP']['smtp_password']
-        options.smtp_server = config['SMTP']['smtp_server']
-
-        if 'smtp_port' in config['SMTP']:
-            options.smtp_port = int(config['SMTP']['smtp_port'])
-
-        if 'smtp_tls' in config['SMTP']:
-            options.smtp_tls = (
-                True
-                if config['SMTP']['smtp_tls'] == '1'
-                else False
-            )
-
-        if 'smtp_starttls' in config['SMTP']:
-            options.smtp_starttls = (
-                True
-                if config['SMTP']['smtp_starttls'] == '1'
-                else False
-            )
-
-    else:
-        # Handling 'none' docker env variable
-        if (
-            options.smtp_recipients == 'none'
-        ):
-            options.smtp_recipients = None
-
-        if (
-            options.smtp_username == 'none'
-        ):
-            options.smtp_username = None
-
-        if (
-            options.smtp_password == 'none'
-        ):
-            options.smtp_password = None
-
-        if (
-            options.smtp_server == 'none'
-        ):
-            options.smtp_server = None
-
+        raise Exception(
+            "Missing mandatory SMTP environment configuration options (SMTP_SENDER|SMTP_SERVER|SMTP_RECIPIENTS)"
+        )
 
     # Init database postgresql connection pool
     application.pool = ioloop.run_until_complete(get_conn())

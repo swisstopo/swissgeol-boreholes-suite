@@ -9,35 +9,31 @@ class SendMail(Action):
 
     async def execute(
         self,
-        recipients, # csv list of emails
+        recipients,
         subject,
         message,
         server,
-        port=587,
-        username=None,
-        password=None,
-        tls=False,
-        starttls=False,  # usually on port 587
-        sender=None
+        port,
+        sender,
+        password,
+        tls,
+        starttls
     ):
         
         try:
-
-            if username is None and sender is None:
-                raise Exception("One of sender or username are mandatory")
-
             msg = EmailMessage()
-            msg["From"] = sender if sender is not None else username
+            msg["From"] = sender
             msg["To"] = recipients
             msg["Subject"] = subject
             msg.set_content(message)
 
-            if username is not None and password is not None:
+            if password is not None:
                 await aiosmtplib.send(
                     msg,
+                    sender=sender,
                     hostname=server,
                     port=port,
-                    username=username,
+                    username=sender,
                     password=password,
                     use_tls=tls,
                     start_tls=starttls
@@ -45,6 +41,7 @@ class SendMail(Action):
             else:
                 await aiosmtplib.send(
                     msg,
+                    sender=sender,
                     hostname=server,
                     port=port,
                     use_tls=tls,

@@ -3,21 +3,20 @@ from bms.v1.action import Action
 from bms.v1.utils import SendMail
 from bms.v1.feedback.get import GetFeedback
 from bms.v1.exceptions import NotFound
-
+import os
 
 class ForwardFeedback(Action):
 
     async def execute(
         self,
         feb_id,
-        username,
+        sender,
         password,
         recipients,
         server,
         port,
         tls,
-        starttls,
-        sender=None
+        starttls
     ):
         try:
             # Getting the feedback from the db
@@ -31,6 +30,7 @@ class ForwardFeedback(Action):
 
             # Preparing the email message
             message = f"""TAG: {feedback['tag']}
+ENVIRONMENT: {os.environ.get('APP_BASE_DOMAIN')} ({os.environ.get('APP_VERSION')}+{os.environ.get('APP_REVISION')})
 DATE: {feedback['created']}
 SENDER: {feedback['user']}
 
@@ -42,15 +42,14 @@ MESSAGE:
             send = SendMail()
             await send.execute(
                 recipients,
-                f"[SWISSFORAGE][{feedback['tag']}] Feedback",
+                f"[{feedback['tag']}] on {os.environ.get('APP_BASE_DOMAIN')}",
                 message,
                 server,
-                port=port,
-                username=username,
-                password=password,
-                tls=tls,
-                starttls=starttls,
-                sender=username
+                port,
+                sender,
+                password,
+                tls,
+                starttls
             )
 
             await self.conn.execute("""

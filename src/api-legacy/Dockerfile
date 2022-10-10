@@ -4,8 +4,6 @@ WORKDIR /usr/src/app
 COPY ./requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-ENV SERVICE_PORT 8888
-
 # S3 credentials based on config file
 ENV S3_CREDENTIALS_FILE none
 ENV S3_CREDENTIALS_FILE_PROFILE default
@@ -13,21 +11,14 @@ ENV S3_CREDENTIALS_FILE_PROFILE default
 # S3 credentials retrieved from iam provider
 ENV S3_CREDENTIALS_IAM 0
 
-# SMTP Email feedback config
-ENV SMTP_CONFIG none
-ENV SMTP_RECIPIENTS none
-ENV SMTP_USERNAME none
-ENV SMTP_PASSWORD none
-ENV SMTP_URL none
-ENV SMTP_PORT 25
-ENV SMTP_TLS 0
-ENV SMTP_STARTTLS 1
-
 COPY . ./bms
 
+ARG VERSION
+ARG REVISION
+ENV APP_VERSION ${VERSION}
+ENV APP_REVISION ${REVISION}
+
 CMD python -u bms/main.py \
-    --port=${SERVICE_PORT} \
-    \
     --pg-host=${DB_HOST} \
     --pg-port=${DB_PORT} \
     --pg-database=${DB_DATABASE} \
@@ -50,9 +41,9 @@ CMD python -u bms/main.py \
     --file-repo=${FILE_STORAGE} \
     \
     --smtp-recipients=${SMTP_RECIPIENTS} \
-    --smtp-username=${SMTP_USERNAME} \
+    --smtp-sender=${SMTP_SENDER} \
     --smtp-password=${SMTP_PASSWORD} \
-    --smtp-server=${SMTP_URL} \
-    --smtp-port=${SMTP_PORT} \
-    --smtp-tls=${SMTP_TLS} \
-    --smtp-starttls=${SMTP_STARTTLS}
+    --smtp-server=${SMTP_SERVER} \
+    --smtp-port=${SMTP_PORT:-25} \
+    --smtp-tls=${SMTP_TLS:-0} \
+    --smtp-starttls=${SMTP_STARTTLS:-0}
