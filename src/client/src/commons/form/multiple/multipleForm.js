@@ -200,7 +200,7 @@ class MultipleForm extends React.Component {
                 ...this.state.data,
                 [field]: {
                   ...this.state.data[field],
-                  value: selected.id,
+                  value: selected,
                 },
               },
             })
