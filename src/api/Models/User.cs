@@ -53,7 +53,7 @@ public class User
     /// <summary>
     /// Gets the events.
     /// </summary>
-    public IEnumerable<BoringEvent> BoringEvents { get; }
+    public IEnumerable<UserEvent> BoringEvents { get; }
 
     /// <inheritdoc/>
     public override string ToString() => Name;

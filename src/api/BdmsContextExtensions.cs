@@ -143,7 +143,7 @@ public static class BdmsContextExtensions
         // Seed BoringEvents
         var event_ids = 3000;
         var eventRange = Enumerable.Range(event_ids, 200);
-        var fakeEvents = new Faker<BoringEvent>()
+        var fakeEvents = new Faker<UserEvent>()
                .StrictMode(true)
                .RuleFor(o => o.Id, f => event_ids++)
                .RuleFor(o => o.UserId, f => f.PickRandom(userRange))
@@ -152,7 +152,7 @@ public static class BdmsContextExtensions
                .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
                .RuleFor(o => o.Payload, f => null);
 
-        BoringEvent SeededEvents(int seed) => fakeEvents.UseSeed(seed).Generate();
+        UserEvent SeededEvents(int seed) => fakeEvents.UseSeed(seed).Generate();
         context.BoringEvents.AddRange(eventRange.Select(SeededEvents));
         context.SaveChanges();
 
