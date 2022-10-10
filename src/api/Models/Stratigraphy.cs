@@ -47,12 +47,12 @@ public class Stratigraphy
     /// Gets or sets the id of the <see cref="User"/> who updated the <see cref="Stratigraphy"/>.
     /// </summary>
     [Column("updater_sty")]
-    public int? UpdaterId { get; set; }
+    public int? UpdatedById { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="User"/> who updated the <see cref="Stratigraphy"/>.
     /// </summary>
-    public User? Updater { get; set; }
+    public User? UpdatedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s creation date.
@@ -64,12 +64,12 @@ public class Stratigraphy
     /// Gets or sets the id of the <see cref="User"/> who authored the <see cref="Stratigraphy"/>.
     /// </summary>
     [Column("author_sty")]
-    public int? AuthorId { get; set; }
+    public int? CreatedById { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="User"/> who authored the <see cref="Stratigraphy"/>.
     /// </summary>
-    public User? Author { get; set; }
+    public User? CreatedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s name.
@@ -98,13 +98,13 @@ public class Stratigraphy
     /// Gets or sets the <see cref="Stratigraphy"/>'s casing.
     /// </summary>
     [Column("casng_id")]
-    public string? Casng { get; set; }
+    public string? Casing { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s casing date.
     /// </summary>
     [Column("casng_date_abd_sty")]
-    public DateOnly? CasngDate { get; set; }
+    public DateOnly? CasingDate { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s notes.
@@ -116,7 +116,7 @@ public class Stratigraphy
     /// Gets or sets the <see cref="Stratigraphy"/>'s fill casing id.
     /// </summary>
     [Column("fill_casng_id_sty_fk")]
-    public int? FillCasngId { get; set; }
+    public int? FillCasingId { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Layer"/>s associated with the <see cref="Stratigraphy"/>.

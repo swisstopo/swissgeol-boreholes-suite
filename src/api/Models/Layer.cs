@@ -29,12 +29,12 @@ public class Layer
     /// Gets or sets the id of the <see cref="User"/> who created the <see cref="Layer"/>.
     /// </summary>
     [Column("creator_lay")]
-    public int CreatorId { get; set; }
+    public int CreatedById { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="User"/> who created the <see cref="Layer"/>.
     /// </summary>
-    public User Creator { get; set; }
+    public User CreatedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s creation date.
@@ -46,12 +46,12 @@ public class Layer
     /// Gets or sets the id of the <see cref="User"/> who updated the <see cref="Layer"/>.
     /// </summary>
     [Column("updater_lay")]
-    public int UpdaterId { get; set; }
+    public int UpdatedById { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="User"/> who updated the <see cref="Layer"/>.
     /// </summary>
-    public User Updater { get; set; }
+    public User UpdatedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s update date.
@@ -399,23 +399,23 @@ public class Layer
     /// Gets or sets the id of the <see cref="Layer"/>'s casing kind.
     /// </summary>
     [Column("casng_kind_id_cli")]
-    public int? CasngKindId { get; set; }
+    public int? CasingKindId { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s casing kind.
     /// </summary>
-    public Codelist? CasngKind { get; set; }
+    public Codelist? CasingKind { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s casing material.
     /// </summary>
     [Column("casng_material_id_cli")]
-    public int? CasngMaterialId { get; set; }
+    public int? CasingMaterialId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s casing kind.
+    /// Gets or sets the <see cref="Layer"/>'s casing material.
     /// </summary>
-    public Codelist? CasngMaterial { get; set; }
+    public Codelist? CasingMaterial { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s fill material.
@@ -432,25 +432,25 @@ public class Layer
     /// Gets or sets the <see cref="Layer"/>'s casing inner diameter.
     /// </summary>
     [Column("casng_inner_diameter_lay")]
-    public double? CasngInnerDiameter { get; set; }
+    public double? CasingInnerDiameter { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s casing outer diameter.
     /// </summary>
     [Column("casng_outer_diameter_lay")]
-    public double? CasngOuterDiameter { get; set; }
+    public double? CasingOuterDiameter { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s casing spud date.
     /// </summary>
     [Column("casng_date_spud_lay")]
-    public DateOnly? CasngDateSpud { get; set; }
+    public DateOnly? CasingDateSpud { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s casing finish date.
     /// </summary>
     [Column("casng_date_finish_lay")]
-    public DateOnly? CasngDateFinish { get; set; }
+    public DateOnly? CasingDateFinish { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s gradation.
@@ -462,7 +462,7 @@ public class Layer
     /// Gets or sets the <see cref="Layer"/>'s casing.
     /// </summary>
     [Column("casng_id")]
-    public string? Casng { get; set; }
+    public string? Casing { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s fill kind.

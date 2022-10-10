@@ -19,12 +19,12 @@ public class Borehole
     /// Gets or sets the id of the <see cref="User"/> who created the <see cref="Borehole"/>.
     /// </summary>
     [Column("created_by_bho")]
-    public int? CreatorId { get; set; }
+    public int? CreatedById { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="User"/> who created the <see cref="Borehole"/>.
     /// </summary>
-    public User? Creator { get; set; }
+    public User? CreatedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/> contact id.
@@ -48,12 +48,12 @@ public class Borehole
     /// Gets or sets the id of the <see cref="User"/> who updated the <see cref="Borehole"/>.
     /// </summary>
     [Column("updated_by_bho")]
-    public int? UpdaterId { get; set; }
+    public int? UpdatedById { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="User"/> who updated the <see cref="Borehole"/>.
     /// </summary>
-    public User? Updater { get; set; }
+    public User? UpdatedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/> locked date.
