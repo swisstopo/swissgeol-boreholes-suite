@@ -44,47 +44,48 @@ public static class BdmsContextExtensions
         var municipalityRange = Enumerable.Range(1, 2371);
 
         // local codelists
-        List<int> kindIds = context.Codelists.Where(c => c.Schema == "kind").Select(s => s.Id).ToList();
-        List<int> srsIds = context.Codelists.Where(c => c.Schema == "srs").Select(s => s.Id).ToList();
-        List<int> hrsIds = context.Codelists.Where(c => c.Schema == "hrs").Select(s => s.Id).ToList();
-        List<int> restrictionIds = context.Codelists.Where(c => c.Schema == "qt_location").Select(s => s.Id).ToList();
-        List<int> qtLocationnIds = context.Codelists.Where(c => c.Schema == "qt_elevation").Select(s => s.Id).ToList();
-        List<int> qtDescriptionIds = context.Codelists.Where(c => c.Schema == "qt_description").Select(s => s.Id).ToList();
-        List<int> drillingMethodIds = context.Codelists.Where(c => c.Schema == "extended.drilling_method").Select(s => s.Id).ToList();
-        List<int> cuttingsIds = context.Codelists.Where(c => c.Schema == "custom.cuttings").Select(s => s.Id).ToList();
-        List<int> qtDepthIds = context.Codelists.Where(c => c.Schema == "custom.qt_depth").Select(s => s.Id).ToList();
-        List<int> qtElevationIds = context.Codelists.Where(c => c.Schema == "qt_elevation").Select(s => s.Id).ToList();
-        List<int> layerKindIds = context.Codelists.Where(c => c.Schema == "layer_kind").Select(s => s.Id).ToList();
-        List<int> purposeIds = context.Codelists.Where(c => c.Schema == "extended.purpose").Select(s => s.Id).ToList();
-        List<int> statusIds = context.Codelists.Where(c => c.Schema == "extended.status").Select(s => s.Id).ToList();
-        List<int> qtTopBedrockIds = context.Codelists.Where(c => c.Schema == "custom.qt_top_bedrock").Select(s => s.Id).ToList();
-        List<int> lithologyTopBedrockIds = context.Codelists.Where(c => c.Schema == "custom.lithology_top_bedrock").Select(s => s.Id).ToList();
-        List<int> qtInclinationDirectionIds = context.Codelists.Where(c => c.Schema == "custom.qt_bore_inc_dir").Select(s => s.Id).ToList();
-        List<int> chronostratigraphyTopBedrockIds = context.Codelists.Where(c => c.Schema == "custom.chronostratigraphy_top_bedrock").Select(s => s.Id).ToList();
-        List<int> lithostratigraphyTopBedrockIds = context.Codelists.Where(c => c.Schema == "custom.lithostratigraphy_top_bedrock").Select(s => s.Id).ToList();
-        List<int> instrumentKindIds = context.Codelists.Where(c => c.Schema == "inst100").Select(s => s.Id).ToList();
-        List<int> instrumentMaterialIds = context.Codelists.Where(c => c.Schema == "inst101").Select(s => s.Id).ToList();
-        List<int> casingKindIds = context.Codelists.Where(c => c.Schema == "casi200").Select(s => s.Id).ToList();
-        List<int> casingMaterialIds = context.Codelists.Where(c => c.Schema == "casi201").Select(s => s.Id).ToList();
-        List<int> plasticityIds = context.Codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList();
-        List<int> compactnessIds = context.Codelists.Where(c => c.Schema == "mlpr102").Select(s => s.Id).ToList();
-        List<int> consistanceIds = context.Codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList();
-        List<int> humidityIds = context.Codelists.Where(c => c.Schema == "mlpr105").Select(s => s.Id).ToList();
-        List<int> alterationIds = context.Codelists.Where(c => c.Schema == "mlpr106").Select(s => s.Id).ToList();
-        List<int> cohesionIds = context.Codelists.Where(c => c.Schema == "mlpr116").Select(s => s.Id).ToList();
-        List<int> fillKindIds = context.Codelists.Where(c => c.Schema == "fill100").Select(s => s.Id).ToList();
-        List<int> fillMaterialIds = context.Codelists.Where(c => c.Schema == "fill200").Select(s => s.Id).ToList();
-        List<int> uscsIds = context.Codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();
-        List<int> uscsDeterminationIds = context.Codelists.Where(c => c.Schema == "mcla104").Select(s => s.Id).ToList();
-        List<int> soilStateIds = context.Codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> kirostIds = context.Codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> lithokIds = context.Codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> symbolIds = context.Codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> tectonicUnitIds = context.Codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> tectonicIds = context.Codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> unconrocksIds = context.Codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> grainSize1Ids = context.Codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
-        List<int> grainSize2Ids = context.Codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
+        List<Codelist> codelists = context.Codelists.ToList();
+        List<int> kindIds = codelists.Where(c => c.Schema == "kind").Select(s => s.Id).ToList();
+        List<int> srsIds = codelists.Where(c => c.Schema == "srs").Select(s => s.Id).ToList();
+        List<int> hrsIds = codelists.Where(c => c.Schema == "hrs").Select(s => s.Id).ToList();
+        List<int> restrictionIds = codelists.Where(c => c.Schema == "qt_location").Select(s => s.Id).ToList();
+        List<int> qtLocationnIds = codelists.Where(c => c.Schema == "qt_elevation").Select(s => s.Id).ToList();
+        List<int> qtDescriptionIds = codelists.Where(c => c.Schema == "qt_description").Select(s => s.Id).ToList();
+        List<int> drillingMethodIds = codelists.Where(c => c.Schema == "extended.drilling_method").Select(s => s.Id).ToList();
+        List<int> cuttingsIds = codelists.Where(c => c.Schema == "custom.cuttings").Select(s => s.Id).ToList();
+        List<int> qtDepthIds = codelists.Where(c => c.Schema == "custom.qt_depth").Select(s => s.Id).ToList();
+        List<int> qtElevationIds = codelists.Where(c => c.Schema == "qt_elevation").Select(s => s.Id).ToList();
+        List<int> layerKindIds = codelists.Where(c => c.Schema == "layer_kind").Select(s => s.Id).ToList();
+        List<int> purposeIds = codelists.Where(c => c.Schema == "extended.purpose").Select(s => s.Id).ToList();
+        List<int> statusIds = codelists.Where(c => c.Schema == "extended.status").Select(s => s.Id).ToList();
+        List<int> qtTopBedrockIds = codelists.Where(c => c.Schema == "custom.qt_top_bedrock").Select(s => s.Id).ToList();
+        List<int> lithologyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithology_top_bedrock").Select(s => s.Id).ToList();
+        List<int> qtInclinationDirectionIds = codelists.Where(c => c.Schema == "custom.qt_bore_inc_dir").Select(s => s.Id).ToList();
+        List<int> chronostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.chronostratigraphy_top_bedrock").Select(s => s.Id).ToList();
+        List<int> lithostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithostratigraphy_top_bedrock").Select(s => s.Id).ToList();
+        List<int> instrumentKindIds = codelists.Where(c => c.Schema == "inst100").Select(s => s.Id).ToList();
+        List<int> instrumentMaterialIds = codelists.Where(c => c.Schema == "inst101").Select(s => s.Id).ToList();
+        List<int> casingKindIds = codelists.Where(c => c.Schema == "casi200").Select(s => s.Id).ToList();
+        List<int> casingMaterialIds = codelists.Where(c => c.Schema == "casi201").Select(s => s.Id).ToList();
+        List<int> plasticityIds = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList();
+        List<int> compactnessIds = codelists.Where(c => c.Schema == "mlpr102").Select(s => s.Id).ToList();
+        List<int> consistanceIds = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList();
+        List<int> humidityIds = codelists.Where(c => c.Schema == "mlpr105").Select(s => s.Id).ToList();
+        List<int> alterationIds = codelists.Where(c => c.Schema == "mlpr106").Select(s => s.Id).ToList();
+        List<int> cohesionIds = codelists.Where(c => c.Schema == "mlpr116").Select(s => s.Id).ToList();
+        List<int> fillKindIds = codelists.Where(c => c.Schema == "fill100").Select(s => s.Id).ToList();
+        List<int> fillMaterialIds = codelists.Where(c => c.Schema == "fill200").Select(s => s.Id).ToList();
+        List<int> uscsIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();
+        List<int> uscsDeterminationIds = codelists.Where(c => c.Schema == "mcla104").Select(s => s.Id).ToList();
+        List<int> soilStateIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> kirostIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> lithokIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> symbolIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> tectonicUnitIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> tectonicIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> unconrocksIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
+        List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
 
         // Seed Boreholes
         var borehole_ids = 1000;
