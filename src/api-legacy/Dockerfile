@@ -38,7 +38,6 @@ CMD python -u bms/main.py \
     --s3-credentials-session-token=${S3_CREDENTIALS_SESSION_TOKEN} \
     \
     --s3-credentials-iam=${S3_CREDENTIALS_IAM} \
-    --file-repo=${FILE_STORAGE} \
     \
     --smtp-recipients=${SMTP_RECIPIENTS} \
     --smtp-sender=${SMTP_SENDER} \

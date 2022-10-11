@@ -24,9 +24,6 @@ class FileBase(Action):
     def __init__(self, *arg, **args):
         super().__init__(*arg, **args)
 
-        if options.file_repo != 's3':
-            raise Exception('File repository not configured')
-
         if (
             options.s3_credentials_file is not None
             and options.s3_credentials_file != 'none'

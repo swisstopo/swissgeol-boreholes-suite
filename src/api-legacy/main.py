@@ -30,8 +30,6 @@ define("pg_host", default="localhost", help="PostgrSQL database host")
 define("pg_port", default="5432", help="PostgrSQL database port")
 define("pg_database", default="bms", help="PostgrSQL database name")
 
-define("file_repo", default='s3', help="Select the file repository", type=str)
-
 # Local storage for files configuration
 define("local_path", default=str(Path.home()), help="Select local path", type=str)
 
@@ -278,16 +276,12 @@ if __name__ == "__main__":
     ], **settings)
 
     # Check S3 configuration
-    if options.file_repo == 's3':
-
-        try:
-            fileBase = FileBase()
-            green("Connection to S3 (compatible) object storage: Ok")
-
-        except S3Error as e:
-
-            red("S3 Configuration error:\n{}".format(e))
-            sys.exit(1)
+    try:
+        fileBase = FileBase()
+        green("Connection to S3 (compatible) object storage: Ok")
+    except S3Error as e:
+        red("S3 Configuration error:\n{}".format(e))
+        sys.exit(1)
 
     # Check for missing SMTP environment configuration options
     if (
