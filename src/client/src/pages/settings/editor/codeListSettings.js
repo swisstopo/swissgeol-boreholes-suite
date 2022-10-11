@@ -78,6 +78,7 @@ const CodeListSettings = () => {
   );
 
   const [id, setId] = useState("");
+  const [geolcode, setGeolcode] = useState("-");
   const [de, setDe] = useState("");
   const [fr, setFr] = useState("");
   const [it, setIt] = useState("");
@@ -86,6 +87,7 @@ const CodeListSettings = () => {
 
   const reset = () => {
     setId("");
+    setGeolcode("-");
     setDe("");
     setFr("");
     setIt("");
@@ -103,6 +105,14 @@ const CodeListSettings = () => {
             flex: 1,
           }}>
           <Form.Group widths="equal">
+            <Form.Input
+              fluid
+              readonly
+              transparent
+              name="geolcode"
+              label="Geolcode"
+              value={geolcode}
+            />
             <Form.Input
               fluid
               name="german-input"
@@ -139,9 +149,12 @@ const CodeListSettings = () => {
               }}
               value={en}
             />
-            <Box style={{ visibility: id ? "visible" : "hidden" }}>
+            <Box
+              style={{
+                visibility: id ? "visible" : "hidden",
+                paddingTop: 20,
+              }}>
               <Form.Button
-                label="&nbsp;"
                 onClick={e => {
                   e.preventDefault();
                   mutation.mutate(
@@ -168,7 +181,7 @@ const CodeListSettings = () => {
           </Form.Group>
         </Form>
       </Stack>
-      <Stack>
+      <Stack sx={{ maxHeight: 400, overflow: "auto" }}>
         {domains.data &&
           schemas.map(s => (
             <Accordion key={s}>
@@ -188,6 +201,7 @@ const CodeListSettings = () => {
                             reset();
                           } else {
                             setId(val.id);
+                            setGeolcode(val.geolcode);
                             setDe(val.textDe);
                             setFr(val.textFr);
                             setIt(val.textIt);
@@ -205,6 +219,7 @@ const CodeListSettings = () => {
                           justifyContent="space-evenly"
                           alignItems="flex-start"
                           spacing={2}>
+                          <div style={{ flex: "1 1 0" }}>{val.geolcode}</div>
                           <div style={{ flex: "1 1 0" }}>{val.textDe}</div>
                           <div style={{ flex: "1 1 0" }}>{val.textFr}</div>
                           <div style={{ flex: "1 1 0" }}>{val.textIt}</div>
