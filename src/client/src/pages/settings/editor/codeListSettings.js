@@ -174,9 +174,6 @@ const CodeListSettings = () => {
                   <TranslationText id="save" />
                 </span>
               </Form.Button>
-              <div className="linker link" onClick={() => reset()}>
-                <TranslationText id="reset" />
-              </div>
             </Box>
           </Form.Group>
         </Form>

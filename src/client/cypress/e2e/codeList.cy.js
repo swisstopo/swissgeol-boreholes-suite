@@ -64,8 +64,8 @@ describe("Codelist translations tests", () => {
     cy.get("input[name=italian-input]").should("have.value", "detriti");
     cy.get("input[name=english-input]").should("have.value", "rubble");
 
-    // click on reset
-    cy.contains("div", "Reset").click();
+    // click on record again to reset
+    cy.contains("div", "Gerölle").click();
 
     // assure input fields are empty
     cy.get("input[name=german-input]").should("have.value", "");
