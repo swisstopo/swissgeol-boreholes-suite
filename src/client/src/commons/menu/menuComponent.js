@@ -273,14 +273,18 @@ class MenuComponent extends React.Component {
                     fontSize: "smaller",
                   }}>
                   <List.Description>
-                    Version: {process.env.REACT_APP_VERSION}
+                    <TranslationText id="header_version_number" />
+                    :&nbsp;
+                    {process.env.REACT_APP_VERSION}
                   </List.Description>
                   {process.env.NODE_ENV !== "production" && (
                     <List.Description
                       style={{
                         color: "darkred",
                       }}>
-                      Environment: {process.env.NODE_ENV}
+                      <TranslationText id="header_environment_identifier" />
+                      :&nbsp;
+                      {process.env.NODE_ENV}
                     </List.Description>
                   )}
                 </List.Content>
