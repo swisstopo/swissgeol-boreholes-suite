@@ -81,14 +81,11 @@ services:
       db:
         condition: service_healthy
     environment:
-      FILE_STORAGE: s3
-      S3_REGION: none
       S3_ENDPOINT: minio:9000
+      S3_BUCKET_NAME: swissforages
+      S3_ACCESS_KEY: REDSQUIRREL
+      S3_SECRET_KEY: YELLOWMONKEY
       S3_SECURE: 0
-      S3_BUCKET: swissforages
-      S3_CREDENTIALS_ACCESS_KEY: REDSQUIRREL
-      S3_CREDENTIALS_SECRET_KEY: YELLOWMONKEY
-      S3_CREDENTIALS_SESSION_TOKEN: none
       DB_USERNAME: SPAWNPLOW
       DB_PASSWORD: YELLOWSPATULA
       DB_DATABASE: bdms

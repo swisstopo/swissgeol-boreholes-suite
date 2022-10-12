@@ -5,8 +5,7 @@ from tornado.options import options
 from minio import Minio
 from minio.credentials import (
     StaticProvider,
-    IamAwsProvider,
-    AWSConfigProvider
+    IamAwsProvider
 )
 from minio.error import S3Error
 import traceback
@@ -24,53 +23,32 @@ class FileBase(Action):
     def __init__(self, *arg, **args):
         super().__init__(*arg, **args)
 
-        if options.file_repo != 's3':
-            raise Exception('File repository not configured')
-
         if (
-            options.s3_credentials_file is not None
-            and options.s3_credentials_file != 'none'
+            options.s3_access_key and
+            options.s3_secret_key
         ):
-            # Use local file with credentials
-            print("Using local file with credentials")
-            self.credentials = AWSConfigProvider(
-                filename=options.s3_credentials_file,
-                profile=options.s3_credentials_file_profile
-            )
-
-        elif options.s3_credentials_iam is True:
-            # Use IAM provider
-            print("Using IAM credentials")
-            self.credentials = IamAwsProvider()
-
-        else: # credentials access key, secret key
             print("Using access key, secret key")
             self.credentials = StaticProvider(
-                options.s3_credentials_access_key,
-                options.s3_credentials_secret_key,
-                (
-                    options.s3_credentials_session_token
-                    if options.s3_credentials_session_token != 'none'
-                    else None
-                )
+                options.s3_access_key,
+                options.s3_secret_key,
+                None
             )
+        else:
+            print("Using IAM credentials")
+            self.credentials = IamAwsProvider()
 
         # Init S3 client
         self.s3 = Minio(
             options.s3_endpoint,
             credentials=self.credentials,
-            region=(
-                options.s3_region
-                if options.s3_region != 'none'
-                else None
-            ),
+            region=options.s3_region or None,
             secure=options.s3_secure
         )
 
         # Check if bucket exists otherwise create a new one
-        found = self.s3.bucket_exists(options.s3_bucket)
+        found = self.s3.bucket_exists(options.s3_bucket_name)
         if not found:
-            self.s3.make_bucket(options.s3_bucket)
+            self.s3.make_bucket(options.s3_bucket_name)
 
 class S3Upload(FileBase):
     async def execute(self, file_name, content_type, file_body):
@@ -78,7 +56,7 @@ class S3Upload(FileBase):
             length = file_body.getbuffer().nbytes
             file_body.seek(0)
             self.s3.put_object(
-                options.s3_bucket,
+                options.s3_bucket_name,
                 file_name,
                 file_body,
                 content_type=content_type,
@@ -202,7 +180,7 @@ class GetFile(FileBase):
             }
 
             # Download the file from s3
-            data = self.s3.get_object(options.s3_bucket, conf['key'])
+            data = self.s3.get_object(options.s3_bucket_name, conf['key'])
 
             # Write the data stream to the byteio object
             for d in data.stream(32*1024):
@@ -245,7 +223,7 @@ class DeleteFile(FileBase):
 
             # Remove version of an object.
             self.s3.remove_object(
-                options.s3_bucket, conf['key'],
+                options.s3_bucket_name, conf['key'],
             )
 
             await self.conn.execute("""

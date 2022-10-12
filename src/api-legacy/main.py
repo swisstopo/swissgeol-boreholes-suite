@@ -24,28 +24,20 @@ from bms.v1.listeners import EventListener
 from bms.v1.utils.files import FileBase
 
 define("port", default=8888, help="Tornado Web port", type=int)
-define("pg_user", default="postgres", help="PostgrSQL database user")
-define("pg_password", default="postgres", help="PostgrSQL user password")
-define("pg_host", default="localhost", help="PostgrSQL database host")
+
+define("pg_user", default=None, help="PostgrSQL database user")
+define("pg_password", default=None, help="PostgrSQL user password")
+define("pg_host", default=None, help="PostgrSQL database host")
 define("pg_port", default="5432", help="PostgrSQL database port")
-define("pg_database", default="bms", help="PostgrSQL database name")
-
-define("file_repo", default='s3', help="Select the file repository", type=str)
-
-# Local storage for files configuration
-define("local_path", default=str(Path.home()), help="Select local path", type=str)
+define("pg_database", default=None, help="PostgrSQL database name")
 
 # Generic S3 storage for files configuration
-define("s3_endpoint", default='s3.amazonaws.com', help="Select S3 Bucket name", type=str)
+define("s3_endpoint", default=None, help="Select S3 Bucket name", type=str)
+define("s3_bucket-name", default=None, help="Select S3 Bucket name", type=str)
 define("s3_region", default=None, help="(Optional, default null) Region name of buckets in S3 service.", type=str)
+define("s3_access_key", default=None, help="S3 access key", type=str)
+define("s3_secret_key", default=None, help="S3 secret key", type=str)
 define("s3_secure", default=True, help="(Default True) Flag to indicate to use secure (TLS) connection to S3 service or not.", type=bool)
-define("s3_bucket", default=None, help="Select S3 Bucket name", type=str)
-define("s3_credentials_file", default=None, help="S3 credential file location (overwrite s3_access_key_id and s3_secret_access_key)", type=str)
-define("s3_credentials_file_profile", default='default', help="(Optional) S3 credential file profile name", type=str)
-define("s3_credentials_access_key", default=None, help="S3 access key", type=str)
-define("s3_credentials_secret_key", default=None, help="S3 secret key", type=str)
-define("s3_credentials_session_token", default=None, help="S3 session token", type=str)
-define("s3_credentials_iam", default=False, help="Credential provider using IAM roles for Amazon EC2/ECS.", type=bool)
 
 # SMTP send mail configuration
 define("smtp_recipients", default=None, help="SMTP comma separated recipients email addresses", type=str)
@@ -278,16 +270,12 @@ if __name__ == "__main__":
     ], **settings)
 
     # Check S3 configuration
-    if options.file_repo == 's3':
-
-        try:
-            fileBase = FileBase()
-            green("Connection to S3 (compatible) object storage: Ok")
-
-        except S3Error as e:
-
-            red("S3 Configuration error:\n{}".format(e))
-            sys.exit(1)
+    try:
+        fileBase = FileBase()
+        green("Connection to S3 (compatible) object storage: Ok")
+    except S3Error as e:
+        red("S3 Configuration error:\n{}".format(e))
+        sys.exit(1)
 
     # Check for missing SMTP environment configuration options
     if (

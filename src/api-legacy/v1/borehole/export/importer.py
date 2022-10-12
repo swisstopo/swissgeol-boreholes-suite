@@ -59,13 +59,11 @@ class Importer(Action):
                                 file_hash in result['files'].keys()
                                 and result['files'][file_hash]['present'] is False
                             ):
-                                if options.file_repo == 's3':
-
-                                    await s3Upload.execute(
-                                        info.filename,
-                                        result['files'][file_hash]["type"],
-                                        BytesIO(byts)
-                                    )
+                                await s3Upload.execute(
+                                    info.filename,
+                                    result['files'][file_hash]["type"],
+                                    BytesIO(byts)
+                                )
 
         except Exception as ex:
             print(traceback.print_exc())
