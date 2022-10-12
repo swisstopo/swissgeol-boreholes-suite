@@ -112,13 +112,10 @@ describe("Bore hole list tests", () => {
 
     cy.intercept("/api/v1/user", adminUser);
 
-    cy.visit("/");
+    cy.visit("/editor");
     cy.contains("button", "Login").click();
     cy.wait("@geoapi");
     cy.get("div[id=map]").should("be.visible");
-
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Editor").click();
 
     // sort by creation date
     cy.contains("th", "Creation date").click();
