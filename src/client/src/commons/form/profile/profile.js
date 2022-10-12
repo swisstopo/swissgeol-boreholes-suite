@@ -142,19 +142,24 @@ const Profile = props => {
 
       {!selectedStratigraphy &&
         stratigraphyKind !== profileKind.INSTRUMENT &&
-        stratigraphyKind !== profileKind.CASING && (
+        stratigraphyKind !== profileKind.CASING &&
+        stratigraphyKind !== profileKind.FILLING && (
           <Styled.Empty>
             <TranslationText id="msgStartigraphyEmpty" />
           </Styled.Empty>
         )}
 
-      {!selectedStratigraphy &&
-        stratigraphyKind !== profileKind.INSTRUMENT &&
-        stratigraphyKind === profileKind.CASING && (
-          <Styled.Empty>
-            <TranslationText id="msgCasingEmpty" />
-          </Styled.Empty>
-        )}
+      {!selectedStratigraphy && stratigraphyKind === profileKind.CASING && (
+        <Styled.Empty>
+          <TranslationText id="msgCasingEmpty" />
+        </Styled.Empty>
+      )}
+
+      {!selectedStratigraphy && stratigraphyKind === profileKind.FILLING && (
+        <Styled.Empty>
+          <TranslationText id="msgBackfillEmty" />
+        </Styled.Empty>
+      )}
 
       {stratigraphyKind !== profileKind.INSTRUMENT && selectedStratigraphy && (
         <Styled.Container>

@@ -31,3 +31,4 @@
 - Fix error highlight of identifier fields.
 - Fix bulk edit.
 - Fix sorting in borehole tables in viewer and editor mode.
+- Fix text displayed in backfill tab, when no backfill is available.

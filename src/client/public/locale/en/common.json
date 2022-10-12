@@ -213,6 +213,7 @@
   "materialCasingLayer": "Casing material",
   "materialFilling": "Backfill/Sealing material",
   "meter": "Meter",
+  "msgBackfillEmty": "For the recording of a backfill please click the plus symbol at the top left",
   "msgCasingEmpty": "For a casing profile please click the plus symbol at the top left",
   "msgDeleteUser": "The selected user can be deleted permanantly because currently there is no trace of activity in the database.",
   "msgDeleteWorkgroup": "The selected workgroup can be permanantly deleted because currently there are no traces of activity in the database.",

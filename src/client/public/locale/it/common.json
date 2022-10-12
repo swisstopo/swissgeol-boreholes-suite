@@ -213,6 +213,7 @@
   "materialCasingLayer": "Tipo di materiale della tubatura",
   "materialFilling": "Materiale di riempimento",
   "meter": "Metri",
+  "msgBackfillEmty": "Per la registrazione di uno riempimento cliccare il pulsante con il simbolo in alto a sinistra",
   "msgCasingEmpty": "Per aggiungere la tubatura cliccare il pulsante con il simbolo in alto a sinistra",
   "msgDeleteUser": "L'utente selezionato può essere eliminato definivamente poiché al momento non esiste alcuna traccia di attività nel database.",
   "msgDeleteWorkgroup": "Visto che al momento non ci sono tracce di attività nel database, il gruppo di lavoro selezionato può essere eliminato definitivamente.",

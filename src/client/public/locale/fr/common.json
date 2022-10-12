@@ -213,6 +213,7 @@
   "materialCasingLayer": "Matériau du casing",
   "materialFilling": "Matériau de remplissage",
   "meter": "Mètres",
+  "msgBackfillEmty": "Pour l'enregistrement d'une remplissage veuillez cliquer sur le symbole dans le coin supérieur gauche",
   "msgCasingEmpty": "Pour un profil de tubage veuillez cliquer sur le symbole dans le coin supérieur gauche",
   "msgDeleteUser": "L'utilisateur sélectionné peut être supprimé définitivement car il n'y a actuellement aucune activité dans la base de données.",
   "msgDeleteWorkgroup": "Le groupe de travail sélectionné peut être supprimé définitivement car il n'y a actuellement aucune activité dans la base de données.",
