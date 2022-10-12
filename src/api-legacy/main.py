@@ -31,9 +31,6 @@ define("pg_host", default=None, help="PostgrSQL database host")
 define("pg_port", default="5432", help="PostgrSQL database port")
 define("pg_database", default=None, help="PostgrSQL database name")
 
-# Local storage for files configuration
-define("local_path", default=str(Path.home()), help="Select local path", type=str)
-
 # Generic S3 storage for files configuration
 define("s3_endpoint", default=None, help="Select S3 Bucket name", type=str)
 define("s3_bucket-name", default=None, help="Select S3 Bucket name", type=str)
