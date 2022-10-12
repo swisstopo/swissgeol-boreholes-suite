@@ -38,8 +38,6 @@ define("s3_endpoint", default='s3.amazonaws.com', help="Select S3 Bucket name", 
 define("s3_region", default=None, help="(Optional, default null) Region name of buckets in S3 service.", type=str)
 define("s3_secure", default=True, help="(Default True) Flag to indicate to use secure (TLS) connection to S3 service or not.", type=bool)
 define("s3_bucket", default=None, help="Select S3 Bucket name", type=str)
-define("s3_credentials_file", default=None, help="S3 credential file location (overwrite s3_access_key_id and s3_secret_access_key)", type=str)
-define("s3_credentials_file_profile", default='default', help="(Optional) S3 credential file profile name", type=str)
 define("s3_credentials_access_key", default=None, help="S3 access key", type=str)
 define("s3_credentials_secret_key", default=None, help="S3 secret key", type=str)
 define("s3_credentials_session_token", default=None, help="S3 session token", type=str)

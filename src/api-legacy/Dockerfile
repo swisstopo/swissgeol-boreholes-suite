@@ -4,10 +4,6 @@ WORKDIR /usr/src/app
 COPY ./requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# S3 credentials based on config file
-ENV S3_CREDENTIALS_FILE none
-ENV S3_CREDENTIALS_FILE_PROFILE default
-
 # S3 credentials retrieved from iam provider
 ENV S3_CREDENTIALS_IAM 0
 
@@ -29,9 +25,6 @@ CMD python -u bms/main.py \
     --s3-region=${S3_REGION} \
     --s3-secure=${S3_SECURE} \
     --s3-bucket=${S3_BUCKET} \
-    \
-    --s3-credentials-file=${S3_CREDENTIALS_FILE} \
-    --s3-credentials-file-profile=${S3_CREDENTIALS_FILE_PROFILE} \
     \
     --s3-credentials-access-key=${S3_CREDENTIALS_ACCESS_KEY} \
     --s3-credentials-secret-key=${S3_CREDENTIALS_SECRET_KEY} \

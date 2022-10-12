@@ -24,18 +24,7 @@ class FileBase(Action):
     def __init__(self, *arg, **args):
         super().__init__(*arg, **args)
 
-        if (
-            options.s3_credentials_file is not None
-            and options.s3_credentials_file != 'none'
-        ):
-            # Use local file with credentials
-            print("Using local file with credentials")
-            self.credentials = AWSConfigProvider(
-                filename=options.s3_credentials_file,
-                profile=options.s3_credentials_file_profile
-            )
-
-        elif options.s3_credentials_iam is True:
+        if options.s3_credentials_iam is True:
             # Use IAM provider
             print("Using IAM credentials")
             self.credentials = IamAwsProvider()
