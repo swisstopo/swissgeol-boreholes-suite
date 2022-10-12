@@ -21,11 +21,11 @@ const ProfileInstrument = props => {
     reloadLayer,
     onUpdated,
     selectedStratigraphyID,
+    setHasInstrumentWithoutCasing,
   } = props;
 
-  const { casing } = useCasingList(boreholeID);
+  const { casing } = useCasingList(borehole.data.id);
   const [instruments, setInstruments] = useState([]);
-  const [hasCasing, setHasCasing] = useState(false);
   const [reload, setReload] = useState(0);
   const [state, setState] = useState({
     isFetching: false,
@@ -42,16 +42,6 @@ const ProfileInstrument = props => {
       }));
     });
   }, []);
-
-  const checkHasCasing = useCallback(() => {
-    getProfile(boreholeID, profileKind.CASING).then(response => {
-      if (response.length > 0) {
-        setHasCasing(true);
-      } else {
-        setHasCasing(false);
-      }
-    });
-  }, [boreholeID]);
 
   const getInstrumentProfile = useCallback(() => {
     getProfile(borehole.data.id, profileKind.INSTRUMENT).then(response => {
@@ -70,11 +60,17 @@ const ProfileInstrument = props => {
     getInstrumentProfile();
   }, [getInstrumentProfile]);
 
-  const setData = useCallback(instrumentID => {
-    getData(instrumentID).then(response => {
-      setInstruments(response);
-    });
-  }, []);
+  const setData = useCallback(
+    instrumentID => {
+      getData(instrumentID).then(response => {
+        setInstruments(response);
+        setHasInstrumentWithoutCasing(
+          response.some(i => i.instrument_casing_id === 0),
+        );
+      });
+    },
+    [setHasInstrumentWithoutCasing],
+  );
 
   useEffect(() => {
     if (state.instrumentID) {
@@ -106,7 +102,7 @@ const ProfileInstrument = props => {
 
   const selectedInstrument = () => {
     let instrument = instruments;
-    if (selectedStratigraphyID) {
+    if (selectedStratigraphyID >= 0) {
       instrument = instruments.filter(
         e => e.instrument_casing_id === selectedStratigraphyID,
       );
@@ -114,7 +110,7 @@ const ProfileInstrument = props => {
     return instrument;
   };
   return (
-    <Styled.Container disable={!hasCasing}>
+    <Styled.Container>
       <Styled.ButtonContainer>
         <Button
           content={<TranslationText id="addInstrument" />}
