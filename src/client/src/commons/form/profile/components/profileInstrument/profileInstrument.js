@@ -17,11 +17,11 @@ import useCasingList from "../../hooks/useCasingList";
 const ProfileInstrument = props => {
   const {
     isEditable,
-    boreholeID,
+    borehole,
     reloadLayer,
     onUpdated,
     selectedStratigraphyID,
-  } = props.data;
+  } = props;
 
   const { casing } = useCasingList(boreholeID);
   const [instruments, setInstruments] = useState([]);
@@ -54,18 +54,17 @@ const ProfileInstrument = props => {
   }, [boreholeID]);
 
   const getInstrumentProfile = useCallback(() => {
-    getProfile(boreholeID, profileKind.INSTRUMENT).then(response => {
-      checkHasCasing();
+    getProfile(borehole.data.id, profileKind.INSTRUMENT).then(response => {
       if (response.length > 0) {
         setState(prevState => ({
           ...prevState,
           instrumentID: response[0].id,
         }));
       } else if (response.length === 0) {
-        createStratigraphy(boreholeID);
+        createStratigraphy(borehole.data.id);
       }
     });
-  }, [boreholeID, createStratigraphy, checkHasCasing]);
+  }, [borehole, createStratigraphy]);
 
   useEffect(() => {
     getInstrumentProfile();
@@ -129,7 +128,9 @@ const ProfileInstrument = props => {
 
       {selectedInstrument().length === 0 && (
         <Styled.Empty>
-          <TranslationText id="nothingToShow" />
+          <TranslationText
+            id={borehole.data.lock ? "msgAddInstrument" : "msgInstrumentsEmpty"}
+          />
         </Styled.Empty>
       )}
 

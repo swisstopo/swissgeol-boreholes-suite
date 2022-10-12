@@ -227,6 +227,7 @@
   "msgFillingEmpty": "Keine Hinterfüllung verfügbar",
   "msgIdentifierAlreadyUsed": "Identifikator bereits vergeben",
   "msgIdentifierDeletionAlreadyUsed": "Identifikator wird genutzt und kann daher nicht gelöscht werden",
+  "msgAddInstrument": "Für die Erfassung eines Instruments bitte das Plus-Symbol oben links klicken",
   "msgInstrumentsEmpty": "Kein Instrument verfügbar",
   "msgReenablingTip": "Sie können ihn später wieder aktivieren.",
   "msgStartigraphyEmpty": "Keine Stratigraphie verfügbar",

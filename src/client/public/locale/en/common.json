@@ -227,6 +227,7 @@
   "msgFillingEmpty": "No casing available",
   "msgIdentifierAlreadyUsed": "Identifier already in use",
   "msgIdentifierDeletionAlreadyUsed": "Connot delete identifier in use",
+  "msgAddInstrument": "For the recording of an instrument please click the plus symbol at the top left",
   "msgInstrumentsEmpty": "No instrumentation available",
   "msgReenablingTip": "You will be able to re-enable it later.",
   "msgStartigraphyEmpty": "No stratigraphy available",

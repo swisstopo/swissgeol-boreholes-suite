@@ -227,6 +227,7 @@
   "msgFillingEmpty": "Nessun riempimento disponibile",
   "msgIdentifierAlreadyUsed": "Identificatore già in uso",
   "msgIdentifierDeletionAlreadyUsed": "Non puoi cancellare l'identificatore in uso",
+  "msgAddInstrument": "Per la registrazione di uno strumento cliccare il pulsante con il simbolo in alto a sinistra",
   "msgInstrumentsEmpty": "Nessuna strumentazione disponibile",
   "msgReenablingTip": "Sarai in grado di riattivarlo in seguito",
   "msgStartigraphyEmpty": "Nessuna stratigrafia disponibile",
