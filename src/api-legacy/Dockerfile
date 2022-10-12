@@ -25,7 +25,6 @@ CMD python -u bms/main.py \
     \
     --s3-credentials-access-key=${S3_CREDENTIALS_ACCESS_KEY} \
     --s3-credentials-secret-key=${S3_CREDENTIALS_SECRET_KEY} \
-    --s3-credentials-session-token=${S3_CREDENTIALS_SESSION_TOKEN} \
     \
     --smtp-recipients=${SMTP_RECIPIENTS} \
     --smtp-sender=${SMTP_SENDER} \

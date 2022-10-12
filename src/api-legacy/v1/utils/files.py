@@ -32,11 +32,7 @@ class FileBase(Action):
             self.credentials = StaticProvider(
                 options.s3_credentials_access_key,
                 options.s3_credentials_secret_key,
-                (
-                    options.s3_credentials_session_token
-                    if options.s3_credentials_session_token != 'none'
-                    else None
-                )
+                None
             )
         else:
             print("Using IAM credentials")

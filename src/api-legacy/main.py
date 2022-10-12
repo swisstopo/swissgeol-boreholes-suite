@@ -40,7 +40,6 @@ define("s3_secure", default=True, help="(Default True) Flag to indicate to use s
 define("s3_bucket", default=None, help="Select S3 Bucket name", type=str)
 define("s3_credentials_access_key", default=None, help="S3 access key", type=str)
 define("s3_credentials_secret_key", default=None, help="S3 secret key", type=str)
-define("s3_credentials_session_token", default=None, help="S3 session token", type=str)
 
 # SMTP send mail configuration
 define("smtp_recipients", default=None, help="SMTP comma separated recipients email addresses", type=str)
