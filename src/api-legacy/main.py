@@ -41,7 +41,6 @@ define("s3_bucket", default=None, help="Select S3 Bucket name", type=str)
 define("s3_credentials_access_key", default=None, help="S3 access key", type=str)
 define("s3_credentials_secret_key", default=None, help="S3 secret key", type=str)
 define("s3_credentials_session_token", default=None, help="S3 session token", type=str)
-define("s3_credentials_iam", default=False, help="Credential provider using IAM roles for Amazon EC2/ECS.", type=bool)
 
 # SMTP send mail configuration
 define("smtp_recipients", default=None, help="SMTP comma separated recipients email addresses", type=str)

@@ -24,12 +24,10 @@ class FileBase(Action):
     def __init__(self, *arg, **args):
         super().__init__(*arg, **args)
 
-        if options.s3_credentials_iam is True:
-            # Use IAM provider
-            print("Using IAM credentials")
-            self.credentials = IamAwsProvider()
-
-        else: # credentials access key, secret key
+        if (
+            options.s3_credentials_access_key and
+            options.s3_credentials_secret_key
+        ):
             print("Using access key, secret key")
             self.credentials = StaticProvider(
                 options.s3_credentials_access_key,
@@ -40,6 +38,9 @@ class FileBase(Action):
                     else None
                 )
             )
+        else:
+            print("Using IAM credentials")
+            self.credentials = IamAwsProvider()
 
         # Init S3 client
         self.s3 = Minio(

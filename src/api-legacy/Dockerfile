@@ -4,9 +4,6 @@ WORKDIR /usr/src/app
 COPY ./requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# S3 credentials retrieved from iam provider
-ENV S3_CREDENTIALS_IAM 0
-
 COPY . ./bms
 
 ARG VERSION
@@ -29,8 +26,6 @@ CMD python -u bms/main.py \
     --s3-credentials-access-key=${S3_CREDENTIALS_ACCESS_KEY} \
     --s3-credentials-secret-key=${S3_CREDENTIALS_SECRET_KEY} \
     --s3-credentials-session-token=${S3_CREDENTIALS_SESSION_TOKEN} \
-    \
-    --s3-credentials-iam=${S3_CREDENTIALS_IAM} \
     \
     --smtp-recipients=${SMTP_RECIPIENTS} \
     --smtp-sender=${SMTP_SENDER} \
