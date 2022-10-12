@@ -5,8 +5,7 @@ from tornado.options import options
 from minio import Minio
 from minio.credentials import (
     StaticProvider,
-    IamAwsProvider,
-    AWSConfigProvider
+    IamAwsProvider
 )
 from minio.error import S3Error
 import traceback
