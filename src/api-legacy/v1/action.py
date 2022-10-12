@@ -96,6 +96,37 @@ class Action():
         elif orderby == 'creation':
             _orderby = 'created_bho'
 
+        elif orderby == 'workgroup':
+            _orderby = 'id_wgp_fk'
+
+        elif orderby == 'purpose':
+            _orderby = 'purpose_id_cli'
+
+        elif orderby == 'elevation_z':
+            _orderby = 'elevation_z_bho' 
+
+        # there are inconsitencies in the client code, that sometimes the translation key is send to the api. Therefore some duplicate keys are mapped here.
+        elif orderby == 'drilling_date':
+            _orderby = 'drilling_date_bho'
+
+        elif orderby == 'boreholestatus':
+            _orderby = 'status_id_cli'
+
+        elif orderby == 'createdBy':
+            _orderby = 'created_by_bho'
+
+        elif orderby == 'drilling_end_date':
+            _orderby = 'drilling_date_bho'
+
+        elif orderby == 'creationdate':
+            _orderby = 'created_bho'
+        
+        elif orderby == 'totaldepth':
+            _orderby = 'total_depth'
+        
+        elif orderby == 'top_bedrock':
+            _orderby = 'top_bedrock_bho'
+        
         else:
             orderby = 'original_name'
 

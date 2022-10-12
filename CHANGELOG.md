@@ -30,3 +30,4 @@
 - Fix appearance setting label.
 - Fix error highlight of identifier fields.
 - Fix bulk edit.
+- Fix sorting in borehole tables in viewer and editor mode.
