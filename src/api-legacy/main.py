@@ -24,22 +24,23 @@ from bms.v1.listeners import EventListener
 from bms.v1.utils.files import FileBase
 
 define("port", default=8888, help="Tornado Web port", type=int)
-define("pg_user", default="postgres", help="PostgrSQL database user")
-define("pg_password", default="postgres", help="PostgrSQL user password")
-define("pg_host", default="localhost", help="PostgrSQL database host")
+
+define("pg_user", default=None, help="PostgrSQL database user")
+define("pg_password", default=None, help="PostgrSQL user password")
+define("pg_host", default=None, help="PostgrSQL database host")
 define("pg_port", default="5432", help="PostgrSQL database port")
-define("pg_database", default="bms", help="PostgrSQL database name")
+define("pg_database", default=None, help="PostgrSQL database name")
 
 # Local storage for files configuration
 define("local_path", default=str(Path.home()), help="Select local path", type=str)
 
 # Generic S3 storage for files configuration
-define("s3_endpoint", default='s3.amazonaws.com', help="Select S3 Bucket name", type=str)
+define("s3_endpoint", default=None, help="Select S3 Bucket name", type=str)
+define("s3_bucket-name", default=None, help="Select S3 Bucket name", type=str)
 define("s3_region", default=None, help="(Optional, default null) Region name of buckets in S3 service.", type=str)
+define("s3_access_key", default=None, help="S3 access key", type=str)
+define("s3_secret_key", default=None, help="S3 secret key", type=str)
 define("s3_secure", default=True, help="(Default True) Flag to indicate to use secure (TLS) connection to S3 service or not.", type=bool)
-define("s3_bucket", default=None, help="Select S3 Bucket name", type=str)
-define("s3_credentials_access_key", default=None, help="S3 access key", type=str)
-define("s3_credentials_secret_key", default=None, help="S3 secret key", type=str)
 
 # SMTP send mail configuration
 define("smtp_recipients", default=None, help="SMTP comma separated recipients email addresses", type=str)

@@ -24,13 +24,13 @@ class FileBase(Action):
         super().__init__(*arg, **args)
 
         if (
-            options.s3_credentials_access_key and
-            options.s3_credentials_secret_key
+            options.s3_access_key and
+            options.s3_secret_key
         ):
             print("Using access key, secret key")
             self.credentials = StaticProvider(
-                options.s3_credentials_access_key,
-                options.s3_credentials_secret_key,
+                options.s3_access_key,
+                options.s3_secret_key,
                 None
             )
         else:
@@ -46,9 +46,9 @@ class FileBase(Action):
         )
 
         # Check if bucket exists otherwise create a new one
-        found = self.s3.bucket_exists(options.s3_bucket)
+        found = self.s3.bucket_exists(options.s3_bucket_name)
         if not found:
-            self.s3.make_bucket(options.s3_bucket)
+            self.s3.make_bucket(options.s3_bucket_name)
 
 class S3Upload(FileBase):
     async def execute(self, file_name, content_type, file_body):
@@ -56,7 +56,7 @@ class S3Upload(FileBase):
             length = file_body.getbuffer().nbytes
             file_body.seek(0)
             self.s3.put_object(
-                options.s3_bucket,
+                options.s3_bucket_name,
                 file_name,
                 file_body,
                 content_type=content_type,
@@ -180,7 +180,7 @@ class GetFile(FileBase):
             }
 
             # Download the file from s3
-            data = self.s3.get_object(options.s3_bucket, conf['key'])
+            data = self.s3.get_object(options.s3_bucket_name, conf['key'])
 
             # Write the data stream to the byteio object
             for d in data.stream(32*1024):
@@ -223,7 +223,7 @@ class DeleteFile(FileBase):
 
             # Remove version of an object.
             self.s3.remove_object(
-                options.s3_bucket, conf['key'],
+                options.s3_bucket_name, conf['key'],
             )
 
             await self.conn.execute("""
