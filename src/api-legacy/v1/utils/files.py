@@ -41,11 +41,7 @@ class FileBase(Action):
         self.s3 = Minio(
             options.s3_endpoint,
             credentials=self.credentials,
-            region=(
-                options.s3_region
-                if options.s3_region != 'none'
-                else None
-            ),
+            region=options.s3_region or None,
             secure=options.s3_secure
         )
 
