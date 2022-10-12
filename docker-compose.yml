@@ -50,6 +50,9 @@ services:
     build:
       context: ./src/client
       target: development
+      args:
+        - VERSION=0.0.99
+        - REVISION=dev
     restart: unless-stopped
     volumes:
       - .:/app
