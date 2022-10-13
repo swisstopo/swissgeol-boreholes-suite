@@ -13,15 +13,7 @@ export const interceptApiCalls = () => {
 };
 
 export const newEditableBorehole = () => {
-  cy.contains("a", "New").click();
-  cy.contains("button", "Create").click();
-  cy.wait(["@edit_create"]).then(interception =>
-    cy.task(
-      "log",
-      "Created new borehole with id:" + interception.response.body.id,
-    ),
-  );
-  cy.wait(["@borehole", "@edit_list"]);
+  newUneditableBorehole();
   cy.contains("a", "Start editing").click();
   cy.wait("@edit_lock");
 };
