@@ -17,6 +17,7 @@
 ### Changed
 
 - Update _Dokumentation_ page in settings.
+- Standardize messages for empty profiles.
 
 ### Fixed
 
