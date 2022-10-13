@@ -48,7 +48,7 @@ describe("Tests for 'Location' edit page.", () => {
   });
 
   it("removes error highlight of identifier fields if at least one identifier is present.", () => {
-    newEditableBorehole();
+    newEditableBorehole().as("borehole_id");
 
     // initial state
     cy.get('[data-cy="identifier-dropdown"]').should("have.class", "error");
@@ -77,8 +77,6 @@ describe("Tests for 'Location' edit page.", () => {
     cy.get('[data-cy="identifier-value"]').should("have.class", "error");
 
     // delete borehole
-    cy.get("@edit_create").then(interception => {
-      deleteBorehole(interception.response.body.id);
-    });
+    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 });

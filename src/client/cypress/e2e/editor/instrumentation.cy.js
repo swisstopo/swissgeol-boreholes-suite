@@ -13,16 +13,14 @@ describe("Instrumentation tests", () => {
     cy.contains("button", "Login").click();
     cy.wait("@geoapi");
 
-    newUneditableBorehole();
+    newUneditableBorehole().as("borehole_id");
     cy.get('[data-cy="completion-menu-item"]').click();
     cy.get('[data-cy="instrument-menu-item"]').click();
   });
 
   afterEach(() => {
     // delete borehole
-    cy.get("@edit_create").then(interception => {
-      deleteBorehole(interception.response.body.id);
-    });
+    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 
   it("Displays correct messages", () => {
