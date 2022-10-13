@@ -25,7 +25,7 @@ const ProfileHeaderList = props => {
   }
 
   return (
-    <Styled.Container>
+    <Styled.Container data-cy="profile-header-list">
       {enhancedProfiles?.map(item => (
         <Styled.Item
           key={item.id}

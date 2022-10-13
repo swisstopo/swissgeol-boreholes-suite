@@ -113,6 +113,7 @@ const ProfileInstrument = props => {
     <Styled.Container>
       <Styled.ButtonContainer>
         <Button
+          data-cy="add-instrument-button"
           content={<TranslationText id="addInstrument" />}
           disabled={!isEditable}
           icon="add"
@@ -123,7 +124,7 @@ const ProfileInstrument = props => {
       </Styled.ButtonContainer>
 
       {selectedInstrument().length === 0 && (
-        <Styled.Empty>
+        <Styled.Empty data-cy="instrument-message">
           <TranslationText
             id={borehole.data.lock ? "msgAddInstrument" : "msgInstrumentsEmpty"}
           />
@@ -131,7 +132,7 @@ const ProfileInstrument = props => {
       )}
 
       {selectedInstrument().length > 0 && (
-        <Styled.ListContainer>
+        <Styled.ListContainer data-cy="instrument-list">
           {selectedInstrument().map((item, index) => (
             <Instrument
               data={{

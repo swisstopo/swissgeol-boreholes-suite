@@ -107,6 +107,7 @@ const ProfileHeader = props => {
         )}
         {kind === profileKind.INSTRUMENT && (
           <Button
+            data-cy="show-all-button"
             content={<TranslationText id="showAll" />}
             disabled={
               showAllInstrument ||
