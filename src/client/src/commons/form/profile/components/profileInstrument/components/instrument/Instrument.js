@@ -97,7 +97,7 @@ const Instrument = props => {
             )}
 
             {item.type === "Input" && (
-              <Styled.AttributesItem>
+              <Styled.AttributesItem data-cy={item.label}>
                 <Input
                   autoCapitalize="off"
                   autoComplete="off"
@@ -121,17 +121,10 @@ const Instrument = props => {
               </Styled.AttributesItem>
             )}
             {item.type === "Dropdown" && (
-              <Styled.AttributesItem>
+              <Styled.AttributesItem data-cy={item.label}>
                 <DomainDropdown
                   multiple={item.multiple}
-                  onSelected={e =>
-                    updateChange(
-                      item.value,
-                      e.id,
-                      // item.multiple ? e.map(mlpr => mlpr.id) : e.id,
-                      false,
-                    )
-                  }
+                  onSelected={e => updateChange(item.value, e.id, false)}
                   schema={item.schema}
                   search={item.search}
                   selected={
@@ -144,7 +137,7 @@ const Instrument = props => {
             )}
 
             {item.type === "CasingDropdown" && (
-              <Styled.AttributesItem>
+              <Styled.AttributesItem data-cy={item.label}>
                 <CasingList
                   data={casing}
                   dropDownValue={
@@ -160,6 +153,7 @@ const Instrument = props => {
 
             {item.type === "Button" && (
               <Button
+                data-cy="delete-instrument-button"
                 disabled={!isEditable}
                 icon="close"
                 onClick={() => {

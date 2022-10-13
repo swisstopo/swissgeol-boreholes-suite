@@ -17,15 +17,15 @@ import useCasingList from "../../hooks/useCasingList";
 const ProfileInstrument = props => {
   const {
     isEditable,
-    boreholeID,
+    borehole,
     reloadLayer,
     onUpdated,
     selectedStratigraphyID,
-  } = props.data;
+    setHasInstrumentWithoutCasing,
+  } = props;
 
-  const { casing } = useCasingList(boreholeID);
+  const { casing } = useCasingList(borehole.data.id);
   const [instruments, setInstruments] = useState([]);
-  const [hasCasing, setHasCasing] = useState(false);
   const [reload, setReload] = useState(0);
   const [state, setState] = useState({
     isFetching: false,
@@ -43,39 +43,34 @@ const ProfileInstrument = props => {
     });
   }, []);
 
-  const checkHasCasing = useCallback(() => {
-    getProfile(boreholeID, profileKind.CASING).then(response => {
-      if (response.length > 0) {
-        setHasCasing(true);
-      } else {
-        setHasCasing(false);
-      }
-    });
-  }, [boreholeID]);
-
   const getInstrumentProfile = useCallback(() => {
-    getProfile(boreholeID, profileKind.INSTRUMENT).then(response => {
-      checkHasCasing();
+    getProfile(borehole.data.id, profileKind.INSTRUMENT).then(response => {
       if (response.length > 0) {
         setState(prevState => ({
           ...prevState,
           instrumentID: response[0].id,
         }));
       } else if (response.length === 0) {
-        createStratigraphy(boreholeID);
+        createStratigraphy(borehole.data.id);
       }
     });
-  }, [boreholeID, createStratigraphy, checkHasCasing]);
+  }, [borehole, createStratigraphy]);
 
   useEffect(() => {
     getInstrumentProfile();
   }, [getInstrumentProfile]);
 
-  const setData = useCallback(instrumentID => {
-    getData(instrumentID).then(response => {
-      setInstruments(response);
-    });
-  }, []);
+  const setData = useCallback(
+    instrumentID => {
+      getData(instrumentID).then(response => {
+        setInstruments(response);
+        setHasInstrumentWithoutCasing(
+          response.some(i => i.instrument_casing_id === 0),
+        );
+      });
+    },
+    [setHasInstrumentWithoutCasing],
+  );
 
   useEffect(() => {
     if (state.instrumentID) {
@@ -107,7 +102,7 @@ const ProfileInstrument = props => {
 
   const selectedInstrument = () => {
     let instrument = instruments;
-    if (selectedStratigraphyID) {
+    if (selectedStratigraphyID >= 0) {
       instrument = instruments.filter(
         e => e.instrument_casing_id === selectedStratigraphyID,
       );
@@ -115,9 +110,10 @@ const ProfileInstrument = props => {
     return instrument;
   };
   return (
-    <Styled.Container disable={!hasCasing}>
+    <Styled.Container>
       <Styled.ButtonContainer>
         <Button
+          data-cy="add-instrument-button"
           content={<TranslationText id="addInstrument" />}
           disabled={!isEditable}
           icon="add"
@@ -128,13 +124,15 @@ const ProfileInstrument = props => {
       </Styled.ButtonContainer>
 
       {selectedInstrument().length === 0 && (
-        <Styled.Empty>
-          <TranslationText id="nothingToShow" />
+        <Styled.Empty data-cy="instrument-message">
+          <TranslationText
+            id={borehole.data.lock ? "msgAddInstrument" : "msgInstrumentsEmpty"}
+          />
         </Styled.Empty>
       )}
 
       {selectedInstrument().length > 0 && (
-        <Styled.ListContainer>
+        <Styled.ListContainer data-cy="instrument-list">
           {selectedInstrument().map((item, index) => (
             <Instrument
               data={{

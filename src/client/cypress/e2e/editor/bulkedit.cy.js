@@ -1,54 +1,6 @@
+import { createBorehole, deleteBorehole } from "../testHelpers";
+
 describe("Test the borehole bulk edit feature.", () => {
-  const adminUserAuth = {
-    user: "admin",
-    password: "swissforages",
-  };
-
-  const createBorehole = values => {
-    return cy
-      .request({
-        method: "POST",
-        url: "/api/v1/borehole/edit",
-        body: {
-          action: "CREATE",
-          id: 1,
-        },
-        auth: adminUserAuth,
-      })
-      .then(res => {
-        expect(res.body).to.have.property("success", true);
-        let boreholeId = res.body.id;
-        let fields = Object.entries(values).map(([key, value]) => [key, value]);
-        if (fields.length > 0) {
-          cy.request({
-            method: "POST",
-            url: "/api/v1/borehole/edit",
-            body: {
-              action: "MULTIPATCH",
-              fields: fields,
-              ids: [boreholeId],
-            },
-            auth: adminUserAuth,
-          }).then(res => expect(res.body).to.have.property("success", true));
-        }
-        return cy.wrap(boreholeId);
-      });
-  };
-
-  const deleteBorehole = id => {
-    cy.request({
-      method: "POST",
-      url: "/api/v1/borehole/edit",
-      body: {
-        action: "DELETE",
-        id: id,
-      },
-      auth: adminUserAuth,
-    })
-      .its("body.success")
-      .should("eq", true);
-  };
-
   beforeEach(() => {
     cy.intercept("/api/v1/geoapi/canton").as("geoapi");
     cy.intercept("/api/v1/borehole").as("borehole");

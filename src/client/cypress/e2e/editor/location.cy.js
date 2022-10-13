@@ -1,18 +1,12 @@
-describe("Tests for 'Location' edit page.", () => {
-  const newBohrung = () => {
-    cy.contains("a", "New").click();
-    cy.contains("button", "Create").click();
-    cy.wait(["@borehole", "@edit_list"]);
-    cy.contains("a", "Start editing").click();
-    cy.wait("@edit_lock");
-  };
+import {
+  deleteBorehole,
+  interceptApiCalls,
+  newEditableBorehole,
+} from "../testHelpers";
 
+describe("Tests for 'Location' edit page.", () => {
   beforeEach(() => {
-    cy.intercept("/api/v1/geoapi/canton").as("geoapi");
-    cy.intercept("/api/v1/borehole").as("borehole");
-    cy.intercept("/api/v1/borehole/edit", req => {
-      return (req.alias = `edit_${req.body.action.toLowerCase()}`);
-    });
+    interceptApiCalls();
 
     // login
     cy.visit("/");
@@ -26,7 +20,7 @@ describe("Tests for 'Location' edit page.", () => {
   });
 
   it("creates and deletes a borehole.", () => {
-    newBohrung();
+    newEditableBorehole();
 
     // enter original name
     cy.contains("label", "Original name")
@@ -54,7 +48,7 @@ describe("Tests for 'Location' edit page.", () => {
   });
 
   it("removes error highlight of identifier fields if at least one identifier is present.", () => {
-    newBohrung();
+    newEditableBorehole().as("borehole_id");
 
     // initial state
     cy.get('[data-cy="identifier-dropdown"]').should("have.class", "error");
@@ -81,5 +75,8 @@ describe("Tests for 'Location' edit page.", () => {
     cy.get('[data-cy="identifier"]').contains("Delete").click();
     cy.get('[data-cy="identifier-dropdown"]').should("have.class", "error");
     cy.get('[data-cy="identifier-value"]').should("have.class", "error");
+
+    // delete borehole
+    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 });

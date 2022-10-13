@@ -27,6 +27,8 @@ const Profile = props => {
   const [reloadAttribute, setReloadAttribute] = useState(0);
   const [attributesBasedKind, setAttributesBasedKind] = useState(null);
   const [stratigraphyKind, setStratigraphyKind] = useState(null);
+  const [hasInstrumentWithoutCasing, setHasInstrumentWithoutCasing] =
+    useState(false);
 
   const onUpdated = attribute => {
     if (
@@ -110,6 +112,7 @@ const Profile = props => {
       setIsEditable(false);
     }
     setKind(kind);
+    setHasInstrumentWithoutCasing(false);
   }, [setIsEditable, borehole, user, kind, setKind]);
 
   const set = useCallback(
@@ -128,15 +131,14 @@ const Profile = props => {
     <Styled.MainContainer>
       {stratigraphyKind && borehole.data.id && (
         <ProfileHeader
-          data={{
-            boreholeID: borehole.data.id,
-            kind: stratigraphyKind,
-            isEditable,
-            reloadHeader,
-          }}
+          boreholeID={borehole.data.id}
+          kind={stratigraphyKind}
+          isEditable={isEditable}
+          reloadHeader={reloadHeader}
           selectedStratigraphy={selectedStratigraphy}
           setSelectedStratigraphy={set}
           setSelectedStratigraphyNull={setSelectedStratigraphyNull}
+          hasInstrumentWithoutCasing={hasInstrumentWithoutCasing}
         />
       )}
 
@@ -209,13 +211,12 @@ const Profile = props => {
       )}
       {stratigraphyKind === profileKind.INSTRUMENT && borehole.data.id && (
         <ProfileInstrument
-          data={{
-            boreholeID: borehole.data.id,
-            selectedStratigraphyID: selectedStratigraphy?.id,
-            isEditable,
-            reloadLayer,
-            onUpdated,
-          }}
+          borehole={borehole}
+          selectedStratigraphyID={selectedStratigraphy?.id}
+          isEditable={isEditable}
+          reloadLayer={reloadLayer}
+          onUpdated={onUpdated}
+          setHasInstrumentWithoutCasing={setHasInstrumentWithoutCasing}
         />
       )}
     </Styled.MainContainer>

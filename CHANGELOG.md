@@ -12,6 +12,7 @@
 - Added fake data for development.
 - Added version/environment information in feedback e-mail.
 - Added version number in web client.
+- Added functionality to add instruments without casing.
 
 ### Changed
 
@@ -32,3 +33,4 @@
 - Fix bulk edit.
 - Fix sorting in borehole tables in viewer and editor mode.
 - Fix text displayed in backfill tab, when no backfill is available.
+- Fix text displayed in instrument tab, when no instrument is available.

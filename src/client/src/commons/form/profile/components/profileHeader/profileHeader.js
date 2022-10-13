@@ -7,11 +7,15 @@ import { profileKind } from "../../constance";
 import ProfileHeaderList from "./components/profileHeaderList";
 
 const ProfileHeader = props => {
-  const { boreholeID, kind, isEditable, reloadHeader } = props.data;
   const {
+    boreholeID,
+    kind,
+    isEditable,
+    reloadHeader,
     selectedStratigraphy,
     setSelectedStratigraphy,
     setSelectedStratigraphyNull,
+    hasInstrumentWithoutCasing,
   } = props;
 
   const [profiles, setProfiles] = useState([]);
@@ -103,8 +107,12 @@ const ProfileHeader = props => {
         )}
         {kind === profileKind.INSTRUMENT && (
           <Button
+            data-cy="show-all-button"
             content={<TranslationText id="showAll" />}
-            disabled={showAllInstrument || profiles?.length < 1}
+            disabled={
+              showAllInstrument ||
+              (profiles?.length < 1 && !hasInstrumentWithoutCasing)
+            }
             onClick={setStratigraphyNull}
             secondary
             size="small"
@@ -113,6 +121,7 @@ const ProfileHeader = props => {
 
         <ProfileHeaderList
           profiles={profiles}
+          hasInstrumentWithoutCasing={hasInstrumentWithoutCasing}
           selectedStratigraphy={selectedStratigraphy}
           setSelectedStratigraphy={setStratigraphy}
         />

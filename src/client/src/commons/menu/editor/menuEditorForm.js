@@ -94,7 +94,7 @@ class MenuEditorForm extends React.Component {
             }}>
             <List.Icon name="arrow left" size="large" verticalAlign="middle" />
             <List.Content>
-              <List.Header as="h3">
+              <List.Header as="h3" data-cy="done-menu-item">
                 <TranslationText id="done" />
               </List.Header>
             </List.Content>
@@ -119,7 +119,7 @@ class MenuEditorForm extends React.Component {
             }}>
             <List.Icon name="map marker" size="large" verticalAlign="middle" />
             <List.Content>
-              <List.Header as="h3">
+              <List.Header as="h3" data-cy="location-menu-item">
                 <TranslationText firstUpperCase id="location" />
               </List.Header>
             </List.Content>
@@ -153,7 +153,7 @@ class MenuEditorForm extends React.Component {
             }}>
             <List.Icon name="info" size="large" verticalAlign="middle" />
             <List.Content>
-              <List.Header as="h3">
+              <List.Header as="h3" data-cy="borehole-menu-item">
                 <TranslationText firstUpperCase id="borehole" />
               </List.Header>
             </List.Content>
@@ -191,7 +191,7 @@ class MenuEditorForm extends React.Component {
               verticalAlign="middle"
             />
             <List.Content>
-              <List.Header as="h3">
+              <List.Header as="h3" data-cy="stratigraphy-menu-item">
                 <TranslationText firstUpperCase id="stratigraphy" />
               </List.Header>
             </List.Content>
@@ -233,7 +233,7 @@ class MenuEditorForm extends React.Component {
               }}
             />
             <List.Content>
-              <List.Header as="h3">
+              <List.Header as="h3" data-cy="completion-menu-item">
                 <TranslationText firstUpperCase id="completion" />
               </List.Header>
             </List.Content>
@@ -298,7 +298,7 @@ class MenuEditorForm extends React.Component {
                   }}
                 />
                 <List.Content>
-                  <List.Header as="h3">
+                  <List.Header as="h3" data-cy="casing-menu-item">
                     <TranslationText firstUpperCase id="casing" />
                   </List.Header>
                 </List.Content>
@@ -349,7 +349,7 @@ class MenuEditorForm extends React.Component {
                   }}
                 />
                 <List.Content>
-                  <List.Header as="h3">
+                  <List.Header as="h3" data-cy="instrument-menu-item">
                     <TranslationText firstUpperCase id="instrument" />
                   </List.Header>
                 </List.Content>
@@ -400,7 +400,7 @@ class MenuEditorForm extends React.Component {
                   }}
                 />
                 <List.Content>
-                  <List.Header as="h3">
+                  <List.Header as="h3" data-cy="filling-menu-item">
                     <TranslationText firstUpperCase id="filling" />
                   </List.Header>
                 </List.Content>
@@ -487,7 +487,7 @@ class MenuEditorForm extends React.Component {
             }}>
             <List.Icon name="attach" size="large" verticalAlign="middle" />
             <List.Content>
-              <List.Header as="h3">
+              <List.Header as="h3" data-cy="attachments-menu-item">
                 <TranslationText firstUpperCase id="attachments" />
               </List.Header>
             </List.Content>

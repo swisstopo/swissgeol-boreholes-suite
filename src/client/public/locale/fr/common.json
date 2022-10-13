@@ -227,6 +227,7 @@
   "msgFillingEmpty": "Aucun remplissage disponible",
   "msgIdentifierAlreadyUsed": "Identifiant déjà utilisé",
   "msgIdentifierDeletionAlreadyUsed": "L'identifiant ne peut pas être supprimé lorsqu'il est utilisé",
+  "msgAddInstrument": "Pour l'enregistrement d'un instrument veuillez cliquer sur le symbole dans le coin supérieur gauche",
   "msgInstrumentsEmpty": "Aucune instrumentation disponible",
   "msgReenablingTip": "Vous pourrez le réactiver plus tard",
   "msgStartigraphyEmpty": "Aucune stratigraphie disponible",
