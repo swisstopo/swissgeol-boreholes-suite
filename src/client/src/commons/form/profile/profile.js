@@ -146,20 +146,30 @@ const Profile = props => {
         stratigraphyKind !== profileKind.INSTRUMENT &&
         stratigraphyKind !== profileKind.CASING &&
         stratigraphyKind !== profileKind.FILLING && (
-          <Styled.Empty>
-            <TranslationText id="msgStartigraphyEmpty" />
+          <Styled.Empty data-cy="stratigraphy-message">
+            <TranslationText
+              id={
+                borehole.data.lock
+                  ? "msgAddStratigraphy"
+                  : "msgStartigraphyEmpty"
+              }
+            />
           </Styled.Empty>
         )}
 
       {!selectedStratigraphy && stratigraphyKind === profileKind.CASING && (
-        <Styled.Empty>
-          <TranslationText id="msgCasingEmpty" />
+        <Styled.Empty data-cy="casing-message">
+          <TranslationText
+            id={borehole.data.lock ? "msgAddCasing" : "msgCasingEmpty"}
+          />
         </Styled.Empty>
       )}
 
       {!selectedStratigraphy && stratigraphyKind === profileKind.FILLING && (
-        <Styled.Empty>
-          <TranslationText id="msgBackfillEmty" />
+        <Styled.Empty data-cy="backfill-message">
+          <TranslationText
+            id={borehole.data.lock ? "msgAddBackfill" : "msgBackfillEmpty"}
+          />
         </Styled.Empty>
       )}
 

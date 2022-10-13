@@ -105,19 +105,20 @@ const ProfileHeader = props => {
             size="small"
           />
         )}
-        {kind === profileKind.INSTRUMENT && (
-          <Button
-            data-cy="show-all-button"
-            content={<TranslationText id="showAll" />}
-            disabled={
-              showAllInstrument ||
-              (profiles?.length < 1 && !hasInstrumentWithoutCasing)
-            }
-            onClick={setStratigraphyNull}
-            secondary
-            size="small"
-          />
-        )}
+        {(profiles.length !== 0 || hasInstrumentWithoutCasing) &&
+          kind === profileKind.INSTRUMENT && (
+            <Button
+              data-cy="show-all-button"
+              content={<TranslationText id="showAll" />}
+              disabled={
+                showAllInstrument ||
+                (profiles?.length < 1 && !hasInstrumentWithoutCasing)
+              }
+              onClick={setStratigraphyNull}
+              secondary
+              size="small"
+            />
+          )}
 
         <ProfileHeaderList
           profiles={profiles}
