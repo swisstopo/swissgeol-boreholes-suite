@@ -448,7 +448,7 @@ class AdminSettings extends React.Component {
                     <p>
                       <TranslationText
                         extra={{ user: this.state.deleteUser.username }}
-                        id="enablingUser"
+                        id="msgEnablingUser"
                       />
                     </p>
                   </Modal.Description>
