@@ -280,6 +280,7 @@ class AdminSettings extends React.Component {
                 }}>
                 <Form.Button
                   icon
+                  data-cy="add-user-button"
                   label="&nbsp;"
                   onClick={() => {
                     if (this.state.uId === null) {
@@ -448,7 +449,7 @@ class AdminSettings extends React.Component {
                     <p>
                       <TranslationText
                         extra={{ user: this.state.deleteUser.username }}
-                        id="enablingUser"
+                        id="msgEnablingUser"
                       />
                     </p>
                   </Modal.Description>
@@ -532,6 +533,7 @@ class AdminSettings extends React.Component {
                   {this.state.deleteUser === null ? null : this.state.deleteUser
                       .disabled !== null ? (
                     <Button
+                      data-cy="enable-user-button"
                       onClick={e => {
                         enableUser(this.state.deleteUser.id).then(() => {
                           this.setState(
@@ -556,6 +558,7 @@ class AdminSettings extends React.Component {
                     </Button>
                   ) : (
                     <Button
+                      data-cy="disable-user-button"
                       onClick={e => {
                         disableUser(this.state.deleteUser.id).then(() => {
                           this.reset(
@@ -580,6 +583,7 @@ class AdminSettings extends React.Component {
                   this.state.deleteUser.disabled === null &&
                   this.state.deleteUser.contributions === 0 ? (
                     <Button
+                      data-cy="permanently-delete-user-button"
                       color="red"
                       onClick={e => {
                         deleteUser(this.state.deleteUser.id).then(() => {
@@ -624,7 +628,7 @@ class AdminSettings extends React.Component {
                   </Table.HeaderCell>
                 </Table.Row>
               </Table.Header>
-              <Table.Body>
+              <Table.Body data-cy="user-list-table-body">
                 {this.props.users.data.map((currentUser, idx) =>
                   (this.state.usersSearch !== "" &&
                     (currentUser.username
