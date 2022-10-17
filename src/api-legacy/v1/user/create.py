@@ -28,7 +28,7 @@ class CreateUser(Action):
                         lastname
                     )
                     VALUES (
-                        False,
+                        $6,
                         True,
                         $1,
                         crypt($2, gen_salt('md5')),
@@ -42,7 +42,8 @@ class CreateUser(Action):
                     password,
                     firstname if firstname != '' else username,
                     middlename,
-                    lastname
+                    lastname,
+                    admin
                 )
             )
         }
