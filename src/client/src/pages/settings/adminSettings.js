@@ -99,6 +99,7 @@ class AdminSettings extends React.Component {
         uFirstname: "",
         uLastname: "",
         uDisabled: null,
+        uAdmin: false,
         ...state,
       },
       () => {
