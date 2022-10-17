@@ -10,6 +10,12 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v1/borehole/edit", req => {
     return (req.alias = `edit_${req.body.action.toLowerCase()}`);
   });
+  cy.intercept("/api/v1/user/edit", req => {
+    return (req.alias = `user_edit_${req.body.action.toLowerCase()}`);
+  });
+  cy.intercept("/api/v1/user", req => {
+    return (req.alias = `user_${req.body.action.toLowerCase()}`);
+  });
 };
 
 export const newEditableBorehole = () => {

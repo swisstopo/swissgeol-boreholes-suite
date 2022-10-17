@@ -36,3 +36,4 @@
 - Fix text displayed in backfill tab, when no backfill is available.
 - Fix text displayed in instrument tab, when no instrument is available.
 - Fix dialog message when enabling user.
+- Fix creation of user with admin role.

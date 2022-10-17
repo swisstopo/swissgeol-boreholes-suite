@@ -99,6 +99,7 @@ class AdminSettings extends React.Component {
         uFirstname: "",
         uLastname: "",
         uDisabled: null,
+        uAdmin: false,
         ...state,
       },
       () => {
@@ -259,6 +260,7 @@ class AdminSettings extends React.Component {
                         : null
                     }>
                     <Checkbox
+                      data-cy="admin-checkbox"
                       checked={this.state.uAdmin}
                       disabled={
                         this.state.uId !== null &&
