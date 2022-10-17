@@ -46,7 +46,7 @@ describe("Instrumentation tests", () => {
       .should("have.length", 0);
 
     // add instrument with completion "no casing"
-    cy.get('[data-cy="add-instrument-button"]').click();
+    cy.get('[data-cy="add-instrumentation-button"]').click();
     cy.wait("@edit_list");
     cy.wait("@layer");
 
@@ -65,7 +65,7 @@ describe("Instrumentation tests", () => {
       .should("have.length", 1);
 
     // add another instrument without name of completion
-    cy.get('[data-cy="add-instrument-button"]').click();
+    cy.get('[data-cy="add-instrumentation-button"]').click();
 
     // select tab "No completion"
     cy.get('[data-cy="profile-header-list"]')

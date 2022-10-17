@@ -111,17 +111,18 @@ const ProfileInstrument = props => {
   };
   return (
     <Styled.Container>
-      <Styled.ButtonContainer>
-        <Button
-          data-cy="add-instrument-button"
-          content={<TranslationText id="addInstrument" />}
-          disabled={!isEditable}
-          icon="add"
-          onClick={createLayer}
-          secondary
-          size="tiny"
-        />
-      </Styled.ButtonContainer>
+      {isEditable && (
+        <Styled.ButtonContainer>
+          <Button
+            data-cy="add-instrumentation-button"
+            content={<TranslationText id="addInstrument" />}
+            icon="add"
+            onClick={createLayer}
+            secondary
+            size="tiny"
+          />
+        </Styled.ButtonContainer>
+      )}
 
       {selectedInstrument().length === 0 && (
         <Styled.Empty data-cy="instrument-message">
