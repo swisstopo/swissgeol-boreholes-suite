@@ -81,8 +81,8 @@ const MenuSettings = props => {
         </>
       )}
       <ListItem
-        path="/setting/resources"
-        name="resources"
+        path="/setting/about"
+        name="about"
         location={location}
         history={history}
         icon="linkify"

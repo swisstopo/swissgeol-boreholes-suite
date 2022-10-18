@@ -8,7 +8,7 @@ import ExplorerSettings from "./explorerSettings";
 import EditorSettings from "./editorSettings";
 import AdminSettings from "./adminSettings";
 import DatabaseSettings from "./databaseSettings";
-import ResourcesSettings from "./resourcesSettings";
+import AboutSettings from "./aboutSettings";
 import TermSettings from "./termSettings";
 import LoginScreen from "./loginScreen";
 
@@ -68,8 +68,8 @@ const SettingCmp = props => {
               path={process.env.PUBLIC_URL + "/setting/database"}
             />
             <Route
-              component={ResourcesSettings}
-              path={process.env.PUBLIC_URL + "/setting/resources"}
+              component={AboutSettings}
+              path={process.env.PUBLIC_URL + "/setting/about"}
             />
           </Switch>
         </div>

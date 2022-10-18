@@ -4,7 +4,7 @@ import { withTranslation } from "react-i18next";
 import { Header } from "semantic-ui-react";
 
 // eslint-disable-next-line react/prefer-stateless-function
-class ResourcesSettings extends React.Component {
+class AboutSettings extends React.Component {
   render() {
     return (
       <div
@@ -18,7 +18,7 @@ class ResourcesSettings extends React.Component {
             margin: "0px",
             textDecoration: "none",
           }}>
-          {this.props.t("common:resources")}
+          {this.props.t("common:about")}
         </Header>
         <div
           style={{
@@ -38,4 +38,4 @@ class ResourcesSettings extends React.Component {
   }
 }
 
-export default withTranslation(["common"])(ResourcesSettings);
+export default withTranslation(["common"])(AboutSettings);

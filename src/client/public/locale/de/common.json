@@ -1,5 +1,6 @@
 {
   "version": "1.0.0",
+  "about": "Über",
   "add": "Hinzufügen",
   "addInstrument": "Instrument hinzufügen",
   "admin": "Administrator",
@@ -267,7 +268,6 @@
   "rejected": "Abgelehnt",
   "remarks": "Bemerkungen",
   "reset": "Zurücksetzen",
-  "resources": "Dokumentation",
   "restriction": "Beschränkung",
   "restriction_until": "Datum Ende der Beschränkung",
   "result": "Ergebnis",

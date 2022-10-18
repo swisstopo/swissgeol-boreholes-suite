@@ -1,5 +1,6 @@
 {
   "version": "1.0.0",
+  "about": "Chi siamo",
   "add": "Aggiungere",
   "addInstrument": "Aggiungere uno strumento",
   "admin": "Amministratore",
@@ -267,7 +268,6 @@
   "rejected": "Respinto",
   "remarks": "Osservazioni",
   "reset": "Azzerare",
-  "resources": "Risorse",
   "restriction": "Restrizione",
   "restriction_until": "Data fine di restrizione",
   "result": "Risultato",

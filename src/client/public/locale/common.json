@@ -1,5 +1,6 @@
 {
   "version": "",
+  "about": "",
   "add": "",
   "addInstrument": "",
   "address": "",
@@ -266,7 +267,6 @@
   "rejected": "",
   "remarks": "",
   "reset": "",
-  "resources": "",
   "restriction": "",
   "restriction_until": "",
   "result": "",

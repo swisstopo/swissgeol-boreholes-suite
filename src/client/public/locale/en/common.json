@@ -1,5 +1,6 @@
 {
   "version": "1.0.0",
+  "about": "About",
   "add": "Add",
   "addInstrument": "Add instrument",
   "admin": "Administrator",
@@ -267,7 +268,6 @@
   "rejected": "Rejected",
   "remarks": "Remarks",
   "reset": "Reset",
-  "resources": "Resources",
   "restriction": "Restriction",
   "restriction_until": "Restriction end date",
   "result": "Result",
