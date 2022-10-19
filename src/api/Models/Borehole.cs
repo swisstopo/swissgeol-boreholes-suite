@@ -469,4 +469,14 @@ public class Borehole
     /// Gets the <see cref="Borehole"/>'s workflows.
     /// </summary>
     public ICollection<Workflow> Workflows { get; }
+
+    /// <summary>
+    /// Gets the <see cref="File"/>s attached to the <see cref="Borehole"/>.
+    /// </summary>
+    public ICollection<File> Files { get; }
+
+    /// <summary>
+    /// Gets the <see cref="BoreholeFile"/> join table entities.
+    /// </summary>
+    public ICollection<BoreholeFile> BoreholeFiles { get; }
 }
