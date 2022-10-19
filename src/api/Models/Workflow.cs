@@ -27,25 +27,25 @@ public class Workflow
     public int BoreholeId { get; set; }
 
     /// <summary>
-    /// Gets or the timestamp from the moment the workflow started.
+    /// Gets or sets the timestamp from the moment the workflow started.
     /// </summary>
     [Column("started_wkf")]
     public DateTime? Started { get; set; }
 
     /// <summary>
-    /// Gets or the timestamp from the moment the workflow finished.
+    /// Gets or sets the timestamp from the moment the workflow finished.
     /// </summary>
     [Column("finished_wkf")]
     public DateTime? Finished { get; set; }
 
     /// <summary>
-    /// Gets or the notes.
+    /// Gets or sets the notes.
     /// </summary>
     [Column("notes_wkf")]
     public string? Notes { get; set; }
 
     /// <summary>
-    /// Gets or the mentions.
+    /// Gets or sets the mentions.
     /// </summary>
     [Column("mentions_wkf")]
 #pragma warning disable CA1819 // Properties should not return arrays

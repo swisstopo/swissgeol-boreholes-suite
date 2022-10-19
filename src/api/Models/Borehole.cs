@@ -461,12 +461,12 @@ public class Borehole
     public Codelist? QtTotalDepthTvd { get; set; }
 
     /// <summary>
-    /// Gets  the <see cref="Borehole"/>'s stratigraphies.
+    /// Gets the <see cref="Borehole"/>'s stratigraphies.
     /// </summary>
     public ICollection<Stratigraphy> Stratigraphies { get; }
 
     /// <summary>
-    /// Gets  the <see cref="Borehole"/>'s workflows.
+    /// Gets the <see cref="Borehole"/>'s workflows.
     /// </summary>
     public ICollection<Workflow> Workflows { get; }
 }
