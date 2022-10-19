@@ -159,7 +159,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TectonicId, f => f.PickRandom(tectonicIds))
            .RuleFor(o => o.Tectonic, _ => default!)
            .RuleFor(o => o.ImportId, f => f.Random.Int().OrNull(f, .05f))
-           .RuleFor(o => o.SpudDate, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
+           .RuleFor(o => o.SpudDate, f => DateOnly.FromDateTime(f.Date.Past().ToUniversalTime()).OrNull(f, .05f))
            .RuleFor(o => o.TopBedrockTvd, f => f.Random.Double(0, 1000).OrNull(f, .05f))
            .RuleFor(o => o.QtTopBedrockTvdId, f => f.PickRandom(qtTopBedrockIds).OrNull(f, .05f))
            .RuleFor(o => o.QtTopBedrockTvd, _ => default!)

@@ -396,7 +396,7 @@ public class Borehole
     /// Gets or sets the timestamp from the spud date of the  <see cref="Borehole"/>.
     /// </summary>
     [Column("spud_date_bho")]
-    public DateTime? SpudDate { get; set; }
+    public DateOnly? SpudDate { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s top bedrock tvd.
