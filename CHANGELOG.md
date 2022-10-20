@@ -17,7 +17,7 @@
 ### Changed
 
 - Update _Dokumentation_ page in settings.
-- Standardize messages for empty profiles.
+- Standardize messages for empty profiles, empty casing and missing stratigraphy.
 
 ### Fixed
 

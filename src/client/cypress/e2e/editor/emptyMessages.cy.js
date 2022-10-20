@@ -26,7 +26,7 @@ describe("Messages for empty profiles", () => {
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="stratigraphy-message"]').should(
       "contain",
-      "No stratigraphy available",
+      "For the recording of a stratigraphic profile please click the plus symbol at the top left",
     );
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");
@@ -57,7 +57,7 @@ describe("Messages for empty profiles", () => {
     cy.get('[data-cy="casing-menu-item"]').click();
     cy.get('[data-cy="casing-message"]').should(
       "contain",
-      "No casing available",
+      "For the recording of a casing profile please click the plus symbol at the top left",
     );
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");
