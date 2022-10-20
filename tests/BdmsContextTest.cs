@@ -22,7 +22,7 @@ public class BdmsContextTest
             .Include(s => s.WorkgroupRoles).ThenInclude(s => s.Workgroup)
             .AsQueryable();
 
-        Assert.AreEqual(5, users.Count());
+        Assert.AreEqual(4, users.Count());
 
         var admin = users.Single(u => u.Name == "admin");
         Assert.AreEqual("admin", admin.Name);
@@ -36,15 +36,6 @@ public class BdmsContextTest
         AssertWorkgroupRole("Default", Role.Controller, admin);
         AssertWorkgroupRole("Default", Role.Validator, admin);
         AssertWorkgroupRole("Default", Role.Publisher, admin);
-
-        var editor = users.Single(u => u.Name == "editor");
-        Assert.AreEqual("editor", editor.Name);
-        Assert.AreEqual(2, editor.Id);
-        Assert.AreEqual(false, editor.IsAdmin);
-        Assert.AreEqual(true, editor.IsViewer);
-        Assert.AreEqual(false, editor.IsDisabled);
-        Assert.AreEqual(1, editor.WorkgroupRoles.Count());
-        AssertWorkgroupRole("Default", Role.Editor, editor);
 
         var controller = users.Single(u => u.Name == "controller");
         Assert.AreEqual("controller", controller.Name);
