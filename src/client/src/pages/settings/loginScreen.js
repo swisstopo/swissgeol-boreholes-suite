@@ -107,9 +107,6 @@ class LoginScreen extends React.Component {
 
   render() {
     const { t } = this.props;
-    // const {
-    //   i18n
-    // } = this.props;
     return (
       <div
         style={{
@@ -126,7 +123,6 @@ class LoginScreen extends React.Component {
           }}>
           <div
             style={{
-              // alignItems: 'center',
               display: "flex",
               flexDirection: "row",
               paddingBottom: "1em",
@@ -306,9 +302,6 @@ LoginScreen.propTypes = {
   t: PropTypes.func,
   user: PropTypes.object,
 };
-
-// LoginScreen.defaultProps = {
-// };
 
 const mapStateToProps = state => {
   return {

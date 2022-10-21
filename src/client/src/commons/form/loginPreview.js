@@ -10,11 +10,6 @@ class LoginPreview extends React.Component {
   }
 
   componentDidMount() {
-    // if (process.env.NODE_ENV === 'development'){
-    //   this.props.setAuthentication('admin', 'swissforages');
-    // } else {
-    //   this.props.setAuthentication('', '');
-    // }
     this.fieldToRef.current.focus();
   }
 
@@ -74,15 +69,6 @@ class LoginPreview extends React.Component {
             }}>
             <Markdown>{this.props.body}</Markdown>
           </div>
-          {/* <div
-            style={{
-              paddingTop: '1em'
-            }}
-          >
-            For any use of swissforages.ch please respect the disclaimer of
-            the Swiss Confederation and in particular the disclaimer
-            (LINK to DISCLAIMER) of swissforages.ch.
-          </div> */}
         </div>
 
         <div
@@ -116,18 +102,6 @@ class LoginPreview extends React.Component {
           <Input
             autoComplete="off"
             fluid
-            onChange={e => {
-              // this.props.setAuthentication(
-              //   e.target.value,
-              //   this.props.user.authentication !== null?
-              //     this.props.user.authentication.password: ''
-              // );
-            }}
-            onKeyPress={e => {
-              // if (e.key === 'Enter'){
-              //   this.props.loadUser();
-              // }
-            }}
             placeholder="username"
             ref={this.fieldToRef}
             value={
@@ -147,18 +121,6 @@ class LoginPreview extends React.Component {
           <Input
             autoComplete="off"
             fluid
-            onChange={e => {
-              // this.props.setAuthentication(
-              //   this.props.user.authentication !== null?
-              //     this.props.user.authentication.username: '',
-              //   e.target.value
-              // );
-            }}
-            onKeyPress={e => {
-              // if (e.key === 'Enter'){
-              //   this.props.loadUser();
-              // }
-            }}
             placeholder="password"
             type="password"
             value={
@@ -173,9 +135,6 @@ class LoginPreview extends React.Component {
             content="Login"
             fluid
             loading={this.props.user.data !== null}
-            onClick={() => {
-              // this.props.onGuestLogin();
-            }}
             primary={this.props.user.data === null}
             size="small"
             style={{
@@ -218,8 +177,6 @@ LoginPreview.propTypes = {
   body: PropTypes.string,
   guest: PropTypes.bool,
   onGuestLogin: PropTypes.func,
-  // onLogin: PropTypes.func,
-  // t: PropTypes.func,
   title: PropTypes.string,
   user: PropTypes.shape({
     authentication: PropTypes.shape({
@@ -237,4 +194,4 @@ LoginPreview.defaultProps = {
   body: "",
 };
 
-export default LoginPreview; //withTranslation()(Login);
+export default LoginPreview;
