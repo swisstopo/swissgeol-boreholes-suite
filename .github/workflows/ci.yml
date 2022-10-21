@@ -44,3 +44,5 @@ jobs:
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
           working-directory: ./src/client
+        env:
+          REACT_APP_VERSION: 0.1.99+cypress

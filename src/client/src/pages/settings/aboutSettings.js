@@ -73,7 +73,8 @@ class AboutSettings extends React.Component {
                 process.env.REACT_APP_VERSION.split("+")[0]
               }
               rel="noopener noreferrer"
-              target="_BLANK">
+              target="_BLANK"
+              data-cy="version">
               {process.env.REACT_APP_VERSION}
             </a>
           </span>
@@ -108,7 +109,7 @@ class AboutSettings extends React.Component {
           {this.props.t("common:licenseInformation")}
         </Header>
         {Object.keys(this.state.license).map(key => (
-          <div key={key}>
+          <div key={key} data-cy={"credits-" + key}>
             <h4
               style={{
                 paddingTop: "1em",
