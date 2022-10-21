@@ -16,6 +16,9 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v1/user", req => {
     return (req.alias = `user_${req.body.action.toLowerCase()}`);
   });
+  cy.intercept("/api/v1/workflow/edit", req => {
+    return (req.alias = `workflow_edit_${req.body.action.toLowerCase()}`);
+  });
 };
 
 export const newEditableBorehole = () => {
