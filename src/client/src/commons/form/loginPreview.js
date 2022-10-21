@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Button, Input } from "semantic-ui-react";
 import Markdown from "markdown-to-jsx";
 
-class Login extends React.Component {
+class LoginPreview extends React.Component {
   constructor(props) {
     super(props);
     this.fieldToRef = createRef();
@@ -214,7 +214,7 @@ class Login extends React.Component {
   }
 }
 
-Login.propTypes = {
+LoginPreview.propTypes = {
   body: PropTypes.string,
   guest: PropTypes.bool,
   onGuestLogin: PropTypes.func,
@@ -231,10 +231,10 @@ Login.propTypes = {
   }),
 };
 
-Login.defaultProps = {
+LoginPreview.defaultProps = {
   guest: true,
   title: "Welcome to swissforage.ch",
   body: "",
 };
 
-export default Login; //withTranslation()(Login);
+export default LoginPreview; //withTranslation()(Login);
