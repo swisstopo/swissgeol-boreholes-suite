@@ -85,7 +85,7 @@ const MenuSettings = props => {
         name="about"
         location={location}
         history={history}
-        icon="linkify"
+        icon="info"
         t={t}
         hasTranslation
       />
