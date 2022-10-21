@@ -1,0 +1,16 @@
+{
+  "example-js@0.0.999": {
+    "licenses": "MIT",
+    "repository": "https://example.com",
+    "publisher": "Hans Muster",
+    "email": "example@example.com",
+    "url": "https://www.example.com",
+    "name": "example-js",
+    "version": "0.0.999",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    "copyright": "Copyright (c) 2011 Hans Muster <example@example.com>",
+    "licenseText": "The MIT License (MIT)",
+    "path": "/app/node_modules/example-js",
+    "licenseFile": "/app/node_modules/example-js/LICENSE"
+  }
+}

@@ -273,7 +273,7 @@ class MenuComponent extends React.Component {
                     fontSize: "smaller",
                   }}>
                   <List.Description>
-                    <TranslationText id="header_version_number" />
+                    <TranslationText id="version" />
                     :&nbsp;
                     {process.env.REACT_APP_VERSION}
                   </List.Description>

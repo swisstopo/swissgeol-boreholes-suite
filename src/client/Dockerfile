@@ -22,4 +22,10 @@ WORKDIR /app
 COPY --from=development /app/src/client/node_modules /app/node_modules
 COPY . .
 RUN npm run build
+
+# Generate license and copyright notice for Node.js packages
+RUN npx license-checker --json --production \
+  --customPath licenseCustomFormat.json \
+  --out /app/build/license.json
+
 ENTRYPOINT serve -s build --listen 3000
