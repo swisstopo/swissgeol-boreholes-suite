@@ -158,11 +158,6 @@ class LoginPreview extends React.Component {
               content="Enter as viewer"
               disabled={this.props.user.data !== null}
               fluid
-              onClick={() => {
-                if (this.props.onGuestLogin) {
-                  this.props.onGuestLogin("guest", "MeiSe0we1Oowief");
-                }
-              }}
               secondary
               size="small"
             />
