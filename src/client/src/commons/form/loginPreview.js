@@ -3,18 +3,13 @@ import PropTypes from "prop-types";
 import { Button, Input } from "semantic-ui-react";
 import Markdown from "markdown-to-jsx";
 
-class Login extends React.Component {
+class LoginPreview extends React.Component {
   constructor(props) {
     super(props);
     this.fieldToRef = createRef();
   }
 
   componentDidMount() {
-    // if (process.env.NODE_ENV === 'development'){
-    //   this.props.setAuthentication('admin', 'swissforages');
-    // } else {
-    //   this.props.setAuthentication('', '');
-    // }
     this.fieldToRef.current.focus();
   }
 
@@ -74,15 +69,6 @@ class Login extends React.Component {
             }}>
             <Markdown>{this.props.body}</Markdown>
           </div>
-          {/* <div
-            style={{
-              paddingTop: '1em'
-            }}
-          >
-            For any use of swissforages.ch please respect the disclaimer of
-            the Swiss Confederation and in particular the disclaimer
-            (LINK to DISCLAIMER) of swissforages.ch.
-          </div> */}
         </div>
 
         <div
@@ -116,18 +102,6 @@ class Login extends React.Component {
           <Input
             autoComplete="off"
             fluid
-            onChange={e => {
-              // this.props.setAuthentication(
-              //   e.target.value,
-              //   this.props.user.authentication !== null?
-              //     this.props.user.authentication.password: ''
-              // );
-            }}
-            onKeyPress={e => {
-              // if (e.key === 'Enter'){
-              //   this.props.loadUser();
-              // }
-            }}
             placeholder="username"
             ref={this.fieldToRef}
             value={
@@ -147,18 +121,6 @@ class Login extends React.Component {
           <Input
             autoComplete="off"
             fluid
-            onChange={e => {
-              // this.props.setAuthentication(
-              //   this.props.user.authentication !== null?
-              //     this.props.user.authentication.username: '',
-              //   e.target.value
-              // );
-            }}
-            onKeyPress={e => {
-              // if (e.key === 'Enter'){
-              //   this.props.loadUser();
-              // }
-            }}
             placeholder="password"
             type="password"
             value={
@@ -173,9 +135,6 @@ class Login extends React.Component {
             content="Login"
             fluid
             loading={this.props.user.data !== null}
-            onClick={() => {
-              // this.props.onGuestLogin();
-            }}
             primary={this.props.user.data === null}
             size="small"
             style={{
@@ -199,11 +158,6 @@ class Login extends React.Component {
               content="Enter as viewer"
               disabled={this.props.user.data !== null}
               fluid
-              onClick={() => {
-                if (this.props.onGuestLogin) {
-                  this.props.onGuestLogin("guest", "MeiSe0we1Oowief");
-                }
-              }}
               secondary
               size="small"
             />
@@ -214,12 +168,10 @@ class Login extends React.Component {
   }
 }
 
-Login.propTypes = {
+LoginPreview.propTypes = {
   body: PropTypes.string,
   guest: PropTypes.bool,
   onGuestLogin: PropTypes.func,
-  // onLogin: PropTypes.func,
-  // t: PropTypes.func,
   title: PropTypes.string,
   user: PropTypes.shape({
     authentication: PropTypes.shape({
@@ -231,10 +183,10 @@ Login.propTypes = {
   }),
 };
 
-Login.defaultProps = {
+LoginPreview.defaultProps = {
   guest: true,
   title: "Welcome to swissforage.ch",
   body: "",
 };
 
-export default Login; //withTranslation()(Login);
+export default LoginPreview;

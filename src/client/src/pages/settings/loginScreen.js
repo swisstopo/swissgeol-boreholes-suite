@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { Button, Form, Modal, TextArea } from "semantic-ui-react";
 
-import Login from "../../commons/form/login";
+import LoginPreview from "../../commons/form/loginPreview";
 import TranslationKeys from "../../commons/translationKeys";
 
 import {
@@ -107,9 +107,6 @@ class LoginScreen extends React.Component {
 
   render() {
     const { t } = this.props;
-    // const {
-    //   i18n
-    // } = this.props;
     return (
       <div
         style={{
@@ -126,7 +123,6 @@ class LoginScreen extends React.Component {
           }}>
           <div
             style={{
-              // alignItems: 'center',
               display: "flex",
               flexDirection: "row",
               paddingBottom: "1em",
@@ -282,7 +278,7 @@ class LoginScreen extends React.Component {
               style={{
                 transform: "scale(0.80)",
               }}>
-              <Login
+              <LoginPreview
                 body={this.state.body[this.state.lang]}
                 title={this.state.title[this.state.lang]}
                 user={{
@@ -306,9 +302,6 @@ LoginScreen.propTypes = {
   t: PropTypes.func,
   user: PropTypes.object,
 };
-
-// LoginScreen.defaultProps = {
-// };
 
 const mapStateToProps = state => {
   return {
