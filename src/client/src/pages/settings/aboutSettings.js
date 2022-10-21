@@ -3,8 +3,22 @@ import { withTranslation } from "react-i18next";
 import TranslationText from "../../commons/form/translationText";
 import { Header } from "semantic-ui-react";
 
-// eslint-disable-next-line react/prefer-stateless-function
 class AboutSettings extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      license: [],
+    };
+  }
+
+  async componentDidMount() {
+    const response = await fetch("/license.json");
+
+    this.setState({
+      license: await response.json(),
+    });
+  }
+
   render() {
     return (
       <div
@@ -84,9 +98,43 @@ class AboutSettings extends React.Component {
             </a>
           </span>
         </div>
+        <Header
+          as="h3"
+          style={{
+            margin: "0px",
+            textDecoration: "none",
+            paddingTop: "2em",
+          }}>
+          {this.props.t("common:licenseInformation")}
+        </Header>
+        {Object.keys(this.state.license).map(key => (
+          <div key={key}>
+            <h4
+              style={{
+                paddingTop: "1em",
+              }}>
+              {this.state.license[key].name}
+              {this.state.license[key].version &&
+                ` (Version ${this.state.license[key].version})`}{" "}
+            </h4>
+            <span>
+              <a href={this.state.license[key].repository}>
+                {this.state.license[key].repository}
+              </a>
+            </span>
+            <div>{this.state.license[key].description}</div>
+            <div>{this.state.license[key].copyright}</div>
+            <div>License: {this.state.license[key].licenses}</div>
+            <div>{this.state.license[key].licenseText}</div>
+          </div>
+        ))}
       </div>
     );
   }
 }
+
+AboutSettings.defaultProps = {
+  license: [],
+};
 
 export default withTranslation(["common"])(AboutSettings);

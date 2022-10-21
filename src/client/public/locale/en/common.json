@@ -197,6 +197,7 @@
   "layer_uscs_determination": "USCS way of determination",
   "layer_uscs_original": "USCS original classification",
   "license": "License",
+  "licenseInformation": "Credits",
   "lithological_description": "Lithological description",
   "lithology_top_bedrock": "Lithology top bedrock",
   "lithostratigraphy_top_bedrock": "Lithostratigraphy top bedrock",
