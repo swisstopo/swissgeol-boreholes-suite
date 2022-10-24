@@ -68,6 +68,11 @@ public class BoreholeController : ControllerBase
             }
         }
 
+        foreach (var boreholeFile in borehole.BoreholeFiles)
+        {
+            boreholeFile.BoreholeId = 0;
+        }
+
         borehole.Workgroup = workgroup;
 
         borehole.Workflows.Clear();

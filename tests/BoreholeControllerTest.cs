@@ -21,7 +21,7 @@ public class BoreholeControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.CreateContext();
-        controller = new BoreholeController(ContextFactory.CreateContext(), new Mock<ILogger<BoreholeController>>().Object);
+        controller = new BoreholeController(context, new Mock<ILogger<BoreholeController>>().Object);
         controller.ControllerContext.HttpContext = new DefaultHttpContext();
         SetAdminClaimsPrincipal();
     }
