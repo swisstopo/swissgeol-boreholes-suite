@@ -1,16 +1,11 @@
-import {
-  interceptApiCalls,
-} from "../testHelpers";
+import { interceptApiCalls, login } from "../testHelpers";
 
 describe("Test copying of boreholes", () => {
   beforeEach(() => {
     interceptApiCalls();
     cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
 
-    // login
-    cy.visit("/editor");
-    cy.contains("button", "Login").click();
-    cy.wait("@geoapi");
+    login("/editor");
   });
 
   it("copies a borehole", () => {
