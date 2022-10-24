@@ -1,7 +1,7 @@
 import editorUser from "../fixtures/editorUser.json";
 import adminUser from "../fixtures/adminUser.json";
 
-describe("Bore hole list tests", () => {
+describe("Borehole list tests", () => {
   it("Boreholes are displayed in correct order with editor login", () => {
     // Login as editor
     cy.intercept("/api/v1/geoapi/canton").as("geoapi");
@@ -94,7 +94,7 @@ describe("Bore hole list tests", () => {
     secondRow.contains("td", "09.11.2021");
     thirdRow.contains("td", "12.10.2021");
 
-    // sort by bore hole type (column of original name)
+    // sort by borehole type (column of original name)
     cy.contains("div", "Borehole type").click();
     cy.wait("@borehole");
     firstRow = cy.get("tbody").children().first();
