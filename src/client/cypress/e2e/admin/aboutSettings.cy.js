@@ -10,11 +10,11 @@ describe("Admin about page tests", () => {
 
   it("shows version information linking the corresponding release on GitHub.", () => {
     cy.get('[data-cy="version"]')
-      .should("contain", "0.1.99+cypress")
+      .should("contain", "0.0.99+dev")
       .should(
         "have.attr",
         "href",
-        "https://github.com/geoadmin/suite-bdms/releases/tag/v0.1.99",
+        "https://github.com/geoadmin/suite-bdms/releases/tag/v0.0.99",
       );
   });
 
