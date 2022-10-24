@@ -5,6 +5,7 @@ import {
 describe("Test copying of boreholes", () => {
   beforeEach(() => {
     interceptApiCalls();
+    cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
 
     // login
     cy.visit("/editor");
