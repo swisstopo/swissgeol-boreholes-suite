@@ -141,6 +141,7 @@ class LoginScreen extends React.Component {
                 textAlign: "right",
               }}>
               <Button
+                data-cy="publish-welcome-message-button"
                 onClick={() => {
                   this.setState({
                     confirmPublication: true,
@@ -187,6 +188,7 @@ class LoginScreen extends React.Component {
                 </Modal.Actions>
               </Modal>
               <Button
+                data-cy="save-welcome-message-button"
                 disabled={this.state.dirty === false}
                 loading={this.state.saving}
                 onClick={() => {
@@ -229,6 +231,7 @@ class LoginScreen extends React.Component {
               value={this.state.title[this.state.lang]}
             />
             <TextArea
+              data-cy="publish-message-area"
               onChange={(e, data) => {
                 this.setState({
                   dirty: true,
