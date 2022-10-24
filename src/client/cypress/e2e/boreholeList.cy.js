@@ -1,17 +1,10 @@
-import editorUser from "../fixtures/editorUser.json";
-import adminUser from "../fixtures/adminUser.json";
+import { loginAsAdmin, loginAsEditor } from "../e2e/testHelpers";
 
-describe("Bore hole list tests", () => {
+describe("Borehole list tests", () => {
   it("Boreholes are displayed in correct order with editor login", () => {
-    // Login as editor
-    cy.intercept("/api/v1/geoapi/canton").as("geoapi");
     cy.intercept("/api/v1/borehole").as("borehole");
+    loginAsEditor();
 
-    cy.intercept("/api/v1/user", editorUser);
-
-    cy.visit("/");
-    cy.contains("button", "Login").click();
-    cy.wait("@geoapi");
     cy.get("div[id=map]").should("be.visible");
 
     cy.get("tbody").children().should("have.length", 27);
@@ -94,7 +87,7 @@ describe("Bore hole list tests", () => {
     secondRow.contains("td", "09.11.2021");
     thirdRow.contains("td", "12.10.2021");
 
-    // sort by bore hole type (column of original name)
+    // sort by borehole type (column of original name)
     cy.contains("div", "Borehole type").click();
     cy.wait("@borehole");
     firstRow = cy.get("tbody").children().first();
@@ -107,14 +100,7 @@ describe("Bore hole list tests", () => {
   });
 
   it("Boreholes are displayed in correct order with admin login", () => {
-    // Login as admin
-    cy.intercept("/api/v1/geoapi/canton").as("geoapi");
-
-    cy.intercept("/api/v1/user", adminUser);
-
-    cy.visit("/editor");
-    cy.contains("button", "Login").click();
-    cy.wait("@geoapi");
+    loginAsAdmin("/editor");
     cy.get("div[id=map]").should("be.visible");
 
     // sort by creation date

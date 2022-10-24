@@ -1,13 +1,10 @@
-import { interceptApiCalls } from "../testHelpers";
+import { interceptApiCalls, login } from "../testHelpers";
 
 describe("Admin settings test", () => {
   it("displays correct message when enabling user.", () => {
     interceptApiCalls();
 
-    // login
-    cy.visit("/setting/admin");
-    cy.contains("button", "Login").click();
-    cy.wait("@geoapi");
+    login("/setting/admin");
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
@@ -75,10 +72,7 @@ describe("Admin settings test", () => {
   it("can add user with admin role.", () => {
     interceptApiCalls();
 
-    // login
-    cy.visit("/setting/admin");
-    cy.contains("button", "Login").click();
-    cy.wait("@geoapi");
+    login("/setting/admin");
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()

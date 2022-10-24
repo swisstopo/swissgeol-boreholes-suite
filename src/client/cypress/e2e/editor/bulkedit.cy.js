@@ -1,17 +1,13 @@
-import { createBorehole, deleteBorehole } from "../testHelpers";
+import { createBorehole, deleteBorehole, login } from "../testHelpers";
 
 describe("Test the borehole bulk edit feature.", () => {
   beforeEach(() => {
-    cy.intercept("/api/v1/geoapi/canton").as("geoapi");
     cy.intercept("/api/v1/borehole").as("borehole");
     cy.intercept("/api/v1/borehole/edit", req => {
       return (req.alias = `edit_${req.body.action.toLowerCase()}`);
     });
 
-    // login
-    cy.visit("/editor");
-    cy.contains("button", "Login").click();
-    cy.wait("@geoapi");
+    login("/editor");
   });
 
   it("opens the bulk edit dialog with all boreholes selected", () => {
