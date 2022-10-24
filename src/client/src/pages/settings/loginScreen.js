@@ -158,10 +158,10 @@ class LoginScreen extends React.Component {
               </Button>
               <Modal open={this.state.confirmPublication} size="mini">
                 <Modal.Header>
-                  {t("messages:content_publish_title")}
+                  {t("msgWelcomeMessage_publish_title")}
                 </Modal.Header>
                 <Modal.Content>
-                  <p>{t("messages:content_publish_message")}</p>
+                  <p>{t("msgWelcomeMessage_publish_message")}</p>
                 </Modal.Content>
                 <Modal.Actions>
                   <Button
