@@ -1,10 +1,8 @@
+import { login } from "../e2e/testHelpers";
+
 describe("Search filter tests", () => {
   beforeEach(() => {
-    cy.intercept("/api/v1/geoapi/canton").as("geoapi");
-
-    cy.visit("/");
-    cy.contains("button", "Enter as viewer").click();
-    cy.wait("@geoapi");
+    login();
   });
 
   it("has search filters", () => {

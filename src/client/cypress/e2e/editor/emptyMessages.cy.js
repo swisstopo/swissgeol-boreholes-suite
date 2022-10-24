@@ -2,16 +2,14 @@ import {
   interceptApiCalls,
   newUneditableBorehole,
   deleteBorehole,
+  login,
 } from "../testHelpers";
 
 describe("Messages for empty profiles", () => {
   beforeEach(() => {
     interceptApiCalls();
 
-    cy.visit("/editor");
-    cy.contains("button", "Login").click();
-    cy.wait("@geoapi");
-
+    login("/editor");
     newUneditableBorehole();
   });
 

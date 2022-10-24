@@ -2,16 +2,14 @@ import {
   interceptApiCalls,
   newUneditableBorehole,
   deleteBorehole,
+  login,
 } from "../testHelpers";
 
 describe("Instrumentation tests", () => {
   beforeEach(() => {
     interceptApiCalls();
 
-    // login
-    cy.visit("/editor");
-    cy.contains("button", "Login").click();
-    cy.wait("@geoapi");
+    login("/editor");
 
     newUneditableBorehole().as("borehole_id");
     cy.get('[data-cy="completion-menu-item"]').click();

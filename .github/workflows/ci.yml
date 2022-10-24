@@ -45,4 +45,4 @@ jobs:
           wait-on-timeout: 120
           working-directory: ./src/client
         env:
-          REACT_APP_VERSION: 0.1.99+cypress
+          REACT_APP_VERSION: 0.0.99+dev
