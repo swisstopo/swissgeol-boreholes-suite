@@ -82,6 +82,10 @@ public class BoreholeControllerTest
         Assert.AreSame(originalBorehole.BoreholeFiles.First().File, copiedBorehole.BoreholeFiles.First().File);
         Assert.AreSame(originalBorehole.Kind, copiedBorehole.Kind);
         Assert.AreSame(originalBorehole.Canton, copiedBorehole.Canton);
+
+        // delete borehole copy
+        context.Boreholes.Remove(copiedBorehole);
+        context.SaveChanges();
     }
 
     private Borehole GetBorehole(int id)
