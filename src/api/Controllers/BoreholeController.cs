@@ -54,7 +54,7 @@ public class BoreholeController : ControllerBase
             return NotFound();
         }
 
-        // Set ids of copied entities to zero
+        // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
         borehole.Id = 0;
         foreach (var stratigraphy in borehole.Stratigraphies)
         {
