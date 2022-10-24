@@ -2,16 +2,14 @@ import {
   deleteBorehole,
   interceptApiCalls,
   newEditableBorehole,
+  login,
 } from "../testHelpers";
 
 describe("Tests for 'Location' edit page.", () => {
   beforeEach(() => {
     interceptApiCalls();
 
-    // login
-    cy.visit("/");
-    cy.contains("button", "Login").click();
-    cy.wait("@geoapi");
+    login();
 
     // go to edit
     cy.get('[data-cy="menu"]').click();

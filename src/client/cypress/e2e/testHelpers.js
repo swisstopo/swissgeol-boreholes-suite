@@ -18,6 +18,17 @@ export const interceptApiCalls = () => {
   });
 };
 
+/**
+ * Login into the application with the pre-filled user for the development environment.
+ * @param {string} visitUrl The url to visit after logging in. Default is the root path.
+ */
+export const login = (visitUrl = "/") => {
+  cy.intercept("/api/v1/geoapi/canton").as("geoapi");
+  cy.visit(visitUrl);
+  cy.contains("button", "Login").click();
+  cy.wait("@geoapi");
+};
+
 export const newEditableBorehole = () => {
   const id = newUneditableBorehole();
   cy.contains("a", "Start editing").click();

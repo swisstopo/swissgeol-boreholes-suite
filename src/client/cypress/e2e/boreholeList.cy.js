@@ -1,17 +1,14 @@
 import editorUser from "../fixtures/editorUser.json";
 import adminUser from "../fixtures/adminUser.json";
+import { login } from "../e2e/testHelpers";
 
 describe("Borehole list tests", () => {
   it("Boreholes are displayed in correct order with editor login", () => {
     // Login as editor
-    cy.intercept("/api/v1/geoapi/canton").as("geoapi");
     cy.intercept("/api/v1/borehole").as("borehole");
-
     cy.intercept("/api/v1/user", editorUser);
+    login();
 
-    cy.visit("/");
-    cy.contains("button", "Login").click();
-    cy.wait("@geoapi");
     cy.get("div[id=map]").should("be.visible");
 
     cy.get("tbody").children().should("have.length", 27);
@@ -108,13 +105,8 @@ describe("Borehole list tests", () => {
 
   it("Boreholes are displayed in correct order with admin login", () => {
     // Login as admin
-    cy.intercept("/api/v1/geoapi/canton").as("geoapi");
-
     cy.intercept("/api/v1/user", adminUser);
-
-    cy.visit("/editor");
-    cy.contains("button", "Login").click();
-    cy.wait("@geoapi");
+    login("/editor");
     cy.get("div[id=map]").should("be.visible");
 
     // sort by creation date
