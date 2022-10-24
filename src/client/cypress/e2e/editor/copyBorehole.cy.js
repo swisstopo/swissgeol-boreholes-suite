@@ -26,6 +26,11 @@ describe("Test copying of boreholes", () => {
     cy.wait("@borehole_copy");
     cy.wait("@workflow_edit_list");
 
+    cy.contains("label", "Original name")
+      .next()
+      .children("input")
+      .should("contain", " (Copy)");
+
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");
 
