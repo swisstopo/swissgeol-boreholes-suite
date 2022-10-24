@@ -115,7 +115,7 @@ public class BoreholeControllerTest
     public async Task CopyInvalidWorkgroupId()
     {
         var result = await controller.CopyAsync(1000, workgroupId: 0).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
 
     [TestMethod]

@@ -30,6 +30,17 @@ public class BoreholeController : ControllerBase
     {
         logger.LogInformation("Copy borehole with id <{BoreholeId}> to workgroup with id <{WorkgroupId}>", id, workgroupId);
 
+        var user = await context.Users
+            .Include(u => u.WorkgroupRoles)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.Name == HttpContext.User.FindFirst(ClaimTypes.Name).Value)
+            .ConfigureAwait(false);
+
+        if (user == null || !user.WorkgroupRoles.Any(w => w.WorkgroupId == workgroupId && w.Role == Role.Editor))
+        {
+            return Unauthorized();
+        }
+
         var borehole = await context.Boreholes
             .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers)
             .Include(b => b.Workflows)
@@ -38,23 +49,9 @@ public class BoreholeController : ControllerBase
             .SingleOrDefaultAsync(b => b.Id == id)
             .ConfigureAwait(false);
 
-        var workgroup = await context.Workgroups
-            .SingleOrDefaultAsync(w => w.Id == workgroupId)
-            .ConfigureAwait(false);
-
-        var user = await context.Users
-            .Include(u => u.WorkgroupRoles)
-            .SingleOrDefaultAsync(u => u.Name == HttpContext.User.FindFirst(ClaimTypes.Name).Value)
-            .ConfigureAwait(false);
-
-        if (borehole == null || workgroup == null || user == null)
+        if (borehole == null)
         {
             return NotFound();
-        }
-
-        if (!user.WorkgroupRoles.Any(w => w.WorkgroupId == workgroup.Id && w.Role == Role.Editor))
-        {
-            return Unauthorized();
         }
 
         // Set ids of copied entities to zero
@@ -73,13 +70,13 @@ public class BoreholeController : ControllerBase
             boreholeFile.BoreholeId = 0;
         }
 
-        borehole.Workgroup = workgroup;
+        borehole.WorkgroupId = workgroupId;
 
         borehole.Workflows.Clear();
-        borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, User = user });
+        borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, UserId = user.Id });
 
         borehole.OriginalName += " (Copy)";
-        borehole.CreatedBy = user;
+        borehole.CreatedById = user.Id;
 
         var entityEntry = await context.AddAsync(borehole).ConfigureAwait(false);
         await context.SaveChangesAsync().ConfigureAwait(false);
