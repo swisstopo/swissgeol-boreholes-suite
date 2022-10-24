@@ -11,5 +11,6 @@ public sealed class Initialize
     {
         using var context = ContextFactory.CreateContext();
         context.Database.Migrate();
+        if (!context.Boreholes.Any()) context.SeedData();
     }
 }
