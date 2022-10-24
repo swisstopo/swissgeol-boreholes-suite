@@ -1,12 +1,8 @@
-import { interceptApiCalls } from "../testHelpers";
+import { login } from "../testHelpers";
 import license from "../../fixtures/license.json";
 
 describe("Admin about page tests", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-    cy.visit("/setting/about");
-    cy.contains("button", "Login").click();
-  });
+  beforeEach(() => login("/setting/about"));
 
   it("shows version information linking the corresponding release on GitHub.", () => {
     cy.get('[data-cy="version"]')

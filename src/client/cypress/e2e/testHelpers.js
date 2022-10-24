@@ -1,3 +1,6 @@
+import adminUser from "../fixtures/adminUser.json";
+import editorUser from "../fixtures/editorUser.json";
+
 const adminUserAuth = {
   user: "admin",
   password: "swissforages",
@@ -26,6 +29,24 @@ export const login = (visitUrl = "/") => {
   cy.visit(visitUrl);
   cy.contains("button", "Login").click();
   cy.wait("@geoapi");
+};
+
+/**
+ * Login into the application as admin.
+ * @param {string} visitUrl The url to visit after logging in. Default is the root path.
+ */
+export const loginAsAdmin = (visitUrl = "/") => {
+  cy.intercept("/api/v1/user", adminUser);
+  login(visitUrl);
+};
+
+/**
+ * Login into the application as editor.
+ * @param {string} visitUrl The url to visit after logging in. Default is the root path.
+ */
+export const loginAsEditor = (visitUrl = "/") => {
+  cy.intercept("/api/v1/user", editorUser);
+  login(visitUrl);
 };
 
 export const newEditableBorehole = () => {

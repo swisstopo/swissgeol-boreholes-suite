@@ -1,13 +1,9 @@
-import adminUser from "../fixtures/adminUser.json";
-import editorUser from "../fixtures/editorUser.json";
-import { login } from "../e2e/testHelpers";
+import { loginAsAdmin, loginAsEditor } from "../e2e/testHelpers";
 
 describe("Codelist translations tests", () => {
   it("Admin can open codelist translation section", () => {
     // Login and navigate to editor settings
-    cy.intercept("/api/v1/user", adminUser);
-
-    login();
+    loginAsAdmin();
     cy.get("div[id=map]").should("be.visible");
 
     cy.get("i[class='th big icon']").click();
@@ -25,9 +21,7 @@ describe("Codelist translations tests", () => {
   });
 
   it("Admin can edit translations", () => {
-    cy.intercept("/api/v1/user", adminUser);
-
-    login();
+    loginAsAdmin();
     cy.get("div[id=map]").should("be.visible");
 
     cy.get("i[class='th big icon']").click();
@@ -96,10 +90,7 @@ describe("Codelist translations tests", () => {
   });
 
   it("Editor cannot open codelist translation section", () => {
-    // login as editor
-    cy.intercept("/api/v1/user", editorUser);
-
-    login();
+    loginAsEditor();
     cy.get("div[id=map]").should("be.visible");
 
     cy.get("i[class='th big icon']").click();

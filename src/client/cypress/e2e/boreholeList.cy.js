@@ -1,13 +1,9 @@
-import editorUser from "../fixtures/editorUser.json";
-import adminUser from "../fixtures/adminUser.json";
-import { login } from "../e2e/testHelpers";
+import { loginAsAdmin, loginAsEditor } from "../e2e/testHelpers";
 
 describe("Borehole list tests", () => {
   it("Boreholes are displayed in correct order with editor login", () => {
-    // Login as editor
     cy.intercept("/api/v1/borehole").as("borehole");
-    cy.intercept("/api/v1/user", editorUser);
-    login();
+    loginAsEditor();
 
     cy.get("div[id=map]").should("be.visible");
 
@@ -104,9 +100,7 @@ describe("Borehole list tests", () => {
   });
 
   it("Boreholes are displayed in correct order with admin login", () => {
-    // Login as admin
-    cy.intercept("/api/v1/user", adminUser);
-    login("/editor");
+    loginAsAdmin("/editor");
     cy.get("div[id=map]").should("be.visible");
 
     // sort by creation date
