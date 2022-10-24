@@ -29,7 +29,7 @@ describe("Test copying of boreholes", () => {
     cy.contains("label", "Original name")
       .next()
       .children("input")
-      .should("contain", " (Copy)");
+      .should("contain.value", " (Copy)");
 
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");
