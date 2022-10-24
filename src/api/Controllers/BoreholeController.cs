@@ -76,7 +76,7 @@ public class BoreholeController : ControllerBase
         borehole.Workgroup = workgroup;
 
         borehole.Workflows.Clear();
-        borehole.Workflows.Add(new Workflow() { Borehole = borehole, Role = Role.Editor, User = user });
+        borehole.Workflows.Add(new Workflow { Borehole = borehole, Role = Role.Editor, User = user });
 
         borehole.OriginalName += " (Copy)";
         borehole.CreatedBy = user;
