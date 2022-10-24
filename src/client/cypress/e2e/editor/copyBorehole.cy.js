@@ -22,6 +22,7 @@ describe("Test copying of boreholes", () => {
     cy.contains("button", "Create a copy").click();
 
     cy.get(".modal").contains("button", "Create a copy").click();
+    cy.wait("@borehole_copy");
     cy.wait("@workflow_edit_list");
 
     cy.contains("a", "Start editing").click();
