@@ -217,7 +217,7 @@
   "msgAddBackfill": "For the recording of a backfill please click the plus symbol at the top left",
   "msgAddCasing": "For the recording of a casing profile please click the plus symbol at the top left",
   "msgAddInstrument": "For the recording of an instrument please click the plus symbol at the top left",
-  "msgAddStratigraphy": "For the recording of a stratigraphy please click the plus symbol at the top left",
+  "msgAddStratigraphy": "For the recording of a stratigraphic profile please click the plus symbol at the top left",
   "msgBackfillEmpty": "No backfill available",
   "msgCasingEmpty": "No casing available",
   "msgDeleteUser": "The selected user can be deleted permanantly because currently there is no trace of activity in the database.",

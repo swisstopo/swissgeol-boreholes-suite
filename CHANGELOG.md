@@ -39,3 +39,4 @@
 - Fix dialog message when enabling user.
 - Fix creation of user with admin role.
 - Add missing translations when publishing new welcome messages.
+- Fix copying of boreholes.

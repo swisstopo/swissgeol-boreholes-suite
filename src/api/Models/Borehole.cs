@@ -396,7 +396,7 @@ public class Borehole
     /// Gets or sets the timestamp from the spud date of the  <see cref="Borehole"/>.
     /// </summary>
     [Column("spud_date_bho")]
-    public DateTime? SpudDate { get; set; }
+    public DateOnly? SpudDate { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s top bedrock tvd.
@@ -461,12 +461,22 @@ public class Borehole
     public Codelist? QtTotalDepthTvd { get; set; }
 
     /// <summary>
-    /// Gets  the <see cref="Borehole"/>'s stratigraphies.
+    /// Gets the <see cref="Borehole"/>'s stratigraphies.
     /// </summary>
     public ICollection<Stratigraphy> Stratigraphies { get; }
 
     /// <summary>
-    /// Gets  the <see cref="Borehole"/>'s workflows.
+    /// Gets the <see cref="Borehole"/>'s workflows.
     /// </summary>
     public ICollection<Workflow> Workflows { get; }
+
+    /// <summary>
+    /// Gets the <see cref="File"/>s attached to the <see cref="Borehole"/>.
+    /// </summary>
+    public ICollection<File> Files { get; }
+
+    /// <summary>
+    /// Gets the <see cref="BoreholeFile"/> join table entities.
+    /// </summary>
+    public ICollection<BoreholeFile> BoreholeFiles { get; }
 }

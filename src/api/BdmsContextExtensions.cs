@@ -159,7 +159,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TectonicId, f => f.PickRandom(tectonicIds))
            .RuleFor(o => o.Tectonic, _ => default!)
            .RuleFor(o => o.ImportId, f => f.Random.Int().OrNull(f, .05f))
-           .RuleFor(o => o.SpudDate, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
+           .RuleFor(o => o.SpudDate, f => DateOnly.FromDateTime(f.Date.Past().ToUniversalTime()).OrNull(f, .05f))
            .RuleFor(o => o.TopBedrockTvd, f => f.Random.Double(0, 1000).OrNull(f, .05f))
            .RuleFor(o => o.QtTopBedrockTvdId, f => f.PickRandom(qtTopBedrockIds).OrNull(f, .05f))
            .RuleFor(o => o.QtTopBedrockTvd, _ => default!)
@@ -232,6 +232,30 @@ public static class BdmsContextExtensions
 
         Models.File Seededfiles(int seed) => fakefiles.UseSeed(seed).Generate();
         context.Files.AddRange(fileRange.Select(Seededfiles));
+        context.SaveChanges();
+
+        // Seed borehole_files
+        var boreholeFileSeeds = Enumerable.Range(0, 30);
+        var fakeBoreholeFiles = new Faker<BoreholeFile>()
+            .StrictMode(true)
+            .RuleFor(o => o.FileId, f => f.PickRandom(fileRange))
+            .RuleFor(o => o.File, f => default!)
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
+            .RuleFor(o => o.Borehole, f => default!)
+            .RuleFor(o => o.UserId, f => f.PickRandom(userRange))
+            .RuleFor(o => o.User, f => default!)
+            .RuleFor(o => o.Attached, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.Update, f => f.Date.Past().ToUniversalTime().OrNull(f, .5f))
+            .RuleFor(o => o.UpdaterId, (f, bf) => bf.Update == null ? null : f.PickRandom(userRange))
+            .RuleFor(o => o.Updater, f => default!)
+            .RuleFor(o => o.Description, f => f.Random.Words().OrNull(f, .5f))
+            .RuleFor(o => o.Public, f => f.Random.Bool(.9f));
+
+        BoreholeFile SeededBoreholeFiles(int seed) => fakeBoreholeFiles.UseSeed(seed).Generate();
+        context.BoreholeFiles.AddRange(boreholeFileSeeds
+            .Select(SeededBoreholeFiles)
+            .GroupBy(bf => new { bf.BoreholeId, bf.FileId })
+            .Select(bf => bf.FirstOrDefault()));
         context.SaveChanges();
 
         // Seed stratigraphy

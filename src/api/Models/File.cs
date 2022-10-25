@@ -54,4 +54,14 @@ public class File
     /// </summary>
     [Column("conf_fil", TypeName = "json")]
     public string? Conf { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="Borehole"/>s that have this <see cref="File"/> attached.
+    /// </summary>
+    public ICollection<Borehole> Boreholes { get; }
+
+    /// <summary>
+    /// Gets the <see cref="BoreholeFile"/> join table entities.
+    /// </summary>
+    public ICollection<BoreholeFile> BoreholeFiles { get; }
 }

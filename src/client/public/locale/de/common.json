@@ -217,7 +217,7 @@
   "msgAddBackfill": "Für die Erfassung einer Hinterfüllung bitte das Plus-Symbol oben links klicken",
   "msgAddCasing": "Für die Erfassung eines Verrohrungsprofils bitte das Plus-Symbol oben links klicken",
   "msgAddInstrument": "Für die Erfassung eines Instruments bitte das Plus-Symbol oben links klicken",
-  "msgAddStratigraphy": "Für die Erfassung einer Stratigraphie bitte das Plus-Symbol oben links klicken",
+  "msgAddStratigraphy": "Für die Erfassung eines Stratigraphieprofils bitte das Plus-Symbol oben links klicken",
   "msgBackfillEmpty": "Keine Hinterfüllung verfügbar",
   "msgCasingEmpty": "Kein Verrohrungsprofil verfügbar",
   "msgDeleteUser": "Der ausgewählte Benutzer kann für immer gelöscht werden, da derzeit keine Aktivitäten in der Datenbank vorhanden sind.",

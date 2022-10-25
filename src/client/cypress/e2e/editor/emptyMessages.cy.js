@@ -30,7 +30,7 @@ describe("Messages for empty profiles", () => {
     cy.wait("@edit_lock");
     cy.get('[data-cy="stratigraphy-message"]').should(
       "contain",
-      "For the recording of a stratigraphy please click the plus symbol at the top left",
+      "For the recording of a stratigraphic profile please click the plus symbol at the top left",
     );
   });
 

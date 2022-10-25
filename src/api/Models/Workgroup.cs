@@ -35,7 +35,7 @@ public class Workgroup
     public DateTime? Disabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the Settings gor the <see cref="Workgroup"/>.
+    /// Gets or sets the Settings for the <see cref="Workgroup"/>.
     /// </summary>
     [Column("settings_wgp", TypeName = "json")]
     public string? Settings { get; set; }
