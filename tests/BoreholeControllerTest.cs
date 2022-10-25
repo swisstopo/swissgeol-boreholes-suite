@@ -151,8 +151,10 @@ public class BoreholeControllerTest
     public async Task CopyWithUserNotSet()
     {
         controller.ControllerContext.HttpContext.User = null;
-        var result = await controller.CopyAsync(BoreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+        await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () =>
+        {
+            await controller.CopyAsync(BoreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
+        });
     }
 
     [TestMethod]

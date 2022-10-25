@@ -30,16 +30,10 @@ public class BoreholeController : ControllerBase
     {
         logger.LogInformation("Copy borehole with id <{BoreholeId}> to workgroup with id <{WorkgroupId}>", id, workgroupId);
 
-        var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
-        if (string.IsNullOrEmpty(userName))
-        {
-            return Unauthorized();
-        }
-
         var user = await context.Users
             .Include(u => u.WorkgroupRoles)
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.Name == userName)
+            .SingleOrDefaultAsync(u => u.Name == HttpContext.User.FindFirst(ClaimTypes.Name).Value)
             .ConfigureAwait(false);
 
         if (user == null || !user.WorkgroupRoles.Any(w => w.WorkgroupId == workgroupId && w.Role == Role.Editor))
