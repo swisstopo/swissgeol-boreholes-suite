@@ -235,6 +235,8 @@
   "msgInstrumentsEmpty": "Nessuna strumentazione disponibile",
   "msgReenablingTip": "Sarai in grado di riattivarlo in seguito",
   "msgStartigraphyEmpty": "Nessuna stratigrafia disponibile",
+  "msgWelcomeMessage_publish_title": "Pubblicare il messaggio di benvenuto",
+  "msgWelcomeMessage_publish_message": "Vuoi pubblicare il messaggio di benvenuto?",
   "municipality": "Comune",
   "name": "Nome",
   "new": "Nuovo {{what}}",

@@ -235,6 +235,8 @@
   "msgInstrumentsEmpty": "Kein Instrument verfügbar",
   "msgReenablingTip": "Sie können ihn später wieder aktivieren.",
   "msgStartigraphyEmpty": "Keine Stratigraphie verfügbar",
+  "msgWelcomeMessage_publish_title": "Willkommensmeldung veröffentlichen",
+  "msgWelcomeMessage_publish_message": "Möchten Sie die Willkommensmeldung veröffentlichen?",
   "municipality": "Gemeinde",
   "name": "Name",
   "new": "Neue {{what}}",
