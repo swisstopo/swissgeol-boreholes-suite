@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 
 import { I18nextProvider } from "react-i18next";
@@ -12,12 +12,13 @@ import "semantic-ui-css/semantic.css";
 
 import store from "./reducers";
 
-ReactDOM.render(
+const container = document.getElementById("root");
+const root = createRoot(container);
+
+root.render(
   <I18nextProvider i18n={i18n}>
     <Provider store={store}>
       <App />
     </Provider>
   </I18nextProvider>,
-  document.getElementById("root"),
 );
-// unregisterServiceWorker();
