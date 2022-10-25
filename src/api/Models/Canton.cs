@@ -104,7 +104,7 @@ public class Canton
     /// Gets or sets the <see cref="Canton"/>'s number.
     /// </summary>
     [Column("kantonsnum")]
-    public string? Kantonsnummer { get; set; }
+    public int? Kantonsnummer { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Canton"/>'s area.
@@ -134,7 +134,7 @@ public class Canton
     /// Gets or sets the <see cref="Canton"/>'s name.
     /// </summary>
     [Column("name")]
-    public int? Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>s associated with the <see cref="Canton"/>.

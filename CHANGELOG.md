@@ -38,3 +38,4 @@
 - Fix text displayed in instrument tab, when no instrument is available.
 - Fix dialog message when enabling user.
 - Fix creation of user with admin role.
+- Fix copying of boreholes.

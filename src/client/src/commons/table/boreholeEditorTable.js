@@ -25,8 +25,9 @@ import {
   getdBoreholeIds,
   deleteBoreholes,
   exportDatabaseById,
-  copyBorehole,
 } from "../../api-lib/index";
+
+import store from "../../reducers";
 
 class BoreholeEditorTable extends TTable {
   constructor(props) {
@@ -205,15 +206,30 @@ class BoreholeEditorTable extends TTable {
     }
   }
   copyBorehole() {
-    copyBorehole(this.state.selected[0], this.state.workgroup).then(r => {
-      debugger;
+    const credentials = store.getState().core_user.authentication;
+    fetch(
+      `/api/v2/borehole/copy?id=${this.state.selected[0]}&workgroupId=${this.state.workgroup}`,
+      {
+        method: "POST",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${btoa(
+            `${credentials.username}:${credentials.password}`,
+          )}`,
+        },
+      },
+    ).then(r => {
       this.setState(
         {
           copy: false,
           copying: false,
         },
-        () => {
-          super.handleClick({ id: r.data.id });
+        async () => {
+          if (r.ok) {
+            super.handleClick({ id: await r.text() });
+          }
         },
       );
     });
