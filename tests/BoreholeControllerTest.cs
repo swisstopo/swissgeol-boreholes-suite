@@ -82,17 +82,20 @@ public class BoreholeControllerTest
         Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
         Assert.AreEqual(1, copiedBorehole.Workflows.Count);
         Assert.AreEqual(Role.Editor, copiedBorehole.Workflows.First().Role);
-
-        Assert.AreNotSame(originalBorehole, copiedBorehole);
-        Assert.AreNotSame(originalBorehole.Stratigraphies, copiedBorehole.Stratigraphies);
-        Assert.AreNotSame(originalBorehole.Stratigraphies.First(), copiedBorehole.Stratigraphies.First());
-        Assert.AreNotSame(originalBorehole.Stratigraphies.First().Layers, copiedBorehole.Stratigraphies.First().Layers);
-        Assert.AreNotSame(originalBorehole.Stratigraphies.First().Layers.First(), copiedBorehole.Stratigraphies.First().Layers.First());
-        Assert.AreNotSame(originalBorehole.BoreholeFiles, copiedBorehole.BoreholeFiles);
-        Assert.AreNotSame(originalBorehole.BoreholeFiles.First(), copiedBorehole.BoreholeFiles.First());
-        Assert.AreSame(originalBorehole.BoreholeFiles.First().File, copiedBorehole.BoreholeFiles.First().File);
         Assert.AreSame(originalBorehole.Kind, copiedBorehole.Kind);
         Assert.AreSame(originalBorehole.Canton, copiedBorehole.Canton);
+
+        Assert.AreNotEqual(originalBorehole.Id, copiedBorehole.Id);
+        Assert.AreNotSame(originalBorehole.Stratigraphies, copiedBorehole.Stratigraphies);
+        Assert.AreNotEqual(originalBorehole.Stratigraphies.First().Id, copiedBorehole.Stratigraphies.First());
+        Assert.AreNotSame(originalBorehole.Stratigraphies.First().Layers, copiedBorehole.Stratigraphies.First().Layers);
+        Assert.AreNotEqual(originalBorehole.Stratigraphies.First().Layers.First().Id, copiedBorehole.Stratigraphies.First().Layers.First().Id);
+        Assert.AreEqual("Summit teal", copiedBorehole.Stratigraphies.First().Layers.First().Casing);
+
+        Assert.AreNotSame(originalBorehole.BoreholeFiles, copiedBorehole.BoreholeFiles);
+        Assert.AreNotEqual(originalBorehole.BoreholeFiles.First().BoreholeId, copiedBorehole.BoreholeFiles.First().BoreholeId);
+        Assert.AreEqual(originalBorehole.BoreholeFiles.First().FileId, copiedBorehole.BoreholeFiles.First().FileId);
+        Assert.AreEqual("Tactics 24/365 Intelligent Concrete Chicken", copiedBorehole.BoreholeFiles.First().Description);
 
         // delete borehole copy
         context.Boreholes.Remove(copiedBorehole);
