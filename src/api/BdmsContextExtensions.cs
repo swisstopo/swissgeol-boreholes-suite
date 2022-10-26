@@ -217,12 +217,13 @@ public static class BdmsContextExtensions
         context.SaveChanges();
 
         // Seed file
+        var filesUserRange = Enumerable.Range(1, 6); // Include dedicated user that only has file
         var file_ids = 5000;
         var fileRange = Enumerable.Range(file_ids, 20);
         var fakefiles = new Faker<Models.File>()
                .StrictMode(true)
                .RuleFor(o => o.Id, f => file_ids++)
-               .RuleFor(o => o.UserId, f => f.PickRandom(userRange).OrNull(f, .05f))
+               .RuleFor(o => o.UserId, f => f.PickRandom(filesUserRange).OrNull(f, .05f))
                .RuleFor(o => o.User, _ => default!)
                .RuleFor(o => o.Name, f => f.Random.Word())
                .RuleFor(o => o.Hash, f => f.Random.Hash())

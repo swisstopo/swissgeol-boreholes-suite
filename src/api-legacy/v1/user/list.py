@@ -88,6 +88,8 @@ class ListUsers(Action):
                                 + COALESCE(borehole_locker, 0)
                                 + COALESCE(stratigraphy_author, 0)
                                 + COALESCE(stratigraphy_updater, 0)
+                                + COALESCE(files, 0)
+                                + COALESCE(borehole_files, 0)
                             ) as contributions
 
                         FROM
@@ -169,6 +171,28 @@ class ListUsers(Action):
                                 updater_sty
                         ) as stu
                         ON id_usr = stu.updater_sty
+
+                        LEFT JOIN (
+                            SELECT
+                                id_usr_fk,
+                                count(id_usr_fk) as files
+                            FROM
+                                bdms.files
+                            GROUP BY
+                                id_usr_fk
+                        ) as f
+                        ON id_usr = f.id_usr_fk
+
+                        LEFT JOIN (
+                            SELECT
+                                id_usr_fk,
+                                count(id_usr_fk) as borehole_files
+                            FROM
+                                bdms.borehole_files
+                            GROUP BY
+                                id_usr_fk
+                        ) as bf
+                        ON id_usr = bf.id_usr_fk
 
                     ) AS stats
                     ON stats.id_usr_sta = id_usr
