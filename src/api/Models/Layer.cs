@@ -396,6 +396,11 @@ public class Layer
     public int? InstrumentStratigraphyId { get; set; }
 
     /// <summary>
+    /// Gets or sets the instrument <see cref="Stratigraphy"/> of the <see cref="Layer"/>.
+    /// </summary>
+    public Stratigraphy? InstrumentStratigraphy { get; set; }
+
+    /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s casing kind.
     /// </summary>
     [Column("casng_kind_id_cli")]

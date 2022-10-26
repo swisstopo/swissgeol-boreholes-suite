@@ -52,5 +52,9 @@ public class BdmsContext : DbContext
                         .WithMany(b => b.BoreholeFiles)
                         .HasForeignKey(bf => bf.BoreholeId),
                     j => j.HasKey(bf => new { bf.BoreholeId, bf.FileId }));
+
+        modelBuilder.Entity<Layer>()
+            .HasOne(b => b.InstrumentStratigraphy)
+            .WithMany(s => s.Layers);
     }
 }
