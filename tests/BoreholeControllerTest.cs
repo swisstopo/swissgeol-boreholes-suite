@@ -78,7 +78,7 @@ public class BoreholeControllerTest
         var copiedBorehole = GetBorehole((int)copiedBoreholeId);
 
         Assert.AreEqual("Alfred Franecki (Copy)", copiedBorehole.OriginalName);
-        Assert.AreEqual("admin", copiedBorehole.CreatedBy.Name);
+        Assert.AreEqual("validator", copiedBorehole.CreatedBy.Name);
         Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
         Assert.AreEqual(1, copiedBorehole.Workflows.Count);
         Assert.AreEqual(Role.Editor, copiedBorehole.Workflows.First().Role);
