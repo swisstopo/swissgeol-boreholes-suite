@@ -26,30 +26,19 @@ const ProfileInstrument = props => {
 
   const { casing } = useCasingList(borehole.data.id);
   const [instruments, setInstruments] = useState([]);
+  const [instrumentProfileId, setInstrumentProfileId] = useState(null);
   const [reload, setReload] = useState(0);
-  const [state, setState] = useState({
-    isFetching: false,
-    isPatching: false,
-    instrumentID: null,
-    allfields: false,
-  });
 
   const createStratigraphy = useCallback(boreholeID => {
     createNewStratigraphy(boreholeID, profileKind.INSTRUMENT).then(id => {
-      setState(prevState => ({
-        ...prevState,
-        instrumentID: id,
-      }));
+      setInstrumentProfileId(id);
     });
   }, []);
 
   const getInstrumentProfile = useCallback(() => {
     getProfile(borehole.data.id, profileKind.INSTRUMENT).then(response => {
       if (response.length > 0) {
-        setState(prevState => ({
-          ...prevState,
-          instrumentID: response[0].id,
-        }));
+        setInstrumentProfileId(response[0].id);
       } else if (response.length === 0) {
         createStratigraphy(borehole.data.id);
       }
@@ -73,21 +62,21 @@ const ProfileInstrument = props => {
   );
 
   useEffect(() => {
-    if (state.instrumentID) {
-      setData(state.instrumentID);
+    if (instrumentProfileId) {
+      setData(instrumentProfileId);
     }
-  }, [state.instrumentID, reloadLayer, setData, reload]);
+  }, [instrumentProfileId, reloadLayer, setData, reload]);
 
   const createLayer = () => {
-    if (state.instrumentID) {
+    if (instrumentProfileId) {
       if (selectedStratigraphyID) {
-        createNewInstrument(state.instrumentID, selectedStratigraphyID).then(
+        createNewInstrument(instrumentProfileId, selectedStratigraphyID).then(
           response => {
             if (response) onUpdated("newLayer");
           },
         );
       } else {
-        createNewLayer(state.instrumentID).then(response => {
+        createNewLayer(instrumentProfileId).then(response => {
           if (response) onUpdated("newLayer");
         });
       }
@@ -100,14 +89,14 @@ const ProfileInstrument = props => {
     });
   };
 
-  const selectedInstrument = () => {
-    let instrument = instruments;
+  const filterInstrumentsByProfile = () => {
+    let instrumentsByProfile = instruments;
     if (selectedStratigraphyID >= 0) {
-      instrument = instruments.filter(
+      instrumentsByProfile = instruments.filter(
         e => e.instrument_casing_id === selectedStratigraphyID,
       );
     }
-    return instrument;
+    return instrumentsByProfile;
   };
   return (
     <Styled.Container>
@@ -124,7 +113,7 @@ const ProfileInstrument = props => {
         </Styled.ButtonContainer>
       )}
 
-      {selectedInstrument().length === 0 && (
+      {filterInstrumentsByProfile().length === 0 && (
         <Styled.Empty data-cy="instrument-message">
           <TranslationText
             id={borehole.data.lock ? "msgAddInstrument" : "msgInstrumentsEmpty"}
@@ -132,9 +121,9 @@ const ProfileInstrument = props => {
         </Styled.Empty>
       )}
 
-      {selectedInstrument().length > 0 && (
+      {filterInstrumentsByProfile().length > 0 && (
         <Styled.ListContainer data-cy="instrument-list">
-          {selectedInstrument().map((item, index) => (
+          {filterInstrumentsByProfile().map((item, index) => (
             <Instrument
               data={{
                 info: item,

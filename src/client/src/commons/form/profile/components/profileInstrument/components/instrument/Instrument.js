@@ -8,30 +8,28 @@ import { InstrumentAttributes } from "../../data/InstrumentAttributes";
 import { useTranslation } from "react-i18next";
 import _ from "lodash";
 import CasingList from "../../../casingList";
+import { produce } from "immer";
 
 const Instrument = props => {
   const { index, info, deleting, isEditable, update, casing } = props.data;
 
   const { t } = useTranslation();
-
-  const [state, setState] = useState({
-    isFetching: false,
-    isPatching: false,
-    updateAttributeDelay: {},
-    instrument: {
-      id: null,
-      instrument_kind: null,
-      depth_from: null,
-      depth_to: null,
-      notes: null,
-      instrument_status: null,
-      instrument_casing_id: null,
-      instrument_id: null,
-    },
+  const [instrument, setInstrument] = useState({
+    id: null,
+    instrument_kind: null,
+    depth_from: null,
+    depth_to: null,
+    notes: null,
+    instrument_status: null,
+    instrument_casing_id: null,
+    instrument_casing_layer_id: null,
+    instrument_id: null,
   });
 
+  const [updateAttributeDelay, setUpdateAttributeDelay] = useState({});
+
   useEffect(() => {
-    setState(prevState => ({ ...prevState, instrument: info }));
+    setInstrument(info);
   }, [info]);
 
   const updateChange = (attribute, value, to = true, isNumber = false) => {
@@ -40,8 +38,11 @@ const Instrument = props => {
       return;
     }
 
-    setState(prevState => ({ ...prevState, isPatching: true }));
-    _.set(state.instrument, attribute, value);
+    setInstrument(
+      produce(draft => {
+        draft[attribute] = value;
+      }),
+    );
 
     if (isNumber) {
       if (value === null) {
@@ -55,14 +56,13 @@ const Instrument = props => {
   };
 
   const patch = (attribute, value) => {
-    clearTimeout(state.updateAttributeDelay?.[attribute]);
+    clearTimeout(updateAttributeDelay?.[attribute]);
 
     let setDelay = {
       [attribute]: setTimeout(() => {
         patchLayer(info?.id, attribute, value)
           .then(response => {
             if (response.data.success) {
-              setState(prevState => ({ ...prevState, isPatching: false }));
               if (attribute === "instrument_casing_id") {
                 update();
               }
@@ -78,10 +78,7 @@ const Instrument = props => {
     };
 
     Promise.resolve().then(() => {
-      setState(prevState => ({
-        ...prevState,
-        updateAttributeDelay: setDelay,
-      }));
+      setUpdateAttributeDelay(setDelay);
     });
   };
 
@@ -113,9 +110,9 @@ const Instrument = props => {
                   spellCheck="false"
                   style={{ width: "100%" }}
                   value={
-                    _.isNil(state?.instrument?.[item.value])
+                    _.isNil(instrument?.[item.value])
                       ? ""
-                      : state.instrument[item.value]
+                      : instrument[item.value]
                   }
                 />
               </Styled.AttributesItem>
@@ -128,9 +125,9 @@ const Instrument = props => {
                   schema={item.schema}
                   search={item.search}
                   selected={
-                    _.isNil(state?.instrument?.[item.value])
+                    _.isNil(instrument?.[item.value])
                       ? null
-                      : state.instrument[item.value]
+                      : instrument[item.value]
                   }
                 />
               </Styled.AttributesItem>
@@ -141,9 +138,9 @@ const Instrument = props => {
                 <CasingList
                   data={casing}
                   dropDownValue={
-                    _.isNil(state?.instrument?.[item.value])
+                    _.isNil(instrument?.[item.value])
                       ? null
-                      : state.instrument[item.value]
+                      : instrument[item.value]
                   }
                   handleCasing={updateChange}
                   ItemValue={item.value}
