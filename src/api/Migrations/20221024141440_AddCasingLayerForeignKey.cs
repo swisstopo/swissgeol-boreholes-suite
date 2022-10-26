@@ -18,22 +18,11 @@ namespace BDMS.Migrations
                 principalTable: "layer",
                 principalColumn: "id_lay",
                 onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                schema: "bdms",
-                name: "layer_instr_id_sty",
-                table: "layer",
-                column: "instr_id_sty_fk",
-                principalSchema: "bdms",
-                principalTable: "stratigraphy",
-                principalColumn: "id_sty",
-                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(name: "instr_id_lay_fk", table: "layer", schema: "bdms");
-            migrationBuilder.DropForeignKey(name: "layer_instr_id_lay", table: "layer", schema: "bdms");
             migrationBuilder.DropForeignKey(name: "layer_instr_id_lay", table: "layer", schema: "bdms");
         }
     }
