@@ -8,7 +8,7 @@ describe("Admin settings test", () => {
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
-      .should("have.length", 5);
+      .should("have.length", 7);
 
     // add user
     cy.get('[placeholder="Username"]').type("Testuser");
@@ -19,7 +19,7 @@ describe("Admin settings test", () => {
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
-      .should("have.length", 6);
+      .should("have.length", 8);
 
     // disable user
     let newUserRow = cy
@@ -35,7 +35,7 @@ describe("Admin settings test", () => {
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
-      .should("have.length", 5);
+      .should("have.length", 7);
 
     // show disabled users
     cy.contains("show Disabled").click();
@@ -60,7 +60,7 @@ describe("Admin settings test", () => {
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
-      .should("have.length", 6);
+      .should("have.length", 8);
 
     // permanently delete test user
     newUserRow = cy.get('[data-cy="user-list-table-body"]').children().first();
@@ -76,7 +76,7 @@ describe("Admin settings test", () => {
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
-      .should("have.length", 5);
+      .should("have.length", 7);
 
     // add admin user
     cy.get('[data-cy="admin-checkbox"]').click();
@@ -89,7 +89,7 @@ describe("Admin settings test", () => {
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
-      .should("have.length", 6);
+      .should("have.length", 8);
 
     // contains "Yes" in administrator column
     const newAdminUserRow = cy
@@ -119,7 +119,7 @@ describe("Admin settings test", () => {
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
-      .should("have.length", 7);
+      .should("have.length", 9);
 
     // contains "No" in administrator column
     const newViewerUserRow = cy
@@ -139,5 +139,60 @@ describe("Admin settings test", () => {
     userRow = cy.get('[data-cy="user-list-table-body"]').children().first();
     userRow.contains("td", "Disable").click();
     cy.get('.modal [data-cy="permanently-delete-user-button"]').click();
+  });
+
+  it("cannot delete users with associated files.", () => {
+    interceptApiCalls();
+
+    login("/setting/admin");
+
+    cy.get('[data-cy="user-list-table-body"]')
+      .children()
+      .should("have.length", 7);
+
+    // Try to delete user that only has associated files
+    let filesUser = cy
+      .get('[data-cy="user-list-table-body"]')
+      .children()
+      .contains("tr", "filesUser");
+
+    cy.contains("user_that_only");
+    cy.contains("has_files");
+    filesUser.contains("td", "Disable").click();
+
+    // Deletion should not be possible
+    cy.get(".modal").should(
+      "not.contain",
+      '[data-cy="permanently-delete-user-button"]',
+    );
+
+    cy.get('.modal [data-cy="disable-user-button"]').should("be.visible");
+  });
+
+  it("can delete users with no associated database entries.", () => {
+    interceptApiCalls();
+
+    login("/setting/admin");
+
+    cy.get('[data-cy="user-list-table-body"]')
+      .children()
+      .should("have.length", 7);
+
+    // Try to delete user
+    let filesUser = cy
+      .get('[data-cy="user-list-table-body"]')
+      .children()
+      .contains("tr", "deletableUser");
+
+    cy.contains("user_that_can");
+    cy.contains("be_deleted");
+    filesUser.contains("td", "Disable").click();
+
+    // Deletion should be possible
+    cy.get('.modal [data-cy="permanently-delete-user-button"]').should(
+      "be.visible",
+    );
+
+    cy.get(".modal").should("not.contain", '[data-cy="disable-user-button"]');
   });
 });

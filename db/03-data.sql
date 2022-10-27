@@ -69,12 +69,6 @@ INSERT INTO bdms.users VALUES (
 '{"filter": {"custom": {"borehole_identifier": true, "project_name": true, "landuse": true, "alternate_name": true, "canton": true, "city": true}, "restriction": true, "mapfilter": true, "restriction_until": true, "extended": {"original_name": true, "method": true, "status": true}, "kind": true, "elevation_z": true, "length": true, "drilling_date": true, "zoom2selected": true}, "boreholetable": {"orderby": "original_name", "direction": "ASC"}, "eboreholetable": {"orderby": "creation", "direction": "DESC"}, "map": {"explorer": {}, "editor": {}}, "appearance": {"explorer": 1}}',
 'admin', NULL, 'user');
 
--- INSERT INTO bdms.users(
--- 	id_usr, admin_usr, viewer_usr, username, disabled_usr)
--- VALUES (
---     -1, false, false, 'system', true
--- );
-
 INSERT INTO bdms.users_roles(
     id_usr_fk, id_rol_fk, id_wgp_fk)
     VALUES (1, 0, 1),(1, 1, 1),(1, 2, 1),(1, 3, 1),(1, 4, 1);
@@ -84,16 +78,20 @@ VALUES
 (2, false, true, 'editor', crypt('swissforages', gen_salt('md5')),'editor', 'user'),
 (3, false, true, 'controller',crypt('swissforages', gen_salt('md5')), 'controller', 'user'),
 (4, false, true, 'validator', crypt('swissforages', gen_salt('md5')), 'validator', 'user'),
-(5, false, true, 'publisher', crypt('swissforages', gen_salt('md5')), 'publisher', 'user');
+(5, false, true, 'publisher', crypt('swissforages', gen_salt('md5')), 'publisher', 'user'),
+(6, false, true, 'filesUser', crypt('swissforages', gen_salt('md5')), 'user_that_only', 'has_files'),
+(7, false, true, 'deletableUser', crypt('swissforages', gen_salt('md5')), 'user_that_can', 'be_deleted');
 
-SELECT pg_catalog.setval('bdms.users_id_usr_seq', 5, true);
+SELECT pg_catalog.setval('bdms.users_id_usr_seq', 7, true);
 
 INSERT INTO bdms.users_roles(id_usr_fk, id_rol_fk, id_wgp_fk)
 VALUES
 (2, 1, 1),
 (3, 2, 1),
 (4, 3, 1),
-(5, 4, 1);
+(5, 4, 1),
+(6, 4, 1),
+(7, 4, 1);
 
 
 INSERT INTO bdms.contents(
