@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import * as Styled from "./styles";
 import { Input, Form, Button } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
@@ -8,12 +8,17 @@ import { InstrumentAttributes } from "../../data/InstrumentAttributes";
 import { useTranslation } from "react-i18next";
 import CasingList from "../../../casingList";
 import { produce } from "immer";
+import {
+  fetchLayerById,
+  fetchLayers,
+  updateLayer,
+} from "../../../../../../../api/layer-api";
 
 const Instrument = props => {
   const { index, info, deleting, isEditable, update, casing } = props.data;
 
   const { t } = useTranslation();
-  const [instrument, setInstrument] = useState({
+  const [instrumentInfo, setInstrumentInfo] = useState({
     id: null,
     instrument_kind: null,
     depth_from: null,
@@ -21,23 +26,50 @@ const Instrument = props => {
     notes: null,
     instrument_status: null,
     instrument_casing_id: null,
-    instrument_casing_layer_id: null,
     instrument_id: null,
   });
-
+  const [casingLayers, setCasingLayers] = useState([]);
+  const [instrument, setInstrument] = useState([]);
   const [updateAttributeDelay, setUpdateAttributeDelay] = useState({});
 
-  useEffect(() => {
-    setInstrument(info);
-  }, [info]);
+  const fetchCasingLayers = useCallback(
+    id =>
+      fetchLayers(id).then(response => {
+        if (response?.length > 0) {
+          setCasingLayers(response);
+        } else {
+          setCasingLayers([]);
+        }
+      }),
+    [],
+  );
 
-  const updateChange = (attribute, value, to = true, isNumber = false) => {
+  useEffect(() => {
+    setInstrumentInfo(info);
+
+    // fetch layer
+    fetchLayerById(info.id).then(response => {
+      setInstrument(response);
+    });
+
+    // fetch corresponding casing layers
+    fetchCasingLayers(info.instrument_casing_id);
+  }, [fetchCasingLayers, info]);
+
+  const updateChange = (attribute, value, isNumber = false) => {
     if (!isEditable) {
       alert(t("common:errorStartEditing"));
       return;
     }
 
-    setInstrument(
+    // refresh casing layers if casing changes
+    if (attribute === "instrument_casing_id") {
+      setCasingLayers([]);
+      updateLayer({ ...instrument, instrumentCasingLayerId: null });
+      fetchCasingLayers(instrument.instrumentCasingId);
+    }
+
+    setInstrumentInfo(
       produce(draft => {
         draft[attribute] = value;
       }),
@@ -52,6 +84,16 @@ const Instrument = props => {
     } else {
       patch(attribute, value);
     }
+  };
+
+  const updateInstrument = (attribute, value) => {
+    if (!isEditable) {
+      alert(t("common:errorStartEditing"));
+      return;
+    }
+
+    setInstrument({ ...instrument, [attribute]: value });
+    updateLayer({ ...instrument, [attribute]: value });
   };
 
   const patch = (attribute, value) => {
@@ -102,7 +144,6 @@ const Instrument = props => {
                     updateChange(
                       item.value,
                       e.target.value === "" ? null : e.target.value,
-                      item?.to,
                       item?.isNumber,
                     );
                   }}
@@ -130,6 +171,20 @@ const Instrument = props => {
                   data={casing}
                   dropDownValue={instrumentInfo?.[item.value] ?? null}
                   handleCasing={updateChange}
+                  ItemValue={item.value}
+                />
+              </Styled.AttributesItem>
+            )}
+
+            {item.type === "CasingLayerDropdown" && (
+              <Styled.AttributesItem data-cy={item.label}>
+                <CasingList
+                  disabled={casingLayers?.length === 0}
+                  data={casingLayers.map(r => {
+                    return { key: r.id, value: r.id, text: r.casing };
+                  })}
+                  dropDownValue={instrument?.[item.value] ?? null}
+                  handleCasing={updateInstrument}
                   ItemValue={item.value}
                 />
               </Styled.AttributesItem>
