@@ -6,7 +6,6 @@ import DomainDropdown from "../../../../../domain/dropdown/domainDropdown";
 import { patchLayer } from "../../../../../../../api-lib/index";
 import { InstrumentAttributes } from "../../data/InstrumentAttributes";
 import { useTranslation } from "react-i18next";
-import _ from "lodash";
 import CasingList from "../../../casingList";
 import { produce } from "immer";
 
@@ -48,7 +47,7 @@ const Instrument = props => {
       if (value === null) {
         patch(attribute, value);
       } else if (/^-?\d*[.,]?\d*$/.test(value)) {
-        patch(attribute, _.toNumber(value));
+        patch(attribute, parseInt(value));
       }
     } else {
       patch(attribute, value);
@@ -109,11 +108,7 @@ const Instrument = props => {
                   }}
                   spellCheck="false"
                   style={{ width: "100%" }}
-                  value={
-                    _.isNil(instrument?.[item.value])
-                      ? ""
-                      : instrument[item.value]
-                  }
+                  value={instrumentInfo?.[item.value] ?? ""}
                 />
               </Styled.AttributesItem>
             )}
@@ -124,11 +119,7 @@ const Instrument = props => {
                   onSelected={e => updateChange(item.value, e.id, false)}
                   schema={item.schema}
                   search={item.search}
-                  selected={
-                    _.isNil(instrument?.[item.value])
-                      ? null
-                      : instrument[item.value]
-                  }
+                  selected={instrumentInfo?.[item.value] ?? null}
                 />
               </Styled.AttributesItem>
             )}
@@ -137,11 +128,7 @@ const Instrument = props => {
               <Styled.AttributesItem data-cy={item.label}>
                 <CasingList
                   data={casing}
-                  dropDownValue={
-                    _.isNil(instrument?.[item.value])
-                      ? null
-                      : instrument[item.value]
-                  }
+                  dropDownValue={instrumentInfo?.[item.value] ?? null}
                   handleCasing={updateChange}
                   ItemValue={item.value}
                 />
