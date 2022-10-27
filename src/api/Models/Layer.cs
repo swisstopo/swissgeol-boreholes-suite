@@ -34,7 +34,7 @@ public class Layer
     /// <summary>
     /// Gets or sets the <see cref="User"/> who created the <see cref="Layer"/>.
     /// </summary>
-    public User CreatedBy { get; set; }
+    public User? CreatedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s creation date.
@@ -51,7 +51,7 @@ public class Layer
     /// <summary>
     /// Gets or sets the <see cref="User"/> who updated the <see cref="Layer"/>.
     /// </summary>
-    public User UpdatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s update date.
@@ -393,12 +393,18 @@ public class Layer
     /// Gets or sets the id of the <see cref="Layer"/>'s instrument stratigraphy.
     /// </summary>
     [Column("instr_id_sty_fk")]
-    public int? InstrumentStratigraphyId { get; set; }
+    public int? InstrumentCasingId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the id of the <see cref="Layer"/>'s instrument stratigraphy.
+    /// </summary>
+    [Column("instr_id_lay_fk")]
+    public int? InstrumentCasingLayerId { get; set; }
 
     /// <summary>
     /// Gets or sets the instrument <see cref="Stratigraphy"/> of the <see cref="Layer"/>.
     /// </summary>
-    public Stratigraphy? InstrumentStratigraphy { get; set; }
+    public Stratigraphy? InstrumentCasing { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s casing kind.

@@ -28,7 +28,8 @@ public class LayerController : ControllerBase
 
         if (profileId != null)
         {
-            layers = layers.Where(l => l.InstrumentStratigraphyId == profileId);
+            layers = layers.Where(l => l.StratigraphyId == profileId);
+
             if (layers.Any())
             {
                 return await layers.AsNoTracking().ToListAsync().ConfigureAwait(false);
@@ -40,6 +41,25 @@ public class LayerController : ControllerBase
         }
 
         return await layers.AsNoTracking().ToListAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Asynchronously gets the <see cref="Layer"/>s, optionally filtered by <paramref name="id"/>.
+    /// </summary>
+    /// <param name="id">The id of the stratigraphy containing the layers to get.</param>
+    [HttpGet("{id}")]
+    public async Task<ActionResult<IEnumerable<Layer>>> GetByIdAsync(int id)
+    {
+        var layer = await context.Layers.SingleOrDefaultAsync(l => l.Id == id).ConfigureAwait(false);
+
+        if (layer != null)
+        {
+            return Ok(layer);
+        }
+        else
+        {
+            return NotFound();
+        }
     }
 
     /// <summary>
