@@ -8,6 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   create-pre-release:
@@ -118,9 +119,12 @@ jobs:
           cache-to: type=inline
 
       - name: Create GitHub pre-release
-        uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: v${{ env.VERSION }}
-          prerelease: true
-          title: ${{ env.VERSION }}
+        run: |
+          gh api \
+            --method POST \
+            --header "Accept: application/vnd.github+json" \
+            /repos/${GITHUB_REPOSITORY}/releases \
+            -f tag_name='v${{ env.VERSION }}' \
+            -f target_commitish='main' \
+            -f name='BDMS ${{ env.VERSION }}' \
+            -F prerelease=true \

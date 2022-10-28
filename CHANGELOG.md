@@ -14,6 +14,7 @@
 - Added version number in web client.
 - Added functionality to add instruments without casing.
 - Added a new about page in settings containing license information.
+- Added automatic release notes for newly created GitHub releases.
 
 ### Changed
 
