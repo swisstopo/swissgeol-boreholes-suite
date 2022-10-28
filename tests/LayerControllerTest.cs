@@ -16,8 +16,8 @@ public class LayerControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        context= ContextFactory.CreateContext();
-        controller= new LayerController(ContextFactory.CreateContext(), new Mock<ILogger<LayerController>>().Object);
+        context = ContextFactory.CreateContext();
+        controller = new LayerController(ContextFactory.CreateContext(), new Mock<ILogger<LayerController>>().Object);
     }
 
     [TestCleanup]
@@ -171,7 +171,7 @@ public class LayerControllerTest
         Assert.AreEqual("Freddy ate more cake than Maria.", updatedLayer.Notes);
 
         // Reset edits
-        _= await controller.EditAsync(originalLayer);
+        _ = await controller.EditAsync(originalLayer);
     }
 
     [TestMethod]
@@ -180,7 +180,7 @@ public class LayerControllerTest
         var id = 9487794;
         var layer = new Layer
         {
-            Id= id,
+            Id = id,
         };
 
         // Upate Layer
