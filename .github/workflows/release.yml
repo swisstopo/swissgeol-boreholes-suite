@@ -115,7 +115,7 @@ jobs:
 
   patch-changelog:
     runs-on: ubuntu-latest
-    name: Patch CHANGELOG.md
+    name: Patch CHANGELOG.md and update GitHub release notes
 
     steps:
       - name: Checkout repository
@@ -125,6 +125,15 @@ jobs:
         run: |
           echo GIT_BRANCH_NAME=mark-version-${TAG_NAME#v}-as-released >> $GITHUB_ENV
           echo GIT_COMMIT_MESSAGE=Mark version ${TAG_NAME#v} as released >> $GITHUB_ENV
+          echo RELEASE_ID=$(gh api -H "Accept: application/vnd.github+json" /repos/${GITHUB_REPOSITORY}/releases/tags/${TAG_NAME} | jq '.id') >> $GITHUB_ENV
+
+      - name: Get changelog for this specific release and update release notes
+        run: |
+          gh api \
+            --method PATCH \
+            --header "Accept: application/vnd.github+json" \
+            /repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID} \
+            -f body="$(./get-changelog.sh)"
 
       - name: Checkout new branch and patch changelog
         run: |
