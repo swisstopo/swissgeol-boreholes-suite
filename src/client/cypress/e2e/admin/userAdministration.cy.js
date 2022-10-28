@@ -1,7 +1,7 @@
 import { interceptApiCalls, loginAsAdmin } from "../testHelpers";
 
 describe("Admin settings test", () => {
-  it("displays correct message when enabling user.", () => {
+  beforeEach(() => {
     interceptApiCalls();
 
     loginAsAdmin("/setting/admin");
@@ -9,7 +9,9 @@ describe("Admin settings test", () => {
     cy.get('[data-cy="user-list-table-body"]')
       .children()
       .should("have.length", 7);
+  });
 
+  it("displays correct message when enabling user.", () => {
     // add user
     cy.get('[placeholder="Username"]').type("Testuser");
     cy.get('[placeholder="Password"]').type("123456");
@@ -73,14 +75,6 @@ describe("Admin settings test", () => {
   });
 
   it("can add user with admin role.", () => {
-    interceptApiCalls();
-
-    loginAsAdmin("/setting/admin");
-
-    cy.get('[data-cy="user-list-table-body"]')
-      .children()
-      .should("have.length", 7);
-
     // add admin user
     cy.get('[data-cy="admin-checkbox"]').click();
 
@@ -152,14 +146,6 @@ describe("Admin settings test", () => {
   });
 
   it("cannot delete users with associated files.", () => {
-    interceptApiCalls();
-
-    loginAsAdmin("/setting/admin");
-
-    cy.get('[data-cy="user-list-table-body"]')
-      .children()
-      .should("have.length", 7);
-
     // Try to delete user that only has associated files
     let filesUser = cy
       .get('[data-cy="user-list-table-body"]')
@@ -180,14 +166,6 @@ describe("Admin settings test", () => {
   });
 
   it("can delete users with no associated database entries.", () => {
-    interceptApiCalls();
-
-    loginAsAdmin("/setting/admin");
-
-    cy.get('[data-cy="user-list-table-body"]')
-      .children()
-      .should("have.length", 7);
-
     // Try to delete user
     let deletableUser = cy
       .get('[data-cy="user-list-table-body"]')
@@ -207,14 +185,6 @@ describe("Admin settings test", () => {
   });
 
   it("can add and remove roles for users in workgroups.", () => {
-    interceptApiCalls();
-
-    loginAsAdmin("/setting/admin");
-
-    cy.get('[data-cy="user-list-table-body"]')
-      .children()
-      .should("have.length", 7);
-
     // Select validator user
     cy.get('[data-cy="user-list-table-body"]')
       .children()
