@@ -98,6 +98,10 @@ public class BoreholeControllerTest
         Assert.AreEqual("Tactics 24/365 Intelligent Concrete Chicken", copiedBorehole.BoreholeFiles.First().Description);
 
         // delete borehole copy
+        var stratigraphiesToRemove = context.Stratigraphies.Where(s => s.BoreholeId == copiedBorehole.Id);
+        var layersToRemove = context.Layers.Where(l => stratigraphiesToRemove.Select(s => s.Id).ToList().Contains((int)l.StratigraphyId!));
+        context.Layers.RemoveRange(layersToRemove);
+        context.Stratigraphies.RemoveRange(stratigraphiesToRemove);
         context.Boreholes.Remove(copiedBorehole);
         context.SaveChanges();
     }
@@ -169,6 +173,10 @@ public class BoreholeControllerTest
         Assert.IsNotNull(copiedBoreholeId);
         Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
         var copiedBorehole = context.Boreholes.Single(b => b.Id == (int)copiedBoreholeId);
+        var stratigraphiesToRemove = context.Stratigraphies.Where(s => s.BoreholeId == copiedBorehole.Id);
+        var layersToRemove = context.Layers.Where(l => stratigraphiesToRemove.Select(s => s.Id).ToList().Contains((int)l.StratigraphyId!));
+        context.Layers.RemoveRange(layersToRemove);
+        context.Stratigraphies.RemoveRange(stratigraphiesToRemove);
         context.Boreholes.Remove(copiedBorehole);
         context.SaveChanges();
     }
