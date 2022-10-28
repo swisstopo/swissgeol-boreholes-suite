@@ -89,4 +89,133 @@ describe("Instrumentation tests", () => {
       .children()
       .should("have.length", 0);
   });
+
+  it("Can add casing layer to instrument", () => {
+    cy.contains("a", "Start editing").click();
+    cy.wait("@edit_lock");
+
+    // add two casings with two layers
+    cy.get('[data-cy="casing-menu-item"]').click();
+
+    // first casing
+    cy.get('[data-cy="add-stratigraphy-button"]').click();
+    cy.wait(2000);
+    cy.wait("@stratigraphy_edit_create");
+    cy.wait("@layer");
+    cy.contains("div", "This is the main completion");
+
+    cy.get('[data-cy="name"]').type("Moonshine Bike");
+
+    cy.get('[data-cy="add-layer-button"]').click();
+    cy.wait("@layer");
+    cy.wait(2000);
+    cy.get('[data-cy="styled-layer-0"]').click();
+    cy.get('[data-cy="casing_id"]').type("Moonshine Veal");
+
+    cy.get('[data-cy="add-layer-button"]').click();
+    cy.wait("@layer");
+    cy.wait(2000);
+    cy.get('[data-cy="styled-layer-1"]').click();
+    cy.get('[data-cy="casing_id"]').type("Moonshine Honey");
+
+    // second casing
+    cy.get('[data-cy="add-stratigraphy-button"]').click();
+    cy.wait("@stratigraphy_edit_create");
+    cy.wait("@layer");
+
+    // navigate to correct tab
+    cy.contains("div", "Unknown").click();
+    cy.get('[data-cy="name"]').type("Sunshine Bike");
+
+    cy.get('[data-cy="add-layer-button"]').click();
+    cy.wait("@layer");
+    cy.wait(2000);
+    cy.wait("@stratigraphy_layer_edit_create");
+    cy.wait(2000);
+
+    cy.get('[data-cy="styled-layer-0"]').click();
+    cy.get('[data-cy="casing_id"]').type("Sunshine Veal");
+
+    cy.get('[data-cy="add-layer-button"]').click();
+    cy.wait("@layer");
+    cy.wait(2000);
+    cy.wait("@stratigraphy_layer_edit_create");
+    cy.wait(2000);
+
+    cy.get('[data-cy="styled-layer-1"]').scrollIntoView().click();
+    cy.get('[data-cy="casing_id"]').type("Sunshine Honey");
+
+    // add instrument
+    cy.get('[data-cy="instrument-menu-item"]').click();
+    cy.wait("@layer");
+    cy.wait(2000);
+
+    cy.get('[data-cy="add-instrumentation-button"]').click({ force: true });
+    cy.wait(2000);
+    cy.wait("@layer-v2");
+
+    // chose first  casing
+    const casingDropDown = cy
+      .get('[data-cy="casingName"]')
+      .children()
+      .first()
+      .children()
+      .first();
+
+    casingDropDown.each((el, index, list) =>
+      cy
+        .wrap(el)
+        .click({ force: true })
+        .find('[role="option"]')
+        .eq(1)
+        .click({ force: true }),
+    );
+
+    casingDropDown.contains("Moonshine Bike");
+
+    // chose second casingLayer
+    const casingLayerDropDown = cy
+      .get('[data-cy="casingId"]')
+      .children()
+      .first()
+      .children()
+      .first();
+
+    casingLayerDropDown.each((el, index, list) =>
+      cy
+        .wrap(el)
+        .click({ force: true })
+        .find('[role="option"]')
+        .eq(2)
+        .click({ force: true }),
+    );
+
+    casingLayerDropDown.contains("Moonshine Honey");
+
+    // chose second casing
+    casingDropDown.each((el, index, list) =>
+      cy
+        .wrap(el)
+        .click({ force: true })
+        .find('[role="option"]')
+        .eq(2)
+        .click({ force: true }),
+    );
+    casingDropDown.contains("Moonshine Bike");
+
+    // change of casing resets casingLayer
+    casingLayerDropDown.should("not.contain", "Moonshine Bike");
+
+    // dropdown Options in casingLayer dropdown have updated
+    casingLayerDropDown.each((el, index, list) =>
+      cy
+        .wrap(el)
+        .click({ force: true })
+        .find('[role="option"]')
+        .eq(2)
+        .click({ force: true }),
+    );
+
+    casingLayerDropDown.contains("Sunshine Honey");
+  });
 });

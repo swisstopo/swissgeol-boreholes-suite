@@ -26,8 +26,9 @@ const ProfileHeaderList = props => {
 
   return (
     <Styled.Container data-cy="profile-header-list">
-      {enhancedProfiles?.map(item => (
+      {enhancedProfiles?.map((item, index) => (
         <Styled.Item
+          data-cy={"profile-header-tab-" + index}
           key={item.id}
           onClick={() => {
             setSelectedStratigraphy(item);

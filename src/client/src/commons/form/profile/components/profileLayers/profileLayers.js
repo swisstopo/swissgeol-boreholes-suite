@@ -56,6 +56,7 @@ const ProfileLayers = props => {
       {isEditable && selectedStratigraphyID !== null && (
         <div>
           <Button
+            data-cy="add-layer-button"
             content={<TranslationText id="add" />}
             icon="add"
             onClick={createNewLayer}

@@ -31,6 +31,7 @@ const ProfileAttributeList = props => {
                 showAll) && (
                 <Styled.AttributesItem>
                   <Input
+                    data-cy={item.value}
                     autoCapitalize="off"
                     autoComplete="off"
                     autoCorrect="off"
@@ -57,6 +58,7 @@ const ProfileAttributeList = props => {
                 showAll) && (
                 <Styled.AttributesItem>
                   <TextArea
+                    data-cy={item.value}
                     onChange={e => updateChange(item.value, e.target.value)}
                     style={{ width: "100%" }}
                     value={
@@ -100,6 +102,7 @@ const ProfileAttributeList = props => {
                 showAll) && (
                 <Styled.AttributesItem>
                   <DomainDropdown
+                    data-cy={item.value}
                     multiple={item.multiple}
                     onSelected={e =>
                       updateChange(
