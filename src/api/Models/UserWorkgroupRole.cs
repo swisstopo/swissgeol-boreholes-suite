@@ -27,5 +27,5 @@ public class UserWorkgroupRole
     public Role Role { get; set; }
 
     /// <inheritdoc/>
-    public override string ToString() => $"WorkgroupId: {WorkgroupId}. {Role}";
+    public override string ToString() => $"WorkgroupId: {WorkgroupId}, {Role}";
 }
