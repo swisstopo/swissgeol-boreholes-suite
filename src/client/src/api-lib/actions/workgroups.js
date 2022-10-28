@@ -54,12 +54,12 @@ export function listSuppliers() {
   });
 }
 
-export function setRole(user_id, workgroup_id, role_name, active = true) {
+export function setRole(user_id, workgroup_id, role_name, activateRole = true) {
   return fetch("/user/workgroup/edit", {
     action: "SET",
     user_id: user_id,
     workgroup_id: workgroup_id,
     role_name: role_name,
-    active: active,
+    active: activateRole,
   });
 }

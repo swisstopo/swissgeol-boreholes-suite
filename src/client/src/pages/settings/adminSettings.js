@@ -136,38 +136,27 @@ class AdminSettings extends React.Component {
   }
 
   setRole(uwg, workgroup, role) {
+    // Special handling for publisher role name in API v1 and v2
     if (role === "PUBLIC") role = "Publisher";
     this.setState(
       {
         roleUpdate: true,
       },
       () => {
-        if (
+        let isRoleActive =
           uwg !== undefined &&
-          uwg.some(x => x.role.toLowerCase().startsWith(role.toLowerCase()))
-        ) {
-          // Remove role
-          setRole(
-            this.state.user.id,
-            workgroup.id,
-            role === "Publisher" ? "PUBLIC" : role,
-            false,
-          ).then(response => {
-            this.listUsers().then(() => {
-              this.props.listWorkgroups(true);
-            });
+          uwg.some(x => x.role.toLowerCase().startsWith(role.toLowerCase()));
+
+        setRole(
+          this.state.user.id,
+          workgroup.id,
+          role === "Publisher" ? "PUBLIC" : role,
+          !isRoleActive,
+        ).then(_ => {
+          this.listUsers().then(() => {
+            this.props.listWorkgroups(true);
           });
-        } else {
-          setRole(
-            this.state.user.id,
-            workgroup.id,
-            role === "Publisher" ? "PUBLIC" : role,
-          ).then(response => {
-            this.listUsers().then(() => {
-              this.props.listWorkgroups(true);
-            });
-          });
-        }
+        });
       },
     );
   }
