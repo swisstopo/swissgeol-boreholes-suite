@@ -337,7 +337,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.InstrumentStatus, _ => default!)
             .RuleFor(o => o.InstrumentCasingId, f => 6000 + (int)Math.Floor((double)((layer_ids - 7000) / 10)))
             .RuleFor(o => o.InstrumentCasing, _ => default!)
-            .RuleFor(o => o.InstrumentCasingLayerId, f => f.PickRandom(layerRange).OrNull(f, .05f))
+            .RuleFor(o => o.InstrumentCasingLayerId, _ => null)
             .RuleFor(o => o.KirostId, f => f.PickRandom(kirostIds).OrNull(f, .05f))
             .RuleFor(o => o.Kirost, _ => default!)
             .RuleFor(o => o.IsLast, f => layer_ids % 10 == 9)
