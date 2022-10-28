@@ -1,10 +1,10 @@
-import { interceptApiCalls, login } from "../testHelpers";
+import { interceptApiCalls, loginAsAdmin } from "../testHelpers";
 
 describe("Admin settings test", () => {
   it("displays correct message when enabling user.", () => {
     interceptApiCalls();
 
-    login("/setting/admin");
+    loginAsAdmin("/setting/admin");
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
@@ -25,7 +25,7 @@ describe("Admin settings test", () => {
     let newUserRow = cy
       .get('[data-cy="user-list-table-body"]')
       .children()
-      .first();
+      .contains("tr", "Testuser");
     cy.contains("Testuser");
     cy.contains("Cinnabuns");
     cy.contains("Moonshine");
@@ -63,7 +63,10 @@ describe("Admin settings test", () => {
       .should("have.length", 8);
 
     // permanently delete test user
-    newUserRow = cy.get('[data-cy="user-list-table-body"]').children().first();
+    newUserRow = cy
+      .get('[data-cy="user-list-table-body"]')
+      .children()
+      .contains("tr", "Testuser");
     newUserRow.contains("td", "Disable").click();
 
     cy.get('.modal [data-cy="permanently-delete-user-button"]').click();
@@ -72,7 +75,7 @@ describe("Admin settings test", () => {
   it("can add user with admin role.", () => {
     interceptApiCalls();
 
-    login("/setting/admin");
+    loginAsAdmin("/setting/admin");
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
@@ -92,12 +95,12 @@ describe("Admin settings test", () => {
       .should("have.length", 8);
 
     // contains "Yes" in administrator column
-    const newAdminUserRow = cy
-      .get('[data-cy="user-list-table-body"]')
+    cy.get('[data-cy="user-list-table-body"]')
       .children()
-      .first();
-    newAdminUserRow.contains("td", "Yes");
-    newAdminUserRow.click();
+      .contains("td", "Bugby")
+      .siblings()
+      .contains("td", "Yes")
+      .click();
 
     // click of "New user" resets admin checkbox
     cy.get('[data-cy="admin-checkbox"]')
@@ -129,22 +132,29 @@ describe("Admin settings test", () => {
     newViewerUserRow.contains("td", "No");
 
     // permanently delete test users
-    let userRow = cy.get('[data-cy="user-list-table-body"]').children().first();
-    userRow.contains("td", "Disable").click();
+    cy.get('[data-cy="user-list-table-body"]')
+      .children()
+      .contains("td", "Bugby")
+      .siblings()
+      .contains("td", "Disable")
+      .click();
     cy.get('.modal [data-cy="permanently-delete-user-button"]').click();
 
-    cy.wait(["@user_reload", "@user_edit_list"]);
     cy.wait(2000);
 
-    userRow = cy.get('[data-cy="user-list-table-body"]').children().first();
-    userRow.contains("td", "Disable").click();
+    cy.get('[data-cy="user-list-table-body"]')
+      .children()
+      .contains("td", "Wiggleton")
+      .siblings()
+      .contains("td", "Disable")
+      .click();
     cy.get('.modal [data-cy="permanently-delete-user-button"]').click();
   });
 
   it("cannot delete users with associated files.", () => {
     interceptApiCalls();
 
-    login("/setting/admin");
+    loginAsAdmin("/setting/admin");
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
@@ -172,21 +182,21 @@ describe("Admin settings test", () => {
   it("can delete users with no associated database entries.", () => {
     interceptApiCalls();
 
-    login("/setting/admin");
+    loginAsAdmin("/setting/admin");
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
       .should("have.length", 7);
 
     // Try to delete user
-    let filesUser = cy
+    let deletableUser = cy
       .get('[data-cy="user-list-table-body"]')
       .children()
       .contains("tr", "deletableUser");
 
     cy.contains("user_that_can");
     cy.contains("be_deleted");
-    filesUser.contains("td", "Disable").click();
+    deletableUser.contains("td", "Disable").click();
 
     // Deletion should be possible
     cy.get('.modal [data-cy="permanently-delete-user-button"]').should(
@@ -194,5 +204,107 @@ describe("Admin settings test", () => {
     );
 
     cy.get(".modal").should("not.contain", '[data-cy="disable-user-button"]');
+  });
+
+  it("can add and remove roles for users in workgroups.", () => {
+    interceptApiCalls();
+
+    loginAsAdmin("/setting/admin");
+
+    cy.get('[data-cy="user-list-table-body"]')
+      .children()
+      .should("have.length", 7);
+
+    // Select validator user
+    cy.get('[data-cy="user-list-table-body"]')
+      .children()
+      .contains("td", "validator")
+      .click();
+
+    // Workgroup "Default" should be visible with user role "VALIDATOR"
+    cy.get('[data-cy="workgroup-list-table-body"]')
+      .children()
+      .should("have.length", 2)
+      .contains("td", "Default")
+      .siblings()
+      .contains("label", "VALIDATOR")
+      .parent()
+      .within(() => {
+        cy.get("input").should("be.checked");
+      });
+
+    cy.get('[data-cy="workgroup-list-table-body"]')
+      .children()
+      .contains("td", "Default")
+      .siblings()
+      .contains("label", "EDITOR")
+      .parent()
+      .within(() => {
+        cy.get("input").should("not.be.checked");
+      });
+
+    const addRole = role => {
+      cy.get('[data-cy="workgroup-list-table-body"]')
+        .children()
+        .contains("td", "Default")
+        .siblings()
+        .contains("label", role)
+        .parent()
+        .within(() => {
+          cy.get("input").check({ force: true });
+        });
+    };
+
+    const removeRole = role => {
+      cy.get('[data-cy="workgroup-list-table-body"]')
+        .children()
+        .contains("td", "Default")
+        .siblings()
+        .contains("label", role)
+        .parent()
+        .within(() => {
+          cy.get("input").uncheck({ force: true });
+        });
+    };
+
+    // Remove role VALIDATOR and add role EDITOR
+    removeRole("VALIDATOR");
+    addRole("EDITOR");
+
+    // Change user selection to be sure that the workgroup table
+    // is reloaded and assert role assignments
+    cy.get('[data-cy="user-list-table-body"]')
+      .children()
+      .contains("td", "admin")
+      .click();
+
+    cy.get('[data-cy="user-list-table-body"]')
+      .children()
+      .contains("td", "validator")
+      .click();
+
+    cy.get('[data-cy="workgroup-list-table-body"]')
+      .children()
+      .contains("td", "Default")
+      .siblings()
+      .contains("label", "VALIDATOR")
+      .parent()
+      .within(() => {
+        cy.get("input").should("not.be.checked");
+      });
+
+    cy.get('[data-cy="workgroup-list-table-body"]')
+      .children()
+      .contains("td", "Default")
+      .siblings()
+      .contains("label", "EDITOR")
+      .parent()
+      .within(() => {
+        cy.get("input").should("be.checked");
+      });
+
+    // Revert role assignment
+    removeRole("EDITOR");
+    addRole("VALIDATOR");
   });
 });

@@ -31,4 +31,35 @@ public class UserController : ControllerBase
     [SwaggerResponse(StatusCodes.Status204NoContent, "If logged in with the default guest user.")]
     public async Task<ActionResult<User?>> GetUserInformationAsync() =>
         await context.Users.SingleOrDefaultAsync(u => u.Name == HttpContext.User.FindFirst(ClaimTypes.Name).Value).ConfigureAwait(false);
+
+    /// <summary>
+    /// Gets the user list.
+    /// </summary>
+    [HttpGet]
+    public async Task<IEnumerable<User>> GetAll()
+    {
+        var users = await context
+            .Users
+            .Include(x => x.WorkgroupRoles)
+            .AsNoTracking()
+            .OrderBy(x => x.Name)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        foreach (var user in users)
+        {
+            user.Deletable = !(context.Workflows.Any(x => x.UserId == user.Id)
+                || context.Layers.Any(x => x.CreatedById == user.Id)
+                || context.Layers.Any(x => x.UpdatedById == user.Id)
+                || context.Boreholes.Any(x => x.UpdatedById == user.Id)
+                || context.Boreholes.Any(x => x.CreatedById == user.Id)
+                || context.Boreholes.Any(x => x.LockedById == user.Id)
+                || context.Stratigraphies.Any(x => x.CreatedById == user.Id)
+                || context.Stratigraphies.Any(x => x.UpdatedById == user.Id)
+                || context.Files.Any(x => x.UserId == user.Id)
+                || context.BoreholeFiles.Any(x => x.UserId == user.Id));
+        }
+
+        return users;
+    }
 }

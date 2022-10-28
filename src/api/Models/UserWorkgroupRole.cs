@@ -21,21 +21,11 @@ public class UserWorkgroupRole
     public int WorkgroupId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="User"/>.
-    /// </summary>
-    public User User { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Workgroup"/>.
-    /// </summary>
-    public Workgroup Workgroup { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Role"/>.
     /// </summary>
     [Column("id_rol_fk", TypeName = "int")]
     public Role Role { get; set; }
 
     /// <inheritdoc/>
-    public override string ToString() => $"{Workgroup.Name}. {Role}";
+    public override string ToString() => $"WorkgroupId: {WorkgroupId}. {Role}";
 }
