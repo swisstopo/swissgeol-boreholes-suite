@@ -209,7 +209,6 @@ class AdminSettings extends React.Component {
             <Form.Group widths="equal">
               <Form.Input
                 fluid
-                // label={t('username')}
                 label={<TranslationText id="username" />}
                 onChange={e => {
                   this.setState({
@@ -222,7 +221,6 @@ class AdminSettings extends React.Component {
               <Form.Input
                 autoComplete="new-password"
                 fluid
-                // label={t('password')}
                 label={<TranslationText id="password" />}
                 onChange={e => {
                   this.setState({
@@ -317,7 +315,6 @@ class AdminSettings extends React.Component {
                           alert(response.data.message);
                         } else {
                           this.listUsers();
-                          // this.props.reloadUser();
                         }
                       });
                     } else {
@@ -334,7 +331,6 @@ class AdminSettings extends React.Component {
                           alert(response.data.message);
                         } else {
                           this.listUsers();
-                          // this.props.reloadUser();
                         }
                       });
                     }
@@ -563,7 +559,6 @@ class AdminSettings extends React.Component {
                             },
                             () => {
                               this.listUsers();
-                              // this.props.reloadUser();
                             },
                           );
                         });
@@ -737,7 +732,7 @@ class AdminSettings extends React.Component {
                                 deleteUser: currentUser,
                               });
                             }}>
-                            {currentUser.disabledAt !== null ? ( // isDisabled
+                            {currentUser.disabledAt !== null ? (
                               <TranslationText id="enable" />
                             ) : (
                               <TranslationText id="disable" />
@@ -1327,7 +1322,7 @@ class AdminSettings extends React.Component {
                                   deleteWorkgroup: workgroup,
                                 });
                               }}>
-                              {workgroup.disabled !== null ? ( // isDisabled
+                              {workgroup.disabled !== null ? (
                                 <TranslationText id="enableWorkgroup" />
                               ) : (
                                 <TranslationText id="disableWorkgroup" />
@@ -1356,9 +1351,6 @@ AdminSettings.propTypes = {
   user: PropTypes.object,
   users: PropTypes.object,
 };
-
-// AdminSettings.defaultProps = {
-// };
 
 const mapStateToProps = state => {
   return {
