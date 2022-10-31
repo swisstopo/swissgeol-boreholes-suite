@@ -42,3 +42,4 @@
 - Add missing translations when publishing new welcome messages.
 - Fix copying of boreholes.
 - Add missing checks for contributions when deleting users.
+- Removed obsolete `borehole.contact_id` column.
