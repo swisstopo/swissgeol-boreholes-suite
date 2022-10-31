@@ -27,12 +27,6 @@ public class Borehole
     public User? CreatedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/> contact id.
-    /// </summary>
-    [Column("contact_id")]
-    public int? ContactId { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Borehole"/> created date.
     /// </summary>
     [Column("created_bho")]

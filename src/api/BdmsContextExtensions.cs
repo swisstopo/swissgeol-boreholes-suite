@@ -95,7 +95,6 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Id, f => borehole_ids++)
            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
            .RuleFor(o => o.CreatedBy, _ => default!)
-           .RuleFor(o => o.ContactId, f => f.Random.Int().OrNull(f, .1f))
            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
            .RuleFor(o => o.UpdatedBy, _ => default!)
            .RuleFor(o => o.LockedById, f => f.PickRandom(userRange).OrNull(f, .9f))
