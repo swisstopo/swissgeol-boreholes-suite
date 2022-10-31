@@ -1,3 +1,5 @@
+import { loginAsEditor } from "./testHelpers";
+
 describe("General app tests", () => {
   it("Displays the login page in english by default", () => {
     cy.visit("/");
@@ -35,5 +37,10 @@ describe("General app tests", () => {
 
     cy.get("div[id=map]").should("be.visible");
     cy.contains("span", " Viewer");
+  });
+
+  it("Displays the current host as app title", () => {
+    loginAsEditor();
+    cy.get('[data-cy="app-title"]').contains("localhost");
   });
 });
