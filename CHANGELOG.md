@@ -20,6 +20,7 @@
 
 - Update _Dokumentation_ page in settings.
 - Standardize messages for empty profiles, empty casing and missing stratigraphy.
+- Update the app title in the top left to show the new _boreholes.swissgeol.ch_ name including the correct environment.
 
 ### Fixed
 
