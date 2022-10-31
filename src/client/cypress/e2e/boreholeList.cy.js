@@ -30,9 +30,9 @@ describe("Borehole list tests", () => {
     let secondRow = cy.get("tbody").children().eq(1);
     let thirdRow = cy.get("tbody").children().eq(2);
 
-    firstRow.contains("td", "Coty Raynor");
-    secondRow.contains("td", "Otto Crist");
-    thirdRow.contains("td", "Felton Macejkovic");
+    firstRow.contains("td", "Aaliyah Klocko");
+    secondRow.contains("td", "Antone Terry");
+    thirdRow.contains("td", "Arch Veum");
 
     // sort by name
     cy.contains("div", "Original name").click();
