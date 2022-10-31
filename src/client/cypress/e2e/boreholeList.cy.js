@@ -10,31 +10,29 @@ describe("Borehole list tests", () => {
     cy.get("tbody").children().should("have.length", 27);
 
     // contains names
-    cy.contains("td", "Bertram Windler");
-    cy.contains("td", "Haylee Goodwin");
-    cy.contains("td", "Matilde Blick");
-    cy.contains("td", "Alfred Franecki");
-    cy.contains("td", "Cynthia Denesik");
+    cy.contains("td", "Pat Dickinson");
+    cy.contains("td", "Tiana Zieme");
+    cy.contains("td", "Aaliyah Klocko");
+    cy.contains("td", "Arch Veum");
+    cy.contains("td", "Coty Raynor");
 
-    // contains date
-    cy.contains("td", "23.07.2022");
-    cy.contains("td", "26.09.2022");
-    cy.contains("td", "13.08.2022");
+    // contains date (restriction date)
+    cy.contains("td", "02.12.2022");
+    cy.contains("td", "31.05.2022");
+    cy.contains("td", "05.06.2022");
 
-    // contains terrain elevation
-    cy.contains("td", "1768.0555385388693 m");
-    cy.contains("td", "49.94531071276651 m");
-    cy.contains("td", "669.8451035981277 m");
-    cy.contains("td", "1796.1156628076526 m");
-    cy.contains("td", "1345.8651450210555 m");
+    // contains total depth
+    cy.contains("td", "1429.5046298902037 m");
+    cy.contains("td", "1106.2753354694114 m");
+    cy.contains("td", "1301.5534539248576 m");
 
     let firstRow = cy.get("tbody").children().first();
     let secondRow = cy.get("tbody").children().eq(1);
     let thirdRow = cy.get("tbody").children().eq(2);
 
-    firstRow.contains("td", "Adan Robert");
-    secondRow.contains("td", "Alfred Franecki");
-    thirdRow.contains("td", "Ara Braun");
+    firstRow.contains("td", "Coty Raynor");
+    secondRow.contains("td", "Otto Crist");
+    thirdRow.contains("td", "Felton Macejkovic");
 
     // sort by name
     cy.contains("div", "Original name").click();
@@ -43,9 +41,9 @@ describe("Borehole list tests", () => {
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
 
-    firstRow.contains("td", "Troy Hoeger");
-    secondRow.contains("td", "Stevie Lebsack");
-    thirdRow.contains("td", "Samanta Ondricka");
+    firstRow.contains("td", "Zelda Johnson");
+    secondRow.contains("td", "Toby Barton");
+    thirdRow.contains("td", "Tiana Zieme");
 
     // sort by total depth
     cy.contains("div", "Total depth MD [m]").click();
@@ -53,18 +51,18 @@ describe("Borehole list tests", () => {
     firstRow = cy.get("tbody").children().first();
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
-    firstRow.contains("td", "21.885186443983198 m");
-    secondRow.contains("td", "687.4034924839639 m");
-    thirdRow.contains("td", "106.06555925033315 m");
+    firstRow.contains("td", "8.636276241688186 m");
+    secondRow.contains("td", "75.96321873178856 m");
+    thirdRow.contains("td", "136.5874522070342 m");
 
     cy.contains("div", "Total depth MD [m]").click();
     cy.wait("@borehole");
     firstRow = cy.get("tbody").children().first();
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
-    firstRow.contains("td", "1993.8250621752 m");
-    secondRow.contains("td", "1796.1156628076526 m");
-    thirdRow.contains("td", "1768.0555385388693 m");
+    firstRow.contains("td", "1948.0120427664424 m");
+    secondRow.contains("td", "1880.6851002763424 m");
+    thirdRow.contains("td", "1813.358157786242 m");
 
     // sort by drilling date
     cy.contains("div", "End of drilling date").click();
@@ -74,7 +72,7 @@ describe("Borehole list tests", () => {
     thirdRow = cy.get("tbody").children().eq(2);
 
     firstRow.contains("td", "12.01.2021");
-    secondRow.contains("td", "17.01.2021");
+    secondRow.contains("td", "14.01.2021");
     thirdRow.contains("td", "29.01.2021");
 
     cy.contains("div", "End of drilling date").click();
@@ -83,9 +81,9 @@ describe("Borehole list tests", () => {
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
 
-    firstRow.contains("td", "14.12.2021");
-    secondRow.contains("td", "09.11.2021");
-    thirdRow.contains("td", "12.10.2021");
+    firstRow.contains("td", "22.12.2021");
+    secondRow.contains("td", "18.12.2021");
+    thirdRow.contains("td", "14.12.2021");
 
     // sort by borehole type (column of original name)
     cy.contains("div", "Borehole type").click();
@@ -94,9 +92,9 @@ describe("Borehole list tests", () => {
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
 
-    firstRow.contains("td", "Rod Cronin");
-    secondRow.contains("td", "Okey Schinner");
-    thirdRow.contains("td", "Gilda Runte");
+    firstRow.contains("td", "Coty Raynor");
+    secondRow.contains("td", "Otto Crist");
+    thirdRow.contains("td", "Felton Macejkovic");
   });
 
   it("Boreholes are displayed in correct order with admin login", () => {
@@ -109,18 +107,18 @@ describe("Borehole list tests", () => {
     let secondRow = cy.get("tbody").children().eq(1);
     let thirdRow = cy.get("tbody").children().eq(2);
 
-    firstRow.contains("td", "30.04.2021");
-    secondRow.contains("td", "01.05.2021");
-    thirdRow.contains("td", "03.05.2021");
+    firstRow.contains("td", "08.01.2021");
+    secondRow.contains("td", "19.01.2021");
+    thirdRow.contains("td", "31.01.2021");
 
     cy.contains("th", "Creation date").click();
     firstRow = cy.get("tbody").children().first();
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
 
-    firstRow.contains("td", "14.11.2021");
-    secondRow.contains("td", "13.11.2021");
-    thirdRow.contains("td", "12.11.2021");
+    firstRow.contains("td", "04.12.2021");
+    secondRow.contains("td", "21.11.2021");
+    thirdRow.contains("td", "09.11.2021");
 
     // sort by creator
     cy.contains("th", "Created by").click();
@@ -147,9 +145,9 @@ describe("Borehole list tests", () => {
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
 
-    firstRow.contains("td", "Alfred Franecki");
-    secondRow.contains("td", "Ara Braun");
-    thirdRow.contains("td", "Bertram Windler");
+    firstRow.contains("td", "Aaliyah Klocko");
+    secondRow.contains("td", "Antone Terry");
+    thirdRow.contains("td", "Arch Veum");
 
     // sort by borehole type
     cy.contains("th", "Borehole type").click();
@@ -158,8 +156,8 @@ describe("Borehole list tests", () => {
     thirdRow = cy.get("tbody").children().eq(2);
 
     firstRow.contains("td", "other");
-    secondRow.contains("td", "trial pit");
-    thirdRow.contains("td", "trial pit");
+    secondRow.contains("td", "other");
+    thirdRow.contains("td", "other");
 
     // sort by borehole status
     cy.contains("th", "Borehole Status").click();
@@ -169,7 +167,7 @@ describe("Borehole list tests", () => {
 
     firstRow.contains("td", "open, no completion");
     secondRow.contains("td", "open, no completion");
-    thirdRow.contains("td", "decayed");
+    thirdRow.contains("td", "open, no completion");
 
     // sort by total depth
     cy.contains("th", "Total depth").click();
@@ -177,8 +175,8 @@ describe("Borehole list tests", () => {
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
 
-    firstRow.contains("td", "1768.0555385388693 m");
-    secondRow.contains("td", "1739.995414270086 m");
-    thirdRow.contains("td", "1711.9352900013027 m");
+    firstRow.contains("td", "1948.0120427664424 m");
+    secondRow.contains("td", "1813.358157786242 m");
+    thirdRow.contains("td", "1685.406981820896 m");
   });
 });
