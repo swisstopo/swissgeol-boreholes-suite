@@ -16,13 +16,12 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(PolicyNames.Admin, options => options.RequireRole(PolicyNames.Admin));
     options.AddPolicy(PolicyNames.Viewer, options => options.RequireRole(PolicyNames.Admin, PolicyNames.Viewer));
-    options.AddPolicy(PolicyNames.Guest, options => options.RequireRole(PolicyNames.Admin, PolicyNames.Viewer, PolicyNames.Guest));
 
     // Remarks: By default controller endpoints are accessible only to administrators (isAdmin flag in user entity).
     // The default authorization policy `[Authorize]` should not be used because its already set as the default fallback
     // policy and because it leads to unwanted behavior. If you have an endpoint which should be accessible for a specific
-    // role use `[Authorize(Policy = PolicyNames.Viewer)]` or `[Authorize(Policy = PolicyNames.Guest)]`. Use `[AllowAnonymous]`
-    // for endpoints which should be accessible without authentication (e.g. /version or /health endpoints).
+    // role use `[Authorize(Policy = PolicyNames.Viewer)]`. Use `[AllowAnonymous]` for endpoints which should be accessible
+    // without authentication (e.g. /version or /health endpoints).
     options.DefaultPolicy = options.GetPolicy(PolicyNames.Admin)!;
     options.FallbackPolicy = options.DefaultPolicy;
 });
