@@ -32,6 +32,7 @@ describe("Instrumentation tests", () => {
       "contain",
       "For the recording of an instrument please click the plus symbol at the top left",
     );
+    cy.contains("a", "Stop editing").click();
   });
 
   it("Can add and delete instrument without completion", () => {
@@ -88,6 +89,8 @@ describe("Instrumentation tests", () => {
     cy.get('[data-cy="profile-header-list"]')
       .children()
       .should("have.length", 0);
+
+    cy.contains("a", "Stop editing").click();
   });
 
   it("Can add casing layer to instrument", () => {
@@ -173,6 +176,8 @@ describe("Instrumentation tests", () => {
 
     casingDropDown.contains("Moonshine Bike");
 
+    cy.wait("@casing-layers");
+
     // chose second casingLayer
     const casingLayerDropDown = cy
       .get('[data-cy="casingId"]')
@@ -201,6 +206,9 @@ describe("Instrumentation tests", () => {
         .eq(3)
         .click({ force: true }),
     );
+
+    cy.wait("@casing-layers");
+
     casingDropDown.contains("Sunshine Bike");
 
     // change of casing resets casingLayer
@@ -216,6 +224,9 @@ describe("Instrumentation tests", () => {
         .click({ force: true }),
     );
 
+    cy.wait("@casing-layers");
+
     casingLayerDropDown.contains("Sunshine Honey");
+    cy.contains("a", "Stop editing").click();
   });
 });
