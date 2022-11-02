@@ -57,7 +57,7 @@ describe("Instrumentation tests", () => {
         cy.wrap(el).click().find('[role="option"]').last().click(),
       );
 
-    // header should contain one tab with name "No casind"
+    // header should contain one tab with name "No casing"
     cy.get('[data-cy="profile-header-list"]')
       .children()
       .should("have.length", 1);
@@ -167,7 +167,7 @@ describe("Instrumentation tests", () => {
         .wrap(el)
         .click({ force: true })
         .find('[role="option"]')
-        .eq(1)
+        .eq(2)
         .click({ force: true }),
     );
 
@@ -198,10 +198,10 @@ describe("Instrumentation tests", () => {
         .wrap(el)
         .click({ force: true })
         .find('[role="option"]')
-        .eq(2)
+        .eq(3)
         .click({ force: true }),
     );
-    casingDropDown.contains("Moonshine Bike");
+    casingDropDown.contains("Sunshine Bike");
 
     // change of casing resets casingLayer
     casingLayerDropDown.should("not.contain", "Moonshine Bike");
