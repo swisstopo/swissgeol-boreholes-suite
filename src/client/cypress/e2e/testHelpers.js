@@ -9,7 +9,7 @@ const adminUserAuth = {
 export const interceptApiCalls = () => {
   cy.intercept("/api/v1/borehole").as("borehole");
   cy.intercept("/api/v1/borehole/profile/layer").as("layer");
-  cy.intercept("/api/v2/layer*").as("layer-v2");
+  cy.intercept("/api/v2/layer/**").as("layer-v2");
   cy.intercept("/api/v1/borehole/edit", req => {
     return (req.alias = `edit_${req.body.action.toLowerCase()}`);
   });
