@@ -28,17 +28,6 @@ describe("General app tests", () => {
     cy.contains("Benvenuti su");
   });
 
-  it("Can enter app as viewer", () => {
-    cy.intercept("/api/v1/geoapi/canton").as("geoapi");
-
-    cy.visit("/");
-    cy.contains("button", "Enter as viewer").click();
-    cy.wait("@geoapi");
-
-    cy.get("div[id=map]").should("be.visible");
-    cy.contains("span", " Viewer");
-  });
-
   it("Displays the current host as app title", () => {
     loginAsEditor();
     cy.get('[data-cy="app-title"]').contains("localhost");

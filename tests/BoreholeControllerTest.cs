@@ -172,12 +172,4 @@ public class BoreholeControllerTest
         context.Boreholes.Remove(copiedBorehole);
         context.SaveChanges();
     }
-
-    [TestMethod]
-    public async Task CopyAsGuest()
-    {
-        SetClaimsPrincipal("guest", PolicyNames.Guest);
-        var result = await controller.CopyAsync(BoreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
-    }
 }

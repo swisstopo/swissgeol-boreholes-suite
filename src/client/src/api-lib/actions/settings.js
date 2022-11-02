@@ -1,7 +1,5 @@
 import { downloadFilePost, downloadFile, fetch, uploadFile } from "./index";
 
-import store from "../reducers";
-
 export function loadSettings() {
   return fetch("/setting", {
     type: "GET",
@@ -17,21 +15,7 @@ export function patchSettings(tree, value, key = null) {
   if (key !== null) {
     payload.key = key;
   }
-  const state = store.getState();
-  // Exclude guest from sending settings patch
-  if (
-    state &&
-    state.hasOwnProperty("core_user") &&
-    state.core_user.authentication !== null &&
-    state.core_user.authentication.username === "guest"
-  ) {
-    return {
-      path: "/setting",
-      ...payload,
-    };
-  } else {
-    return fetch("/setting", payload);
-  }
+  return fetch("/setting", payload);
 }
 
 export function patchEditorSettings(tree, value, key = null) {

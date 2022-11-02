@@ -152,16 +152,6 @@ class LoginPreview extends React.Component {
               "User or password wrong"
             )}
           </div>
-          {this.props.guest === true ? (
-            <Button
-              compact
-              content="Enter as viewer"
-              disabled={this.props.user.data !== null}
-              fluid
-              secondary
-              size="small"
-            />
-          ) : null}
         </div>
       </div>
     );
@@ -170,8 +160,6 @@ class LoginPreview extends React.Component {
 
 LoginPreview.propTypes = {
   body: PropTypes.string,
-  guest: PropTypes.bool,
-  onGuestLogin: PropTypes.func,
   title: PropTypes.string,
   user: PropTypes.shape({
     authentication: PropTypes.shape({
@@ -184,7 +172,6 @@ LoginPreview.propTypes = {
 };
 
 LoginPreview.defaultProps = {
-  guest: true,
   title: "Welcome to swissforage.ch",
   body: "",
 };
