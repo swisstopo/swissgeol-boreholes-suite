@@ -53,7 +53,9 @@ const Instrument = props => {
     });
 
     // fetch corresponding casing layers
-    fetchCasingLayers(info.instrument_casing_id);
+    if (info.instrument_casing_id) {
+      fetchCasingLayers(info.instrument_casing_id);
+    }
   }, [fetchCasingLayers, info]);
 
   const updateChange = (attribute, value, isNumber = false) => {
@@ -66,7 +68,8 @@ const Instrument = props => {
     if (attribute === "instrument_casing_id") {
       setCasingLayers([]);
       updateLayer({ ...instrument, instrumentCasingLayerId: null });
-      fetchCasingLayers(instrument.instrumentCasingId);
+      instrument.instrumentCasingId &&
+        fetchCasingLayers(instrument.instrumentCasingId);
     }
 
     setInstrumentInfo(
