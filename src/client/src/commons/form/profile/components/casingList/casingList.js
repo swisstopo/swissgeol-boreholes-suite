@@ -8,7 +8,7 @@ const CasingList = props => {
 
   // add reset option to dropdown
   if (!data.some(d => d.key === 0)) {
-    data.push({
+    data.unshift({
       key: 0,
       value: null,
       text: (
