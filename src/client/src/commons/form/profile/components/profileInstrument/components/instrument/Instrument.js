@@ -33,15 +33,16 @@ const Instrument = props => {
   const [updateAttributeDelay, setUpdateAttributeDelay] = useState({});
 
   const fetchCasingLayers = useCallback(
-    id =>
-      fetchLayers(id).then(response => {
+    () =>
+      instrument.instrumentCasingId &&
+      fetchLayers(instrument.instrumentCasingId).then(response => {
         if (response?.length > 0) {
           setCasingLayers(response);
         } else {
           setCasingLayers([]);
         }
       }),
-    [],
+    [instrument.instrumentCasingId],
   );
 
   useEffect(() => {
@@ -52,10 +53,7 @@ const Instrument = props => {
       setInstrument(response);
     });
 
-    // fetch corresponding casing layers
-    if (info.instrument_casing_id) {
-      fetchCasingLayers(info.instrument_casing_id);
-    }
+    fetchCasingLayers();
   }, [fetchCasingLayers, info]);
 
   const updateChange = (attribute, value, isNumber = false) => {
@@ -68,8 +66,7 @@ const Instrument = props => {
     if (attribute === "instrument_casing_id") {
       setCasingLayers([]);
       updateLayer({ ...instrument, instrumentCasingLayerId: null });
-      instrument.instrumentCasingId &&
-        fetchCasingLayers(instrument.instrumentCasingId);
+      instrument.instrumentCasingId && fetchCasingLayers();
     }
 
     setInstrumentInfo(
