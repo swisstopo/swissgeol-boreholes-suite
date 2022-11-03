@@ -5,6 +5,18 @@ import {
   login,
 } from "../testHelpers";
 
+const delayedType = (selector, string) => {
+  const element = cy.get(selector);
+  cy.wait(500);
+  element.type(string);
+};
+
+const addInstrumentLayer = () => {
+  cy.get('[data-cy="add-instrumentation-button"]').click();
+  cy.wait("@layer");
+  cy.wait(5000);
+};
+
 describe("Instrumentation tests", () => {
   beforeEach(() => {
     interceptApiCalls();
@@ -44,11 +56,7 @@ describe("Instrumentation tests", () => {
       .children()
       .should("have.length", 0);
 
-    // add instrument with completion "no casing"
-    cy.get('[data-cy="add-instrumentation-button"]').click();
-    cy.wait("@edit_list");
-    cy.wait("@layer");
-    cy.wait(2000);
+    addInstrumentLayer();
 
     cy.get('[data-cy="casingName"]')
       .children()
@@ -65,7 +73,7 @@ describe("Instrumentation tests", () => {
       .should("have.length", 1);
 
     // add another instrument without name of completion
-    cy.get('[data-cy="add-instrumentation-button"]').click();
+    addInstrumentLayer();
 
     // select tab "No completion"
     cy.get('[data-cy="profile-header-list"]')
@@ -103,27 +111,21 @@ describe("Instrumentation tests", () => {
 
     // first casing
     cy.get('[data-cy="add-stratigraphy-button"]').click();
-    cy.wait(2000);
     cy.wait("@stratigraphy_edit_create");
     cy.wait("@layer");
     cy.contains("div", "This is the main completion");
 
-    cy.wait(500);
-    cy.get('[data-cy="name"]').type("Moonshine Bike");
+    delayedType('[data-cy="name"]', "Moonshine Bike");
 
     cy.get('[data-cy="add-layer-button"]').click();
     cy.wait("@layer");
-    cy.wait(2000);
     cy.get('[data-cy="styled-layer-0"]').click();
-    cy.wait(500);
-    cy.get('[data-cy="casing_id"]').type("Moonshine Veal");
+    delayedType('[data-cy="casing_id"]', "Moonshine Veal");
 
     cy.get('[data-cy="add-layer-button"]').click();
     cy.wait("@layer");
-    cy.wait(2000);
     cy.get('[data-cy="styled-layer-1"]').click();
-    cy.wait(500);
-    cy.get('[data-cy="casing_id"]').type("Moonshine Honey");
+    delayedType('[data-cy="casing_id"]', "Moonshine Honey");
 
     // second casing
     cy.get('[data-cy="add-stratigraphy-button"]').click();
@@ -132,37 +134,27 @@ describe("Instrumentation tests", () => {
 
     // navigate to correct tab
     cy.contains("div", "Unknown").click();
-    cy.wait(2000);
-    cy.get('[data-cy="name"]').type("Sunshine Bike");
+    delayedType('[data-cy="name"]', "Sunshine Bike");
 
     cy.get('[data-cy="add-layer-button"]').click();
     cy.wait("@layer");
-    cy.wait(2000);
     cy.wait("@stratigraphy_layer_edit_create");
-    cy.wait(2000);
 
     cy.get('[data-cy="styled-layer-0"]').click();
-    cy.wait(500);
-    cy.get('[data-cy="casing_id"]').type("Sunshine Veal");
+    delayedType('[data-cy="casing_id"]', "Sunshine Veal");
 
     cy.get('[data-cy="add-layer-button"]').click();
     cy.wait("@layer");
-    cy.wait(2000);
     cy.wait("@stratigraphy_layer_edit_create");
-    cy.wait(2000);
 
     cy.get('[data-cy="styled-layer-1"]').scrollIntoView().click();
-    cy.wait(500);
-    cy.get('[data-cy="casing_id"]').type("Sunshine Honey");
+    delayedType('[data-cy="casing_id"]', "Sunshine Honey");
 
     // add instrument
     cy.get('[data-cy="instrument-menu-item"]').click();
     cy.wait("@layer");
-    cy.wait(2000);
 
-    cy.get('[data-cy="add-instrumentation-button"]').click({ force: true });
-    cy.wait(2000);
-    cy.wait("@layer-v2");
+    addInstrumentLayer();
 
     // chose first  casing
     let casingDropDown = cy
@@ -203,7 +195,6 @@ describe("Instrumentation tests", () => {
         .click({ force: true }),
     );
 
-    cy.wait(500);
     casingLayerDropDown.contains("Moonshine Honey");
 
     casingDropDown = cy
