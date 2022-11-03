@@ -30,7 +30,7 @@ public class CodeListControllerTest
     public async Task GetAllEntriesAsync()
     {
         var codeLists = await controller.GetAsync();
-        Assert.AreEqual(2437, codeLists.Count());
+        Assert.AreEqual(2403, codeLists.Count());
     }
 
     [TestMethod]
