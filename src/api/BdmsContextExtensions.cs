@@ -292,6 +292,12 @@ public static class BdmsContextExtensions
         var layer_ids = 7000;
         var layerRange = Enumerable.Range(layer_ids, 1500);
 
+        // Each ten layers should be associated with the one stratigraphy.
+        int GetStratigraphyId(int currentLayerId)
+        {
+            return 6000 + (int)Math.Floor((double)((currentLayerId - 7000) / 10));
+        }
+
         var fakelayers = new Faker<Layer>()
             .StrictMode(true)
             .RuleFor(o => o.FromDepth, f => (layer_ids % 10) * 10)
@@ -335,7 +341,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.InstrumentKind, _ => default!)
             .RuleFor(o => o.InstrumentStatusId, f => f.PickRandom(instrumentMaterialIds).OrNull(f, .05f))
             .RuleFor(o => o.InstrumentStatus, _ => default!)
-            .RuleFor(o => o.InstrumentCasingId, f => 6000 + (int)Math.Floor((double)((layer_ids - 7000) / 10)))
+            .RuleFor(o => o.InstrumentCasingId, f => GetStratigraphyId(layer_ids))
             .RuleFor(o => o.InstrumentCasing, _ => default!)
             .RuleFor(o => o.InstrumentCasingLayerId, _ => null)
             .RuleFor(o => o.KirostId, f => f.PickRandom(kirostIds).OrNull(f, .05f))
@@ -353,7 +359,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.QtDescription, _ => default!)
             .RuleFor(o => o.SoilStateId, f => f.PickRandom(soilStateIds))
             .RuleFor(o => o.SoilState, _ => default!)
-            .RuleFor(o => o.StratigraphyId, f => 6000 + (int)Math.Floor((double)((layer_ids - 7000) / 10)))
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyId(layer_ids))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.IsStriae, f => f.Random.Bool())
             .RuleFor(o => o.SymbolId, f => f.PickRandom(symbolIds).OrNull(f, .05f))
