@@ -27,8 +27,7 @@ public class UserController : ControllerBase
     /// Gets the current authenticated and authorized bdms user.
     /// </summary>
     [HttpGet("self")]
-    [Authorize(Policy = PolicyNames.Guest)]
-    [SwaggerResponse(StatusCodes.Status204NoContent, "If logged in with the default guest user.")]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<User?>> GetUserInformationAsync() =>
         await context.Users.SingleOrDefaultAsync(u => u.Name == HttpContext.User.FindFirst(ClaimTypes.Name).Value).ConfigureAwait(false);
 }

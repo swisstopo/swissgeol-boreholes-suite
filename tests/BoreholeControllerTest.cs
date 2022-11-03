@@ -77,7 +77,7 @@ public class BoreholeControllerTest
         Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
         var copiedBorehole = GetBorehole((int)copiedBoreholeId);
 
-        Assert.AreEqual("Alfred Franecki (Copy)", copiedBorehole.OriginalName);
+        Assert.AreEqual("Felton Macejkovic (Copy)", copiedBorehole.OriginalName);
         Assert.AreEqual("validator", copiedBorehole.CreatedBy.Name);
         Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
         Assert.AreEqual(1, copiedBorehole.Workflows.Count);
@@ -179,13 +179,5 @@ public class BoreholeControllerTest
         context.Stratigraphies.RemoveRange(stratigraphiesToRemove);
         context.Boreholes.Remove(copiedBorehole);
         context.SaveChanges();
-    }
-
-    [TestMethod]
-    public async Task CopyAsGuest()
-    {
-        SetClaimsPrincipal("guest", PolicyNames.Guest);
-        var result = await controller.CopyAsync(BoreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
 }

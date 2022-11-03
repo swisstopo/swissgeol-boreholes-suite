@@ -21,6 +21,7 @@ class MenuComponent extends React.Component {
 
   render() {
     const { handleModeChange, mode } = this.props;
+    const baseUrl = window.location.host;
 
     return (
       <div
@@ -46,11 +47,12 @@ class MenuComponent extends React.Component {
             marginLeft: "1em",
           }}>
           <div
+            data-cy="app-title"
             style={{
               fontSize: "1.2em",
               fontWeight: "bold",
             }}>
-            swissforages.ch
+            {baseUrl}
           </div>
           <div
             style={{

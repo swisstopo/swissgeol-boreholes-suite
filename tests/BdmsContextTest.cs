@@ -22,7 +22,7 @@ public class BdmsContextTest
             .Include(s => s.WorkgroupRoles).ThenInclude(s => s.Workgroup)
             .AsQueryable();
 
-        Assert.AreEqual(5, users.Count());
+        Assert.AreEqual(7, users.Count());
 
         var admin = users.Single(u => u.Name == "admin");
         Assert.AreEqual("admin", admin.Name);

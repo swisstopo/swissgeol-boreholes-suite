@@ -16,9 +16,4 @@ public static class PolicyNames
     /// Users with <see cref="User.IsViewer"/> set to <c>true</c>.
     /// </summary>
     public const string Viewer = "Viewer";
-
-    /// <summary>
-    /// Users logged in with the default guest account.
-    /// </summary>
-    public const string Guest = "Guest";
 }

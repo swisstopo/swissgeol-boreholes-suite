@@ -262,17 +262,6 @@ class DataLoader extends React.Component {
                   "User or password wrong"
                 )}
               </div>
-              <Button
-                compact
-                content="Enter as viewer"
-                disabled={this.props.user.data !== null}
-                fluid
-                onClick={() => {
-                  this.props.anonymousLogin("guest", "MeiSe0we1Oowief");
-                }}
-                secondary
-                size="small"
-              />
             </div>
           </div>
 

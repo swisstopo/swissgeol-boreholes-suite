@@ -42,6 +42,9 @@ dotnet_style_predefined_type_for_locals_parameters_members = true:silent
 [*.md]
 trim_trailing_whitespace = false
 
+[CHANGELOG.md]
+end_of_line = lf
+
 [*.{json,yml,xml,config,*proj,nuspec,props,resx,targets,tasks}]
 indent_size = 2
 
