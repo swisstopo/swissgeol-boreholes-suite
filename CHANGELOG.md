@@ -45,3 +45,4 @@
 - Fix copying of boreholes.
 - Add missing checks for contributions when deleting users.
 - Removed obsolete `borehole.contact_id` column.
+- Always displays `Show all` button when editing instruments.
