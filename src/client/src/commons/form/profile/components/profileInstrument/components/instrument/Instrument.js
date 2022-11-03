@@ -8,11 +8,7 @@ import { InstrumentAttributes } from "../../data/InstrumentAttributes";
 import { useTranslation } from "react-i18next";
 import CasingList from "../../../casingList";
 import { produce } from "immer";
-import {
-  fetchLayerById,
-  fetchLayers,
-  updateLayer,
-} from "../../../../../../../api/layer-api";
+import { fetchWithAuth } from "../../../../../../../api/fetchWithAuth";
 
 const Instrument = props => {
   const { index, info, deleting, isEditable, update, casing } = props.data;
@@ -31,6 +27,21 @@ const Instrument = props => {
   const [casingLayers, setCasingLayers] = useState([]);
   const [instrument, setInstrument] = useState([]);
   const [updateAttributeDelay, setUpdateAttributeDelay] = useState({});
+
+  async function fetchLayers(profileId) {
+    return await fetchWithAuth(`/api/v2/layer?profileId=${profileId}`, "GET");
+  }
+
+  async function fetchLayerById(id) {
+    return await fetchWithAuth(`/api/v2/layer/${id}`, "GET");
+  }
+
+  async function updateLayer(layer) {
+    // remove derived objects
+    delete layer.createdBy;
+    delete layer.updatedBy;
+    return await fetchWithAuth(`/api/v2/layer`, "PUT", layer);
+  }
 
   const fetchCasingLayers = useCallback(() => {
     if (instrument.instrumentCasingId) {
