@@ -29,7 +29,7 @@ describe("Instrumentation tests", () => {
   });
 
   afterEach(() => {
-    // delete borehole
+    // Delete borehole
     cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 
@@ -51,7 +51,7 @@ describe("Instrumentation tests", () => {
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");
 
-    // header should not contain tabs
+    // Header should not contain tabs
     cy.get('[data-cy="profile-header-list"]')
       .children()
       .should("have.length", 0);
@@ -67,15 +67,15 @@ describe("Instrumentation tests", () => {
         cy.wrap(el).click().find('[role="option"]').last().click(),
       );
 
-    // header should contain one tab with name "No casing"
+    // Header should contain one tab with name "No casing"
     cy.get('[data-cy="profile-header-list"]')
       .children()
       .should("have.length", 1);
 
-    // add another instrument without name of completion
+    // Add another instrument without name of completion
     addInstrumentLayer();
 
-    // select tab "No completion"
+    // Select tab "No completion"
     cy.get('[data-cy="profile-header-list"]')
       .children()
       .first()
@@ -84,17 +84,17 @@ describe("Instrumentation tests", () => {
       .should("contain", "No casing")
       .click();
 
-    // only one instrument should be displayed
+    // Only one instrument should be displayed
     cy.get('[data-cy="instrument-list"]').children().should("have.length", 1);
 
-    // show all instruments
+    // Show all instruments
     cy.get('[data-cy="show-all-button"]').click();
     cy.get('[data-cy="instrument-list"]').children().should("have.length", 2);
 
-    // delete instrument with "no completion" removes "No completion" tab.
+    // Delete instrument with "no completion" removes "No completion" tab.
     cy.get('[data-cy="delete-instrument-button"]').first().click();
 
-    // header should not contain tabs
+    // Header should not contain tabs
     cy.get('[data-cy="profile-header-list"]')
       .children()
       .should("have.length", 0);
@@ -106,10 +106,10 @@ describe("Instrumentation tests", () => {
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");
 
-    // add two casings with two layers
+    // Add two casings with two layers
     cy.get('[data-cy="casing-menu-item"]').click();
 
-    // first casing
+    // First casing
     cy.get('[data-cy="add-stratigraphy-button"]').click();
     cy.wait("@stratigraphy_edit_create");
     cy.wait("@layer");
@@ -127,12 +127,12 @@ describe("Instrumentation tests", () => {
     cy.get('[data-cy="styled-layer-1"]').click();
     delayedType('[data-cy="casing_id"]', "Moonshine Honey");
 
-    // second casing
+    // Second casing
     cy.get('[data-cy="add-stratigraphy-button"]').click();
     cy.wait("@stratigraphy_edit_create");
     cy.wait("@layer");
 
-    // navigate to correct tab
+    // Navigate to correct tab
     cy.contains("div", "Unknown").click();
     delayedType('[data-cy="name"]', "Sunshine Bike");
 
@@ -150,13 +150,13 @@ describe("Instrumentation tests", () => {
     cy.get('[data-cy="styled-layer-1"]').scrollIntoView().click();
     delayedType('[data-cy="casing_id"]', "Sunshine Honey");
 
-    // add instrument
+    // Add instrument
     cy.get('[data-cy="instrument-menu-item"]').click();
     cy.wait("@layer");
 
     addInstrumentLayer();
 
-    // chose first  casing
+    // Chose first casing
     let casingDropDown = cy
       .get('[data-cy="casingName"]')
       .children()
@@ -178,7 +178,7 @@ describe("Instrumentation tests", () => {
     cy.wait("@casing-layers");
     cy.wait(3000);
 
-    // chose second casingLayer
+    // Choose second casingLayer
     let casingLayerDropDown = cy
       .get('[data-cy="casingId"]')
       .children()
@@ -204,7 +204,7 @@ describe("Instrumentation tests", () => {
       .children()
       .first();
 
-    // chose second casing
+    // Choose second casing
     casingDropDown.each((el, index, list) =>
       cy
         .wrap(el)
@@ -226,13 +226,13 @@ describe("Instrumentation tests", () => {
       .children()
       .first();
 
-    // change of casing resets casingLayer
+    // Change of casing should reset casingLayer
     casingLayerDropDown.should("not.contain", "Moonshine Bike");
 
     cy.wait("@casing-layers");
     cy.wait(3000);
 
-    // dropdown Options in casingLayer dropdown have updated
+    // Dropdown options in casingLayer dropdown have updated
     casingLayerDropDown.each((el, index, list) =>
       cy
         .wrap(el)
