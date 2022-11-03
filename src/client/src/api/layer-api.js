@@ -53,5 +53,7 @@ export const updateLayer = async layer => {
     },
     body: JSON.stringify(layer),
   });
-  return await response.json();
+  if (response.ok) {
+    return await response.json();
+  }
 };
