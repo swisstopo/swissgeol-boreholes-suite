@@ -48,6 +48,7 @@ describe("Instrumentation tests", () => {
     cy.get('[data-cy="add-instrumentation-button"]').click();
     cy.wait("@edit_list");
     cy.wait("@layer");
+    cy.wait(2000);
 
     cy.get('[data-cy="casingName"]')
       .children()
