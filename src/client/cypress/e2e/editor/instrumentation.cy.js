@@ -107,18 +107,21 @@ describe("Instrumentation tests", () => {
     cy.wait("@layer");
     cy.contains("div", "This is the main completion");
 
+    cy.wait(500);
     cy.get('[data-cy="name"]').type("Moonshine Bike");
 
     cy.get('[data-cy="add-layer-button"]').click();
     cy.wait("@layer");
     cy.wait(2000);
     cy.get('[data-cy="styled-layer-0"]').click();
+    cy.wait(500);
     cy.get('[data-cy="casing_id"]').type("Moonshine Veal");
 
     cy.get('[data-cy="add-layer-button"]').click();
     cy.wait("@layer");
     cy.wait(2000);
     cy.get('[data-cy="styled-layer-1"]').click();
+    cy.wait(500);
     cy.get('[data-cy="casing_id"]').type("Moonshine Honey");
 
     // second casing
@@ -128,6 +131,7 @@ describe("Instrumentation tests", () => {
 
     // navigate to correct tab
     cy.contains("div", "Unknown").click();
+    cy.wait(2000);
     cy.get('[data-cy="name"]').type("Sunshine Bike");
 
     cy.get('[data-cy="add-layer-button"]').click();
@@ -137,6 +141,7 @@ describe("Instrumentation tests", () => {
     cy.wait(2000);
 
     cy.get('[data-cy="styled-layer-0"]').click();
+    cy.wait(500);
     cy.get('[data-cy="casing_id"]').type("Sunshine Veal");
 
     cy.get('[data-cy="add-layer-button"]').click();
@@ -146,6 +151,7 @@ describe("Instrumentation tests", () => {
     cy.wait(2000);
 
     cy.get('[data-cy="styled-layer-1"]').scrollIntoView().click();
+    cy.wait(500);
     cy.get('[data-cy="casing_id"]').type("Sunshine Honey");
 
     // add instrument
@@ -158,7 +164,7 @@ describe("Instrumentation tests", () => {
     cy.wait("@layer-v2");
 
     // chose first  casing
-    const casingDropDown = cy
+    let casingDropDown = cy
       .get('[data-cy="casingName"]')
       .children()
       .first()
@@ -177,9 +183,10 @@ describe("Instrumentation tests", () => {
     casingDropDown.contains("Moonshine Bike");
 
     cy.wait("@casing-layers");
+    cy.wait(3000);
 
     // chose second casingLayer
-    const casingLayerDropDown = cy
+    let casingLayerDropDown = cy
       .get('[data-cy="casingId"]')
       .children()
       .first()
@@ -195,7 +202,15 @@ describe("Instrumentation tests", () => {
         .click({ force: true }),
     );
 
+    cy.wait(500);
     casingLayerDropDown.contains("Moonshine Honey");
+
+    casingDropDown = cy
+      .get('[data-cy="casingName"]')
+      .children()
+      .first()
+      .children()
+      .first();
 
     // chose second casing
     casingDropDown.each((el, index, list) =>
@@ -208,11 +223,22 @@ describe("Instrumentation tests", () => {
     );
 
     cy.wait("@casing-layers");
+    cy.wait(3000);
 
     casingDropDown.contains("Sunshine Bike");
 
+    casingLayerDropDown = cy
+      .get('[data-cy="casingId"]')
+      .children()
+      .first()
+      .children()
+      .first();
+
     // change of casing resets casingLayer
     casingLayerDropDown.should("not.contain", "Moonshine Bike");
+
+    cy.wait("@casing-layers");
+    cy.wait(3000);
 
     // dropdown Options in casingLayer dropdown have updated
     casingLayerDropDown.each((el, index, list) =>
@@ -225,6 +251,7 @@ describe("Instrumentation tests", () => {
     );
 
     cy.wait("@casing-layers");
+    cy.wait(3000);
 
     casingLayerDropDown.contains("Sunshine Honey");
     cy.contains("a", "Stop editing").click();
