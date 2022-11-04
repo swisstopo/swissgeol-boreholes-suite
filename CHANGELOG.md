@@ -4,6 +4,12 @@
 
 ### Added
 
+- Added possibility to add a casing layer (CasingId) to an instrument.
+
+## v2.0.65 - 2022-11-04
+
+### Added
+
 - Added this changelog.
 - Added new .NET REST API (_v2_).
 - Added new API endpoint (_/v2/version_).
@@ -15,7 +21,6 @@
 - Added functionality to add instruments without casing.
 - Added a new about page in settings containing license information.
 - Added automatic release notes for newly created GitHub releases.
-- Added possibility to add a casing layer (CasingId) to an instrument.
 
 ### Changed
 
@@ -46,3 +51,4 @@
 - Fix copying of boreholes.
 - Add missing checks for contributions when deleting users.
 - Removed obsolete `borehole.contact_id` column.
+- Always displays `Show all` button when editing instruments.

@@ -77,13 +77,13 @@ public static class BdmsContextExtensions
         List<int> fillMaterialIds = codelists.Where(c => c.Schema == "fill200").Select(s => s.Id).ToList();
         List<int> uscsIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();
         List<int> uscsDeterminationIds = codelists.Where(c => c.Schema == "mcla104").Select(s => s.Id).ToList();
-        List<int> soilStateIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> kirostIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> lithokIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> symbolIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> tectonicUnitIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> tectonicIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> unconrocksIds = codelists.Where(c => c.Schema == "mlpr117").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> soilStateIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> kirostIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> lithokIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> symbolIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> tectonicUnitIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> tectonicIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> unconrocksIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
 
