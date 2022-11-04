@@ -47,7 +47,7 @@ describe("Test the borehole bulk edit feature.", () => {
     // select all bulk edit fields and insert values
     cy.get(".modal .toggle").click({ multiple: true });
     cy.get("form .field > .input > input")
-      .should("have.length", 8)
+      .should("have.length", 11)
       .each((el, index, list) => cy.wrap(el).type(`A${index}`));
     cy.get("form .field > .react-datepicker-wrapper input")
       .should("have.length", 3)
@@ -56,7 +56,7 @@ describe("Test the borehole bulk edit feature.", () => {
         cy.get(`.react-datepicker__day--013`).click();
       });
     cy.get('form .field [role="combobox"]')
-      .should("have.length", 14)
+      .should("have.length", 11)
       .each((el, index, list) =>
         cy.wrap(el).click().find('[role="option"]').last().click(),
       );
