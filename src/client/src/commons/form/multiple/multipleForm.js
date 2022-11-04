@@ -5,7 +5,9 @@ import { withTranslation } from "react-i18next";
 import _ from "lodash";
 
 import DomainDropdown from "../domain/dropdown/domainDropdown";
+import DomainTree from "../domain/tree/domainTree";
 import DateField from "../dateField";
+import TranslationText from "../translationText";
 
 import { Header, Input, Button, Form } from "semantic-ui-react";
 
@@ -120,31 +122,57 @@ class MultipleForm extends React.Component {
   }
 
   getDomain(field, schema = null) {
+    const onSelected = selected =>
+      this.setState({
+        ...this.state,
+        data: {
+          ...this.state.data,
+          [field]: {
+            ...this.state.data[field],
+            value: selected.id,
+          },
+        },
+      });
+
     const { t } = this.props;
     if (!this.isActive(field)) {
       return null;
     }
-    return (
-      <Form.Field key={field}>
-        <label>{t(field)}</label>
-        <DomainDropdown
-          onSelected={selected =>
-            this.setState({
-              ...this.state,
-              data: {
-                ...this.state.data,
-                [field]: {
-                  ...this.state.data[field],
-                  value: selected.id,
-                },
-              },
-            })
-          }
-          schema={schema === null ? this.state.data[field].api : schema}
-          selected={this.state.data[field].value}
-        />
-      </Form.Field>
-    );
+    if (
+      [
+        "lithology_top_bedrock",
+        "lithostratigraphy_top_bedrock",
+        "chronostratigraphy_top_bedrock",
+      ].includes(field)
+    ) {
+      return (
+        <Form.Field key={field}>
+          <label>{t(field)}</label>
+          <DomainTree
+            levels={{
+              1: "rock",
+              2: "process",
+              3: "type",
+            }}
+            onSelected={onSelected}
+            schema={schema === null ? this.state.data[field].api : schema}
+            selected={this.state.data[field].value}
+            title={<TranslationText id={field} />}
+          />
+        </Form.Field>
+      );
+    } else {
+      return (
+        <Form.Field key={field}>
+          <label>{t(field)}</label>
+          <DomainDropdown
+            onSelected={onSelected}
+            schema={schema === null ? this.state.data[field].api : schema}
+            selected={this.state.data[field].value}
+          />
+        </Form.Field>
+      );
+    }
   }
 
   getInput(field, type = "text") {
