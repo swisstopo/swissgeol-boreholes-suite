@@ -32,7 +32,6 @@ import {
   Message,
   Dimmer,
   Loader,
-  // Progress,
   TextArea,
   Icon,
 } from "semantic-ui-react";
@@ -90,21 +89,6 @@ class BoreholeForm extends React.Component {
       this.loadOrCreate(parseInt(this.props.match.params.id, 10));
     }
   }
-
-  // componentWillUnmount() {
-  //   const {
-  //     borehole,
-  //     user,
-  //   } = this.props;
-  //   if (
-  //     borehole.data.lock === null
-  //     || borehole.data.lock.username === user.data.username
-  //   ){
-  //     this.props.unlockBorehole(
-  //       borehole.data.id
-  //     );
-  //   }
-  // }
 
   loadOrCreate(id) {
     const self = this;
@@ -171,8 +155,6 @@ class BoreholeForm extends React.Component {
         clearTimeout(this.checkattribute);
         this.checkattribute = false;
       }
-      // this.props.updateBorehole(borehole);
-
       this.checkattribute = setTimeout(() => {
         checkBorehole(attribute, value)
           .then(response => {
@@ -310,7 +292,6 @@ class BoreholeForm extends React.Component {
   }
 
   patch(borehole, attribute, value, to = true) {
-    // this.props.updateBorehole(borehole);
     if (
       this.updateAttributeDelay.hasOwnProperty(attribute) &&
       this.updateAttributeDelay[attribute]
@@ -503,10 +484,6 @@ class BoreholeForm extends React.Component {
                           }>
                           <label>&nbsp;</label>
                           <DomainDropdown
-                            // exclude={
-                            //   this.props.borehole.data.custom.identifiers?
-                            //   this.props.borehole.data.custom.identifiers.map(el => el.id): []
-                            // }
                             onSelected={selected => {
                               this.setState({
                                 identifier: selected.id,
@@ -690,24 +667,6 @@ class BoreholeForm extends React.Component {
                           value={borehole.custom.alternate_name ?? ""}
                         />
                       </Form.Field>
-                      {/* drilling type in Location */}
-                      {/* <Form.Field
-                        error={
-                          borehole.kind === null ||
-                          mentions.indexOf('kind') >= 0
-                        }
-                        required>
-                        <label>
-                          <TranslationText id="kind" />
-                        </label>
-                        <DomainDropdown
-                          onSelected={selected => {
-                            this.updateChange('kind', selected.id, false);
-                          }}
-                          schema="kind"
-                          selected={borehole.kind}
-                        />
-                      </Form.Field> */}
                     </Form.Group>
                   </Form>
                 </Segment>
@@ -862,13 +821,6 @@ class BoreholeForm extends React.Component {
                                   "location_y",
                                   e.target.value === "" ? null : e.target.value,
                                 );
-                                // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
-                                //   this.updateChange(
-                                //     'location_y',
-                                //     e.target.value === '' ?
-                                //       null : _.toNumber(e.target.value)
-                                //   );
-                                // }
                               }}
                               spellCheck="false"
                               value={
@@ -898,14 +850,6 @@ class BoreholeForm extends React.Component {
                                   "elevation_z",
                                   e.target.value === "" ? null : e.target.value,
                                 );
-
-                                // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
-                                //   this.updateChange(
-                                //     'elevation_z',
-                                //     e.target.value === '' ?
-                                //       null : _.toNumber(e.target.value)
-                                //   );
-                                // }
                               }}
                               spellCheck="false"
                               value={
@@ -1021,13 +965,6 @@ class BoreholeForm extends React.Component {
                             <label>
                               <TranslationText id="hrs" />
                             </label>
-                            {/* <DomainDropdown
-                              onSelected={(selected) => {
-                                this.updateChange('hrs', selected.id, false);
-                              }}
-                              schema='hrs'
-                              selected={borehole.hrs}
-                            /> */}
                             <div
                               style={{
                                 height: "36px",
@@ -1086,26 +1023,9 @@ class BoreholeForm extends React.Component {
                                     }
                                   }}>
                                   <Icon name="map marker" />
-                                  {/* <Icon.Group>
-                                      <Icon name='map marker' />
-                                      <Icon corner name='search' />
-                                    </Icon.Group> */}
                                 </span>
                               ) : null}
                             </label>
-                            {/* <CantonDropdown
-                              onSelected={selected => {
-                                if (borehole.custom.city !== null) {
-                                  this.updateChange('custom.city', null, false);
-                                }
-                                this.updateChange(
-                                  'custom.canton',
-                                  selected.id,
-                                  false,
-                                );
-                              }}
-                              selected={borehole.custom.canton}
-                            /> */}
                             <Input
                               value={
                                 this.props.cantons.filter(
@@ -1141,17 +1061,6 @@ class BoreholeForm extends React.Component {
                                       }
                                     }
                                   }}>
-                                  {/* <Image
-                                      avatar
-                                      src={
-                                        process.env.PUBLIC_URL
-                                        + '/img/map-search-outline.svg'
-                                      }
-                                      style={{
-                                        height: '1.5em',
-                                        width: 'auto'                                      
-                                      }}
-                                    /> */}
                                   <Icon name="map marker" />
                                 </span>
                               ) : null}
@@ -1160,13 +1069,6 @@ class BoreholeForm extends React.Component {
                               <MunicipalityDropdown
                                 canton={borehole.custom.canton}
                                 disabled={borehole.custom.canton === null}
-                                // onSelected={selected => {
-                                //   this.updateChange(
-                                //     'custom.city',
-                                //     selected.id,
-                                //     false,
-                                //   );
-                                // }}
                                 selected={borehole.custom.city}
                               />
                             </div>
@@ -1340,14 +1242,7 @@ class BoreholeForm extends React.Component {
                             </Form.Field>
                           </div>
                           <div style={{ width: "33%", paddingRight: "1%" }}>
-                            <Form.Field
-                              // error={
-                              //   (_.isString(borehole.drilling_date) &&
-                              //     borehole.drilling_date !== '' &&
-                              //     !moment(borehole.drilling_date).isValid()) ||
-                              //   mentions.indexOf('method') >= 0
-                              // }
-                              required>
+                            <Form.Field required>
                               <label>
                                 <TranslationText id="spud_date" />
                               </label>
@@ -1420,13 +1315,6 @@ class BoreholeForm extends React.Component {
                                   "custom.drill_diameter",
                                   e.target.value === "" ? null : e.target.value,
                                 );
-                                // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
-                                //   this.updateChange(
-                                //     'custom.drill_diameter',
-                                //     e.target.value === '' ?
-                                //       null : _.toNumber(e.target.value)
-                                //   );
-                                // }
                               }}
                               spellCheck="false"
                               value={(() => {
@@ -1480,13 +1368,6 @@ class BoreholeForm extends React.Component {
                                   "inclination",
                                   e.target.value === "" ? null : e.target.value,
                                 );
-                                // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
-                                //   this.updateChange(
-                                //     'inclination',
-                                //     e.target.value === '' ?
-                                //       null : _.toNumber(e.target.value)
-                                //   );
-                                // }
                               }}
                               spellCheck="false"
                               value={
@@ -1516,13 +1397,6 @@ class BoreholeForm extends React.Component {
                                   "inclination_direction",
                                   e.target.value === "" ? null : e.target.value,
                                 );
-                                // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
-                                //   this.updateChange(
-                                //     'inclination_direction',
-                                //     e.target.value === '' ?
-                                //       null : _.toNumber(e.target.value)
-                                //   );
-                                // }
                               }}
                               spellCheck="false"
                               value={
@@ -1598,13 +1472,6 @@ class BoreholeForm extends React.Component {
                               "total_depth",
                               e.target.value === "" ? null : e.target.value,
                             );
-                            // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
-                            //   this.updateChange(
-                            //     'total_depth',
-                            //     e.target.value === '' ?
-                            //       null : _.toNumber(e.target.value)
-                            //   );
-                            // }
                           }}
                           spellCheck="false"
                           value={
@@ -1649,13 +1516,6 @@ class BoreholeForm extends React.Component {
                               "total_depth_tvd",
                               e.target.value === "" ? null : e.target.value,
                             );
-                            // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
-                            //   this.updateChange(
-                            //     'length',
-                            //     e.target.value === '' ?
-                            //       null : _.toNumber(e.target.value)
-                            //   );
-                            // }
                           }}
                           spellCheck="false"
                           value={
@@ -1704,13 +1564,6 @@ class BoreholeForm extends React.Component {
                               "extended.top_bedrock",
                               e.target.value === "" ? null : e.target.value,
                             );
-                            // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
-                            //   this.updateChange(
-                            //     'extended.top_bedrock',
-                            //     e.target.value === '' ?
-                            //       null : _.toNumber(e.target.value)
-                            //   );
-                            // }
                           }}
                           spellCheck="false"
                           value={
@@ -1755,13 +1608,6 @@ class BoreholeForm extends React.Component {
                               "extended.top_bedrock_tvd",
                               e.target.value === "" ? null : e.target.value,
                             );
-                            // if (/^-?\d*[.,]?\d*$/.test(e.target.value)){
-                            //   this.updateChange(
-                            //     'length',
-                            //     e.target.value === '' ?
-                            //       null : _.toNumber(e.target.value)
-                            //   );
-                            // }
                           }}
                           spellCheck="false"
                           value={
@@ -1772,9 +1618,7 @@ class BoreholeForm extends React.Component {
                         />
                       </Form.Field>
 
-                      <Form.Field
-                        // error={mentions.indexOf('qt_top_bedrock') >= 0}
-                        required>
+                      <Form.Field required>
                         <label>
                           <TranslationText id="top_bedrock_tvd_qt" />
                         </label>
@@ -1866,7 +1710,6 @@ class BoreholeForm extends React.Component {
                           1: "rock",
                           2: "process",
                           3: "type",
-                          // 4: 'specification',
                         }}
                         onSelected={selected => {
                           this.updateChange(
@@ -1918,17 +1761,6 @@ class BoreholeForm extends React.Component {
                       <label>
                         <TranslationText id="chronostratigraphy_top_bedrock" />
                       </label>
-                      {/* <DomainDropdown
-                        onSelected={(selected) => {
-                          this.updateChange(
-                            'custom.chronostratigraphy_top_bedrock',
-                            selected.id,
-                            false
-                          );
-                        }}
-                        schema='custom.chronostratigraphy_top_bedrock'
-                        selected={borehole.custom.chronostratigraphy_top_bedrock}
-                      /> */}
                       <DomainTree
                         levels={{
                           1: "1st_order_eon",
@@ -2068,14 +1900,6 @@ class BoreholeForm extends React.Component {
             )}
           />
         </Switch>
-        {/* <Progress
-          color={
-            borehole.percentage === 100 ? 'green' : 'black'
-          }
-          percent={borehole.percentage}
-          progress
-          size='medium'
-        /> */}
       </Dimmer.Dimmable>
     );
   }
