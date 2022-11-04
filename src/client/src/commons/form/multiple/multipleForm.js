@@ -28,7 +28,7 @@ class MultipleForm extends React.Component {
         // toggle: name of the toggle button (defaults to field name)
         // api: field identifier for api
         // value: the value of the field
-        project_name: { api: "custom.project_name", value: "" },
+        project_name: { api: "custom.project_name", value: null },
         restriction: { api: "restriction", value: null },
         restriction_until: {
           toggle: "restriction",
@@ -41,18 +41,18 @@ class MultipleForm extends React.Component {
         cuttings: { api: "custom.cuttings", value: null },
         spud_date: { api: "spud_date", value: null },
         drilling_end_date: { api: "drilling_date", value: null },
-        drill_diameter: { api: "custom.drill_diameter", value: "" },
+        drill_diameter: { api: "custom.drill_diameter", value: null },
         boreholestatus: { api: "extended.status", value: null },
-        inclination: { api: "inclination", value: "" },
-        inclination_direction: { api: "inclination_direction", value: "" },
+        inclination: { api: "inclination", value: null },
+        inclination_direction: { api: "inclination_direction", value: null },
         qt_bore_inc_dir: { api: "custom.qt_bore_inc_dir", value: null },
-        totaldepth: { api: "total_depth", value: "" },
+        totaldepth: { api: "total_depth", value: null },
         qt_depth: { api: "custom.qt_depth", value: null },
-        total_depth_tvd: { api: "total_depth_tvd", value: "" },
+        total_depth_tvd: { api: "total_depth_tvd", value: null },
         total_depth_tvd_qt: { api: "qt_total_depth_tvd", value: null },
-        top_bedrock: { api: "extended.top_bedrock", value: "" },
+        top_bedrock: { api: "extended.top_bedrock", value: null },
         qt_top_bedrock: { api: "custom.qt_top_bedrock", value: null },
-        top_bedrock_tvd: { api: "extended.top_bedrock_tvd", value: "" },
+        top_bedrock_tvd: { api: "extended.top_bedrock_tvd", value: null },
         top_bedrock_tvd_qt: { api: "custom.qt_top_bedrock_tvd", value: null },
         groundwater: { api: "extended.groundwater", value: null },
         lithology_top_bedrock: {
@@ -191,7 +191,7 @@ class MultipleForm extends React.Component {
           onChange={e => {
             let newValue = e.target.value;
             if (type === "number") {
-              newValue = newValue === "" ? null : _.toNumber(newValue);
+              newValue = _.toNumber(newValue);
             }
             this.setState({
               ...this.state,
