@@ -122,16 +122,9 @@ class AdminSettings extends React.Component {
       },
     });
 
-    const users = await response.json();
-    this.setState({ users: users });
-
-    if (this.state.user) {
-      const user = users.find(x => x.id === this.state.user.id);
-      if (user) {
-        this.setState({
-          user: user,
-        });
-      }
+    if (response.ok) {
+      const users = await response.json();
+      this.setState({ users: users });
     }
   }
 
