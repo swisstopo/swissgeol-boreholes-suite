@@ -184,6 +184,7 @@ class MultipleForm extends React.Component {
       <Form.Field key={field}>
         <label>{t(field)}</label>
         <Input
+          data-cy="text-input"
           autoCapitalize="off"
           autoComplete="off"
           autoCorrect="off"
