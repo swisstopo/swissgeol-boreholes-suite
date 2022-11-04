@@ -4,7 +4,7 @@
 
 ### Added
 
-- Added possibility to add a casing layer (CasingId) to an instrument.
+- Added possibility to add a casing layer (_CasingId_) to an instrument.
 
 ## v2.0.65 - 2022-11-04
 
