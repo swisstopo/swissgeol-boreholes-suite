@@ -11,7 +11,7 @@ describe("Test copying of boreholes", () => {
   it("copies a borehole", () => {
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .first()
+      .eq(1)
       .find(".checkbox")
       .click();
 

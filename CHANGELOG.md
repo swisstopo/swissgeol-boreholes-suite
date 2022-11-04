@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.0.65 - 2022-11-04
+
 ### Added
 
 - Added this changelog.
@@ -20,6 +22,8 @@
 
 - Update _Dokumentation_ page in settings.
 - Standardize messages for empty profiles, empty casing and missing stratigraphy.
+- Update the app title in the top left to show the new _boreholes.swissgeol.ch_ name including the correct environment.
+- Removed _Enter as viewer_ login option.
 
 ### Fixed
 
@@ -42,3 +46,5 @@
 - Add missing translations when publishing new welcome messages.
 - Fix copying of boreholes.
 - Add missing checks for contributions when deleting users.
+- Removed obsolete `borehole.contact_id` column.
+- Always displays `Show all` button when editing instruments.

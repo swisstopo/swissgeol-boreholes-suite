@@ -10,7 +10,6 @@ namespace BDMS.Authentication;
 
 public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
-    private const string GuestCredentials = "guest:MeiSe0we1Oowief";
     private readonly BdmsContext dbContext;
 
     /// <summary>
@@ -47,19 +46,17 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
                     new NpgsqlParameter("@password", credentials[1]))
                 .SingleOrDefault();
 
-            // Handle disabled and default guest user
-            if ((authenticatedUser == null || authenticatedUser.IsDisabled) &&
-                !credentialstring.Equals(GuestCredentials, StringComparison.OrdinalIgnoreCase))
+            // Handle invalid or disabled user
+            if (authenticatedUser == null || authenticatedUser.IsDisabled)
             {
-                return Task.FromResult(AuthenticateResult.Fail("No valid authentication credentials have been provided."));
+                return Task.FromResult(AuthenticateResult.Fail("No valid authentication credentials have been provided or the specified user has been disabled in the backend."));
             }
 
             var claimsIdentity = new ClaimsIdentity();
             claimsIdentity.AddClaim(new Claim(ClaimTypes.AuthenticationMethod, "Basic"));
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, authenticatedUser?.Name ?? "guest"));
-            if (authenticatedUser?.IsAdmin ?? false) claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, PolicyNames.Admin));
-            else if (authenticatedUser?.IsViewer ?? false) claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, PolicyNames.Viewer));
-            else claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, PolicyNames.Guest));
+            claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, authenticatedUser.Name));
+            if (authenticatedUser.IsAdmin) claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, PolicyNames.Admin));
+            else if (authenticatedUser.IsViewer) claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, PolicyNames.Viewer));
 
             return Task.FromResult(AuthenticateResult.Success(
                 new AuthenticationTicket(new ClaimsPrincipal(claimsIdentity), "BasicAuthentication")));
