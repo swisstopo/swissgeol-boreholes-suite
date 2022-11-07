@@ -63,7 +63,7 @@ public class LayerController : ControllerBase
     /// Asynchronously updates the <see cref="Layer"/> corresponding to
     /// the <paramref name="layer"/> with the values to update.
     /// </summary>
-    /// <param name="layer"> The <see cref="Layer"/> to update.</param>
+    /// <param name="layer">The <see cref="Layer"/> to update.</param>
     [HttpPut]
     public async Task<IActionResult> EditAsync(Layer layer)
     {
