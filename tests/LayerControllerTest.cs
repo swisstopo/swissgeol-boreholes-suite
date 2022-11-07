@@ -134,7 +134,7 @@ public class LayerControllerTest
             LithologyTopBedrockId = 15104417,
             Lithostratigraphy = null,
             LithostratigraphyId = null,
-            Notes = "Investment Account AGP Engineer Sleek Plastic Computer",
+            Notes = "Pakistan Rupee Investment Account AGP Engineer",
             OriginalUscs = "Bedfordshire",
             Plasticity = null,
             PlasticityId = 21101005,
@@ -175,7 +175,7 @@ public class LayerControllerTest
 
         var layerToEdit = context.Layers.Single(c => c.Id == id);
         Assert.AreEqual(3, layerToEdit.CreatedById);
-        Assert.AreEqual("Investment Account AGP Engineer Sleek Plastic Computer", layerToEdit.Notes);
+        Assert.AreEqual("Pakistan Rupee Investment Account AGP Engineer", layerToEdit.Notes);
 
         // Upate Layer
         var response = await controller.EditAsync(newLayer);
