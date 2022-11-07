@@ -28,12 +28,12 @@ const Instrument = props => {
   const [instrument, setInstrument] = useState([]);
   const [updateAttributeDelay, setUpdateAttributeDelay] = useState({});
 
-  async function fetchLayers(profileId) {
+  async function fetchLayersByProfileId(profileId) {
     return await fetchWithAuth(`/api/v2/layer?profileId=${profileId}`, "GET");
   }
 
   async function fetchLayerById(id) {
-    return await fetchWithAuth(`/api/v2/layer/${id}`, "GET");
+    return await fetchWithAuth(`/api/v2/layer?id=${id}`, "GET");
   }
 
   async function updateLayer(layer) {
@@ -45,7 +45,7 @@ const Instrument = props => {
 
   const fetchCasingLayers = useCallback(() => {
     if (instrument.instrumentCasingId) {
-      fetchLayers(instrument.instrumentCasingId).then(response => {
+      fetchLayersByProfileId(instrument.instrumentCasingId).then(response => {
         if (response?.length > 0) {
           setCasingLayers(response);
         } else {

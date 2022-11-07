@@ -29,7 +29,7 @@ public class LayerControllerTest
     [TestMethod]
     public async Task GetAllEntriesAsync()
     {
-        var response = await controller.GetAsync().ConfigureAwait(false);
+        var response = await controller.GetAllAsync().ConfigureAwait(false);
         IEnumerable<Layer>? layers = response?.Value;
         Assert.IsNotNull(layers);
         Assert.AreEqual(1500, layers.Count());
@@ -38,17 +38,36 @@ public class LayerControllerTest
     [TestMethod]
     public async Task GetEntriesByProfileIdReturnsNotFoundForInexistantId()
     {
-        var result = await controller.GetAsync(94578122).ConfigureAwait(false);
+        var result = await controller.GetByProfileIdAsync(94578122).ConfigureAwait(false);
         Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
     }
 
     [TestMethod]
     public async Task GetEntriesByProfileId()
     {
-        var response = await controller.GetAsync(6009).ConfigureAwait(false);
+        var response = await controller.GetByProfileIdAsync(6009).ConfigureAwait(false);
         IEnumerable<Layer>? layers = response?.Value;
         Assert.IsNotNull(layers);
         Assert.AreEqual(10, layers.Count());
+    }
+
+    [TestMethod]
+    public async Task GetLayerByInexistantIdReturnsNotFound()
+    {
+        var response = await controller.GetByIdAsync(9483157).ConfigureAwait(false);
+        Assert.IsInstanceOfType(response.Result, typeof(NotFoundResult));
+    }
+
+    [TestMethod]
+    public async Task GetLayerById()
+    {
+        var response = await controller.GetByIdAsync(7005).ConfigureAwait(false);
+        var okResult = response.Result as OkObjectResult;
+        var layer = okResult.Value as Layer;
+        Assert.AreEqual(7005, layer.Id);
+        Assert.AreEqual(2.274020571389245, layer.CasingInnerDiameter);
+        Assert.AreEqual("Malaysian Ringgit Distributed Sleek mint green", layer.Notes);
+        Assert.AreEqual(15103001, layer.LithologyId);
     }
 
     [TestMethod]
@@ -115,7 +134,7 @@ public class LayerControllerTest
             LithologyTopBedrockId = 15104417,
             Lithostratigraphy = null,
             LithostratigraphyId = null,
-            Notes = "Pakistan Rupee Investment Account AGP Engineer",
+            Notes = "Investment Account AGP Engineer Sleek Plastic Computer",
             OriginalUscs = "Bedfordshire",
             Plasticity = null,
             PlasticityId = 21101005,
@@ -156,7 +175,7 @@ public class LayerControllerTest
 
         var layerToEdit = context.Layers.Single(c => c.Id == id);
         Assert.AreEqual(3, layerToEdit.CreatedById);
-        Assert.AreEqual("Pakistan Rupee Investment Account AGP Engineer", layerToEdit.Notes);
+        Assert.AreEqual("Investment Account AGP Engineer Sleek Plastic Computer", layerToEdit.Notes);
 
         // Upate Layer
         var response = await controller.EditAsync(newLayer);

@@ -18,48 +18,45 @@ public class LayerController : ControllerBase
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Layer"/>s, optionally filtered by <paramref name="profileId"/>.
+    /// Asynchronously gets all <see cref="Layer"/>s.
+    /// </summary>
+    [HttpGet("")]
+    public async Task<ActionResult<IEnumerable<Layer>>> GetAllAsync() => await context.Layers.AsNoTracking().ToListAsync().ConfigureAwait(false);
+
+    /// <summary>
+    /// Asynchronously gets the <see cref="Layer"/>s, filtered by <paramref name="profileId"/>.
     /// </summary>
     /// <param name="profileId">The id of the stratigraphy containing the layers to get.</param>
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Layer>>> GetAsync(int? profileId = null)
+    /// GET /api/v2/layer/profileId/{profileId}
+    [HttpGet("profileId")]
+    public async Task<ActionResult<IEnumerable<Layer>>> GetByProfileIdAsync(int profileId)
     {
-        var layers = context.Layers.AsQueryable();
+        var layers = context.Layers.Where(l => l.StratigraphyId == profileId);
 
-        if (profileId != null)
+        if (!layers.Any())
         {
-            layers = layers.Where(l => l.StratigraphyId == profileId);
-
-            if (layers.Any())
-            {
-                return await layers.AsNoTracking().ToListAsync().ConfigureAwait(false);
-            }
-            else
-            {
-                return NotFound();
-            }
+            return NotFound();
         }
 
         return await layers.AsNoTracking().ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Layer"/>s, optionally filtered by <paramref name="id"/>.
+    /// Asynchronously gets the <see cref="Layer"/> with the specified <paramref name="id"/>.
     /// </summary>
-    /// <param name="id">The id of the stratigraphy containing the layers to get.</param>
-    [HttpGet("{id}")]
-    public async Task<ActionResult<IEnumerable<Layer>>> GetByIdAsync(int id)
+    /// <param name="id">The id of layer to get.</param>
+    /// GET /api/v2/layer/id/{id}
+    [HttpGet("id")]
+    public async Task<ActionResult<Layer>> GetByIdAsync(int id)
     {
         var layer = await context.Layers.SingleOrDefaultAsync(l => l.Id == id).ConfigureAwait(false);
 
-        if (layer != null)
-        {
-            return Ok(layer);
-        }
-        else
+        if (layer == null)
         {
             return NotFound();
         }
+
+        return Ok(layer);
     }
 
     /// <summary>
