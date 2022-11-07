@@ -67,7 +67,7 @@ public class LayerControllerTest
         Assert.AreEqual(7005, layer.Id);
         Assert.AreEqual(2.274020571389245, layer.CasingInnerDiameter);
         Assert.AreEqual("Malaysian Ringgit Distributed Sleek mint green", layer.Notes);
-        Assert.AreEqual(15103001, layer.LithologyId);
+        Assert.AreEqual(15101007, layer.LithologyId);
     }
 
     [TestMethod]
