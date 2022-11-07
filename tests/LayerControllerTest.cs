@@ -29,7 +29,7 @@ public class LayerControllerTest
     [TestMethod]
     public async Task GetAllEntriesAsync()
     {
-        var response = await controller.GetAllAsync().ConfigureAwait(false);
+        var response = await controller.GetAsync().ConfigureAwait(false);
         IEnumerable<Layer>? layers = response?.Value;
         Assert.IsNotNull(layers);
         Assert.AreEqual(1500, layers.Count());
@@ -38,14 +38,14 @@ public class LayerControllerTest
     [TestMethod]
     public async Task GetEntriesByProfileIdReturnsNotFoundForInexistantId()
     {
-        var result = await controller.GetByProfileIdAsync(94578122).ConfigureAwait(false);
+        var result = await controller.GetAsync(94578122).ConfigureAwait(false);
         Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
     }
 
     [TestMethod]
     public async Task GetEntriesByProfileId()
     {
-        var response = await controller.GetByProfileIdAsync(6009).ConfigureAwait(false);
+        var response = await controller.GetAsync(6009).ConfigureAwait(false);
         IEnumerable<Layer>? layers = response?.Value;
         Assert.IsNotNull(layers);
         Assert.AreEqual(10, layers.Count());

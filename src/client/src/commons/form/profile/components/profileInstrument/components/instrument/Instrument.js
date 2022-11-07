@@ -29,7 +29,7 @@ const Instrument = props => {
   const [updateAttributeDelay, setUpdateAttributeDelay] = useState({});
 
   async function fetchLayersByProfileId(profileId) {
-    return await fetchApiV2(`layer/profileId/${profileId}`, "GET");
+    return await fetchApiV2(`layer?profileId=${profileId}`, "GET");
   }
 
   async function fetchLayerById(id) {

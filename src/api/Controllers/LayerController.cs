@@ -18,20 +18,17 @@ public class LayerController : ControllerBase
     }
 
     /// <summary>
-    /// Asynchronously gets all <see cref="Layer"/>s.
+    /// Asynchronously gets the <see cref="Layer"/>s, optionally filtered by <paramref name="profileId"/>.
     /// </summary>
+    /// <param name="profileId">The id of the profile containing the layers to get.</param>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Layer>>> GetAllAsync() => await context.Layers.AsNoTracking().ToListAsync().ConfigureAwait(false);
-
-    /// <summary>
-    /// Asynchronously gets the <see cref="Layer"/>s, filtered by <paramref name="profileId"/>.
-    /// </summary>
-    /// <param name="profileId">The id of the stratigraphy containing the layers to get.</param>
-    /// GET /api/v2/layer/profileId/{profileId}
-    [HttpGet("profileId/{profileId}")]
-    public async Task<ActionResult<IEnumerable<Layer>>> GetByProfileIdAsync(int profileId)
+    public async Task<ActionResult<IEnumerable<Layer>>> GetAsync([FromQuery] int? profileId = null)
     {
-        var layers = context.Layers.Where(l => l.StratigraphyId == profileId);
+        var layers = context.Layers.AsNoTracking();
+        if (profileId != null)
+        {
+            layers = layers.Where(l => l.StratigraphyId == profileId);
+        }
 
         if (!layers.Any())
         {
@@ -45,7 +42,6 @@ public class LayerController : ControllerBase
     /// Asynchronously gets the <see cref="Layer"/> with the specified <paramref name="id"/>.
     /// </summary>
     /// <param name="id">The id of layer to get.</param>
-    /// GET /api/v2/layer/id/{id}
     [HttpGet("{id}")]
     public async Task<ActionResult<Layer>> GetByIdAsync(int id)
     {
