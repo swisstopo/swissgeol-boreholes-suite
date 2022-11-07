@@ -20,7 +20,7 @@ public class LayerController : ControllerBase
     /// <summary>
     /// Asynchronously gets all <see cref="Layer"/>s.
     /// </summary>
-    [HttpGet("")]
+    [HttpGet]
     public async Task<ActionResult<IEnumerable<Layer>>> GetAllAsync() => await context.Layers.AsNoTracking().ToListAsync().ConfigureAwait(false);
 
     /// <summary>
@@ -28,7 +28,7 @@ public class LayerController : ControllerBase
     /// </summary>
     /// <param name="profileId">The id of the stratigraphy containing the layers to get.</param>
     /// GET /api/v2/layer/profileId/{profileId}
-    [HttpGet("profileId")]
+    [HttpGet("profileId/{profileId}")]
     public async Task<ActionResult<IEnumerable<Layer>>> GetByProfileIdAsync(int profileId)
     {
         var layers = context.Layers.Where(l => l.StratigraphyId == profileId);
@@ -46,7 +46,7 @@ public class LayerController : ControllerBase
     /// </summary>
     /// <param name="id">The id of layer to get.</param>
     /// GET /api/v2/layer/id/{id}
-    [HttpGet("id")]
+    [HttpGet("{id}")]
     public async Task<ActionResult<Layer>> GetByIdAsync(int id)
     {
         var layer = await context.Layers.SingleOrDefaultAsync(l => l.Id == id).ConfigureAwait(false);
