@@ -8,7 +8,6 @@ from bms.v1.user import (
     DeleteUser,
     DisableUser,
     EnableUser,
-    ListUsers,
     UpdateUser
 )
 
@@ -23,7 +22,6 @@ class AdminHandler(Admin):
             'DISABLE',
             'DELETE',
             'ENABLE',
-            'LIST',
             'UPDATE'
         ]:
 
@@ -36,7 +34,6 @@ class AdminHandler(Admin):
                     'DELETE',
                     'DISABLE',
                     'ENABLE',
-                    'LIST',
                     'UPDATE'
                 ]:
                     if self.user['admin'] is False: 
@@ -58,10 +55,7 @@ class AdminHandler(Admin):
                         if was_admin and request['admin'] is False:
                             request['admin'] = True
 
-                if action == 'LIST':
-                    exe = ListUsers(conn)
-
-                elif action == 'CREATE':
+                if action == 'CREATE':
                     exe = CreateUser(conn)
 
                 elif action == 'UPDATE':

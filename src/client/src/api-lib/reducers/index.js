@@ -87,45 +87,6 @@ export function user() {
   };
 }
 
-export function users() {
-  const initialState = {
-    isFetching: false,
-    fcnt: 0,
-    rtime: 0, // fetch time
-    id: null,
-    data: [],
-  };
-  return function _users(state = { ...initialState }, action) {
-    const { path } = action;
-    if (path !== "/user/edit") {
-      return state;
-    }
-    switch (action.type) {
-      case "LIST": {
-        return {
-          ...initialState,
-          id: action.id,
-          rtime: new Date().getTime(),
-          isFetching: true,
-        };
-      }
-      case "LIST_OK": {
-        let copy = {
-          ...state,
-          fcnt: state.fcnt + 1,
-          isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
-          data: action.json.data,
-        };
-        return copy;
-      }
-      default: {
-        return state;
-      }
-    }
-  };
-}
-
 export function workgroups() {
   const initialState = {
     isFetching: false,
@@ -980,7 +941,6 @@ export function layersList() {
 export function createReducer(pluginsReducers) {
   const combinedReducers = combineReducers({
     core_user: user(),
-    core_users: users(),
     core_workgroups: workgroups(),
     core_workflow: workflow(),
     core_workflows: workflows(),

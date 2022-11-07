@@ -97,7 +97,6 @@ from bms.v1.geoapi import Wms
 # User actions
 from bms.v1.user.handler import UserHandler
 from bms.v1.user.admin import AdminHandler
-from bms.v1.user import ListUsers
 from bms.v1.user import CheckUsername
 from bms.v1.user import CreateUser
 

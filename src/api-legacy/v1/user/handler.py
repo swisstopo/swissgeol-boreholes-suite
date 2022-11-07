@@ -3,9 +3,6 @@ from bms import (
     AuthorizationException
 )
 from bms.v1.handlers import Viewer
-from bms.v1.user import (
-    ListUsers
-)
 
 
 class UserHandler(Viewer):

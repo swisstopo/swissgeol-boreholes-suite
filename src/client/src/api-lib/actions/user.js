@@ -100,9 +100,3 @@ export function checkUsername(username) {
     username: username,
   });
 }
-
-export function listUsers() {
-  return fetch("/user/edit", {
-    type: "LIST",
-  });
-}

@@ -23,6 +23,18 @@ public class User
     public string Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the <see cref="User"/>s firstname.
+    /// </summary>
+    [Column("firstname")]
+    public string FirstName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="User"/>s lastname.
+    /// </summary>
+    [Column("lastname")]
+    public string LastName { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the <see cref="User"/> has admin privileges.
     /// </summary>
     [Column("admin_usr")]
@@ -54,6 +66,12 @@ public class User
     /// Gets the events.
     /// </summary>
     public IEnumerable<UserEvent> BoringEvents { get; }
+
+    /// <summary>
+    /// Gets or sets whether this user can be deleted.
+    /// </summary>
+    [NotMapped]
+    public bool? Deletable { get; set; }
 
     /// <inheritdoc/>
     public override string ToString() => Name;
