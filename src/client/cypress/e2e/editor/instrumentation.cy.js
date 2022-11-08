@@ -12,7 +12,8 @@ const delayedType = (selector, string) => {
 };
 
 const addInstrumentLayer = () => {
-  cy.get('[data-cy="add-instrumentation-button"]').click();
+  cy.wait(1000);
+  cy.get('[data-cy="add-instrumentation-button"]').click({ force: true });
   cy.wait("@stratigraphy_layer_edit_create");
   cy.wait("@layer");
   cy.wait(5000);
@@ -158,7 +159,6 @@ describe("Instrumentation tests", () => {
     cy.wait("@layer");
 
     addInstrumentLayer();
-    cy.wait(500);
 
     // Chose first casing
     let casingDropDown = cy
