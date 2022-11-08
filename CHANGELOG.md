@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Display `lithology_top_bedrock`, `lithostratigraphy_top_bedrock`and `chronostratigraphy_top_bedrock` as domain trees in bulk edit.
+
 ## v2.0.65 - 2022-11-04
 
 ### Added
@@ -48,4 +52,3 @@
 - Add missing checks for contributions when deleting users.
 - Removed obsolete `borehole.contact_id` column.
 - Always displays `Show all` button when editing instruments.
-- Display `lithology_top_bedrock`, `lithostratigraphy_top_bedrock`and `chronostratigraphy_top_bedrock` as domain trees in bulk edit.
