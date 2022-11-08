@@ -27,7 +27,7 @@ class SendMail(Action):
             msg["Subject"] = subject
             msg.set_content(message)
 
-            if password is not None:
+            if password:
                 await aiosmtplib.send(
                     msg,
                     sender=sender,
