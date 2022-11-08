@@ -48,7 +48,6 @@ import {
   deleteUser,
   enableUser,
   checkUsername,
-  listUsers,
 } from "./actions/user";
 
 import {
@@ -196,7 +195,6 @@ export {
   deleteUser,
   enableUser,
   checkUsername,
-  listUsers,
   createWorkgroup,
   enableWorkgroup,
   disableWorkgroup,
