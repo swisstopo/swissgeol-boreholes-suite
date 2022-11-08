@@ -5,6 +5,8 @@
 ### Fixed
 
 - Fix sending feedback e-mail.
+- Display `lithology_top_bedrock`, `lithostratigraphy_top_bedrock`and `chronostratigraphy_top_bedrock` as domain trees in bulk edit.
+
 
 ## v2.0.65 - 2022-11-04
 
