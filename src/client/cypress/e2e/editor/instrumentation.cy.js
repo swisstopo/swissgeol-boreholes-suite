@@ -13,6 +13,7 @@ const delayedType = (selector, string) => {
 
 const addInstrumentLayer = () => {
   cy.get('[data-cy="add-instrumentation-button"]').click();
+  cy.wait("@stratigraphy_layer_edit_create");
   cy.wait("@layer");
   cy.wait(5000);
 };
@@ -57,6 +58,7 @@ describe("Instrumentation tests", () => {
       .should("have.length", 0);
 
     addInstrumentLayer();
+    cy.wait(500);
 
     cy.get('[data-cy="casingName"]')
       .children()
@@ -74,6 +76,7 @@ describe("Instrumentation tests", () => {
 
     // Add another instrument without name of completion
     addInstrumentLayer();
+    cy.wait(500);
 
     // Select tab "No completion"
     cy.get('[data-cy="profile-header-list"]')
@@ -155,6 +158,7 @@ describe("Instrumentation tests", () => {
     cy.wait("@layer");
 
     addInstrumentLayer();
+    cy.wait(500);
 
     // Chose first casing
     let casingDropDown = cy
