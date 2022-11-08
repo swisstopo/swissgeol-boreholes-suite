@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix sending feedback e-mail.
+
 ## v2.0.65 - 2022-11-04
 
 ### Added
