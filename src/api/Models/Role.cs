@@ -1,8 +1,11 @@
-﻿namespace BDMS.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace BDMS.Models;
 
 /// <summary>
 /// Represents a role entity in the database.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Role
 {
     View = 0,

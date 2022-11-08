@@ -18,8 +18,10 @@ public class BdmsContextTest
     [TestMethod]
     public void CanFetchUsersFromDatabase()
     {
+        const int DefaultWorkgroupId = 1;
+
         var users = context.Users
-            .Include(s => s.WorkgroupRoles).ThenInclude(s => s.Workgroup)
+            .Include(s => s.WorkgroupRoles)
             .AsQueryable();
 
         Assert.AreEqual(7, users.Count());
@@ -31,11 +33,11 @@ public class BdmsContextTest
         Assert.AreEqual(true, admin.IsViewer);
         Assert.AreEqual(false, admin.IsDisabled);
         Assert.AreEqual(5, admin.WorkgroupRoles.Count());
-        AssertWorkgroupRole("Default", Role.View, admin);
-        AssertWorkgroupRole("Default", Role.Editor, admin);
-        AssertWorkgroupRole("Default", Role.Controller, admin);
-        AssertWorkgroupRole("Default", Role.Validator, admin);
-        AssertWorkgroupRole("Default", Role.Publisher, admin);
+        AssertWorkgroupRole(DefaultWorkgroupId, Role.View, admin);
+        AssertWorkgroupRole(DefaultWorkgroupId, Role.Editor, admin);
+        AssertWorkgroupRole(DefaultWorkgroupId, Role.Controller, admin);
+        AssertWorkgroupRole(DefaultWorkgroupId, Role.Validator, admin);
+        AssertWorkgroupRole(DefaultWorkgroupId, Role.Publisher, admin);
 
         var editor = users.Single(u => u.Name == "editor");
         Assert.AreEqual("editor", editor.Name);
@@ -44,7 +46,7 @@ public class BdmsContextTest
         Assert.AreEqual(true, editor.IsViewer);
         Assert.AreEqual(false, editor.IsDisabled);
         Assert.AreEqual(1, editor.WorkgroupRoles.Count());
-        AssertWorkgroupRole("Default", Role.Editor, editor);
+        AssertWorkgroupRole(DefaultWorkgroupId, Role.Editor, editor);
 
         var controller = users.Single(u => u.Name == "controller");
         Assert.AreEqual("controller", controller.Name);
@@ -53,7 +55,7 @@ public class BdmsContextTest
         Assert.AreEqual(true, controller.IsViewer);
         Assert.AreEqual(false, controller.IsDisabled);
         Assert.AreEqual(1, controller.WorkgroupRoles.Count());
-        AssertWorkgroupRole("Default", Role.Controller, controller);
+        AssertWorkgroupRole(DefaultWorkgroupId, Role.Controller, controller);
 
         var validator = users.Single(u => u.Name == "validator");
         Assert.AreEqual("validator", validator.Name);
@@ -62,7 +64,7 @@ public class BdmsContextTest
         Assert.AreEqual(true, validator.IsViewer);
         Assert.AreEqual(false, validator.IsDisabled);
         Assert.AreEqual(1, validator.WorkgroupRoles.Count());
-        AssertWorkgroupRole("Default", Role.Validator, validator);
+        AssertWorkgroupRole(DefaultWorkgroupId, Role.Validator, validator);
 
         var publisher = users.Single(u => u.Name == "publisher");
         Assert.AreEqual("publisher", publisher.Name);
@@ -71,9 +73,9 @@ public class BdmsContextTest
         Assert.AreEqual(true, publisher.IsViewer);
         Assert.AreEqual(false, publisher.IsDisabled);
         Assert.AreEqual(1, publisher.WorkgroupRoles.Count());
-        AssertWorkgroupRole("Default", Role.Publisher, publisher);
+        AssertWorkgroupRole(DefaultWorkgroupId, Role.Publisher, publisher);
     }
 
-    private static void AssertWorkgroupRole(string workgroupName, Role role, User user) =>
-        Assert.IsNotNull(user.WorkgroupRoles.SingleOrDefault(w => w.Workgroup.Name == workgroupName && w.Role == role));
+    private static void AssertWorkgroupRole(int workgroupId, Role role, User user) =>
+        Assert.IsNotNull(user.WorkgroupRoles.SingleOrDefault(w => w.WorkgroupId == workgroupId && w.Role == role));
 }
