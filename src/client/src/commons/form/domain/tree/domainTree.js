@@ -410,6 +410,7 @@ class DomainTree extends React.Component {
         open={this.state.modalOpen}
         trigger={
           <Input
+            data-cy="domain-tree"
             fluid
             icon="sitemap"
             onClick={this.handleOpen}
