@@ -10,7 +10,7 @@ export const Container = styled.div`
 `;
 
 export const ButtonContainer = styled.div`
-  flex: 1 1 5%;
+  flex: 0 0 8%;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -26,6 +26,7 @@ export const Empty = styled.div`
 `;
 
 export const ListContainer = styled.div`
+  margin-top: 30px;
   flex: 1 1 70%;
   overflow-y: auto;
   overflow-x: hidden;
