@@ -39,6 +39,7 @@
     "react-dom": "^18.2.0",
     "react-draggable": "4.4.5",
     "react-highlight-words": "^0.18.0",
+    "react-hook-form": "^7.39.1",
     "react-i18next": "^11.3.1",
     "react-mentions": "^4.1.0",
     "react-query": "^3.39.2",
