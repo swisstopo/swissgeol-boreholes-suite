@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added possibility to add a casing layer (_CasingId_) to an instrument.
+
 ### Fixed
 
 - Fix sending feedback e-mail.

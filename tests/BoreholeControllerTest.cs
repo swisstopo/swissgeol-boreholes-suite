@@ -90,7 +90,7 @@ public class BoreholeControllerTest
         Assert.AreNotEqual(originalBorehole.Stratigraphies.First().Id, copiedBorehole.Stratigraphies.First());
         Assert.AreNotSame(originalBorehole.Stratigraphies.First().Layers, copiedBorehole.Stratigraphies.First().Layers);
         Assert.AreNotEqual(originalBorehole.Stratigraphies.First().Layers.First().Id, copiedBorehole.Stratigraphies.First().Layers.First().Id);
-        Assert.AreEqual("Summit teal", copiedBorehole.Stratigraphies.First().Layers.First().Casing);
+        Assert.AreEqual("Practical Plastic Shoes North Carolina", copiedBorehole.Stratigraphies.First().Layers.First().Casing);
 
         Assert.AreNotSame(originalBorehole.BoreholeFiles, copiedBorehole.BoreholeFiles);
         Assert.AreNotEqual(originalBorehole.BoreholeFiles.First().BoreholeId, copiedBorehole.BoreholeFiles.First().BoreholeId);
@@ -98,6 +98,10 @@ public class BoreholeControllerTest
         Assert.AreEqual("Tactics 24/365 Intelligent Concrete Chicken", copiedBorehole.BoreholeFiles.First().Description);
 
         // delete borehole copy
+        var stratigraphiesToRemove = copiedBorehole.Stratigraphies;
+        var layersToRemove = stratigraphiesToRemove.SelectMany(s => s.Layers);
+        context.Layers.RemoveRange(layersToRemove);
+        context.Stratigraphies.RemoveRange(stratigraphiesToRemove);
         context.Boreholes.Remove(copiedBorehole);
         context.SaveChanges();
     }
@@ -169,6 +173,10 @@ public class BoreholeControllerTest
         Assert.IsNotNull(copiedBoreholeId);
         Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
         var copiedBorehole = context.Boreholes.Single(b => b.Id == (int)copiedBoreholeId);
+        var stratigraphiesToRemove = copiedBorehole.Stratigraphies;
+        var layersToRemove = stratigraphiesToRemove.SelectMany(s => s.Layers);
+        context.Layers.RemoveRange(layersToRemove);
+        context.Stratigraphies.RemoveRange(stratigraphiesToRemove);
         context.Boreholes.Remove(copiedBorehole);
         context.SaveChanges();
     }

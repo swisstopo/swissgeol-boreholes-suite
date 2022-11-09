@@ -98,6 +98,7 @@ const ProfileHeader = props => {
       <Styled.ButtonContainer>
         {isEditable && kind !== profileKind.INSTRUMENT && (
           <Button
+            data-cy="add-stratigraphy-button"
             content={setText}
             icon="add"
             onClick={createStratigraphy}

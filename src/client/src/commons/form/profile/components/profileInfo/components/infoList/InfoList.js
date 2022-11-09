@@ -23,6 +23,7 @@ const InfoList = props => {
               {item.type === "Input" && (
                 <Styled.AttributesItem>
                   <Input
+                    data-cy={item.value}
                     autoCapitalize="off"
                     autoComplete="off"
                     autoCorrect="off"
@@ -47,6 +48,7 @@ const InfoList = props => {
               {item.type === "Dropdown" && (
                 <Styled.AttributesItem>
                   <DomainDropdown
+                    data-cy={item.value}
                     multiple={item.multiple}
                     onSelected={e =>
                       updateChange(
@@ -69,6 +71,7 @@ const InfoList = props => {
               {item.type === "Date" && (
                 <Styled.AttributesItem>
                   <DateField
+                    data-cy={item.value}
                     date={
                       profileInfo?.[item.value] ? profileInfo[item.value] : null
                     }
@@ -82,6 +85,7 @@ const InfoList = props => {
               {item.type === "CasingDropdown" && (
                 <Styled.AttributesItem>
                   <CasingList
+                    data-cy={item.value}
                     data={casing}
                     dropDownValue={
                       _.isNil(profileInfo?.[item.value])

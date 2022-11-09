@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import * as Styled from "./styles";
 import { Input, Form, Button } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
@@ -6,63 +6,116 @@ import DomainDropdown from "../../../../../domain/dropdown/domainDropdown";
 import { patchLayer } from "../../../../../../../api-lib/index";
 import { InstrumentAttributes } from "../../data/InstrumentAttributes";
 import { useTranslation } from "react-i18next";
-import _ from "lodash";
 import CasingList from "../../../casingList";
+import { produce } from "immer";
+import { fetchApiV2 } from "../../../../../../../api/fetchApiV2";
 
 const Instrument = props => {
   const { index, info, deleting, isEditable, update, casing } = props.data;
 
   const { t } = useTranslation();
-
-  const [state, setState] = useState({
-    isFetching: false,
-    isPatching: false,
-    updateAttributeDelay: {},
-    instrument: {
-      id: null,
-      instrument_kind: null,
-      depth_from: null,
-      depth_to: null,
-      notes: null,
-      instrument_status: null,
-      instrument_casing_id: null,
-      instrument_id: null,
-    },
+  const [instrumentInfo, setInstrumentInfo] = useState({
+    id: null,
+    instrument_kind: null,
+    depth_from: null,
+    depth_to: null,
+    notes: null,
+    instrument_status: null,
+    instrument_casing_id: null,
+    instrument_id: null,
   });
+  const [casingLayers, setCasingLayers] = useState([]);
+  const [instrument, setInstrument] = useState([]);
+  const [updateAttributeDelay, setUpdateAttributeDelay] = useState({});
+
+  async function fetchLayersByProfileId(profileId) {
+    return await fetchApiV2(`layer?profileId=${profileId}`, "GET");
+  }
+
+  async function fetchLayerById(id) {
+    return await fetchApiV2(`layer/${id}`, "GET");
+  }
+
+  async function updateLayer(layer) {
+    // remove derived objects
+    delete layer.createdBy;
+    delete layer.updatedBy;
+    return await fetchApiV2(`layer`, "PUT", layer);
+  }
+
+  const fetchCasingLayers = useCallback(() => {
+    if (instrument.instrumentCasingId) {
+      fetchLayersByProfileId(instrument.instrumentCasingId).then(response => {
+        if (response?.length > 0) {
+          setCasingLayers(response);
+        } else {
+          setCasingLayers([]);
+        }
+      });
+    } else {
+      setCasingLayers([]);
+    }
+  }, [instrument.instrumentCasingId]);
 
   useEffect(() => {
-    setState(prevState => ({ ...prevState, instrument: info }));
-  }, [info]);
+    setInstrumentInfo(info);
 
-  const updateChange = (attribute, value, to = true, isNumber = false) => {
+    // fetch layer
+    fetchLayerById(info.id).then(response => {
+      setInstrument(response);
+    });
+
+    fetchCasingLayers();
+  }, [fetchCasingLayers, info]);
+
+  const updateChange = (attribute, value, isNumber = false) => {
     if (!isEditable) {
       alert(t("common:errorStartEditing"));
       return;
     }
 
-    setState(prevState => ({ ...prevState, isPatching: true }));
-    _.set(state.instrument, attribute, value);
+    // refresh casing layers if casing changes
+    if (attribute === "instrument_casing_id") {
+      setCasingLayers([]);
+      updateLayer({ ...instrument, instrumentCasingLayerId: null });
+      instrument.instrumentCasingId && fetchCasingLayers();
+    }
+
+    setInstrumentInfo(
+      produce(draft => {
+        draft[attribute] = value;
+      }),
+    );
 
     if (isNumber) {
       if (value === null) {
         patch(attribute, value);
       } else if (/^-?\d*[.,]?\d*$/.test(value)) {
-        patch(attribute, _.toNumber(value));
+        patch(attribute, parseInt(value));
       }
     } else {
       patch(attribute, value);
     }
   };
 
+  const updateInstrument = (attribute, value) => {
+    if (!isEditable) {
+      alert(t("common:errorStartEditing"));
+      return;
+    }
+
+    setInstrument({ ...instrument, [attribute]: value });
+    updateLayer({ ...instrument, [attribute]: value });
+  };
+
   const patch = (attribute, value) => {
-    clearTimeout(state.updateAttributeDelay?.[attribute]);
+    clearTimeout(updateAttributeDelay?.[attribute]);
 
     let setDelay = {
       [attribute]: setTimeout(() => {
         patchLayer(info?.id, attribute, value)
           .then(response => {
             if (response.data.success) {
-              setState(prevState => ({ ...prevState, isPatching: false }));
               if (attribute === "instrument_casing_id") {
                 update();
               }
@@ -78,10 +131,7 @@ const Instrument = props => {
     };
 
     Promise.resolve().then(() => {
-      setState(prevState => ({
-        ...prevState,
-        updateAttributeDelay: setDelay,
-      }));
+      setUpdateAttributeDelay(setDelay);
     });
   };
 
@@ -106,17 +156,12 @@ const Instrument = props => {
                     updateChange(
                       item.value,
                       e.target.value === "" ? null : e.target.value,
-                      item?.to,
                       item?.isNumber,
                     );
                   }}
                   spellCheck="false"
                   style={{ width: "100%" }}
-                  value={
-                    _.isNil(state?.instrument?.[item.value])
-                      ? ""
-                      : state.instrument[item.value]
-                  }
+                  value={instrumentInfo?.[item.value] ?? ""}
                 />
               </Styled.AttributesItem>
             )}
@@ -127,11 +172,7 @@ const Instrument = props => {
                   onSelected={e => updateChange(item.value, e.id, false)}
                   schema={item.schema}
                   search={item.search}
-                  selected={
-                    _.isNil(state?.instrument?.[item.value])
-                      ? null
-                      : state.instrument[item.value]
-                  }
+                  selected={instrumentInfo?.[item.value] ?? null}
                 />
               </Styled.AttributesItem>
             )}
@@ -140,12 +181,22 @@ const Instrument = props => {
               <Styled.AttributesItem data-cy={item.label}>
                 <CasingList
                   data={casing}
-                  dropDownValue={
-                    _.isNil(state?.instrument?.[item.value])
-                      ? null
-                      : state.instrument[item.value]
-                  }
+                  dropDownValue={instrumentInfo?.[item.value] ?? null}
                   handleCasing={updateChange}
+                  ItemValue={item.value}
+                />
+              </Styled.AttributesItem>
+            )}
+
+            {item.type === "CasingLayerDropdown" && (
+              <Styled.AttributesItem data-cy={item.label}>
+                <CasingList
+                  disabled={casingLayers?.length === 0}
+                  data={casingLayers.map(r => {
+                    return { key: r.id, value: r.id, text: r.casing };
+                  })}
+                  dropDownValue={instrument?.[item.value] ?? null}
+                  handleCasing={updateInstrument}
                   ItemValue={item.value}
                 />
               </Styled.AttributesItem>

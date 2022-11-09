@@ -33,7 +33,10 @@ export const ProfileLayersValidation = props => {
       {/* layers list */}
       {layers?.data &&
         layers?.data.map((item, index) => (
-          <Styled.Layer key={item.id} isFirst={index === 0 ? true : false}>
+          <Styled.Layer
+            key={item.id}
+            data-cy={"styled-layer-" + index}
+            isFirst={index === 0 ? true : false}>
             {/* validation before each layer */}
             {item.validation &&
               Object.keys(item.validation)
