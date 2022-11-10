@@ -270,8 +270,12 @@ class MetaComponent extends React.Component {
               flex: "1 1 100%",
             }}>
             {this.getTextRow(
-              "coordinates",
+              "coordinatesLV95",
               data.location_x + ", " + data.location_y,
+            )}
+            {this.getTextRow(
+              "coordinatesLV03",
+              data.location_x_lv03 + ", " + data.location_y_lv03,
             )}
             {this.getTextRow("elevation_z", data.elevation_z)}
             {this.getTextRow("reference_elevation", data.reference_elevation)}
