@@ -119,10 +119,10 @@ public class Borehole
     public double? LocationYLV03 { get; set; }
 
     /// <summary>
-    /// Gets or sets the reference system origin.
+    /// Gets or sets the original reference system.
     /// </summary>
     [Column("srs_id_cli")]
-    public ReferenceSystem? ReferenceSystemOrigin { get; set; }
+    public ReferenceSystem? OriginalReferenceSystem { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s Elevation(Z).

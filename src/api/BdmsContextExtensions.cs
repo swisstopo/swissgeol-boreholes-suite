@@ -109,7 +109,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.LocationY, f => f.Random.Int(1066750, 1310750))
            .RuleFor(o => o.LocationXLV03, _ => null)
            .RuleFor(o => o.LocationYLV03, _ => null)
-           .RuleFor(o => o.ReferenceSystemOrigin, _ => ReferenceSystem.LV95)
+           .RuleFor(o => o.OriginalReferenceSystem, _ => ReferenceSystem.LV95)
            .RuleFor(o => o.ElevationZ, f => f.Random.Double(0, 4500))
            .RuleFor(o => o.KindId, f => f.PickRandom(kindIds).OrNull(f, .6f))
            .RuleFor(o => o.Kind, _ => default!)
