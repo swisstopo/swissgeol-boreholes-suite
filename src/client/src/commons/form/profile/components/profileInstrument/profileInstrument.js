@@ -49,17 +49,17 @@ const ProfileInstrument = props => {
     getInstrumentProfile();
   }, [getInstrumentProfile]);
 
-  const setData = useCallback(
-    instrumentID => {
-      getData(instrumentID).then(response => {
-        setInstruments(response);
-        setHasInstrumentWithoutCasing(
-          response.some(i => i.instrument_casing_id === 0),
-        );
-      });
-    },
-    [setHasInstrumentWithoutCasing],
-  );
+  const setData = useCallback(instrumentID => {
+    getData(instrumentID).then(response => {
+      setInstruments(response);
+    });
+  }, []);
+
+  useEffect(() => {
+    setHasInstrumentWithoutCasing(
+      instruments.some(i => i.instrument_casing_id === 0),
+    );
+  }, [instruments, setHasInstrumentWithoutCasing]);
 
   useEffect(() => {
     if (instrumentProfileId) {
@@ -131,6 +131,8 @@ const ProfileInstrument = props => {
                 deleting: deleteLayer,
                 onUpdated,
                 isEditable,
+                instruments,
+                setInstruments,
                 update: () => {
                   setReload(prevState => prevState + 1);
                 },

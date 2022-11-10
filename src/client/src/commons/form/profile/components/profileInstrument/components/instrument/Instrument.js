@@ -7,9 +7,18 @@ import { InstrumentAttributes } from "../../data/InstrumentAttributes";
 import { useTranslation } from "react-i18next";
 import CasingList from "../../../casingList";
 import { fetchApiV2 } from "../../../../../../../api/fetchApiV2";
+import produce from "immer";
 
 const Instrument = props => {
-  const { index, info, deleting, isEditable, casing } = props.data;
+  const {
+    index,
+    info,
+    deleting,
+    isEditable,
+    casing,
+    instruments,
+    setInstruments,
+  } = props.data;
 
   const { t } = useTranslation();
   const [casingLayers, setCasingLayers] = useState([]);
@@ -75,6 +84,15 @@ const Instrument = props => {
     }
 
     setInstrument(updatedInstrument);
+    setInstruments(
+      produce(instruments, draft => {
+        const index = draft.findIndex(d => d.id === updatedInstrument.id);
+        if (index >= 0) {
+          draft[index].instrument_casing_id =
+            updatedInstrument.instrumentCasingId;
+        }
+      }),
+    );
     updateLayer(updatedInstrument);
   };
 
