@@ -180,7 +180,6 @@ describe("Instrumentation tests", () => {
     casingDropDown.contains("Moonshine Bike");
 
     cy.wait("@casing-layers");
-    cy.wait(3000);
 
     // Choose second casingLayer
     let casingLayerDropDown = cy
@@ -218,7 +217,6 @@ describe("Instrumentation tests", () => {
         .click({ force: true }),
     );
 
-
     casingDropDown.contains("Sunshine Bike");
 
     casingLayerDropDown = cy
@@ -231,7 +229,6 @@ describe("Instrumentation tests", () => {
     // Change of casing should reset casingLayer
     casingLayerDropDown.should("not.contain", "Moonshine Bike");
 
-
     // Dropdown options in casingLayer dropdown have updated
     casingLayerDropDown.each((el, index, list) =>
       cy
@@ -241,7 +238,6 @@ describe("Instrumentation tests", () => {
         .eq(2)
         .click({ force: true }),
     );
-
 
     casingLayerDropDown.contains("Sunshine Honey");
     cy.contains("a", "Stop editing").click();
