@@ -92,6 +92,7 @@ const Instrument = props => {
             {item.type === "Input" && (
               <Styled.AttributesItem data-cy={item.label}>
                 <Input
+                  type={item.isNumber ? "number" : "text"}
                   autoCapitalize="off"
                   autoComplete="off"
                   autoCorrect="off"
