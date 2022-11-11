@@ -5,6 +5,8 @@
 /// </summary>
 public enum ReferenceSystem
 {
+    None,
+
     /// <summary>
     /// CH1903+ LV 95 (EPSG:2056).
     /// </summary>
