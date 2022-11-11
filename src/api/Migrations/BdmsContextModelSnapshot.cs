@@ -797,6 +797,14 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("instr_id");
 
+                    b.Property<int?>("InstrumentCasingId")
+                        .HasColumnType("integer")
+                        .HasColumnName("instr_id_sty_fk");
+
+                    b.Property<int?>("InstrumentCasingLayerId")
+                        .HasColumnType("integer")
+                        .HasColumnName("instr_id_lay_fk");
+
                     b.Property<int?>("InstrumentKindId")
                         .HasColumnType("integer")
                         .HasColumnName("instr_kind_id_cli");
@@ -804,10 +812,6 @@ namespace BDMS.Migrations
                     b.Property<int?>("InstrumentStatusId")
                         .HasColumnType("integer")
                         .HasColumnName("instr_status_id_cli");
-
-                    b.Property<int?>("InstrumentStratigraphyId")
-                        .HasColumnType("integer")
-                        .HasColumnName("instr_id_sty_fk");
 
                     b.Property<bool?>("IsLast")
                         .HasColumnType("boolean")
@@ -932,6 +936,8 @@ namespace BDMS.Migrations
                     b.HasIndex("GrainSize2Id");
 
                     b.HasIndex("HumidityId");
+
+                    b.HasIndex("InstrumentCasingId");
 
                     b.HasIndex("InstrumentKindId");
 
@@ -1218,6 +1224,11 @@ namespace BDMS.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("disabled_usr");
 
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("firstname");
+
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("boolean")
                         .HasColumnName("admin_usr");
@@ -1225,6 +1236,11 @@ namespace BDMS.Migrations
                     b.Property<bool>("IsViewer")
                         .HasColumnType("boolean")
                         .HasColumnName("viewer_usr");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("lastname");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1284,8 +1300,6 @@ namespace BDMS.Migrations
                         .HasColumnName("id_rol_fk");
 
                     b.HasKey("UserId", "WorkgroupId", "Role");
-
-                    b.HasIndex("WorkgroupId");
 
                     b.ToTable("users_roles", "bdms");
                 });
@@ -1632,6 +1646,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("HumidityId");
 
+                    b.HasOne("BDMS.Models.Stratigraphy", "InstrumentCasing")
+                        .WithMany("Layers")
+                        .HasForeignKey("InstrumentCasingId");
+
                     b.HasOne("BDMS.Models.Codelist", "InstrumentKind")
                         .WithMany()
                         .HasForeignKey("InstrumentKindId");
@@ -1673,7 +1691,7 @@ namespace BDMS.Migrations
                         .HasForeignKey("SoilStateId");
 
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
-                        .WithMany("Layers")
+                        .WithMany()
                         .HasForeignKey("StratigraphyId");
 
                     b.HasOne("BDMS.Models.Codelist", "Symbol")
@@ -1735,6 +1753,8 @@ namespace BDMS.Migrations
                     b.Navigation("GrainSize2");
 
                     b.Navigation("Humidity");
+
+                    b.Navigation("InstrumentCasing");
 
                     b.Navigation("InstrumentKind");
 
@@ -1817,21 +1837,11 @@ namespace BDMS.Migrations
 
             modelBuilder.Entity("BDMS.Models.UserWorkgroupRole", b =>
                 {
-                    b.HasOne("BDMS.Models.User", "User")
+                    b.HasOne("BDMS.Models.User", null)
                         .WithMany("WorkgroupRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("BDMS.Models.Workgroup", "Workgroup")
-                        .WithMany()
-                        .HasForeignKey("WorkgroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-
-                    b.Navigation("Workgroup");
                 });
 
             modelBuilder.Entity("BDMS.Models.Workflow", b =>
