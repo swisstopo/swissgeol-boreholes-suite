@@ -3,30 +3,26 @@ import * as Styled from "./styles";
 import { Input, Form, Button } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
 import DomainDropdown from "../../../../../domain/dropdown/domainDropdown";
-import { patchLayer } from "../../../../../../../api-lib/index";
 import { InstrumentAttributes } from "../../data/InstrumentAttributes";
 import { useTranslation } from "react-i18next";
 import CasingList from "../../../casingList";
-import { produce } from "immer";
 import { fetchApiV2 } from "../../../../../../../api/fetchApiV2";
+import produce from "immer";
 
 const Instrument = props => {
-  const { index, info, deleting, isEditable, update, casing } = props.data;
+  const {
+    index,
+    info,
+    deleting,
+    isEditable,
+    casing,
+    instruments,
+    setInstruments,
+  } = props.data;
 
   const { t } = useTranslation();
-  const [instrumentInfo, setInstrumentInfo] = useState({
-    id: null,
-    instrument_kind: null,
-    depth_from: null,
-    depth_to: null,
-    notes: null,
-    instrument_status: null,
-    instrument_casing_id: null,
-    instrument_id: null,
-  });
   const [casingLayers, setCasingLayers] = useState([]);
   const [instrument, setInstrument] = useState([]);
-  const [updateAttributeDelay, setUpdateAttributeDelay] = useState({});
 
   async function fetchLayersByProfileId(profileId) {
     return await fetchApiV2(`layer?profileId=${profileId}`, "GET");
@@ -58,8 +54,6 @@ const Instrument = props => {
   }, [instrument.instrumentCasingId]);
 
   useEffect(() => {
-    setInstrumentInfo(info);
-
     // fetch layer
     fetchLayerById(info.id).then(response => {
       setInstrument(response);
@@ -68,71 +62,38 @@ const Instrument = props => {
     fetchCasingLayers();
   }, [fetchCasingLayers, info]);
 
-  const updateChange = (attribute, value, isNumber = false) => {
-    if (!isEditable) {
-      alert(t("common:errorStartEditing"));
-      return;
-    }
-
-    // refresh casing layers if casing changes
-    if (attribute === "instrument_casing_id") {
-      setCasingLayers([]);
-      updateLayer({ ...instrument, instrumentCasingLayerId: null });
-      instrument.instrumentCasingId && fetchCasingLayers();
-    }
-
-    setInstrumentInfo(
-      produce(draft => {
-        draft[attribute] = value;
-      }),
-    );
-
-    if (isNumber) {
-      if (value === null) {
-        patch(attribute, value);
-      } else if (/^-?\d*[.,]?\d*$/.test(value)) {
-        patch(attribute, parseInt(value));
-      }
-    } else {
-      patch(attribute, value);
-    }
-  };
-
   const updateInstrument = (attribute, value) => {
     if (!isEditable) {
       alert(t("common:errorStartEditing"));
       return;
     }
 
-    setInstrument({ ...instrument, [attribute]: value });
-    updateLayer({ ...instrument, [attribute]: value });
-  };
+    let updatedInstrument;
+    // reset casing layer if casing changes.
+    if (attribute === "instrumentCasingId") {
+      updatedInstrument = {
+        ...instrument,
+        [attribute]: value,
+        instrumentCasingLayerId: null,
+      };
+    } else {
+      updatedInstrument = {
+        ...instrument,
+        [attribute]: value,
+      };
+    }
 
-  const patch = (attribute, value) => {
-    clearTimeout(updateAttributeDelay?.[attribute]);
-
-    let setDelay = {
-      [attribute]: setTimeout(() => {
-        patchLayer(info?.id, attribute, value)
-          .then(response => {
-            if (response.data.success) {
-              if (attribute === "instrument_casing_id") {
-                update();
-              }
-            } else {
-              alert(response.data.message);
-              window.location.reload();
-            }
-          })
-          .catch(function (error) {
-            console.error(error);
-          });
-      }, 500),
-    };
-
-    Promise.resolve().then(() => {
-      setUpdateAttributeDelay(setDelay);
-    });
+    setInstrument(updatedInstrument);
+    setInstruments(
+      produce(instruments, draft => {
+        const index = draft.findIndex(d => d.id === updatedInstrument.id);
+        if (index >= 0) {
+          draft[index].instrument_casing_id =
+            updatedInstrument.instrumentCasingId;
+        }
+      }),
+    );
+    updateLayer(updatedInstrument);
   };
 
   return (
@@ -149,19 +110,19 @@ const Instrument = props => {
             {item.type === "Input" && (
               <Styled.AttributesItem data-cy={item.label}>
                 <Input
+                  type={item.isNumber ? "number" : "text"}
                   autoCapitalize="off"
                   autoComplete="off"
                   autoCorrect="off"
                   onChange={e => {
-                    updateChange(
+                    updateInstrument(
                       item.value,
                       e.target.value === "" ? null : e.target.value,
-                      item?.isNumber,
                     );
                   }}
                   spellCheck="false"
                   style={{ width: "100%" }}
-                  value={instrumentInfo?.[item.value] ?? ""}
+                  value={instrument?.[item.value] ?? ""}
                 />
               </Styled.AttributesItem>
             )}
@@ -169,10 +130,10 @@ const Instrument = props => {
               <Styled.AttributesItem data-cy={item.label}>
                 <DomainDropdown
                   multiple={item.multiple}
-                  onSelected={e => updateChange(item.value, e.id, false)}
+                  onSelected={e => updateInstrument(item.value, e.id)}
                   schema={item.schema}
                   search={item.search}
-                  selected={instrumentInfo?.[item.value] ?? null}
+                  selected={instrument?.[item.value] ?? null}
                 />
               </Styled.AttributesItem>
             )}
@@ -181,8 +142,8 @@ const Instrument = props => {
               <Styled.AttributesItem data-cy={item.label}>
                 <CasingList
                   data={casing}
-                  dropDownValue={instrumentInfo?.[item.value] ?? null}
-                  handleCasing={updateChange}
+                  dropDownValue={instrument?.[item.value] ?? null}
+                  handleCasing={updateInstrument}
                   ItemValue={item.value}
                 />
               </Styled.AttributesItem>
