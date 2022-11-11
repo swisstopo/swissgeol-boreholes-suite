@@ -6,6 +6,10 @@
 
 - Added possibility to add a casing layer (_CasingId_) to an instrument.
 
+### Changed
+
+- Migrate identifiers for existing boreholes.
+
 ### Fixed
 
 - Fix sending feedback e-mail.
