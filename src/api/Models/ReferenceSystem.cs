@@ -5,7 +5,10 @@
 /// </summary>
 public enum ReferenceSystem
 {
-    None,
+    /// <summary>
+    /// The default value.
+    /// </summary>
+    None = 0,
 
     /// <summary>
     /// CH1903+ LV 95 (EPSG:2056).
