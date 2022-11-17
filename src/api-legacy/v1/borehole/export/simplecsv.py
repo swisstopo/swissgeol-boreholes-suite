@@ -41,6 +41,8 @@ class ExportSimpleCsv(Action):
 
                 location_x_bho as location_x,
                 location_y_bho as location_y,
+                location_x_lv03_bho as location_x_lv03,
+                location_y_lv03_bho as location_y_lv03,
                 srd.geolcode as srs,
                 
                 qtloc.geolcode as qt_location,

@@ -425,7 +425,9 @@ class ExportSpatiaLite(Action):
                         borehole['workflow']['role'],
 
                         borehole['location_x'],
-                        borehole['location_y']
+                        borehole['location_y'],
+                        borehole['location_x_lv03'],
+                        borehole['location_y_lv03']
                         # "POINT({} {})".format(
                         #     borehole['location_x'],
                         #     borehole['location_y']

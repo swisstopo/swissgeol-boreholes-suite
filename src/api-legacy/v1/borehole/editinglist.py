@@ -95,6 +95,8 @@ class ListEditingBorehole(Action):
                 ) as restriction_until,
                 location_x_bho as location_x,
                 location_y_bho as location_y,
+                location_x_lv03_bho as location_x_lv03,
+                location_y_lv03_bho as location_y_lv03,
                 srs_id_cli as srs,
                 elevation_z_bho as elevation_z,
                 hrs_id_cli as hrs,

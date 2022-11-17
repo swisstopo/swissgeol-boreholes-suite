@@ -26,13 +26,19 @@ class PatchBorehole(Action):
         elif field == 'custom.project_name':
             column = 'project_name_bho'
 
-        elif field in ['location_x', 'location_y', 'location']:
+        elif field in ['location_x', 'location_y', 'location_x_lv03',  'location_y_lv03', 'location']:
 
             if field == 'location_x':
                 column = 'location_x_bho'
 
             elif field == 'location_y':
                 column = 'location_y_bho'
+            
+            elif field == 'location_x_lv03':
+                column = 'location_x_lv03_bho'
+
+            elif field == 'location_y_lv03':
+                column = 'location_y_lv03_bho'
 
             elif field == 'location':
                 column = [
@@ -191,6 +197,8 @@ class PatchBorehole(Action):
                 'location',
                 'location_x',
                 'location_y',
+                'location_x_lv03',
+                'location_y_lv03',
                 'elevation_z',
                 'canton',
                 'address',
