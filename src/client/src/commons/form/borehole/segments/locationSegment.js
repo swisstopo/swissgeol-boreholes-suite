@@ -14,6 +14,9 @@ import DomainText from "../../domain/domainText";
 import TranslationText from "../../translationText";
 import { Form, Input, Segment } from "semantic-ui-react";
 
+const webApilv95tolv03 = "http://geodesy.geo.admin.ch/reframe/lv95tolv03";
+const webApilv03tolv95 = "http://geodesy.geo.admin.ch/reframe/lv03tolv95";
+
 const LocationSegment = props => {
   const { control, reset, trigger, setValue, getValues } = useForm({
     mode: "onChange",
@@ -26,9 +29,6 @@ const LocationSegment = props => {
     LV95: { X: null, Y: null },
     LV03: { X: null, Y: null },
   });
-
-  const webApilv95tolv03 = "http://geodesy.geo.admin.ch/reframe/lv95tolv03";
-  const webApilv03tolv95 = "http://geodesy.geo.admin.ch/reframe/lv03tolv95";
 
   const referenceSystems = {
     LV95: 20104001,
@@ -79,6 +79,10 @@ const LocationSegment = props => {
       },
       { keepErrors: true },
     );
+    updateNumber("location_x", null);
+    updateNumber("location_y", null);
+    updateNumber("location_x_lv03", null);
+    updateNumber("location_y_lv03", null);
     setCoordinates({ LV95: { X: null, Y: null }, LV03: { X: null, Y: null } });
     setReferenceSystem(parseInt(value));
   };
