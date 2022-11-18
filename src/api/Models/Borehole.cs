@@ -95,30 +95,40 @@ public class Borehole
     public Codelist? Kind { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s X-location.
+    /// Gets or sets the <see cref="Borehole"/>'s X-location using LV95 coordinates.
     /// </summary>
     [Column("location_x_bho")]
     public double? LocationX { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s Y-location.
+    /// Gets or sets the <see cref="Borehole"/>'s Y-location using LV95 coordinates.
     /// </summary>
     [Column("location_y_bho")]
     public double? LocationY { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s X-location using LV03 coordinates.
+    /// </summary>
+    [Column("location_x_lv03_bho")]
+    public double? LocationXLV03 { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s Y-location using LV03 coordinates.
+    /// </summary>
+    [Column("location_y_lv03_bho")]
+    public double? LocationYLV03 { get; set; }
+
+    /// <summary>
+    /// Gets or sets the original reference system.
+    /// </summary>
+    [Column("srs_id_cli")]
+    public ReferenceSystem? OriginalReferenceSystem { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s Elevation(Z).
     /// </summary>
     [Column("elevation_z_bho")]
     public double? ElevationZ { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s SrsId.
-    /// </summary>
-    [Column("srs_id_cli")]
-    public int? SrsId { get; set; }
-
-    public Codelist? Srs { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s HrsId.
