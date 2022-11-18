@@ -5,13 +5,17 @@
 ### Added
 
 - Added possibility to add a casing layer (_CasingId_) to an instrument.
+- Added new columns in borehole table for LV03 coordinates.
+
+### Changed
+
+- Migrate existing LV95 coordinates into LV03 coordinates using 'shift' method. Preserve original LV95 coordinates for some selected boreholes (e.g. Bülach-1-1, ...). These changes are not yet visible in the web client.
 
 ### Fixed
 
 - Fix sending feedback e-mail.
 - Display `lithology_top_bedrock`, `lithostratigraphy_top_bedrock`and `chronostratigraphy_top_bedrock` as domain trees in bulk edit.
 - Added space above the instrument list.
-
 
 ## v2.0.65 - 2022-11-04
 

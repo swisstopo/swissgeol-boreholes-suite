@@ -77,7 +77,7 @@ public class BoreholeControllerTest
         Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
         var copiedBorehole = GetBorehole((int)copiedBoreholeId);
 
-        Assert.AreEqual("Felton Macejkovic (Copy)", copiedBorehole.OriginalName);
+        Assert.AreEqual("Monique Schneider (Copy)", copiedBorehole.OriginalName);
         Assert.AreEqual("validator", copiedBorehole.CreatedBy.Name);
         Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
         Assert.AreEqual(1, copiedBorehole.Workflows.Count);
