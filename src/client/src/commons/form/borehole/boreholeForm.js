@@ -431,6 +431,7 @@ class BoreholeForm extends React.Component {
                       size={size}
                       mentions={mentions}
                       borehole={borehole}
+                      user={this.props.user}
                       updateChange={this.updateChange}
                       updateNumber={this.updateNumber}
                       checkLock={this.checkLock}></LocationSegment>
