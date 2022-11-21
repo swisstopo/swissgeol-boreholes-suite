@@ -11,6 +11,10 @@
 
 - Migrate existing LV95 coordinates into LV03 coordinates using 'shift' method. Preserve original LV95 coordinates for some selected boreholes (e.g. Bülach-1-1, ...). These changes are not yet visible in the web client.
 
+### Changed
+
+- Migrate identifiers for existing boreholes.
+
 ### Fixed
 
 - Fix sending feedback e-mail.
