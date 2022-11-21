@@ -33,6 +33,7 @@ builder.Services.AddAuthentication("BasicAuthentication")
     .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 
 var connectionString = builder.Configuration.GetConnectionString("BdmsContext");
 builder.Services.AddNpgsql<BdmsContext>(connectionString, options =>
