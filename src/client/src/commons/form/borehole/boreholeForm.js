@@ -13,19 +13,17 @@ import {
   patchBorehole,
 } from "../../../api-lib/index";
 
-import PointComponent from "../../map/pointComponent";
 import EditorBoreholeFilesTable from "../../files/table/editorBoreholeFilesTable";
 import TranslationText from "../translationText";
 
 import { Dimmer, Loader } from "semantic-ui-react";
 import Profile from "../profile";
-import LocationSegment from "./segments/locationSegment";
 import IdentifierSegment from "./segments/indentifierSegment";
-import CantonMunicipalitySegment from "./segments/cantonMunicipalitySegment";
 import NameSegment from "./segments/nameSegment";
 import RestrictionSegment from "./segments/restrictionSegment";
 import BoreholeGeneralSegment from "./segments/boreholeGeneralSegment";
 import BoreholeDetailSegment from "./segments/boreholeDetailSegment";
+import LocationSegment from "./segments/locationSegment";
 
 class BoreholeForm extends React.Component {
   constructor(props) {
@@ -417,78 +415,18 @@ class BoreholeForm extends React.Component {
                   mentions={mentions}
                   borehole={this.props.borehole}
                   updateChange={this.updateChange}></RestrictionSegment>
-
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                  }}>
-                  <div
-                    style={{
-                      flex: "1",
-                    }}>
-                    <LocationSegment
-                      size={size}
-                      mentions={mentions}
-                      borehole={borehole}
-                      user={this.props.user}
-                      updateChange={this.updateChange}
-                      updateNumber={this.updateNumber}
-                      checkLock={this.checkLock}></LocationSegment>
-                    <CantonMunicipalitySegment
-                      size={size}
-                      mentions={mentions}
-                      borehole={borehole}
-                      cantons={this.props.cantons}
-                      municipalities={this.props.municipalities}
-                      zoomToPolygon={
-                        this.map?.zoomtopoly
-                      }></CantonMunicipalitySegment>
-                  </div>
-                  <div
-                    style={{
-                      flex: "1",
-                      marginLeft: "1em",
-                    }}>
-                    <PointComponent
-                      applyChange={(x, y, height, cid, mid) => {
-                        this.updateChange(
-                          "location",
-                          [x, y, cid, mid, height],
-                          false,
-                        );
-                      }}
-                      id={borehole.data.id}
-                      ref={pmap => (this.map = pmap)}
-                      srs={
-                        borehole.data.srs !== null &&
-                        this.props.domains.data.hasOwnProperty("srs")
-                          ? (() => {
-                              const code = this.props.domains.data.srs.find(
-                                element => {
-                                  return element.id === borehole.data.srs;
-                                },
-                              );
-                              if (code !== undefined) {
-                                return "EPSG:" + code["code"];
-                              }
-                              return null;
-                            })()
-                          : null
-                      }
-                      x={
-                        _.isNil(borehole.data.location_x)
-                          ? null
-                          : _.toNumber(borehole.data.location_x)
-                      }
-                      y={
-                        _.isNil(borehole.data.location_y)
-                          ? null
-                          : _.toNumber(borehole.data.location_y)
-                      }
-                    />
-                  </div>
-                </div>
+                <LocationSegment
+                  size={size}
+                  mentions={mentions}
+                  borehole={borehole}
+                  user={this.props.user}
+                  updateChange={this.updateChange}
+                  updateNumber={this.updateNumber}
+                  checkLock={this.checkLock}
+                  cantons={this.props.cantons}
+                  municipalities={this.props.municipalities}
+                  zoomToPolygon={this.map?.zoomtopoly}
+                  domains={this.props.domains}></LocationSegment>
               </div>
             )}
           />

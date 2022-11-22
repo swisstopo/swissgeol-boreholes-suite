@@ -490,6 +490,7 @@ class PointComponent extends React.Component {
                 loading={this.state.address}
                 onClick={e => {
                   if (_.isFunction(this.props.applyChange)) {
+                    this.props.setMapPointChange(true);
                     this.props.applyChange(
                       _.round(this.state.toPoint[0], 2),
                       _.round(this.state.toPoint[1], 2),
