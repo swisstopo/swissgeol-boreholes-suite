@@ -41,6 +41,7 @@ const LocationSegment = props => {
   } = props;
 
   const [referenceSystem, setReferenceSystem] = useState(borehole.data.srs);
+  const [precision, setPrecision] = useState(4);
   const [coordinates, setCoordinates] = useState({
     LV95: { X: null, Y: null },
     LV03: { X: null, Y: null },
@@ -65,12 +66,23 @@ const LocationSegment = props => {
     },
   };
 
+  const isEditable =
+    borehole?.data.role === "EDIT" &&
+    borehole?.data.lock !== null &&
+    borehole?.data.lock?.username === user?.data.username;
+
+  const getDecimals = number => {
+    var text = number.toString();
+    var index = text.indexOf(".");
+    return index === -1 ? 0 : text.length - index - 1;
+  };
+
   //initially validate the form to display errors.
   useEffect(() => {
     trigger();
   }, [trigger, referenceSystem]);
 
-  // set programmatically set values to form.
+  // programmatically set values to form.
   const setValuesForReferenceSystem = useCallback(
     (referenceSystem, X, Y) => {
       setValue(referenceSystems[referenceSystem].fieldName.X, X, {
@@ -101,7 +113,7 @@ const LocationSegment = props => {
     }
   }, []);
 
-  // Reset form values when the borehole changes.
+  // reset form values when the borehole changes.
   useEffect(() => {
     if (borehole.data.location_x && borehole.data.location_y)
       setValuesForReferenceSystem(
@@ -128,19 +140,12 @@ const LocationSegment = props => {
   //update all coordinates on backend.
   const updateCoordinates = useCallback(
     (LV95X, LV95Y, LV03X, LV03Y) => {
-      const isEditable =
-        borehole?.data.role === "EDIT" &&
-        borehole?.data.lock !== null &&
-        borehole?.data.lock?.username === user?.data.username;
-
-      if (isEditable) {
-        updateNumber(referenceSystems.LV95.fieldName.X, LV95X);
-        updateNumber(referenceSystems.LV95.fieldName.Y, LV95Y);
-        updateNumber(referenceSystems.LV03.fieldName.X, LV03X);
-        updateNumber(referenceSystems.LV03.fieldName.Y, LV03Y);
-      }
+      updateNumber(referenceSystems.LV95.fieldName.X, LV95X);
+      updateNumber(referenceSystems.LV95.fieldName.Y, LV95Y);
+      updateNumber(referenceSystems.LV03.fieldName.X, LV03X);
+      updateNumber(referenceSystems.LV03.fieldName.Y, LV03Y);
     },
-    [borehole, updateNumber, user],
+    [updateNumber],
   );
 
   const changeReferenceSystem = value => {
@@ -163,10 +168,13 @@ const LocationSegment = props => {
     updateNumber("srs", value);
     setCoordinates({ LV95: { X: null, Y: null }, LV03: { X: null, Y: null } });
     setReferenceSystem(parseFloat(value));
+    setValuesForReferenceSystem("LV03", null, null);
+    setValuesForReferenceSystem("LV95", null, null);
   };
 
   // Gets all current coordinates and sets them to coordinates object.
   const getCoordinatesFromForm = (referenceSystem, direction, value) => {
+    setPrecision(getDecimals(value)); // save all coordinates with same precision as last changed coordinate.
     const currentFieldName =
       referenceSystems[referenceSystem].fieldName[direction];
 
@@ -218,60 +226,60 @@ const LocationSegment = props => {
 
   // Transforms and updates the coordinates if location changes.
   useEffect(() => {
-    const completeLV95 = coordinates.LV95.X > 0 && coordinates.LV95.Y > 0;
-    const completeLV03 = coordinates.LV03.X > 0 && coordinates.LV03.Y > 0;
+    if (isEditable) {
+      const completeLV95 = coordinates.LV95.X > 0 && coordinates.LV95.Y > 0;
+      const completeLV03 = coordinates.LV03.X > 0 && coordinates.LV03.Y > 0;
 
-    const hasChangedLV95 =
-      coordinates.LV95.X !== borehole.data.location_x ||
-      coordinates.LV95.Y !== borehole.data.location_y;
+      const hasChangedLV95 =
+        coordinates.LV95.X !== borehole.data.location_x ||
+        coordinates.LV95.Y !== borehole.data.location_y;
 
-    const hasChangedLV03 =
-      coordinates.LV03.X !== borehole.data.location_x_lv03 ||
-      coordinates.LV03.Y !== borehole.data.location_y_lv03;
+      const hasChangedLV03 =
+        coordinates.LV03.X !== borehole.data.location_x_lv03 ||
+        coordinates.LV03.Y !== borehole.data.location_y_lv03;
 
-    if (
-      referenceSystem === referenceSystems.LV95.code &&
-      completeLV95 &&
-      hasChangedLV95
-    )
-      transformCoodinates("LV95", coordinates.LV95.X, coordinates.LV95.Y).then(
-        res => {
-          setValuesForReferenceSystem("LV03", res.easting, res.northing);
-          console.log("update lv 95");
-          updateCoordinates(
-            coordinates.LV95.X,
-            coordinates.LV95.Y,
-            res.easting,
-            res.northing,
-          );
-        },
-      );
-    if (
-      referenceSystem === referenceSystems.LV03.code &&
-      completeLV03 &&
-      hasChangedLV03
-    ) {
-      transformCoodinates("LV03", coordinates.LV03.X, coordinates.LV03.Y).then(
-        res => {
-          setValuesForReferenceSystem("LV95", res.easting, res.northing);
-          console.log("update lv 03");
-
-          updateCoordinates(
-            res.easting,
-            res.northing,
-            coordinates.LV03.X,
-            coordinates.LV03.Y,
-          );
-        },
-      );
+      if (
+        referenceSystem === referenceSystems.LV95.code &&
+        completeLV95 &&
+        hasChangedLV95
+      )
+        transformCoodinates(
+          "LV95",
+          coordinates.LV95.X,
+          coordinates.LV95.Y,
+        ).then(res => {
+          const x = parseFloat(parseFloat(res.easting).toFixed(precision));
+          const y = parseFloat(parseFloat(res.northing).toFixed(precision));
+          setValuesForReferenceSystem("LV03", x, y);
+          updateCoordinates(coordinates.LV95.X, coordinates.LV95.Y, x, y);
+        });
+      if (
+        referenceSystem === referenceSystems.LV03.code &&
+        completeLV03 &&
+        hasChangedLV03
+      ) {
+        transformCoodinates(
+          "LV03",
+          coordinates.LV03.X,
+          coordinates.LV03.Y,
+        ).then(res => {
+          const x = parseFloat(parseFloat(res.easting).toFixed(precision));
+          const y = parseFloat(parseFloat(res.northing).toFixed(precision));
+          setValuesForReferenceSystem("LV95", x, y);
+          if (isEditable) {
+            updateCoordinates(x, y, coordinates.LV03.X, coordinates.LV03.Y);
+          }
+        });
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    borehole,
     coordinates,
     setValuesForReferenceSystem,
     transformCoodinates,
     updateCoordinates,
     referenceSystem,
+    isEditable,
   ]);
 
   return (
@@ -369,7 +377,6 @@ const LocationSegment = props => {
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
-                      step="0.0001"
                       readOnly={!isLV95}
                       onChange={e => {
                         changeCoordinate("LV95", "X", e.target.value);
@@ -404,7 +411,6 @@ const LocationSegment = props => {
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
-                      step="0.0001"
                       readOnly={!isLV95}
                       onChange={e => {
                         // new columns!!
@@ -442,7 +448,6 @@ const LocationSegment = props => {
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
-                      step="0.0001"
                       readOnly={isLV95}
                       onChange={e => {
                         // new columns!!
@@ -478,7 +483,6 @@ const LocationSegment = props => {
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
-                      step="0.0001"
                       readOnly={isLV95}
                       onChange={e => {
                         // new columns!!
