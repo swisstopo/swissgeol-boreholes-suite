@@ -6,6 +6,7 @@
 
 - Added possibility to add a casing layer (_CasingId_) to an instrument.
 - Added new columns in borehole table for LV03 coordinates.
+- Added inputs for entering coordinates in LV03 as well as LV95. The coordintaes in the coodinate system that was not entered by the user, are automatically transformed and completed.
 
 ### Changed
 
