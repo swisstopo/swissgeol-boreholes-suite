@@ -6,6 +6,7 @@ describe("Test copying of boreholes", () => {
     cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
 
     login("/editor");
+    cy.wait("@edit_list");
   });
 
   it("copies a borehole", () => {
@@ -13,6 +14,7 @@ describe("Test copying of boreholes", () => {
       .children()
       .eq(1)
       .find(".checkbox")
+      .scrollIntoView()
       .click();
 
     cy.contains("button", "Create a copy").click();
