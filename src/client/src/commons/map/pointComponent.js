@@ -486,6 +486,7 @@ class PointComponent extends React.Component {
           <div>
             <Button.Group size="mini">
               <Button
+                data-cy="apply-button"
                 disabled={!_.isArray(this.state.toPoint) || this.state.address}
                 loading={this.state.address}
                 onClick={e => {

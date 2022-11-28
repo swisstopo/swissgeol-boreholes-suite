@@ -411,6 +411,7 @@ const CoordinatesSegment = props => {
                       <TranslationText id="location_x_LV95" />
                     </label>
                     <Input
+                      data-cy="LV95X"
                       type="number"
                       autoCapitalize="off"
                       autoComplete="off"
@@ -445,6 +446,7 @@ const CoordinatesSegment = props => {
                       <TranslationText id="location_y_LV95" />
                     </label>
                     <Input
+                      data-cy="LV95Y"
                       type="number"
                       autoCapitalize="off"
                       autoComplete="off"
@@ -483,6 +485,7 @@ const CoordinatesSegment = props => {
                     </label>
                     <Input
                       type="number"
+                      data-cy="LV03X"
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
@@ -517,6 +520,7 @@ const CoordinatesSegment = props => {
                       <TranslationText id="location_y_LV03" />
                     </label>
                     <Input
+                      data-cy="LV03Y"
                       type="number"
                       autoCapitalize="off"
                       autoComplete="off"
