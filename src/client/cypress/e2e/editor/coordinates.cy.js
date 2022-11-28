@@ -32,6 +32,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     );
 
     // wait edits of all 4 inputs to complete
+    cy.wait("@location");
     cy.wait("@edit_patch");
     cy.wait("@edit_patch");
     cy.wait("@edit_patch");
@@ -59,6 +60,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     delayedType(cy.get('[data-cy="LV95X"]').children().first(), "2645123.12");
 
     // wait edits of all 4 inputs to complete
+    cy.wait("@location");
     cy.wait("@edit_patch");
     cy.wait("@edit_patch");
     cy.wait("@edit_patch");
@@ -114,6 +116,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("[name=location_y]").should("not.have.class", "error");
 
     // wait edits of all 4 inputs to complete
+    cy.wait("@location");
     cy.wait("@edit_patch");
     cy.wait("@edit_patch");
     cy.wait("@edit_patch");
