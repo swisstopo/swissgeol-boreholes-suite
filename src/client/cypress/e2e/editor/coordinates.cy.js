@@ -2,6 +2,7 @@ import {
   interceptApiCalls,
   deleteBorehole,
   newEditableBorehole,
+  delayedType,
   login,
 } from "../testHelpers";
 
@@ -21,10 +22,14 @@ describe("Tests for editing coordinates of a borehole.", () => {
     newEditableBorehole().as("borehole_id");
 
     // fill inputs for LV95
-    cy.get('[data-cy="LV95X"]').children().first().type(2645123.12124);
-    cy.get('[data-cy="LV95Y"]').children().first().type(1245794.92348);
+    delayedType(cy.get('[data-cy="LV95X"]').children().first(), 2645123.12124);
+    delayedType(cy.get('[data-cy="LV95Y"]').children().first(), 1245794.92348);
 
-    cy.wait(2000);
+    // wait edits of all 4 inputs to complete
+    cy.wait("@edit_patch");
+    cy.wait("@edit_patch");
+    cy.wait("@edit_patch");
+    cy.wait("@edit_patch");
     // verify automatically filled inputs for LV03
     cy.get('[data-cy="LV95X"]')
       .children()
@@ -45,9 +50,13 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
     // clear and fill again with less decimals.
     cy.get('[data-cy="LV95X"]').children().first().clear();
-    cy.get('[data-cy="LV95X"]').children().first().type(2645123.12);
+    delayedType(cy.get('[data-cy="LV95X"]').children().first(), 2645123.12);
 
-    cy.wait(2000);
+    // wait edits of all 4 inputs to complete
+    cy.wait("@edit_patch");
+    cy.wait("@edit_patch");
+    cy.wait("@edit_patch");
+    cy.wait("@edit_patch");
 
     // automatically filled LV03
     cy.get('[data-cy="LV03X"]')
@@ -81,16 +90,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("[name=location_y]").should("have.class", "error");
 
     // type valid coordinates
-    cy.get('[data-cy="LV95X"]')
-      .children()
-      .first()
-      .scrollIntoView()
-      .type(2645123.12124);
-    cy.get('[data-cy="LV95Y"]')
-      .children()
-      .first()
-      .scrollIntoView()
-      .type(1245794.92348);
+    cy.get('[data-cy="LV95X"]').children().first().scrollIntoView();
+    delayedType(cy.get('[data-cy="LV95X"]').children().first(), 2645123.12124);
+    cy.get('[data-cy="LV95Y"]').children().first().scrollIntoView();
+    delayedType(cy.get('[data-cy="LV95Y"]').children().first(), 1245794.92348);
 
     // divs have errors as long as inputs are empty
     cy.get("[name=location_x_lv03]").should("not.have.class", "error");
@@ -105,16 +108,11 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.wait("@edit_patch");
 
     // type coordinates that are out of bounds
-    cy.get('[data-cy="LV95X"]')
-      .children()
-      .first()
-      .clear()
-      .type("264512{enter}");
-    cy.get('[data-cy="LV95Y"]')
-      .children()
-      .first()
-      .clear()
-      .type("124579{enter}");
+    cy.get('[data-cy="LV95X"]').children().first().clear();
+    delayedType(cy.get('[data-cy="LV95X"]').children().first(), 264512);
+
+    cy.get('[data-cy="LV95Y"]').children().first().clear();
+    delayedType(cy.get('[data-cy="LV95Y"]').children().first(), 124579);
 
     // divs that changed have errors
     cy.get("[name=location_x_lv03]").should("not.have.class", "error");

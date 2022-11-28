@@ -133,3 +133,8 @@ export const deleteBorehole = id => {
     .its("body.success")
     .should("eq", true);
 };
+
+export const delayedType = (element, string) => {
+  cy.wait(500);
+  element.type(string);
+};

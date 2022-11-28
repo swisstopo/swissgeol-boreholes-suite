@@ -2,14 +2,9 @@ import {
   interceptApiCalls,
   newUneditableBorehole,
   deleteBorehole,
+  delayedType,
   login,
 } from "../testHelpers";
-
-const delayedType = (selector, string) => {
-  const element = cy.get(selector);
-  cy.wait(500);
-  element.type(string);
-};
 
 const addInstrumentLayer = () => {
   cy.wait(1000);
@@ -119,17 +114,17 @@ describe("Instrumentation tests", () => {
     cy.wait("@layer");
     cy.contains("div", "This is the main completion");
 
-    delayedType('[data-cy="name"]', "Moonshine Bike");
+    delayedType(cy.get('[data-cy="name"]'), "Moonshine Bike");
 
     cy.get('[data-cy="add-layer-button"]').click();
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-0"]').click();
-    delayedType('[data-cy="casing_id"]', "Moonshine Veal");
+    delayedType(cy.get('[data-cy="casing_id"]'), "Moonshine Veal");
 
     cy.get('[data-cy="add-layer-button"]').click();
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-1"]').click();
-    delayedType('[data-cy="casing_id"]', "Moonshine Honey");
+    delayedType(cy.get('[data-cy="casing_id"]'), "Moonshine Honey");
 
     // Second casing
     cy.get('[data-cy="add-stratigraphy-button"]').click();
@@ -138,21 +133,21 @@ describe("Instrumentation tests", () => {
 
     // Navigate to correct tab
     cy.contains("div", "Unknown").click();
-    delayedType('[data-cy="name"]', "Sunshine Bike");
+    delayedType(cy.get('[data-cy="name"]'), "Sunshine Bike");
 
     cy.get('[data-cy="add-layer-button"]').click();
     cy.wait("@layer");
     cy.wait("@stratigraphy_layer_edit_create");
 
     cy.get('[data-cy="styled-layer-0"]').click();
-    delayedType('[data-cy="casing_id"]', "Sunshine Veal");
+    delayedType(cy.get('[data-cy="casing_id"]'), "Sunshine Veal");
 
     cy.get('[data-cy="add-layer-button"]').click();
     cy.wait("@layer");
     cy.wait("@stratigraphy_layer_edit_create");
 
     cy.get('[data-cy="styled-layer-1"]').scrollIntoView().click();
-    delayedType('[data-cy="casing_id"]', "Sunshine Honey");
+    delayedType(cy.get('[data-cy="casing_id"]'), "Sunshine Honey");
 
     // Add instrument
     cy.get('[data-cy="instrument-menu-item"]').click();
