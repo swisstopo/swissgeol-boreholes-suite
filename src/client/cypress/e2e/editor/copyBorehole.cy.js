@@ -6,6 +6,7 @@ describe("Test copying of boreholes", () => {
     cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
 
     login("/editor");
+    cy.wait("@borehole");
     cy.wait("@edit_list");
   });
 
