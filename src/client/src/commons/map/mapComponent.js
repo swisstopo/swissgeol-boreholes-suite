@@ -9,13 +9,9 @@ import LayerGroup from "ol/layer/Group";
 import WMTS from "ol/source/WMTS";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
+import { Circle, Fill, RegularShape, Stroke, Style, Text } from "ol/style";
+import { Cluster } from "ol/source";
 import GeoJSON from "ol/format/GeoJSON";
-import Stroke from "ol/style/Stroke";
-import Fill from "ol/style/Fill";
-import Style from "ol/style/Style";
-import Circle from "ol/style/Circle";
-import RegularShape from "ol/style/RegularShape";
-import Text from "ol/style/Text";
 import Select from "ol/interaction/Select";
 import Overlay from "ol/Overlay.js";
 import { defaults as defaultControls } from "ol/control/util";
@@ -23,11 +19,8 @@ import { click, pointerMove } from "ol/events/condition";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
 
 import MapOverlay from "./overlay/mapOverlay";
-
 import { withTranslation } from "react-i18next";
-
 import { getGeojson } from "../../api-lib/index";
-
 import { Button, Dropdown, Icon } from "semantic-ui-react";
 
 import {
@@ -99,11 +92,6 @@ class MapComponent extends React.Component {
           value: "satellite",
           text: "Aerial Imagery",
         },
-        // {
-        //   key: 'geologie500',
-        //   value: 'geologie500',
-        //   text: 'Geology'
-        // }
       ],
       overlays: [
         // todelete
@@ -127,14 +115,7 @@ class MapComponent extends React.Component {
     }
   }
 
-  // componentWillUnmount() {
-  //   window.removeEventListener("resize", this.updateDimensions);
-  //   this.cnt.removeEventListener("resize", this.updateDimensions);
-  // }
-
   componentDidMount() {
-    // window.addEventListener("resize", this.updateDimensions);
-    // this.cnt.addEventListener("resize", this.updateDimensions);
     var resolutions = [
       4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250,
       1000, 750, 650, 500, 250, 100, 50, 20, 10, 5, 2.5, 2, 1.5, 1, 0.5,
@@ -152,7 +133,6 @@ class MapComponent extends React.Component {
     }
     var tileGrid = new WMTSTileGrid({
       origin: [extent[0], extent[3]],
-      // origin: [420000, 350000],
       resolutions: resolutions,
       matrixIds: matrixIds,
     });
@@ -167,7 +147,6 @@ class MapComponent extends React.Component {
         layers: [
           new TileLayer({
             minResolution: 2.5,
-            // preload: Infinity,
             source: new WMTS({
               crossOrigin: "anonymous",
               dimensions: {
@@ -177,14 +156,12 @@ class MapComponent extends React.Component {
               url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/{Time}/2056/{TileMatrix}/{TileCol}/{TileRow}.jpeg",
               tileGrid: tileGrid,
               projection: getProjection(this.srs),
-              // projection: getProjection(this.srs),
               layer: "ch.swisstopo.pixelkarte-farbe",
               requestEncoding: "REST",
             }),
           }),
           new TileLayer({
             maxResolution: 2.5,
-            // preload: Infinity,
             source: new WMTS({
               crossOrigin: "anonymous",
               dimensions: {
@@ -194,7 +171,6 @@ class MapComponent extends React.Component {
               url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/{Time}/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
               tileGrid: tileGrid,
               projection: getProjection(this.srs),
-              // projection: getProjection(this.srs),
               layer: "ch.swisstopo.swisstlm3d-karte-farbe",
               requestEncoding: "REST",
             }),
@@ -252,25 +228,10 @@ class MapComponent extends React.Component {
       }),
     });
 
-    // this.loadWmtsCapabilities();
-    // return;
-
-    // Loaading user's layers
+    // Loading user's layers
     for (var identifier in this.props.layers) {
       if (this.props.layers.hasOwnProperty(identifier)) {
         const layer = this.props.layers[identifier];
-
-        // Workaround to parse layers configurations
-        // for (var k in layer.conf.projection){
-        //   if (k.indexOf('_')>=0) {
-        //     layer.conf.projection[k.replace('_', '')] = layer.conf.projection[k];
-        //   }
-        // }
-        // for (var k in layer.conf.tileGrid){
-        //   if (k.indexOf('_')>=0) {
-        //     layer.conf.tileGrid[k.replace('_', '')] = layer.conf.tileGrid[k];
-        //   }
-        // }
 
         if (layer.type === "WMS") {
           this.overlays.push(
@@ -299,7 +260,6 @@ class MapComponent extends React.Component {
               name: identifier,
               opacity: 1,
               source: new WMTS({
-                //layer.conf)
                 ...layer.conf,
                 projection: getProjection(layer.conf.projection),
                 tileGrid: new WMTSTileGrid(layer.conf.tileGrid),
@@ -313,7 +273,6 @@ class MapComponent extends React.Component {
 
     let singleclick = function (evt) {
       if (this.state.selectedLayer !== null) {
-        //document.getElementById('info').innerHTML = '';
         var viewResolution = this.map.getView().getResolution();
         for (let c = 0, l = this.overlays.length; c < l; c++) {
           const layer = this.overlays[c];
@@ -335,13 +294,6 @@ class MapComponent extends React.Component {
                 "gfi",
                 "height=400,width=600,modal=yes,alwaysRaised=yes",
               );
-              // fetch(url)
-              //   .then(function (response) { return response.text(); })
-              //   .then(function (html) {
-              //     console.log(
-              //       html
-              //     );
-              //   });
             }
             break;
           }
@@ -356,14 +308,24 @@ class MapComponent extends React.Component {
         function (response) {
           if (response.data.success) {
             this.points = new VectorSource();
-            this.map.addLayer(
-              new VectorLayer({
-                name: "points",
-                zIndex: this.overlays.length + this.layers.length + 1,
-                source: this.points,
-                style: this.styleFunction.bind(this),
-              }),
-            );
+
+            const clusterSource = new Cluster({
+              distance: 35,
+              minDistance: 10,
+              source: this.points,
+            });
+
+            const clusters = new VectorLayer({
+              source: clusterSource,
+              name: "points",
+              zIndex: this.overlays.length + this.layers.length + 1,
+              style: features => {
+                const size = features.get("features").length;
+                return this.styleFunction(features, size);
+              },
+            });
+
+            this.map.addLayer(clusters);
 
             this.popup = new Overlay({
               position: undefined,
@@ -379,7 +341,6 @@ class MapComponent extends React.Component {
             // On point over interaction
             const selectPointerMove = new Select({
               condition: pointerMove,
-              // style: this.styleHover.bind(this)
             });
             selectPointerMove.on("select", this.hover);
             this.map.addInteraction(selectPointerMove);
@@ -437,7 +398,6 @@ class MapComponent extends React.Component {
               hover: feature,
             },
             () => {
-              // this.popup.setPosition(feature.getGeometry().getCoordinates());
               if (hover !== undefined) {
                 hover(feature.getId());
               }
@@ -515,7 +475,6 @@ class MapComponent extends React.Component {
       this.points.refresh({ force: true });
     }
 
-    // console.log("Updating size..")
     this.map.updateSize();
   }
 
@@ -523,164 +482,121 @@ class MapComponent extends React.Component {
     this.map.updateSize();
   }
 
-  styleHover(feature, resolution) {
-    let conf = {
-      image: new Circle({
-        radius: 6,
-        fill: new Fill({ color: "rgba(255, 0, 255, 0.8)" }),
-        stroke: new Stroke({ color: "black", width: 1 }),
-      }),
-      text: new Text({
-        textAlign: "center",
-        textBaseline: "middle",
-        fill: new Fill({ color: "white" }),
-        font: "bold 20px arial sans-serif",
-        text: feature.get("original_name"),
-        stroke: new Stroke({
-          color: "black",
-          width: 3,
-        }),
-        offsetY: -22,
-      }),
-    };
-    return [new Style(conf)];
-  }
+  styleFunction(features, length) {
+    if (length === 1) {
+      const feature = features.get("features")[0];
+      const { highlighted } = this.props;
 
-  styleFunction(feature, resolution) {
-    const { highlighted } = this.props;
+      let selected =
+        highlighted !== undefined &&
+        highlighted.indexOf(feature.get("id")) > -1;
+      let res = feature.get("restriction_code");
+      let fill = null;
+      let fcolor = null;
+      if (res === "f") {
+        fcolor = "rgb(33, 186, 69)";
+      } else if (["b", "g"].indexOf(res) >= 0) {
+        fcolor = "rgb(220, 0, 24)";
+      } else {
+        fcolor = "rgb(0, 0, 0)";
+      }
+      fill = new Fill({ color: fcolor });
 
-    let selected =
-      highlighted !== undefined && highlighted.indexOf(feature.get("id")) > -1;
-
-    /*
-      "f" "free"
-      "b" "limited until"
-      "g" "closed"
-    */
-    let res = feature.get("restriction_code");
-    let fill = null; //, stroke = new Stroke({color: 'black', width: 2});
-    let fcolor = null;
-    if (res === "f") {
-      fcolor = "rgb(33, 186, 69)";
-    } else if (["b", "g"].indexOf(res) >= 0) {
-      fcolor = "rgb(220, 0, 24)";
-    } else {
-      fcolor = "rgb(0, 0, 0)";
-    }
-    fill = new Fill({ color: fcolor });
-
-    let conf = null;
-    /*
-      "a"   "Other"             "Other"
-      "SS"  "Sondierschlitz"    "trial pit"
-      "B"   "Drilling"          "borehole"
-      "RS"  "Dynamic probing"   "dynamic probing"
-
-       deep boreholes:
-       return [
-        new Style({
+      let conf = null;
+      let kind = feature.get("kind_code");
+      if (kind === "B") {
+        // boreholes
+        conf = {
           image: new Circle({
             radius: 6,
-            stroke: new Stroke({color: fcolor, width: 2}),
-            fill: new Fill({color: 'white'})
-          })
-        }),
-        new Style({
-          image: new Circle({
-            radius: 3,
-            fill: fill
-          })
-        })
-      ];
-    */
-    let kind = feature.get("kind_code");
-    if (kind === "B") {
-      // boreholes
-      conf = {
-        image: new Circle({
-          radius: 6,
-          stroke: new Stroke({ color: "black", width: 1 }),
-          fill: new Fill({ color: fcolor }),
-        }),
-      };
-    } else if (kind === "SS") {
-      // trial pits
-      conf = {
-        image: new RegularShape({
-          fill: fill,
-          stroke: new Stroke({ color: "black", width: 1 }),
-          points: 3,
-          radius: 8,
-          // rotation: Math.PI / 4,
-          angle: 0,
-        }),
-      };
-    } else if (kind === "RS") {
-      // dynamic probing
-      conf = {
-        image: new RegularShape({
-          fill: fill,
-          stroke: new Stroke({ color: "black", width: 1 }),
-          points: 3,
-          radius: 8,
-          rotation: Math.PI,
-          angle: 0,
-        }),
-      };
-    } else {
-      // Not set and if(kind==='a'){ // deep boreholes
-      conf = {
-        image: new RegularShape({
-          fill: fill,
-          stroke: new Stroke({ color: "black", width: 1 }),
-          points: 4,
-          radius: 8,
-          rotation: 0.25 * Math.PI,
-          angle: 0,
-        }),
-      };
-    }
+            stroke: new Stroke({ color: "black", width: 1 }),
+            fill: new Fill({ color: fcolor }),
+          }),
+        };
+      } else if (kind === "SS") {
+        // trial pits
+        conf = {
+          image: new RegularShape({
+            fill: fill,
+            stroke: new Stroke({ color: "black", width: 1 }),
+            points: 3,
+            radius: 8,
+            angle: 0,
+          }),
+        };
+      } else if (kind === "RS") {
+        // dynamic probing
+        conf = {
+          image: new RegularShape({
+            fill: fill,
+            stroke: new Stroke({ color: "black", width: 1 }),
+            points: 3,
+            radius: 8,
+            rotation: Math.PI,
+            angle: 0,
+          }),
+        };
+      } else {
+        // Not set and if(kind==='a'){ // deep boreholes
+        conf = {
+          image: new RegularShape({
+            fill: fill,
+            stroke: new Stroke({ color: "black", width: 1 }),
+            points: 4,
+            radius: 8,
+            rotation: 0.25 * Math.PI,
+            angle: 0,
+          }),
+        };
+      }
 
-    // if(resolution<10 || selected){
-    //   conf.text = new Text({
-    //     textAlign: "center",
-    //     textBaseline: 'middle',
-    //     fill: new Fill({color: 'black'}),
-    //     font: "bold 14px arial sans-serif",
-    //     text: feature.get('original_name'),
-    //     stroke: new Stroke({
-    //       color: 'white',
-    //       width: 3
-    //     }),
-    //     offsetY: 14
-    //   });
-    // }
-    if (selected) {
-      return [
-        new Style({
-          image: new Circle({
-            radius: 10,
-            fill: new Fill({ color: "#ffff00" /*'rgba(255, 255, 255, 0.5)'*/ }),
-            stroke: new Stroke({
-              color: "rgba(0, 0, 0, 0.75)",
-              width: 1,
+      if (selected) {
+        return [
+          new Style({
+            image: new Circle({
+              radius: 10,
+              fill: new Fill({
+                color: "#ffff00",
+              }),
+              stroke: new Stroke({
+                color: "rgba(0, 0, 0, 0.75)",
+                width: 1,
+              }),
             }),
           }),
-          // zIndex: 10000
-        }),
-        new Style({
-          image: new Circle({
-            radius: 11,
-            stroke: new Stroke({
-              color: "rgba(120, 120, 120, 0.5)",
-              width: 1,
+          new Style({
+            image: new Circle({
+              radius: 11,
+              stroke: new Stroke({
+                color: "rgba(120, 120, 120, 0.5)",
+                width: 1,
+              }),
             }),
           }),
+          new Style(conf),
+        ];
+      }
+      return [new Style(conf)];
+    } else {
+      return new Style({
+        image: new Circle({
+          radius: 8,
+          stroke: new Stroke({
+            color: "rgba(0, 0, 0, 0.5)",
+            width: 8,
+          }),
+          fill: new Fill({
+            color: "#00000",
+          }),
         }),
-        new Style(conf),
-      ];
+        text: new Text({
+          text: length.toString(),
+          fill: new Fill({
+            color: "#fff",
+          }),
+        }),
+      });
     }
-    return [new Style(conf)];
   }
 
   /*
@@ -722,18 +638,22 @@ class MapComponent extends React.Component {
   hover(e) {
     const { hover } = this.props;
     if (hover !== undefined) {
-      if (e.selected.length > 0) {
-        this.setState(
-          {
-            hover: e.selected[0],
-          },
-          () => {
-            this.popup.setPosition(
-              e.selected[0].getGeometry().getCoordinates(),
-            );
-            hover(e.selected[0].getId());
-          },
-        );
+      if (e.selected.length === 1) {
+        const features = e.selected[0].get("features");
+        if (features.length === 1) {
+          const singleFeature = e.selected[0].get("features")[0];
+          this.setState(
+            {
+              hover: singleFeature,
+            },
+            () => {
+              this.popup.setPosition(
+                singleFeature.getGeometry().getCoordinates(),
+              );
+              hover(singleFeature.getId());
+            },
+          );
+        }
       } else {
         this.setState(
           {
@@ -753,10 +673,6 @@ class MapComponent extends React.Component {
 
     return (
       <div
-        // ref={cnt => this.cnt = cnt}
-        // onResize={()=>{
-        //   console.info('resize')
-        // }}
         style={{
           width: "100%",
           height: "100%",
@@ -766,7 +682,6 @@ class MapComponent extends React.Component {
           display: "flex",
           flexDirection: "row",
           backgroundColor: "#F2F2EF",
-          // border: 'thin solid #cccccc'
         }}>
         <div
           style={{
@@ -796,14 +711,11 @@ class MapComponent extends React.Component {
         <div
           id="map"
           style={{
-            // width: '100%',
-            // height: '100%',
             padding: "0px",
             flex: "1 1 100%",
             cursor: this.state.hover === null ? null : "pointer",
             position: "relative",
             boxShadow: "rgba(0, 0, 0, 0.17) 2px 6px 6px 0px",
-            // border: 'thin solid #cccccc'
           }}
         />
         <div
@@ -833,7 +745,6 @@ class MapComponent extends React.Component {
                   },
                   a => {
                     this.layers.forEach(function (layer) {
-                      // console.log(layer.get('name'), data.value);
                       if (data.value === "nomap") {
                         layer.setVisible(false);
                       } else {
@@ -897,20 +808,6 @@ class MapComponent extends React.Component {
                   ? this.state.hover.get("original_name")
                   : null}
               </div>
-              {/* <div
-                style={{
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                <span
-                  style={{
-                    color: 'rgb(120, 120, 120)',
-                    fontSize: '0.8em'
-                  }}
-                >
-                  {t('length')}
-                </span>
-              </div> */}
               {this.state.hover === null ||
               _.isNil(this.state.hover.get("length")) ? null : (
                 <div
