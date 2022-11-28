@@ -22,8 +22,14 @@ describe("Tests for editing coordinates of a borehole.", () => {
     newEditableBorehole().as("borehole_id");
 
     // fill inputs for LV95
-    delayedType(cy.get('[data-cy="LV95X"]').children().first(), 2645123.12124);
-    delayedType(cy.get('[data-cy="LV95Y"]').children().first(), 1245794.92348);
+    delayedType(
+      cy.get('[data-cy="LV95X"]').children().first(),
+      "2645123.12124",
+    );
+    delayedType(
+      cy.get('[data-cy="LV95Y"]').children().first(),
+      "1245794.92348",
+    );
 
     // wait edits of all 4 inputs to complete
     cy.wait("@edit_patch");
@@ -50,7 +56,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
     // clear and fill again with less decimals.
     cy.get('[data-cy="LV95X"]').children().first().clear();
-    delayedType(cy.get('[data-cy="LV95X"]').children().first(), 2645123.12);
+    delayedType(cy.get('[data-cy="LV95X"]').children().first(), "2645123.12");
 
     // wait edits of all 4 inputs to complete
     cy.wait("@edit_patch");
@@ -91,9 +97,15 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
     // type valid coordinates
     cy.get('[data-cy="LV95X"]').children().first().scrollIntoView();
-    delayedType(cy.get('[data-cy="LV95X"]').children().first(), 2645123.12124);
+    delayedType(
+      cy.get('[data-cy="LV95X"]').children().first(),
+      "2645123.12124",
+    );
     cy.get('[data-cy="LV95Y"]').children().first().scrollIntoView();
-    delayedType(cy.get('[data-cy="LV95Y"]').children().first(), 1245794.92348);
+    delayedType(
+      cy.get('[data-cy="LV95Y"]').children().first(),
+      "1245794.92348",
+    );
 
     // divs have errors as long as inputs are empty
     cy.get("[name=location_x_lv03]").should("not.have.class", "error");
@@ -109,10 +121,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
     // type coordinates that are out of bounds
     cy.get('[data-cy="LV95X"]').children().first().clear();
-    delayedType(cy.get('[data-cy="LV95X"]').children().first(), 264512);
+    delayedType(cy.get('[data-cy="LV95X"]').children().first(), "264512");
 
     cy.get('[data-cy="LV95Y"]').children().first().clear();
-    delayedType(cy.get('[data-cy="LV95Y"]').children().first(), 124579);
+    delayedType(cy.get('[data-cy="LV95Y"]').children().first(), "124579");
 
     // divs that changed have errors
     cy.get("[name=location_x_lv03]").should("not.have.class", "error");
