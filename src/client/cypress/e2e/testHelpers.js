@@ -136,5 +136,5 @@ export const deleteBorehole = id => {
 
 export const delayedType = (element, string) => {
   cy.wait(500);
-  element.type(string);
+  element.type(string, { delay: 10 });
 };
