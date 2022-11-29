@@ -16,11 +16,15 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get('[data-cy="menu"]').click();
     cy.contains("h4", "Editor").click();
     cy.wait("@edit_list");
+    newEditableBorehole().as("borehole_id");
+  });
+
+  afterEach(() => {
+    // delete borehole
+    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 
   it("creates new borehole and adds coordinates", () => {
-    newEditableBorehole().as("borehole_id");
-
     // fill inputs for LV95
     delayedType(
       cy.get('[data-cy="LV95X"]').children().first(),
@@ -83,14 +87,9 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get('[data-cy="LV95Y"]').children().first().should("be.empty");
     cy.get('[data-cy="LV03X"]').children().first().should("be.empty");
     cy.get('[data-cy="LV03Y"]').children().first().should("be.empty");
-
-    // delete borehole
-    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 
   it("validates inputs", () => {
-    newEditableBorehole().as("borehole_id");
-
     // divs have errors as long as inputs are empty
     cy.get("[name=location_x_lv03]").should("have.class", "error");
     cy.get("[name=location_y_lv03]").should("have.class", "error");
@@ -134,14 +133,9 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("[name=location_y_lv03]").should("not.have.class", "error");
     cy.get("[name=location_x]").should("have.class", "error");
     cy.get("[name=location_y]").should("have.class", "error");
-
-    // delete borehole
-    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 
   it("edits borehole and changes coordinates from map", () => {
-    newEditableBorehole().as("borehole_id");
-
     //start with references system LV03
     cy.get("input[value=20104002]").click();
     cy.get("input[value=20104002]").should("be.checked");
@@ -177,8 +171,5 @@ describe("Tests for editing coordinates of a borehole.", () => {
     // verify original reference system has switched to LV95
     cy.get("input[value=20104002]").should("not.be.checked");
     cy.get("input[value=20104001]").should("be.checked");
-
-    //delete borehole;
-    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 });
