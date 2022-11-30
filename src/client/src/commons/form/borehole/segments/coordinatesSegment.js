@@ -44,6 +44,7 @@ const CoordinatesSegment = props => {
 
   const [referenceSystem, setReferenceSystem] = useState(borehole.data.srs);
   const [precision, setPrecision] = useState(4);
+  const [boreholeId, setBoreholeId] = useState();
   const [coordinates, setCoordinates] = useState({
     LV95: { X: null, Y: null },
     LV03: { X: null, Y: null },
@@ -115,31 +116,6 @@ const CoordinatesSegment = props => {
     }
   }, []);
 
-  // reset form values when the borehole id changes.
-  useEffect(() => {
-    if (borehole.data.location_x && borehole.data.location_y)
-      setValuesForReferenceSystem(
-        "LV95",
-        borehole.data.location_x,
-        borehole.data.location_y,
-      );
-    if (borehole.data.location_x_lv03 && borehole.data.location_y_lv03)
-      setValuesForReferenceSystem(
-        "LV03",
-        borehole.data.location_x_lv03,
-        borehole.data.location_y_lv03,
-      );
-    setCoordinates({
-      LV95: { X: borehole.data.location_x, Y: borehole.data.location_y },
-      LV03: {
-        X: borehole.data.location_x_lv03,
-        Y: borehole.data.location_y_lv03,
-      },
-    });
-    setReferenceSystem(parseFloat(borehole.data.srs));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [borehole.data.id, setValuesForReferenceSystem, transformCoodinates]);
-
   //update all coordinates on backend.
   const updateCoordinates = useCallback(
     (LV95X, LV95Y, LV03X, LV03Y) => {
@@ -151,8 +127,33 @@ const CoordinatesSegment = props => {
     [updateNumber],
   );
 
-  //recalculate LV03 coordinates when LV95 coordinates were changed from map.
+  // reset form values when the borehole changes.
   useEffect(() => {
+    // only update coordinates if borehole id changed or location was changed from map.
+    if (mapPointChange || borehole.data.id !== boreholeId) {
+      if (borehole.data.location_x && borehole.data.location_y)
+        setValuesForReferenceSystem(
+          "LV95",
+          borehole.data.location_x,
+          borehole.data.location_y,
+        );
+      if (borehole.data.location_x_lv03 && borehole.data.location_y_lv03)
+        setValuesForReferenceSystem(
+          "LV03",
+          borehole.data.location_x_lv03,
+          borehole.data.location_y_lv03,
+        );
+      setCoordinates({
+        LV95: { X: borehole.data.location_x, Y: borehole.data.location_y },
+        LV03: {
+          X: borehole.data.location_x_lv03,
+          Y: borehole.data.location_y_lv03,
+        },
+      });
+      setReferenceSystem(parseFloat(borehole.data.srs));
+      setBoreholeId(borehole.data.id);
+    }
+    //recalculate LV03 coordinates when LV95 coordinates were changed from map.
     if (mapPointChange) {
       setReferenceSystem(referenceSystems.LV95.code);
       updateNumber("srs", referenceSystems.LV95.code);
@@ -176,12 +177,14 @@ const CoordinatesSegment = props => {
       }
     }
   }, [
-    borehole,
+    borehole.data,
+    boreholeId,
     mapPointChange,
-    precision,
-    isEditable,
     setValuesForReferenceSystem,
     transformCoodinates,
+    borehole,
+    precision,
+    isEditable,
     updateCoordinates,
     setMapPointChange,
     updateNumber,
