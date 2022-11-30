@@ -64,4 +64,9 @@ export const locationEditorData = [
     label: "canton",
     value: "custom.canton",
   },
+  {
+    id: 13,
+    label: "srs",
+    value: "srs",
+  },
 ];

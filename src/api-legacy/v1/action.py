@@ -1108,6 +1108,12 @@ class Action():
                     qt_depth_id_cli = %s
                 """ % self.getIdx())
 
+            if 'srs' in keys and filter['srs'] not in ['', None]:
+                params.append(int(filter['srs']))
+                where.append("""
+                    srs_id_cli = %s
+                """ % self.getIdx())
+
             if 'lithostratigraphy_top_bedrock' in keys and filter[
                     'lithostratigraphy_top_bedrock'] not in ['', None]:
                 params.append(int(filter['lithostratigraphy_top_bedrock']))
