@@ -47,8 +47,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV03Y-input").should("have.value", 245794.77398);
 
     // clear and fill again with less decimals.
-    cy.get("@LV95X-input").clear();
-    delayedType(cy.get("@LV95X-input"), "2645123.12");
+    cy.get("@LV95X-input").clear().type("2645123.12", { delay: 10 });
 
     // wait edits of all 4 inputs to complete
     cy.wait("@location");
