@@ -115,7 +115,7 @@ const CoordinatesSegment = props => {
     }
   }, []);
 
-  // reset form values when the borehole changes.
+  // reset form values when the borehole id changes.
   useEffect(() => {
     if (borehole.data.location_x && borehole.data.location_y)
       setValuesForReferenceSystem(
@@ -137,7 +137,8 @@ const CoordinatesSegment = props => {
       },
     });
     setReferenceSystem(parseFloat(borehole.data.srs));
-  }, [borehole, setValuesForReferenceSystem, transformCoodinates]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [borehole.data.id, setValuesForReferenceSystem, transformCoodinates]);
 
   //update all coordinates on backend.
   const updateCoordinates = useCallback(
