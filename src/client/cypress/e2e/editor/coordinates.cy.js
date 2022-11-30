@@ -35,6 +35,15 @@ describe("Tests for editing coordinates of a borehole.", () => {
       "1245794.92348",
     );
 
+    // manually dispatch change event.
+    cy.get('[data-cy="LV95Y"]')
+      .children()
+      .first()
+      .then($el => {
+        const el = $el.get(0);
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
     // wait edits of all 4 inputs to complete
     cy.wait("@location");
     cy.wait("@edit_patch");
