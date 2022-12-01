@@ -44,9 +44,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     ]);
     // verify automatically filled inputs for LV03
     cy.get("@LV95Y-input").should("have.value", 1245794.92348);
-
     cy.get("@LV03Y-input").should("have.value", 245794.77398);
-
     cy.get("@LV03X-input").should("have.value", 645122.39962);
 
     // assert input, then clear and fill again with less decimals.
