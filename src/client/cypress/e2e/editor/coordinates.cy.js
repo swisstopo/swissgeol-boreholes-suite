@@ -43,35 +43,44 @@ describe("Tests for editing coordinates of a borehole.", () => {
       "@edit_patch",
     ]);
     // verify automatically filled inputs for LV03
-    cy.get("@LV95Y-input").should("have.value", 1245794.92348);
-    cy.get("@LV03Y-input").should("have.value", 245794.77398);
-    cy.get("@LV03X-input").should("have.value", 645122.39962);
+    cy.get("@LV95Y-input")
+      .should("have.value", 1245794.92348)
+      .then(() => {
+        cy.get("@LV03Y-input")
+          .should("have.value", 245794.77398)
+          .then(() => {
+            cy.get("@LV03X-input")
+              .should("have.value", 645122.39962)
+              .then(() => {
+                // assert input, then clear and fill again with less decimals.
+                cy.get("@LV95X-input")
+                  .should("have.value", 2645123.12124)
+                  .clear()
+                  .type("2645123.12", { delay: 10 })
+                  .then(() => {
+                    // wait edits of all 4 inputs to complete
+                    cy.wait([
+                      "@location",
+                      "@edit_patch",
+                      "@edit_patch",
+                      "@edit_patch",
+                      "@edit_patch",
+                    ]);
+                    // automatically filled LV03
+                    cy.get("@LV03X-input").should("have.value", 645122.4);
+                    cy.get("@LV03Y-input").should("have.value", 245794.77);
 
-    // assert input, then clear and fill again with less decimals.
-    cy.get("@LV95X-input")
-      .should("have.value", 2645123.12124)
-      .clear()
-      .type("2645123.12", { delay: 10 });
-
-    // wait edits of all 4 inputs to complete
-    cy.wait([
-      "@location",
-      "@edit_patch",
-      "@edit_patch",
-      "@edit_patch",
-      "@edit_patch",
-    ]);
-    // automatically filled LV03
-    cy.get("@LV03X-input").should("have.value", 645122.4);
-    cy.get("@LV03Y-input").should("have.value", 245794.77);
-
-    //switch reference system
-    cy.get("input[value=20104002]").click();
-    // verify all inputs are empty
-    cy.get("@LV95X-input").should("be.empty");
-    cy.get("@LV95Y-input").should("be.empty");
-    cy.get("@LV03X-input").should("be.empty");
-    cy.get("@LV03Y-input").should("be.empty");
+                    //switch reference system
+                    cy.get("input[value=20104002]").click();
+                    // verify all inputs are empty
+                    cy.get("@LV95X-input").should("be.empty");
+                    cy.get("@LV95Y-input").should("be.empty");
+                    cy.get("@LV03X-input").should("be.empty");
+                    cy.get("@LV03Y-input").should("be.empty");
+                  });
+              });
+          });
+      });
   });
 
   it("validates inputs", () => {
