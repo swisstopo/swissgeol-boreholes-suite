@@ -242,8 +242,8 @@ const CoordinatesSegment = props => {
     if (checkLock() === false) {
       return;
     }
-    // verify coordinates are in bounding box
     if (isEditable) {
+      // verify coordinates are in bounding box
       if (
         coordinateLimits[referenceSystem][direction].Min < value &&
         value < coordinateLimits[referenceSystem][direction].Max
@@ -287,7 +287,6 @@ const CoordinatesSegment = props => {
             const x = parseFloat(parseFloat(res.easting).toFixed(precision));
             const y = parseFloat(parseFloat(res.northing).toFixed(precision));
             setValuesForReferenceSystem("LV95", x, y);
-
             updateCoordinates(x, y, coordinates.LV03.X, coordinates.LV03.Y);
           });
         }
