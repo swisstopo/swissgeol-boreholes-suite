@@ -44,10 +44,6 @@ const CoordinatesSegment = props => {
 
   const [referenceSystem, setReferenceSystem] = useState(borehole.data.srs);
   const [boreholeId, setBoreholeId] = useState();
-  const [coordinates, setCoordinates] = useState({
-    LV95: { X: null, Y: null },
-    LV03: { X: null, Y: null },
-  });
 
   const { control, reset, trigger, setValue, getValues } = useForm({
     mode: "onChange",
@@ -142,13 +138,6 @@ const CoordinatesSegment = props => {
           borehole.data.location_x_lv03,
           borehole.data.location_y_lv03,
         );
-      setCoordinates({
-        LV95: { X: borehole.data.location_x, Y: borehole.data.location_y },
-        LV03: {
-          X: borehole.data.location_x_lv03,
-          Y: borehole.data.location_y_lv03,
-        },
-      });
       setReferenceSystem(parseFloat(borehole.data.srs));
       setBoreholeId(borehole.data.id);
     }
@@ -207,7 +196,6 @@ const CoordinatesSegment = props => {
     updateNumber(referenceSystems.LV03.fieldName.X, null);
     updateNumber(referenceSystems.LV03.fieldName.Y, null);
     updateNumber("srs", value);
-    setCoordinates({ LV95: { X: null, Y: null }, LV03: { X: null, Y: null } });
     setReferenceSystem(parseFloat(value));
     setValuesForReferenceSystem("LV03", null, null);
     setValuesForReferenceSystem("LV95", null, null);
@@ -237,7 +225,7 @@ const CoordinatesSegment = props => {
         ? parseFloat(value)
         : parseFloat(getValues(referenceSystems.LV03.fieldName.Y));
 
-    setCoordinates({
+    return {
       LV95: {
         X: LV95X,
         Y: LV95Y,
@@ -246,8 +234,7 @@ const CoordinatesSegment = props => {
         X: LV03X,
         Y: LV03Y,
       },
-    });
-    // }
+    };
   };
 
   // Passed to the onChange handler of the location values. Checks bounding box before updating.
@@ -255,74 +242,58 @@ const CoordinatesSegment = props => {
     if (checkLock() === false) {
       return;
     }
-
-    if (
-      coordinateLimits[referenceSystem][direction].Min < value &&
-      value < coordinateLimits[referenceSystem][direction].Max
-    ) {
-      getCoordinatesFromForm(referenceSystem, direction, value);
-    }
-  };
-
-  // Transforms and updates the coordinates if location changes.
-  useEffect(() => {
+    // verify coordinates are in bounding box
     if (isEditable) {
-      const completeLV95 = coordinates.LV95.X > 0 && coordinates.LV95.Y > 0;
-      const completeLV03 = coordinates.LV03.X > 0 && coordinates.LV03.Y > 0;
-
-      const hasChangedLV95 =
-        coordinates.LV95.X !== borehole.data.location_x ||
-        coordinates.LV95.Y !== borehole.data.location_y;
-
-      const hasChangedLV03 =
-        coordinates.LV03.X !== borehole.data.location_x_lv03 ||
-        coordinates.LV03.Y !== borehole.data.location_y_lv03;
-
       if (
-        referenceSystem === referenceSystems.LV95.code &&
-        completeLV95 &&
-        hasChangedLV95
-      )
-        transformCoodinates(
-          "LV95",
-          coordinates.LV95.X,
-          coordinates.LV95.Y,
-        ).then(res => {
-          const precision = getDecimals(coordinates.LV95.X);
-          const x = parseFloat(parseFloat(res.easting).toFixed(precision));
-          const y = parseFloat(parseFloat(res.northing).toFixed(precision));
-          setValuesForReferenceSystem("LV03", x, y);
-          updateCoordinates(coordinates.LV95.X, coordinates.LV95.Y, x, y);
-        });
-      if (
-        referenceSystem === referenceSystems.LV03.code &&
-        completeLV03 &&
-        hasChangedLV03
+        coordinateLimits[referenceSystem][direction].Min < value &&
+        value < coordinateLimits[referenceSystem][direction].Max
       ) {
-        transformCoodinates(
-          "LV03",
-          coordinates.LV03.X,
-          coordinates.LV03.Y,
-        ).then(res => {
-          const precision = getDecimals(coordinates.LV03.X);
-          const x = parseFloat(parseFloat(res.easting).toFixed(precision));
-          const y = parseFloat(parseFloat(res.northing).toFixed(precision));
-          setValuesForReferenceSystem("LV95", x, y);
-          if (isEditable) {
+        const coordinates = getCoordinatesFromForm(
+          referenceSystem,
+          direction,
+          value,
+        );
+
+        const completeLV95 = coordinates.LV95.X > 0 && coordinates.LV95.Y > 0;
+        const completeLV03 = coordinates.LV03.X > 0 && coordinates.LV03.Y > 0;
+
+        const hasChangedLV95 =
+          coordinates.LV95.X !== borehole.data.location_x ||
+          coordinates.LV95.Y !== borehole.data.location_y;
+
+        const hasChangedLV03 =
+          coordinates.LV03.X !== borehole.data.location_x_lv03 ||
+          coordinates.LV03.Y !== borehole.data.location_y_lv03;
+
+        if (referenceSystem === "LV95" && completeLV95 && hasChangedLV95)
+          transformCoodinates(
+            "LV95",
+            coordinates.LV95.X,
+            coordinates.LV95.Y,
+          ).then(res => {
+            const precision = getDecimals(coordinates.LV95.X);
+            const x = parseFloat(parseFloat(res.easting).toFixed(precision));
+            const y = parseFloat(parseFloat(res.northing).toFixed(precision));
+            setValuesForReferenceSystem("LV03", x, y);
+            updateCoordinates(coordinates.LV95.X, coordinates.LV95.Y, x, y);
+          });
+        if (referenceSystem === "LV03" && completeLV03 && hasChangedLV03) {
+          transformCoodinates(
+            "LV03",
+            coordinates.LV03.X,
+            coordinates.LV03.Y,
+          ).then(res => {
+            const precision = getDecimals(coordinates.LV03.X);
+            const x = parseFloat(parseFloat(res.easting).toFixed(precision));
+            const y = parseFloat(parseFloat(res.northing).toFixed(precision));
+            setValuesForReferenceSystem("LV95", x, y);
+
             updateCoordinates(x, y, coordinates.LV03.X, coordinates.LV03.Y);
-          }
-        });
+          });
+        }
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    coordinates,
-    setValuesForReferenceSystem,
-    transformCoodinates,
-    updateCoordinates,
-    referenceSystem,
-    isEditable,
-  ]);
+  };
 
   return (
     <Segment>
@@ -457,7 +428,6 @@ const CoordinatesSegment = props => {
                       autoCorrect="off"
                       readOnly={!isLV95}
                       onChange={e => {
-                        // new columns!!
                         changeCoordinate("LV95", "Y", e.target.value);
                       }}
                       spellCheck="false"
@@ -495,7 +465,6 @@ const CoordinatesSegment = props => {
                       autoCorrect="off"
                       readOnly={isLV95}
                       onChange={e => {
-                        // new columns!!
                         changeCoordinate("LV03", "X", e.target.value);
                       }}
                       spellCheck="false"
@@ -531,7 +500,6 @@ const CoordinatesSegment = props => {
                       autoCorrect="off"
                       readOnly={isLV95}
                       onChange={e => {
-                        // new columns!!
                         changeCoordinate("LV03", "Y", e.target.value);
                       }}
                       spellCheck="false"

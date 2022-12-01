@@ -43,44 +43,37 @@ describe("Tests for editing coordinates of a borehole.", () => {
       "@edit_patch",
     ]);
     // verify automatically filled inputs for LV03
-    cy.get("@LV95Y-input")
-      .should("have.value", 1245794.92348)
-      .then(() => {
-        cy.get("@LV03Y-input")
-          .should("have.value", 245794.77398)
-          .then(() => {
-            cy.get("@LV03X-input")
-              .should("have.value", 645122.39962)
-              .then(() => {
-                // assert input, then clear and fill again with less decimals.
-                cy.get("@LV95X-input")
-                  .should("have.value", 2645123.12124)
-                  .clear()
-                  .type("2645123.12", { delay: 10 })
-                  .then(() => {
-                    // wait edits of all 4 inputs to complete
-                    cy.wait([
-                      "@location",
-                      "@edit_patch",
-                      "@edit_patch",
-                      "@edit_patch",
-                      "@edit_patch",
-                    ]);
-                    // automatically filled LV03
-                    cy.get("@LV03X-input").should("have.value", 645122.4);
-                    cy.get("@LV03Y-input").should("have.value", 245794.77);
+    cy.get("@LV95Y-input").should("have.value", 1245794.92348);
 
-                    //switch reference system
-                    cy.get("input[value=20104002]").click();
-                    // verify all inputs are empty
-                    cy.get("@LV95X-input").should("be.empty");
-                    cy.get("@LV95Y-input").should("be.empty");
-                    cy.get("@LV03X-input").should("be.empty");
-                    cy.get("@LV03Y-input").should("be.empty");
-                  });
-              });
-          });
-      });
+    cy.get("@LV03Y-input").should("have.value", 245794.77398);
+
+    cy.get("@LV03X-input").should("have.value", 645122.39962);
+
+    // assert input, then clear and fill again with less decimals.
+    cy.get("@LV95X-input")
+      .should("have.value", 2645123.12124)
+      .clear()
+      .type("2645123.12", { delay: 10 });
+
+    // wait edits of all 4 inputs to complete
+    cy.wait([
+      "@location",
+      "@edit_patch",
+      "@edit_patch",
+      "@edit_patch",
+      "@edit_patch",
+    ]);
+    // automatically filled LV03
+    cy.get("@LV03X-input").should("have.value", 645122.4);
+    cy.get("@LV03Y-input").should("have.value", 245794.77);
+
+    //switch reference system
+    cy.get("input[value=20104002]").click();
+    // verify all inputs are empty
+    cy.get("@LV95X-input").should("be.empty");
+    cy.get("@LV95Y-input").should("be.empty");
+    cy.get("@LV03X-input").should("be.empty");
+    cy.get("@LV03Y-input").should("be.empty");
   });
 
   it("validates inputs", () => {
@@ -130,21 +123,24 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("input[value=20104002]").click();
     cy.get("input[value=20104002]").should("be.checked");
 
-    // verify switches reference system
+    // zoom into map
+    cy.get('[class="ol-zoom-in"]').click({ force: true });
+    cy.get('[class="ol-zoom-in"]').click({ force: true });
 
+    cy.wait(2000);
+    // click no map
     cy.get('[class="ol-viewport"]')
       .scrollIntoView()
       .click(390, 250, { force: true });
 
     cy.wait("@location");
-
     cy.get('[data-cy="apply-button"]').click();
 
     // verify automatically filled inputs
-    cy.get("@LV95X-input").should("have.value", 2797750);
-    cy.get("@LV95Y-input").should("have.value", 1177320.31);
-    cy.get("@LV03X-input").should("have.value", 797749.0665);
-    cy.get("@LV03Y-input").should("have.value", 177320.3968);
+    cy.get("@LV95X-input").should("have.value", 2692324.22);
+    cy.get("@LV95Y-input").should("have.value", 1187067.26);
+    cy.get("@LV03X-input").should("have.value", 692323.59);
+    cy.get("@LV03Y-input").should("have.value", 187067.7);
 
     // verify original reference system has switched to LV95
     cy.get("input[value=20104002]").should("not.be.checked");
