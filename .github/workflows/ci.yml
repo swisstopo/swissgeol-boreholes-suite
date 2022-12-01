@@ -35,11 +35,6 @@ jobs:
 
       - working-directory: ./src/client
         run: npm run lint
-
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-        with:
-          limit-access-to-actor: false
         
       - name: Cypress run
         uses: cypress-io/github-action@v4
