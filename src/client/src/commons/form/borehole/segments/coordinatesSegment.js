@@ -43,7 +43,6 @@ const CoordinatesSegment = props => {
   } = props;
 
   const [referenceSystem, setReferenceSystem] = useState(borehole.data.srs);
-  const [precision, setPrecision] = useState(4);
   const [boreholeId, setBoreholeId] = useState();
   const [coordinates, setCoordinates] = useState({
     LV95: { X: null, Y: null },
@@ -163,6 +162,7 @@ const CoordinatesSegment = props => {
           borehole.data.location_x,
           borehole.data.location_y,
         ).then(res => {
+          const precision = getDecimals(borehole.data.location_x);
           const x = parseFloat(parseFloat(res.easting).toFixed(precision));
           const y = parseFloat(parseFloat(res.northing).toFixed(precision));
           setValuesForReferenceSystem("LV03", x, y);
@@ -183,7 +183,6 @@ const CoordinatesSegment = props => {
     setValuesForReferenceSystem,
     transformCoodinates,
     borehole,
-    precision,
     isEditable,
     updateCoordinates,
     setMapPointChange,
@@ -216,7 +215,6 @@ const CoordinatesSegment = props => {
 
   // Gets all current coordinates and sets them to coordinates object.
   const getCoordinatesFromForm = (referenceSystem, direction, value) => {
-    setPrecision(getDecimals(value)); // save all coordinates with same precision as last changed coordinate.
     const currentFieldName =
       referenceSystems[referenceSystem].fieldName[direction];
 
@@ -290,6 +288,7 @@ const CoordinatesSegment = props => {
           coordinates.LV95.X,
           coordinates.LV95.Y,
         ).then(res => {
+          const precision = getDecimals(coordinates.LV95.X);
           const x = parseFloat(parseFloat(res.easting).toFixed(precision));
           const y = parseFloat(parseFloat(res.northing).toFixed(precision));
           setValuesForReferenceSystem("LV03", x, y);
@@ -305,6 +304,7 @@ const CoordinatesSegment = props => {
           coordinates.LV03.X,
           coordinates.LV03.Y,
         ).then(res => {
+          const precision = getDecimals(coordinates.LV03.X);
           const x = parseFloat(parseFloat(res.easting).toFixed(precision));
           const y = parseFloat(parseFloat(res.northing).toFixed(precision));
           setValuesForReferenceSystem("LV95", x, y);
