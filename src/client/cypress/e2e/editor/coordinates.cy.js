@@ -104,12 +104,18 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("input[value=20104002]").click();
     cy.get("input[value=20104002]").should("be.checked");
 
+    // verify automatically filled inputs
+    cy.get("@LV95X-input").should("have.value", "");
+    cy.get("@LV95Y-input").should("have.value", "");
+    cy.get("@LV03X-input").should("have.value", "");
+    cy.get("@LV03Y-input").should("have.value", "");
+
     // zoom into map
     cy.get('[class="ol-zoom-in"]').click({ force: true });
     cy.get('[class="ol-zoom-in"]').click({ force: true });
 
     cy.wait(2000);
-    // click no map
+    // click on map
     cy.get('[class="ol-viewport"]')
       .scrollIntoView()
       .click(390, 250, { force: true });
@@ -118,10 +124,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get('[data-cy="apply-button"]').click();
 
     // verify automatically filled inputs
-    cy.get("@LV95X-input").should("have.value", 2692324.22);
-    cy.get("@LV95Y-input").should("have.value", 1187067.26);
-    cy.get("@LV03X-input").should("have.value", 692323.59);
-    cy.get("@LV03Y-input").should("have.value", 187067.7);
+    cy.get("@LV95X-input").should("not.have.value", "");
+    cy.get("@LV95Y-input").should("not.have.value", "");
+    cy.get("@LV03X-input").should("not.have.value", "");
+    cy.get("@LV03Y-input").should("not.have.value", "");
 
     // verify original reference system has switched to LV95
     cy.get("input[value=20104002]").should("not.be.checked");
