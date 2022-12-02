@@ -40,18 +40,21 @@ const Instrument = props => {
   }
 
   const fetchCasingLayers = useCallback(() => {
-    if (instrument.instrumentCasingId) {
-      fetchLayersByProfileId(instrument.instrumentCasingId).then(response => {
-        if (response?.length > 0) {
-          setCasingLayers(response);
-        } else {
-          setCasingLayers([]);
-        }
-      });
+    if (instrument?.instrumentCasingId) {
+      if (instrument.instrumentCasingId === 0) setCasingLayers([]);
+      else {
+        fetchLayersByProfileId(instrument.instrumentCasingId).then(response => {
+          if (response?.length > 0) {
+            setCasingLayers(response);
+          } else {
+            setCasingLayers([]);
+          }
+        });
+      }
     } else {
       setCasingLayers([]);
     }
-  }, [instrument.instrumentCasingId]);
+  }, [instrument?.instrumentCasingId]);
 
   useEffect(() => {
     // fetch layer
