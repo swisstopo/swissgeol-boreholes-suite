@@ -13,8 +13,8 @@ import DomainText from "../../domain/domainText";
 import TranslationText from "../../translationText";
 import { Form, Input, Segment } from "semantic-ui-react";
 
-const webApilv95tolv03 = "http://geodesy.geo.admin.ch/reframe/lv95tolv03";
-const webApilv03tolv95 = "http://geodesy.geo.admin.ch/reframe/lv03tolv95";
+const webApilv95tolv03 = "https://geodesy.geo.admin.ch/reframe/lv95tolv03";
+const webApilv03tolv95 = "https://geodesy.geo.admin.ch/reframe/lv03tolv95";
 
 const referenceSystems = {
   LV95: {
