@@ -16,6 +16,8 @@ class ExportBorehole(Action):
                 knd.code_cli as kind,
                 location_x_bho as location_x,
                 location_y_bho as location_y,
+                location_x_lv03_bho as location_x_lv03,
+                location_y_lv03_bho as location_y_lv03,
                 srd.code_cli as srs,
                 elevation_z_bho as elevation_z,
                 hrs.code_cli  as hrs,

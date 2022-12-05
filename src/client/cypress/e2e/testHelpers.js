@@ -32,6 +32,7 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v1/borehole/stratigraphy/edit", req => {
     return (req.alias = `stratigraphy_edit_${req.body.action.toLowerCase()}`);
   });
+  cy.intercept("/api/v1/geoapi/location").as("location");
 };
 
 /**
@@ -131,4 +132,9 @@ export const deleteBorehole = id => {
   })
     .its("body.success")
     .should("eq", true);
+};
+
+export const delayedType = (element, string) => {
+  cy.wait(500);
+  element.type(string, { delay: 10 });
 };
