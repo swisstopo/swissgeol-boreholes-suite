@@ -65,7 +65,8 @@ const ListFilter = props => {
       item.type === "DomainTree" ||
       item.type === "Dropdown" ||
       item.type === "Canton" ||
-      item.type === "City"
+      item.type === "City" ||
+      item.type === "ReferenceSystem"
     ) {
       updateChange(item.value, null, false);
     } else if (item.type === "Radio") {

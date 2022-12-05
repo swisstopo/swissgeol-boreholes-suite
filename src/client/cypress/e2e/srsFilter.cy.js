@@ -108,6 +108,14 @@ describe("Tests for filtering data by reference system.", () => {
 
     cy.get('[data-cy="radiobutton-LV03"]').click();
     cy.get("tbody").children().should("have.length", 1);
+
+    // click reset label
+    cy.get('[data-cy="spatial-reference-filter"]')
+      .next()
+      .children()
+      .first()
+      .click({ force: true });
+    cy.get("tbody").children().should("have.length", 22);
     cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 });
