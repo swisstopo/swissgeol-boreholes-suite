@@ -156,4 +156,13 @@ export const LocationSearchData = [
     value: "canton",
     isVisibleValue: "custom.canton",
   },
+  {
+    id: 17,
+    type: "ReferenceSystem",
+    label: "srs",
+    value: "srs",
+    isVisibleValue: "srs",
+    hasUnknown: true,
+    to: false,
+  },
 ];

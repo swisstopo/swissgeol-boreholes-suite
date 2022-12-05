@@ -65,7 +65,8 @@ const ListFilter = props => {
       item.type === "DomainTree" ||
       item.type === "Dropdown" ||
       item.type === "Canton" ||
-      item.type === "City"
+      item.type === "City" ||
+      item.type === "ReferenceSystem"
     ) {
       updateChange(item.value, null, false);
     } else if (item.type === "Radio") {
@@ -257,6 +258,54 @@ const ListFilter = props => {
                               onChange={() =>
                                 updateChange(item.value, null, item?.to)
                               }
+                            />
+                          </>
+                        )}
+                      </div>
+                    </Form.Group>
+                  )}
+
+                {item.type === "ReferenceSystem" &&
+                  (item.isVisible ||
+                    isVisibleFunction(item.isVisibleValue) ||
+                    showAll) && (
+                    <Form.Group data-cy="spatial-reference-filter">
+                      <div
+                        style={{
+                          display: "flex",
+                          paddingTop: "5px",
+                          paddingLeft: "5px",
+                        }}>
+                        {item.hasUnknown && (
+                          <>
+                            <Form.Radio
+                              data-cy="radiobutton-all"
+                              checked={search.filter?.[item.value] === null}
+                              label={t("all")}
+                              onChange={() =>
+                                updateChange(item.value, null, item?.to)
+                              }
+                            />
+                            <Form.Radio
+                              data-cy="radiobutton-LV95"
+                              checked={search.filter?.[item.value] === 20104001}
+                              label="LV95"
+                              onChange={() =>
+                                updateChange(item.value, 20104001, item?.to)
+                              }
+                              style={{
+                                paddingRight: "10px",
+                                paddingLeft: "10px",
+                              }}
+                            />
+                            <Form.Radio
+                              data-cy="radiobutton-LV03"
+                              checked={search.filter?.[item.value] === 20104002}
+                              label="LV03"
+                              onChange={() =>
+                                updateChange(item.value, 20104002, item?.to)
+                              }
+                              style={{ paddingRight: "10px" }}
                             />
                           </>
                         )}
