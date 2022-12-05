@@ -1,4 +1,9 @@
-import { interceptApiCalls, newEditableBorehole, login } from "./testHelpers";
+import {
+  interceptApiCalls,
+  newEditableBorehole,
+  deleteBorehole,
+  login,
+} from "./testHelpers";
 
 describe("Tests for filtering data by reference system.", () => {
   beforeEach(() => {
