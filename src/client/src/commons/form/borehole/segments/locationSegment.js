@@ -16,7 +16,6 @@ const LocationSegment = props => {
     cantons,
     municipalities,
     zoomToPolygon,
-    domains,
   } = props;
 
   const [mapPointChange, setMapPointChange] = useState(false);
