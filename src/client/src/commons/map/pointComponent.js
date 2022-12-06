@@ -188,8 +188,7 @@ class PointComponent extends React.Component {
     if (
       _.isNumber(nextProps.x) &&
       _.isNumber(nextProps.y) &&
-      nextProps.x + nextProps.y !== 0 &&
-      !_.isNil(nextProps.srs)
+      nextProps.x + nextProps.y !== 0
     ) {
       const point = [nextProps.x, nextProps.y];
       if (!_.isEqual(point, this.state.point)) {
