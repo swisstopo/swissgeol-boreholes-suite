@@ -16,7 +16,6 @@ const LocationSegment = props => {
     cantons,
     municipalities,
     zoomToPolygon,
-    domains,
   } = props;
 
   const [mapPointChange, setMapPointChange] = useState(false);
@@ -60,19 +59,6 @@ const LocationSegment = props => {
             updateChange("location", [x, y, cid, mid, height], false);
           }}
           id={borehole.data.id}
-          srs={
-            borehole.data.srs !== null && domains.data.hasOwnProperty("srs")
-              ? (() => {
-                  const code = domains.data.srs.find(element => {
-                    return element.id === borehole.data.srs;
-                  });
-                  if (code !== undefined) {
-                    return "EPSG:" + code["code"];
-                  }
-                  return null;
-                })()
-              : null
-          }
           x={
             _.isNil(borehole.data.location_x)
               ? null

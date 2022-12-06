@@ -12,22 +12,16 @@ import Stroke from "ol/style/Stroke";
 import Fill from "ol/style/Fill";
 import Style from "ol/style/Style";
 import Circle from "ol/style/Circle";
-
 import Draw from "ol/interaction/Draw";
 import Modify from "ol/interaction/Modify";
 import Point from "ol/geom/Point";
 import Polygon from "ol/geom/Polygon";
 import Feature from "ol/Feature";
 import { defaults as defaultControls } from "ol/control/util";
-
-import { get as getProjection, getTransform } from "ol/proj";
-
+import { get as getProjection } from "ol/proj";
 import { register } from "ol/proj/proj4";
-
 import proj4 from "proj4";
-
 import { Segment, Button, Label, Icon } from "semantic-ui-react";
-
 import { getHeight, getAddressByPoint } from "../../api-lib/index";
 
 const projections = {
@@ -50,7 +44,6 @@ class PointComponent extends React.Component {
     this.changefeature = this.changefeature.bind(this);
     this.styleFunction = this.styleFunction.bind(this);
     this.getAddress = this.getAddress.bind(this);
-    this.transform = this.transform.bind(this);
     this.zoomtopoly = this.zoomtopoly.bind(this);
     this.srs = "EPSG:2056";
 
@@ -70,36 +63,6 @@ class PointComponent extends React.Component {
       municipality: null,
       address: false,
     };
-    // if (
-    //   !_.isNil(props.id) &&
-    //   _.isNumber(props.x) &&
-    //   _.isNumber(props.y) &&
-    //   !_.isNil(props.srs)
-    // ){
-    //   this.state = {
-    //     point: this.transform([props.x, props.y], props.srs),
-    //     toPoint: [props.x, props.y],
-    //     height: null,
-    //     satellite: false,
-    //     cid: null,
-    //     canton: null,
-    //     mid: null,
-    //     municipality: null,
-    //     address: false
-    //   };
-    // } else {
-    //   this.state = {
-    //     point: null,
-    //     toPoint: null,
-    //     height: null,
-    //     satellite: false,
-    //     cid: null,
-    //     canton: null,
-    //     mid: null,
-    //     municipality: null,
-    //     address: false
-    //   };
-    // }
   }
 
   componentDidMount() {
@@ -120,7 +83,6 @@ class PointComponent extends React.Component {
     }
     var tileGrid = new WMTSTileGrid({
       origin: [extent[0], extent[3]],
-      // origin: [420000, 350000],
       resolutions: resolutions,
       matrixIds: matrixIds,
     });
@@ -140,7 +102,6 @@ class PointComponent extends React.Component {
           layers: [
             new TileLayer({
               minResolution: 2.5,
-              // preload: Infinity,
               source: new WMTS({
                 crossOrigin: "anonymous",
                 attributions: attribution,
@@ -153,7 +114,6 @@ class PointComponent extends React.Component {
             }),
             new TileLayer({
               maxResolution: 2.5,
-              // preload: Infinity,
               source: new WMTS({
                 crossOrigin: "anonymous",
                 attributions: attribution,
@@ -181,14 +141,10 @@ class PointComponent extends React.Component {
       ],
       target: "point",
       view: new View({
-        /*maxResolution: 340,
-        minResolution: 1,*/
         resolution: this.state.point !== null ? 1 : 500,
         center: this.state.point !== null ? this.state.point : center,
-        // center: [2720000, 1095000],
         projection: projection,
         extent: extent,
-        //extent: [708000, 115000, 727000, 143000]
       }),
     });
 
@@ -232,10 +188,9 @@ class PointComponent extends React.Component {
     if (
       _.isNumber(nextProps.x) &&
       _.isNumber(nextProps.y) &&
-      nextProps.x + nextProps.y !== 0 &&
-      !_.isNil(nextProps.srs)
+      nextProps.x + nextProps.y !== 0
     ) {
-      const point = this.transform([nextProps.x, nextProps.y], nextProps.srs);
+      const point = [nextProps.x, nextProps.y];
       if (!_.isEqual(point, this.state.point)) {
         this.setState(
           {
@@ -260,7 +215,6 @@ class PointComponent extends React.Component {
           this.position.addFeature(this.centerFeature);
         }
         this.map.getView().fit(this.centerFeature.getGeometry(), {
-          //padding: [170, 100, 30, 100],
           minResolution: 1,
         });
         this.position.on("changefeature", this.changefeature, this);
@@ -269,33 +223,11 @@ class PointComponent extends React.Component {
     }
   }
 
-  transform(point, srs) {
-    if (srs === this.srs) {
-      return point;
-    }
-    if (this.fromSRS === undefined) {
-      this.fromSRS = getTransform(srs, this.srs);
-    }
-    return this.fromSRS(point);
-  }
-
-  btransform(point, srs) {
-    if (srs === this.srs) {
-      return point;
-    }
-    if (this.toSRS === undefined) {
-      this.toSRS = getTransform(this.srs, srs);
-    }
-    return this.toSRS(point);
-  }
-
   zoomtopoly(coords) {
     var feature = new Feature({
       geometry: new Polygon(coords),
     });
     this.map.getView().fit(feature.getGeometry(), {
-      // padding: [170, 100, 30, 100],
-      // minResolution: 1,
       nearest: true,
       duration: 500,
     });
@@ -312,14 +244,11 @@ class PointComponent extends React.Component {
     if (this.centerFeature === undefined) {
       this.centerFeature = feature;
     }
-    // const self = this;
     this.setState(
       {
         point: coordinates,
         height: null,
-        toPoint: !_.isNil(this.props.srs)
-          ? this.btransform(coordinates, this.props.srs)
-          : coordinates,
+        toPoint: coordinates,
         cid: null,
         canton: null,
         mid: null,
@@ -345,7 +274,6 @@ class PointComponent extends React.Component {
     this.lh = setTimeout(
       function () {
         getAddressByPoint(coordinates[0], coordinates[1]).then(response => {
-          // console.log(response);
           this.setState({
             address: false,
             ...response.data.data,
@@ -372,17 +300,6 @@ class PointComponent extends React.Component {
       }),
     };
 
-    // if(resolution<10){
-    //   conf.text = new Text({
-    //     textAlign: "center",
-    //     textBaseline: 'middle',
-    //     fill: new Fill({color: 'black'}),
-    //     font: '12px sans-serif',
-    //     text: feature.get('name'),
-    //     offsetY: 12
-    //   });
-    // }
-
     return [new Style(conf)];
   }
 
@@ -391,11 +308,8 @@ class PointComponent extends React.Component {
     return (
       <Segment
         style={{
-          // display: 'flex',
-          // flexDirection: 'column',
           padding: "0px",
           flex: "1 1 100%",
-          // border: 'thin solid #cccccc'
         }}>
         <div
           style={{
@@ -428,13 +342,9 @@ class PointComponent extends React.Component {
           className="stbg"
           id="point"
           style={{
-            // width: '100%',
-            // height: '100%',
             padding: "0px",
             flex: "1 1 100%",
             height: 450,
-
-            // border: 'thin solid #cccccc'
           }}
         />
         <div
@@ -459,15 +369,7 @@ class PointComponent extends React.Component {
                   " N" +
                   _.round(this.state.toPoint[1], 2).toLocaleString()
                 : "n/p"}
-              <Label.Detail>
-                {
-                  // _.compact([
-                  //   this.state.municipality,
-                  //   this.state.canton
-                  // ]).join(", ")
-                  _.isNil(this.props.srs) ? this.srs : this.props.srs
-                }
-              </Label.Detail>
+              <Label.Detail>{this.srs}</Label.Detail>
             </Label>
             {_.compact([this.state.municipality, this.state.canton]).length >
             0 ? (
@@ -527,9 +429,7 @@ class PointComponent extends React.Component {
                 <Icon name="resize vertical" />
               </Button>
               <Button
-                disabled={
-                  false //!_.isArray(this.state.toPoint)
-                }
+                disabled={false}
                 icon
                 onClick={e => {
                   this.map.getView().fit(this.centerFeature.getGeometry(), {
@@ -550,13 +450,8 @@ class PointComponent extends React.Component {
 PointComponent.propTypes = {
   applyChange: PropTypes.func,
   changefeature: PropTypes.func,
-  // id: PropTypes.number,
-  srs: PropTypes.string,
   x: PropTypes.number,
   y: PropTypes.number,
-  // highlighted: PropTypes.array,
-  // hover: PropTypes.func,
-  // selected: PropTypes.func
 };
 
 PointComponent.defaultProps = {
