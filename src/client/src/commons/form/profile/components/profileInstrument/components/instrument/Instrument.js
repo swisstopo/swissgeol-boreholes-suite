@@ -39,11 +39,11 @@ const Instrument = props => {
     return await fetchApiV2(`layer`, "PUT", layer);
   }
 
-  const fetchCasingLayers = useCallback(() => {
-    if (instrument?.instrumentCasingId) {
-      if (instrument.instrumentCasingId === 0) setCasingLayers([]);
+  const fetchCasingLayers = useCallback(instrumentCasingId => {
+    if (instrumentCasingId) {
+      if (instrumentCasingId === 0) setCasingLayers([]);
       else {
-        fetchLayersByProfileId(instrument.instrumentCasingId).then(response => {
+        fetchLayersByProfileId(instrumentCasingId).then(response => {
           if (response?.length > 0) {
             setCasingLayers(response);
           } else {
@@ -54,16 +54,15 @@ const Instrument = props => {
     } else {
       setCasingLayers([]);
     }
-  }, [instrument?.instrumentCasingId]);
+  }, []);
 
   useEffect(() => {
     // fetch layer
     fetchLayerById(info.id).then(response => {
       setInstrument(response);
+      fetchCasingLayers(response.instrumentCasingId);
     });
-
-    fetchCasingLayers();
-  }, [fetchCasingLayers, info]);
+  }, [fetchCasingLayers, info.id]);
 
   const updateInstrument = (attribute, value) => {
     if (!isEditable) {
