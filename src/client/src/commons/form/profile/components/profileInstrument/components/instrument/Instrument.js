@@ -78,6 +78,7 @@ const Instrument = props => {
         [attribute]: value,
         instrumentCasingLayerId: null,
       };
+      fetchCasingLayers(value);
     } else {
       updatedInstrument = {
         ...instrument,
