@@ -194,7 +194,7 @@ class DomainDropdown extends React.Component {
     );
     return (
       <Form.Select
-        data-cy="domain-dropdown"
+        data-cy={"domain-dropdown-" + this.props.schema}
         fluid
         multiple={multiple}
         onChange={this.handleChange}

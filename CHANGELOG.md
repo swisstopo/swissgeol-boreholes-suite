@@ -24,6 +24,7 @@
 - Display `lithology_top_bedrock`, `lithostratigraphy_top_bedrock`and `chronostratigraphy_top_bedrock` as domain trees in bulk edit.
 - Added space above the instrument list.
 - Fix bug where casing IDs could be selected, even though the name of completion was `No casing`.
+- Fix bug where filtering by `identifier` led to bugs in bulk edit.
 
 ## v2.0.65 - 2022-11-04
 
