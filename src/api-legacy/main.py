@@ -25,11 +25,11 @@ from bms.v1.utils.files import FileBase
 
 define("port", default=8888, help="Tornado Web port", type=int)
 
-define("pg_user", default=None, help="PostgrSQL database user")
-define("pg_password", default=None, help="PostgrSQL user password")
-define("pg_host", default=None, help="PostgrSQL database host")
-define("pg_port", default="5432", help="PostgrSQL database port")
-define("pg_database", default=None, help="PostgrSQL database name")
+define("pg_user", default=None, help="PostgreSQL database user")
+define("pg_password", default=None, help="PostgreSQL user password")
+define("pg_host", default=None, help="PostgreSQL database host")
+define("pg_port", default="5432", help="PostgreSQL database port")
+define("pg_database", default=None, help="PostgreSQL database name")
 
 # Generic S3 storage for files configuration
 define("s3_endpoint", default=None, help="Select S3 Bucket name", type=str)
