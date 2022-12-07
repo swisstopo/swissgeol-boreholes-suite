@@ -69,14 +69,9 @@ const CoordinatesSegment = props => {
     borehole?.data.lock !== null &&
     borehole?.data.lock?.username === user?.data.username;
 
-  const getDecimals = (x, y) => {
-    const text_x = x.toString();
-    const index_x = text_x.indexOf(".");
-    const precision_x = index_x === -1 ? 0 : text_x.length - index_x - 1;
-    const text_y = y.toString();
-    const index_y = text_y.indexOf(".");
-    const precision_y = index_y === -1 ? 0 : text_y.length - index_y - 1;
-    console.log(precision_x, precision_y);
+  const getPrecision = (x, y) => {
+    const precision_x = x.toString().split(".")[1]?.length || 0;
+    const precision_y = y.toString().split(".")[1]?.length || 0;
     return Math.max(precision_x, precision_y);
   };
 
@@ -156,7 +151,7 @@ const CoordinatesSegment = props => {
           borehole.data.location_x,
           borehole.data.location_y,
         ).then(res => {
-          const precision = getDecimals(
+          const precision = getPrecision(
             borehole.data.location_x,
             borehole.data.location_y,
           );
@@ -279,7 +274,7 @@ const CoordinatesSegment = props => {
             coordinates.LV95.X,
             coordinates.LV95.Y,
           ).then(res => {
-            const precision = getDecimals(
+            const precision = getPrecision(
               coordinates.LV95.X,
               coordinates.LV95.Y,
             );
@@ -294,7 +289,7 @@ const CoordinatesSegment = props => {
             coordinates.LV03.X,
             coordinates.LV03.Y,
           ).then(res => {
-            const precision = getDecimals(
+            const precision = getPrecision(
               coordinates.LV03.X,
               coordinates.LV03.Y,
             );
