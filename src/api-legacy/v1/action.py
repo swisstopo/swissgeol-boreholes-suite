@@ -426,21 +426,6 @@ class Action():
                 notes_lay ILIKE %s
             """ % self.getIdx())
 
-        # if len(layer_codelist) > 0:
-        #     joins.append("""
-        #         INNER JOIN (
-        #             SELECT DISTINCT
-        #                 id_lay_fk
-        #             FROM
-        #                 bdms.layer_codelist
-        #             WHERE
-        #                 {}
-        #         ) clr
-        #         ON clr.id_lay_fk = id_lay
-        #     """.format(
-        #         ' OR '.join(layer_codelist)
-        #     ))
-
         return where, params, joins
 
     def filterProfileLayers(self, filter={}):
@@ -701,28 +686,6 @@ class Action():
             where.append("(%s)" % " OR ".join(_or))
 
         else:
-
-            # if 'completness' in keys and filter['completness'] not in ['', None]:
-            #     if filter['completness'] == 'complete':
-            #         params.append(100)
-            #         where.append("""
-            #             percentage = %s
-            #         """ % self.getIdx())
-            #     elif filter['completness'] == 'incomplete':
-            #         params.append(0)
-            #         where.append("""
-            #             percentage > %s
-            #         """ % self.getIdx())
-            #         params.append(100)
-            #         where.append("""
-            #             percentage < %s
-            #         """ % self.getIdx())
-            #     if filter['completness'] == 'empty':
-            #         params.append(0)
-            #         where.append("""
-            #             percentage = %s
-            #         """ % self.getIdx())
-
             if (
                 'role' in keys and
                 filter['role'] not in ['', None] and
@@ -747,11 +710,8 @@ class Action():
 
             if 'borehole_identifier' in keys and filter['borehole_identifier'] != None:
                 params.append(int(filter['borehole_identifier']))
-                where.append("""(
-                    borehole_identifier IS NOT NULL 
-                    AND
-                    %s = ANY (borehole_identifier)
-                )
+                where.append("""
+                    borehole.id_bho IN (SELECT id_bho_fk FROM bdms.borehole_codelist WHERE id_cli_fk = %s)
                 """ % self.getIdx())
 
             if 'identifier_value' in keys and filter['identifier_value'] not in ['', None]:
@@ -792,12 +752,6 @@ class Action():
                     where.append("""
                         alternate_name_bho ILIKE %s
                     """ % self.getIdx())
-
-            # if 'project' in keys and filter['project'] not in ['', None]:
-            #     params.append(filter['project'])
-            #     where.append("""
-            #         project_id = %s
-            #     """ % self.getIdx())
 
             if 'project_name' in keys and filter['project_name'] not in ['', None]:
                 if filter['project_name'] == '$null':
