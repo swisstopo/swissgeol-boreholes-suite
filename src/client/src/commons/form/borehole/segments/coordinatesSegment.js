@@ -377,7 +377,11 @@ const CoordinatesSegment = props => {
           </Form.Field>
         </Form.Group>
         <Box>
-          <Stack direction="row" spacing={2} justifyContent="space-around">
+          <Stack
+            direction="row"
+            spacing={2}
+            justifyContent="space-around"
+            mb={2}>
             <Stack direction="column" sx={{ flexGrow: 1 }}>
               <Controller
                 name="location_x"
