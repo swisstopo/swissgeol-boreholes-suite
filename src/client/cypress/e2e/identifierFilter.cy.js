@@ -41,19 +41,18 @@ describe("Tests for filtering data by identifier.", () => {
 
     cy.get("tbody").children().should("have.length", 22);
 
-    cy.get('[data-cy="domain-dropdown-borehole_identifier"]').each(
-      (el, index, list) =>
-        cy
-          .wrap(el)
-          .click({ force: true })
-          .find('[role="option"]')
-          .eq(1)
-          .click({ force: true }),
-    );
+    cy.get('[data-cy="domain-dropdown"]')
+      .first()
+      .click({ force: true })
+      .find('[role="option"]')
+      .eq(1)
+      .click({ force: true });
+
     cy.get("tbody").children().should("have.length", 1);
 
     // click reset label
-    cy.get('[data-cy="domain-dropdown-borehole_identifier"]')
+    cy.get('[data-cy="domain-dropdown')
+      .first()
       .parent()
       .parent()
       .next()
@@ -113,15 +112,12 @@ describe("Tests for filtering data by identifier.", () => {
       .first()
       .check({ force: true });
 
-    cy.get('[data-cy="domain-dropdown-borehole_identifier"]').each(
-      (el, index, list) =>
-        cy
-          .wrap(el)
-          .click({ force: true })
-          .find('[role="option"]')
-          .eq(1)
-          .click({ force: true }),
-    );
+    cy.get('[data-cy="domain-dropdown"]')
+      .first()
+      .click({ force: true })
+      .find('[role="option"]')
+      .eq(1)
+      .click({ force: true });
     cy.get("tbody").children().should("have.length", 2);
 
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
@@ -133,7 +129,8 @@ describe("Tests for filtering data by identifier.", () => {
     cy.contains("button", "Cancel").click();
 
     // click reset label
-    cy.get('[data-cy="domain-dropdown-borehole_identifier"]')
+    cy.get('[data-cy="domain-dropdown"]')
+      .first()
       .parent()
       .parent()
       .next()
