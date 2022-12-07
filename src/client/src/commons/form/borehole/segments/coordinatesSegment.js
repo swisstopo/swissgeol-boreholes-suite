@@ -69,10 +69,10 @@ const CoordinatesSegment = props => {
     borehole?.data.lock !== null &&
     borehole?.data.lock?.username === user?.data.username;
 
-  const getDecimals = number => {
-    var text = number.toString();
-    var index = text.indexOf(".");
-    return index === -1 ? 0 : text.length - index - 1;
+  const getPrecision = (x, y) => {
+    const precision_x = x.toString().split(".")[1]?.length || 0;
+    const precision_y = y.toString().split(".")[1]?.length || 0;
+    return Math.max(precision_x, precision_y);
   };
 
   //initially validate the form to display errors.
@@ -151,7 +151,10 @@ const CoordinatesSegment = props => {
           borehole.data.location_x,
           borehole.data.location_y,
         ).then(res => {
-          const precision = getDecimals(borehole.data.location_x);
+          const precision = getPrecision(
+            borehole.data.location_x,
+            borehole.data.location_y,
+          );
           const x = parseFloat(parseFloat(res.easting).toFixed(precision));
           const y = parseFloat(parseFloat(res.northing).toFixed(precision));
           setValuesForReferenceSystem("LV03", x, y);
@@ -271,7 +274,10 @@ const CoordinatesSegment = props => {
             coordinates.LV95.X,
             coordinates.LV95.Y,
           ).then(res => {
-            const precision = getDecimals(coordinates.LV95.X);
+            const precision = getPrecision(
+              coordinates.LV95.X,
+              coordinates.LV95.Y,
+            );
             const x = parseFloat(parseFloat(res.easting).toFixed(precision));
             const y = parseFloat(parseFloat(res.northing).toFixed(precision));
             setValuesForReferenceSystem("LV03", x, y);
@@ -283,7 +289,10 @@ const CoordinatesSegment = props => {
             coordinates.LV03.X,
             coordinates.LV03.Y,
           ).then(res => {
-            const precision = getDecimals(coordinates.LV03.X);
+            const precision = getPrecision(
+              coordinates.LV03.X,
+              coordinates.LV03.Y,
+            );
             const x = parseFloat(parseFloat(res.easting).toFixed(precision));
             const y = parseFloat(parseFloat(res.northing).toFixed(precision));
             setValuesForReferenceSystem("LV95", x, y);
@@ -363,7 +372,11 @@ const CoordinatesSegment = props => {
           </Form.Field>
         </Form.Group>
         <Box>
-          <Stack direction="row" spacing={2} justifyContent="space-around">
+          <Stack
+            direction="row"
+            spacing={2}
+            justifyContent="space-around"
+            mb={2}>
             <Stack direction="column" sx={{ flexGrow: 1 }}>
               <Controller
                 name="location_x"
