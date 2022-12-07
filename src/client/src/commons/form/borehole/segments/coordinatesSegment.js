@@ -69,10 +69,15 @@ const CoordinatesSegment = props => {
     borehole?.data.lock !== null &&
     borehole?.data.lock?.username === user?.data.username;
 
-  const getDecimals = number => {
-    var text = number.toString();
-    var index = text.indexOf(".");
-    return index === -1 ? 0 : text.length - index - 1;
+  const getDecimals = (x, y) => {
+    const text_x = x.toString();
+    const index_x = text_x.indexOf(".");
+    const precision_x = index_x === -1 ? 0 : text_x.length - index_x - 1;
+    const text_y = y.toString();
+    const index_y = text_y.indexOf(".");
+    const precision_y = index_y === -1 ? 0 : text_y.length - index_y - 1;
+    console.log(precision_x, precision_y);
+    return Math.max(precision_x, precision_y);
   };
 
   //initially validate the form to display errors.
@@ -151,7 +156,10 @@ const CoordinatesSegment = props => {
           borehole.data.location_x,
           borehole.data.location_y,
         ).then(res => {
-          const precision = getDecimals(borehole.data.location_x);
+          const precision = getDecimals(
+            borehole.data.location_x,
+            borehole.data.location_y,
+          );
           const x = parseFloat(parseFloat(res.easting).toFixed(precision));
           const y = parseFloat(parseFloat(res.northing).toFixed(precision));
           setValuesForReferenceSystem("LV03", x, y);
@@ -271,7 +279,10 @@ const CoordinatesSegment = props => {
             coordinates.LV95.X,
             coordinates.LV95.Y,
           ).then(res => {
-            const precision = getDecimals(coordinates.LV95.X);
+            const precision = getDecimals(
+              coordinates.LV95.X,
+              coordinates.LV95.Y,
+            );
             const x = parseFloat(parseFloat(res.easting).toFixed(precision));
             const y = parseFloat(parseFloat(res.northing).toFixed(precision));
             setValuesForReferenceSystem("LV03", x, y);
@@ -283,7 +294,10 @@ const CoordinatesSegment = props => {
             coordinates.LV03.X,
             coordinates.LV03.Y,
           ).then(res => {
-            const precision = getDecimals(coordinates.LV03.X);
+            const precision = getDecimals(
+              coordinates.LV03.X,
+              coordinates.LV03.Y,
+            );
             const x = parseFloat(parseFloat(res.easting).toFixed(precision));
             const y = parseFloat(parseFloat(res.northing).toFixed(precision));
             setValuesForReferenceSystem("LV95", x, y);
