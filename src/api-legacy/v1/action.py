@@ -717,7 +717,7 @@ class Action():
             if 'identifier_value' in keys and filter['identifier_value'] not in ['', None]:
                 params.append("%%%s%%" % filter['identifier_value'])
                 where.append("""
-                    array_to_string(identifier_value, ',') ILIKE %s
+                    borehole.id_bho IN (SELECT id_bho_fk FROM bdms.borehole_codelist WHERE value_bco ILIKE %s)
                 """ % self.getIdx())
 
             if 'identifier' in keys and filter['identifier'] not in ['', None]:
