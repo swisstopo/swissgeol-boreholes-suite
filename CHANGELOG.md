@@ -8,6 +8,7 @@
 - Added new columns in borehole table for LV03 coordinates.
 - Added inputs for entering coordinates in LV03 as well as LV95. The coordinates in the coordinate system that were not entered by the user, are automatically transformed and completed.
 - Added search filter for reference systems (LV03 and LV95).
+- Added cluster layer for displaying points on map while maintaning application performance.
 
 ### Changed
 
