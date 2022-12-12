@@ -18,12 +18,14 @@ class PatchGeom(Action):
                     ]:
 
                 # Get currently inserted location
+
+                # Code_cli was fixed to 2056 as we no longer need the geometry transformation after migrating the geometries.
                 location = await self.conn.fetchrow(
                     """
                         SELECT
                             location_x_bho,
                             location_y_bho,
-                            code_cli
+                            '2056' AS code_cli
                         FROM
                             bdms.borehole
                         LEFT JOIN bdms.codelist
