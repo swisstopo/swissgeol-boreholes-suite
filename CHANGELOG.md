@@ -24,6 +24,7 @@
 - Fix bug where filtering by `identifier` led to bugs in bulk edit.
 - Fix bug where points with spatial reference system LV03 were not correctly displayed on detail map.
 - Fix bug where groundwater radio buttons were not displayed.
+- Display dropdown with values from schema `qt_top_bedrock` for attribute `qt_depth` to streamline all qt drowpdowns.
 
 ## v2.0.65 - 2022-11-04
 

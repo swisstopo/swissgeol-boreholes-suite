@@ -43,7 +43,7 @@ const BoreholeDetailSegment = props => {
               onSelected={selected => {
                 updateChange("custom.qt_depth", selected.id, false);
               }}
-              schema="custom.qt_depth"
+              schema="custom.qt_top_bedrock"
               selected={borehole.data.custom.qt_depth}
             />
           </Form.Field>
