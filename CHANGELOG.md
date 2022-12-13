@@ -14,6 +14,7 @@
 
 - Migrate existing LV95 coordinates into LV03 coordinates using 'shift' method. Preserve original LV95 coordinates for some selected boreholes (e.g. Bülach-1-1, ...). These changes are not yet visible in the web client.
 - Points on the overview map are now displayed as clusters depending on zoom level.
+- Order codelists in translation UI by `order` column instead of by `geolcode`.
 
 ### Fixed
 

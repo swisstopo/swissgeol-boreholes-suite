@@ -189,6 +189,7 @@ const CodeListSettings = () => {
                 {domains.data.length > 0 &&
                   domains.data
                     .filter(d => d.schema === s)
+                    .sort((a, b) => a.order - b.order)
                     .map((val, idx) => (
                       <Box
                         className="selectable"
