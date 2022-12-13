@@ -17,18 +17,15 @@ import Overlay from "ol/Overlay.js";
 import { defaults as defaultControls } from "ol/control/util";
 import { click, pointerMove } from "ol/events/condition";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
-
+import { createEmpty, extend } from "ol/extent";
 import MapOverlay from "./overlay/mapOverlay";
 import { withTranslation } from "react-i18next";
 import { getGeojson } from "../../api-lib/index";
 import { Button, Dropdown, Icon } from "semantic-ui-react";
-
-import {
-  get as getProjection,
-  // getTransform
-} from "ol/proj";
+import { get as getProjection } from "ol/proj";
 import { register } from "ol/proj/proj4";
 import proj4 from "proj4";
+
 const projections = {
   "EPSG:21781":
     "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs",
@@ -94,7 +91,6 @@ class MapComponent extends React.Component {
         },
       ],
       overlays: [
-        // todelete
         {
           key: "nomap",
           value: "nomap",
@@ -271,38 +267,6 @@ class MapComponent extends React.Component {
       }
     }
 
-    let singleclick = function (evt) {
-      if (this.state.selectedLayer !== null) {
-        var viewResolution = this.map.getView().getResolution();
-        for (let c = 0, l = this.overlays.length; c < l; c++) {
-          const layer = this.overlays[c];
-          if (
-            (layer.get("name") !== undefined) &
-            (layer.get("name") === this.state.selectedLayer.Identifier)
-          ) {
-            var url = layer
-              .getSource()
-              .getGetFeatureInfoUrl(
-                evt.coordinate,
-                viewResolution,
-                "EPSG:2056",
-                {},
-              );
-            if (url) {
-              window.open(
-                url,
-                "gfi",
-                "height=400,width=600,modal=yes,alwaysRaised=yes",
-              );
-            }
-            break;
-          }
-        }
-      }
-    }.bind(this);
-
-    this.map.on("singleclick", singleclick);
-
     getGeojson(this.props.filter)
       .then(
         function (response) {
@@ -310,22 +274,70 @@ class MapComponent extends React.Component {
             this.points = new VectorSource();
 
             const clusterSource = new Cluster({
-              distance: 35,
-              minDistance: 10,
+              distance: 40,
+              minDistance: 20,
               source: this.points,
             });
 
-            const clusters = new VectorLayer({
+            // Display clusters for resolutions smaller than 50
+            const clusterLayer = new VectorLayer({
               source: clusterSource,
-              name: "points",
+              name: "clusters",
               zIndex: this.overlays.length + this.layers.length + 1,
               style: features => {
                 const size = features.get("features").length;
-                return this.styleFunction(features, size);
+                return this.clusterStyleFunction(size);
               },
+              minResolution: 100,
             });
 
-            this.map.addLayer(clusters);
+            // Display original point layer for resolutions larger than 50
+            const pointLayer = new VectorLayer({
+              name: "points",
+              zIndex: this.overlays.length + this.layers.length + 1,
+              source: this.points,
+              style: this.styleFunction.bind(this),
+              maxResolution: 100,
+            });
+
+            this.map.addLayer(clusterLayer);
+            this.map.addLayer(pointLayer);
+
+            // Zoom to cluster extent if clicked on cluster.
+            this.map.on("click", event => {
+              if (clusterLayer) {
+                const features = this.map.getFeaturesAtPixel(event.pixel, {
+                  layerFilter: layerCandidate => {
+                    return layerCandidate.get("name") === "clusters";
+                  },
+                });
+                if (features?.length > 0) {
+                  const clusterMembers = features[0].get("features");
+                  const view = this.map.getView();
+                  if (clusterMembers.length > 1) {
+                    // Calculate the extent of the cluster members.
+                    const extent = createEmpty();
+                    clusterMembers.forEach(feature =>
+                      extend(extent, feature.getGeometry().getExtent()),
+                    );
+                    // Zoom to the extent of the cluster members.
+                    view.fit(extent, {
+                      duration: 500,
+                      padding: [50, 50, 50, 50],
+                    });
+                    this.props.setmapfilter(true);
+                    this.props.filterByExtent(extent);
+                  } else {
+                    // Go zoom to single point.
+                    const coordinates = clusterMembers[0]
+                      .getGeometry()
+                      .getCoordinates();
+                    view.setCenter(coordinates);
+                    view.setResolution(50);
+                  }
+                }
+              }
+            });
 
             this.popup = new Overlay({
               position: undefined,
@@ -347,6 +359,9 @@ class MapComponent extends React.Component {
 
             this.selectClick = new Select({
               condition: click,
+              layers: layerCandidate => {
+                return layerCandidate.get("name") === "points";
+              },
               style: this.styleFunction.bind(this),
             });
             this.selectClick.on("select", this.selected);
@@ -482,121 +497,119 @@ class MapComponent extends React.Component {
     this.map.updateSize();
   }
 
-  styleFunction(features, length) {
-    if (length === 1) {
-      const feature = features.get("features")[0];
-      const { highlighted } = this.props;
+  styleFunction(feature, resolution) {
+    const { highlighted } = this.props;
 
-      let selected =
-        highlighted !== undefined &&
-        highlighted.indexOf(feature.get("id")) > -1;
-      let res = feature.get("restriction_code");
-      let fill = null;
-      let fcolor = null;
-      if (res === "f") {
-        fcolor = "rgb(33, 186, 69)";
-      } else if (["b", "g"].indexOf(res) >= 0) {
-        fcolor = "rgb(220, 0, 24)";
-      } else {
-        fcolor = "rgb(0, 0, 0)";
-      }
-      fill = new Fill({ color: fcolor });
-
-      let conf = null;
-      let kind = feature.get("kind_code");
-      if (kind === "B") {
-        // boreholes
-        conf = {
-          image: new Circle({
-            radius: 6,
-            stroke: new Stroke({ color: "black", width: 1 }),
-            fill: new Fill({ color: fcolor }),
-          }),
-        };
-      } else if (kind === "SS") {
-        // trial pits
-        conf = {
-          image: new RegularShape({
-            fill: fill,
-            stroke: new Stroke({ color: "black", width: 1 }),
-            points: 3,
-            radius: 8,
-            angle: 0,
-          }),
-        };
-      } else if (kind === "RS") {
-        // dynamic probing
-        conf = {
-          image: new RegularShape({
-            fill: fill,
-            stroke: new Stroke({ color: "black", width: 1 }),
-            points: 3,
-            radius: 8,
-            rotation: Math.PI,
-            angle: 0,
-          }),
-        };
-      } else {
-        // Not set and if(kind==='a'){ // deep boreholes
-        conf = {
-          image: new RegularShape({
-            fill: fill,
-            stroke: new Stroke({ color: "black", width: 1 }),
-            points: 4,
-            radius: 8,
-            rotation: 0.25 * Math.PI,
-            angle: 0,
-          }),
-        };
-      }
-
-      if (selected) {
-        return [
-          new Style({
-            image: new Circle({
-              radius: 10,
-              fill: new Fill({
-                color: "#ffff00",
-              }),
-              stroke: new Stroke({
-                color: "rgba(0, 0, 0, 0.75)",
-                width: 1,
-              }),
-            }),
-          }),
-          new Style({
-            image: new Circle({
-              radius: 11,
-              stroke: new Stroke({
-                color: "rgba(120, 120, 120, 0.5)",
-                width: 1,
-              }),
-            }),
-          }),
-          new Style(conf),
-        ];
-      }
-      return [new Style(conf)];
+    let selected =
+      highlighted !== undefined && highlighted.indexOf(feature.get("id")) > -1;
+    let res = feature.get("restriction_code");
+    let fill = null;
+    let fcolor = null;
+    if (res === "f") {
+      fcolor = "rgb(33, 186, 69)";
+    } else if (["b", "g"].indexOf(res) >= 0) {
+      fcolor = "rgb(220, 0, 24)";
     } else {
-      return new Style({
-        image: new Circle({
-          radius: 8,
-          stroke: new Stroke({
-            color: "rgba(0, 0, 0, 0.5)",
-            width: 8,
-          }),
-          fill: new Fill({
-            color: "#00000",
-          }),
-        }),
-        text: new Text({
-          text: length.toString(),
-          fill: new Fill({
-            color: "#fff",
-          }),
-        }),
-      });
+      fcolor = "rgb(0, 0, 0)";
     }
+    fill = new Fill({ color: fcolor });
+
+    let conf = null;
+    let kind = feature.get("kind_code");
+    if (kind === "B") {
+      // boreholes
+      conf = {
+        image: new Circle({
+          radius: 6,
+          stroke: new Stroke({ color: "black", width: 1 }),
+          fill: new Fill({ color: fcolor }),
+        }),
+      };
+    } else if (kind === "SS") {
+      // trial pits
+      conf = {
+        image: new RegularShape({
+          fill: fill,
+          stroke: new Stroke({ color: "black", width: 1 }),
+          points: 3,
+          radius: 8,
+          angle: 0,
+        }),
+      };
+    } else if (kind === "RS") {
+      // dynamic probing
+      conf = {
+        image: new RegularShape({
+          fill: fill,
+          stroke: new Stroke({ color: "black", width: 1 }),
+          points: 3,
+          radius: 8,
+          rotation: Math.PI,
+          angle: 0,
+        }),
+      };
+    } else {
+      // Not set and if(kind==='a'){ // deep boreholes
+      conf = {
+        image: new RegularShape({
+          fill: fill,
+          stroke: new Stroke({ color: "black", width: 1 }),
+          points: 4,
+          radius: 8,
+          rotation: 0.25 * Math.PI,
+          angle: 0,
+        }),
+      };
+    }
+
+    if (selected) {
+      return [
+        new Style({
+          image: new Circle({
+            radius: 10,
+            fill: new Fill({ color: "#ffff00" }),
+            stroke: new Stroke({
+              color: "rgba(0, 0, 0, 0.75)",
+              width: 1,
+            }),
+          }),
+        }),
+        new Style({
+          image: new Circle({
+            radius: 11,
+            stroke: new Stroke({
+              color: "rgba(120, 120, 120, 0.5)",
+              width: 1,
+            }),
+          }),
+        }),
+        new Style(conf),
+      ];
+    }
+    return [new Style(conf)];
+  }
+
+  clusterStyleFunction(length) {
+    const circleSize = 8 + length.toString().length * 2.5;
+    return new Style({
+      image: new Circle({
+        radius: circleSize,
+        stroke: new Stroke({
+          color: "rgba(43, 132, 204, 0.5)",
+          width: 8,
+        }),
+        fill: new Fill({
+          color: "rgba(43, 132, 204, 1)",
+        }),
+      }),
+      text: new Text({
+        text: length.toString(),
+        scale: 1.5,
+        fill: new Fill({
+          color: "#fff",
+        }),
+      }),
+    });
   }
 
   /*
@@ -638,22 +651,20 @@ class MapComponent extends React.Component {
   hover(e) {
     const { hover } = this.props;
     if (hover !== undefined) {
-      if (e.selected.length === 1) {
-        const features = e.selected[0].get("features");
-        if (features.length === 1) {
-          const singleFeature = e.selected[0].get("features")[0];
-          this.setState(
-            {
-              hover: singleFeature,
-            },
-            () => {
-              this.popup.setPosition(
-                singleFeature.getGeometry().getCoordinates(),
-              );
-              hover(singleFeature.getId());
-            },
-          );
-        }
+      // Only display popover if hover contains one single feature and is not a cluster point.
+      if (e.selected?.length === 1 && !e.selected[0].values_.features) {
+        const singleFeature = e.selected[0];
+        this.setState(
+          {
+            hover: singleFeature,
+          },
+          () => {
+            this.popup.setPosition(
+              singleFeature.getGeometry().getCoordinates(),
+            );
+            hover(singleFeature.getId());
+          },
+        );
       } else {
         this.setState(
           {

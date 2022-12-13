@@ -2,6 +2,7 @@ import _ from "lodash";
 
 const initialState = {
   isFetching: false,
+  mapfilter: false,
   filter: {
     refresh: 1,
     borehole_identifier: null,
@@ -156,6 +157,26 @@ const searchEditor = (
   action,
 ) => {
   switch (action.type) {
+    case "SEARCH_EDITOR_MAPFILTER_CHANGED": {
+      if (action.active === true) {
+        return {
+          ...state,
+          filter: {
+            ...state.filter,
+            extent: state.extent,
+          },
+          mapfilter: action.active,
+        };
+      }
+      return {
+        ...state,
+        filter: {
+          ...state.filter,
+          extent: null,
+        },
+        mapfilter: action.active,
+      };
+    }
     case "SEARCH_EDITOR_FILTER_CHANGED": {
       const copy = { ...state };
       const path = `filter.${action.key}`;
@@ -274,6 +295,22 @@ const searchEditor = (
           ...state.filter,
           creation: action.date,
         },
+      };
+    }
+    case "SEARCH_EXTENT_CHANGED": {
+      if (state.mapfilter === true) {
+        return {
+          ...state,
+          extent: action.extent,
+          filter: {
+            ...state.filter,
+            extent: action.extent,
+          },
+        };
+      }
+      return {
+        ...state,
+        extent: action.extent,
       };
     }
     default:

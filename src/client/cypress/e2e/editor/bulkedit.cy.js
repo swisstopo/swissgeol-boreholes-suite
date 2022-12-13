@@ -17,6 +17,7 @@ describe("Test the borehole bulk edit feature.", () => {
   });
 
   it("checks if all toggle buttons do something", () => {
+    cy.wait("@edit_list");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 
@@ -24,9 +25,9 @@ describe("Test the borehole bulk edit feature.", () => {
       .should("have.length", 25)
       .each((el, index, list) => {
         cy.wrap(el).click({ force: true });
-        cy.get("form .field").should("exist");
+        cy.get(".modal form .field").should("exist");
         cy.wrap(el).click({ force: true });
-        cy.get("form").children().should("not.exist");
+        cy.get(".modal form").children().should("not.exist");
       });
   });
 

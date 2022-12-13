@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-import { Icon } from "semantic-ui-react";
+import { Icon, Form, Checkbox } from "semantic-ui-react";
 import TranslationText from "../../form/translationText";
 import WorkgroupRadioGroup from "../../form/workgroup/radio";
 import * as Styled from "./searchEditorStyles";
@@ -133,12 +133,48 @@ class SearchEditorComponent extends React.Component {
     return selectedData;
   }
   render() {
-    const { search, user } = this.props;
+    const { search, user, settings } = this.props;
+    const filter = settings.data.filter;
     return (
       <Styled.Container>
         <Styled.SearchFilterLabel>
           <TranslationText id={"searchfilters"} />:
         </Styled.SearchFilterLabel>
+        <div style={{ padding: 10 }}>
+          <Form size="tiny">
+            {settings.data.appearance.explorer === 0
+              ? null
+              : [
+                  <Form.Field
+                    key="msc-1"
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                    }}>
+                    <label>
+                      <TranslationText id="filterbymap" />
+                    </label>
+                    <Checkbox
+                      checked={search.mapfilter}
+                      onChange={(e, d) => {
+                        this.props.setmapfilter(d.checked);
+                      }}
+                      toggle
+                    />
+                  </Form.Field>,
+                  <Form.Group
+                    key="msc-2"
+                    style={{
+                      display:
+                        search.advanced === true ||
+                        filter.zoom2selected === true
+                          ? null
+                          : "none",
+                    }}
+                    widths="equal"></Form.Group>,
+                ]}
+          </Form>
+        </div>
         <div>
           {this.state?.searchList?.map((filter, idx) => (
             <Styled.FilterContainer key={idx}>
@@ -281,6 +317,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         type: "SEARCH_EDITOR_FILTER_CHANGED",
         key: key,
         value: value,
+      });
+    },
+    setmapfilter: active => {
+      dispatch({
+        type: "SEARCH_EDITOR_MAPFILTER_CHANGED",
+        active: active,
       });
     },
     resetIdentifier: () => {
