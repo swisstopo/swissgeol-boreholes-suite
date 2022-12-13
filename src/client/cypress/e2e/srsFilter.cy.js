@@ -100,6 +100,7 @@ describe("Tests for filtering data by reference system.", () => {
 
     cy.contains("span", "Location").click();
     cy.get('[class="ui fitted toggle checkbox"]')
+      .eq(1)
       .children()
       .first()
       .check({ force: true });
