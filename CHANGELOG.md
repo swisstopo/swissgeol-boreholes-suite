@@ -23,6 +23,7 @@
 - Fix bug where casing IDs could be selected, even though the name of completion was `No casing`.
 - Fix bug where filtering by `identifier` led to bugs in bulk edit.
 - Fix bug where points with spatial reference system LV03 were not correctly displayed on detail map.
+- Fix bug where groundwater radio buttons were not displayed.
 
 ## v2.0.65 - 2022-11-04
 

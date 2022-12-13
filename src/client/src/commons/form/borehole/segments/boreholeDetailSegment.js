@@ -3,13 +3,12 @@ import _ from "lodash";
 
 import DomainDropdown from "../../domain/dropdown/domainDropdown";
 import DomainTree from "../../domain/tree/domainTree";
-
 import TranslationText from "../../translationText";
-
 import { Form, Input, Segment } from "semantic-ui-react";
 
 const BoreholeDetailSegment = props => {
-  const { size, mentions, borehole, updateChange, updateNumber, debug } = props;
+  const { size, mentions, borehole, updateChange, updateNumber, debug, t } =
+    props;
   return (
     <Segment>
       <Form autoComplete="off" error size={size}>
@@ -177,21 +176,21 @@ const BoreholeDetailSegment = props => {
           <Form.Group inline>
             <Form.Radio
               checked={borehole.data.extended.groundwater === true}
-              label={<TranslationText id="yes" />}
+              label={t("common:yes")}
               onChange={(e, d) => {
                 updateChange("extended.groundwater", true, false);
               }}
             />
             <Form.Radio
               checked={borehole.data.extended.groundwater === false}
-              label={<TranslationText id="no" />}
+              label={t("common:no")}
               onChange={(e, d) => {
                 updateChange("extended.groundwater", false, false);
               }}
             />
             <Form.Radio
               checked={borehole.data.extended.groundwater === null}
-              label={<TranslationText id="np" />}
+              label={t("common:np")}
               onChange={(e, d) => {
                 updateChange("extended.groundwater", null, false);
               }}
