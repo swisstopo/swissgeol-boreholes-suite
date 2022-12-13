@@ -35,6 +35,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.contains("span", "Location").click();
     // show all options
     cy.get('[class="ui fitted toggle checkbox"]')
+      .eq(1)
       .children()
       .first()
       .check({ force: true });
@@ -108,6 +109,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.contains("span", "Location").click();
     // show all options
     cy.get('[class="ui fitted toggle checkbox"]')
+      .eq(1)
       .children()
       .first()
       .check({ force: true });

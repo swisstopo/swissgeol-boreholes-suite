@@ -139,14 +139,20 @@ class EditorComponent extends React.Component {
                           });
                         }}
                         layers={props.setting.data.map.explorer}
-                        // moveend={(features, extent) => {
-                        //   this.props.filterByExtent(extent);
-                        // }}
+                        moveend={(features, extent) => {
+                          this.props.filterByExtent(extent);
+                        }}
                         selected={id => {
                           // this.props.boreholeSeleced(id);
                           if (id !== null) {
                             props.lock(id);
                           }
+                        }}
+                        filterByExtent={extent => {
+                          this.props.filterByExtent(extent);
+                        }}
+                        setmapfilter={checked => {
+                          this.props.setmapfilter(checked);
                         }}
                         // zoomto={
                         //   search.zoom2selected
@@ -276,6 +282,18 @@ const mapDispatchToProps = (dispatch, ownprops) => {
       dispatch({
         type: "EDITOR_PROJECT_SELECTED",
         selected: project,
+      });
+    },
+    filterByExtent: extent => {
+      dispatch({
+        type: "SEARCH_EXTENT_CHANGED",
+        extent: extent,
+      });
+    },
+    setmapfilter: active => {
+      dispatch({
+        type: "SEARCH_EDITOR_MAPFILTER_CHANGED",
+        active: active,
       });
     },
     boreholeSelected: borehole => {
