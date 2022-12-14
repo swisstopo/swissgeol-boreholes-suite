@@ -6,7 +6,7 @@ import MenuSettings from "../../commons/menu/settings/menuSettings";
 import MenuContainer from "../../commons/menu/menuContainer";
 import ExplorerSettings from "./explorerSettings";
 import EditorSettings from "./editorSettings";
-import AdminSettings from "./adminSettings";
+import AdminSettings from "./admin/adminSettings";
 import DatabaseSettings from "./databaseSettings";
 import AboutSettings from "./aboutSettings";
 import TermSettings from "./termSettings";
