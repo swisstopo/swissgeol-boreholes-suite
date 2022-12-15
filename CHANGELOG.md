@@ -27,7 +27,9 @@
 - Fix bug where points with spatial reference system LV03 were not correctly displayed on detail map.
 - Fix bug where groundwater radio buttons were not displayed.
 - Disable possibility to draw and move point in detail map when borehole is not locked.
-- Display dropdown with values from schema `qt_top_bedrock` for attribute `qt_depth` to streamline all qt drowpdowns.
+- Fix layout of comments in publication workflow.
+- Immediately update tickboxes in admin user role UI.
+- Display dropdown with values from schema `qt_top_bedrock` for attribute `qt_depth` to streamline all qt drowpdowns
 
 ## v2.0.65 - 2022-11-04
 
