@@ -157,6 +157,8 @@ export function checkBorehole(attribute, text) {
 }
 
 export function getGeojson(filter = {}) {
+  // extent filter is not relevant for map features.
+  delete filter.extent;
   return fetch("/borehole", {
     action: "GEOJSON",
     filter: filter,
