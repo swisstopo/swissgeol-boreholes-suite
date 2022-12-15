@@ -70,6 +70,7 @@ const CodeListSettings = () => {
               code.textEn = data.textEn;
               code.textFr = data.textFr;
               code.textIt = data.textIt;
+              code.order = data.order;
             }
           }),
         );
@@ -83,6 +84,7 @@ const CodeListSettings = () => {
   const [fr, setFr] = useState("");
   const [it, setIt] = useState("");
   const [en, setEn] = useState("");
+  const [order, setOrder] = useState("");
   const [code, setCode] = useState({});
 
   const reset = () => {
@@ -92,6 +94,7 @@ const CodeListSettings = () => {
     setFr("");
     setIt("");
     setEn("");
+    setOrder("");
     setCode({});
   };
 
@@ -99,7 +102,11 @@ const CodeListSettings = () => {
   const schemas = [...new Set(domains.data.map(d => d.schema))];
   return (
     <Box sx={{ padding: "2em" }}>
-      <Stack direction="row" spacing={2}>
+      <Stack
+        direction="row"
+        justifyContent="space-evenly"
+        alignItems="flex-start"
+        marginLeft={2}>
         <Form
           style={{
             flex: 1,
@@ -149,6 +156,15 @@ const CodeListSettings = () => {
               }}
               value={en}
             />
+            <Form.Input
+              fluid
+              name="order-input"
+              label={<TranslationText id="order" />}
+              onChange={e => {
+                setOrder(e.target.value);
+              }}
+              value={order}
+            />
             <Box
               style={{
                 visibility: id ? "visible" : "hidden",
@@ -163,9 +179,11 @@ const CodeListSettings = () => {
                       draft.textFr = fr;
                       draft.textEn = en;
                       draft.textIt = it;
+                      draft.order = order;
                     }),
                   );
-                }}>
+                }}
+                style={{ width: "120px" }}>
                 <span
                   style={{
                     whiteSpace: "nowrap",
@@ -189,6 +207,7 @@ const CodeListSettings = () => {
                 {domains.data.length > 0 &&
                   domains.data
                     .filter(d => d.schema === s)
+                    .sort((a, b) => a.order - b.order)
                     .map((val, idx) => (
                       <Box
                         className="selectable"
@@ -203,6 +222,7 @@ const CodeListSettings = () => {
                             setFr(val.textFr);
                             setIt(val.textIt);
                             setEn(val.textEn);
+                            setOrder(val.order);
                             setCode(val);
                           }
                         }}
@@ -221,6 +241,8 @@ const CodeListSettings = () => {
                           <div style={{ flex: "1 1 0" }}>{val.textFr}</div>
                           <div style={{ flex: "1 1 0" }}>{val.textIt}</div>
                           <div style={{ flex: "1 1 0" }}>{val.textEn}</div>
+                          <div style={{ flex: "1 1 0" }}>{val.order}</div>
+                          <div style={{ width: "60px" }}></div>
                         </Stack>
                       </Box>
                     ))}

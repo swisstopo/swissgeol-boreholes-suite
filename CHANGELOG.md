@@ -9,11 +9,13 @@
 - Added inputs for entering coordinates in LV03 as well as LV95. The coordinates in the coordinate system that were not entered by the user, are automatically transformed and completed.
 - Added search filter for reference systems (LV03 and LV95).
 - Added cluster layer for displaying points on map while maintaining application performance.
+- Added input field to codelist translation UI, that is used to change the order of the codelist.
 
 ### Changed
 
 - Migrate existing LV95 coordinates into LV03 coordinates using 'shift' method. Preserve original LV95 coordinates for some selected boreholes (e.g. Bülach-1-1, ...). These changes are not yet visible in the web client.
 - Points on the overview map are now displayed as clusters depending on zoom level.
+- Order codelists in translation UI by `order` column instead of by `geolcode`.
 
 ### Fixed
 
@@ -25,7 +27,7 @@
 - Fix bug where points with spatial reference system LV03 were not correctly displayed on detail map.
 - Fix bug where groundwater radio buttons were not displayed.
 - Disable possibility to draw and move point in detail map when borehole is not locked.
-
+- Display dropdown with values from schema `qt_top_bedrock` for attribute `qt_depth` to streamline all qt drowpdowns.
 
 ## v2.0.65 - 2022-11-04
 
