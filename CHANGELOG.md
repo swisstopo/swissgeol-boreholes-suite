@@ -28,6 +28,9 @@
 - Fix bug where groundwater radio buttons were not displayed.
 - Correctly display number of boreholes, independently of map appearance.
 - Display dropdown with values from schema `qt_top_bedrock` for attribute `qt_depth` to streamline all qt drowpdowns.
+- Fix layout of comments in publication workflow.
+- Immediately update tickboxes in admin user role UI.
+- Display dropdown with values from schema `qt_top_bedrock` for attribute `qt_depth` to streamline all qt drowpdowns
 
 ## v2.0.65 - 2022-11-04
 

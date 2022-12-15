@@ -5,7 +5,7 @@ import { withTranslation } from "react-i18next";
 import CommentComponent from "./commentComponent";
 
 const CommentArea = props => {
-  const { domains, readOnly, height, onChange, value, i18n } = props;
+  const { domains, readOnly, height, onChange, value, i18n, border } = props;
   return (
     <CommentComponent
       fields={
@@ -20,6 +20,7 @@ const CommentArea = props => {
       onChange={onChange}
       readOnly={readOnly}
       value={value}
+      border={border}
     />
   );
 };

@@ -42,13 +42,13 @@ class CommentComponent extends React.Component {
         }}
         style={_.merge({}, defaultStyle, {
           input: {
-            overflow: "auto",
-            height: this.props.height,
+            minHeight: this.props.height,
+            border: this.props.border,
           },
+          padding: "8px",
         })}
         value={this.state.value}>
         <Mention
-          // appendSpaceOnAdd
           data={fields}
           renderSuggestion={(suggestion, search, highlightedDisplay) => (
             <div>{highlightedDisplay}</div>

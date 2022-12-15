@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
-import store from "../../reducers";
+import store from "../../../reducers";
 
 import {
   Button,
@@ -29,10 +29,11 @@ import {
   setRole,
   listWorkgroups,
   reloadUser,
-} from "../../api-lib/index";
+} from "../../../api-lib/index";
 
-import DateText from "../../commons/form/dateText";
-import TranslationText from "../../commons/form/translationText";
+import DateText from "../../../commons/form/dateText";
+import TranslationText from "../../../commons/form/translationText";
+import { WorkgroupRoleSettings } from "./workgroupRoleSettings";
 
 class AdminSettings extends React.Component {
   constructor(props) {
@@ -112,7 +113,6 @@ class AdminSettings extends React.Component {
   }
 
   async listUsers() {
-    reloadUser();
     const credentials = store.getState().core_user.authentication;
     const response = await fetch("/api/v2/user", {
       headers: {
@@ -124,7 +124,13 @@ class AdminSettings extends React.Component {
 
     if (response.ok) {
       const users = await response.json();
-      this.setState({ users: users });
+      this.setState({
+        users: users,
+      });
+      // immediately update currently selected user.
+      if (this.state.user) {
+        this.setState({ user: users.find(u => u.id === this.state.user.id) });
+      }
     }
   }
 
@@ -146,9 +152,7 @@ class AdminSettings extends React.Component {
           role === "Publisher" ? "PUBLIC" : role,
           !isRoleActive,
         ).then(_ => {
-          this.listUsers().then(() => {
-            this.props.listWorkgroups(true);
-          });
+          this.listUsers();
         });
       },
     );
@@ -1176,110 +1180,11 @@ class AdminSettings extends React.Component {
                             style={{
                               paddingTop: "20px",
                             }}>
-                            {(() => {
-                              const uwg = this.state.user.workgroupRoles.filter(
-                                w => w.workgroupId === workgroup.id,
-                              );
-                              return (
-                                <Form>
-                                  <Form.Group autoComplete="off" widths="equal">
-                                    <Form.Field>
-                                      <Checkbox
-                                        checked={
-                                          uwg !== undefined &&
-                                          uwg.some(x => x.role === "View")
-                                        }
-                                        label="VIEW"
-                                        onChange={(e, d) => {
-                                          e.stopPropagation();
-                                          this.setRole(uwg, workgroup, "VIEW");
-                                        }}
-                                      />
-                                    </Form.Field>
-                                    {workgroup.supplier === false ? (
-                                      <Form.Field>
-                                        <Checkbox
-                                          checked={
-                                            uwg !== undefined &&
-                                            uwg.some(x => x.role === "Editor")
-                                          }
-                                          label="EDITOR"
-                                          onChange={(e, d) => {
-                                            e.stopPropagation();
-                                            this.setRole(
-                                              uwg,
-                                              workgroup,
-                                              "EDIT",
-                                            );
-                                          }}
-                                        />
-                                      </Form.Field>
-                                    ) : null}
-                                    {workgroup.supplier === false ? (
-                                      <Form.Field>
-                                        <Checkbox
-                                          checked={
-                                            uwg !== undefined &&
-                                            uwg.some(
-                                              x => x.role === "Controller",
-                                            )
-                                          }
-                                          label="CONTROLLER"
-                                          onChange={(e, d) => {
-                                            e.stopPropagation();
-                                            this.setRole(
-                                              uwg,
-                                              workgroup,
-                                              "CONTROL",
-                                            );
-                                          }}
-                                        />
-                                      </Form.Field>
-                                    ) : null}
-                                  </Form.Group>
-                                  <Form.Group autoComplete="off" widths="equal">
-                                    {workgroup.supplier === false ? (
-                                      <Form.Field>
-                                        <Checkbox
-                                          checked={
-                                            uwg !== undefined &&
-                                            uwg.some(
-                                              x => x.role === "Validator",
-                                            )
-                                          }
-                                          label="VALIDATOR"
-                                          onChange={(e, d) => {
-                                            e.stopPropagation();
-                                            this.setRole(
-                                              uwg,
-                                              workgroup,
-                                              "VALID",
-                                            );
-                                          }}
-                                        />
-                                      </Form.Field>
-                                    ) : null}
-                                    <Form.Field>
-                                      <Checkbox
-                                        checked={
-                                          uwg !== undefined &&
-                                          uwg.some(x => x.role === "Publisher")
-                                        }
-                                        label="PUBLISHER"
-                                        onChange={(e, d) => {
-                                          e.stopPropagation();
-                                          this.setRole(
-                                            uwg,
-                                            workgroup,
-                                            "PUBLIC",
-                                          );
-                                        }}
-                                      />
-                                    </Form.Field>
-                                  </Form.Group>
-                                </Form>
-                              );
-                            })()}
+                            <WorkgroupRoleSettings
+                              user={this.state.user}
+                              workgroup={workgroup}
+                              setRole={this.setRole.bind(this)}
+                            />
                             {workgroup.disabled !== null ? (
                               <span
                                 style={{
