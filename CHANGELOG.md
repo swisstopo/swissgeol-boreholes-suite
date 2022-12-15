@@ -26,6 +26,7 @@
 - Fix bug where filtering by `identifier` led to bugs in bulk edit.
 - Fix bug where points with spatial reference system LV03 were not correctly displayed on detail map.
 - Fix bug where groundwater radio buttons were not displayed.
+- Correctly display number of boreholes, independently of map appearance.
 - Disable possibility to draw and move point in detail map when borehole is not locked.
 - Fix layout of comments in publication workflow.
 - Immediately update tickboxes in admin user role UI.

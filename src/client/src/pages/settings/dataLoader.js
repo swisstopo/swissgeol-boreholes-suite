@@ -11,6 +11,7 @@ import { Button, Input } from "semantic-ui-react";
 import {
   loadDomains,
   loadCantons,
+  loadBoreholes,
   loadSettings,
   loadUser,
   setAuthentication,
@@ -65,6 +66,7 @@ class DataLoader extends React.Component {
       this.props.loadSettings();
       this.props.loadDomains();
       this.props.loadCantons();
+      this.props.loadBoreholes();
     }
   }
 
@@ -284,6 +286,7 @@ DataLoader.propTypes = {
   i18n: PropTypes.object,
   loadCantons: PropTypes.func,
   loadDomains: PropTypes.func,
+  loadBoreholes: PropTypes.func,
   loadSettings: PropTypes.func,
   loadUser: PropTypes.func,
   setAuthentication: PropTypes.func,
@@ -304,6 +307,9 @@ const mapDispatchToProps = dispatch => {
     },
     loadCantons: () => {
       dispatch(loadCantons());
+    },
+    loadBoreholes: () => {
+      dispatch(loadBoreholes());
     },
     loadSettings: () => {
       dispatch(loadSettings());
