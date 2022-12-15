@@ -174,15 +174,10 @@ class WorkflowForm extends React.Component {
                       : null,
                   marginBottom: "1em",
                   padding: "0px 0.5em 0.5em 0.5em",
-                  // padding: '0.5em',
-                  // margin: '0.5em 0.5em 1.5em 0.5em',
-                  // boxShadow: this.state.expanded?
-                  //   'rgba(0, 0, 0, 0.75) 0px 4px 8px -4px': null
                 }}>
                 <div
                   style={{
                     color: "#2185d0",
-                    // fontWeight: 'bold'
                   }}>
                   {flow.creator.name}{" "}
                   {flow.creator.username === user.data.username ? (
@@ -196,7 +191,6 @@ class WorkflowForm extends React.Component {
                 </div>
                 <div
                   style={{
-                    // color: '#787878',
                     fontSize: "0.8em",
                   }}>
                   <DateText date={flow.finished} fromnow /> -{" "}
@@ -205,9 +199,17 @@ class WorkflowForm extends React.Component {
                 <div
                   style={{
                     padding: "0.5em 0px",
+                    maxHeight: "120px",
+                    overflowY: "auto",
+                    overflowX: "hidden",
                   }}>
                   {flow.notes !== null && flow.notes !== "" ? (
-                    <CommentArea height={100} readOnly value={flow.notes} />
+                    <CommentArea
+                      readOnly
+                      value={flow.notes}
+                      border="none"
+                      height={0}
+                    />
                   ) : (
                     <div
                       style={{
@@ -232,6 +234,7 @@ class WorkflowForm extends React.Component {
                   :
                 </span>
                 <CommentArea
+                  height={100}
                   onChange={this.handleChange}
                   readOnly={readOnly}
                   value={workflow.data.notes}
