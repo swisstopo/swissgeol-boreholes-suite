@@ -60,8 +60,7 @@ const LocationSegment = props => {
           }}
           id={borehole.data.id}
           isLocked={
-            borehole.data.lock !== null &&
-            borehole.data.lock.username === user.data.username
+            borehole.data.lock?.username === user.data.username
           }
           x={
             _.isNil(borehole.data.location_x)
