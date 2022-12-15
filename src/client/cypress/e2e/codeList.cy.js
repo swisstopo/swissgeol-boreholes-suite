@@ -99,4 +99,55 @@ describe("Codelist translations tests", () => {
     // Codelist translation section is not available
     cy.get("div").should("not.contain", "Codelist translations");
   });
+
+  it("Admin can edit order", () => {
+    loginAsAdmin();
+    cy.get("div[id=map]").should("be.visible");
+
+    cy.get("i[class='th big icon']").click();
+    cy.contains("h4", "Settings").click();
+    cy.contains("h3", "Editor").click();
+    cy.contains("div", "Codelist translations")
+      .parent("div")
+      .children("div")
+      .find("button")
+      .click();
+
+    cy.contains("p", "custom.cuttings").click();
+    cy.get("div[name='custom.cuttings']").children().should("have.length", 5);
+    cy.get("div[name='custom.cuttings']").first().should("contain", 1);
+    cy.get("div[name='custom.cuttings']").first().should("contain", "Bohrkern");
+
+    // click on record.
+    cy.contains("div", "Bohrkern").click();
+
+    // assure order is displayed
+    cy.get("input[name=order-input]").should("have.value", "1");
+
+    // edit order
+    cy.get("input[name=order-input]").click().clear().type("6");
+    cy.contains("button", "Save").click();
+
+    cy.get("div[name='custom.cuttings']").children().should("have.length", 5);
+    cy.get("div[name='custom.cuttings']")
+      .children()
+      .first()
+      .should("contain", 2);
+    cy.get("div[name='custom.cuttings']")
+      .children()
+      .first()
+      .should("contain", "Bohrklein");
+    cy.get("div[name='custom.cuttings']").children().eq(4).should("contain", 6);
+    cy.get("div[name='custom.cuttings']")
+      .children()
+      .eq(4)
+      .should("contain", "Bohrkern");
+
+    // undo edit order
+    cy.get("input[name=order-input]").click().clear().type("1");
+    cy.contains("button", "Save").click();
+
+    // order was updated
+    cy.get("div[name='custom.cuttings']").first().should("contain", 1);
+  });
 });

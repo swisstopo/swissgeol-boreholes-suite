@@ -9,6 +9,7 @@
 - Added inputs for entering coordinates in LV03 as well as LV95. The coordinates in the coordinate system that were not entered by the user, are automatically transformed and completed.
 - Added search filter for reference systems (LV03 and LV95).
 - Added cluster layer for displaying points on map while maintaining application performance.
+- Added input field to codelist translation UI, that is used to change the order of the codelist.
 
 ### Changed
 
