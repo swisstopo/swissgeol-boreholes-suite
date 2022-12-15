@@ -380,8 +380,8 @@ class MapComponent extends React.Component {
       });
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    const { centerto, filter, highlighted, hover, layers, zoomto } = nextProps;
+  componentDidUpdate(prevProps, prevState) {
+    const { centerto, filter, highlighted, hover, layers, zoomto } = this.props;
     let refresh = false;
 
     // Check overlays apparence
@@ -402,7 +402,7 @@ class MapComponent extends React.Component {
 
     if (
       this.points !== undefined &&
-      !_.isEqual(highlighted, this.props.highlighted)
+      !_.isEqual(highlighted, prevProps.highlighted)
     ) {
       if (highlighted.length > 0) {
         let feature = this.points.getFeatureById(highlighted[0]);
@@ -444,8 +444,8 @@ class MapComponent extends React.Component {
       }
       refresh = true;
     }
-    if (!_.isEqual(filter, this.props.filter)) {
-      if (!_.isEqual(filter.extent, this.props.filter.extent)) {
+    if (!_.isEqual(filter, prevProps.filter)) {
+      if (!_.isEqual(filter.extent, prevProps.filter.extent)) {
         console.info("extent changed..");
       } else {
         refresh = true;
@@ -472,7 +472,7 @@ class MapComponent extends React.Component {
         }, 500);
       }
     }
-    if (centerto !== null && centerto !== this.props.centerto) {
+    if (centerto !== null && centerto !== prevProps.centerto) {
       let feature = this.points.getFeatureById(centerto);
       if (feature !== null) {
         var point = feature.getGeometry();

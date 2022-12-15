@@ -258,7 +258,7 @@ export const boreholeSearchData = [
     type: "Dropdown",
     label: "qt_depth",
     value: "qt_depth",
-    schema: "custom.qt_depth",
+    schema: "custom.qt_top_bedrock",
     multiple: false,
     search: false,
     isVisibleValue: "qt_depth",
