@@ -156,69 +156,74 @@ class PointComponent extends React.Component {
       }),
     );
 
-    // ol Drawing point interaction declaration
-    this.draw = new Draw({
-      type: "Point",
-      source: this.position,
-    });
-    this.map.addInteraction(this.draw);
-
-    // ol Modify point interaction declaration
-    this.modify = new Modify({
-      source: this.position,
-    });
-    this.map.addInteraction(this.modify);
-
     if (this.state.point !== null) {
       this.centerFeature = new Feature({
         name: "Center",
         geometry: new Point(this.state.point),
       });
       this.position.addFeature(this.centerFeature);
-      this.draw.setActive(false);
+      this.draw && this.draw.setActive(false);
     } else {
-      this.draw.setActive(true);
+      this.draw && this.draw.setActive(true);
     }
 
     this.position.on("addfeature", this.changefeature, this);
     this.position.on("changefeature", this.changefeature, this);
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (
-      _.isNumber(nextProps.x) &&
-      _.isNumber(nextProps.y) &&
-      nextProps.x + nextProps.y !== 0
-    ) {
-      const point = [nextProps.x, nextProps.y];
-      if (!_.isEqual(point, this.state.point)) {
-        this.setState(
-          {
-            point: point,
-            toPoint: [nextProps.x, nextProps.y],
-            address: true,
-          },
-          () => {
-            this.getAddress(point);
-          },
-        );
-        this.draw.setActive(false);
-        this.position.un("changefeature", this.changefeature, this);
-        this.position.un("addfeature", this.changefeature, this);
-        if (this.centerFeature) {
-          this.centerFeature.getGeometry().setCoordinates(point);
-        } else {
-          this.centerFeature = new Feature({
-            name: "Center",
-            geometry: new Point(point),
+  componentDidUpdate(previousProps, predviousState) {
+    const { x, y, isLocked } = this.props;
+    if (x !== previousProps.x || y !== previousProps.y) {
+      if (_.isNumber(x) && _.isNumber(y) && x + y !== 0) {
+        const point = [x, y];
+        if (!_.isEqual(point, this.state.point)) {
+          this.setState(
+            {
+              point: point,
+              toPoint: [x, y],
+              address: true,
+            },
+            () => {
+              this.getAddress(point);
+            },
+          );
+          this.draw && this.draw.setActive(false);
+          this.position.un("changefeature", this.changefeature, this);
+          this.position.un("addfeature", this.changefeature, this);
+          if (this.centerFeature) {
+            this.centerFeature.getGeometry().setCoordinates(point);
+          } else {
+            this.centerFeature = new Feature({
+              name: "Center",
+              geometry: new Point(point),
+            });
+            this.position.addFeature(this.centerFeature);
+          }
+          this.map.getView().fit(this.centerFeature.getGeometry(), {
+            minResolution: 1,
           });
-          this.position.addFeature(this.centerFeature);
+          this.position.on("changefeature", this.changefeature, this);
+          this.position.on("addfeature", this.changefeature, this);
         }
-        this.map.getView().fit(this.centerFeature.getGeometry(), {
-          minResolution: 1,
+      }
+    }
+    if (isLocked !== previousProps.isLocked) {
+      if (isLocked) {
+        // add ol modify point interaction.
+        this.modify = new Modify({
+          source: this.position,
         });
-        this.position.on("changefeature", this.changefeature, this);
-        this.position.on("addfeature", this.changefeature, this);
+        // add ol draw point interaction.
+        this.draw = new Draw({
+          type: "Point",
+          source: this.position,
+        });
+        this.map.addInteraction(this.draw);
+        this.map.addInteraction(this.modify);
+      } else {
+        // remove interactions.
+        this.map.removeInteraction(this.draw);
+        this.map.removeInteraction(this.modify);
       }
     }
   }
@@ -263,7 +268,7 @@ class PointComponent extends React.Component {
         this.getAddress(coordinates);
       },
     );
-    this.draw.setActive(false);
+    this.draw && this.draw.setActive(false);
   }
 
   getAddress(coordinates) {
