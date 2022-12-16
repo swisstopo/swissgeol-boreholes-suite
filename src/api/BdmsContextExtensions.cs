@@ -53,7 +53,7 @@ public static class BdmsContextExtensions
         List<int> qtDescriptionIds = codelists.Where(c => c.Schema == "qt_description").Select(s => s.Id).ToList();
         List<int> drillingMethodIds = codelists.Where(c => c.Schema == "extended.drilling_method").Select(s => s.Id).ToList();
         List<int> cuttingsIds = codelists.Where(c => c.Schema == "custom.cuttings").Select(s => s.Id).ToList();
-        List<int> qtDepthIds = codelists.Where(c => c.Schema == "custom.qt_depth").Select(s => s.Id).ToList();
+        List<int> qtDepthIds = codelists.Where(c => c.Schema == "custom.qt_top_bedrock").Select(s => s.Id).ToList();
         List<int> qtElevationIds = codelists.Where(c => c.Schema == "qt_elevation").Select(s => s.Id).ToList();
         List<int> layerKindIds = codelists.Where(c => c.Schema == "layer_kind").Select(s => s.Id).ToList();
         List<int> purposeIds = codelists.Where(c => c.Schema == "extended.purpose").Select(s => s.Id).ToList();
