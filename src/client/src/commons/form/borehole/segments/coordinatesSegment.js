@@ -211,22 +211,22 @@ const CoordinatesSegment = props => {
 
     const LV95X =
       currentFieldName === referenceSystems.LV95.fieldName.X
-        ? parseFloat(value)
-        : parseFloat(getValues(referenceSystems.LV95.fieldName.X));
+        ? value
+        : getValues(referenceSystems.LV95.fieldName.X);
     const LV95Y =
       currentFieldName === referenceSystems.LV95.fieldName.Y
-        ? parseFloat(value)
-        : parseFloat(getValues(referenceSystems.LV95.fieldName.Y));
+        ? value
+        : getValues(referenceSystems.LV95.fieldName.Y);
 
     const LV03X =
       currentFieldName === referenceSystems.LV03.fieldName.X
-        ? parseFloat(value)
-        : parseFloat(getValues(referenceSystems.LV03.fieldName.X));
+        ? value
+        : getValues(referenceSystems.LV03.fieldName.X);
 
     const LV03Y =
       currentFieldName === referenceSystems.LV03.fieldName.Y
-        ? parseFloat(value)
-        : parseFloat(getValues(referenceSystems.LV03.fieldName.Y));
+        ? value
+        : getValues(referenceSystems.LV03.fieldName.Y);
 
     return {
       LV95: {
