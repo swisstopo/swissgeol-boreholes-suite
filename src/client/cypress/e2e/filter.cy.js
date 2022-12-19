@@ -9,7 +9,7 @@ describe("Search filter tests", () => {
     cy.contains("Search filters:");
   });
 
-  it.only("shows the correct dropdowns", () => {
+  it("shows the correct dropdowns", () => {
     cy.contains("span", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
     let restrictionDropdown = cy.contains("label", "Identifier").next();
@@ -37,5 +37,15 @@ describe("Search filter tests", () => {
         expect(options[3]).to.have.text("trial pit");
         expect(options[4]).to.have.text("other");
       });
+  });
+
+  it("shows 'fiter by map' in editor on 'Large Map' appearance", () => {
+    login("/setting/explorer");
+    cy.contains("Appearance").click();
+    cy.contains("Large Map").children(".checkbox").click();
+    cy.get('[data-cy="menu"]').click();
+    cy.contains("h4", "Editor").click();
+
+    cy.contains("Filter by map");
   });
 });
