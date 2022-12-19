@@ -275,11 +275,11 @@ class MapComponent extends React.Component {
 
             const clusterSource = new Cluster({
               distance: 40,
-              minDistance: 20,
+              minDistance: 35,
               source: this.points,
             });
 
-            // Display clusters for resolutions smaller than 50
+            // Display clusters for resolutions >= 20.
             const clusterLayer = new VectorLayer({
               source: clusterSource,
               name: "clusters",
@@ -288,16 +288,16 @@ class MapComponent extends React.Component {
                 const size = features.get("features").length;
                 return this.clusterStyleFunction(size);
               },
-              minResolution: 100,
+              minResolution: 20,
             });
 
-            // Display original point layer for resolutions larger than 50
+            // Display original point layer for resolutions <= 20.
             const pointLayer = new VectorLayer({
               name: "points",
               zIndex: this.overlays.length + this.layers.length + 1,
               source: this.points,
               style: this.styleFunction.bind(this),
-              maxResolution: 100,
+              maxResolution: 20,
             });
 
             this.map.addLayer(clusterLayer);
