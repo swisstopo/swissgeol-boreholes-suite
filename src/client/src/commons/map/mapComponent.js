@@ -333,7 +333,7 @@ class MapComponent extends React.Component {
                       .getGeometry()
                       .getCoordinates();
                     view.setCenter(coordinates);
-                    view.setResolution(50);
+                    view.setResolution(15);
                   }
                 }
               }
