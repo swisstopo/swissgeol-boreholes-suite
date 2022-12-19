@@ -54,7 +54,7 @@ class PointComponent extends React.Component {
 
     this.state = {
       point: null,
-      toPoint: null,
+      storedPoint: null,
       height: null,
       satellite: false,
       cid: null,
@@ -156,17 +156,6 @@ class PointComponent extends React.Component {
       }),
     );
 
-    if (this.state.point !== null) {
-      this.centerFeature = new Feature({
-        name: "Center",
-        geometry: new Point(this.state.point),
-      });
-      this.position.addFeature(this.centerFeature);
-      this.draw && this.draw.setActive(false);
-    } else {
-      this.draw && this.draw.setActive(true);
-    }
-
     this.position.on("addfeature", this.changefeature, this);
     this.position.on("changefeature", this.changefeature, this);
   }
@@ -179,8 +168,8 @@ class PointComponent extends React.Component {
         if (!_.isEqual(point, this.state.point)) {
           this.setState(
             {
+              storedPoint: point,
               point: point,
-              toPoint: [x, y],
               address: true,
             },
             () => {
@@ -220,7 +209,36 @@ class PointComponent extends React.Component {
         });
         this.map.addInteraction(this.draw);
         this.map.addInteraction(this.modify);
+
+        // deactivate draw if a point already exists.
+        const point = x && y ? [x, y] : this.state.point ?? null;
+        if (point) {
+          this.centerFeature = new Feature({
+            name: "Center",
+            geometry: new Point(point),
+          });
+          this.position.addFeature(this.centerFeature);
+          this.draw && this.draw.setActive(false);
+        } else {
+          this.draw && this.draw.setActive(true);
+        }
       } else {
+        // reset point if the borehole is unlocked without applying the changed position.
+        this.position.clear();
+        if (this.state.storedPoint && x !== null && y !== null) {
+          this.position.addFeature(
+            new Feature({
+              name: "Center",
+              geometry: new Point(this.state.storedPoint),
+            }),
+          );
+        } else {
+          this.setState({
+            ...this.state,
+            storedPoint: null,
+            point: null,
+          });
+        }
         // remove interactions.
         this.map.removeInteraction(this.draw);
         this.map.removeInteraction(this.modify);
@@ -251,9 +269,9 @@ class PointComponent extends React.Component {
     }
     this.setState(
       {
+        storedPoint: this.state.storedPoint || coordinates,
         point: coordinates,
         height: null,
-        toPoint: coordinates,
         cid: null,
         canton: null,
         mid: null,
@@ -263,7 +281,7 @@ class PointComponent extends React.Component {
       () => {
         // Callback after state is updated
         if (_.isFunction(changefeature)) {
-          changefeature(this.state.toPoint);
+          changefeature(this.state.point);
         }
         this.getAddress(coordinates);
       },
@@ -368,11 +386,11 @@ class PointComponent extends React.Component {
             }}>
             <Label color="black">
               <Icon name="map marker" />
-              {_.isArray(this.state.toPoint)
+              {_.isArray(this.state.point)
                 ? "E" +
-                  _.round(this.state.toPoint[0], 2).toLocaleString() +
+                  _.round(this.state.point[0], 2).toLocaleString() +
                   " N" +
-                  _.round(this.state.toPoint[1], 2).toLocaleString()
+                  _.round(this.state.point[1], 2).toLocaleString()
                 : "n/p"}
               <Label.Detail>{this.srs}</Label.Detail>
             </Label>
@@ -394,32 +412,38 @@ class PointComponent extends React.Component {
             <Button.Group size="mini">
               <Button
                 data-cy="apply-button"
-                disabled={!_.isArray(this.state.toPoint) || this.state.address}
+                disabled={!_.isArray(this.state.point) || this.state.address}
                 loading={this.state.address}
                 onClick={e => {
                   if (_.isFunction(this.props.applyChange)) {
                     if (
-                      this.props.x !== this.state.toPoint[0] ||
-                      this.props.y !== this.state.toPoint[1]
+                      this.props.x !== this.state.point[0] ||
+                      this.props.y !== this.state.point[1]
                     ) {
                       this.props.setMapPointChange(true);
                     }
                     this.props.applyChange(
-                      _.round(this.state.toPoint[0], 2),
-                      _.round(this.state.toPoint[1], 2),
+                      _.round(this.state.point[0], 2),
+                      _.round(this.state.point[1], 2),
                       this.state.height !== null
                         ? parseFloat(this.state.height)
                         : null,
                       this.state.cid,
                       this.state.mid,
                     );
+
+                    // update stored point on apply.
+                    this.setState({
+                      ...this.state,
+                      storedPoint: this.state.point,
+                    });
                   }
                 }}
                 size="mini">
                 Apply
               </Button>
               <Button
-                disabled={!_.isArray(this.state.toPoint)}
+                disabled={!_.isArray(this.state.point)}
                 icon
                 onClick={e => {
                   if (_.isFunction(this.props.applyChange)) {
