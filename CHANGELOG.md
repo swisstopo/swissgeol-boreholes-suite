@@ -31,6 +31,7 @@
 - Fix layout of comments in publication workflow.
 - Immediately update tickboxes in admin user role UI.
 - Display dropdown with values from schema `qt_top_bedrock` for attribute `qt_depth` to streamline all qt drowpdowns
+- Display _Filter by map_ in Editor when appearance is _Large Map_.
 
 ## v2.0.65 - 2022-11-04
 
