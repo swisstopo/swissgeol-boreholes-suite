@@ -142,37 +142,32 @@ class SearchEditorComponent extends React.Component {
         </Styled.SearchFilterLabel>
         <div style={{ padding: 10 }}>
           <Form size="tiny">
-            {settings.data.appearance.explorer === 0
-              ? null
-              : [
-                  <Form.Field
-                    key="msc-1"
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}>
-                    <label>
-                      <TranslationText id="filterbymap" />
-                    </label>
-                    <Checkbox
-                      checked={search.mapfilter}
-                      onChange={(e, d) => {
-                        this.props.setmapfilter(d.checked);
-                      }}
-                      toggle
-                    />
-                  </Form.Field>,
-                  <Form.Group
-                    key="msc-2"
-                    style={{
-                      display:
-                        search.advanced === true ||
-                        filter.zoom2selected === true
-                          ? null
-                          : "none",
-                    }}
-                    widths="equal"></Form.Group>,
-                ]}
+            <Form.Field
+              key="msc-1"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}>
+              <label>
+                <TranslationText id="filterbymap" />
+              </label>
+              <Checkbox
+                checked={search.mapfilter}
+                onChange={(e, d) => {
+                  this.props.setmapfilter(d.checked);
+                }}
+                toggle
+              />
+            </Form.Field>
+            <Form.Group
+              key="msc-2"
+              style={{
+                display:
+                  search.advanced === true || filter.zoom2selected === true
+                    ? null
+                    : "none",
+              }}
+              widths="equal"></Form.Group>
           </Form>
         </div>
         <div>
