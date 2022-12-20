@@ -9,6 +9,7 @@ import DateText from "../form/dateText";
 import TranslationText from "../form/translationText";
 import ExportLink from "../exportlink";
 import { Icon } from "semantic-ui-react";
+import { NumericFormat } from "react-number-format";
 
 class DetailsComponent extends React.Component {
   render() {
@@ -195,7 +196,12 @@ class DetailsComponent extends React.Component {
                       fontWeight: "bold",
                       fontSize: "1.1em",
                     }}>
-                    {detail.borehole.elevation_z} m
+                    <NumericFormat
+                      value={detail.borehole.elevation_z}
+                      thousandSeparator="'"
+                      suffix=" m"
+                      displayType="text"
+                    />
                   </div>
                   <div
                     style={{

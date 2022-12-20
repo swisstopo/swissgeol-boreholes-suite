@@ -18,10 +18,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.wait("@edit_list");
     newEditableBorehole().as("borehole_id");
 
-    cy.get('[data-cy="LV95X"]').children().first().as("LV95X-input");
-    cy.get('[data-cy="LV95Y"]').children().first().as("LV95Y-input");
-    cy.get('[data-cy="LV03X"]').children().first().as("LV03X-input");
-    cy.get('[data-cy="LV03Y"]').children().first().as("LV03Y-input");
+    cy.get('[data-cy="LV95X"]').as("LV95X-input");
+    cy.get('[data-cy="LV95Y"]').as("LV95Y-input");
+    cy.get('[data-cy="LV03X"]').as("LV03X-input");
+    cy.get('[data-cy="LV03Y"]').as("LV03Y-input");
   });
 
   afterEach(() => {
@@ -44,9 +44,9 @@ describe("Tests for editing coordinates of a borehole.", () => {
       "@edit_patch",
     ]);
     // verify automatically filled inputs for LV03
-    cy.get("@LV95Y-input").should("have.value", 1245794);
-    cy.get("@LV03Y-input").should("have.value", 245794);
-    cy.get("@LV03X-input").should("have.value", 645122);
+    cy.get("@LV95Y-input").should("have.value", "1'245'794");
+    cy.get("@LV03Y-input").should("have.value", "245'794");
+    cy.get("@LV03X-input").should("have.value", "645'122");
 
     //switch reference system
     cy.get("input[value=20104002]").click();
