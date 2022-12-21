@@ -15,6 +15,7 @@ import { fillingSearchData } from "../data/fillingSearchData";
 import { LocationSearchData } from "../data/LocationSearchData";
 import { boreholeSearchData } from "../data/boreholeSearchData";
 import { stratigraphySearchData } from "../data/stratigraphySearchData";
+import { registrationSearchData } from "../data/registrationSearchData";
 
 class SearchEditorComponent extends React.Component {
   constructor(props) {
@@ -72,6 +73,12 @@ class SearchEditorComponent extends React.Component {
           translationId: "filling",
           isSelected: false,
         },
+        {
+          id: 8,
+          name: "registration",
+          translationId: "registration",
+          isSelectedd: false,
+        },
       ],
     };
   }
@@ -127,6 +134,11 @@ class SearchEditorComponent extends React.Component {
       this.state?.searchList?.[7]?.isSelected
     ) {
       selectedData = fillingSearchData;
+    } else if (
+      this.state?.searchList?.[8]?.name === "registration" &&
+      this.state?.searchList?.[8]?.isSelected
+    ) {
+      selectedData = registrationSearchData;
     } else {
       selectedData = null;
     }
@@ -254,6 +266,7 @@ class SearchEditorComponent extends React.Component {
                 search={this.props.search}
                 setFilter={this.props.setFilter}
                 settings={this.props.settings.data.efilter}
+                resetCreatedDate={this.props.resetCreatedDate}
               />
             )}
 
@@ -272,6 +285,7 @@ class SearchEditorComponent extends React.Component {
                 search={this.props.search}
                 setFilter={this.props.setFilter}
                 settings={this.props.settings.data.efilter}
+                resetCreatedDate={this.props.resetCreatedDate}
               />
             </Styled.FormFilterContainer>
           )}
@@ -293,6 +307,7 @@ SearchEditorComponent.propTypes = {
   search: PropTypes.object,
   setFilter: PropTypes.func,
   settings: PropTypes.object,
+  resetCreatedDate: PropTypes.func,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -388,6 +403,11 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     resetDepth: () => {
       dispatch({
         type: "SEARCH_EDITOR_FILTER_RESET_DEPTH",
+      });
+    },
+    resetCreatedDate: () => {
+      dispatch({
+        type: "SEARCH_EDITOR_FILTER_RESET_CREATED_DATE",
       });
     },
   };
