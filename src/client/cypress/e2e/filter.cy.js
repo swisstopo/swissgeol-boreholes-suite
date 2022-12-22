@@ -1,15 +1,17 @@
-import { login } from "../e2e/testHelpers";
+import { login, interceptApiCalls } from "../e2e/testHelpers";
 
 describe("Search filter tests", () => {
   beforeEach(() => {
-    login();
+    interceptApiCalls();
   });
 
   it("has search filters", () => {
+    login();
     cy.contains("Search filters:");
   });
 
   it("shows the correct dropdowns", () => {
+    login();
     cy.contains("span", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
     let restrictionDropdown = cy.contains("label", "Identifier").next();
@@ -47,5 +49,97 @@ describe("Search filter tests", () => {
     cy.contains("h4", "Editor").click();
 
     cy.contains("Filter by map");
+  });
+
+  it("checks that the registration filter settings control the filter visibility.", () => {
+    // precondition filters not visible
+    login("/editor");
+    cy.contains("Registration").click();
+    cy.contains("Show all fields")
+      .next()
+      .within(() => {
+        cy.contains("Created by").should("not.exist");
+        cy.contains("Creation date").should("not.exist");
+      });
+
+    // turn on registration filters
+    cy.get('[data-cy="menu"]').click();
+    cy.contains("h4", "Settings").click();
+    cy.contains("Editor").click();
+    cy.contains("Registration filters").click();
+    cy.contains("Select all").click();
+    cy.wait("@setting");
+
+    // check visibility of filters
+    cy.get('[data-cy="menu"]').click();
+    cy.contains("h4", "Editor").click();
+    cy.contains("Registration").click();
+    cy.contains("Created by");
+    cy.contains("Creation date");
+
+    // reset setting
+    cy.get('[data-cy="menu"]').click();
+    cy.contains("h4", "Settings").click();
+    cy.contains("Editor").click();
+    cy.contains("Registration filters").click();
+    cy.contains("Unselect all").click();
+    cy.wait("@setting");
+  });
+
+  it("filters boreholes by creator name", () => {
+    login("/editor");
+    cy.contains("Registration").click();
+    cy.contains("Show all fields").children(".checkbox").click();
+
+    // input value
+    cy.contains("Created by").next().find("input").type("val_da%r");
+    cy.wait("@edit_list");
+
+    // check content of table
+    cy.get('[data-cy="borehole-table"] tbody')
+      .children()
+      .should("have.length", 5)
+      .each((el, index, list) => {
+        cy.wrap(el).contains("validator");
+      });
+  });
+
+  it("filters boreholes by creation date", () => {
+    login("/editor");
+    cy.contains("Registration").click();
+    cy.contains("Show all fields").children(".checkbox").click();
+
+    // input values
+    cy.contains("Creation date")
+      .next()
+      .find(".react-datepicker-wrapper input")
+      .click();
+
+    cy.get(".react-datepicker__year-select").select("2021");
+    cy.get(".react-datepicker__month-select").select("November");
+    cy.get(".react-datepicker__day--009").click();
+
+    cy.wait("@edit_list");
+
+    cy.contains("Creation date")
+      .parent()
+      .parent()
+      .next()
+      .find(".react-datepicker-wrapper input")
+      .click();
+
+    cy.get(".react-datepicker__year-select").select("2021");
+    cy.get(".react-datepicker__month-select").select("November");
+    cy.get(".react-datepicker__day--010").click();
+
+    cy.wait("@edit_list");
+
+    // check content of table
+    cy.get('[data-cy="borehole-table"] tbody')
+      .children()
+      .should("have.length", 1)
+      .each((el, index, list) => {
+        cy.wrap(el).contains("09.11.2021");
+      });
   });
 });

@@ -33,6 +33,7 @@ export const interceptApiCalls = () => {
     return (req.alias = `stratigraphy_edit_${req.body.action.toLowerCase()}`);
   });
   cy.intercept("/api/v1/geoapi/location").as("location");
+  cy.intercept("/api/v1/setting").as("setting");
 };
 
 /**
