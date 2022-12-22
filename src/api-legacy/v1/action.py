@@ -1082,4 +1082,22 @@ class Action():
                     lithostrat_id_cli = %s
                 """ % self.getIdx())
 
+            if 'created_date_from' in keys and filter['created_date_from'] not in ['', None]:
+                params.append(filter['created_date_from'])
+                where.append("""
+                    created_bho >= to_date(%s, 'YYYY-MM-DD')
+                """ % self.getIdx())
+
+            if 'created_date_to' in keys and filter['created_date_to'] not in ['', None]:
+                params.append(filter['created_date_to'])
+                where.append("""
+                    created_bho <= to_date(%s, 'YYYY-MM-DD')
+                """ % self.getIdx())
+
+            if 'created_by' in keys and filter['created_by'] not in ['', None]:
+                params.append(filter['created_by'])
+                where.append("""
+                    creator.username ILIKE %s
+                """ % self.getIdx())
+
         return where, params
