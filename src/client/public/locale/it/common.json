@@ -356,5 +356,7 @@
   "export_database": "Esportazione di un gruppo di lavoro o di una perforazione in un file .gpkg zippato",
   "import_database": "Per favore importare un file .gpkg zippato (valido unicamente per le esportazioni da swissforages) di un gruppo di lavoro o di una perforazione.",
   "import": "Importare",
-  "to": "fino a"
+  "to": "fino a",
+  "searchFilterRegistration": "Filtri specifici alla cattura",
+  "registration": "Cattura"
 }

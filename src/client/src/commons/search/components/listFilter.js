@@ -26,6 +26,7 @@ const ListFilter = props => {
     setFilter,
     settings,
     resetDepth,
+    resetCreatedDate,
   } = props;
   const { t } = useTranslation();
 
@@ -149,6 +150,8 @@ const ListFilter = props => {
     } else if (item.value === "reference_elevation_to") {
       updateChange("reference_elevation_from", "", false);
       updateChange("reference_elevation_to", "", false);
+    } else if (item.value === "created_date_to") {
+      resetCreatedDate();
     }
   };
 

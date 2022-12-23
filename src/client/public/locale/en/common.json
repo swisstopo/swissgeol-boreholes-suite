@@ -356,5 +356,7 @@
   "export_database": "Export of a workgroup or borehole in a zipped .gpkg file",
   "import_database": "Please import a zipped .gpkg file (swissforages exports only) of a workgroup or borehole.",
   "import": "Import",
-  "to": "to"
+  "to": "to",
+  "searchFilterRegistration": "Registration filters",
+  "registration": "Registration"
 }

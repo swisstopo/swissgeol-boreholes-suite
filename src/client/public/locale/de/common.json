@@ -356,5 +356,7 @@
   "export_database": "Export einer Arbeitsgruppe oder Bohrung in eine gezippte .gpkg-Datei",
   "import_database": "Bitte importieren Sie eine gezippte .gpkg-Datei (nur swissforages-Exporte) einer Arbeitsgruppe oder Bohrung.",
   "import": "Importieren",
-  "to": "bis"
+  "to": "bis",
+  "searchFilterRegistration": "Suchfilter Erfassung",
+  "registration": "Erfassung"
 }
