@@ -17,6 +17,7 @@ import { casingEditorData } from "./data/casingEditorData";
 import { locationEditorData } from "./data/locationEditorData";
 import { instrumentEditorData } from "./data/instrumentEditorData";
 import { fillingEditorData } from "./data/fillingEditorData";
+import { registrationEditorData } from "./data/registrationEditorData";
 
 export const fields = [];
 
@@ -71,6 +72,12 @@ class EditorSettings extends React.Component {
           translationId: "stratigraphyfields",
           isSelected: false,
         },
+        {
+          id: 7,
+          name: "registration",
+          translationId: "searchFilterRegistration",
+          isSelected: false,
+        },
       ],
     };
   }
@@ -90,6 +97,8 @@ class EditorSettings extends React.Component {
       selectedData = fillingEditorData;
     } else if (name === "stratigraphyfields" && isSelected) {
       selectedData = stratigraphyFieldEditorData;
+    } else if (name === "registration" && isSelected) {
+      selectedData = registrationEditorData;
     } else {
       selectedData = null;
     }

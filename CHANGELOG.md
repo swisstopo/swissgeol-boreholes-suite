@@ -10,6 +10,7 @@
 - Added search filter for reference systems (LV03 and LV95).
 - Added cluster layer for displaying points on map while maintaining application performance.
 - Added input field to codelist translation UI, that is used to change the order of the codelist.
+- Added filter in editor mode for registration details creation date and user.
 
 ### Changed
 

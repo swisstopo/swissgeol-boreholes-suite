@@ -356,5 +356,7 @@
   "export_database": "Exporter un groupe de travail ou un forage dans un fichier .gpkg zippé",
   "import_database": "Veuillez importer un fichier .gpkg zippé (uniquement sous forme d’exports de swissforages) d'un groupe de travail ou d’un forage.",
   "import": "Importer",
-  "to": "à"
+  "to": "à",
+  "searchFilterRegistration": "Filtres par enregistrement",
+  "registration": "Enregistrement"
 }

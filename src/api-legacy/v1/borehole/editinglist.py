@@ -293,6 +293,11 @@ class ListEditingBorehole(Action):
                 bdms.completness
             ON
                 completness.id_bho = borehole.id_bho
+
+            INNER JOIN
+                bdms.users as creator
+            ON
+                created_by_bho = creator.id_usr
         """
 
         if len(layer_params) > 0:

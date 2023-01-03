@@ -144,6 +144,10 @@ const initialState = {
     reference_elevation_from: "",
     reference_elevation_to: "",
     srs: null,
+
+    created_by: "",
+    created_date_from: null,
+    created_date_to: null,
   },
 };
 
@@ -312,6 +316,12 @@ const searchEditor = (
         ...state,
         extent: action.extent,
       };
+    }
+    case "SEARCH_EDITOR_FILTER_RESET_CREATED_DATE": {
+      const copy = { ...state };
+      copy.filter.created_date_from = null;
+      copy.filter.created_date_to = null;
+      return copy;
     }
     default:
       return state;
