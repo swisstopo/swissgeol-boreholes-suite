@@ -11,7 +11,8 @@ import { Controller, useForm } from "react-hook-form";
 import DomainDropdown from "../../domain/dropdown/domainDropdown";
 import DomainText from "../../domain/domainText";
 import TranslationText from "../../translationText";
-import { Form, Input, Segment } from "semantic-ui-react";
+import { Form, Segment } from "semantic-ui-react";
+import { NumericFormat } from "react-number-format";
 
 const webApilv95tolv03 = "https://geodesy.geo.admin.ch/reframe/lv95tolv03";
 const webApilv03tolv95 = "https://geodesy.geo.admin.ch/reframe/lv03tolv95";
@@ -64,6 +65,13 @@ const CoordinatesSegment = props => {
     },
   };
 
+  const parseIfString = value => {
+    if (typeof value === "string") {
+      return parseFloat(value.replace(/'/g, ""));
+    } else {
+      return value;
+    }
+  };
   const isEditable =
     borehole?.data.role === "EDIT" &&
     borehole?.data.lock !== null &&
@@ -209,24 +217,38 @@ const CoordinatesSegment = props => {
     const currentFieldName =
       referenceSystems[referenceSystem].fieldName[direction];
 
-    const LV95X =
-      currentFieldName === referenceSystems.LV95.fieldName.X
-        ? value
-        : getValues(referenceSystems.LV95.fieldName.X);
-    const LV95Y =
-      currentFieldName === referenceSystems.LV95.fieldName.Y
-        ? value
-        : getValues(referenceSystems.LV95.fieldName.Y);
+    let LV95X = null;
+    let LV95Y = null;
+    let LV03X = null;
+    let LV03Y = null;
 
-    const LV03X =
-      currentFieldName === referenceSystems.LV03.fieldName.X
-        ? value
-        : getValues(referenceSystems.LV03.fieldName.X);
+    const LV95XFormValue = getValues(referenceSystems.LV95.fieldName.X);
+    const LV95YFormValue = getValues(referenceSystems.LV95.fieldName.Y);
+    const LV03XFormValue = getValues(referenceSystems.LV03.fieldName.X);
+    const LV03YFormValue = getValues(referenceSystems.LV03.fieldName.Y);
 
-    const LV03Y =
-      currentFieldName === referenceSystems.LV03.fieldName.Y
-        ? value
-        : getValues(referenceSystems.LV03.fieldName.Y);
+    if (LV95XFormValue)
+      LV95X =
+        currentFieldName === referenceSystems.LV95.fieldName.X
+          ? value
+          : parseIfString(LV95XFormValue);
+    if (LV95YFormValue)
+      LV95Y =
+        currentFieldName === referenceSystems.LV95.fieldName.Y
+          ? value
+          : parseIfString(LV95YFormValue);
+
+    if (LV03XFormValue)
+      LV03X =
+        currentFieldName === referenceSystems.LV03.fieldName.X
+          ? value
+          : parseIfString(LV03XFormValue);
+
+    if (LV03YFormValue)
+      LV03Y =
+        currentFieldName === referenceSystems.LV03.fieldName.Y
+          ? value
+          : parseIfString(LV03YFormValue);
 
     return {
       LV95: {
@@ -246,15 +268,16 @@ const CoordinatesSegment = props => {
       return;
     }
     if (isEditable) {
+      const floatValue = parseIfString(value);
       // verify coordinates are in bounding box
       if (
-        coordinateLimits[referenceSystem][direction].Min < value &&
-        value < coordinateLimits[referenceSystem][direction].Max
+        coordinateLimits[referenceSystem][direction].Min < floatValue &&
+        floatValue < coordinateLimits[referenceSystem][direction].Max
       ) {
         const coordinates = getCoordinatesFromForm(
           referenceSystem,
           direction,
-          value,
+          floatValue,
         );
 
         const completeLV95 = coordinates.LV95.X > 0 && coordinates.LV95.Y > 0;
@@ -301,6 +324,40 @@ const CoordinatesSegment = props => {
         }
       }
     }
+  };
+
+  // Custom form validation for coodinate inputs with thousand seperators.
+  const inLV95XBounds = value => {
+    const coordinate = parseIfString(value);
+
+    return (
+      coordinateLimits.LV95.X.Min < coordinate &&
+      coordinate < coordinateLimits.LV95.X.Max
+    );
+  };
+  const inLV95YBounds = value => {
+    const coordinate = parseIfString(value);
+
+    return (
+      coordinateLimits.LV95.Y.Min < coordinate &&
+      coordinate < coordinateLimits.LV95.Y.Max
+    );
+  };
+  const inLV03XBounds = value => {
+    const coordinate = parseIfString(value);
+
+    return (
+      coordinateLimits.LV03.X.Min < coordinate &&
+      coordinate < coordinateLimits.LV03.X.Max
+    );
+  };
+  const inLV03YBounds = value => {
+    const coordinate = parseIfString(value);
+
+    return (
+      coordinateLimits.LV03.Y.Min < coordinate &&
+      coordinate < coordinateLimits.LV03.Y.Max
+    );
   };
 
   return (
@@ -383,8 +440,7 @@ const CoordinatesSegment = props => {
                 control={control}
                 rules={{
                   required: true,
-                  min: coordinateLimits.LV95.X.Min,
-                  max: coordinateLimits.LV95.X.Max,
+                  validate: inLV95XBounds,
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <Form.Field
@@ -397,9 +453,9 @@ const CoordinatesSegment = props => {
                     <label>
                       <TranslationText id="location_x_LV95" />
                     </label>
-                    <Input
+                    <NumericFormat
                       data-cy="LV95X"
-                      type="number"
+                      type="text"
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
@@ -409,6 +465,7 @@ const CoordinatesSegment = props => {
                       }}
                       spellCheck="false"
                       value={field.value || ""}
+                      thousandSeparator="'"
                     />
                   </Form.Field>
                 )}
@@ -418,8 +475,7 @@ const CoordinatesSegment = props => {
                 control={control}
                 rules={{
                   required: true,
-                  min: coordinateLimits.LV95.Y.Min,
-                  max: coordinateLimits.LV95.Y.Max,
+                  validate: inLV95YBounds,
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <Form.Field
@@ -432,9 +488,9 @@ const CoordinatesSegment = props => {
                     <label>
                       <TranslationText id="location_y_LV95" />
                     </label>
-                    <Input
+                    <NumericFormat
                       data-cy="LV95Y"
-                      type="number"
+                      type="text"
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
@@ -444,6 +500,7 @@ const CoordinatesSegment = props => {
                       }}
                       spellCheck="false"
                       value={field.value || ""}
+                      thousandSeparator="'"
                     />
                   </Form.Field>
                 )}
@@ -455,8 +512,7 @@ const CoordinatesSegment = props => {
                 control={control}
                 rules={{
                   required: true,
-                  min: coordinateLimits.LV03.X.Min,
-                  max: coordinateLimits.LV03.X.Max,
+                  validate: inLV03XBounds,
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <Form.Field
@@ -469,8 +525,8 @@ const CoordinatesSegment = props => {
                     <label>
                       <TranslationText id="location_x_LV03" />
                     </label>
-                    <Input
-                      type="number"
+                    <NumericFormat
+                      type="text"
                       data-cy="LV03X"
                       autoCapitalize="off"
                       autoComplete="off"
@@ -481,6 +537,7 @@ const CoordinatesSegment = props => {
                       }}
                       spellCheck="false"
                       value={field.value || ""}
+                      thousandSeparator="'"
                     />
                   </Form.Field>
                 )}
@@ -490,8 +547,7 @@ const CoordinatesSegment = props => {
                 control={control}
                 rules={{
                   required: true,
-                  min: coordinateLimits.LV03.Y.Min,
-                  max: coordinateLimits.LV03.Y.Max,
+                  validate: inLV03YBounds,
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <Form.Field
@@ -504,9 +560,9 @@ const CoordinatesSegment = props => {
                     <label>
                       <TranslationText id="location_y_LV03" />
                     </label>
-                    <Input
+                    <NumericFormat
                       data-cy="LV03Y"
-                      type="number"
+                      type="text"
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
@@ -516,6 +572,7 @@ const CoordinatesSegment = props => {
                       }}
                       spellCheck="false"
                       value={field.value || ""}
+                      thousandSeparator="'"
                     />
                   </Form.Field>
                 )}
@@ -547,18 +604,19 @@ const CoordinatesSegment = props => {
             <label>
               <TranslationText id="elevation_z" />
             </label>
-            <Input
+            <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
                 updateNumber(
                   "elevation_z",
-                  e.target.value === "" ? null : e.target.value,
+                  e.target.value === "" ? null : parseIfString(e.target.value),
                 );
               }}
               spellCheck="false"
               value={borehole.data.elevation_z ?? ""}
+              thousandSeparator="'"
             />
           </Form.Field>
 
@@ -585,14 +643,14 @@ const CoordinatesSegment = props => {
             <label>
               <TranslationText id="reference_elevation" />
             </label>
-            <Input
+            <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
                 updateNumber(
                   "reference_elevation",
-                  e.target.value === "" ? null : e.target.value,
+                  e.target.value === "" ? null : parseIfString(e.target.value),
                 );
 
                 if (/^-?\d*[.,]?\d*$/.test(e.target.value)) {
@@ -604,6 +662,7 @@ const CoordinatesSegment = props => {
               }}
               spellCheck="false"
               value={borehole.data.reference_elevation ?? ""}
+              thousandSeparator="'"
             />
           </Form.Field>
           <Form.Field

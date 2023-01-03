@@ -6,8 +6,10 @@ import DateText from "../../form/dateText";
 import MunicipalityText from "../../form/municipality/municipalityText";
 import CantonText from "../../form/cantons/cantonText";
 import TranslationText from "../../form/translationText";
+import { NumericFormat } from "react-number-format";
 
 // if it's text: this.getTextRow(translationId, data)
+// if it's numeric with thousand separators: this.getNumericTextRow(translationId, data)
 // if it's dropdown :  this.getDomainRow(schema,data,translationId)
 // if it's date : this.getTextRow(translationId, data)
 class MetaComponent extends React.Component {
@@ -32,6 +34,54 @@ class MetaComponent extends React.Component {
     return this.getTextRow(
       schema,
       _.isNil(isodate) || isodate === "" ? null : <DateText date={isodate} />,
+    );
+  }
+
+  getNumericTextRow(schema, ...values) {
+    let coordinates;
+    if (values?.length === 2) {
+      coordinates = (
+        <>
+          <NumericFormat
+            value={values[0]}
+            thousandSeparator="'"
+            displayType="text"
+            suffix=", "
+          />
+          <NumericFormat
+            value={values[1]}
+            thousandSeparator="'"
+            displayType="text"
+          />
+        </>
+      );
+    } else {
+      coordinates = (
+        <NumericFormat
+          value={values[0]}
+          thousandSeparator="'"
+          displayType="text"
+        />
+      );
+    }
+
+    return (
+      <div key={schema}>
+        <div
+          style={{
+            fontSize: "0.8em",
+            color: "#787878",
+            lineHeight: "1em",
+          }}>
+          <TranslationText id={schema} />
+        </div>
+        <div
+          style={{
+            marginBottom: "0.4em",
+          }}>
+          {coordinates}
+        </div>
+      </div>
     );
   }
 
@@ -269,16 +319,21 @@ class MetaComponent extends React.Component {
             style={{
               flex: "1 1 100%",
             }}>
-            {this.getTextRow(
+            {this.getNumericTextRow(
               "coordinatesLV95",
-              data.location_x + ", " + data.location_y,
+              data.location_x,
+              data.location_y,
             )}
-            {this.getTextRow(
+            {this.getNumericTextRow(
               "coordinatesLV03",
-              data.location_x_lv03 + ", " + data.location_y_lv03,
+              data.location_x_lv03,
+              data.location_y_lv03,
             )}
-            {this.getTextRow("elevation_z", data.elevation_z)}
-            {this.getTextRow("reference_elevation", data.reference_elevation)}
+            {this.getNumericTextRow("elevation_z", data.elevation_z)}
+            {this.getNumericTextRow(
+              "reference_elevation",
+              data.reference_elevation,
+            )}
             {this.getDomainRow(
               "ibor117",
               data.reference_elevation_type,
