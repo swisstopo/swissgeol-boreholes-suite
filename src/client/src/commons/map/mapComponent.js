@@ -325,8 +325,8 @@ class MapComponent extends React.Component {
                       duration: 500,
                       padding: [50, 50, 50, 50],
                     });
-                    this.props.setmapfilter(true);
-                    this.props.filterByExtent(extent);
+                    this.props.setmapfilter?.(true);
+                    this.props.filterByExtent?.(extent);
                   } else {
                     // Go zoom to single point.
                     const coordinates = clusterMembers[0]
