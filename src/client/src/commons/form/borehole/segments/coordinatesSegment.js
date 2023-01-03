@@ -344,7 +344,6 @@ const CoordinatesSegment = props => {
     );
   };
   const inLV03XBounds = value => {
-    console.log(value);
     const coordinate = parseIfString(value);
 
     return (
