@@ -6,6 +6,7 @@ import _ from "lodash";
 import DomainText from "../form/domain/domainText";
 import DateText from "../form/dateText";
 import TranslationText from "../form/translationText";
+import { NumericFormat } from "react-number-format";
 
 import TTable from "./table";
 
@@ -64,7 +65,7 @@ class BoreholeEditorTable extends TTable {
   componentDidMount() {
     const { filter } = this.props;
     this.props.clear();
-    this.props.loadData(1, filter); //, setting.orderby, setting.direction);
+    this.props.loadData(1, filter);
   }
   reorder(orderby) {
     const { filter, loadData, store } = this.props;
@@ -171,16 +172,6 @@ class BoreholeEditorTable extends TTable {
                   alert(response.message);
                 }
               });
-              // ).then(() => {
-              //   this.setState({
-              //     confirmDelete: false,
-              //     deleting: false,
-              //     selected: [],
-              //     all: false
-              //   }, () => {
-              //     this.props.loadData(1, filter);
-              //   });
-              // });
             }
           })
           .catch(err => {
@@ -192,16 +183,6 @@ class BoreholeEditorTable extends TTable {
             alert(response.message);
           }
         });
-        // ).then(() => {
-        //   this.setState({
-        //     confirmDelete: false,
-        //     deleting: false,
-        //     selected: [],
-        //     all: false
-        //   }, () => {
-        //     this.props.loadData(1, filter);
-        //   });
-        // });
       }
     }
   }
@@ -296,9 +277,6 @@ class BoreholeEditorTable extends TTable {
         {this.getHeaderLabel("original_name")}
         {this.getHeaderLabel("kind")}
         {this.getHeaderLabel("restriction")}
-        {/*this.getHeaderLabel('location_x', true)}
-        {this.getHeaderLabel('location_y', true)}
-          {this.getHeaderLabel('srs', true)*/}
         {this.getHeaderLabel("elevation_z")}
         {this.getHeaderLabel("hrs", true)}
         {this.getHeaderLabel("drilling_end_date")}
@@ -377,7 +355,14 @@ class BoreholeEditorTable extends TTable {
         </span>
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
-        {_.isNil(item.elevation_z) ? null : item.elevation_z + " m"}
+        {_.isNil(item.elevation_z) ? null : (
+          <NumericFormat
+            value={item.elevation_z}
+            displayType="text"
+            thousandSeparator="'"
+            suffix={" m"}
+          />
+        )}
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         <DomainText id={item.hrs} schema="hrs" />

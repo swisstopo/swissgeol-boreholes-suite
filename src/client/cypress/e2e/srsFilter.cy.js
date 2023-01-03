@@ -83,8 +83,8 @@ describe("Tests for filtering data by reference system.", () => {
   it("can filter by reference system", () => {
     login("/editor");
     newEditableBorehole().as("borehole_id");
-    cy.get('[data-cy="LV03X"]').children().first().as("LV03X-input");
-    cy.get('[data-cy="LV03Y"]').children().first().as("LV03Y-input");
+    cy.get('[data-cy="LV03X"]').as("LV03X-input");
+    cy.get('[data-cy="LV03Y"]').as("LV03Y-input");
 
     cy.get("input[value=20104002]").click();
 
