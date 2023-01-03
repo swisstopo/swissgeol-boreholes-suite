@@ -9,6 +9,7 @@ import TranslationText from "../../form/translationText";
 import { NumericFormat } from "react-number-format";
 
 // if it's text: this.getTextRow(translationId, data)
+// if it's numeric with thousand separators: this.getNumericTextRow(translationId, data)
 // if it's dropdown :  this.getDomainRow(schema,data,translationId)
 // if it's date : this.getTextRow(translationId, data)
 class MetaComponent extends React.Component {
@@ -36,10 +37,9 @@ class MetaComponent extends React.Component {
     );
   }
 
-  getNumericTextRow(schema, text) {
+  getNumericTextRow(schema, ...values) {
     let coordinates;
-    const values = typeof text === "string" && text.split(",");
-    if (values?.length > 1) {
+    if (values?.length === 2) {
       coordinates = (
         <>
           <NumericFormat
@@ -57,7 +57,11 @@ class MetaComponent extends React.Component {
       );
     } else {
       coordinates = (
-        <NumericFormat value={text} thousandSeparator="'" displayType="text" />
+        <NumericFormat
+          value={values[0]}
+          thousandSeparator="'"
+          displayType="text"
+        />
       );
     }
 
@@ -75,7 +79,7 @@ class MetaComponent extends React.Component {
           style={{
             marginBottom: "0.4em",
           }}>
-          {_.isNil(text) || text === "" ? "-" : coordinates}
+          {coordinates}
         </div>
       </div>
     );
@@ -317,11 +321,13 @@ class MetaComponent extends React.Component {
             }}>
             {this.getNumericTextRow(
               "coordinatesLV95",
-              data.location_x + ", " + data.location_y,
+              data.location_x,
+              data.location_y,
             )}
             {this.getNumericTextRow(
               "coordinatesLV03",
-              data.location_x_lv03 + ", " + data.location_y_lv03,
+              data.location_x_lv03,
+              data.location_y_lv03,
             )}
             {this.getNumericTextRow("elevation_z", data.elevation_z)}
             {this.getNumericTextRow(
