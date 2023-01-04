@@ -8,7 +8,6 @@ public partial class RemoveMentionsFromWorkflow : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
     {
-
         migrationBuilder.DropColumn(
             name: "mentions_wkf",
             schema: "bdms",
@@ -25,4 +24,3 @@ public partial class RemoveMentionsFromWorkflow : Migration
             nullable: true);
     }
 }
-
