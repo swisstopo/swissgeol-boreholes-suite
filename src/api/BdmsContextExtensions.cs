@@ -411,7 +411,6 @@ public static class BdmsContextExtensions
                .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
                .RuleFor(o => o.Borehole, _ => default!)
                .RuleFor(o => o.Notes, f => f.Random.Words(4))
-               .RuleFor(o => o.Mentions, f => new[] { f.Random.Word(), f.Random.Word(), f.Random.Word(), f.Random.Word() })
                .RuleFor(o => o.Role, f => f.PickRandom<Role>())
                .RuleFor(o => o.Started, f => f.Date.Between(new DateTime(1990, 1, 1).ToUniversalTime(), new DateTime(2005, 1, 1).ToUniversalTime()))
                .RuleFor(o => o.Finished, f => f.Date.Between(new DateTime(2005, 2, 1).ToUniversalTime(), new DateTime(2022, 1, 1).ToUniversalTime()));

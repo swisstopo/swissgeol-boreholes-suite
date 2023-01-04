@@ -7,13 +7,12 @@ import TranslationText from "../../translationText";
 import { Form, Input, Segment } from "semantic-ui-react";
 
 const BoreholeDetailSegment = props => {
-  const { size, mentions, borehole, updateChange, updateNumber, debug, t } =
-    props;
+  const { size, borehole, updateChange, updateNumber, debug, t } = props;
   return (
     <Segment>
       <Form autoComplete="off" error size={size}>
         <Form.Group widths="equal">
-          <Form.Field error={mentions.indexOf("total_depth") >= 0} required>
+          <Form.Field required>
             <label>
               <TranslationText id="totaldepth" />
             </label>
@@ -35,7 +34,7 @@ const BoreholeDetailSegment = props => {
               }
             />
           </Form.Field>
-          <Form.Field error={mentions.indexOf("qt_depth") >= 0} required>
+          <Form.Field required>
             <label>
               <TranslationText id="qt_depth" />
             </label>
@@ -74,9 +73,7 @@ const BoreholeDetailSegment = props => {
             />
           </Form.Field>
 
-          <Form.Field
-            // error={mentions.indexOf('qt_top_bedrock') >= 0}
-            required>
+          <Form.Field required>
             <label>
               <TranslationText id="total_depth_tvd_qt" />
             </label>
@@ -90,12 +87,7 @@ const BoreholeDetailSegment = props => {
           </Form.Field>
         </Form.Group>
         <Form.Group widths="equal">
-          <Form.Field
-            error={
-              mentions.indexOf("top_bedrock") >= 0
-              // || _.isNil(borehole.extended.top_bedrock)
-            }
-            required>
+          <Form.Field required>
             <label>
               <TranslationText id="top_bedrock" />
             </label>
@@ -117,7 +109,7 @@ const BoreholeDetailSegment = props => {
               }
             />
           </Form.Field>
-          <Form.Field error={mentions.indexOf("qt_top_bedrock") >= 0} required>
+          <Form.Field required>
             <label>
               <TranslationText id="qt_top_bedrock" />
             </label>
@@ -169,7 +161,7 @@ const BoreholeDetailSegment = props => {
             />
           </Form.Field>
         </Form.Group>
-        <Form.Field error={mentions.indexOf("groundwater") >= 0} required>
+        <Form.Field required>
           <label>
             <TranslationText id="groundwater" />
           </label>
@@ -219,9 +211,7 @@ const BoreholeDetailSegment = props => {
             ) : null}
           </Form.Group>
         </Form.Field>
-        <Form.Field
-          error={mentions.indexOf("lithology_top_bedrock") >= 0}
-          required>
+        <Form.Field required>
           <label>
             <TranslationText id="lithology_top_bedrock" />
           </label>
@@ -239,9 +229,7 @@ const BoreholeDetailSegment = props => {
             title={<TranslationText id="lithology_top_bedrock" />}
           />
         </Form.Field>
-        <Form.Field
-          error={mentions.indexOf("lithostratigraphy_top_bedrock") >= 0}
-          required>
+        <Form.Field required>
           <label>
             <TranslationText id="lithostratigraphy_top_bedrock" />
           </label>
@@ -265,9 +253,7 @@ const BoreholeDetailSegment = props => {
             title={<TranslationText id="lithostratigraphy_top_bedrock" />}
           />
         </Form.Field>
-        <Form.Field
-          error={mentions.indexOf("chronostratigraphy_top_bedrock") >= 0}
-          required>
+        <Form.Field required>
           <label>
             <TranslationText id="chronostratigraphy_top_bedrock" />
           </label>

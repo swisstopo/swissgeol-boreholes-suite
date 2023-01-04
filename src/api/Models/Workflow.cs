@@ -45,14 +45,6 @@ public class Workflow
     public string? Notes { get; set; }
 
     /// <summary>
-    /// Gets or sets the mentions.
-    /// </summary>
-    [Column("mentions_wkf")]
-#pragma warning disable CA1819 // Properties should not return arrays
-    public string[]? Mentions { get; set; }
-#pragma warning restore CA1819 // Properties should not return arrays
-
-    /// <summary>
     /// Gets or sets the <see cref="User"/>.
     /// </summary>
     public User User { get; set; }

@@ -332,7 +332,7 @@ class BoreholeForm extends React.Component {
   }
 
   render() {
-    const { t, workflow, borehole } = this.props;
+    const { t, borehole } = this.props;
     const size = null; // 'small'
 
     if (this.props.borehole.error !== null) {
@@ -340,10 +340,6 @@ class BoreholeForm extends React.Component {
         <div>{t(this.props.borehole.error, this.props.borehole.data)}</div>
       );
     }
-
-    // Handle highlithing of mentions in comments
-    const mentions =
-      workflow.previous !== null ? workflow.previous.mentions : [];
 
     return (
       <Dimmer.Dimmable
@@ -402,7 +398,6 @@ class BoreholeForm extends React.Component {
                   }></IdentifierSegment>
                 <NameSegment
                   size={size}
-                  mentions={mentions}
                   borehole={this.props.borehole}
                   originalNameCheck={this.state["extended.original_name_check"]}
                   originalNameFetch={this.state["extended.original_name_fetch"]}
@@ -412,12 +407,10 @@ class BoreholeForm extends React.Component {
                   check={this.check}></NameSegment>
                 <RestrictionSegment
                   size={size}
-                  mentions={mentions}
                   borehole={this.props.borehole}
                   updateChange={this.updateChange}></RestrictionSegment>
                 <LocationSegment
                   size={size}
-                  mentions={mentions}
                   borehole={borehole}
                   user={this.props.user}
                   updateChange={this.updateChange}
@@ -442,13 +435,11 @@ class BoreholeForm extends React.Component {
                 }}>
                 <BoreholeGeneralSegment
                   size={size}
-                  mentions={mentions}
                   borehole={this.props.borehole}
                   updateChange={this.updateChange}
                   updateNumber={this.updateNumber}></BoreholeGeneralSegment>
                 <BoreholeDetailSegment
                   size={size}
-                  mentions={mentions}
                   borehole={this.props.borehole}
                   updateChange={this.updateChange}
                   updateNumber={this.updateNumber}
