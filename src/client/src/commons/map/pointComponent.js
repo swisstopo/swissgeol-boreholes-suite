@@ -54,7 +54,7 @@ class PointComponent extends React.Component {
 
     this.state = {
       point: null,
-      storedPoint: null,
+      storedPoint: null, //used to keep track of previous position if editing is canceled.
       height: null,
       satellite: false,
       cid: null,
@@ -158,11 +158,20 @@ class PointComponent extends React.Component {
 
     this.position.on("addfeature", this.changefeature, this);
     this.position.on("changefeature", this.changefeature, this);
+
+    if (this.props.x !== 0 && this.props.y !== 0) {
+      this.manageMapInteractions();
+    }
   }
 
   componentDidUpdate(previousProps, predviousState) {
     const { x, y, isLocked } = this.props;
-    if (x !== previousProps.x || y !== previousProps.y) {
+    // update map if props have changed or no feature is present.
+    if (
+      x !== previousProps.x ||
+      y !== previousProps.y ||
+      this.position.getFeatures().length === 0
+    ) {
       if (_.isNumber(x) && _.isNumber(y) && x + y !== 0) {
         const point = [x, y];
         if (!_.isEqual(point, this.state.point)) {
@@ -197,52 +206,59 @@ class PointComponent extends React.Component {
       }
     }
     if (isLocked !== previousProps.isLocked) {
-      if (isLocked) {
-        // add ol modify point interaction.
-        this.modify = new Modify({
-          source: this.position,
-        });
-        // add ol draw point interaction.
-        this.draw = new Draw({
-          type: "Point",
-          source: this.position,
-        });
-        this.map.addInteraction(this.draw);
-        this.map.addInteraction(this.modify);
+      this.manageMapInteractions();
+    }
+  }
 
-        // deactivate draw if a point already exists.
-        const point = x && y ? [x, y] : this.state.point ?? null;
-        if (point) {
-          this.centerFeature = new Feature({
-            name: "Center",
-            geometry: new Point(point),
-          });
-          this.position.addFeature(this.centerFeature);
-          this.draw && this.draw.setActive(false);
-        } else {
-          this.draw && this.draw.setActive(true);
-        }
+  manageMapInteractions() {
+    const { x, y, isLocked } = this.props;
+    if (isLocked) {
+      // add ol modify point interaction.
+      this.modify = new Modify({
+        source: this.position,
+      });
+      // add ol draw point interaction.
+      this.draw = new Draw({
+        type: "Point",
+        source: this.position,
+      });
+      this.map.addInteraction(this.draw);
+      this.map.addInteraction(this.modify);
+
+      // deactivate draw if a point already exists.
+      const point = x && y ? [x, y] : this.state.point ?? null;
+      if (point) {
+        this.centerFeature = new Feature({
+          name: "Center",
+          geometry: new Point(point),
+        });
+        this.map.getView().setResolution(1);
+        this.map.getView().setCenter(point);
+        this.position.addFeature(this.centerFeature);
+        this.draw && this.draw.setActive(false);
       } else {
-        // reset point if the borehole is unlocked without applying the changed position.
-        this.position.clear();
-        if (this.state.storedPoint && x !== null && y !== null) {
-          this.position.addFeature(
-            new Feature({
-              name: "Center",
-              geometry: new Point(this.state.storedPoint),
-            }),
-          );
-        } else {
-          this.setState({
-            ...this.state,
-            storedPoint: null,
-            point: null,
-          });
-        }
-        // remove interactions.
-        this.map.removeInteraction(this.draw);
-        this.map.removeInteraction(this.modify);
+        this.draw && this.draw.setActive(true);
       }
+    } else {
+      // reset point if the borehole is unlocked without applying the changed position.
+      this.position.clear();
+      if (this.state.storedPoint && x !== null && y !== null) {
+        this.position.addFeature(
+          new Feature({
+            name: "Center",
+            geometry: new Point(this.state.storedPoint),
+          }),
+        );
+      } else {
+        this.setState({
+          ...this.state,
+          storedPoint: null,
+          point: null,
+        });
+      }
+      // remove interactions.
+      this.map.removeInteraction(this.draw);
+      this.map.removeInteraction(this.modify);
     }
   }
 
