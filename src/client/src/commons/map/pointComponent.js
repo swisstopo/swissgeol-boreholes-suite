@@ -54,7 +54,6 @@ class PointComponent extends React.Component {
 
     this.state = {
       point: null,
-      storedPoint: null, //used to keep track of previous position if editing is canceled.
       height: null,
       satellite: false,
       cid: null,
@@ -177,7 +176,6 @@ class PointComponent extends React.Component {
         if (!_.isEqual(point, this.state.point)) {
           this.setState(
             {
-              storedPoint: point,
               point: point,
               address: true,
             },
@@ -242,17 +240,16 @@ class PointComponent extends React.Component {
     } else {
       // reset point if the borehole is unlocked without applying the changed position.
       this.position.clear();
-      if (this.state.storedPoint && x !== null && y !== null) {
+      if (x !== null && y !== null) {
         this.position.addFeature(
           new Feature({
             name: "Center",
-            geometry: new Point(this.state.storedPoint),
+            geometry: new Point([x, y]),
           }),
         );
       } else {
         this.setState({
           ...this.state,
-          storedPoint: null,
           point: null,
         });
       }
@@ -285,7 +282,6 @@ class PointComponent extends React.Component {
     }
     this.setState(
       {
-        storedPoint: this.state.storedPoint || coordinates,
         point: coordinates,
         height: null,
         cid: null,
@@ -447,12 +443,6 @@ class PointComponent extends React.Component {
                       this.state.cid,
                       this.state.mid,
                     );
-
-                    // update stored point on apply.
-                    this.setState({
-                      ...this.state,
-                      storedPoint: this.state.point,
-                    });
                   }
                 }}
                 size="mini">
