@@ -7,7 +7,6 @@ import _ from "lodash";
 const LocationSegment = props => {
   const {
     size,
-    mentions,
     borehole,
     user,
     updateChange,
@@ -32,7 +31,6 @@ const LocationSegment = props => {
         }}>
         <CoordinatesSegment
           size={size}
-          mentions={mentions}
           borehole={borehole}
           user={user}
           updateChange={updateChange}
@@ -42,7 +40,6 @@ const LocationSegment = props => {
           setMapPointChange={setMapPointChange}></CoordinatesSegment>
         <CantonMunicipalitySegment
           size={size}
-          mentions={mentions}
           borehole={borehole}
           cantons={cantons}
           municipalities={municipalities}

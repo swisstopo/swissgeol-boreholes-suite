@@ -33,7 +33,6 @@ const referenceSystems = {
 const CoordinatesSegment = props => {
   const {
     size,
-    mentions,
     borehole,
     user,
     updateChange,
@@ -364,7 +363,7 @@ const CoordinatesSegment = props => {
     <Segment>
       <Form size={size}>
         <Form.Group widths="equal">
-          <Form.Field error={mentions.indexOf("srs") >= 0} required>
+          <Form.Field required>
             <label>
               <TranslationText id="srs" />
             </label>
@@ -581,7 +580,7 @@ const CoordinatesSegment = props => {
           </Stack>
         </Box>
         <Form.Group widths="equal">
-          <Form.Field error={mentions.indexOf("qt_location") >= 0} required>
+          <Form.Field required>
             <label>
               <TranslationText id="qt_location" />
             </label>
@@ -595,12 +594,7 @@ const CoordinatesSegment = props => {
           </Form.Field>
         </Form.Group>
         <Form.Group widths="equal">
-          <Form.Field
-            error={
-              mentions.indexOf("elevation_z") >= 0 ||
-              borehole.data.elevation_z == null
-            }
-            required>
+          <Form.Field error={borehole.data.elevation_z == null} required>
             <label>
               <TranslationText id="elevation_z" />
             </label>
@@ -620,7 +614,7 @@ const CoordinatesSegment = props => {
             />
           </Form.Field>
 
-          <Form.Field error={mentions.indexOf("qt_elevation") >= 0} required>
+          <Form.Field required>
             <label>
               <TranslationText id="qt_elevation" />
             </label>
@@ -635,10 +629,7 @@ const CoordinatesSegment = props => {
         </Form.Group>
         <Form.Group widths="equal">
           <Form.Field
-            error={
-              mentions.indexOf("reference_elevation") >= 0 ||
-              borehole.data.reference_elevation == null
-            }
+            error={borehole.data.reference_elevation == null}
             required>
             <label>
               <TranslationText id="reference_elevation" />
@@ -665,9 +656,7 @@ const CoordinatesSegment = props => {
               thousandSeparator="'"
             />
           </Form.Field>
-          <Form.Field
-            error={mentions.indexOf("qt_reference_elevation") >= 0}
-            required>
+          <Form.Field required>
             <label>
               <TranslationText id="reference_elevation_qt" />
             </label>
@@ -682,10 +671,7 @@ const CoordinatesSegment = props => {
         </Form.Group>
         <Form.Group widths="equal">
           <Form.Field
-            error={
-              mentions.indexOf("reference_elevation_type") >= 0 ||
-              borehole.data.reference_elevation_type === null
-            }
+            error={borehole.data.reference_elevation_type === null}
             required>
             <label>
               <TranslationText id="reference_elevation_type" />
@@ -698,7 +684,7 @@ const CoordinatesSegment = props => {
               selected={borehole.data.reference_elevation_type}
             />
           </Form.Field>
-          <Form.Field error={mentions.indexOf("hrs") >= 0} required>
+          <Form.Field required>
             <label>
               <TranslationText id="hrs" />
             </label>

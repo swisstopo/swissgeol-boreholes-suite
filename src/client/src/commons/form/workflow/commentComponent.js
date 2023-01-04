@@ -1,10 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import _ from "lodash";
-
-import { MentionsInput, Mention } from "react-mentions";
-
-import defaultStyle from "./defaultStyle";
+import { defaultStyle } from "./defaultStyle";
 
 class CommentComponent extends React.Component {
   constructor(props) {
@@ -23,44 +20,32 @@ class CommentComponent extends React.Component {
   }
 
   render() {
-    const { readOnly, fields, onChange } = this.props;
+    const { readOnly, onChange } = this.props;
     return (
-      <MentionsInput
-        onChange={(event, newValue, newPlainTextValue, mentions) => {
+      <textarea
+        onChange={event => {
+          console.log("change", event);
           if (readOnly === false) {
             this.setState(
               {
-                value: newValue,
+                value: event.target.value,
               },
               () => {
                 if (_.isFunction(onChange)) {
-                  onChange(newValue);
+                  onChange(event.target.value);
                 }
               },
             );
           }
         }}
         style={_.merge({}, defaultStyle, {
-          input: {
-            minHeight: this.props.height,
-            border: this.props.border,
-          },
+          minHeight: this.props.height,
+          border: this.props.border,
+          width: "100%",
           padding: "8px",
+          resize: "none",
         })}
-        value={this.state.value}>
-        <Mention
-          data={fields}
-          renderSuggestion={(suggestion, search, highlightedDisplay) => (
-            <div>{highlightedDisplay}</div>
-          )}
-          style={{
-            backgroundColor: "#ff000024",
-            fontSize: "14px",
-            margin: "0px",
-          }}
-          trigger="@"
-        />
-      </MentionsInput>
+        value={this.state.value}></textarea>
     );
   }
 }

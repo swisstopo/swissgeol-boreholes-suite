@@ -5,8 +5,7 @@ import TranslationText from "../../translationText";
 import { Form, Input, Segment, Icon } from "semantic-ui-react";
 
 const CantonMunicipalitySegment = props => {
-  const { size, mentions, borehole, cantons, municipalities, zoomToPolygon } =
-    props;
+  const { size, borehole, cantons, municipalities, zoomToPolygon } = props;
 
   return (
     <Segment>
@@ -17,13 +16,13 @@ const CantonMunicipalitySegment = props => {
         size={size}
         spellCheck="false">
         <Form.Group widths="equal">
-          <Form.Field error={mentions.indexOf("country") >= 0} required>
+          <Form.Field required>
             <label>
               <TranslationText id="country" />
             </label>
             <Input value={"Switzerland"} />
           </Form.Field>
-          <Form.Field error={mentions.indexOf("canton") >= 0} required>
+          <Form.Field required>
             <label>
               <TranslationText id="canton" />
               &nbsp;
@@ -50,7 +49,7 @@ const CantonMunicipalitySegment = props => {
               }
             />
           </Form.Field>
-          <Form.Field error={mentions.indexOf("city") >= 0} required>
+          <Form.Field required>
             <label>
               <TranslationText id="city" />
               &nbsp;

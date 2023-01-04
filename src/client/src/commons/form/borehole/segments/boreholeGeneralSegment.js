@@ -9,7 +9,7 @@ import TranslationText from "../../translationText";
 import { Form, Input, Segment, TextArea } from "semantic-ui-react";
 
 const BoreholeGeneralSegment = props => {
-  const { size, mentions, borehole, updateChange, updateNumber } = props;
+  const { size, borehole, updateChange, updateNumber } = props;
   return (
     <Segment>
       <div
@@ -25,11 +25,7 @@ const BoreholeGeneralSegment = props => {
           <Form autoComplete="off" error size={size}>
             <Form.Group widths="equal">
               {/* drilling type in Borehole */}
-              <Form.Field
-                error={
-                  borehole.data.kind === null || mentions.indexOf("kind") >= 0
-                }
-                required>
+              <Form.Field error={borehole.data.kind === null} required>
                 <label>
                   <TranslationText id="kind" />
                 </label>
@@ -41,7 +37,7 @@ const BoreholeGeneralSegment = props => {
                   selected={borehole.data.kind}
                 />
               </Form.Field>
-              <Form.Field error={mentions.indexOf("method") >= 0} required>
+              <Form.Field required>
                 <label>
                   <TranslationText id="drilling_method" />
                 </label>
@@ -57,7 +53,7 @@ const BoreholeGeneralSegment = props => {
                   selected={borehole.data.extended.drilling_method}
                 />
               </Form.Field>
-              <Form.Field error={mentions.indexOf("purpose") >= 0} required>
+              <Form.Field required>
                 <label>
                   <TranslationText id="purpose" />
                 </label>
@@ -77,7 +73,7 @@ const BoreholeGeneralSegment = props => {
                   paddingRight: "2%",
                   paddingLeft: "1%",
                 }}>
-                <Form.Field error={mentions.indexOf("cuttings") >= 0} required>
+                <Form.Field required>
                   <label>
                     <TranslationText id="cuttings" />
                   </label>
@@ -106,10 +102,9 @@ const BoreholeGeneralSegment = props => {
               <div style={{ width: "33%", paddingLeft: "1%" }}>
                 <Form.Field
                   error={
-                    (_.isString(borehole.data.drilling_date) &&
-                      borehole.data.drilling_date !== "" &&
-                      !moment(borehole.data.drilling_date).isValid()) ||
-                    mentions.indexOf("method") >= 0
+                    _.isString(borehole.data.drilling_date) &&
+                    borehole.data.drilling_date !== "" &&
+                    !moment(borehole.data.drilling_date).isValid()
                   }
                   required>
                   <label>
@@ -144,9 +139,7 @@ const BoreholeGeneralSegment = props => {
                   }
                 />
               </Form.Field>
-              <Form.Field
-                error={mentions.indexOf("drill_diameter") >= 0}
-                required>
+              <Form.Field required>
                 <label>
                   <TranslationText id="drill_diameter" />
                 </label>
@@ -166,7 +159,7 @@ const BoreholeGeneralSegment = props => {
                   })()}
                 />
               </Form.Field>
-              <Form.Field error={mentions.indexOf("status") >= 0} required>
+              <Form.Field required>
                 <label>
                   <TranslationText firstUpperCase id="boreholestatus" />
                 </label>
@@ -180,7 +173,7 @@ const BoreholeGeneralSegment = props => {
               </Form.Field>
             </Form.Group>
             <Form.Group widths="equal">
-              <Form.Field error={mentions.indexOf("inclination") >= 0} required>
+              <Form.Field required>
                 <label>
                   <TranslationText firstUpperCase id="inclination" />
                 </label>
@@ -202,9 +195,7 @@ const BoreholeGeneralSegment = props => {
                   }
                 />
               </Form.Field>
-              <Form.Field
-                error={mentions.indexOf("inclination_direction") >= 0}
-                required>
+              <Form.Field required>
                 <label>
                   <TranslationText firstUpperCase id="inclination_direction" />
                 </label>
@@ -226,9 +217,7 @@ const BoreholeGeneralSegment = props => {
                   }
                 />
               </Form.Field>
-              <Form.Field
-                error={mentions.indexOf("qt_bore_inc_dir") >= 0}
-                required>
+              <Form.Field required>
                 <label>
                   <TranslationText firstUpperCase id="qt_bore_inc_dir" />
                 </label>
