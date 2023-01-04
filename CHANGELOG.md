@@ -18,6 +18,7 @@
 - Points on the overview map are now displayed as clusters depending on zoom level.
 - Order codelists in translation UI by `order` column instead of by `geolcode`.
 - Coordinates and elevations in inputs and texts are now displayed with thousand separators.
+- Removed `mentions` functionality in workflow comments.
 
 ### Fixed
 
