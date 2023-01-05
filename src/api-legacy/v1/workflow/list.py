@@ -20,9 +20,6 @@ class ListWorkflows(Action):
             COALESCE(
                 notes_wkf, ''
             ) as notes,
-            COALESCE(
-                mentions_wkf, '{}'::character varying[]
-            ) as mentions,
             (
                 select row_to_json(t)
                 FROM (
