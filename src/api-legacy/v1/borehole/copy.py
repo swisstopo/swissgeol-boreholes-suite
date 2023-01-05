@@ -213,12 +213,12 @@ class CopyBorehole(Action):
                             lithological_description_lay, facies_description_lay, last_lay,
                             qt_description_id_cli, lithology_top_bedrock_id_cli,
                             chronostratigraphy_id_cli,
-                            symbol_id_cli, plasticity_id_cli, consistance_id_cli,
+                            plasticity_id_cli, consistance_id_cli,
                             alteration_id_cli, compactness_id_cli,
-                            soil_state_id_cli, grain_size_1_id_cli,
+                            grain_size_1_id_cli,
                             grain_size_2_id_cli, cohesion_id_cli,
                             uscs_1_id_cli, uscs_2_id_cli, uscs_original_lay,
-                            uscs_determination_id_cli, kirost_id_cli, notes_lay,
+                            uscs_determination_id_cli, notes_lay,
                             lithostratigraphy_id_cli, humidity_id_cli, striae_lay,
                             unconrocks_id_cli, lithok_id_cli, gradation_id_cli
                         )
@@ -228,12 +228,12 @@ class CopyBorehole(Action):
                             lithological_description_lay, facies_description_lay, last_lay,
                             qt_description_id_cli, lithology_top_bedrock_id_cli,
                             chronostratigraphy_id_cli,
-                            symbol_id_cli, plasticity_id_cli, consistance_id_cli,
+                            plasticity_id_cli, consistance_id_cli,
                             alteration_id_cli, compactness_id_cli,
-                            soil_state_id_cli, grain_size_1_id_cli,
+                            grain_size_1_id_cli,
                             grain_size_2_id_cli, cohesion_id_cli,
                             uscs_1_id_cli, uscs_2_id_cli, uscs_original_lay,
-                            uscs_determination_id_cli, kirost_id_cli, notes_lay,
+                            uscs_determination_id_cli, notes_lay,
                             lithostratigraphy_id_cli, humidity_id_cli, striae_lay,
                             unconrocks_id_cli, lithok_id_cli, gradation_id_cli
                         FROM

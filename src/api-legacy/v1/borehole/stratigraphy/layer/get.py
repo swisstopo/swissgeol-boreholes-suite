@@ -45,7 +45,6 @@ class GetLayer(Action):
             layer.lithology_id_cli AS lithology,
             layer.lithostratigraphy_id_cli AS lithostratigraphy,
             layer.chronostratigraphy_id_cli AS chronostratigraphy,
-            layer.symbol_id_cli AS symbol,
             COALESCE(
                 mlpr112, '{}'::int[]
             ) AS color,
@@ -55,7 +54,6 @@ class GetLayer(Action):
             layer.gradation_id_cli AS gradation,
             layer.alteration_id_cli AS alteration,
             layer.compactness_id_cli AS compactness,
-            layer.soil_state_id_cli AS soil_state,
             COALESCE(
                 mlpr108, '{}'::int[]
             ) AS organic_component,
@@ -82,7 +80,6 @@ class GetLayer(Action):
                 mcla107, '{}'::int[]
             ) AS debris,
             lithok_id_cli AS lithok,
-            kirost_id_cli AS kirost,
             unconrocks_id_cli AS unconrocks,
             COALESCE(
                 notes_lay, ''

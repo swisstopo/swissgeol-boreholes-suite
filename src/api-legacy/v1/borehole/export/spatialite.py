@@ -241,7 +241,6 @@ class ExportSpatiaLite(Action):
                         gradation INTEGER,
                         alteration INTEGER,
                         compactness INTEGER,
-                        soil_state INTEGER,
                         organic_component TEXT,
                         striae INTEGER,
                         grain_size_1 INTEGER,
@@ -256,7 +255,6 @@ class ExportSpatiaLite(Action):
                         uscs_determination INTEGER,
                         debris TEXT,
                         lithology_top_bedrock INTEGER,
-                        kirost INTEGER,
                         lithok INTEGER,
                         notes TEXT
                     )
@@ -629,7 +627,6 @@ class ExportSpatiaLite(Action):
                                 consistance,
                                 alteration,
                                 compactness,
-                                soil_state,
                                 organic_component,
                                 striae,
                                 grain_size_1,
@@ -645,13 +642,12 @@ class ExportSpatiaLite(Action):
                                 debris,
                                 lithology_top_bedrock,
                                 lithok,
-                                kirost,
                                 notes,
                                 gradation
                             ) VALUES (
                                 ?,?,?,?,?,?,?,?,?,
-                                ?,?,?,?,?,?,?,?,?,?,
-                                ?,?,?,?,?,?,?,?,?,?,
+                                ?,?,?,?,?,?,?,?,?,
+                                ?,?,?,?,?,?,?,?,?,
                                 ?,?,?,?,?,?,?,?,?
                             )
                         """, (
@@ -674,7 +670,6 @@ class ExportSpatiaLite(Action):
                         layer['consistance'],
                         layer['alteration'],
                         layer['compactness'],
-                        layer['soil_state'],
                         ",".join([str(elem) for elem in layer['organic_component']]),
                         layer['striae'],
                         layer['grain_size_1'],
@@ -690,7 +685,6 @@ class ExportSpatiaLite(Action):
                         ",".join([str(elem) for elem in layer['debris']]),
                         layer['lithology_top_bedrock'],
                         layer['lithok'],
-                        layer['kirost'],
                         layer['notes'],
                         layer['gradation']
                     ))
@@ -1091,26 +1085,24 @@ class ImportSpatiaLite(Action):
                                 consistance, --15
                                 alteration, --16
                                 compactness, --17
-                                soil_state, --18
-                                striae, --19
-                                grain_size_1, --20
-                                grain_size_2, --21
-                                cohesion, --22
-                                uscs_1, --23
-                                uscs_2, --24
-                                uscs_original, --25
-                                lithok, --26
-                                kirost, --27
-                                notes, --28
-                                color, --29
-                                lithology_top_bedrock, --30
-                                uscs_determination, --31
-                                debris, --32
-                                uscs_3, --33
-                                grain_granularity, --34
-                                grain_shape, --35
-                                organic_component, --36
-                                gradation -- 37
+                                striae, --18
+                                grain_size_1, --19
+                                grain_size_2, --20
+                                cohesion, --21
+                                uscs_1, --22
+                                uscs_2, --23
+                                uscs_original, --24
+                                lithok, --25
+                                notes, --26
+                                color, --27
+                                lithology_top_bedrock, --28
+                                uscs_determination, --29
+                                debris, --30
+                                uscs_3, --31
+                                grain_granularity, --32
+                                grain_shape, --33
+                                organic_component, --34
+                                gradation -- 35
 
                             FROM
                                 layer
@@ -1138,7 +1130,7 @@ class ImportSpatiaLite(Action):
                                     plasticity_id_cli, humidity_id_cli,
 
                                     consistance_id_cli, alteration_id_cli,
-                                    compactness_id_cli, soil_state_id_cli,
+                                    compactness_id_cli,
 
                                     striae_lay,
                                     grain_size_1_id_cli, grain_size_2_id_cli,
@@ -1146,7 +1138,7 @@ class ImportSpatiaLite(Action):
                                     cohesion_id_cli, uscs_1_id_cli, uscs_2_id_cli,
                                     uscs_original_lay, lithok_id_cli,
 
-                                    kirost_id_cli, notes_lay,
+                                    notes_lay,
 
                                     gradation_id_cli, uscs_3_id_cli,
                                     uscs_determination_id_cli,
@@ -1164,16 +1156,16 @@ class ImportSpatiaLite(Action):
 
                                     $13, $14,
                                     $15, $16,
-                                    $17, $18,
-                                    $19, $20,
-                                    $21, $22,
-                                    $23, $24,
-                                    $25, $26,
+                                    $17,
+                                    $18, $19,
+                                    $20, $21,
+                                    $22, $23,
+                                    $24, $25,
+                                    $26,
                                     $27, $28,
-                                    $29, $30,
 
-                                    $31, $32,
-                                    $33
+                                    $29, $30,
+                                    $31
 
                                 ) RETURNING id_lay
                             """,
@@ -1190,23 +1182,23 @@ class ImportSpatiaLite(Action):
                                 layer[13], layer[14],
 
                                 layer[15], layer[16],
-                                layer[17], layer[18],
+                                layer[17],
 
-                                True if layer[19] == 1 else False,
-                                layer[20], layer[21],
+                                True if layer[18] == 1 else False,
+                                layer[19], layer[20],
 
-                                layer[22], layer[23], layer[24],
-                                layer[25], layer[26],
+                                layer[21], layer[22], layer[23],
+                                layer[24], layer[25],
 
-                                layer[27], layer[28],
+                                layer[26],
 
-                                layer[37], layer[33],
-                                layer[31], layer[30]
+                                layer[35], layer[31],
+                                layer[29], layer[28]
 
                             )
 
                             # color
-                            if layer[29]:
+                            if layer[27]:
 
                                 await self.conn.executemany("""
                                     INSERT INTO
@@ -1214,7 +1206,7 @@ class ImportSpatiaLite(Action):
                                             id_lay_fk, id_cli_fk, code_cli
                                         ) VALUES ($1, $2, $3)
                                 """, [
-                                    (lay_id, int(v), 'mlpr112') for v in layer[29].split(',')]
+                                    (lay_id, int(v), 'mlpr112') for v in layer[27].split(',')]
                                 )
 
                             # debris
@@ -1228,7 +1220,7 @@ class ImportSpatiaLite(Action):
                                 """, [
                                     (
                                         lay_id, int(v), 'mcla107'
-                                    ) for v in layer[32].split(',')]
+                                    ) for v in layer[30].split(',')]
                                 )
 
                             # grain_granularity
@@ -1242,7 +1234,7 @@ class ImportSpatiaLite(Action):
                                 """, [
                                     (
                                         lay_id, int(v), 'mlpr115'
-                                    ) for v in layer[34].split(',')]
+                                    ) for v in layer[32].split(',')]
                                 )
 
                             # grain_shape
@@ -1256,7 +1248,7 @@ class ImportSpatiaLite(Action):
                                 """, [
                                     (
                                         lay_id, int(v), 'mlpr110'
-                                    ) for v in layer[35].split(',')]
+                                    ) for v in layer[33].split(',')]
                                 )
 
                             # organic_component
@@ -1270,7 +1262,7 @@ class ImportSpatiaLite(Action):
                                 """, [
                                     (
                                         lay_id, int(v), 'mlpr108'
-                                    ) for v in layer[36].split(',')]
+                                    ) for v in layer[34].split(',')]
                                 )
 
             # await self.conn.execute("COMMIT;")
