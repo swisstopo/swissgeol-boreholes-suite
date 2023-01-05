@@ -59,7 +59,7 @@ const LocationSegment = props => {
             updateChange("location", [x, y, cid, mid, height], false);
           }}
           id={borehole.data.id}
-          isLocked={borehole.data.lock?.username === user.data.username}
+          isEditable={borehole.data.lock?.username === user.data.username}
           x={
             _.isNil(borehole.data.location_x)
               ? null

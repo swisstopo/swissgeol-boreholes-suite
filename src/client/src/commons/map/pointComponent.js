@@ -165,7 +165,7 @@ class PointComponent extends React.Component {
   }
 
   componentDidUpdate(previousProps, predviousState) {
-    const { x, y, isLocked } = this.props;
+    const { x, y, isEditable } = this.props;
     // update map if props have changed or no feature is present.
     if (
       x !== previousProps.x ||
@@ -195,7 +195,7 @@ class PointComponent extends React.Component {
         }
       }
     }
-    if (isLocked !== previousProps.isLocked) {
+    if (isEditable !== previousProps.isEditable) {
       this.manageMapInteractions();
     }
   }
@@ -224,9 +224,9 @@ class PointComponent extends React.Component {
   }
 
   manageMapInteractions() {
-    const { x, y, isLocked } = this.props;
+    const { x, y, isEditable } = this.props;
     const point = x && y ? [x, y] : null;
-    if (isLocked) {
+    if (isEditable) {
       if (point) {
         this.drawOrUpdatePoint(point);
         this.allowModifying();
@@ -280,7 +280,7 @@ class PointComponent extends React.Component {
       is changed.
   */
   changefeature(ev) {
-    const { changefeature, isLocked } = this.props;
+    const { changefeature, isEditable } = this.props;
     let feature = ev.feature;
     let coordinates = feature.getGeometry().getCoordinates();
     if (this.centerFeature === undefined) {
@@ -304,7 +304,7 @@ class PointComponent extends React.Component {
         this.getAddress(coordinates);
       },
     );
-    if (isLocked) this.allowModifying();
+    if (isEditable) this.allowModifying();
   }
 
   getAddress(coordinates) {
