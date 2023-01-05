@@ -5,8 +5,10 @@ import TranslationText from "../../../../../translationText";
 import DomainDropdown from "../../../../../domain/dropdown/domainDropdown";
 import DomainTree from "../../../../../domain/tree/domainTree";
 import DateField from "../../../../../dateField";
+import { NumericFormat } from "react-number-format";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
+import { parseIfString } from "../../../../../formUtils";
 
 const ProfileAttributeList = props => {
   const { attribute, showAll, updateChange, layer, isVisibleFunction } =
@@ -30,25 +32,50 @@ const ProfileAttributeList = props => {
                 isVisibleFunction(item.isVisibleValue) ||
                 showAll) && (
                 <Styled.AttributesItem>
-                  <Input
-                    data-cy={item.value}
-                    autoCapitalize="off"
-                    autoComplete="off"
-                    autoCorrect="off"
-                    onChange={e =>
-                      updateChange(
-                        item.value,
-                        e.target.value === "" ? null : e.target.value,
-                        item?.to,
-                        item?.isNumber,
-                      )
-                    }
-                    spellCheck="false"
-                    style={{ width: "100%" }}
-                    value={
-                      _.isNil(layer?.[item.value]) ? "" : layer[item.value]
-                    }
-                  />
+                  {item.isNumber ? (
+                    <NumericFormat
+                      data-cy={item.value}
+                      autoCapitalize="off"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      onChange={e =>
+                        updateChange(
+                          item.value,
+                          e.target.value === ""
+                            ? null
+                            : parseIfString(e.target.value),
+                          item?.to,
+                          item?.isNumber,
+                        )
+                      }
+                      spellCheck="false"
+                      style={{ width: "100%" }}
+                      value={
+                        _.isNil(layer?.[item.value]) ? "" : layer[item.value]
+                      }
+                      thousandSeparator="'"
+                    />
+                  ) : (
+                    <Input
+                      data-cy={item.value}
+                      autoCapitalize="off"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      onChange={e =>
+                        updateChange(
+                          item.value,
+                          e.target.value === "" ? null : e.target.value,
+                          item?.to,
+                          item?.isNumber,
+                        )
+                      }
+                      spellCheck="false"
+                      style={{ width: "100%" }}
+                      value={
+                        _.isNil(layer?.[item.value]) ? "" : layer[item.value]
+                      }
+                    />
+                  )}
                 </Styled.AttributesItem>
               )}
 

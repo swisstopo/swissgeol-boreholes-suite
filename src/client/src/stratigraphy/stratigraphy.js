@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import * as Styled from "./styles";
 import PropTypes from "prop-types";
 import Draggable from "react-draggable";
+import { NumericFormat } from "react-number-format";
 
 const Stratigraphy = props => {
   const {
@@ -235,13 +236,21 @@ const Stratigraphy = props => {
             {rangeHeight >= 40 && (
               <>
                 <Styled.LensNumber>
-                  {parseInt(state.top / state.pxm, 10) + " " + unit}
+                  <NumericFormat
+                    value={parseInt(state.top / state.pxm, 10)}
+                    thousandSeparator="'"
+                    displayType="text"
+                    suffix={" " + unit}
+                  />
                 </Styled.LensNumber>
                 <div style={{ flex: "1 1 100%" }} />
                 <Styled.LensNumber>
-                  {parseInt((state.top + rangeHeight) / state.pxm, 10) +
-                    " " +
-                    unit}
+                  <NumericFormat
+                    value={parseInt((state.top + rangeHeight) / state.pxm, 10)}
+                    thousandSeparator="'"
+                    displayType="text"
+                    suffix={" " + unit}
+                  />
                 </Styled.LensNumber>
               </>
             )}
@@ -280,7 +289,12 @@ const Stratigraphy = props => {
                   backgroundImage={handlePattern(layer)}>
                   {layerHeight > titleLimit && (
                     <Styled.LayerLength isBig={layerHeight > subTitleLimit}>
-                      {layer[mapping.to]} {unit}
+                      <NumericFormat
+                        value={layer[mapping.to]}
+                        thousandSeparator="'"
+                        displayType="text"
+                        suffix={" " + unit}
+                      />
                     </Styled.LayerLength>
                   )}
                 </Styled.SecondLayerList>

@@ -5,7 +5,7 @@ import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import DomainText from "../../../../form/domain/domainText";
 import { Stratigraphy } from "../../../../../stratigraphy";
-
+import { NumericFormat } from "react-number-format";
 import { Checkbox, Icon } from "semantic-ui-react";
 
 import TranslationText from "../../../../form/translationText";
@@ -66,6 +66,15 @@ class ProfileView extends React.Component {
       ),
     );
   }
+
+  getNumericTextRow(schema, number) {
+    const text = (
+      <NumericFormat value={number} thousandSeparator="'" displayType="text" />
+    );
+
+    return this.getTextRow(schema, text);
+  }
+
   getTextRow(schema, text) {
     const { domains, layer } = this.props;
     return this.isVisible(
@@ -74,14 +83,10 @@ class ProfileView extends React.Component {
         <div
           style={{
             fontSize: "0.8em",
-            color: "#787878", // 'rgb(33, 133, 208)',
+            color: "#787878",
             lineHeight: "1em",
-            // marginTop: '0.5em 0px 0.4em'
           }}>
-          <TranslationText
-            id={schema}
-            // ns='layer'
-          />
+          <TranslationText id={schema} />
         </div>
         <div
           style={{
@@ -94,7 +99,6 @@ class ProfileView extends React.Component {
         ? (() => {
             const filtered = domains.data.layer_kind.filter(
               kind => layer.kind === kind.id,
-              //layer.kinds.includes(kind.id),
             );
 
             let fields = { ...filtered[0].conf.viewerFields };
@@ -320,8 +324,8 @@ class ProfileView extends React.Component {
                   />
                 </div>
 
-                {this.getTextRow("layer_depth_from", layer.depth_from)}
-                {this.getTextRow("layer_depth_to", layer.depth_to)}
+                {this.getNumericTextRow("layer_depth_from", layer.depth_from)}
+                {this.getNumericTextRow("layer_depth_to", layer.depth_to)}
                 {this.getTextRow(
                   "lithological_description",
                   layer.lithological_description,

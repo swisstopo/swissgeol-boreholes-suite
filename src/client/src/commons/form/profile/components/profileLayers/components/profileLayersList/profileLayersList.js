@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Icon, Popup } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
+import { NumericFormat } from "react-number-format";
 import * as Styled from "./styles";
 
 const ProfileLayersList = props => {
@@ -109,7 +110,12 @@ const ProfileLayersList = props => {
                     }
                   />
                 ) : (
-                  item?.depth_from + " m"
+                  <NumericFormat
+                    value={item?.depth_from}
+                    thousandSeparator="'"
+                    suffix=" m"
+                    displayType="text"
+                  />
                 )}
               </Styled.Text>
               <Styled.Text
@@ -167,7 +173,12 @@ const ProfileLayersList = props => {
                     }
                   />
                 ) : (
-                  item?.depth_to + " m"
+                  <NumericFormat
+                    value={item?.depth_to}
+                    thousandSeparator="'"
+                    suffix=" m"
+                    displayType="text"
+                  />
                 )}
               </Styled.Text>
             </Styled.CardInfo>
