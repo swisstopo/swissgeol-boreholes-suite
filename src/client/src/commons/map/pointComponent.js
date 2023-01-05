@@ -54,7 +54,6 @@ class PointComponent extends React.Component {
 
     this.state = {
       point: null,
-      storedPoint: null,
       height: null,
       satellite: false,
       cid: null,
@@ -142,6 +141,7 @@ class PointComponent extends React.Component {
       target: "point",
       view: new View({
         resolution: this.state.point !== null ? 1 : 500,
+        minResolution: 1,
         center: this.state.point !== null ? this.state.point : center,
         projection: projection,
         extent: extent,
@@ -158,17 +158,25 @@ class PointComponent extends React.Component {
 
     this.position.on("addfeature", this.changefeature, this);
     this.position.on("changefeature", this.changefeature, this);
+
+    if (this.props.x !== 0 && this.props.y !== 0) {
+      this.manageMapInteractions();
+    }
   }
 
   componentDidUpdate(previousProps, predviousState) {
-    const { x, y, isLocked } = this.props;
-    if (x !== previousProps.x || y !== previousProps.y) {
+    const { x, y, isEditable } = this.props;
+    // update map if props have changed or no feature is present.
+    if (
+      x !== previousProps.x ||
+      y !== previousProps.y ||
+      this.position.getFeatures().length === 0
+    ) {
       if (_.isNumber(x) && _.isNumber(y) && x + y !== 0) {
         const point = [x, y];
         if (!_.isEqual(point, this.state.point)) {
           this.setState(
             {
-              storedPoint: point,
               point: point,
               address: true,
             },
@@ -176,74 +184,85 @@ class PointComponent extends React.Component {
               this.getAddress(point);
             },
           );
-          this.draw && this.draw.setActive(false);
           this.position.un("changefeature", this.changefeature, this);
           this.position.un("addfeature", this.changefeature, this);
-          if (this.centerFeature) {
-            this.centerFeature.getGeometry().setCoordinates(point);
-          } else {
-            this.centerFeature = new Feature({
-              name: "Center",
-              geometry: new Point(point),
-            });
-            this.position.addFeature(this.centerFeature);
-          }
-          this.map.getView().fit(this.centerFeature.getGeometry(), {
-            minResolution: 1,
-          });
+          this.drawOrUpdatePoint(point);
+          this.map
+            .getView()
+            .fit(this.centerFeature.getGeometry(), { resolution: 1 });
           this.position.on("changefeature", this.changefeature, this);
           this.position.on("addfeature", this.changefeature, this);
         }
       }
     }
-    if (isLocked !== previousProps.isLocked) {
-      if (isLocked) {
-        // add ol modify point interaction.
-        this.modify = new Modify({
-          source: this.position,
-        });
-        // add ol draw point interaction.
-        this.draw = new Draw({
-          type: "Point",
-          source: this.position,
-        });
-        this.map.addInteraction(this.draw);
-        this.map.addInteraction(this.modify);
-
-        // deactivate draw if a point already exists.
-        const point = x && y ? [x, y] : this.state.point ?? null;
-        if (point) {
-          this.centerFeature = new Feature({
-            name: "Center",
-            geometry: new Point(point),
-          });
-          this.position.addFeature(this.centerFeature);
-          this.draw && this.draw.setActive(false);
-        } else {
-          this.draw && this.draw.setActive(true);
-        }
-      } else {
-        // reset point if the borehole is unlocked without applying the changed position.
-        this.position.clear();
-        if (this.state.storedPoint && x !== null && y !== null) {
-          this.position.addFeature(
-            new Feature({
-              name: "Center",
-              geometry: new Point(this.state.storedPoint),
-            }),
-          );
-        } else {
-          this.setState({
-            ...this.state,
-            storedPoint: null,
-            point: null,
-          });
-        }
-        // remove interactions.
-        this.map.removeInteraction(this.draw);
-        this.map.removeInteraction(this.modify);
-      }
+    if (isEditable !== previousProps.isEditable) {
+      this.manageMapInteractions();
     }
+  }
+
+  drawOrUpdatePoint(point) {
+    if (this.centerFeature) {
+      this.centerFeature.getGeometry().setCoordinates(point);
+    } else {
+      this.centerFeature = new Feature({
+        name: "Center",
+        geometry: new Point(point),
+      });
+      this.position.addFeature(this.centerFeature);
+      this.map.getView().setResolution(1);
+      this.map.getView().setCenter(point);
+    }
+  }
+
+  removeMapFeature() {
+    this.centerFeature = null;
+    this.position.clear();
+    this.setState({
+      ...this.state,
+      point: null,
+    });
+  }
+
+  manageMapInteractions() {
+    const { x, y, isEditable } = this.props;
+    const point = x && y ? [x, y] : null;
+    if (isEditable) {
+      if (point) {
+        this.drawOrUpdatePoint(point);
+        this.allowModifying();
+      } else {
+        this.allowDrawing();
+      }
+    } else {
+      if (point) {
+        this.drawOrUpdatePoint(point);
+      } else {
+        this.removeMapFeature();
+      }
+      this.map.removeInteraction(this.draw);
+      this.map.removeInteraction(this.modify);
+    }
+  }
+
+  allowDrawing() {
+    if (!this.draw) {
+      this.draw = new Draw({
+        type: "Point",
+        source: this.position,
+      });
+    }
+    this.map.addInteraction(this.draw);
+    this.map.removeInteraction(this.modify);
+  }
+
+  allowModifying() {
+    if (!this.modify) {
+      this.modify = new Modify({
+        source: this.position,
+      });
+    }
+    this.map.addInteraction(this.modify);
+    this.map.removeInteraction(this.draw);
   }
 
   zoomtopoly(coords) {
@@ -261,7 +280,7 @@ class PointComponent extends React.Component {
       is changed.
   */
   changefeature(ev) {
-    const { changefeature } = this.props;
+    const { changefeature, isEditable } = this.props;
     let feature = ev.feature;
     let coordinates = feature.getGeometry().getCoordinates();
     if (this.centerFeature === undefined) {
@@ -269,7 +288,6 @@ class PointComponent extends React.Component {
     }
     this.setState(
       {
-        storedPoint: this.state.storedPoint || coordinates,
         point: coordinates,
         height: null,
         cid: null,
@@ -286,7 +304,7 @@ class PointComponent extends React.Component {
         this.getAddress(coordinates);
       },
     );
-    this.draw && this.draw.setActive(false);
+    if (isEditable) this.allowModifying();
   }
 
   getAddress(coordinates) {
@@ -431,12 +449,6 @@ class PointComponent extends React.Component {
                       this.state.cid,
                       this.state.mid,
                     );
-
-                    // update stored point on apply.
-                    this.setState({
-                      ...this.state,
-                      storedPoint: this.state.point,
-                    });
                   }
                 }}
                 size="mini">
@@ -466,9 +478,9 @@ class PointComponent extends React.Component {
                 disabled={false}
                 icon
                 onClick={e => {
-                  this.map.getView().fit(this.centerFeature.getGeometry(), {
-                    minResolution: 1,
-                  });
+                  this.map
+                    .getView()
+                    .fit(this.centerFeature.getGeometry(), { resolution: 1 });
                 }}
                 size="mini">
                 <Icon name="compress" />
