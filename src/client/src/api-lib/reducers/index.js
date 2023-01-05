@@ -356,7 +356,7 @@ export function borehole() {
             identifiers: null,
             public_name: "",
             project_name: "",
-            country: "Switzerland",
+            country: null,
             canton: null,
             city: null,
             address: "",

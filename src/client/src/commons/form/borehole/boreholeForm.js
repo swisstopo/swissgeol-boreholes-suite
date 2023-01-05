@@ -416,9 +416,6 @@ class BoreholeForm extends React.Component {
                   updateChange={this.updateChange}
                   updateNumber={this.updateNumber}
                   checkLock={this.checkLock}
-                  cantons={this.props.cantons}
-                  municipalities={this.props.municipalities}
-                  zoomToPolygon={this.map?.zoomtopoly}
                   domains={this.props.domains}></LocationSegment>
               </div>
             )}
