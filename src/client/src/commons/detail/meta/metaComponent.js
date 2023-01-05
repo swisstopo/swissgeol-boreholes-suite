@@ -402,7 +402,7 @@ class MetaComponent extends React.Component {
                 "purpose",
               )}
               {this.getTextRow("spud_date", data.spud_date)}
-              {this.getTextRow(
+              {this.getNumericTextRow(
                 "drill_diameter",
                 data.custom.drill_diameter !== null
                   ? data.custom.drill_diameter
@@ -461,21 +461,21 @@ class MetaComponent extends React.Component {
             style={{
               flex: "1 1 100%",
             }}>
-            {this.getTextRow(
+            {this.getNumericTextRow(
               "totaldepth",
               data.total_depth !== null ? data.total_depth : null,
             )}
-            {this.getTextRow(
+            {this.getNumericTextRow(
               "total_depth_tvd",
               data.total_depth_tvd !== null ? data.total_depth_tvd : null,
             )}
-            {this.getTextRow(
+            {this.getNumericTextRow(
               "top_bedrock",
               data.extended.top_bedrock !== null
                 ? data.extended.top_bedrock
                 : null,
             )}
-            {this.getTextRow(
+            {this.getNumericTextRow(
               "top_bedrock_tvd",
               data.extended.top_bedrock_tvd !== null
                 ? data.extended.top_bedrock_tvd

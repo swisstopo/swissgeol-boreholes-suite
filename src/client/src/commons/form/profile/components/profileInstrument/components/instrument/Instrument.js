@@ -7,6 +7,8 @@ import { InstrumentAttributes } from "../../data/InstrumentAttributes";
 import { useTranslation } from "react-i18next";
 import CasingList from "../../../casingList";
 import { fetchApiV2 } from "../../../../../../../api/fetchApiV2";
+import { NumericFormat } from "react-number-format";
+import { parseIfString } from "../../../../../formUtils";
 import produce from "immer";
 
 const Instrument = props => {
@@ -112,21 +114,37 @@ const Instrument = props => {
 
             {item.type === "Input" && (
               <Styled.AttributesItem data-cy={item.label}>
-                <Input
-                  type={item.isNumber ? "number" : "text"}
-                  autoCapitalize="off"
-                  autoComplete="off"
-                  autoCorrect="off"
-                  onChange={e => {
-                    updateInstrument(
-                      item.value,
-                      e.target.value === "" ? null : e.target.value,
-                    );
-                  }}
-                  spellCheck="false"
-                  style={{ width: "100%" }}
-                  value={instrument?.[item.value] ?? ""}
-                />
+                {item.isNumber ? (
+                  <NumericFormat
+                    onChange={e => {
+                      updateInstrument(
+                        item.value,
+                        e.target.value === ""
+                          ? null
+                          : parseIfString(e.target.value),
+                      );
+                    }}
+                    style={{ width: "100%" }}
+                    value={instrument?.[item.value] ?? ""}
+                    thousandSeparator="'"
+                  />
+                ) : (
+                  <Input
+                    type="text"
+                    autoCapitalize="off"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    onChange={e => {
+                      updateInstrument(
+                        item.value,
+                        e.target.value === "" ? null : e.target.value,
+                      );
+                    }}
+                    spellCheck="false"
+                    style={{ width: "100%" }}
+                    value={instrument?.[item.value] ?? ""}
+                  />
+                )}
               </Styled.AttributesItem>
             )}
             {item.type === "Dropdown" && (

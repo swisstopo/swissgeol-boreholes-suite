@@ -4,7 +4,9 @@ import _ from "lodash";
 import DomainDropdown from "../../domain/dropdown/domainDropdown";
 import DomainTree from "../../domain/tree/domainTree";
 import TranslationText from "../../translationText";
-import { Form, Input, Segment } from "semantic-ui-react";
+import { NumericFormat } from "react-number-format";
+import { Form, Segment } from "semantic-ui-react";
+import { parseIfString } from "../../formUtils";
 
 const BoreholeDetailSegment = props => {
   const { size, borehole, updateChange, updateNumber, debug, t } = props;
@@ -16,14 +18,14 @@ const BoreholeDetailSegment = props => {
             <label>
               <TranslationText id="totaldepth" />
             </label>
-            <Input
+            <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
                 updateNumber(
                   "total_depth",
-                  e.target.value === "" ? null : e.target.value,
+                  e.target.value === "" ? null : parseIfString(e.target.value),
                 );
               }}
               spellCheck="false"
@@ -32,6 +34,7 @@ const BoreholeDetailSegment = props => {
                   ? ""
                   : borehole.data.total_depth
               }
+              thousandSeparator="'"
             />
           </Form.Field>
           <Form.Field required>
@@ -48,20 +51,18 @@ const BoreholeDetailSegment = props => {
           </Form.Field>
         </Form.Group>
         <Form.Group widths="equal">
-          <Form.Field
-            // error={borehole.extended.top_bedrock_tvd === true}
-            required>
+          <Form.Field required>
             <label>
               <TranslationText id="total_depth_tvd" />
             </label>
-            <Input
+            <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
                 updateNumber(
                   "total_depth_tvd",
-                  e.target.value === "" ? null : e.target.value,
+                  e.target.value === "" ? null : parseIfString(e.target.value),
                 );
               }}
               spellCheck="false"
@@ -70,6 +71,7 @@ const BoreholeDetailSegment = props => {
                   ? ""
                   : borehole.data.total_depth_tvd
               }
+              thousandSeparator="'"
             />
           </Form.Field>
 
@@ -91,14 +93,14 @@ const BoreholeDetailSegment = props => {
             <label>
               <TranslationText id="top_bedrock" />
             </label>
-            <Input
+            <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
                 updateNumber(
                   "extended.top_bedrock",
-                  e.target.value === "" ? null : e.target.value,
+                  e.target.value === "" ? null : parseIfString(e.target.value),
                 );
               }}
               spellCheck="false"
@@ -107,6 +109,7 @@ const BoreholeDetailSegment = props => {
                   ? ""
                   : borehole.data.extended.top_bedrock
               }
+              thousandSeparator="'"
             />
           </Form.Field>
           <Form.Field required>
@@ -129,14 +132,14 @@ const BoreholeDetailSegment = props => {
             <label>
               <TranslationText id="top_bedrock_tvd" />
             </label>
-            <Input
+            <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
                 updateNumber(
                   "extended.top_bedrock_tvd",
-                  e.target.value === "" ? null : e.target.value,
+                  e.target.value === "" ? null : parseIfString(e.target.value),
                 );
               }}
               spellCheck="false"
@@ -145,6 +148,7 @@ const BoreholeDetailSegment = props => {
                   ? ""
                   : borehole.data.extended.top_bedrock_tvd
               }
+              thousandSeparator="'"
             />
           </Form.Field>
 

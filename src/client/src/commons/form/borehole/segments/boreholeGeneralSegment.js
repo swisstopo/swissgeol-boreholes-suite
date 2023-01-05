@@ -5,8 +5,9 @@ import moment from "moment";
 import DomainDropdown from "../../domain/dropdown/domainDropdown";
 import DateField from "../../dateField";
 import TranslationText from "../../translationText";
-
+import { NumericFormat } from "react-number-format";
 import { Form, Input, Segment, TextArea } from "semantic-ui-react";
+import { parseIfString } from "../../formUtils";
 
 const BoreholeGeneralSegment = props => {
   const { size, borehole, updateChange, updateNumber } = props;
@@ -143,11 +144,13 @@ const BoreholeGeneralSegment = props => {
                 <label>
                   <TranslationText id="drill_diameter" />
                 </label>
-                <Input
+                <NumericFormat
                   onChange={e => {
                     updateNumber(
                       "custom.drill_diameter",
-                      e.target.value === "" ? null : e.target.value,
+                      e.target.value === ""
+                        ? null
+                        : parseIfString(e.target.value),
                     );
                   }}
                   spellCheck="false"
@@ -157,6 +160,7 @@ const BoreholeGeneralSegment = props => {
                       : borehole.data.custom.drill_diameter;
                     return r;
                   })()}
+                  thousandSeparator="'"
                 />
               </Form.Field>
               <Form.Field required>

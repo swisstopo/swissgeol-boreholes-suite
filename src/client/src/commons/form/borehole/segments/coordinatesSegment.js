@@ -13,6 +13,7 @@ import DomainText from "../../domain/domainText";
 import TranslationText from "../../translationText";
 import { Form, Segment } from "semantic-ui-react";
 import { NumericFormat } from "react-number-format";
+import { parseIfString, getPrecision } from "../../formUtils";
 
 const webApilv95tolv03 = "https://geodesy.geo.admin.ch/reframe/lv95tolv03";
 const webApilv03tolv95 = "https://geodesy.geo.admin.ch/reframe/lv03tolv95";
@@ -64,23 +65,10 @@ const CoordinatesSegment = props => {
     },
   };
 
-  const parseIfString = value => {
-    if (typeof value === "string") {
-      return parseFloat(value.replace(/'/g, ""));
-    } else {
-      return value;
-    }
-  };
   const isEditable =
     borehole?.data.role === "EDIT" &&
     borehole?.data.lock !== null &&
     borehole?.data.lock?.username === user?.data.username;
-
-  const getPrecision = (x, y) => {
-    const precision_x = x.toString().split(".")[1]?.length || 0;
-    const precision_y = y.toString().split(".")[1]?.length || 0;
-    return Math.max(precision_x, precision_y);
-  };
 
   //initially validate the form to display errors.
   useEffect(() => {
