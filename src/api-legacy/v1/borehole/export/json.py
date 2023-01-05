@@ -230,7 +230,6 @@ class ExportJson(Action):
                                 layer_lithology.geolcode AS lithology,
                                 layer_lithostratigraphy.geolcode AS lithostratigraphy,
                                 layer_chronostratigraphy.geolcode AS chronostratigraphy,
-                                layer_tectonic_unit.geolcode AS tectonic_unit,
                                 layer_symbol.geolcode AS symbol,
                                 COALESCE(
                                     mlpr112, '{}'::int[]
@@ -297,9 +296,6 @@ class ExportJson(Action):
 
                             LEFT JOIN bdms.codelist as layer_chronostratigraphy
                             ON layer_chronostratigraphy.id_cli = layer.chronostratigraphy_id_cli
-
-                            LEFT JOIN bdms.codelist as layer_tectonic_unit
-                            ON layer_tectonic_unit.id_cli = layer.tectonic_unit_id_cli
 
                             LEFT JOIN bdms.codelist as layer_symbol
                             ON layer_symbol.id_cli = layer.symbol_id_cli

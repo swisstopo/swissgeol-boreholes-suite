@@ -38,9 +38,6 @@ class PatchLayer(Action):
         elif field == 'chronostratigraphy':
             column = 'chronostratigraphy_id_cli'
 
-        elif field == 'tectonic_unit':
-            column = 'tectonic_unit_id_cli'
-
         elif field == 'plasticity':
             column = 'plasticity_id_cli'
 
@@ -206,7 +203,6 @@ class PatchLayer(Action):
                 'lithology',
                 'lithostratigraphy',
                 'chronostratigraphy',
-                'tectonic_unit',
                 'plasticity',
                 'humidity',
                 'consistance',
@@ -243,9 +239,6 @@ class PatchLayer(Action):
 
                 elif field == 'chronostratigraphy':
                     schema = 'custom.chronostratigraphy_top_bedrock'
-
-                elif field == 'tectonic_unit':
-                    schema = 'vtec400'
 
                 elif field == 'plasticity':
                     schema = 'mlpr101'

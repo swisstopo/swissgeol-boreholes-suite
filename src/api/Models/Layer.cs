@@ -129,17 +129,6 @@ public class Layer
     public Codelist? Chronostratigraphy { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s tectonic unit.
-    /// </summary>
-    [Column("tectonic_unit_id_cli")]
-    public int? TectonicUnitId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s tectonic unit.
-    /// </summary>
-    public Codelist? TectonicUnit { get; set; }
-
-    /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s symbol.
     /// </summary>
     [Column("symbol_id_cli")]

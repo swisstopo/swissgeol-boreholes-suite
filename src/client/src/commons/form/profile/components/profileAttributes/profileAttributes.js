@@ -35,8 +35,6 @@ const ProfileAttributes = props => {
       lithology: null,
       lithostratigraphy: null,
       chronostratigraphy: null,
-      tectonic_unit: null,
-      // symbol: null,
       color: [],
       plasticity: null,
       humidity: null,

@@ -81,8 +81,6 @@ public static class BdmsContextExtensions
         List<int> kirostIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> lithokIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> symbolIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> tectonicUnitIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> tectonicIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> unconrocksIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
@@ -156,8 +154,6 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Lithostratigraphy, _ => default!)
            .RuleFor(o => o.ChronostratigraphyId, f => f.PickRandom(chronostratigraphyTopBedrockIds).OrNull(f, .05f))
            .RuleFor(o => o.Chronostratigraphy, _ => default!)
-           .RuleFor(o => o.TectonicId, f => f.PickRandom(tectonicIds))
-           .RuleFor(o => o.Tectonic, _ => default!)
            .RuleFor(o => o.SpudDate, f => DateOnly.FromDateTime(f.Date.Past().ToUniversalTime()).OrNull(f, .05f))
            .RuleFor(o => o.TopBedrockTvd, f => f.Random.Double(0, 1000).OrNull(f, .05f))
            .RuleFor(o => o.QtTopBedrockTvdId, f => f.PickRandom(qtTopBedrockIds).OrNull(f, .05f))
@@ -363,8 +359,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.IsStriae, f => f.Random.Bool())
             .RuleFor(o => o.SymbolId, f => f.PickRandom(symbolIds).OrNull(f, .05f))
             .RuleFor(o => o.Symbol, _ => default!)
-            .RuleFor(o => o.TectonicUnitId, f => f.PickRandom(tectonicUnitIds).OrNull(f, .05f))
-            .RuleFor(o => o.TectonicUnit, _ => default!)
             .RuleFor(o => o.IsUndefined, f => f.Random.Bool())
             .RuleFor(o => o.Update, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.Uscs1Id, f => f.PickRandom(uscsIds).OrNull(f, .05f))

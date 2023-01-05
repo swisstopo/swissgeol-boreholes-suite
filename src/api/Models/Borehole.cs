@@ -380,17 +380,6 @@ public class Borehole
     public Codelist? Chronostratigraphy { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s tectonic id.
-    /// </summary>
-    [Column("tecto_id_cli")]
-    public int? TectonicId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s tectonic.
-    /// </summary>
-    public Codelist? Tectonic { get; set; }
-
-    /// <summary>
     /// Gets or sets the timestamp from the spud date of the  <see cref="Borehole"/>.
     /// </summary>
     [Column("spud_date_bho")]

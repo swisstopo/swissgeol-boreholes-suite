@@ -202,7 +202,6 @@ class ExportCsvFull(Action):
                 sty.lithology,
                 sty.lithostratigraphy,
                 sty.chronostratigraphy,
-                sty.tectonic_unit,
                 sty.symbol,
                 sty.color,
                 sty.plasticity,
@@ -282,7 +281,6 @@ class ExportCsvFull(Action):
                     lay_lith.geolcode AS lithology,
                     lay_lith_stra.geolcode AS lithostratigraphy,
                     lay_chrono_strati.geolcode AS chronostratigraphy,
-                    lay_tectonic_unit.geolcode AS tectonic_unit,
                     lay_symbol.geolcode AS symbol,
                     COALESCE(
                         mlpr112, '{}'::int[]
@@ -507,9 +505,6 @@ class ExportCsvFull(Action):
 
                 LEFT JOIN bdms.codelist as lay_symbol
                     ON lay_symbol.id_cli = symbol_id_cli
-
-                LEFT JOIN bdms.codelist as lay_tectonic_unit
-                    ON lay_tectonic_unit.id_cli = tectonic_unit_id_cli
 
                 LEFT JOIN bdms.codelist as lay_chrono_strati
                     ON lay_chrono_strati.id_cli = chronostratigraphy_id_cli

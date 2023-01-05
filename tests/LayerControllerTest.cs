@@ -146,8 +146,6 @@ public class LayerControllerTest
             StratigraphyId = 6008,
             Symbol = null,
             SymbolId = 21117001,
-            TectonicUnit = null,
-            TectonicUnitId = 21117002,
             ToDepth = 100,
             Unconrocks = null,
             UnconrocksId = 21117002,

@@ -189,7 +189,6 @@ class GetGeologyLayer(Action):
             layer.lithology_id_cli AS lithology,
             layer.lithostratigraphy_id_cli AS lithostratigraphy,
             layer.chronostratigraphy_id_cli AS chronostratigraphy,
-            layer.tectonic_unit_id_cli AS tectonic_unit,
             layer.symbol_id_cli AS symbol,
             COALESCE(
                 mlpr112, '{}'::int[]
