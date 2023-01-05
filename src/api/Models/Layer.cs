@@ -356,12 +356,6 @@ public class Layer
     public Codelist? Lithok { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s import.
-    /// </summary>
-    [Column("import_id")]
-    public int? Import { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s instrument.
     /// </summary>
     [Column("instr_id")]

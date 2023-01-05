@@ -391,12 +391,6 @@ public class Borehole
     public Codelist? Tectonic { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s import id.
-    /// </summary>
-    [Column("import_id")]
-    public int? ImportId { get; set; }
-
-    /// <summary>
     /// Gets or sets the timestamp from the spud date of the  <see cref="Borehole"/>.
     /// </summary>
     [Column("spud_date_bho")]

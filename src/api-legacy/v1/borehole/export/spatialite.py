@@ -883,57 +883,55 @@ class ImportSpatiaLite(Action):
                             bdms.borehole
 
                         SET
-                            import_id = $1,
-                            {PatchBorehole.get_column('visible')} = $2,
-                            {PatchBorehole.get_column('kind')} = $3,
-                            {PatchBorehole.get_column('restriction')} = $4,
+                            {PatchBorehole.get_column('visible')} = $1,
+                            {PatchBorehole.get_column('kind')} = $2,
+                            {PatchBorehole.get_column('restriction')} = $3,
                             {PatchBorehole.get_column(
                                 'restriction_until'
-                            )} = to_date($5, 'YYYY-MM-DD'),
-                            {PatchBorehole.get_column('qt_location')} = $6,
-                            {PatchBorehole.get_column('elevation_z')} = $7,
-                            {PatchBorehole.get_column('qt_elevation')} = $8,
+                            )} = to_date($4, 'YYYY-MM-DD'),
+                            {PatchBorehole.get_column('qt_location')} = $5,
+                            {PatchBorehole.get_column('elevation_z')} = $6,
+                            {PatchBorehole.get_column('qt_elevation')} = $7,
                             {PatchBorehole.get_column(
                                 'drilling_date'
-                            )} = to_date($9, 'YYYY-MM-DD'),
-                            {PatchBorehole.get_column('inclination')} = $10,
-                            {PatchBorehole.get_column('inclination_direction')} = $11,
-                            {PatchBorehole.get_column('total_depth')} = $12,
-                            {PatchBorehole.get_column('extended.original_name')} = $13,
-                            {PatchBorehole.get_column('extended.drilling_method')} = $14,
-                            {PatchBorehole.get_column('extended.purpose')} = $15,
-                            {PatchBorehole.get_column('extended.status')} = $16,
-                            {PatchBorehole.get_column('extended.top_bedrock')} = $17,
-                            {PatchBorehole.get_column('extended.groundwater')} = $18,
-                            {PatchBorehole.get_column('custom.project_name')} = $19,
-                            {PatchBorehole.get_column('custom.alternate_name')} = $20,
-                            {PatchBorehole.get_column('custom.canton')} = $21,
-                            {PatchBorehole.get_column('custom.city')} = $22,
-                            {PatchBorehole.get_column('custom.address')} = $23,
-                            {PatchBorehole.get_column('custom.landuse')} = $24,
-                            {PatchBorehole.get_column('custom.cuttings')} = $25,
-                            {PatchBorehole.get_column('custom.drill_diameter')} = $26,
-                            {PatchBorehole.get_column('custom.qt_bore_inc_dir')} = $27,
-                            {PatchBorehole.get_column('custom.qt_depth')} = $28,
-                            {PatchBorehole.get_column('custom.qt_top_bedrock')} = $29,
-                            {PatchBorehole.get_column('custom.lithology_top_bedrock')} = $30,
-                            {PatchBorehole.get_column('custom.lithostratigraphy_top_bedrock')} = $31,
-                            {PatchBorehole.get_column('custom.chronostratigraphy_top_bedrock')} = $32,
-                            {PatchBorehole.get_column('custom.remarks')} = $33,
+                            )} = to_date($8, 'YYYY-MM-DD'),
+                            {PatchBorehole.get_column('inclination')} = $9,
+                            {PatchBorehole.get_column('inclination_direction')} = $10,
+                            {PatchBorehole.get_column('total_depth')} = $11,
+                            {PatchBorehole.get_column('extended.original_name')} = $12,
+                            {PatchBorehole.get_column('extended.drilling_method')} = $13,
+                            {PatchBorehole.get_column('extended.purpose')} = $14,
+                            {PatchBorehole.get_column('extended.status')} = $15,
+                            {PatchBorehole.get_column('extended.top_bedrock')} = $16,
+                            {PatchBorehole.get_column('extended.groundwater')} = $17,
+                            {PatchBorehole.get_column('custom.project_name')} = $18,
+                            {PatchBorehole.get_column('custom.alternate_name')} = $19,
+                            {PatchBorehole.get_column('custom.canton')} = $20,
+                            {PatchBorehole.get_column('custom.city')} = $21,
+                            {PatchBorehole.get_column('custom.address')} = $22,
+                            {PatchBorehole.get_column('custom.landuse')} = $23,
+                            {PatchBorehole.get_column('custom.cuttings')} = $24,
+                            {PatchBorehole.get_column('custom.drill_diameter')} = $25,
+                            {PatchBorehole.get_column('custom.qt_bore_inc_dir')} = $26,
+                            {PatchBorehole.get_column('custom.qt_depth')} = $27,
+                            {PatchBorehole.get_column('custom.qt_top_bedrock')} = $28,
+                            {PatchBorehole.get_column('custom.lithology_top_bedrock')} = $29,
+                            {PatchBorehole.get_column('custom.lithostratigraphy_top_bedrock')} = $30,
+                            {PatchBorehole.get_column('custom.chronostratigraphy_top_bedrock')} = $31,
+                            {PatchBorehole.get_column('custom.remarks')} = $32,
                             geom_bho = {
-                                'ST_GeomFromText($34, 2056)'
+                                'ST_GeomFromText($33, 2056)'
                                 if row[33] and row[34]
-                                else '$34'
+                                else '$33'
                             },
-                            {PatchBorehole.get_column('reference_elevation')} = $36,
-                            {PatchBorehole.get_column('qt_reference_elevation')} = $37,
-                            {PatchBorehole.get_column('reference_elevation_type')} = $38
+                            {PatchBorehole.get_column('reference_elevation')} = $35,
+                            {PatchBorehole.get_column('qt_reference_elevation')} = $36,
+                            {PatchBorehole.get_column('reference_elevation_type')} = $37
 
                         WHERE
-                            id_bho = $35
+                            id_bho = $34
 
                     """,
-                        row[0],
                         True if row[1] == 1 else False,
                         row[2],
                         row[3],
@@ -1051,7 +1049,6 @@ class ImportSpatiaLite(Action):
                             INSERT INTO bdms.stratigraphy(
                                 id_bho_fk,
                                 kind_id_cli,
-                                import_id,
                                 primary_sty,
                                 name_sty,
                                 date_sty,
@@ -1069,7 +1066,6 @@ class ImportSpatiaLite(Action):
                             ) RETURNING id_sty
                         """,
                             bid['id'],
-                            strat[0],
                             True if strat[2] == 1 else False,
                             strat[3],
                             strat[4],
@@ -1135,7 +1131,7 @@ class ImportSpatiaLite(Action):
                         for layer in layers:
                             lay_id = await self.conn.fetchval(f"""
                                 INSERT INTO bdms.layer(
-                                    id_sty_fk, import_id,
+                                    id_sty_fk,
                                     creator_lay, updater_lay,
 
                                     depth_from_lay, depth_to_lay,
@@ -1163,7 +1159,7 @@ class ImportSpatiaLite(Action):
                                     lithology_top_bedrock_id_cli
                                 )
                                 VALUES (
-                                    $1, $2,
+                                    $1,
                                     $3, $4,
 
                                     $5, $6,
