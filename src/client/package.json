@@ -41,7 +41,6 @@
     "react-highlight-words": "^0.18.0",
     "react-hook-form": "^7.39.1",
     "react-i18next": "^11.3.1",
-    "react-mentions": "^4.1.0",
     "react-number-format": "^5.1.2",
     "react-query": "^3.39.2",
     "react-redux": "^7.1.3",

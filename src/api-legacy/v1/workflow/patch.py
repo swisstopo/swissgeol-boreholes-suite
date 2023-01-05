@@ -27,21 +27,14 @@ class PatchWorkflow(Action):
                         schema_cli = 'borehole_form'
                 """)
 
-                mentions = []
-                if field is not None:
-                    for field_name in fields:
-                        if value.find(f'({field_name}') > -1:
-                            mentions.append(field_name)
-
                 id_bho = await self.conn.fetchval(f"""
                     UPDATE bdms.workflow
                     SET
                         {column} = $1,
-                        mentions_wkf = $2,
-                        id_usr_fk = $3
-                    WHERE id_wkf = $4
+                        id_usr_fk = $2
+                    WHERE id_wkf = $3
                     RETURNING id_bho_fk;
-                """, value, mentions, user['id'], id)
+                """, value, user['id'], id)
 
                 await self.conn.execute("""
                     UPDATE bdms.borehole
@@ -53,8 +46,7 @@ class PatchWorkflow(Action):
 
             return {
                 "data": {
-                    "id": id,
-                    "mentions": mentions
+                    "id": id
                 }
             }
 

@@ -5,7 +5,6 @@ import { Form, Input, Segment, Message } from "semantic-ui-react";
 const NameSegment = props => {
   const {
     size,
-    mentions,
     borehole,
     originalNameCheck,
     originalNameFetch,
@@ -21,8 +20,7 @@ const NameSegment = props => {
           <Form.Field
             error={
               borehole.data.extended.original_name === "" ||
-              (originalNameCheck === false && originalNameFetch === false) ||
-              mentions.indexOf("original_name") >= 0
+              (originalNameCheck === false && originalNameFetch === false)
             }
             required>
             <label>
@@ -46,7 +44,7 @@ const NameSegment = props => {
               value={borehole.data.extended.original_name ?? ""}
             />
           </Form.Field>
-          <Form.Field error={mentions.indexOf("project_name") >= 0}>
+          <Form.Field>
             <label>
               <TranslationText id="project_name" />
             </label>

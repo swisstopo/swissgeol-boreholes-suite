@@ -10,17 +10,12 @@ import DomainDropdown from "../../domain/dropdown/domainDropdown";
 import DateField from "../../dateField";
 
 const RestrictionSegment = props => {
-  const { size, mentions, borehole, updateChange } = props;
+  const { size, borehole, updateChange } = props;
   return (
     <Segment>
       <Form size={size}>
         <Form.Group widths="equal">
-          <Form.Field
-            error={
-              mentions.indexOf("restriction") >= 0 ||
-              borehole.data.restriction === null
-            }
-            required>
+          <Form.Field error={borehole.data.restriction === null} required>
             <label>
               <TranslationText id="restriction" />
             </label>
@@ -39,8 +34,7 @@ const RestrictionSegment = props => {
               (borehole.data.restriction !== 20111003 &&
                 _.isString(borehole.data.restriction_until) &&
                 borehole.data.restriction_until !== "" &&
-                moment(borehole.data.restriction_until).isValid()) ||
-              mentions.indexOf("restriction_until") >= 0
+                moment(borehole.data.restriction_until).isValid())
             }
             required={borehole.data.restriction === 20111003}>
             <label>

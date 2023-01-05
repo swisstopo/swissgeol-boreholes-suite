@@ -296,7 +296,6 @@ export function workflow() {
           ...state,
           data: {
             ...state.data,
-            mentions: action.json.data.mentions,
           },
           isPatching: false,
         };
