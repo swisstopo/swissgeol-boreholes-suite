@@ -200,26 +200,22 @@ public class Borehole
     public string? ProjectName { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s canton id.
+    /// Gets or sets the <see cref="Borehole"/>'s country.
     /// </summary>
-    [Column("canton_bho")]
-    public int? CantonId { get; set; }
+    [Column("country_bho")]
+    public string? Country { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s canton.
     /// </summary>
-    public Canton Canton { get; set; }
+    [Column("canton_bho")]
+    public string? Canton { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s city.
+    /// Gets or sets the <see cref="Borehole"/>'s municipality.
     /// </summary>
-    [Column("city_bho")]
-    public int? CityId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s city.
-    /// </summary>
-    public Municipality City { get; set; }
+    [Column("municipality_bho")]
+    public string? Municipality { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s drilling method Id.

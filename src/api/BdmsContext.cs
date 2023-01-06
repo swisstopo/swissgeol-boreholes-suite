@@ -11,14 +11,12 @@ public class BdmsContext : DbContext
 {
     public DbSet<Borehole> Boreholes { get; set; }
     public DbSet<UserEvent> BoringEvents { get; set; }
-    public DbSet<Canton> Cantons { get; set; }
     public DbSet<Codelist> Codelists { get; set; }
     public DbSet<Config> Configs { get; set; }
     public DbSet<Content> Contents { get; set; }
     public DbSet<Feedback> Feedbacks { get; set; }
     public DbSet<Models.File> Files { get; set; }
     public DbSet<Layer> Layers { get; set; }
-    public DbSet<Municipality> Municipalities { get; set; }
     public DbSet<Stratigraphy> Stratigraphies { get; set; }
     public DbSet<Term> Terms { get; set; }
     public DbSet<User> Users { get; set; }

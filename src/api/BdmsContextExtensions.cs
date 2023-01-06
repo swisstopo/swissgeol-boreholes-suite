@@ -40,8 +40,6 @@ public static class BdmsContextExtensions
 
         // ranges for exsiting tables
         var userRange = Enumerable.Range(1, 5);
-        var cantonRange = Enumerable.Range(1, 51);
-        var municipalityRange = Enumerable.Range(1, 2371);
 
         // local codelists
         List<Codelist> codelists = context.Codelists.ToList();
@@ -123,10 +121,9 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.QtElevationId, f => f.PickRandom(qtElevationIds).OrNull(f, .1f))
            .RuleFor(o => o.QtElevation, _ => default!)
            .RuleFor(o => o.ProjectName, f => f.Company.CatchPhrase().OrNull(f, .1f))
-           .RuleFor(o => o.CantonId, f => f.PickRandom(cantonRange))
-           .RuleFor(o => o.Canton, _ => default!)
-           .RuleFor(o => o.CityId, f => f.PickRandom(municipalityRange).OrNull(f, .05f))
-           .RuleFor(o => o.City, _ => default!)
+           .RuleFor(o => o.Country,  f => f.Address.Country().OrNull(f, 0.01f))
+           .RuleFor(o => o.Canton,  f => f.Address.State().OrNull(f, 0.01f))
+           .RuleFor(o => o.Municipality,  f => f.Address.City().OrNull(f, 0.01f))
            .RuleFor(o => o.DrillingMethodId, f => f.PickRandom(drillingMethodIds).OrNull(f, .05f))
            .RuleFor(o => o.DrillingMethod, _ => default!)
            .RuleFor(o => o.DrillingDate, f => DateOnly.FromDateTime(f.Date.Past().ToUniversalTime()))
