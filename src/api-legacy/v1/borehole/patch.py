@@ -44,9 +44,10 @@ class PatchBorehole(Action):
                 column = [
                     'location_x_bho',
                     'location_y_bho',
+                    'elevation_z_bho',
+                    'country'
                     'canton_bho',
                     'city_bho',
-                    'elevation_z_bho'
                 ]
 
         elif field == 'elevation_z':
@@ -216,10 +217,11 @@ class PatchBorehole(Action):
                 'reference_elevation'
             ]:
 
-                if field == 'location' and value[3] is None:
+                if field == 'location' and value[2] is None:
                     column = [
                         'location_x_bho',
                         'location_y_bho',
+                        'country_bho'
                         'canton_bho',
                         'city_bho'
                     ]
