@@ -132,29 +132,7 @@ class ExportAdminHandler(Admin):
 
                         not_found = []
 
-                        for row in rows:
-
-                            if row is None:
-                                raise NotFound()
-
-                            try:
-                                attachment = await (
-                                    GetFile(conn)
-                                ).execute(row[0])
-
-                                output_stream.writestr(
-                                    f'files/{attachment["conf"]["key"]}',
-                                    attachment['file'].getvalue()
-                                )
-
-                            except Exception as ce:
-                                if ce.response['Error']['Code'] == '404':
-                                    not_found.append(conf['key'])
-                                    continue
-
-                                raise Exception(
-                                    "Error while downloading from AWS"
-                                )
+                        # The export of attached files was removed in https://github.com/geoadmin/suite-bdms/pull/268.
 
                         if len(not_found) > 0:
                             print(f"\033[91m{len(not_found)} files not found 🤔\033[0m")

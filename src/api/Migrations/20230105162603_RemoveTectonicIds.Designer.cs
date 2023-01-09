@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20230105162603_RemoveTectonicIds")]
+    partial class RemoveTectonicIds
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -817,6 +819,10 @@ namespace BDMS.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("undefined_lay");
 
+                    b.Property<int?>("KirostId")
+                        .HasColumnType("integer")
+                        .HasColumnName("kirost_id_cli");
+
                     b.Property<int?>("LithokId")
                         .HasColumnType("integer")
                         .HasColumnName("lithok_id_cli");
@@ -849,9 +855,17 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("qt_description_id_cli");
 
+                    b.Property<int?>("SoilStateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("soil_state_id_cli");
+
                     b.Property<int?>("StratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("id_sty_fk");
+
+                    b.Property<int?>("SymbolId")
+                        .HasColumnType("integer")
+                        .HasColumnName("symbol_id_cli");
 
                     b.Property<double?>("ToDepth")
                         .HasColumnType("double precision")
@@ -907,8 +921,6 @@ namespace BDMS.Migrations
 
                     b.HasIndex("FillMaterialId");
 
-                    b.HasIndex("GradationId");
-
                     b.HasIndex("GrainSize1Id");
 
                     b.HasIndex("GrainSize2Id");
@@ -920,6 +932,8 @@ namespace BDMS.Migrations
                     b.HasIndex("InstrumentKindId");
 
                     b.HasIndex("InstrumentStatusId");
+
+                    b.HasIndex("KirostId");
 
                     b.HasIndex("LithokId");
 
@@ -933,7 +947,11 @@ namespace BDMS.Migrations
 
                     b.HasIndex("QtDescriptionId");
 
+                    b.HasIndex("SoilStateId");
+
                     b.HasIndex("StratigraphyId");
+
+                    b.HasIndex("SymbolId");
 
                     b.HasIndex("UnconrocksId");
 
@@ -1122,8 +1140,6 @@ namespace BDMS.Migrations
                     b.HasIndex("BoreholeId");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("FillCasingId");
 
                     b.HasIndex("KindId");
 
@@ -1586,10 +1602,6 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("FillMaterialId");
 
-                    b.HasOne("BDMS.Models.Codelist", "Gradation")
-                        .WithMany()
-                        .HasForeignKey("GradationId");
-
                     b.HasOne("BDMS.Models.Codelist", "GrainSize1")
                         .WithMany()
                         .HasForeignKey("GrainSize1Id");
@@ -1613,6 +1625,10 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "InstrumentStatus")
                         .WithMany()
                         .HasForeignKey("InstrumentStatusId");
+
+                    b.HasOne("BDMS.Models.Codelist", "Kirost")
+                        .WithMany()
+                        .HasForeignKey("KirostId");
 
                     b.HasOne("BDMS.Models.Codelist", "Lithok")
                         .WithMany()
@@ -1638,9 +1654,17 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("QtDescriptionId");
 
+                    b.HasOne("BDMS.Models.Codelist", "SoilState")
+                        .WithMany()
+                        .HasForeignKey("SoilStateId");
+
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany()
                         .HasForeignKey("StratigraphyId");
+
+                    b.HasOne("BDMS.Models.Codelist", "Symbol")
+                        .WithMany()
+                        .HasForeignKey("SymbolId");
 
                     b.HasOne("BDMS.Models.Codelist", "Unconrocks")
                         .WithMany()
@@ -1688,8 +1712,6 @@ namespace BDMS.Migrations
 
                     b.Navigation("FillMaterial");
 
-                    b.Navigation("Gradation");
-
                     b.Navigation("GrainSize1");
 
                     b.Navigation("GrainSize2");
@@ -1701,6 +1723,8 @@ namespace BDMS.Migrations
                     b.Navigation("InstrumentKind");
 
                     b.Navigation("InstrumentStatus");
+
+                    b.Navigation("Kirost");
 
                     b.Navigation("Lithok");
 
@@ -1714,7 +1738,11 @@ namespace BDMS.Migrations
 
                     b.Navigation("QtDescription");
 
+                    b.Navigation("SoilState");
+
                     b.Navigation("Stratigraphy");
+
+                    b.Navigation("Symbol");
 
                     b.Navigation("Unconrocks");
 
@@ -1739,10 +1767,6 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Stratigraphy", "FillCasing")
-                        .WithMany()
-                        .HasForeignKey("FillCasingId");
-
                     b.HasOne("BDMS.Models.Codelist", "Kind")
                         .WithMany()
                         .HasForeignKey("KindId")
@@ -1756,8 +1780,6 @@ namespace BDMS.Migrations
                     b.Navigation("Borehole");
 
                     b.Navigation("CreatedBy");
-
-                    b.Navigation("FillCasing");
 
                     b.Navigation("Kind");
 

@@ -234,7 +234,6 @@ class ExportSpatiaLite(Action):
                         lithology INTEGER,
                         lithostratigraphy INTEGER,
                         chronostratigraphy INTEGER,
-                        tectonic_unit INTEGER,
                         color TEXT,
                         plasticity INTEGER,
                         humidity INTEGER,
@@ -242,7 +241,6 @@ class ExportSpatiaLite(Action):
                         gradation INTEGER,
                         alteration INTEGER,
                         compactness INTEGER,
-                        soil_state INTEGER,
                         organic_component TEXT,
                         striae INTEGER,
                         grain_size_1 INTEGER,
@@ -257,7 +255,6 @@ class ExportSpatiaLite(Action):
                         uscs_determination INTEGER,
                         debris TEXT,
                         lithology_top_bedrock INTEGER,
-                        kirost INTEGER,
                         lithok INTEGER,
                         notes TEXT
                     )
@@ -426,8 +423,6 @@ class ExportSpatiaLite(Action):
 
                         borehole['location_x'],
                         borehole['location_y'],
-                        borehole['location_x_lv03'],
-                        borehole['location_y_lv03']
                         # "POINT({} {})".format(
                         #     borehole['location_x'],
                         #     borehole['location_y']
@@ -626,14 +621,12 @@ class ExportSpatiaLite(Action):
                                 lithology,
                                 lithostratigraphy,
                                 chronostratigraphy,
-                                tectonic_unit,
                                 color,
                                 plasticity,
                                 humidity,
                                 consistance,
                                 alteration,
                                 compactness,
-                                soil_state,
                                 organic_component,
                                 striae,
                                 grain_size_1,
@@ -649,13 +642,12 @@ class ExportSpatiaLite(Action):
                                 debris,
                                 lithology_top_bedrock,
                                 lithok,
-                                kirost,
                                 notes,
                                 gradation
                             ) VALUES (
-                                ?,?,?,?,?,?,?,?,?,?,
-                                ?,?,?,?,?,?,?,?,?,?,
-                                ?,?,?,?,?,?,?,?,?,?,
+                                ?,?,?,?,?,?,?,?,?,
+                                ?,?,?,?,?,?,?,?,?,
+                                ?,?,?,?,?,?,?,?,?,
                                 ?,?,?,?,?,?,?,?,?
                             )
                         """, (
@@ -672,14 +664,12 @@ class ExportSpatiaLite(Action):
                         layer['lithology'],
                         layer['lithostratigraphy'],
                         layer['chronostratigraphy'],
-                        layer['tectonic_unit'],
                         ",".join([str(elem) for elem in layer['color']]),
                         layer['plasticity'],
                         layer['humidity'],
                         layer['consistance'],
                         layer['alteration'],
                         layer['compactness'],
-                        layer['soil_state'],
                         ",".join([str(elem) for elem in layer['organic_component']]),
                         layer['striae'],
                         layer['grain_size_1'],
@@ -695,7 +685,6 @@ class ExportSpatiaLite(Action):
                         ",".join([str(elem) for elem in layer['debris']]),
                         layer['lithology_top_bedrock'],
                         layer['lithok'],
-                        layer['kirost'],
                         layer['notes'],
                         layer['gradation']
                     ))
@@ -883,57 +872,55 @@ class ImportSpatiaLite(Action):
                             bdms.borehole
 
                         SET
-                            import_id = $1,
-                            {PatchBorehole.get_column('visible')} = $2,
-                            {PatchBorehole.get_column('kind')} = $3,
-                            {PatchBorehole.get_column('restriction')} = $4,
+                            {PatchBorehole.get_column('visible')} = $1,
+                            {PatchBorehole.get_column('kind')} = $2,
+                            {PatchBorehole.get_column('restriction')} = $3,
                             {PatchBorehole.get_column(
                                 'restriction_until'
-                            )} = to_date($5, 'YYYY-MM-DD'),
-                            {PatchBorehole.get_column('qt_location')} = $6,
-                            {PatchBorehole.get_column('elevation_z')} = $7,
-                            {PatchBorehole.get_column('qt_elevation')} = $8,
+                            )} = to_date($4, 'YYYY-MM-DD'),
+                            {PatchBorehole.get_column('qt_location')} = $5,
+                            {PatchBorehole.get_column('elevation_z')} = $6,
+                            {PatchBorehole.get_column('qt_elevation')} = $7,
                             {PatchBorehole.get_column(
                                 'drilling_date'
-                            )} = to_date($9, 'YYYY-MM-DD'),
-                            {PatchBorehole.get_column('inclination')} = $10,
-                            {PatchBorehole.get_column('inclination_direction')} = $11,
-                            {PatchBorehole.get_column('total_depth')} = $12,
-                            {PatchBorehole.get_column('extended.original_name')} = $13,
-                            {PatchBorehole.get_column('extended.drilling_method')} = $14,
-                            {PatchBorehole.get_column('extended.purpose')} = $15,
-                            {PatchBorehole.get_column('extended.status')} = $16,
-                            {PatchBorehole.get_column('extended.top_bedrock')} = $17,
-                            {PatchBorehole.get_column('extended.groundwater')} = $18,
-                            {PatchBorehole.get_column('custom.project_name')} = $19,
-                            {PatchBorehole.get_column('custom.alternate_name')} = $20,
-                            {PatchBorehole.get_column('custom.canton')} = $21,
-                            {PatchBorehole.get_column('custom.city')} = $22,
-                            {PatchBorehole.get_column('custom.address')} = $23,
-                            {PatchBorehole.get_column('custom.landuse')} = $24,
-                            {PatchBorehole.get_column('custom.cuttings')} = $25,
-                            {PatchBorehole.get_column('custom.drill_diameter')} = $26,
-                            {PatchBorehole.get_column('custom.qt_bore_inc_dir')} = $27,
-                            {PatchBorehole.get_column('custom.qt_depth')} = $28,
-                            {PatchBorehole.get_column('custom.qt_top_bedrock')} = $29,
-                            {PatchBorehole.get_column('custom.lithology_top_bedrock')} = $30,
-                            {PatchBorehole.get_column('custom.lithostratigraphy_top_bedrock')} = $31,
-                            {PatchBorehole.get_column('custom.chronostratigraphy_top_bedrock')} = $32,
-                            {PatchBorehole.get_column('custom.remarks')} = $33,
+                            )} = to_date($8, 'YYYY-MM-DD'),
+                            {PatchBorehole.get_column('inclination')} = $9,
+                            {PatchBorehole.get_column('inclination_direction')} = $10,
+                            {PatchBorehole.get_column('total_depth')} = $11,
+                            {PatchBorehole.get_column('extended.original_name')} = $12,
+                            {PatchBorehole.get_column('extended.drilling_method')} = $13,
+                            {PatchBorehole.get_column('extended.purpose')} = $14,
+                            {PatchBorehole.get_column('extended.status')} = $15,
+                            {PatchBorehole.get_column('extended.top_bedrock')} = $16,
+                            {PatchBorehole.get_column('extended.groundwater')} = $17,
+                            {PatchBorehole.get_column('custom.project_name')} = $18,
+                            {PatchBorehole.get_column('custom.alternate_name')} = $19,
+                            {PatchBorehole.get_column('custom.canton')} = $20,
+                            {PatchBorehole.get_column('custom.city')} = $21,
+                            {PatchBorehole.get_column('custom.address')} = $22,
+                            {PatchBorehole.get_column('custom.landuse')} = $23,
+                            {PatchBorehole.get_column('custom.cuttings')} = $24,
+                            {PatchBorehole.get_column('custom.drill_diameter')} = $25,
+                            {PatchBorehole.get_column('custom.qt_bore_inc_dir')} = $26,
+                            {PatchBorehole.get_column('custom.qt_depth')} = $27,
+                            {PatchBorehole.get_column('custom.qt_top_bedrock')} = $28,
+                            {PatchBorehole.get_column('custom.lithology_top_bedrock')} = $29,
+                            {PatchBorehole.get_column('custom.lithostratigraphy_top_bedrock')} = $30,
+                            {PatchBorehole.get_column('custom.chronostratigraphy_top_bedrock')} = $31,
+                            {PatchBorehole.get_column('custom.remarks')} = $32,
                             geom_bho = {
-                                'ST_GeomFromText($34, 2056)'
+                                'ST_GeomFromText($33, 2056)'
                                 if row[33] and row[34]
-                                else '$34'
+                                else '$33'
                             },
-                            {PatchBorehole.get_column('reference_elevation')} = $36,
-                            {PatchBorehole.get_column('qt_reference_elevation')} = $37,
-                            {PatchBorehole.get_column('reference_elevation_type')} = $38
+                            {PatchBorehole.get_column('reference_elevation')} = $35,
+                            {PatchBorehole.get_column('qt_reference_elevation')} = $36,
+                            {PatchBorehole.get_column('reference_elevation_type')} = $37
 
                         WHERE
-                            id_bho = $35
+                            id_bho = $34
 
                     """,
-                        row[0],
                         True if row[1] == 1 else False,
                         row[2],
                         row[3],
@@ -1051,7 +1038,6 @@ class ImportSpatiaLite(Action):
                             INSERT INTO bdms.stratigraphy(
                                 id_bho_fk,
                                 kind_id_cli,
-                                import_id,
                                 primary_sty,
                                 name_sty,
                                 date_sty,
@@ -1069,7 +1055,6 @@ class ImportSpatiaLite(Action):
                             ) RETURNING id_sty
                         """,
                             bid['id'],
-                            strat[0],
                             True if strat[2] == 1 else False,
                             strat[3],
                             strat[4],
@@ -1095,32 +1080,29 @@ class ImportSpatiaLite(Action):
                                 lithology, -- 10
                                 lithostratigraphy, --11
                                 chronostratigraphy, --12
-                                tectonic_unit, --13
-                                plasticity, --14
-                                humidity, --15
-                                consistance, --16
-                                alteration, --17
-                                compactness, --18
-                                soil_state, --19
-                                striae, --20
-                                grain_size_1, --21
-                                grain_size_2, --22
-                                cohesion, --23
-                                uscs_1, --24
-                                uscs_2, --25
-                                uscs_original, --26
-                                lithok, --27
-                                kirost, --28
-                                notes, --29
-                                color, --30
-                                lithology_top_bedrock, --31
-                                uscs_determination, --32
-                                debris, --33
-                                uscs_3, --34
-                                grain_granularity, --35
-                                grain_shape, --36
-                                organic_component, --37
-                                gradation -- 38
+                                plasticity, --13
+                                humidity, --14
+                                consistance, --15
+                                alteration, --16
+                                compactness, --17
+                                striae, --18
+                                grain_size_1, --19
+                                grain_size_2, --20
+                                cohesion, --21
+                                uscs_1, --22
+                                uscs_2, --23
+                                uscs_original, --24
+                                lithok, --25
+                                notes, --26
+                                color, --27
+                                lithology_top_bedrock, --28
+                                uscs_determination, --29
+                                debris, --30
+                                uscs_3, --31
+                                grain_granularity, --32
+                                grain_shape, --33
+                                organic_component, --34
+                                gradation -- 35
 
                             FROM
                                 layer
@@ -1135,7 +1117,7 @@ class ImportSpatiaLite(Action):
                         for layer in layers:
                             lay_id = await self.conn.fetchval(f"""
                                 INSERT INTO bdms.layer(
-                                    id_sty_fk, import_id,
+                                    id_sty_fk,
                                     creator_lay, updater_lay,
 
                                     depth_from_lay, depth_to_lay,
@@ -1144,11 +1126,11 @@ class ImportSpatiaLite(Action):
                                     last_lay, qt_description_id_cli,
                                     lithology_id_cli, lithostratigraphy_id_cli,
 
-                                    chronostratigraphy_id_cli, tectonic_unit_id_cli,
+                                    chronostratigraphy_id_cli,
                                     plasticity_id_cli, humidity_id_cli,
 
                                     consistance_id_cli, alteration_id_cli,
-                                    compactness_id_cli, soil_state_id_cli,
+                                    compactness_id_cli,
 
                                     striae_lay,
                                     grain_size_1_id_cli, grain_size_2_id_cli,
@@ -1156,14 +1138,14 @@ class ImportSpatiaLite(Action):
                                     cohesion_id_cli, uscs_1_id_cli, uscs_2_id_cli,
                                     uscs_original_lay, lithok_id_cli,
 
-                                    kirost_id_cli, notes_lay,
+                                    notes_lay,
 
                                     gradation_id_cli, uscs_3_id_cli,
                                     uscs_determination_id_cli,
                                     lithology_top_bedrock_id_cli
                                 )
                                 VALUES (
-                                    $1, $2,
+                                    $1,
                                     $3, $4,
 
                                     $5, $6,
@@ -1174,16 +1156,16 @@ class ImportSpatiaLite(Action):
 
                                     $13, $14,
                                     $15, $16,
-                                    $17, $18,
-                                    $19, $20,
-                                    $21, $22,
-                                    $23, $24,
-                                    $25, $26,
+                                    $17,
+                                    $18, $19,
+                                    $20, $21,
+                                    $22, $23,
+                                    $24, $25,
+                                    $26,
                                     $27, $28,
-                                    $29, $30,
 
-                                    $31, $32,
-                                    $33, $34
+                                    $29, $30,
+                                    $31
 
                                 ) RETURNING id_lay
                             """,
@@ -1196,27 +1178,27 @@ class ImportSpatiaLite(Action):
                                 True if layer[8] == 1 else False, layer[9],
                                 layer[10], layer[11],
 
-                                layer[12], layer[13],
-                                layer[14], layer[15],
+                                layer[12],
+                                layer[13], layer[14],
 
-                                layer[16], layer[17],
-                                layer[18], layer[19],
+                                layer[15], layer[16],
+                                layer[17],
 
-                                True if layer[20] == 1 else False,
-                                layer[21], layer[22],
+                                True if layer[18] == 1 else False,
+                                layer[19], layer[20],
 
-                                layer[23], layer[24], layer[25],
-                                layer[26], layer[27],
+                                layer[21], layer[22], layer[23],
+                                layer[24], layer[25],
 
-                                layer[28], layer[29],
+                                layer[26],
 
-                                layer[38], layer[34],
-                                layer[32], layer[31]
+                                layer[35], layer[31],
+                                layer[29], layer[28]
 
                             )
 
                             # color
-                            if layer[30]:
+                            if layer[27]:
 
                                 await self.conn.executemany("""
                                     INSERT INTO
@@ -1224,7 +1206,7 @@ class ImportSpatiaLite(Action):
                                             id_lay_fk, id_cli_fk, code_cli
                                         ) VALUES ($1, $2, $3)
                                 """, [
-                                    (lay_id, int(v), 'mlpr112') for v in layer[30].split(',')]
+                                    (lay_id, int(v), 'mlpr112') for v in layer[27].split(',')]
                                 )
 
                             # debris
@@ -1238,7 +1220,7 @@ class ImportSpatiaLite(Action):
                                 """, [
                                     (
                                         lay_id, int(v), 'mcla107'
-                                    ) for v in layer[33].split(',')]
+                                    ) for v in layer[30].split(',')]
                                 )
 
                             # grain_granularity
@@ -1252,7 +1234,7 @@ class ImportSpatiaLite(Action):
                                 """, [
                                     (
                                         lay_id, int(v), 'mlpr115'
-                                    ) for v in layer[35].split(',')]
+                                    ) for v in layer[32].split(',')]
                                 )
 
                             # grain_shape
@@ -1266,7 +1248,7 @@ class ImportSpatiaLite(Action):
                                 """, [
                                     (
                                         lay_id, int(v), 'mlpr110'
-                                    ) for v in layer[36].split(',')]
+                                    ) for v in layer[33].split(',')]
                                 )
 
                             # organic_component
@@ -1280,7 +1262,7 @@ class ImportSpatiaLite(Action):
                                 """, [
                                     (
                                         lay_id, int(v), 'mlpr108'
-                                    ) for v in layer[37].split(',')]
+                                    ) for v in layer[34].split(',')]
                                 )
 
             # await self.conn.execute("COMMIT;")
