@@ -470,6 +470,11 @@ public class Layer
     public int? GradationId { get; set; }
 
     /// <summary>
+    /// Gets or sets the <see cref="Layer"/>'s gradation.
+    /// </summary>
+    public Codelist? Gradation { get; set; }
+
+    /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s casing.
     /// </summary>
     [Column("casng_id")]
@@ -482,7 +487,7 @@ public class Layer
     public int? FillKindId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s gradation.
+    /// Gets or sets the <see cref="Layer"/>'s fill kind.
     /// </summary>
     public Codelist? FillKind { get; set; }
 
