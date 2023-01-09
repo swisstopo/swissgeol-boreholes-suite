@@ -38,9 +38,6 @@ class PatchLayer(Action):
         elif field == 'chronostratigraphy':
             column = 'chronostratigraphy_id_cli'
 
-        elif field == 'tectonic_unit':
-            column = 'tectonic_unit_id_cli'
-
         elif field == 'plasticity':
             column = 'plasticity_id_cli'
 
@@ -58,9 +55,6 @@ class PatchLayer(Action):
 
         elif field == 'compactness':
             column = 'compactness_id_cli'
-
-        elif field == 'soil_state':
-            column = 'soil_state_id_cli'
 
         elif field == 'lithology_top_bedrock':
             column = 'lithology_top_bedrock_id_cli'
@@ -106,9 +100,6 @@ class PatchLayer(Action):
 
         elif field == 'unconrocks':
             column = 'unconrocks_id_cli'
-
-        elif field == 'kirost':
-            column = 'kirost_id_cli'
 
         elif field == 'notes':
             column = 'notes_lay'
@@ -206,14 +197,12 @@ class PatchLayer(Action):
                 'lithology',
                 'lithostratigraphy',
                 'chronostratigraphy',
-                'tectonic_unit',
                 'plasticity',
                 'humidity',
                 'consistance',
                 'gradation',
                 'alteration',
                 'compactness',
-                'soil_state',
                 'grain_size_1',
                 'grain_size_2',
                 'cohesion',
@@ -224,7 +213,6 @@ class PatchLayer(Action):
                 'lithology_top_bedrock',
                 'unconrocks',
                 'lithok',
-                'kirost',
                 'casing_kind',
                 'casing_material',
                 'casing_drilling',
@@ -244,9 +232,6 @@ class PatchLayer(Action):
                 elif field == 'chronostratigraphy':
                     schema = 'custom.chronostratigraphy_top_bedrock'
 
-                elif field == 'tectonic_unit':
-                    schema = 'vtec400'
-
                 elif field == 'plasticity':
                     schema = 'mlpr101'
 
@@ -264,9 +249,6 @@ class PatchLayer(Action):
 
                 elif field == 'compactness':
                     schema = 'mlpr102'
-
-                elif field == 'soil_state':
-                    schema = 'mlpr108'
 
                 elif field == 'grain_size_1':
                     schema = 'mlpr109'
@@ -294,9 +276,6 @@ class PatchLayer(Action):
 
                 elif field == 'lithok':
                     schema = 'mcla105'
-
-                elif field == 'kirost':
-                    schema = 'mcla106'
 
                 elif field == 'instrument_kind':
                     schema = 'inst100'

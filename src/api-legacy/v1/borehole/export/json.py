@@ -230,7 +230,6 @@ class ExportJson(Action):
                                 layer_lithology.geolcode AS lithology,
                                 layer_lithostratigraphy.geolcode AS lithostratigraphy,
                                 layer_chronostratigraphy.geolcode AS chronostratigraphy,
-                                layer_tectonic_unit.geolcode AS tectonic_unit,
                                 layer_symbol.geolcode AS symbol,
                                 COALESCE(
                                     mlpr112, '{}'::int[]
@@ -244,7 +243,6 @@ class ExportJson(Action):
                                 COALESCE(
                                     mlpr113, '{}'::int[]
                                 ) AS jointing,
-                                soil_state.geolcode AS soil_state,
                                 COALESCE(
                                     mlpr108, '{}'::int[]
                                 ) AS organic_component,
@@ -274,7 +272,6 @@ class ExportJson(Action):
                                 ) AS debris,
                                 lithology_top_bedrock_id_cli AS lithology_top_bedrock,
                                 stratigraphy_lithok.geolcode AS lithok,
-                                stratigraphy_kirost.geolcode AS kirost,
                                 stratigraphy_unconrocks.geolcode AS unconrocks,
                                 COALESCE(
                                     notes_lay, ''
@@ -298,12 +295,6 @@ class ExportJson(Action):
                             LEFT JOIN bdms.codelist as layer_chronostratigraphy
                             ON layer_chronostratigraphy.id_cli = layer.chronostratigraphy_id_cli
 
-                            LEFT JOIN bdms.codelist as layer_tectonic_unit
-                            ON layer_tectonic_unit.id_cli = layer.tectonic_unit_id_cli
-
-                            LEFT JOIN bdms.codelist as layer_symbol
-                            ON layer_symbol.id_cli = layer.symbol_id_cli
-
                             LEFT JOIN bdms.codelist as layer_plasticity
                             ON layer_plasticity.id_cli = layer.plasticity_id_cli
 
@@ -322,9 +313,6 @@ class ExportJson(Action):
                             LEFT JOIN bdms.codelist as compactness
                             ON compactness.id_cli = layer.compactness_id_cli
 
-                            LEFT JOIN bdms.codelist as soil_state
-                            ON soil_state.id_cli = layer.soil_state_id_cli
-
                             LEFT JOIN bdms.codelist as stratigraphy_grain_size_1
                             ON stratigraphy_grain_size_1.id_cli = layer.grain_size_1_id_cli
 
@@ -342,9 +330,6 @@ class ExportJson(Action):
 
                             LEFT JOIN bdms.codelist as stratigraphy_lithok
                             ON stratigraphy_lithok.id_cli = lithok_id_cli
-
-                            LEFT JOIN bdms.codelist as stratigraphy_kirost
-                            ON stratigraphy_kirost.id_cli = kirost_id_cli
 
                             LEFT JOIN bdms.codelist as stratigraphy_unconrocks
                             ON stratigraphy_unconrocks.id_cli = unconrocks_id_cli

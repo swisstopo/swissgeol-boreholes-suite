@@ -10,7 +10,7 @@ class GetBorehole(Action):
         return f"""
             SELECT
                 borehole.id_bho as id,
-                borehole.import_id IS NOT NULL as imported,
+                'False' as imported,
                 borehole.public_bho as visible,
                 (
                     SELECT row_to_json(t)

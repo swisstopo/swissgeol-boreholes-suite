@@ -77,12 +77,7 @@ public static class BdmsContextExtensions
         List<int> fillMaterialIds = codelists.Where(c => c.Schema == "fill200").Select(s => s.Id).ToList();
         List<int> uscsIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();
         List<int> uscsDeterminationIds = codelists.Where(c => c.Schema == "mcla104").Select(s => s.Id).ToList();
-        List<int> soilStateIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> kirostIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> lithokIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> symbolIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> tectonicUnitIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> tectonicIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> unconrocksIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
@@ -156,9 +151,6 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Lithostratigraphy, _ => default!)
            .RuleFor(o => o.ChronostratigraphyId, f => f.PickRandom(chronostratigraphyTopBedrockIds).OrNull(f, .05f))
            .RuleFor(o => o.Chronostratigraphy, _ => default!)
-           .RuleFor(o => o.TectonicId, f => f.PickRandom(tectonicIds))
-           .RuleFor(o => o.Tectonic, _ => default!)
-           .RuleFor(o => o.ImportId, f => f.Random.Int().OrNull(f, .05f))
            .RuleFor(o => o.SpudDate, f => DateOnly.FromDateTime(f.Date.Past().ToUniversalTime()).OrNull(f, .05f))
            .RuleFor(o => o.TopBedrockTvd, f => f.Random.Double(0, 1000).OrNull(f, .05f))
            .RuleFor(o => o.QtTopBedrockTvdId, f => f.PickRandom(qtTopBedrockIds).OrNull(f, .05f))
@@ -274,7 +266,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Creation, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
             .RuleFor(o => o.Date, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .05f))
             .RuleFor(o => o.FillCasingId, f => f.Random.Int())
-            .RuleFor(o => o.ImportId, f => f.Random.Int().OrNull(f, .05f))
             .RuleFor(o => o.KindId, f => f.PickRandom(layerKindIds))
             .RuleFor(o => o.Kind, _ => default!)
             .RuleFor(o => o.Name, f => f.Name.FullName())
@@ -345,8 +336,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.InstrumentCasingId, f => GetStratigraphyOrCasingId(layer_ids))
             .RuleFor(o => o.InstrumentCasing, _ => default!)
             .RuleFor(o => o.InstrumentCasingLayerId, _ => null)
-            .RuleFor(o => o.KirostId, f => f.PickRandom(kirostIds).OrNull(f, .05f))
-            .RuleFor(o => o.Kirost, _ => default!)
             .RuleFor(o => o.IsLast, f => layer_ids % 10 == 9)
             .RuleFor(o => o.LithokId, f => f.PickRandom(lithokIds).OrNull(f, .05f))
             .RuleFor(o => o.Lithok, _ => default!)
@@ -358,15 +347,9 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Plasticity, _ => default!)
             .RuleFor(o => o.QtDescriptionId, f => f.PickRandom(qtDescriptionIds).OrNull(f, .05f))
             .RuleFor(o => o.QtDescription, _ => default!)
-            .RuleFor(o => o.SoilStateId, f => f.PickRandom(soilStateIds))
-            .RuleFor(o => o.SoilState, _ => default!)
             .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(layer_ids))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.IsStriae, f => f.Random.Bool())
-            .RuleFor(o => o.SymbolId, f => f.PickRandom(symbolIds).OrNull(f, .05f))
-            .RuleFor(o => o.Symbol, _ => default!)
-            .RuleFor(o => o.TectonicUnitId, f => f.PickRandom(tectonicUnitIds).OrNull(f, .05f))
-            .RuleFor(o => o.TectonicUnit, _ => default!)
             .RuleFor(o => o.IsUndefined, f => f.Random.Bool())
             .RuleFor(o => o.Update, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.Uscs1Id, f => f.PickRandom(uscsIds).OrNull(f, .05f))
@@ -379,7 +362,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.UscsDetermination, _ => default!)
             .RuleFor(o => o.DescriptionFacies, f => f.Random.Words(5).OrNull(f, .05f))
             .RuleFor(o => o.DescriptionLithological, f => f.Random.Words(3).OrNull(f, .05f))
-            .RuleFor(o => o.Import, f => f.Random.Int().OrNull(f, .05f))
             .RuleFor(o => o.Instrument, f => f.Music.Genre().OrNull(f, .05f))
             .RuleFor(o => o.LithologyTopBedrockId, f => f.PickRandom(lithologyTopBedrockIds).OrNull(f, .05f))
             .RuleFor(o => o.LithologyTopBedrock, _ => default!)

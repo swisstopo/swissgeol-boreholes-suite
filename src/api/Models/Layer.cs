@@ -129,28 +129,6 @@ public class Layer
     public Codelist? Chronostratigraphy { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s tectonic unit.
-    /// </summary>
-    [Column("tectonic_unit_id_cli")]
-    public int? TectonicUnitId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s tectonic unit.
-    /// </summary>
-    public Codelist? TectonicUnit { get; set; }
-
-    /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s symbol.
-    /// </summary>
-    [Column("symbol_id_cli")]
-    public int? SymbolId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s symbol.
-    /// </summary>
-    public Codelist? Symbol { get; set; }
-
-    /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s plasticity.
     /// </summary>
     [Column("plasticity_id_cli")]
@@ -193,17 +171,6 @@ public class Layer
     /// Gets or sets the <see cref="Layer"/>'s compactness.
     /// </summary>
     public Codelist? Compactness { get; set; }
-
-    /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s soil state.
-    /// </summary>
-    [Column("soil_state_id_cli")]
-    public int? SoilStateId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s soil state.
-    /// </summary>
-    public Codelist? SoilState { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s grain size 1.
@@ -289,17 +256,6 @@ public class Layer
     public Codelist? UscsDetermination { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s kirost.
-    /// </summary>
-    [Column("kirost_id_cli")]
-    public int? KirostId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s kirost.
-    /// </summary>
-    public Codelist? Kirost { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s notes.
     /// </summary>
     [Column("notes_lay")]
@@ -354,12 +310,6 @@ public class Layer
     /// Gets or sets the <see cref="Layer"/>'s lithok.
     /// </summary>
     public Codelist? Lithok { get; set; }
-
-    /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s import.
-    /// </summary>
-    [Column("import_id")]
-    public int? Import { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s instrument.

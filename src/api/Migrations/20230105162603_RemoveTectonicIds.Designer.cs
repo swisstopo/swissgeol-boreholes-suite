@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20230105162603_RemoveTectonicIds")]
+    partial class RemoveTectonicIds
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -817,6 +819,10 @@ namespace BDMS.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("undefined_lay");
 
+                    b.Property<int?>("KirostId")
+                        .HasColumnType("integer")
+                        .HasColumnName("kirost_id_cli");
+
                     b.Property<int?>("LithokId")
                         .HasColumnType("integer")
                         .HasColumnName("lithok_id_cli");
@@ -849,9 +855,17 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("qt_description_id_cli");
 
+                    b.Property<int?>("SoilStateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("soil_state_id_cli");
+
                     b.Property<int?>("StratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("id_sty_fk");
+
+                    b.Property<int?>("SymbolId")
+                        .HasColumnType("integer")
+                        .HasColumnName("symbol_id_cli");
 
                     b.Property<double?>("ToDepth")
                         .HasColumnType("double precision")
@@ -919,6 +933,8 @@ namespace BDMS.Migrations
 
                     b.HasIndex("InstrumentStatusId");
 
+                    b.HasIndex("KirostId");
+
                     b.HasIndex("LithokId");
 
                     b.HasIndex("LithologyId");
@@ -931,7 +947,11 @@ namespace BDMS.Migrations
 
                     b.HasIndex("QtDescriptionId");
 
+                    b.HasIndex("SoilStateId");
+
                     b.HasIndex("StratigraphyId");
+
+                    b.HasIndex("SymbolId");
 
                     b.HasIndex("UnconrocksId");
 
@@ -1606,6 +1626,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("InstrumentStatusId");
 
+                    b.HasOne("BDMS.Models.Codelist", "Kirost")
+                        .WithMany()
+                        .HasForeignKey("KirostId");
+
                     b.HasOne("BDMS.Models.Codelist", "Lithok")
                         .WithMany()
                         .HasForeignKey("LithokId");
@@ -1630,9 +1654,17 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("QtDescriptionId");
 
+                    b.HasOne("BDMS.Models.Codelist", "SoilState")
+                        .WithMany()
+                        .HasForeignKey("SoilStateId");
+
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany()
                         .HasForeignKey("StratigraphyId");
+
+                    b.HasOne("BDMS.Models.Codelist", "Symbol")
+                        .WithMany()
+                        .HasForeignKey("SymbolId");
 
                     b.HasOne("BDMS.Models.Codelist", "Unconrocks")
                         .WithMany()
@@ -1692,6 +1724,8 @@ namespace BDMS.Migrations
 
                     b.Navigation("InstrumentStatus");
 
+                    b.Navigation("Kirost");
+
                     b.Navigation("Lithok");
 
                     b.Navigation("Lithology");
@@ -1704,7 +1738,11 @@ namespace BDMS.Migrations
 
                     b.Navigation("QtDescription");
 
+                    b.Navigation("SoilState");
+
                     b.Navigation("Stratigraphy");
+
+                    b.Navigation("Symbol");
 
                     b.Navigation("Unconrocks");
 

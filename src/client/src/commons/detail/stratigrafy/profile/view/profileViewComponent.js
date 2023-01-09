@@ -362,11 +362,6 @@ class ProfileView extends React.Component {
                   layer.chronostratigraphy,
                   "layer_chronostratigraphy",
                 )}
-                {/* {this.getDomainRow(
-                    'vtec400',
-                    layer.tectonic_unit,
-                    'tectonic_unit'++++++++++++++
-                  )} */}
 
                 {this.getTextRow("layer_uscs_original", layer.uscs_original)}
                 {this.getDomainRow(
