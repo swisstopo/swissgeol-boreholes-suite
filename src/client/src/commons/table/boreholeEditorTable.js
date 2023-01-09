@@ -374,7 +374,14 @@ class BoreholeEditorTable extends TTable {
         <DomainText id={item.extended.status} schema="extended.status" />
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
-        {_.isNil(item.total_depth) ? null : item.total_depth + " m"}
+        {_.isNil(item.total_depth) ? null : (
+          <NumericFormat
+            value={item.total_depth}
+            thousandSeparator="'"
+            suffix=" m"
+            displayType="text"
+          />
+        )}
       </Table.Cell>,
     ];
   }
@@ -472,10 +479,7 @@ class BoreholeEditorTable extends TTable {
                     {t("common:copy")}
                   </Button>
                 }>
-                <Header
-                  content={t("common:copy")}
-                  // icon='archive'
-                />
+                <Header content={t("common:copy")} />
                 <Modal.Content>
                   <div
                     style={{
@@ -579,17 +583,6 @@ class BoreholeEditorTable extends TTable {
             </Modal>
           </div>
         ) : null}
-        {/* <div
-          style={{
-            backgroundColor: '#ececec',
-            borderBottom: 'thin solid #c5c5c5',
-            color: 'black',
-            textAlign: 'center',
-            padding: '0.5em'
-          }}
-        >
-          {super.render()}
-        </div> */}
         {super.render()}
       </Segment>
     );

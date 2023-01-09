@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
+import { NumericFormat } from "react-number-format";
 
 import TableComponent from "./tableComponent";
 import DomainText from "../form/domain/domainText";
@@ -9,7 +10,6 @@ import DateText from "../form/dateText";
 import TranslationText from "../form/translationText";
 
 import { Button, Icon, Segment, Table } from "semantic-ui-react";
-
 import { loadBoreholes } from "../../api-lib/index";
 
 class BoreholeTable extends TableComponent {
@@ -46,23 +46,6 @@ class BoreholeTable extends TableComponent {
   getHeader() {
     return (
       <Table.Row>
-        {/* <Table.HeaderCell
-          style={{width: '1.5em'}}
-          verticalAlign='top'>
-          
-        </Table.HeaderCell> */}
-        {/* <Table.HeaderCell style={{width: '2em'}}>
-          <Checkbox
-            // checked={all === true}
-            onClick={(e)=>{
-              e.stopPropagation();
-              // this.setState({
-              //   all: !all,
-              //   selected: []
-              // });
-            }}
-          />
-        </Table.HeaderCell> */}
         <Table.HeaderCell verticalAlign="top">
           {this.getIcon("original_name")}
           {this.getIcon("kind", true)}
@@ -71,18 +54,6 @@ class BoreholeTable extends TableComponent {
           {this.getIcon("restriction")}
           {this.getIcon("restriction_until", true)}
         </Table.HeaderCell>
-        {/*<Table.HeaderCell
-          verticalAlign='top'>
-          {t('coordinates')}
-          <br/>
-          <span
-            style={{
-              color: '#787878',
-              fontSize: '0.8em'
-            }}>
-            {t('srs')}
-          </span>
-        </Table.HeaderCell>*/}
         <Table.HeaderCell verticalAlign="top">
           {this.getIcon("totaldepth")}
           {this.getIcon("top_bedrock", true)}
@@ -179,45 +150,26 @@ class BoreholeTable extends TableComponent {
           <DateText date={item.restriction_until} />
         </span>
       </Table.Cell>,
-      // <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
-      //   {item.location_x}, {item.location_y}
-      //   <br/>
-      //   <span
-      //     style={{
-      //       color: '#787878',
-      //       fontSize: '0.8em'
-      //     }}>
-      //     <DomainText id={item.srs} schema='srs'/>
-      //   </span>
-      // </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
-        {/* {
-          _.isNil(item.extended.top_bedrock) ?
-            null :
-            item.elevation_z + ' m'
-        } {
-          _.isNil(item.hrs) ?
-            null : <span>(
-              <DomainText
-                id={item.hrs}
-                schema='hrs'
-              />)</span>
-        } */}
-        {_.isNil(item.total_depth) ? "n/p" : item.total_depth + " m"}
+        {_.isNil(item.total_depth) ? (
+          "n/p"
+        ) : (
+          <NumericFormat
+            value={item.total_depth}
+            thousandSeparator="'"
+            suffix=" m"
+            displayType="text"
+          />
+        )}
         <br />
         <span
           style={{
             color: "#787878",
             fontSize: "0.8em",
           }}>
-          {
-            _.isNil(item.extended.top_bedrock)
-              ? ""
-              : item.extended.top_bedrock + " m"
-            // _.isNil(item.extended.top_bedrock)?
-            //   <span>&nbsp;</span>:
-            //   item.extended.top_bedrock
-          }
+          {_.isNil(item.extended.top_bedrock)
+            ? ""
+            : item.extended.top_bedrock + " m"}
         </span>
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
@@ -246,21 +198,6 @@ class BoreholeTable extends TableComponent {
           width: "4em",
           textAlign: "center",
         }}>
-        {
-          // this.props.home.hover !== null
-          // && this.props.home.hover.id === item.id?
-          //   <Button
-          //     disabled={this.inCart(item.id)}
-          //     icon
-          //     color='blue'
-          //     icon='cart'
-          //     onClick={(e)=>{
-          //       e.stopPropagation();
-          //       this.add2cart(item.id);
-          //     }}
-          //     size='tiny'
-          //   />: null
-        }
         <Button
           color={
             _.findIndex(this.props.checkout.cart, ["id", item.id]) >= 0
@@ -278,10 +215,6 @@ class BoreholeTable extends TableComponent {
           }}
           size="mini"
         />
-        {/* <Icon
-          color='grey'
-          name='cart plus'
-        /> */}
       </Table.Cell>,
     ];
   }
@@ -294,7 +227,6 @@ class BoreholeTable extends TableComponent {
           flex: "1 1 100%",
           display: "flex",
           flexDirection: "column",
-          // height: '100%',
           overflow: "hidden",
         }}>
         {super.render()}
