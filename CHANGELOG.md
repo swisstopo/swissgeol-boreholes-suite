@@ -11,6 +11,7 @@
 - Added cluster layer for displaying points on map while maintaining application performance.
 - Added input field to codelist translation UI, that is used to change the order of the codelist.
 - Added filter in editor mode for registration details creation date and user.
+- Added db constraints for `stratigraphy.fill_casng_id_sty_fk` and `layer.gradation_id_cli`.
 
 ### Changed
 
