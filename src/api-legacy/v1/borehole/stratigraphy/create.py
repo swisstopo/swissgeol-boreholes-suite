@@ -49,15 +49,6 @@ class CreateStratigraphy(Action):
                 VALUES ($1, $2, $3, $4) RETURNING id_sty
             """, id, primary_sty, user_id, kind)
 
-            await self.conn.fetchval("""
-                INSERT INTO bdms.stratigraphy_codelist(
-                    id_sty_fk, id_cli_fk, code_cli
-                )
-                VALUES (
-                    $1, $2, 'layer_kind'
-                );
-            """, id_sty, kind)
-
             await self.conn.execute("COMMIT;")
 
             return {
