@@ -20,8 +20,8 @@ describe("Borehole list tests", () => {
     cy.contains("td", "09.03.2022");
 
     // contains total depth
-    cy.contains("td", "1549.3226989867737 m");
-    cy.contains("td", "1269.3186613122552 m");
+    cy.contains("td", "1'549.3226989867737 m");
+    cy.contains("td", "1'269.3186613122552 m");
     cy.contains("td", "469.3455791423775 m");
 
     // sort by name
@@ -50,9 +50,9 @@ describe("Borehole list tests", () => {
     firstRow = cy.get("tbody").children().first();
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
-    firstRow.contains("td", "1989.34827092539 m");
-    secondRow.contains("td", "1949.3092400717128 m");
-    thirdRow.contains("td", "1829.326736661292 m");
+    firstRow.contains("td", "1'989.34827092539 m");
+    secondRow.contains("td", "1'949.3092400717128 m");
+    thirdRow.contains("td", "1'829.326736661292 m");
 
     // sort by drilling date
     cy.contains("div", "End of drilling date").click();
@@ -165,8 +165,8 @@ describe("Borehole list tests", () => {
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
 
-    firstRow.contains("td", "1949.3092400717128 m");
-    secondRow.contains("td", "1829.326736661292 m");
-    thirdRow.contains("td", "1749.3159695292431 m");
+    firstRow.contains("td", "1'949.3092400717128 m");
+    secondRow.contains("td", "1'829.326736661292 m");
+    thirdRow.contains("td", "1'749.3159695292431 m");
   });
 });
