@@ -66,8 +66,8 @@ public class LayerControllerTest
         var layer = okResult.Value as Layer;
         Assert.AreEqual(7005, layer.Id);
         Assert.AreEqual(2.274020571389245, layer.CasingInnerDiameter);
-        Assert.AreEqual("Malaysian Ringgit Distributed Sleek mint green", layer.Notes);
-        Assert.AreEqual(15101007, layer.LithologyId);
+        Assert.AreEqual("Drive Internal invoice Soft", layer.Notes);
+        Assert.AreEqual(15103053, layer.LithologyId);
     }
 
     [TestMethod]
@@ -166,7 +166,7 @@ public class LayerControllerTest
 
         var layerToEdit = context.Layers.Single(c => c.Id == id);
         Assert.AreEqual(3, layerToEdit.CreatedById);
-        Assert.AreEqual("Pakistan Rupee Investment Account AGP Engineer", layerToEdit.Notes);
+        Assert.AreEqual("Investment Account Bedfordshire Licensed Granite Car experiences", layerToEdit.Notes);
 
         // Upate Layer
         var response = await controller.EditAsync(newLayer);
