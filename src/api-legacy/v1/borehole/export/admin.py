@@ -132,6 +132,8 @@ class ExportAdminHandler(Admin):
 
                         not_found = []
 
+                        # The export of attached files was removed in https://github.com/geoadmin/suite-bdms/pull/268.
+
                         if len(not_found) > 0:
                             print(f"\033[91m{len(not_found)} files not found 🤔\033[0m")
 
