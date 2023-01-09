@@ -77,6 +77,9 @@ public static class BdmsContextExtensions
         List<int> fillMaterialIds = codelists.Where(c => c.Schema == "fill200").Select(s => s.Id).ToList();
         List<int> uscsIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();
         List<int> uscsDeterminationIds = codelists.Where(c => c.Schema == "mcla104").Select(s => s.Id).ToList();
+        List<int> gradationIds = codelists.Where(c => c.Schema == "gradation").Select(s => s.Id).ToList();
+        List<int> soilStateIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
+        List<int> kirostIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> lithokIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> unconrocksIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
@@ -265,7 +268,8 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.CasingDate, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .05f))
             .RuleFor(o => o.Creation, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
             .RuleFor(o => o.Date, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .05f))
-            .RuleFor(o => o.FillCasingId, f => f.Random.Int())
+            .RuleFor(o => o.FillCasingId, f => stratigraphy_ids == 6000 ? null : stratigraphy_ids - 1)
+            .RuleFor(o => o.FillCasing, f => default!)
             .RuleFor(o => o.KindId, f => f.PickRandom(layerKindIds))
             .RuleFor(o => o.Kind, _ => default!)
             .RuleFor(o => o.Name, f => f.Name.FullName())
@@ -322,7 +326,8 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.FillKind, _ => default!)
             .RuleFor(o => o.FillMaterialId, f => f.PickRandom(fillMaterialIds).OrNull(f, .05f))
             .RuleFor(o => o.FillMaterial, _ => default!)
-            .RuleFor(o => o.GradationId, f => f.Random.Int())
+            .RuleFor(o => o.GradationId, f => f.PickRandom(gradationIds).OrNull(f, .05f))
+            .RuleFor(o => o.Gradation, f => default!)
             .RuleFor(o => o.GrainSize1Id, f => f.PickRandom(grainSize1Ids).OrNull(f, .05f))
             .RuleFor(o => o.GrainSize1, _ => default!)
             .RuleFor(o => o.GrainSize2Id, f => f.PickRandom(grainSize2Ids).OrNull(f, .05f))
