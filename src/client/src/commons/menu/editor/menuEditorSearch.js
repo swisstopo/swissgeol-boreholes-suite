@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import _ from "lodash";
 import { withTranslation } from "react-i18next";
 import { withRouter } from "react-router-dom";
-
+import { NumericFormat } from "react-number-format";
 import TranslationText from "../../form/translationText";
 
 import {
@@ -37,9 +37,6 @@ class MenuEditorSearch extends React.Component {
       selectedFile: null,
       scroller: false,
       workgroup: wgs !== null && wgs.length > 0 ? wgs[0].id : null,
-      // workgroup: this.props.user.data.workgroups !== null
-      //   && this.props.user.data.workgroups.length > 0?
-      //   this.props.user.data.workgroups[0].id: null
     };
   }
 
@@ -79,29 +76,19 @@ class MenuEditorSearch extends React.Component {
             boreholes.isFetching === false && boreholes.dlen === 0
               ? "red"
               : "#767676",
-          // fontWeight: 'bold',
           borderBottom: "thin solid rgb(187, 187, 187)",
           padding: "1em 1em 0px 1em",
         }}>
         <TranslationText firstUpperCase id="boreholes" />:{" "}
-        {
-          boreholes.isFetching ? (
-            <Icon loading name="spinner" />
-          ) : (
-            boreholes.dlen
-          )
-          // boreholes.dlen + ' ' + (
-          //   boreholes.dlen > 1 || boreholes.dlen === 0 ?
-          //     <TranslationText
-          //       firstUpperCase
-          //       id='results'
-          //     />:
-          //     <TranslationText
-          //       firstUpperCase
-          //       id='result'
-          //     />
-          // )
-        }
+        {boreholes.isFetching ? (
+          <Icon loading name="spinner" />
+        ) : (
+          <NumericFormat
+            value={boreholes.dlen}
+            thousandSeparator="'"
+            displayType="text"
+          />
+        )}
       </div>,
       <div
         className={this.state.scroller === true ? "scroller" : null}
@@ -116,11 +103,7 @@ class MenuEditorSearch extends React.Component {
           marginRight:
             this.state.scroller === true ? this.props.setting.scrollbar : "0px",
         }}>
-        <SearchEditorComponent
-          onChange={filter => {
-            //console.log(filter)
-          }}
-        />
+        <SearchEditorComponent onChange={filter => {}} />
       </div>,
       <Menu
         icon="labeled"
@@ -204,7 +187,6 @@ class MenuEditorSearch extends React.Component {
         size="tiny">
         <Header
           content={<TranslationText id="newBorehole" />}
-          // content={t(`common:newBorehole`)}
           icon={this.state.upload === true ? "upload" : "plus"}
         />
         <Modal.Content>
@@ -285,7 +267,6 @@ class MenuEditorSearch extends React.Component {
                       }))}
                     simple
                     value={this.state.workgroup}
-                    // text={this.props.user.data.workgroups[0].workgroup}
                   />
                 );
               })()}
@@ -364,15 +345,11 @@ class MenuEditorSearch extends React.Component {
             }}
             secondary>
             <Icon name={this.state.upload === true ? "upload" : "plus"} />{" "}
-            {
-              this.state.upload === true ? (
-                <TranslationText id="upload" />
-              ) : (
-                <TranslationText id="create" />
-              )
-              // t('editor:upload'):
-              // t('editor:create')
-            }
+            {this.state.upload === true ? (
+              <TranslationText id="upload" />
+            ) : (
+              <TranslationText id="create" />
+            )}
           </Button>
         </Modal.Actions>
       </Modal>,

@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import _ from "lodash";
 import { Route, Switch, withRouter } from "react-router-dom";
-
+import { NumericFormat } from "react-number-format";
 import { Button, Header, Icon, Menu, Segment } from "semantic-ui-react";
 import DateText from "../../form/dateText";
 import SearchComponent from "../../search/searchComponent";
@@ -122,28 +122,18 @@ class MenuExplorer extends React.Component {
               key="sb-em-1"
               style={{
                 color: "#767676",
-                // fontWeight: 'bold',
                 padding: "1em 1em 0px 1em",
               }}>
               <TranslationText firstUpperCase id="boreholes" />:{" "}
-              {
-                boreholes.isFetching ? (
-                  <Icon loading name="spinner" />
-                ) : (
-                  boreholes.dlen
-                )
-                //  + ' ' + (
-                //   boreholes.dlen > 1 || boreholes.dlen === 0?
-                //     <TranslationText
-                //       firstUpperCase
-                //       id='results'
-                //     />:
-                //     <TranslationText
-                //       firstUpperCase
-                //       id='result'
-                //     />
-                // )
-              }
+              {boreholes.isFetching ? (
+                <Icon loading name="spinner" />
+              ) : (
+                <NumericFormat
+                  value={boreholes.dlen}
+                  thousandSeparator="'"
+                  displayType="text"
+                />
+              )}
             </div>,
             <div
               className={this.state.scroller === true ? "scroller" : null}
