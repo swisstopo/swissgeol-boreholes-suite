@@ -325,6 +325,9 @@ class PatchBorehole(Action):
 
                 elif field == 'qt_total_depth_tvd':
                     schema = 'custom.qt_top_bedrock'
+                
+                elif field == 'custom.qt_depth':
+                    schema = 'custom.qt_top_bedrock'
 
                 # Check if domain is extracted from the correct schema
                 if value is not None and schema != (
