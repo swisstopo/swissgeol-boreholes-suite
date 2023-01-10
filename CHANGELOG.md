@@ -21,6 +21,7 @@
 - Coordinates, elevations diameters and depths in inputs and texts are now displayed with thousand separators.
 - Removed `mentions` functionality in workflow comments.
 - Removed unused columns from database: `borehole.import_id`, `borehole.tecto_id_cli`, `stratigraphy.import_id`, `layer.import_id`, `layer.tectonic_unit_id_cli`, `layer.symbol_id_cli`, `layer.soil_state_id_cli`, `layer.kirost_id_cli`.
+- Removed unused table `bdms.statigraphy_codelist` from database.
 
 ### Fixed
 
