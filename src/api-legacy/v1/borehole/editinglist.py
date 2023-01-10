@@ -211,16 +211,6 @@ class ListEditingBorehole(Action):
                         COUNT(id_lay) AS layers
                     FROM
                         bdms.stratigraphy
-                    LEFT JOIN (
-                        SELECT
-                            id_sty_fk, array_agg(id_cli_fk) as kind
-                        FROM
-                            bdms.stratigraphy_codelist as scl
-                        WHERE
-                            code_cli = 'layer_kind'
-                        GROUP BY id_sty_fk
-                    ) lk
-                        ON lk.id_sty_fk = id_sty
                     LEFT JOIN bdms.layer
                         ON layer.id_sty_fk = id_sty
                     GROUP BY id_bho_fk, id_sty, kind, date_sty
