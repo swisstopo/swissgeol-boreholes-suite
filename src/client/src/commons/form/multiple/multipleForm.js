@@ -47,7 +47,7 @@ class MultipleForm extends React.Component {
         inclination_direction: { api: "inclination_direction", value: null },
         qt_bore_inc_dir: { api: "custom.qt_bore_inc_dir", value: null },
         totaldepth: { api: "total_depth", value: null },
-        qt_depth: { api: "custom.qt_depth", value: null },
+        qt_depth: { api: "custom.qt_top_bedrock", value: null },
         total_depth_tvd: { api: "total_depth_tvd", value: null },
         total_depth_tvd_qt: { api: "qt_total_depth_tvd", value: null },
         top_bedrock: { api: "extended.top_bedrock", value: null },
