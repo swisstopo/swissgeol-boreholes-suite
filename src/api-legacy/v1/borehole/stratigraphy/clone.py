@@ -37,26 +37,6 @@ class CloneStratigraphy(Action):
             """, id)
         )
 
-        # Copy stratigraphy_codelist
-        await self.conn.execute(f"""
-                INSERT INTO bdms.stratigraphy_codelist(
-                    id_sty_fk,
-                    id_cli_fk,
-                    code_cli
-                )
-
-                SELECT
-                    {id_sty} as id_sty_fk,
-                    id_cli_fk,
-                    code_cli
-
-                FROM
-                    bdms.stratigraphy_codelist
-
-                WHERE
-                    id_sty_fk = $1
-        """, id)
-
         recs = await self.conn.fetch("""
             SELECT
                 id_lay
@@ -167,26 +147,6 @@ class CloneStratigraphy(Action):
                 
                 RETURNING
                     id_lay
-            """, rec[0])
-
-            # Copy stratigraphy_codelist
-            await self.conn.execute(f"""
-                    INSERT INTO bdms.layer_codelist(
-                        id_lay_fk,
-                        id_cli_fk,
-                        code_cli
-                    )
-
-                    SELECT
-                        {id_lay} as id_lay_fk,
-                        id_cli_fk,
-                        code_cli
-
-                    FROM
-                        bdms.layer_codelist
-
-                    WHERE
-                        id_lay_fk = $1
             """, rec[0])
 
         return {

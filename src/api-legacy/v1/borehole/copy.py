@@ -180,18 +180,6 @@ class CopyBorehole(Action):
                     RETURNING
                         id_sty
                 """, bid, user['id'], user['id'], stratigraphy[0])
-        
-                await self.conn.execute("""
-                    INSERT INTO bdms.stratigraphy_codelist(
-                        id_sty_fk, id_cli_fk, code_cli
-                    )
-                    SELECT
-                        $1, id_cli_fk, code_cli
-                    FROM
-                        bdms.stratigraphy_codelist
-                    WHERE
-                        id_sty_fk = $2
-                """, sid, stratigraphy[0])
 
                 # Fetch all layers associated with the stratigraphy
                 layers = await self.conn.fetch("""
