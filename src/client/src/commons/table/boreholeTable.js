@@ -167,9 +167,16 @@ class BoreholeTable extends TableComponent {
             color: "#787878",
             fontSize: "0.8em",
           }}>
-          {_.isNil(item.extended.top_bedrock)
-            ? ""
-            : item.extended.top_bedrock + " m"}
+          {_.isNil(item.extended.top_bedrock) ? (
+            ""
+          ) : (
+            <NumericFormat
+              value={item.extended.top_bedrock}
+              thousandSeparator="'"
+              suffix=" m"
+              displayType="text"
+            />
+          )}
         </span>
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>

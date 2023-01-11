@@ -176,7 +176,12 @@ class DetailsComponent extends React.Component {
                       fontWeight: "bold",
                       fontSize: "1.1em",
                     }}>
-                    {detail.borehole.total_depth} m
+                    <NumericFormat
+                      value={detail.borehole.total_depth}
+                      thousandSeparator="'"
+                      suffix=" m"
+                      displayType="text"
+                    />
                   </div>
                   <div
                     style={{
