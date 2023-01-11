@@ -1,7 +1,6 @@
 import {
   // fetch,
   getHeight,
-  getAddressByPoint,
   uploadFile,
   downloadBorehole,
   downloadAttachment,
@@ -153,7 +152,6 @@ import store, {
 
 export {
   getHeight,
-  getAddressByPoint,
   uploadFile,
   downloadBorehole,
   downloadAttachment,
