@@ -178,7 +178,7 @@ export const stratigraphyData = {
       label: "layer_uscs_3",
       value: "uscs_3",
       schema: "mcla101",
-      multiple: false,
+      multiple: true,
       search: false,
       isVisibleValue: "uscs_3",
     },
