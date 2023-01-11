@@ -66,8 +66,8 @@ public class LayerControllerTest
         var layer = okResult.Value as Layer;
         Assert.AreEqual(7005, layer.Id);
         Assert.AreEqual(2.274020571389245, layer.CasingInnerDiameter);
-        Assert.AreEqual("Drive Internal invoice Soft", layer.Notes);
-        Assert.AreEqual(15103053, layer.LithologyId);
+        Assert.AreEqual("microchip Drive Internal invoice", layer.Notes);
+        Assert.AreEqual(15101036, layer.LithologyId);
     }
 
     [TestMethod]
@@ -123,8 +123,6 @@ public class LayerControllerTest
             IsLast = true,
             IsStriae = true,
             IsUndefined = false,
-            Lithok = null,
-            LithokId = 21117002,
             Lithology = null,
             LithologyId = 15101055,
             LithologyTopBedrock = null,
@@ -140,8 +138,6 @@ public class LayerControllerTest
             Stratigraphy = null,
             StratigraphyId = 6008,
             ToDepth = 100,
-            Unconrocks = null,
-            UnconrocksId = 21117002,
             Update = new DateTime(2021, 2, 14, 8, 55, 34).ToUniversalTime(),
             UpdatedBy = null,
             UpdatedById = 3,
