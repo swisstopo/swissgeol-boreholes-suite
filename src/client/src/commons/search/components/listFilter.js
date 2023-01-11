@@ -9,7 +9,6 @@ import DomainDropdown from "../../form/domain/dropdown/domainDropdown";
 import DomainTree from "../../form/domain/tree/domainTree";
 import DateField from "../../form/dateField";
 import LabelReset from "../../form/labelReset";
-import MunicipalityDropdown from "../../form/municipality/dropdown/municipalityDropdown";
 import CantonDropdown from "../../form/cantons/dropdown/cantonDropdown";
 
 const ListFilter = props => {
@@ -390,22 +389,6 @@ const ListFilter = props => {
                             updateChange("municipality", null, false);
                           }
 
-                          updateChange(item.value, selected.id, false);
-                        }}
-                        selected={search.filter?.[item.value]}
-                      />
-                    </Styled.AttributesItem>
-                  )}
-
-                {item.type === "City" &&
-                  (item.isVisible ||
-                    isVisibleFunction(item.isVisibleValue) ||
-                    showAll) && (
-                    <Styled.AttributesItem>
-                      <MunicipalityDropdown
-                        canton={search.filter.canton}
-                        disabled={search.filter.canton === null}
-                        onSelected={selected => {
                           updateChange(item.value, selected.id, false);
                         }}
                         selected={search.filter?.[item.value]}
