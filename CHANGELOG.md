@@ -12,6 +12,7 @@
 - Added input field to codelist translation UI, that is used to change the order of the codelist.
 - Added filter in editor mode for registration details creation date and user.
 - Added db constraints for `stratigraphy.fill_casng_id_sty_fk` and `layer.gradation_id_cli`.
+- Added new db field `original_lithology` to layer table. The new field contains english text values of `unconrocks_id_cli` and `lithok_id_cli`.
 
 ### Changed
 
@@ -22,6 +23,7 @@
 - Removed `mentions` functionality in workflow comments.
 - Removed unused columns from database: `borehole.import_id`, `borehole.tecto_id_cli`, `stratigraphy.import_id`, `layer.import_id`, `layer.tectonic_unit_id_cli`, `layer.symbol_id_cli`, `layer.soil_state_id_cli`, `layer.kirost_id_cli`.
 - Removed unused table `bdms.statigraphy_codelist` from database.
+- Removed  `layer.unconrocks_id_cli` and `layer.lithok_id_cli` from database.
 
 ### Fixed
 
