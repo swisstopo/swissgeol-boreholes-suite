@@ -66,8 +66,8 @@ public class LayerControllerTest
         var layer = okResult.Value as Layer;
         Assert.AreEqual(7005, layer.Id);
         Assert.AreEqual(2.274020571389245, layer.CasingInnerDiameter);
-        Assert.AreEqual("microchip Drive Internal invoice", layer.Notes);
-        Assert.AreEqual(15101036, layer.LithologyId);
+        Assert.AreEqual("Drive Internal invoice Soft", layer.Notes);
+        Assert.AreEqual(15103053, layer.LithologyId);
     }
 
     [TestMethod]
