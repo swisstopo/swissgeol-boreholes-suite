@@ -17,6 +17,5 @@ public partial class UpdateUSCS3Cardinality : Migration
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-
     }
 }
