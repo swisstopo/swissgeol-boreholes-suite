@@ -342,8 +342,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.InstrumentCasing, _ => default!)
             .RuleFor(o => o.InstrumentCasingLayerId, _ => null)
             .RuleFor(o => o.IsLast, f => layer_ids % 10 == 9)
-            .RuleFor(o => o.LithokId, f => f.PickRandom(lithokIds).OrNull(f, .05f))
-            .RuleFor(o => o.Lithok, _ => default!)
             .RuleFor(o => o.LithologyId, f => f.PickRandom(lithologyTopBedrockIds).OrNull(f, .05f))
             .RuleFor(o => o.Lithology, _ => default!)
             .RuleFor(o => o.LithostratigraphyId, f => f.PickRandom(lithostratigraphyTopBedrockIds).OrNull(f, .05f))
@@ -372,8 +370,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.LithologyTopBedrock, _ => default!)
             .RuleFor(o => o.Notes, f => f.Random.Words(4).OrNull(f, .05f))
             .RuleFor(o => o.OriginalUscs, f => f.Random.Word().OrNull(f, .05f))
-            .RuleFor(o => o.UnconrocksId, f => f.PickRandom(unconrocksIds).OrNull(f, .05f))
-            .RuleFor(o => o.Unconrocks, _ => default!)
             .RuleFor(o => o.OriginalLithology, f => f.Random.Words(5).OrNull(f, .05f))
             .RuleFor(o => o.Id, f => layer_ids++);
 
