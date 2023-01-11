@@ -92,15 +92,6 @@ class PatchLayer(Action):
         elif field == 'uscs_determination':
             column = 'uscs_determination_id_cli'
 
-        elif field == 'lithok':
-            column = 'lithok_id_cli'
-
-        elif field == 'custom.lithology_top_bedrock':
-            column = 'lithok_id_cli'
-
-        elif field == 'unconrocks':
-            column = 'unconrocks_id_cli'
-
         elif field == 'notes':
             column = 'notes_lay'
 
@@ -211,8 +202,6 @@ class PatchLayer(Action):
                 'uscs_3',
                 'uscs_determination',
                 'lithology_top_bedrock',
-                'unconrocks',
-                'lithok',
                 'casing_kind',
                 'casing_material',
                 'casing_drilling',
@@ -270,12 +259,6 @@ class PatchLayer(Action):
 
                 elif field == 'uscs_determination':
                     schema = 'mcla104'
-
-                elif field == 'unconrocks':
-                    schema = 'mcla102'
-
-                elif field == 'lithok':
-                    schema = 'mcla105'
 
                 elif field == 'instrument_kind':
                     schema = 'inst100'

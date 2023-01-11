@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20230110161542_AddOriginalLithologyField")]
+    partial class AddOriginalLithologyField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -817,6 +819,10 @@ namespace BDMS.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("undefined_lay");
 
+                    b.Property<int?>("LithokId")
+                        .HasColumnType("integer")
+                        .HasColumnName("lithok_id_cli");
+
                     b.Property<int?>("LithologyId")
                         .HasColumnType("integer")
                         .HasColumnName("lithology_id_cli");
@@ -832,11 +838,6 @@ namespace BDMS.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text")
                         .HasColumnName("notes_lay");
-
-                    b.Property<string>("OriginalLithology")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("original_lithology");
 
                     b.Property<string>("OriginalUscs")
                         .HasColumnType("text")
@@ -857,6 +858,10 @@ namespace BDMS.Migrations
                     b.Property<double?>("ToDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_to_lay");
+
+                    b.Property<int?>("UnconrocksId")
+                        .HasColumnType("integer")
+                        .HasColumnName("unconrocks_id_cli");
 
                     b.Property<DateTime?>("Update")
                         .HasColumnType("timestamp with time zone")
@@ -918,6 +923,8 @@ namespace BDMS.Migrations
 
                     b.HasIndex("InstrumentStatusId");
 
+                    b.HasIndex("LithokId");
+
                     b.HasIndex("LithologyId");
 
                     b.HasIndex("LithologyTopBedrockId");
@@ -929,6 +936,8 @@ namespace BDMS.Migrations
                     b.HasIndex("QtDescriptionId");
 
                     b.HasIndex("StratigraphyId");
+
+                    b.HasIndex("UnconrocksId");
 
                     b.HasIndex("UpdatedById");
 
@@ -1607,6 +1616,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("InstrumentStatusId");
 
+                    b.HasOne("BDMS.Models.Codelist", "Lithok")
+                        .WithMany()
+                        .HasForeignKey("LithokId");
+
                     b.HasOne("BDMS.Models.Codelist", "Lithology")
                         .WithMany()
                         .HasForeignKey("LithologyId");
@@ -1630,6 +1643,10 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany()
                         .HasForeignKey("StratigraphyId");
+
+                    b.HasOne("BDMS.Models.Codelist", "Unconrocks")
+                        .WithMany()
+                        .HasForeignKey("UnconrocksId");
 
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
                         .WithMany()
@@ -1687,6 +1704,8 @@ namespace BDMS.Migrations
 
                     b.Navigation("InstrumentStatus");
 
+                    b.Navigation("Lithok");
+
                     b.Navigation("Lithology");
 
                     b.Navigation("LithologyTopBedrock");
@@ -1698,6 +1717,8 @@ namespace BDMS.Migrations
                     b.Navigation("QtDescription");
 
                     b.Navigation("Stratigraphy");
+
+                    b.Navigation("Unconrocks");
 
                     b.Navigation("UpdatedBy");
 

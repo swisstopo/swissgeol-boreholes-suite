@@ -255,7 +255,6 @@ class ExportSpatiaLite(Action):
                         uscs_determination INTEGER,
                         debris TEXT,
                         lithology_top_bedrock INTEGER,
-                        lithok INTEGER,
                         notes TEXT
                     )
                 """)
@@ -641,14 +640,13 @@ class ExportSpatiaLite(Action):
                                 uscs_determination,
                                 debris,
                                 lithology_top_bedrock,
-                                lithok,
                                 notes,
                                 gradation
                             ) VALUES (
                                 ?,?,?,?,?,?,?,?,?,
                                 ?,?,?,?,?,?,?,?,?,
                                 ?,?,?,?,?,?,?,?,?,
-                                ?,?,?,?,?,?,?,?,?
+                                ?,?,?,?,?,?,?,?
                             )
                         """, (
                         layer['id'],
@@ -684,7 +682,6 @@ class ExportSpatiaLite(Action):
                         layer['uscs_determination'],
                         ",".join([str(elem) for elem in layer['debris']]),
                         layer['lithology_top_bedrock'],
-                        layer['lithok'],
                         layer['notes'],
                         layer['gradation']
                     ))
@@ -1092,17 +1089,16 @@ class ImportSpatiaLite(Action):
                                 uscs_1, --22
                                 uscs_2, --23
                                 uscs_original, --24
-                                lithok, --25
-                                notes, --26
-                                color, --27
-                                lithology_top_bedrock, --28
-                                uscs_determination, --29
-                                debris, --30
-                                uscs_3, --31
-                                grain_granularity, --32
-                                grain_shape, --33
-                                organic_component, --34
-                                gradation -- 35
+                                notes, --25
+                                color, --26
+                                lithology_top_bedrock, --27
+                                uscs_determination, --28
+                                debris, --29
+                                uscs_3, --30
+                                grain_granularity, --31
+                                grain_shape, --32
+                                organic_component, --33
+                                gradation -- 34
 
                             FROM
                                 layer
@@ -1136,7 +1132,7 @@ class ImportSpatiaLite(Action):
                                     grain_size_1_id_cli, grain_size_2_id_cli,
 
                                     cohesion_id_cli, uscs_1_id_cli, uscs_2_id_cli,
-                                    uscs_original_lay, lithok_id_cli,
+                                    uscs_original_lay,
 
                                     notes_lay,
 
@@ -1161,11 +1157,10 @@ class ImportSpatiaLite(Action):
                                     $20, $21,
                                     $22, $23,
                                     $24, $25,
-                                    $26,
-                                    $27, $28,
+                                    $26, $27,
 
-                                    $29, $30,
-                                    $31
+                                    $28, $29,
+                                    $30
 
                                 ) RETURNING id_lay
                             """,
@@ -1190,10 +1185,8 @@ class ImportSpatiaLite(Action):
                                 layer[21], layer[22], layer[23],
                                 layer[24], layer[25],
 
-                                layer[26],
-
-                                layer[35], layer[31],
-                                layer[29], layer[28]
+                                layer[34], layer[30],
+                                layer[28], layer[27]
 
                             )
 
@@ -1206,7 +1199,7 @@ class ImportSpatiaLite(Action):
                                             id_lay_fk, id_cli_fk, code_cli
                                         ) VALUES ($1, $2, $3)
                                 """, [
-                                    (lay_id, int(v), 'mlpr112') for v in layer[27].split(',')]
+                                    (lay_id, int(v), 'mlpr112') for v in layer[26].split(',')]
                                 )
 
                             # debris

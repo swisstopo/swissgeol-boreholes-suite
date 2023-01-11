@@ -221,10 +221,8 @@ class ExportCsvFull(Action):
                 sty.uscs_3,
                 sty.uscs_original,
                 sty.uscs_determination,
-                sty.unconrocks,
                 sty.debris,
                 sty.lithology_top_bedrock,
-                sty.lithok,
                 sty.notes,
 
                 identifiers
@@ -315,12 +313,10 @@ class ExportCsvFull(Action):
                     COALESCE(
                         mcla104, '{}'::int[]
                     ) AS uscs_determination,
-                    lay_unconrocks.geolcode AS unconrocks,
                     COALESCE(
                         mcla107, '{}'::int[]
                     ) AS debris,
                     lithology_top_bedrock_id_cli AS lithology_top_bedrock,
-                    lay_lithok.geolcode AS lithok,
                     COALESCE(
                         notes_lay, ''
                     ) AS notes
@@ -332,9 +328,6 @@ class ExportCsvFull(Action):
                     bdms.layer
                 ON
                     layer.id_sty_fk = id_sty
-
-                LEFT JOIN bdms.codelist as lay_lithok
-                    ON lay_lithok.id_cli = lithok_id_cli
 
                 LEFT JOIN (
                     SELECT
@@ -350,9 +343,6 @@ class ExportCsvFull(Action):
                     GROUP BY id_lay_fk
                 ) dbr
                 ON dbr.id_lay_fk = id_lay
-
-                LEFT JOIN bdms.codelist as lay_unconrocks
-                    ON lay_unconrocks.id_cli = unconrocks_id_cli
 
                 LEFT JOIN (
                     SELECT

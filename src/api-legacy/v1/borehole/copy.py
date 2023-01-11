@@ -208,7 +208,7 @@ class CopyBorehole(Action):
                             uscs_1_id_cli, uscs_2_id_cli, uscs_original_lay,
                             uscs_determination_id_cli, notes_lay,
                             lithostratigraphy_id_cli, humidity_id_cli, striae_lay,
-                            unconrocks_id_cli, lithok_id_cli, gradation_id_cli
+                            gradation_id_cli
                         )
                         SELECT
                             $1, $2,
@@ -223,7 +223,7 @@ class CopyBorehole(Action):
                             uscs_1_id_cli, uscs_2_id_cli, uscs_original_lay,
                             uscs_determination_id_cli, notes_lay,
                             lithostratigraphy_id_cli, humidity_id_cli, striae_lay,
-                            unconrocks_id_cli, lithok_id_cli, gradation_id_cli
+                            gradation_id_cli
                         FROM
                             bdms.layer
                         WHERE

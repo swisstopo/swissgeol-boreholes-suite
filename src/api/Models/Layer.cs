@@ -290,28 +290,6 @@ public class Layer
     public bool? IsStriae { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s unconrocks.
-    /// </summary>
-    [Column("unconrocks_id_cli")]
-    public int? UnconrocksId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s unconrocks.
-    /// </summary>
-    public Codelist? Unconrocks { get; set; }
-
-    /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s lithok.
-    /// </summary>
-    [Column("lithok_id_cli")]
-    public int? LithokId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s lithok.
-    /// </summary>
-    public Codelist? Lithok { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s instrument.
     /// </summary>
     [Column("instr_id")]
@@ -451,4 +429,7 @@ public class Layer
     /// Gets or sets the <see cref="Layer"/>'s lithology top bedrock.
     /// </summary>
     public Codelist? LithologyTopBedrock { get; set; }
+
+    [Column("original_lithology")]
+    public string? OriginalLithology { get; set; }
 }

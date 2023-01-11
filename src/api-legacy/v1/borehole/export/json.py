@@ -271,8 +271,6 @@ class ExportJson(Action):
                                     mcla107, '{}'::int[]
                                 ) AS debris,
                                 lithology_top_bedrock_id_cli AS lithology_top_bedrock,
-                                stratigraphy_lithok.geolcode AS lithok,
-                                stratigraphy_unconrocks.geolcode AS unconrocks,
                                 COALESCE(
                                     notes_lay, ''
                                 ) AS notes,
@@ -327,12 +325,6 @@ class ExportJson(Action):
 
                             LEFT JOIN bdms.codelist as stratigraphy_uscs_2
                             ON stratigraphy_uscs_2.id_cli = layer.uscs_2_id_cli
-
-                            LEFT JOIN bdms.codelist as stratigraphy_lithok
-                            ON stratigraphy_lithok.id_cli = lithok_id_cli
-
-                            LEFT JOIN bdms.codelist as stratigraphy_unconrocks
-                            ON stratigraphy_unconrocks.id_cli = unconrocks_id_cli
 
                             LEFT JOIN bdms.codelist as stratigraphy_kind
                             ON stratigraphy_kind.id_cli = stratigraphy.kind_id_cli
