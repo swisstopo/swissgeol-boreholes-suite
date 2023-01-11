@@ -66,8 +66,9 @@ class ListBorehole(Action):
                     ret.text_cli_{fallback}
                 ) as reference_elevation_type,
 
-                cnt.name as canton,
-                municipalities.name as city,
+                country_bho as country,
+                canton_bho as canton,
+                municipality_bho as municipality,
 
                 COALESCE(
                     meth.text_cli_{language},
@@ -157,15 +158,6 @@ class ListBorehole(Action):
             LEFT JOIN bdms.codelist as ret
                 ON ret.id_cli = reference_elevation_type_id_cli
 
-            LEFT JOIN (
-                SELECT DISTINCT
-                    cantons.kantonsnum,
-                    cantons.name
-                FROM
-                    bdms.cantons
-            ) AS cnt
-            ON cnt.kantonsnum = canton_bho
-
             LEFT JOIN bdms.codelist as qt_len
                 ON qt_len.id_cli = qt_depth_id_cli
 
@@ -174,9 +166,6 @@ class ListBorehole(Action):
 
             LEFT JOIN bdms.codelist as cut
                 ON cut.id_cli = cuttings_id_cli
-
-            LEFT JOIN bdms.municipalities
-                ON municipalities.gid = city_bho
 
             LEFT JOIN bdms.codelist as meth
                 ON meth.id_cli = drilling_method_id_cli
@@ -260,9 +249,6 @@ class ListBorehole(Action):
                 reference_elevation_bho as reference_elevation,
                 qre.geolcode as qt_reference_elevation,
                 ret.geolcode as reference_elevation_type,
-                
-                cnt.name as canton,
-                municipalities.name as city,
 
                 meth.geolcode as method,
                 to_char(
@@ -371,15 +357,6 @@ class ListBorehole(Action):
             LEFT JOIN bdms.codelist as ret
                 ON ret.id_cli = reference_elevation_type_id_cli
 
-            LEFT JOIN (
-                SELECT DISTINCT
-                    cantons.kantonsnum,
-                    cantons.name
-                FROM
-                    bdms.cantons
-            ) AS cnt
-            ON cnt.kantonsnum = canton_bho
-
             LEFT JOIN bdms.codelist as qt_len
                 ON qt_len.id_cli = qt_depth_id_cli
 
@@ -388,9 +365,6 @@ class ListBorehole(Action):
 
             LEFT JOIN bdms.codelist as cut
                 ON cut.id_cli = cuttings_id_cli
-
-            LEFT JOIN bdms.municipalities
-                ON municipalities.gid = city_bho
 
             LEFT JOIN bdms.codelist as meth
                 ON meth.id_cli = drilling_method_id_cli

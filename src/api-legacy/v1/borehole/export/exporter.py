@@ -218,9 +218,9 @@ class ExportHandler(Viewer):
                                     FROM (
                                         SELECT
                                             id_bho as idb,
-                                            'Switzerland' as country,
-                                            cant_j.name as canton,
-                                            mun_j.name as city,
+                                            country_bho as country,
+                                            canton_bho as canton,
+                                            municipality_bho as municipality,
                                             COALESCE(
                                                 cli_kind.text_cli_{lan},
                                                 cli_kind.text_cli_{fallback}
@@ -385,20 +385,6 @@ class ExportHandler(Viewer):
                                             ON cli_status.id_cli =status_id_cli
                                         LEFT JOIN bdms.codelist as cli_cuttings
                                             ON cli_cuttings.id_cli = cuttings_id_cli
-                                        LEFT JOIN bdms.municipalities as mun_j
-                                            ON mun_j.gid = city_bho
-                                        
-                                        --LEFT JOIN bdms.cantons as cant_j
-                                        --    ON cant_j.gid = canton_bho
-                                        
-                                        LEFT JOIN (
-                                            SELECT DISTINCT
-                                                cantons.kantonsnum,
-                                                cantons.name
-                                            FROM
-                                                bdms.cantons
-                                        ) as cant_j
-                                            ON cant_j.kantonsnum = canton_bho
 
                                         LEFT JOIN (
                                             SELECT id_sty, date_sty, name_sty, id_bho_fk 
