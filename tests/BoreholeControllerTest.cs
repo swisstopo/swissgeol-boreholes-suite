@@ -90,7 +90,7 @@ public class BoreholeControllerTest
         Assert.AreNotEqual(originalBorehole.Stratigraphies.First().Id, copiedBorehole.Stratigraphies.First());
         Assert.AreNotSame(originalBorehole.Stratigraphies.First().Layers, copiedBorehole.Stratigraphies.First().Layers);
         Assert.AreNotEqual(originalBorehole.Stratigraphies.First().Layers.First().Id, copiedBorehole.Stratigraphies.First().Layers.First().Id);
-        Assert.AreEqual("Practical Plastic Shoes North Carolina", copiedBorehole.Stratigraphies.First().Layers.First().Casing);
+        Assert.AreEqual("virtual frictionless", copiedBorehole.Stratigraphies.First().Layers.First().Casing);
 
         Assert.AreNotSame(originalBorehole.BoreholeFiles, copiedBorehole.BoreholeFiles);
         Assert.AreNotEqual(originalBorehole.BoreholeFiles.First().BoreholeId, copiedBorehole.BoreholeFiles.First().BoreholeId);
