@@ -75,12 +75,9 @@ class GetLayer(Action):
                 uscs_original_lay, ''
             ) AS uscs_original,
             uscs_determination_id_cli AS uscs_determination,
-            -- layer.unconrocks_id_cli AS unconrocks,
             COALESCE(
                 mcla107, '{}'::int[]
             ) AS debris,
-            lithok_id_cli AS lithok,
-            unconrocks_id_cli AS unconrocks,
             COALESCE(
                 notes_lay, ''
             ) AS notes,
