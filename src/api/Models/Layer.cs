@@ -451,4 +451,7 @@ public class Layer
     /// Gets or sets the <see cref="Layer"/>'s lithology top bedrock.
     /// </summary>
     public Codelist? LithologyTopBedrock { get; set; }
+
+    [Column("original_lithology")]
+    public string? OriginalLithology { get; set; }
 }

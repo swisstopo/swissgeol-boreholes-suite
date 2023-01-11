@@ -374,6 +374,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.OriginalUscs, f => f.Random.Word().OrNull(f, .05f))
             .RuleFor(o => o.UnconrocksId, f => f.PickRandom(unconrocksIds).OrNull(f, .05f))
             .RuleFor(o => o.Unconrocks, _ => default!)
+            .RuleFor(o => o.OriginalLithology, f => f.Random.Words(5).OrNull(f, .05f))
             .RuleFor(o => o.Id, f => layer_ids++);
 
         Layer SeededLayers(int seed) => fakelayers.UseSeed(seed).Generate();
