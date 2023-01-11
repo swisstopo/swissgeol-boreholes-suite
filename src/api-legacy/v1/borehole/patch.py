@@ -45,19 +45,13 @@ class PatchBorehole(Action):
                     'location_x_bho',
                     'location_y_bho',
                     'elevation_z_bho',
-                    'country'
+                    'country_bho',
                     'canton_bho',
-                    'city_bho',
+                    'municipality_bho',
                 ]
 
         elif field == 'elevation_z':
             column = 'elevation_z_bho'
-
-        elif field == 'geocoding':
-            column = [
-                'canton_bho',
-                'city_bho'
-            ]
 
         elif field == 'custom.canton':
             column = 'canton_bho'
@@ -182,7 +176,6 @@ class PatchBorehole(Action):
         try:
 
             column = PatchBorehole.get_column(field)
-            location = None
             
             # Updating character varing, numeric, boolean fields
             if field in [
@@ -190,19 +183,15 @@ class PatchBorehole(Action):
                 'extended.original_name',
                 'custom.alternate_name',
                 'custom.project_name',
-                'address',
-                'geocoding',
-                'custom.canton',
-                'custom.city',
-                'custom.address',
                 'location',
                 'location_x',
                 'location_y',
                 'location_x_lv03',
                 'location_y_lv03',
                 'elevation_z',
-                'canton',
-                'address',
+                'country_bho',
+                'canton_bho',
+                'municipality_bho',
                 'drill_diameter',
                 'custom.drill_diameter',
                 'inclination',
@@ -216,16 +205,6 @@ class PatchBorehole(Action):
                 'custom.remarks',
                 'reference_elevation'
             ]:
-
-                if field == 'location' and value[2] is None:
-                    column = [
-                        'location_x_bho',
-                        'location_y_bho',
-                        'country_bho'
-                        'canton_bho',
-                        'city_bho'
-                    ]
-                    value = value[:-1]
 
                 if isinstance(column, list):
                     sets = []
@@ -259,7 +238,7 @@ class PatchBorehole(Action):
                 if field in ['location_x', 'location_y', 'location']:
 
                     geom = PatchGeom(self.conn)
-                    location = await geom.execute(id, field, value)
+                    await geom.execute(id, field, value)
 
             # Datetime values
             elif field in [
@@ -409,12 +388,7 @@ class PatchBorehole(Action):
             """, id)
 
             if rec is not None:
-                ret = self.decode(rec)
-
-                if location is not None:
-                    ret["location"] = location
-
-                return ret
+                return self.decode(rec)
 
             return None
 
