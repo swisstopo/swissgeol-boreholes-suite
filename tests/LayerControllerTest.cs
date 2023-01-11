@@ -145,8 +145,6 @@ public class LayerControllerTest
             Uscs1Id = 23101016,
             Uscs2 = null,
             Uscs2Id = 23101010,
-            Uscs3 = null,
-            Uscs3Id = 23101012,
             UscsDetermination = null,
             UscsDeterminationId = null,
         };

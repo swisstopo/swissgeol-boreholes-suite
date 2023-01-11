@@ -357,8 +357,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Uscs1, _ => default!)
             .RuleFor(o => o.Uscs2Id, f => f.PickRandom(uscsIds).OrNull(f, .05f))
             .RuleFor(o => o.Uscs2, _ => default!)
-            .RuleFor(o => o.Uscs3Id, f => f.PickRandom(uscsIds).OrNull(f, .05f))
-            .RuleFor(o => o.Uscs3, _ => default!)
             .RuleFor(o => o.UscsDeterminationId, f => f.PickRandom(uscsDeterminationIds).OrNull(f, .05f))
             .RuleFor(o => o.UscsDetermination, _ => default!)
             .RuleFor(o => o.DescriptionFacies, f => f.Random.Words(5).OrNull(f, .05f))
