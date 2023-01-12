@@ -30,9 +30,9 @@ const LocationSegment = props => {
           setMapPointChange={setMapPointChange}></CoordinatesSegment>
         <CantonMunicipalitySegment
           size={size}
-          country={"Switzerland"}
+          country={borehole.data.custom.country}
           canton={borehole.data.custom.canton}
-          municipality={borehole.data.custom.city}
+          municipality={borehole.data.custom.municipality}
         />
       </div>
       <div
@@ -42,8 +42,12 @@ const LocationSegment = props => {
         }}>
         <PointComponent
           setMapPointChange={setMapPointChange}
-          applyChange={(x, y, height, cid, mid) => {
-            updateChange("location", [x, y, cid, mid, height], false);
+          applyChange={(x, y, height, country, canton, municipality) => {
+            updateChange(
+              "location",
+              [x, y, height, country, canton, municipality],
+              false,
+            );
           }}
           id={borehole.data.id}
           isEditable={borehole.data.lock?.username === user.data.username}

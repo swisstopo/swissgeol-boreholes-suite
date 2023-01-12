@@ -259,17 +259,12 @@ class BoreholeForm extends React.Component {
       }
       _.set(borehole.data, "location_x", value[0]);
       _.set(borehole.data, "location_y", value[1]);
-      _.set(borehole.data, "custom.canton", value[2]);
-      _.set(borehole.data, "custom.city", value[3]);
-      if (value[4] !== null) {
-        if (!this.isNumber(value[4])) {
-          return;
-        }
-        _.set(borehole.data, "elevation_z", value[4]);
+      if (value[2] !== null && this.isNumber(value[2])) {
+        _.set(borehole.data, "elevation_z", value[2]);
       }
-    } else if (attribute === "geocoding") {
-      _.set(borehole.data, "custom.canton", value[0]);
-      _.set(borehole.data, "custom.city", value[1]);
+      _.set(borehole.data, "custom.country", value[3]);
+      _.set(borehole.data, "custom.canton", value[4]);
+      _.set(borehole.data, "custom.municipality", value[5]);
     } else {
       _.set(borehole.data, attribute, value);
     }
@@ -300,8 +295,10 @@ class BoreholeForm extends React.Component {
                   borehole.lock = response.data.lock;
                   borehole.updater = response.data.updater;
                   if (response.data.location) {
+                    borehole.custom.country = response.data.location.country;
                     borehole.custom.canton = response.data.location.canton;
-                    borehole.custom.city = response.data.location.city;
+                    borehole.custom.municipality =
+                      response.data.location.municipality;
                   }
                   this.props.updateBorehole(borehole);
                 },
@@ -584,8 +581,6 @@ const mapStateToProps = state => {
     developer: state.developer,
     workflow: state.core_workflow,
     domains: state.core_domain_list,
-    cantons: state.core_canton_list.data,
-    municipalities: state.core_municipality_list.data,
     user: state.core_user,
   };
 };

@@ -375,7 +375,7 @@ class MetaComponent extends React.Component {
             }}>
             {this.getTextRow(
               "city",
-              <MunicipalityText id={data.custom.city} />,
+              <MunicipalityText id={data.custom.municipality} />,
             )}
           </div>
         </div>
