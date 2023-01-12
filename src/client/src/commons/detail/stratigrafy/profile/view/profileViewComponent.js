@@ -22,19 +22,8 @@ class ProfileView extends React.Component {
     this.state = {
       allfields: false,
       viewas: props.kind,
-      // viewas: props.kinds && props.kinds.length > 0? props.kinds[0]: null
     };
   }
-
-  // static getDerivedStateFromProps(props, state) {
-  // componentDidUpdate(prevProps, prevState) {
-  //   const {
-  //     kinds
-  //   } = this.props;
-  //   this.setState({
-  //     viewas: kinds && kinds.length > 0? kinds[0]: null
-  //   });
-  // }
 
   getDomainRow(schema, id, i18n = undefined) {
     return this.getTextRow(
@@ -247,13 +236,7 @@ class ProfileView extends React.Component {
               pattern: domains.data.layer_kind.find(
                 element => element.id === this.state.viewas,
               )?.conf.pattern,
-              // color: 'lithostratigraphy',
-              // pattern: 'lithology'
             }}
-            // minimapSelectedLayerStyle={{
-            //   border: '2px solid #2185d0',
-            //   boxShadow: 'rgba(0, 0, 0, 0.2) 4px 4px 12px'
-            // }}
             onSelected={handleSelected}
             overLayerStyle={{
               backgroundColor: "rgb(245, 245, 245)",
@@ -381,7 +364,11 @@ class ProfileView extends React.Component {
                   layer.grain_size_2,
                   "layer_grain_size_2",
                 )}
-                {this.getDomainRow("mcla101", layer.uscs_3, "layer_uscs_3")}
+                {this.getDomainRowMultiple(
+                  "mcla101",
+                  layer.uscs_3,
+                  "layer_uscs_3",
+                )}
                 {this.getDomainRowMultiple(
                   "mlpr110",
                   layer.grain_shape,
@@ -463,8 +450,6 @@ ProfileView.propTypes = {
     language: PropTypes.string,
   }),
   kind: PropTypes.number,
-  // kinds: PropTypes.array,
-  // isFetchingLayer: PropTypes.bool,
   layer: PropTypes.object,
   setting: PropTypes.shape({
     data: PropTypes.object,

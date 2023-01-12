@@ -228,17 +228,6 @@ public class Layer
     public Codelist? Uscs2 { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s Uscs 3.
-    /// </summary>
-    [Column("uscs_3_id_cli")]
-    public int? Uscs3Id { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s Uscs 3.
-    /// </summary>
-    public Codelist? Uscs3 { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s Original Uscs.
     /// </summary>
     [Column("uscs_original_lay")]

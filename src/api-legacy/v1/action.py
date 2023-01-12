@@ -467,6 +467,12 @@ class Action():
             layer_codelist.append("""
                 id_cli_fk = %s
             """ % self.getIdx())
+        
+        if 'layer_uscs_3' in keys and filter['layer_uscs_3'] not in ['', None]:
+            params.append(filter['layer_uscs_3'])
+            layer_codelist.append("""
+                id_cli_fk = %s
+            """ % self.getIdx())
 
         if len(layer_codelist) > 0:
             joins.append("""
@@ -499,12 +505,6 @@ class Action():
             params.append(filter['layer_uscs_2'])
             where.append("""
                 uscs_2_id_cli = %s
-            """ % self.getIdx())
-
-        if 'layer_uscs_3' in keys and filter['layer_uscs_3'] not in ['', None]:
-            params.append(filter['layer_uscs_3'])
-            where.append("""
-                uscs_3_id_cli = %s
             """ % self.getIdx())
 
         if 'layer_uscs_determination' in keys and filter['layer_uscs_determination'] not in ['', None]:

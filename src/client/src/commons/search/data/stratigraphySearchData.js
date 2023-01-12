@@ -164,7 +164,7 @@ export const stratigraphySearchData = [
     value: "layer_uscs_3",
     schema: "mcla101",
     multiple: false,
-    search: false,
+    search: true,
     isVisibleValue: "layer.uscs_3",
   },
   {

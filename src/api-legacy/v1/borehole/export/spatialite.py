@@ -677,7 +677,7 @@ class ExportSpatiaLite(Action):
                         layer['cohesion'],
                         layer['uscs_1'],
                         layer['uscs_2'],
-                        layer['uscs_3'],
+                        ",".join([str(elem) for elem in layer['uscs_3']]),
                         layer['uscs_original'],
                         layer['uscs_determination'],
                         ",".join([str(elem) for elem in layer['debris']]),
@@ -1242,6 +1242,20 @@ class ImportSpatiaLite(Action):
                                     (
                                         lay_id, int(v), 'mlpr110'
                                     ) for v in layer[33].split(',')]
+                                )
+                            
+                            # uscs_3
+                            if layer[31]:
+
+                                await self.conn.executemany("""
+                                    INSERT INTO
+                                        bdms.layer_codelist (
+                                            id_lay_fk, id_cli_fk, code_cli
+                                        ) VALUES ($1, $2, $3)
+                                """, [
+                                    (
+                                        lay_id, int(v), 'mcla101'
+                                    ) for v in layer[31].split(',')]
                                 )
 
                             # organic_component

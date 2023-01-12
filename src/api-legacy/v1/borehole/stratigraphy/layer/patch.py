@@ -83,9 +83,6 @@ class PatchLayer(Action):
         elif field == 'uscs_2':
             column = 'uscs_2_id_cli'
 
-        elif field == 'uscs_3':
-            column = 'uscs_3_id_cli'
-
         elif field == 'uscs_original':
             column = 'uscs_original_lay'
 
@@ -199,7 +196,6 @@ class PatchLayer(Action):
                 'cohesion',
                 'uscs_1',
                 'uscs_2',
-                'uscs_3',
                 'uscs_determination',
                 'lithology_top_bedrock',
                 'casing_kind',
@@ -252,9 +248,6 @@ class PatchLayer(Action):
                     schema = 'mcla101'
 
                 elif field == 'uscs_2':
-                    schema = 'mcla101'
-
-                elif field == 'uscs_3':
                     schema = 'mcla101'
 
                 elif field == 'uscs_determination':
@@ -361,7 +354,7 @@ class PatchLayer(Action):
                 'organic_component',
                 'grain_shape',
                 'grain_granularity',
-                # 'uscs_3',
+                'uscs_3',
                 # 'uscs_determination',
                 'debris',
                 # 'lithology_top_bedrock'
@@ -381,8 +374,8 @@ class PatchLayer(Action):
                 elif field == 'grain_granularity':
                     schema = 'mlpr115'
 
-                # elif field == 'uscs_3':
-                #     schema = 'mcla101'
+                elif field == 'uscs_3':
+                    schema = 'mcla101'
 
                 # elif field == 'uscs_determination':
                 #     schema = 'mcla104'
