@@ -24,7 +24,7 @@
 - Removed unused columns from database: `borehole.import_id`, `borehole.tecto_id_cli`, `stratigraphy.import_id`, `layer.import_id`, `layer.tectonic_unit_id_cli`, `layer.symbol_id_cli`, `layer.soil_state_id_cli`, `layer.kirost_id_cli`.
 - Removed unused table `bdms.statigraphy_codelist` from database.
 - Removed  `layer.unconrocks_id_cli` and `layer.lithok_id_cli` from database.
-- Changed cardinality of `uscs3` field on `bdms.layer` to n:n.
+- Changed cardinality of `uscs3` field on `bdms.layer` to m:n.
 
 ### Fixed
 
