@@ -70,6 +70,7 @@ public class MigrateController : ControllerBase
                 var setDestinationLocationY = (double y) => transformDirection == Lv95ToLv03 ? borehole.LocationYLV03 = y : borehole.LocationY = y;
 
                 if (onlyMissing && destinationLocationX != null && destinationLocationY != null) continue;
+                if (sourceLocationX == null || sourceLocationY == null) continue;
 
                 var reframeOptions = FormattableString.Invariant(
                     $"{transformDirection}?easting={sourceLocationX}&northing={sourceLocationY}&format=json");

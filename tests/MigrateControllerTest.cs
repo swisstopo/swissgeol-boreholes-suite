@@ -8,6 +8,7 @@ using Moq;
 using Moq.Protected;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.RegularExpressions;
 
 namespace BDMS;
 
@@ -44,6 +45,7 @@ public class MigrateControllerTest
     {
         await AssertRecalculateCoordinatesAsync(onlyMissing: false, 8097, context =>
         {
+            AssertUnchangedBohrungLuciaCrist(context);
             AssertBohrungJonathonAnderson60(context);
             AssertBohrungPaulaGulgowski(context);
         });
@@ -54,6 +56,7 @@ public class MigrateControllerTest
     {
         await AssertRecalculateCoordinatesAsync(onlyMissing: true, 1527, context =>
         {
+            AssertUnchangedBohrungLuciaCrist(context);
             AssertBohrungJonathonAnderson60(context);
             AssertUnchangedBohrungPaulaGulgowski(context);
         });
@@ -68,22 +71,15 @@ public class MigrateControllerTest
         {
             Assert.AreEqual(10000, context.Boreholes.Count());
 
-            // Skip boreholes with null coordinates in source reference system for now, because the current code base cannot handle this.
-            // This will be fixed at a later commit.
-            var boreholesWithNullCoordinates = context.Boreholes
-                .Where(b => (b.OriginalReferenceSystem == ReferenceSystem.LV95 && (b.LocationX == null || b.LocationY == null)) ||
-                            (b.OriginalReferenceSystem == ReferenceSystem.LV03 && (b.LocationXLV03 == null || b.LocationYLV03 == null)));
-            context.RemoveRange(boreholesWithNullCoordinates);
-            context.SaveChanges();
-
-            Assert.AreEqual(8097, context.Boreholes.Count());
-
             var httpClient = new HttpClient(httpMessageHandler.Object);
             httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(httpClient).Verifiable();
 
             var jsonContent = () => JsonContent.Create(new { easting = "9876.543", northing = "1234.5623" });
             httpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(m => Regex.IsMatch(m.RequestUri.AbsoluteUri, "easting=\\d{1,}\\.?\\d*&northing=\\d{1,}\\.?\\d*&format=json$")),
+                    ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = jsonContent() })
                 .Verifiable();
 
@@ -103,6 +99,18 @@ public class MigrateControllerTest
             context.Boreholes.AddRange(boreholes);
             context.SaveChanges();
         }
+    }
+
+    private static void AssertUnchangedBohrungLuciaCrist(BdmsContext context)
+    {
+        var bohrung = context.Boreholes.Single(b => b.Id == 1000014);
+        Assert.AreEqual("Lucia_Crist", bohrung.AlternateName);
+        Assert.AreEqual(ReferenceSystem.LV95, bohrung.OriginalReferenceSystem);
+        Assert.AreEqual(2525078.5292495643, bohrung.LocationX);
+        Assert.AreEqual(null, bohrung.LocationY);
+        Assert.AreEqual("POINT (2761165 1074306)", bohrung.Geometry.ToString());
+        Assert.AreEqual(706310.53521463671, bohrung.LocationXLV03);
+        Assert.AreEqual(null, bohrung.LocationYLV03);
     }
 
     private static void AssertBohrungJonathonAnderson60(BdmsContext context)
