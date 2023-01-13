@@ -1,27 +1,37 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
 
 import { Form, Header } from "semantic-ui-react";
+import { fetchApiV2 } from "../../../../api/fetchApiV2";
 
 class CantonDropdown extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      cantons: [],
       selected: this.props.selected,
     };
     this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
-    const { cantons } = this.props;
-    if (cantons.length === 0) this.props.loadCantons();
+    const { cantons } = this.state;
+    if (cantons.length === 0) {
+      fetchApiV2("canton")
+        .then(cantons =>
+          this.setState({
+            ...this.state,
+            cantons: cantons,
+          }),
+        )
+        .catch(error => console.log(error));
+    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
-      this.props.cantons.length !== nextProps.cantons.length ||
-      this.state.selected !== nextState.selected
+      this.state.cantons.length !== nextState.cantons.length ||
+      this.state.selected !== nextProps.selected
     );
   }
 
@@ -32,8 +42,7 @@ class CantonDropdown extends React.Component {
   }
 
   render() {
-    const { cantons } = this.props,
-      { selected } = this.state;
+    const { cantons, selected } = this.state;
     return (
       <Form.Select
         fluid={true}
@@ -59,16 +68,4 @@ CantonDropdown.propTypes = {
   onSelected: PropTypes.func,
 };
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    cantons: state.core_canton_list.data,
-  };
-};
-
-const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    dispatch: dispatch,
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(CantonDropdown);
+export default CantonDropdown;

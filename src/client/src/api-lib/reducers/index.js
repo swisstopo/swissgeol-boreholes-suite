@@ -821,18 +821,6 @@ export function domainsList() {
   };
 }
 
-export function cantonList() {
-  const initialState = {
-    isFetching: false,
-    rtime: 0, // fetch time
-    fcnt: 0, // fetch counter
-    data: ["Some fake canton", "Another fake canton"],
-  };
-  return function canton(state = initialState, action) {
-    return state;
-  };
-}
-
 export function layersList() {
   const initialState = {
     isFetching: false,
@@ -885,7 +873,6 @@ export function createReducer(pluginsReducers) {
     core_project_list: projectList(),
     core_stratigraphy_list: stratigraphyList(),
     core_domain_list: domainsList(),
-    core_canton_list: cantonList(),
     core_layers_list: layersList(),
     ...pluginsReducers,
   });
