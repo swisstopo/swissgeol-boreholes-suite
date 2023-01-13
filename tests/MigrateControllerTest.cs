@@ -112,7 +112,7 @@ public class MigrateControllerTest
         Assert.AreEqual(ReferenceSystem.LV95, bohrung.OriginalReferenceSystem);
         Assert.AreEqual(2655485.6419794895, bohrung.LocationX);
         Assert.AreEqual(1098169.2770996222, bohrung.LocationY);
-        Assert.AreEqual("POINT (2638753 1181730)", bohrung.Geometry.ToString());
+        Assert.AreEqual("POINT (2655485.6419794895 1098169.2770996222)", bohrung.Geometry.ToString());
         Assert.AreEqual(9876.543, bohrung.LocationXLV03);
         Assert.AreEqual(1234.5623, bohrung.LocationYLV03);
     }

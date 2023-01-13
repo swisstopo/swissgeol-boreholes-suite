@@ -86,10 +86,10 @@ public class MigrateController : ControllerBase
                         "lv03tolv95", borehole.LocationXLV03, borehole.LocationYLV03).ConfigureAwait(false);
                     borehole.LocationX = easting;
                     borehole.LocationY = northing;
-
-                    // Update geometry when changing LV95 coordinates
-                    borehole.Geometry = new Point(borehole.LocationX.Value, borehole.LocationY.Value) { SRID = 2056 };
                 }
+
+                // Update geometry (using LV95 coordinates)
+                borehole.Geometry = new Point(borehole.LocationX!.Value, borehole.LocationY!.Value) { SRID = 2056 };
 
                 transformedCoordinates++;
             }
