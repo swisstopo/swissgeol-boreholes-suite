@@ -80,8 +80,9 @@ public class MigrateController : ControllerBase
 
                 var jsonResult = await response.Content.ReadFromJsonAsync<JsonElement>().ConfigureAwait(false);
 
-                setDestinationLocationX(double.Parse(jsonResult.GetProperty("easting").GetString()!, CultureInfo.InvariantCulture));
-                setDestinationLocationY(double.Parse(jsonResult.GetProperty("northing").GetString()!, CultureInfo.InvariantCulture));
+                var originalDecimalPlaces = new List<int> { GetDecimalPlaces(sourceLocationX.Value), GetDecimalPlaces(sourceLocationY.Value) }.OrderByDescending(x => x).First();
+                setDestinationLocationX(Math.Round(double.Parse(jsonResult.GetProperty("easting").GetString()!, CultureInfo.InvariantCulture), originalDecimalPlaces, MidpointRounding.AwayFromZero));
+                setDestinationLocationY(Math.Round(double.Parse(jsonResult.GetProperty("northing").GetString()!, CultureInfo.InvariantCulture), originalDecimalPlaces, MidpointRounding.AwayFromZero));
 
                 // Update geometry (using LV95 coordinates)
                 borehole.Geometry = new Point(borehole.LocationX!.Value, borehole.LocationY!.Value) { SRID = 2056 };
@@ -103,4 +104,10 @@ public class MigrateController : ControllerBase
 
         return new JsonResult(new { transformedCoordinates, onlyMissing, dryRun, success = true });
     }
+
+    /// <summary>
+    /// Gets the number of decimal places for the given <paramref name="value"/>.
+    /// </summary>
+    internal static int GetDecimalPlaces(double value) =>
+        value.ToString(CultureInfo.InvariantCulture).Split('.').Skip(1).FirstOrDefault()?.Length ?? default;
 }
