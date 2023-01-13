@@ -45,6 +45,9 @@ public class MigrateController : ControllerBase
     ///
     /// Example:
     /// https://example.com/api/v2/migrate/recalculatecoordinates?onlymissing=true&dryrun=true
+    ///
+    /// Important:
+    /// In order to use this endpoint, you have to authenticate with an admin user.
     /// ]]>
     [HttpGet("recalculatecoordinates")]
     public async Task<IActionResult> RecalculateCoordinates(bool onlyMissing = true, bool dryRun = true)
