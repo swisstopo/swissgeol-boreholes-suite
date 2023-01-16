@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -107,8 +108,20 @@ public class Codelist
     public string? Conf { get; set; }
 
     /// <summary>
-    /// Gets or sets wheter the <see cref="Codelist"/> is default.
+    /// Gets or sets whether the <see cref="Codelist"/> is default.
     /// </summary>
     [Column("default_cli")]
     public bool? IsDefault { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="Layer"/>s that use this <see cref="Codelist"/>.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<Layer> Layers { get; }
+
+    /// <summary>
+    /// Gets the <see cref="LayerCodelist"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LayerCodelist> LayerCodelists { get; }
 }

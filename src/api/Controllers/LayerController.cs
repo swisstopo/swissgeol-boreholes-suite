@@ -24,7 +24,7 @@ public class LayerController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Layer>>> GetAsync([FromQuery] int? profileId = null)
     {
-        var layers = context.Layers.AsNoTracking();
+        var layers = GetLayersWithIncludes();
         if (profileId != null)
         {
             layers = layers.Where(l => l.StratigraphyId == profileId);
@@ -35,7 +35,7 @@ public class LayerController : ControllerBase
             return NotFound();
         }
 
-        return await layers.AsNoTracking().ToListAsync().ConfigureAwait(false);
+        return await layers.ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public class LayerController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Layer>> GetByIdAsync(int id)
     {
-        var layer = await context.Layers.SingleOrDefaultAsync(l => l.Id == id).ConfigureAwait(false);
+        var layer = await GetLayersWithIncludes().SingleOrDefaultAsync(l => l.Id == id).ConfigureAwait(false);
 
         if (layer == null)
         {
@@ -68,7 +68,7 @@ public class LayerController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var layerToUpdate = await context.Layers.SingleOrDefaultAsync(c => c.Id == layer.Id).ConfigureAwait(false);
+        var layerToUpdate = await GetLayersWithIncludes().SingleOrDefaultAsync(c => c.Id == layer.Id).ConfigureAwait(false);
 
         if (layerToUpdate == null)
         {
@@ -88,5 +88,36 @@ public class LayerController : ControllerBase
             logger.LogError(ex, errorMessage);
             return Problem(errorMessage, statusCode: StatusCodes.Status400BadRequest);
         }
+    }
+
+    private IQueryable<Layer> GetLayersWithIncludes()
+    {
+        return context.Layers
+            .Include(l => l.QtDescription)
+            .Include(l => l.Lithology)
+            .Include(l => l.Chronostratigraphy)
+            .Include(l => l.Plasticity)
+            .Include(l => l.Consistance)
+            .Include(l => l.Alteration)
+            .Include(l => l.Compactness)
+            .Include(l => l.GrainSize1)
+            .Include(l => l.GrainSize2)
+            .Include(l => l.Cohesion)
+            .Include(l => l.Uscs1)
+            .Include(l => l.Uscs2)
+            .Include(l => l.UscsDetermination)
+            .Include(l => l.Lithostratigraphy)
+            .Include(l => l.Humidity)
+            .Include(l => l.InstrumentKind)
+            .Include(l => l.InstrumentStatus)
+            .Include(l => l.CasingKind)
+            .Include(l => l.CasingMaterial)
+            .Include(l => l.FillMaterial)
+            .Include(l => l.Gradation)
+            .Include(l => l.FillKind)
+            .Include(l => l.LithologyTopBedrock)
+            .Include(l => l.LayerCodelists)
+            .Include(l => l.Codelists)
+            .AsNoTracking();
     }
 }

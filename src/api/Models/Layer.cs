@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -421,4 +423,15 @@ public class Layer
 
     [Column("original_lithology")]
     public string? OriginalLithology { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="Codelist"/>s used by the <see cref="Layer"/>.
+    /// </summary>
+    public ICollection<Codelist> Codelists { get; }
+
+    /// <summary>
+    /// Gets the<see cref= "LayerCodelist"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public IList<LayerCodelist> LayerCodelists { get; }
 }
