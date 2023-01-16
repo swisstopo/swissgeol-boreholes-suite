@@ -6,7 +6,11 @@ import DomainDropdown from "../../../../../domain/dropdown/domainDropdown";
 import { InstrumentAttributes } from "../../data/InstrumentAttributes";
 import { useTranslation } from "react-i18next";
 import CasingList from "../../../casingList";
-import { fetchApiV2 } from "../../../../../../../api/fetchApiV2";
+import {
+  fetchLayerById,
+  fetchLayersByProfileId,
+  updateLayer,
+} from "../../../../../../../api/fetchApiV2";
 import { NumericFormat } from "react-number-format";
 import { parseIfString } from "../../../../../formUtils";
 import produce from "immer";
@@ -25,21 +29,6 @@ const Instrument = props => {
   const { t } = useTranslation();
   const [casingLayers, setCasingLayers] = useState([]);
   const [instrument, setInstrument] = useState([]);
-
-  async function fetchLayersByProfileId(profileId) {
-    return await fetchApiV2(`layer?profileId=${profileId}`, "GET");
-  }
-
-  async function fetchLayerById(id) {
-    return await fetchApiV2(`layer/${id}`, "GET");
-  }
-
-  async function updateLayer(layer) {
-    // remove derived objects
-    delete layer.createdBy;
-    delete layer.updatedBy;
-    return await fetchApiV2(`layer`, "PUT", layer);
-  }
 
   const fetchCasingLayers = useCallback(instrumentCasingId => {
     if (instrumentCasingId) {

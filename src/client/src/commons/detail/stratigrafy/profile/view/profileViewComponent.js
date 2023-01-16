@@ -87,7 +87,7 @@ class ProfileView extends React.Component {
       layer !== null && domains.data.hasOwnProperty("layer_kind")
         ? (() => {
             const filtered = domains.data.layer_kind.filter(
-              kind => layer.kind === kind.id,
+              kind => this.props.kind === kind.id,
             );
 
             let fields = { ...filtered[0].conf.viewerFields };
@@ -216,13 +216,13 @@ class ProfileView extends React.Component {
             getPattern={this.getPattern}
             getSubTitle={layer => (
               <DomainText
-                id={layer.lithology}
+                id={layer.lithology.id}
                 schema="custom.lithology_top_bedrock"
               />
             )}
             getTitle={layer => (
               <DomainText
-                id={layer.lithostratigraphy}
+                id={layer.lithostratigraphy.id}
                 schema="custom.lithostratigraphy_top_bedrock"
               />
             )}
@@ -307,127 +307,148 @@ class ProfileView extends React.Component {
                   />
                 </div>
 
-                {this.getNumericTextRow("layer_depth_from", layer.depth_from)}
-                {this.getNumericTextRow("layer_depth_to", layer.depth_to)}
+                {this.getNumericTextRow("layer_depth_from", layer.fromDepth)}
+                {this.getNumericTextRow("layer_depth_to", layer.toDepth)}
                 {this.getTextRow(
                   "lithological_description",
-                  layer.lithological_description,
+                  layer.descriptionLithological,
                 )}
-                {this.getTextRow(
-                  "facies_description",
-                  layer.facies_description,
-                )}
+                {this.getTextRow("facies_description", layer.descriptionFacies)}
                 {this.getTextRow(
                   "layer_last",
-                  layer.last === true
+                  layer.isLast === true
                     ? t("common:yes")
-                    : layer.last === false
+                    : layer.isLast === false
                     ? t("common:no")
                     : null,
                 )}
                 {this.getDomainRow(
                   "qt_description",
-                  layer.qt_description,
+                  layer.qtDescription.id,
                   "layer_qt_description",
                 )}
                 {this.getDomainRow(
                   "custom.lithology_top_bedrock",
-                  layer.lithology,
+                  layer.lithology.id,
                   "layer_lithology",
                 )}
                 {this.getDomainRow(
                   "custom.lithostratigraphy_top_bedrock",
-                  layer.lithostratigraphy,
+                  layer.lithostratigraphy.id,
                   "layer_lithostratigraphy",
                 )}
                 {this.getDomainRow(
                   "custom.chronostratigraphy_top_bedrock",
-                  layer.chronostratigraphy,
+                  layer.chronostratigraphy.id,
                   "layer_chronostratigraphy",
                 )}
 
-                {this.getTextRow("layer_uscs_original", layer.uscs_original)}
+                {this.getTextRow("layer_uscs_original", layer.originalUscs)}
                 {this.getDomainRow(
                   "mcla104",
-                  layer.uscs_determination,
+                  layer.uscsDetermination.id,
                   "layer_uscs_determination",
                 )}
-                {this.getDomainRow("mcla101", layer.uscs_1, "layer_uscs_1")}
+                {this.getDomainRow("mcla101", layer.uscs1.id, "layer_uscs_1")}
                 {this.getDomainRow(
                   "mlpr109",
-                  layer.grain_size_1,
+                  layer.grainSize1.id,
                   "layer_grain_size_1",
                 )}
-                {this.getDomainRow("mcla101", layer.uscs_2, "layer_uscs_2")}
+                {this.getDomainRow("mcla101", layer.uscs2.id, "layer_uscs_2")}
                 {this.getDomainRow(
                   "mlpr109",
-                  layer.grain_size_2,
+                  layer.grainSize2.id,
                   "layer_grain_size_2",
                 )}
                 {this.getDomainRowMultiple(
                   "mcla101",
-                  layer.uscs_3,
+                  layer.codelists
+                    .filter(c => c.schema === "mcla101")
+                    .map(c => c.id),
                   "layer_uscs_3",
                 )}
                 {this.getDomainRowMultiple(
                   "mlpr110",
-                  layer.grain_shape,
+                  layer.codelists
+                    .filter(c => c.schema === "mlpr110")
+                    .map(c => c.id),
                   "layer_grain_shape",
                 )}
                 {this.getDomainRowMultiple(
                   "mlpr115",
-                  layer.grain_granularity,
+                  layer.codelists
+                    .filter(c => c.schema === "mlpr115")
+                    .map(c => c.id),
                   "layer_grain_granularity",
                 )}
                 {this.getDomainRowMultiple(
                   "mlpr108",
-                  layer.organic_component,
+                  layer.codelists
+                    .filter(c => c.schema === "mlpr108")
+                    .map(c => c.id),
                   "layer_organic_component",
                 )}
                 {this.getDomainRowMultiple(
                   "mcla107",
-                  layer.debris,
+                  layer.codelists
+                    .filter(c => c.schema === "mcla107")
+                    .map(c => c.id),
                   "layer_debris",
                 )}
                 {this.getDomainRow(
                   "custom.lithology_top_bedrock",
-                  layer.lithology_top_bedrock,
+                  layer.lithologyTopBedrock.id,
                   "layer_lithology_top_bedrock",
                 )}
                 {this.getTextRow(
                   "layer_striae",
-                  layer.striae === true
+                  layer.isStriae === true
                     ? t("common:yes")
-                    : layer.striae === false
+                    : layer.isStriae === false
                     ? t("common:no")
                     : null,
                 )}
                 {this.getDomainRowMultiple(
                   "mlpr112",
-                  layer.color,
+                  layer.codelists
+                    .filter(c => c.schema === "mlpr112")
+                    .map(c => c.id),
                   "layer_color",
                 )}
                 {this.getDomainRow(
                   "mlpr103",
-                  layer.consistance,
+                  layer.consistance.id,
                   "layer_consistance",
                 )}
                 {this.getDomainRow(
                   "mlpr101",
-                  layer.plasticity,
+                  layer.plasticity.id,
                   "layer_plasticity",
                 )}
                 {this.getDomainRow(
                   "mlpr102",
-                  layer.compactness,
+                  layer.compactness.id,
                   "layer_compactness",
                 )}
-                {this.getDomainRow("mlpr116", layer.cohesion, "layer_cohesion")}
-                {this.getDomainRow("gradation", layer.gradation, "gradation")}
-                {this.getDomainRow("mlpr105", layer.humidity, "layer_humidity")}
+                {this.getDomainRow(
+                  "mlpr116",
+                  layer.cohesion.id,
+                  "layer_cohesion",
+                )}
+                {this.getDomainRow(
+                  "gradation",
+                  layer.gradation.id,
+                  "gradation",
+                )}
+                {this.getDomainRow(
+                  "mlpr105",
+                  layer.humidity.id,
+                  "layer_humidity",
+                )}
                 {this.getDomainRow(
                   "mlpr106",
-                  layer.alteration,
+                  layer.alteration.id,
                   "layer_alteration",
                 )}
                 {this.getTextRow("layer_notes", layer.notes)}

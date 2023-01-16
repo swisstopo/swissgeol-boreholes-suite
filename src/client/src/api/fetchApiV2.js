@@ -27,3 +27,18 @@ export async function fetchApiV2(url, method, payload = null) {
     return await response.json();
   }
 }
+
+export async function fetchLayerById(id) {
+  return await fetchApiV2(`layer/${id}`, "GET");
+}
+
+export async function fetchLayersByProfileId(profileId) {
+  return await fetchApiV2(`layer?profileId=${profileId}`, "GET");
+}
+
+export async function updateLayer(layer) {
+  // remove derived objects
+  delete layer.createdBy;
+  delete layer.updatedBy;
+  return await fetchApiV2(`layer`, "PUT", layer);
+}
