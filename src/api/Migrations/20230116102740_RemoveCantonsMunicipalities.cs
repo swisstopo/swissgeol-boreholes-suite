@@ -1,49 +1,45 @@
-﻿using BDMS.Models;
-using Microsoft.EntityFrameworkCore.Migrations;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static System.Net.Mime.MediaTypeNames;
-using System.Collections.Generic;
-using Bogus.DataSets;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using System;
 
 #nullable disable
 
-namespace BDMS.Migrations
+namespace BDMS.Migrations;
+public partial class RemoveCantonsMunicipalities : Migration
 {
-    public partial class RemoveCantonsMunicipalities : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<string>(
-                name: "country_bho_tmp",
-                schema: "bdms",
-                table: "borehole",
-                type: "text",
-                nullable: true);
+        migrationBuilder.AddColumn<string>(
+            name: "country_bho_tmp",
+            schema: "bdms",
+            table: "borehole",
+            type: "text",
+            nullable: true);
 
-            migrationBuilder.AddColumn<string>(
-                name: "canton_bho_tmp",
-                schema: "bdms",
-                table: "borehole",
-                type: "text",
-                nullable: true);
+        migrationBuilder.AddColumn<string>(
+            name: "canton_bho_tmp",
+            schema: "bdms",
+            table: "borehole",
+            type: "text",
+            nullable: true);
 
-            migrationBuilder.AddColumn<string>(
-                name: "municipality_bho_tmp",
-                schema: "bdms",
-                table: "borehole",
-                type: "text",
-                nullable: true);
+        migrationBuilder.AddColumn<string>(
+            name: "municipality_bho_tmp",
+            schema: "bdms",
+            table: "borehole",
+            type: "text",
+            nullable: true);
 
-            migrationBuilder.Sql(@"
+        migrationBuilder.Sql(@"
                 UPDATE bdms.borehole
                 SET country_bho_tmp = 'Schweiz',
                     canton_bho_tmp = (SELECT name from bdms.cantons WHERE cantons.gid = canton_bho),
                     municipality_bho_tmp = (SELECT name from bdms.municipalities WHERE municipalities.gid = city_bho)
                 ");
 
-            // Remove Canton / City as measure of completeness.
-            migrationBuilder.Sql("DROP VIEW bdms.completness");
-            migrationBuilder.Sql(@"
+        // Remove Canton / City as measure of completeness.
+        migrationBuilder.Sql("DROP VIEW bdms.completness");
+        migrationBuilder.Sql(@"
             CREATE VIEW bdms.completness AS
              SELECT t.id_bho,
                 row_to_json(t.*) AS detail,
@@ -111,24 +107,22 @@ namespace BDMS.Migrations
                       ORDER BY borehole.id_bho) t;
 ");
 
-            migrationBuilder.DropCheckConstraint(name: "borehole_canton_bho_fkey", table: "borehole", schema: "bdms");
-            migrationBuilder.DropCheckConstraint(name: "borehole_city_bho_fkey", table: "borehole", schema: "bdms");
+        migrationBuilder.DropCheckConstraint(name: "borehole_canton_bho_fkey", table: "borehole", schema: "bdms");
+        migrationBuilder.DropCheckConstraint(name: "borehole_city_bho_fkey", table: "borehole", schema: "bdms");
 
-            migrationBuilder.DropColumn(name: "canton_bho", table: "borehole", schema: "bdms");
-            migrationBuilder.DropColumn(name: "city_bho", table: "borehole", schema: "bdms");
+        migrationBuilder.DropColumn(name: "canton_bho", table: "borehole", schema: "bdms");
+        migrationBuilder.DropColumn(name: "city_bho", table: "borehole", schema: "bdms");
 
-            migrationBuilder.RenameColumn(name: "country_bho_tmp", table: "borehole", newName: "country_bho", schema: "bdms");
-            migrationBuilder.RenameColumn(name: "canton_bho_tmp", table: "borehole", newName: "canton_bho", schema: "bdms");
-            migrationBuilder.RenameColumn(name: "municipality_bho_tmp", table: "borehole", newName: "municipality_bho", schema: "bdms");
+        migrationBuilder.RenameColumn(name: "country_bho_tmp", table: "borehole", newName: "country_bho", schema: "bdms");
+        migrationBuilder.RenameColumn(name: "canton_bho_tmp", table: "borehole", newName: "canton_bho", schema: "bdms");
+        migrationBuilder.RenameColumn(name: "municipality_bho_tmp", table: "borehole", newName: "municipality_bho", schema: "bdms");
 
-            migrationBuilder.DropTable(name: "cantons", schema: "bdms");
-            migrationBuilder.DropTable(name: "municipalities", schema: "bdms");
+        migrationBuilder.DropTable(name: "cantons", schema: "bdms");
+        migrationBuilder.DropTable(name: "municipalities", schema: "bdms");
+    }
 
-        }
-
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            throw new NotImplementedException();
-        }
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        throw new NotImplementedException();
     }
 }

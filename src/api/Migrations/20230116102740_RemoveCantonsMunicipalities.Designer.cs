@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20230106103304_RemoveCantonsMunicipalities")]
+    [Migration("20230116102740_RemoveCantonsMunicipalities")]
     partial class RemoveCantonsMunicipalities
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,17 +39,17 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("alternate_name_bho");
 
-                    b.Property<int?>("CantonId")
-                        .HasColumnType("integer")
+                    b.Property<string>("Canton")
+                        .HasColumnType("text")
                         .HasColumnName("canton_bho");
 
                     b.Property<int?>("ChronostratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("chronostrat_id_cli");
 
-                    b.Property<int?>("CityId")
-                        .HasColumnType("integer")
-                        .HasColumnName("city_bho");
+                    b.Property<string>("Country")
+                        .HasColumnType("text")
+                        .HasColumnName("country_bho");
 
                     b.Property<DateTime?>("Created")
                         .HasColumnType("timestamp with time zone")
@@ -94,10 +94,6 @@ namespace BDMS.Migrations
                     b.Property<int?>("HrsId")
                         .HasColumnType("integer")
                         .HasColumnName("hrs_id_cli");
-
-                    b.Property<int?>("ImportId")
-                        .HasColumnType("integer")
-                        .HasColumnName("import_id");
 
                     b.Property<double?>("Inclination")
                         .HasColumnType("double precision")
@@ -146,6 +142,10 @@ namespace BDMS.Migrations
                     b.Property<int?>("LockedById")
                         .HasColumnType("integer")
                         .HasColumnName("locked_by_bho");
+
+                    b.Property<string>("Municipality")
+                        .HasColumnType("text")
+                        .HasColumnName("municipality_bho");
 
                     b.Property<string>("OriginalName")
                         .HasColumnType("text")
@@ -223,10 +223,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("status_id_cli");
 
-                    b.Property<int?>("TectonicId")
-                        .HasColumnType("integer")
-                        .HasColumnName("tecto_id_cli");
-
                     b.Property<double?>("TopBedrock")
                         .HasColumnType("double precision")
                         .HasColumnName("top_bedrock_bho");
@@ -257,11 +253,7 @@ namespace BDMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CantonId");
-
                     b.HasIndex("ChronostratigraphyId");
-
-                    b.HasIndex("CityId");
 
                     b.HasIndex("CreatedById");
 
@@ -302,8 +294,6 @@ namespace BDMS.Migrations
                     b.HasIndex("RestrictionId");
 
                     b.HasIndex("StatusId");
-
-                    b.HasIndex("TectonicId");
 
                     b.HasIndex("UpdatedById");
 
@@ -355,100 +345,6 @@ namespace BDMS.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("borehole_files", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.Canton", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("gid");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateOnly?>("DatumAenderung")
-                        .HasColumnType("date")
-                        .HasColumnName("datum_aend");
-
-                    b.Property<DateOnly?>("DatumErstellung")
-                        .HasColumnType("date")
-                        .HasColumnName("datum_erst");
-
-                    b.Property<int?>("Einwohnerzahl")
-                        .HasColumnType("integer")
-                        .HasColumnName("einwohnerz");
-
-                    b.Property<int?>("ErstellungsJahr")
-                        .HasColumnType("integer")
-                        .HasColumnName("erstell_j");
-
-                    b.Property<string>("ErstellungsMonat")
-                        .HasColumnType("text")
-                        .HasColumnName("erstell_m");
-
-                    b.Property<string>("GrundAenderung")
-                        .HasColumnType("text")
-                        .HasColumnName("grund_aend");
-
-                    b.Property<string>("Herkunft")
-                        .HasColumnType("text")
-                        .HasColumnName("herkunft");
-
-                    b.Property<int?>("HerkunftJahr")
-                        .HasColumnType("integer")
-                        .HasColumnName("herkunft_j");
-
-                    b.Property<string>("HerkunftMonat")
-                        .HasColumnType("text")
-                        .HasColumnName("herkunft_m");
-
-                    b.Property<string>("Icc")
-                        .HasColumnType("text")
-                        .HasColumnName("icc");
-
-                    b.Property<string>("KantonsTeil")
-                        .HasColumnType("text")
-                        .HasColumnName("kt_teil");
-
-                    b.Property<decimal?>("Kantonsflaeche")
-                        .HasColumnType("numeric")
-                        .HasColumnName("kantonsfla");
-
-                    b.Property<int?>("Kantonsnummer")
-                        .HasColumnType("integer")
-                        .HasColumnName("kantonsnum");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Objektart")
-                        .HasColumnType("text")
-                        .HasColumnName("objektart");
-
-                    b.Property<int?>("RevisionJahr")
-                        .HasColumnType("integer")
-                        .HasColumnName("revision_j");
-
-                    b.Property<string>("RevisionMonat")
-                        .HasColumnType("text")
-                        .HasColumnName("revision_m");
-
-                    b.Property<string>("RevisionQualitaet")
-                        .HasColumnType("text")
-                        .HasColumnName("revision_q");
-
-                    b.Property<decimal?>("SeeFlaeche")
-                        .HasColumnType("numeric")
-                        .HasColumnName("see_flaech");
-
-                    b.Property<string>("Uuid")
-                        .HasColumnType("text")
-                        .HasColumnName("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("cantons", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.Codelist", b =>
@@ -797,10 +693,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("humidity_id_cli");
 
-                    b.Property<int?>("Import")
-                        .HasColumnType("integer")
-                        .HasColumnName("import_id");
-
                     b.Property<string>("Instrument")
                         .HasColumnType("text")
                         .HasColumnName("instr_id");
@@ -833,14 +725,6 @@ namespace BDMS.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("undefined_lay");
 
-                    b.Property<int?>("KirostId")
-                        .HasColumnType("integer")
-                        .HasColumnName("kirost_id_cli");
-
-                    b.Property<int?>("LithokId")
-                        .HasColumnType("integer")
-                        .HasColumnName("lithok_id_cli");
-
                     b.Property<int?>("LithologyId")
                         .HasColumnType("integer")
                         .HasColumnName("lithology_id_cli");
@@ -857,6 +741,10 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("notes_lay");
 
+                    b.Property<string>("OriginalLithology")
+                        .HasColumnType("text")
+                        .HasColumnName("original_lithology");
+
                     b.Property<string>("OriginalUscs")
                         .HasColumnType("text")
                         .HasColumnName("uscs_original_lay");
@@ -869,29 +757,13 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("qt_description_id_cli");
 
-                    b.Property<int?>("SoilStateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("soil_state_id_cli");
-
                     b.Property<int?>("StratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("id_sty_fk");
 
-                    b.Property<int?>("SymbolId")
-                        .HasColumnType("integer")
-                        .HasColumnName("symbol_id_cli");
-
-                    b.Property<int?>("TectonicUnitId")
-                        .HasColumnType("integer")
-                        .HasColumnName("tectonic_unit_id_cli");
-
                     b.Property<double?>("ToDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_to_lay");
-
-                    b.Property<int?>("UnconrocksId")
-                        .HasColumnType("integer")
-                        .HasColumnName("unconrocks_id_cli");
 
                     b.Property<DateTime?>("Update")
                         .HasColumnType("timestamp with time zone")
@@ -908,10 +780,6 @@ namespace BDMS.Migrations
                     b.Property<int?>("Uscs2Id")
                         .HasColumnType("integer")
                         .HasColumnName("uscs_2_id_cli");
-
-                    b.Property<int?>("Uscs3Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("uscs_3_id_cli");
 
                     b.Property<int?>("UscsDeterminationId")
                         .HasColumnType("integer")
@@ -939,6 +807,8 @@ namespace BDMS.Migrations
 
                     b.HasIndex("FillMaterialId");
 
+                    b.HasIndex("GradationId");
+
                     b.HasIndex("GrainSize1Id");
 
                     b.HasIndex("GrainSize2Id");
@@ -951,10 +821,6 @@ namespace BDMS.Migrations
 
                     b.HasIndex("InstrumentStatusId");
 
-                    b.HasIndex("KirostId");
-
-                    b.HasIndex("LithokId");
-
                     b.HasIndex("LithologyId");
 
                     b.HasIndex("LithologyTopBedrockId");
@@ -965,15 +831,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("QtDescriptionId");
 
-                    b.HasIndex("SoilStateId");
-
                     b.HasIndex("StratigraphyId");
-
-                    b.HasIndex("SymbolId");
-
-                    b.HasIndex("TectonicUnitId");
-
-                    b.HasIndex("UnconrocksId");
 
                     b.HasIndex("UpdatedById");
 
@@ -981,117 +839,9 @@ namespace BDMS.Migrations
 
                     b.HasIndex("Uscs2Id");
 
-                    b.HasIndex("Uscs3Id");
-
                     b.HasIndex("UscsDeterminationId");
 
                     b.ToTable("layer", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.Municipality", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("gid");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("Bezirksnummer")
-                        .HasColumnType("integer")
-                        .HasColumnName("bezirksnum");
-
-                    b.Property<int?>("BfsNummer")
-                        .HasColumnType("integer")
-                        .HasColumnName("bfs_nummer");
-
-                    b.Property<DateOnly?>("DatumAenderung")
-                        .HasColumnType("date")
-                        .HasColumnName("datum_aend");
-
-                    b.Property<DateOnly?>("DatumErstellung")
-                        .HasColumnType("date")
-                        .HasColumnName("datum_erst");
-
-                    b.Property<int?>("Einwohnerzahl")
-                        .HasColumnType("integer")
-                        .HasColumnName("einwohnerz");
-
-                    b.Property<int?>("ErstellungJahr")
-                        .HasColumnType("integer")
-                        .HasColumnName("erstell_j");
-
-                    b.Property<string>("ErstellungMonat")
-                        .HasColumnType("text")
-                        .HasColumnName("erstell_m");
-
-                    b.Property<decimal?>("GemeindeFlaeche")
-                        .HasColumnType("numeric")
-                        .HasColumnName("gem_flaech");
-
-                    b.Property<string>("GemeindeTeil")
-                        .HasColumnType("text")
-                        .HasColumnName("gem_teil");
-
-                    b.Property<string>("GrundAenderung")
-                        .HasColumnType("text")
-                        .HasColumnName("grund_aend");
-
-                    b.Property<string>("Herkunft")
-                        .HasColumnType("text")
-                        .HasColumnName("herkunft");
-
-                    b.Property<int?>("HerkunftJahr")
-                        .HasColumnType("integer")
-                        .HasColumnName("herkunft_j");
-
-                    b.Property<string>("HerkunftMonat")
-                        .HasColumnType("text")
-                        .HasColumnName("herkunft_m");
-
-                    b.Property<string>("Icc")
-                        .HasColumnType("text")
-                        .HasColumnName("icc");
-
-                    b.Property<int?>("Kantonsnummer")
-                        .HasColumnType("integer")
-                        .HasColumnName("kantonsnum");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Objektart")
-                        .HasColumnType("text")
-                        .HasColumnName("objektart");
-
-                    b.Property<string>("RevisionMontat")
-                        .HasColumnType("text")
-                        .HasColumnName("revision_m");
-
-                    b.Property<string>("RevisionQualitaet")
-                        .HasColumnType("text")
-                        .HasColumnName("revision_q");
-
-                    b.Property<int?>("RevisionsJahr")
-                        .HasColumnType("integer")
-                        .HasColumnName("revision_j");
-
-                    b.Property<decimal?>("SeeFlaeche")
-                        .HasColumnType("numeric")
-                        .HasColumnName("see_flaech");
-
-                    b.Property<string>("Shn")
-                        .HasColumnType("text")
-                        .HasColumnName("shn");
-
-                    b.Property<string>("Uuid")
-                        .HasColumnType("text")
-                        .HasColumnName("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("municipalities", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
@@ -1131,10 +881,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("fill_casng_id_sty_fk");
 
-                    b.Property<int?>("ImportId")
-                        .HasColumnType("integer")
-                        .HasColumnName("import_id");
-
                     b.Property<bool?>("IsPrimary")
                         .HasColumnType("boolean")
                         .HasColumnName("primary_sty");
@@ -1164,6 +910,8 @@ namespace BDMS.Migrations
                     b.HasIndex("BoreholeId");
 
                     b.HasIndex("CreatedById");
+
+                    b.HasIndex("FillCasingId");
 
                     b.HasIndex("KindId");
 
@@ -1391,17 +1139,9 @@ namespace BDMS.Migrations
 
             modelBuilder.Entity("BDMS.Models.Borehole", b =>
                 {
-                    b.HasOne("BDMS.Models.Canton", "Canton")
-                        .WithMany("Boreholes")
-                        .HasForeignKey("CantonId");
-
                     b.HasOne("BDMS.Models.Codelist", "Chronostratigraphy")
                         .WithMany()
                         .HasForeignKey("ChronostratigraphyId");
-
-                    b.HasOne("BDMS.Models.Municipality", "City")
-                        .WithMany("Boreholes")
-                        .HasForeignKey("CityId");
 
                     b.HasOne("BDMS.Models.User", "CreatedBy")
                         .WithMany()
@@ -1483,10 +1223,6 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("StatusId");
 
-                    b.HasOne("BDMS.Models.Codelist", "Tectonic")
-                        .WithMany()
-                        .HasForeignKey("TectonicId");
-
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
@@ -1495,11 +1231,7 @@ namespace BDMS.Migrations
                         .WithMany("Boreholes")
                         .HasForeignKey("WorkgroupId");
 
-                    b.Navigation("Canton");
-
                     b.Navigation("Chronostratigraphy");
-
-                    b.Navigation("City");
 
                     b.Navigation("CreatedBy");
 
@@ -1540,8 +1272,6 @@ namespace BDMS.Migrations
                     b.Navigation("Restriction");
 
                     b.Navigation("Status");
-
-                    b.Navigation("Tectonic");
 
                     b.Navigation("UpdatedBy");
 
@@ -1632,6 +1362,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("FillMaterialId");
 
+                    b.HasOne("BDMS.Models.Codelist", "Gradation")
+                        .WithMany()
+                        .HasForeignKey("GradationId");
+
                     b.HasOne("BDMS.Models.Codelist", "GrainSize1")
                         .WithMany()
                         .HasForeignKey("GrainSize1Id");
@@ -1656,14 +1390,6 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("InstrumentStatusId");
 
-                    b.HasOne("BDMS.Models.Codelist", "Kirost")
-                        .WithMany()
-                        .HasForeignKey("KirostId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Lithok")
-                        .WithMany()
-                        .HasForeignKey("LithokId");
-
                     b.HasOne("BDMS.Models.Codelist", "Lithology")
                         .WithMany()
                         .HasForeignKey("LithologyId");
@@ -1684,25 +1410,9 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("QtDescriptionId");
 
-                    b.HasOne("BDMS.Models.Codelist", "SoilState")
-                        .WithMany()
-                        .HasForeignKey("SoilStateId");
-
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany()
                         .HasForeignKey("StratigraphyId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Symbol")
-                        .WithMany()
-                        .HasForeignKey("SymbolId");
-
-                    b.HasOne("BDMS.Models.Codelist", "TectonicUnit")
-                        .WithMany()
-                        .HasForeignKey("TectonicUnitId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Unconrocks")
-                        .WithMany()
-                        .HasForeignKey("UnconrocksId");
 
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
                         .WithMany()
@@ -1717,10 +1427,6 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Uscs2")
                         .WithMany()
                         .HasForeignKey("Uscs2Id");
-
-                    b.HasOne("BDMS.Models.Codelist", "Uscs3")
-                        .WithMany()
-                        .HasForeignKey("Uscs3Id");
 
                     b.HasOne("BDMS.Models.Codelist", "UscsDetermination")
                         .WithMany()
@@ -1746,6 +1452,8 @@ namespace BDMS.Migrations
 
                     b.Navigation("FillMaterial");
 
+                    b.Navigation("Gradation");
+
                     b.Navigation("GrainSize1");
 
                     b.Navigation("GrainSize2");
@@ -1758,10 +1466,6 @@ namespace BDMS.Migrations
 
                     b.Navigation("InstrumentStatus");
 
-                    b.Navigation("Kirost");
-
-                    b.Navigation("Lithok");
-
                     b.Navigation("Lithology");
 
                     b.Navigation("LithologyTopBedrock");
@@ -1772,23 +1476,13 @@ namespace BDMS.Migrations
 
                     b.Navigation("QtDescription");
 
-                    b.Navigation("SoilState");
-
                     b.Navigation("Stratigraphy");
-
-                    b.Navigation("Symbol");
-
-                    b.Navigation("TectonicUnit");
-
-                    b.Navigation("Unconrocks");
 
                     b.Navigation("UpdatedBy");
 
                     b.Navigation("Uscs1");
 
                     b.Navigation("Uscs2");
-
-                    b.Navigation("Uscs3");
 
                     b.Navigation("UscsDetermination");
                 });
@@ -1803,6 +1497,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
+                    b.HasOne("BDMS.Models.Stratigraphy", "FillCasing")
+                        .WithMany()
+                        .HasForeignKey("FillCasingId");
+
                     b.HasOne("BDMS.Models.Codelist", "Kind")
                         .WithMany()
                         .HasForeignKey("KindId")
@@ -1816,6 +1514,8 @@ namespace BDMS.Migrations
                     b.Navigation("Borehole");
 
                     b.Navigation("CreatedBy");
+
+                    b.Navigation("FillCasing");
 
                     b.Navigation("Kind");
 
@@ -1870,19 +1570,9 @@ namespace BDMS.Migrations
                     b.Navigation("Workflows");
                 });
 
-            modelBuilder.Entity("BDMS.Models.Canton", b =>
-                {
-                    b.Navigation("Boreholes");
-                });
-
             modelBuilder.Entity("BDMS.Models.File", b =>
                 {
                     b.Navigation("BoreholeFiles");
-                });
-
-            modelBuilder.Entity("BDMS.Models.Municipality", b =>
-                {
-                    b.Navigation("Boreholes");
                 });
 
             modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
