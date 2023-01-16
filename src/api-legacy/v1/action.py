@@ -827,13 +827,13 @@ class Action():
                 """ % self.getIdx())
 
             if 'canton' in keys and filter['canton'] not in ['', None]:
-                params.append(int(filter['canton']))
+                params.append(filter['canton'])
                 where.append("""
                     canton_bho = %s
                 """ % self.getIdx())
 
             if 'municipality' in keys and filter['municipality'] not in ['', None]:
-                params.append(int(filter['municipality']))
+                params.append(filter['municipality'])
                 where.append("""
                     municipality_bho = %s
                 """ % self.getIdx())
