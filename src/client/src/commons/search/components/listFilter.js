@@ -385,11 +385,7 @@ const ListFilter = props => {
                     <Styled.AttributesItem>
                       <CantonDropdown
                         onSelected={selected => {
-                          if (search.filter.municipality !== null) {
-                            updateChange("municipality", null, false);
-                          }
-
-                          updateChange(item.value, selected.id, false);
+                          updateChange(item.value, selected, false);
                         }}
                         selected={search.filter?.[item.value]}
                       />

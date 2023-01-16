@@ -31,7 +31,7 @@ class CantonDropdown extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     return (
       this.state.cantons.length !== nextState.cantons.length ||
-      this.state.selected !== nextProps.selected
+      this.state.selected !== nextState.selected
     );
   }
 
@@ -39,6 +39,13 @@ class CantonDropdown extends React.Component {
     const { onSelected } = this.props;
     this.setState({ selected: data.value });
     onSelected?.(data.value);
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    return {
+      ...state,
+      selected: props.selected,
+    };
   }
 
   render() {
