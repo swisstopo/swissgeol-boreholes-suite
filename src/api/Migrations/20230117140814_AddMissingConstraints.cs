@@ -15,7 +15,8 @@ public partial class AddMissingConstraints : Migration
             column: "id_lay_fk",
             principalSchema: "bdms",
             principalTable: "layer",
-            principalColumn: "id_lay");
+            principalColumn: "id_lay",
+            onDelete: ReferentialAction.Cascade);
 
         migrationBuilder.CreateIndex(
             name: "IX_layer_codelist_id_lay_fk",
