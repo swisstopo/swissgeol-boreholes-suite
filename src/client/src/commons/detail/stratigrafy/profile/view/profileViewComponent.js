@@ -6,8 +6,8 @@ import _ from "lodash";
 import DomainText from "../../../../form/domain/domainText";
 import { Stratigraphy } from "../../../../../stratigraphy";
 import { NumericFormat } from "react-number-format";
-import { Checkbox, Icon } from "semantic-ui-react";
-
+import { Icon } from "semantic-ui-react";
+import { Box, Stack, Switch, Typography } from "@mui/material";
 import TranslationText from "../../../../form/translationText";
 
 class ProfileView extends React.Component {
@@ -18,41 +18,38 @@ class ProfileView extends React.Component {
     this.getTextRow = this.getTextRow.bind(this);
     this.getPattern = this.getPattern.bind(this);
     this.getColor = this.getColor.bind(this);
-    this.isVisible = this.isVisible.bind(this);
+    this.getRowIfVisible = this.getRowIfVisible.bind(this);
     this.state = {
       allfields: false,
       viewas: props.kind,
     };
   }
 
-  getDomainRow(schema, id, i18n = undefined) {
-    return this.getTextRow(
-      _.isUndefined(i18n) ? schema : i18n,
-      _.isNil(id) || id === "" ? null : (
-        <div>
-          <DomainText id={id} schema={schema} />
-        </div>
-      ),
+  getRow(text, translationId) {
+    const rowStyle = { marginBottom: "0.4em" };
+    return (
+      <Stack>
+        <Typography variant="subtitle2">
+          <TranslationText id={translationId} />
+        </Typography>
+        <Typography style={rowStyle}>{text}</Typography>
+      </Stack>
     );
   }
 
-  getDomainRowMultiple(schema, ids, i18n = undefined) {
-    return this.getTextRow(
-      _.isUndefined(i18n) ? schema : i18n,
-      _.isNil(ids) || ids.length === 0 ? null : (
-        <div>
-          {ids.map((id, idx) => (
-            <span key={"dbms-pvds-" + id}>
-              <DomainText
-                id={id}
-                key={schema + "-itm-" + idx}
-                schema={schema}
-              />
-              {idx < ids.length - 1 ? ", " : null}
-            </span>
-          ))}
-        </div>
-      ),
+  getDomainRow(code, translationId) {
+    const { i18n } = this.props;
+    const text = code?.[i18n.language] ?? "-";
+    return this.getRowIfVisible(code.schema, this.getRow(text, translationId));
+  }
+
+  getDomainRowMultiple(codes, translationId) {
+    const { i18n } = this.props;
+    const text =
+      codes.length > 0 ? codes.map(code => code[i18n.language]).join(",") : "-";
+    return this.getRowIfVisible(
+      codes[0].schema,
+      this.getRow(text, translationId),
     );
   }
 
@@ -60,58 +57,43 @@ class ProfileView extends React.Component {
     const text = (
       <NumericFormat value={number} thousandSeparator="'" displayType="text" />
     );
-
     return this.getTextRow(schema, text);
   }
 
   getTextRow(schema, text) {
+    return this.getRowIfVisible(schema, this.getRow(text, schema));
+  }
+
+  getVisibleFields() {
     const { domains, layer } = this.props;
     console.log(layer);
-    return this.isVisible(
-      schema,
-      <div>
-        <div
-          style={{
-            fontSize: "0.8em",
-            color: "#787878",
-            lineHeight: "1em",
-          }}>
-          <TranslationText id={schema} />
-        </div>
-        <div
-          style={{
-            marginBottom: "0.4em",
-          }}>
-          {_.isNil(text) || text === "" ? "-" : text}
-        </div>
-      </div>,
-      layer !== null && domains.data.hasOwnProperty("layer_kind")
-        ? (() => {
-            const filtered = domains.data.layer_kind.filter(
-              kind => this.props.kind === kind.id,
-            );
+    if (layer !== null && domains.data.hasOwnProperty("layer_kind")) {
+      const filtered = domains.data.layer_kind.filter(
+        kind => this.props.kind === kind.id,
+      );
 
-            let fields = { ...filtered[0].conf.viewerFields };
-            if (filtered.length > 1) {
-              for (let index = 1; index < filtered.length; index++) {
-                const element = filtered[index];
+      let fields = { ...filtered[0].conf.viewerFields };
+      if (filtered.length > 1) {
+        for (let index = 1; index < filtered.length; index++) {
+          const element = filtered[index];
 
-                fields = _.mergeWith(
-                  fields,
-                  element.conf.viewerFields,
-                  (objValue, srcValue) => {
-                    return objValue || srcValue;
-                  },
-                );
-              }
-            }
-            return {
-              fields: fields,
-            };
-          })()
-        : null,
-    );
+          fields = _.mergeWith(
+            fields,
+            element.conf.viewerFields,
+            (objValue, srcValue) => {
+              return objValue || srcValue;
+            },
+          );
+        }
+      }
+      return {
+        fields: fields,
+      };
+    } else {
+      return null;
+    }
   }
+
   getPattern(id) {
     const { domains } = this.props;
 
@@ -168,9 +150,11 @@ class ProfileView extends React.Component {
       return null;
     }
   }
-  isVisible(name, field, conf) {
-    const isVisibleValue = name.replace("layer_", "");
+
+  getRowIfVisible(name, field) {
     const { domains } = this.props;
+    const conf = this.getVisibleFields();
+    console.log(name, field, conf);
 
     if (
       _.has(domains, "data.layer_kind") &&
@@ -180,9 +164,9 @@ class ProfileView extends React.Component {
         if (
           this.state.allfields === false &&
           _.isObject(conf) &&
-          _.has(conf, `fields.${isVisibleValue}`)
+          _.has(conf, `fields.${name}`)
         ) {
-          if (conf.fields[isVisibleValue] === true) {
+          if (conf.fields[name] === true) {
             return field;
           } else {
             return null;
@@ -196,14 +180,14 @@ class ProfileView extends React.Component {
   render() {
     const { data, domains, t, handleSelected, layer } = this.props;
     return (
-      <div
+      <Box
         className="flex_col"
         style={{
           flex: "1 1 100%",
           height: "100%",
           overflowY: "hidden",
         }}>
-        <div
+        <Box
           style={{
             display: "flex",
             flex: "1 1 100%",
@@ -223,7 +207,7 @@ class ProfileView extends React.Component {
             )}
             getTitle={layer => (
               <DomainText
-                id={layer.lithostratigraphy.id}
+                id={layer.lithostratigraphy?.id}
                 schema="custom.lithostratigraphy_top_bedrock"
               />
             )}
@@ -253,7 +237,7 @@ class ProfileView extends React.Component {
               overflow: "hidden",
             }}
           />
-          <div
+          <Box
             style={{
               flex: "1 1 100%",
               overflowY: "auto",
@@ -285,7 +269,7 @@ class ProfileView extends React.Component {
                 </div>
               </div>
             ) : (
-              <div>
+              <Box>
                 <div
                   style={{
                     display: "flex",
@@ -297,17 +281,15 @@ class ProfileView extends React.Component {
                     justifyContent: "space-between",
                   }}>
                   <TranslationText id="showallfields" />
-                  <Checkbox
+                  <Switch
                     checked={this.state.allfields}
-                    onChange={(ev, data) => {
+                    onChange={ev => {
                       this.setState({
-                        allfields: data.checked,
+                        allfields: ev.target.checked,
                       });
                     }}
-                    toggle
                   />
                 </div>
-
                 {this.getNumericTextRow("layer_depth_from", layer.fromDepth)}
                 {this.getNumericTextRow("layer_depth_to", layer.toDepth)}
                 {this.getTextRow(
@@ -323,83 +305,48 @@ class ProfileView extends React.Component {
                     ? t("common:no")
                     : null,
                 )}
+                {this.getDomainRow(layer.qtDescription, "layer_qt_description")}
+
+                {this.getDomainRow(layer.lithology, "layer_lithology")}
                 {this.getDomainRow(
-                  "qt_description",
-                  layer.qtDescription.id,
-                  "layer_qt_description",
-                )}
-                {this.getDomainRow(
-                  "custom.lithology_top_bedrock",
-                  layer.lithology.id,
-                  "layer_lithology",
-                )}
-                {this.getDomainRow(
-                  "custom.lithostratigraphy_top_bedrock",
-                  layer.lithostratigraphy.id,
+                  layer.lithostratigraphy,
                   "layer_lithostratigraphy",
                 )}
                 {this.getDomainRow(
-                  "custom.chronostratigraphy_top_bedrock",
-                  layer.chronostratigraphy.id,
+                  layer.chronostratigraphy,
                   "layer_chronostratigraphy",
                 )}
-
                 {this.getTextRow("layer_uscs_original", layer.originalUscs)}
                 {this.getDomainRow(
-                  "mcla104",
-                  layer.uscsDetermination.id,
+                  layer.uscsDetermination,
                   "layer_uscs_determination",
                 )}
-                {this.getDomainRow("mcla101", layer.uscs1.id, "layer_uscs_1")}
-                {this.getDomainRow(
-                  "mlpr109",
-                  layer.grainSize1.id,
-                  "layer_grain_size_1",
-                )}
-                {this.getDomainRow("mcla101", layer.uscs2.id, "layer_uscs_2")}
-                {this.getDomainRow(
-                  "mlpr109",
-                  layer.grainSize2.id,
-                  "layer_grain_size_2",
-                )}
+                {this.getDomainRow(layer.uscs1, "layer_uscs_1")}
+                {this.getDomainRow(layer.grainSize1, "layer_grain_size_1")}
+                {this.getDomainRow(layer.uscs2, "layer_uscs_2")}
+                {this.getDomainRow(layer.grainSize2, "layer_grain_size_2")}
                 {this.getDomainRowMultiple(
-                  "mcla101",
-                  layer.codelists
-                    .filter(c => c.schema === "mcla101")
-                    .map(c => c.id),
+                  layer.codelists.filter(c => c.schema === "mcla101"),
                   "layer_uscs_3",
                 )}
                 {this.getDomainRowMultiple(
-                  "mlpr110",
-                  layer.codelists
-                    .filter(c => c.schema === "mlpr110")
-                    .map(c => c.id),
+                  layer.codelists.filter(c => c.schema === "mlpr110"),
                   "layer_grain_shape",
                 )}
                 {this.getDomainRowMultiple(
-                  "mlpr115",
-                  layer.codelists
-                    .filter(c => c.schema === "mlpr115")
-                    .map(c => c.id),
+                  layer.codelists.filter(c => c.schema === "mlpr115"),
                   "layer_grain_granularity",
                 )}
                 {this.getDomainRowMultiple(
-                  "mlpr108",
-                  layer.codelists
-                    .filter(c => c.schema === "mlpr108")
-                    .map(c => c.id),
+                  layer.codelists.filter(c => c.schema === "mlpr108"),
                   "layer_organic_component",
                 )}
                 {this.getDomainRowMultiple(
-                  "mcla107",
-                  layer.codelists
-                    .filter(c => c.schema === "mcla107")
-                    .map(c => c.id),
+                  layer.codelists.filter(c => c.schema === "mcla107"),
                   "layer_debris",
                 )}
                 {this.getDomainRow(
-                  "custom.lithology_top_bedrock",
-                  layer.lithologyTopBedrock.id,
+                  layer.lithologyTopBedrock,
                   "layer_lithology_top_bedrock",
                 )}
                 {this.getTextRow(
@@ -411,53 +358,22 @@ class ProfileView extends React.Component {
                     : null,
                 )}
                 {this.getDomainRowMultiple(
-                  "mlpr112",
-                  layer.codelists
-                    .filter(c => c.schema === "mlpr112")
-                    .map(c => c.id),
+                  layer.codelists.filter(c => c.schema === "mlpr112"),
                   "layer_color",
                 )}
-                {this.getDomainRow(
-                  "mlpr103",
-                  layer.consistance.id,
-                  "layer_consistance",
-                )}
-                {this.getDomainRow(
-                  "mlpr101",
-                  layer.plasticity.id,
-                  "layer_plasticity",
-                )}
-                {this.getDomainRow(
-                  "mlpr102",
-                  layer.compactness.id,
-                  "layer_compactness",
-                )}
-                {this.getDomainRow(
-                  "mlpr116",
-                  layer.cohesion.id,
-                  "layer_cohesion",
-                )}
-                {this.getDomainRow(
-                  "gradation",
-                  layer.gradation.id,
-                  "gradation",
-                )}
-                {this.getDomainRow(
-                  "mlpr105",
-                  layer.humidity.id,
-                  "layer_humidity",
-                )}
-                {this.getDomainRow(
-                  "mlpr106",
-                  layer.alteration.id,
-                  "layer_alteration",
-                )}
+                {this.getDomainRow(layer.consistance, "layer_consistance")}
+                {this.getDomainRow(layer.plasticity, "layer_plasticity")}
+                {this.getDomainRow(layer.compactness, "layer_compactness")}
+                {this.getDomainRow(layer.cohesion, "layer_cohesion")}
+                {this.getDomainRow(layer.gradation, "gradation")}
+                {this.getDomainRow(layer.humidity, "layer_humidity")}
+                {this.getDomainRow(layer.alteration, "layer_alteration")}
                 {this.getTextRow("layer_notes", layer.notes)}
-              </div>
+              </Box>
             )}
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Box>
     );
   }
 }
