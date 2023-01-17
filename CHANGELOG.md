@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added db constraints for table `layer_codelist`.
+
 ## v2.0.131 - 2023-01-16
 
 ### Added
