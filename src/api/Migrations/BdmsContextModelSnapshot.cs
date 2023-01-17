@@ -834,7 +834,6 @@ namespace BDMS.Migrations
                         .HasColumnName("notes_lay");
 
                     b.Property<string>("OriginalLithology")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("original_lithology");
 
@@ -873,10 +872,6 @@ namespace BDMS.Migrations
                     b.Property<int?>("Uscs2Id")
                         .HasColumnType("integer")
                         .HasColumnName("uscs_2_id_cli");
-
-                    b.Property<int?>("Uscs3Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("uscs_3_id_cli");
 
                     b.Property<int?>("UscsDeterminationId")
                         .HasColumnType("integer")
@@ -935,8 +930,6 @@ namespace BDMS.Migrations
                     b.HasIndex("Uscs1Id");
 
                     b.HasIndex("Uscs2Id");
-
-                    b.HasIndex("Uscs3Id");
 
                     b.HasIndex("UscsDeterminationId");
 
@@ -1645,10 +1638,6 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("Uscs2Id");
 
-                    b.HasOne("BDMS.Models.Codelist", "Uscs3")
-                        .WithMany()
-                        .HasForeignKey("Uscs3Id");
-
                     b.HasOne("BDMS.Models.Codelist", "UscsDetermination")
                         .WithMany()
                         .HasForeignKey("UscsDeterminationId");
@@ -1704,8 +1693,6 @@ namespace BDMS.Migrations
                     b.Navigation("Uscs1");
 
                     b.Navigation("Uscs2");
-
-                    b.Navigation("Uscs3");
 
                     b.Navigation("UscsDetermination");
                 });
