@@ -41,10 +41,10 @@ export const interceptApiCalls = () => {
  * @param {string} visitUrl The url to visit after logging in. Default is the root path.
  */
 export const login = (visitUrl = "/") => {
-  cy.intercept("/api/v2/canton").as("canton");
+  cy.intercept("/api/v1/borehole/codes").as("code");
   cy.visit(visitUrl);
   cy.contains("button", "Login").click();
-  cy.wait("@canton");
+  cy.wait("@code");
 };
 
 /**
