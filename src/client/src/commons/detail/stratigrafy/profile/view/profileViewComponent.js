@@ -66,6 +66,7 @@ class ProfileView extends React.Component {
 
   getTextRow(schema, text) {
     const { domains, layer } = this.props;
+    console.log(layer);
     return this.isVisible(
       schema,
       <div>
