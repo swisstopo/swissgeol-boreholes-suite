@@ -198,13 +198,13 @@ class ProfileView extends React.Component {
             getPattern={this.getPattern}
             getSubTitle={layer => (
               <DomainText
-                id={layer.lithology.id}
+                id={layer.lithology}
                 schema="custom.lithology_top_bedrock"
               />
             )}
             getTitle={layer => (
               <DomainText
-                id={layer.lithostratigraphy?.id}
+                id={layer.lithostratigraphy}
                 schema="custom.lithostratigraphy_top_bedrock"
               />
             )}
