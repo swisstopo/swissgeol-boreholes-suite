@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.0.131 - 2023-01-16
+
 ### Added
 
 - Added possibility to add a casing layer (_CasingId_) to an instrument.
