@@ -58,7 +58,7 @@ export const stratigraphyData = {
     {
       id: 5,
       type: "Dropdown",
-      label: "layer_qt_description",
+      label: "qt_description",
       value: "qt_description",
       schema: "qt_description",
       multiple: false,
@@ -69,7 +69,7 @@ export const stratigraphyData = {
     {
       id: 6,
       type: "DomainTree",
-      label: "layer_lithology",
+      label: "lithology",
       value: "lithology",
       schema: "custom.lithology_top_bedrock",
       levels: {
@@ -84,7 +84,7 @@ export const stratigraphyData = {
     {
       id: 7,
       type: "DomainTree",
-      label: "layer_lithostratigraphy",
+      label: "lithostratigraphy",
       value: "lithostratigraphy",
       schema: "custom.lithostratigraphy_top_bedrock",
       levels: {
@@ -100,7 +100,7 @@ export const stratigraphyData = {
     {
       id: 8,
       type: "DomainTree",
-      label: "layer_chronostratigraphy",
+      label: "chronostratigraphy",
       value: "chronostratigraphy",
       schema: "custom.chronostratigraphy_top_bedrock",
       levels: {
@@ -117,7 +117,7 @@ export const stratigraphyData = {
     {
       id: 9,
       type: "Input",
-      label: "layer_uscs_original",
+      label: "uscs_original",
       value: "uscs_original",
       require: false,
       isVisibleValue: "uscs_original",
@@ -125,7 +125,7 @@ export const stratigraphyData = {
     {
       id: 10,
       type: "Dropdown",
-      label: "layer_uscs_determination",
+      label: "uscs_determination",
       value: "uscs_determination",
       schema: "mcla104",
       multiple: false,
@@ -135,7 +135,7 @@ export const stratigraphyData = {
     {
       id: 11,
       type: "Dropdown",
-      label: "layer_uscs_1",
+      label: "uscs_1",
       value: "uscs_1",
       schema: "mcla101",
       multiple: false,
@@ -145,7 +145,7 @@ export const stratigraphyData = {
     {
       id: 12,
       type: "Dropdown",
-      label: "layer_grain_size_1",
+      label: "grain_size_1",
       value: "grain_size_1",
       schema: "mlpr109",
       multiple: false,
@@ -155,7 +155,7 @@ export const stratigraphyData = {
     {
       id: 13,
       type: "Dropdown",
-      label: "layer_uscs_2",
+      label: "uscs_2",
       value: "uscs_2",
       schema: "mcla101",
       multiple: false,
@@ -165,7 +165,7 @@ export const stratigraphyData = {
     {
       id: 14,
       type: "Dropdown",
-      label: "layer_grain_size_2",
+      label: "grain_size_2",
       value: "grain_size_2",
       schema: "mlpr109",
       multiple: false,
@@ -175,7 +175,7 @@ export const stratigraphyData = {
     {
       id: 15,
       type: "Dropdown",
-      label: "layer_uscs_3",
+      label: "uscs_3",
       value: "uscs_3",
       schema: "mcla101",
       multiple: true,
@@ -185,7 +185,7 @@ export const stratigraphyData = {
     {
       id: 16,
       type: "Dropdown",
-      label: "layer_grain_shape",
+      label: "grain_shape",
       value: "grain_shape",
       schema: "mlpr110",
       multiple: true,
@@ -195,7 +195,7 @@ export const stratigraphyData = {
     {
       id: 17,
       type: "Dropdown",
-      label: "layer_grain_granularity",
+      label: "grain_granularity",
       value: "grain_granularity",
       schema: "mlpr115",
       multiple: true,
@@ -205,7 +205,7 @@ export const stratigraphyData = {
     {
       id: 18,
       type: "Dropdown",
-      label: "layer_organic_component",
+      label: "organic_component",
       value: "organic_component",
       schema: "mlpr108",
       multiple: true,
@@ -215,7 +215,7 @@ export const stratigraphyData = {
     {
       id: 19,
       type: "Dropdown",
-      label: "layer_debris",
+      label: "debris",
       value: "debris",
       schema: "mcla107",
       multiple: true,
@@ -225,7 +225,7 @@ export const stratigraphyData = {
     {
       id: 20,
       type: "Dropdown",
-      label: "layer_lithology_top_bedrock",
+      label: "lithology_top_bedrock",
       value: "lithology_top_bedrock",
       schema: "custom.lithology_top_bedrock",
       multiple: false,
@@ -235,7 +235,7 @@ export const stratigraphyData = {
     {
       id: 21,
       type: "Radio",
-      label: "layer_striae",
+      label: "striae",
       value: "striae",
       to: false,
       isVisibleValue: "striae",
@@ -243,7 +243,7 @@ export const stratigraphyData = {
     {
       id: 22,
       type: "Dropdown",
-      label: "layer_color",
+      label: "color",
       value: "color",
       schema: "mlpr112",
       multiple: true,
@@ -253,7 +253,7 @@ export const stratigraphyData = {
     {
       id: 23,
       type: "Dropdown",
-      label: "layer_consistance",
+      label: "consistance",
       value: "consistance",
       schema: "mlpr103",
       multiple: false,
@@ -263,7 +263,7 @@ export const stratigraphyData = {
     {
       id: 24,
       type: "Dropdown",
-      label: "layer_plasticity",
+      label: "plasticity",
       value: "plasticity",
       schema: "mlpr101",
       multiple: false,
@@ -273,7 +273,7 @@ export const stratigraphyData = {
     {
       id: 25,
       type: "Dropdown",
-      label: "layer_compactness",
+      label: "compactness",
       value: "compactness",
       schema: "mlpr102",
       multiple: false,
@@ -283,7 +283,7 @@ export const stratigraphyData = {
     {
       id: 26,
       type: "Dropdown",
-      label: "layer_cohesion",
+      label: "cohesion",
       value: "cohesion",
       schema: "mlpr116",
       multiple: false,
@@ -303,7 +303,7 @@ export const stratigraphyData = {
     {
       id: 28,
       type: "Dropdown",
-      label: "layer_humidity",
+      label: "humidity",
       value: "humidity",
       schema: "mlpr105",
       multiple: false,
@@ -313,7 +313,7 @@ export const stratigraphyData = {
     {
       id: 29,
       type: "Dropdown",
-      label: "layer_alteration",
+      label: "alteration",
       value: "alteration",
       schema: "mlpr106",
       multiple: false,
@@ -323,7 +323,7 @@ export const stratigraphyData = {
     {
       id: 30,
       type: "TextArea",
-      label: "layer_notes",
+      label: "notes",
       value: "notes",
       isVisibleValue: "notes",
     },

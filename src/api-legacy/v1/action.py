@@ -438,38 +438,38 @@ class Action():
 
         keys = filter.keys()
 
-        if 'layer_grain_shape' in keys and filter['layer_grain_shape'] not in ['', None]:
-            params.append(filter['layer_grain_shape'])
+        if 'grain_shape' in keys and filter['grain_shape'] not in ['', None]:
+            params.append(filter['grain_shape'])
             layer_codelist.append("""
                 id_cli_fk = %s
             """ % self.getIdx())
 
-        if 'layer_grain_granularity' in keys and filter['layer_grain_granularity'] not in ['', None]:
-            params.append(filter['layer_grain_granularity'])
+        if 'grain_granularity' in keys and filter['grain_granularity'] not in ['', None]:
+            params.append(filter['grain_granularity'])
             layer_codelist.append("""
                 id_cli_fk = %s
             """ % self.getIdx())
 
-        if 'layer_organic_component' in keys and filter['layer_organic_component'] not in ['', None]:
-            params.append(filter['layer_organic_component'])
+        if 'organic_component' in keys and filter['organic_component'] not in ['', None]:
+            params.append(filter['organic_component'])
             layer_codelist.append("""
                 id_cli_fk = %s
             """ % self.getIdx())
 
-        if 'layer_debris' in keys and filter['layer_debris'] not in ['', None]:
-            params.append(filter['layer_debris'])
+        if 'debris' in keys and filter['debris'] not in ['', None]:
+            params.append(filter['debris'])
             layer_codelist.append("""
                 id_cli_fk = %s
             """ % self.getIdx())
 
-        if 'layer_color' in keys and filter['layer_color'] not in ['', None]:
-            params.append(filter['layer_color'])
+        if 'color' in keys and filter['color'] not in ['', None]:
+            params.append(filter['color'])
             layer_codelist.append("""
                 id_cli_fk = %s
             """ % self.getIdx())
         
-        if 'layer_uscs_3' in keys and filter['layer_uscs_3'] not in ['', None]:
-            params.append(filter['layer_uscs_3'])
+        if 'uscs_3' in keys and filter['uscs_3'] not in ['', None]:
+            params.append(filter['uscs_3'])
             layer_codelist.append("""
                 id_cli_fk = %s
             """ % self.getIdx())
@@ -489,32 +489,32 @@ class Action():
                 ' OR '.join(layer_codelist)
             ))
 
-        if 'layer_lithology_top_bedrock' in keys and filter['layer_lithology_top_bedrock'] not in ['', None]:
-            params.append(filter['layer_lithology_top_bedrock'])
+        if 'lithology_top_bedrock' in keys and filter['lithology_top_bedrock'] not in ['', None]:
+            params.append(filter['lithology_top_bedrock'])
             where.append("""
                 layer.lithology_top_bedrock_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_uscs_1' in keys and filter['layer_uscs_1'] not in ['', None]:
-            params.append(filter['layer_uscs_1'])
+        if 'uscs_1' in keys and filter['uscs_1'] not in ['', None]:
+            params.append(filter['uscs_1'])
             where.append("""
                 uscs_1_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_uscs_2' in keys and filter['layer_uscs_2'] not in ['', None]:
-            params.append(filter['layer_uscs_2'])
+        if 'uscs_2' in keys and filter['uscs_2'] not in ['', None]:
+            params.append(filter['uscs_2'])
             where.append("""
                 uscs_2_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_uscs_determination' in keys and filter['layer_uscs_determination'] not in ['', None]:
-            params.append(filter['layer_uscs_determination'])
+        if 'uscs_determination' in keys and filter['uscs_determination'] not in ['', None]:
+            params.append(filter['uscs_determination'])
             where.append("""
                 uscs_determination_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_uscs_original' in keys and filter['layer_uscs_original'] not in ['', None]:
-            params.append(f"%{filter['layer_uscs_original']}%")
+        if 'uscs_original' in keys and filter['uscs_original'] not in ['', None]:
+            params.append(f"%{filter['uscs_original']}%")
             where.append("""
                 uscs_original_lay ILIKE %s
             """ % self.getIdx())
@@ -579,38 +579,38 @@ class Action():
                 facies_description_lay ILIKE %s
             """ % self.getIdx())
 
-        if 'layer_lithology' in keys and filter['layer_lithology'] not in ['', None]:
-            params.append(filter['layer_lithology'])
+        if 'lithology' in keys and filter['lithology'] not in ['', None]:
+            params.append(filter['lithology'])
             where.append("""
                 lithology_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_lithostratigraphy' in keys and filter['layer_lithostratigraphy'] not in ['', None]:
-            params.append(filter['layer_lithostratigraphy'])
+        if 'lithostratigraphy' in keys and filter['lithostratigraphy'] not in ['', None]:
+            params.append(filter['lithostratigraphy'])
             where.append("""
                 lithostratigraphy_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_chronostratigraphy' in keys and filter['layer_chronostratigraphy'] not in ['', None]:
-            params.append(filter['layer_chronostratigraphy'])
+        if 'chronostratigraphy' in keys and filter['chronostratigraphy'] not in ['', None]:
+            params.append(filter['chronostratigraphy'])
             where.append("""
                 chronostratigraphy_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_plasticity' in keys and filter['layer_plasticity'] not in ['', None]:
-            params.append(filter['layer_plasticity'])
+        if 'plasticity' in keys and filter['plasticity'] not in ['', None]:
+            params.append(filter['plasticity'])
             where.append("""
                 plasticity_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_humidity' in keys and filter['layer_humidity'] not in ['', None]:
-            params.append(filter['layer_humidity'])
+        if 'humidity' in keys and filter['humidity'] not in ['', None]:
+            params.append(filter['humidity'])
             where.append("""
                 humidity_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_consistance' in keys and filter['layer_consistance'] not in ['', None]:
-            params.append(filter['layer_consistance'])
+        if 'consistance' in keys and filter['consistance'] not in ['', None]:
+            params.append(filter['consistance'])
             where.append("""
                 consistance_id_cli = %s
             """ % self.getIdx())
@@ -621,49 +621,49 @@ class Action():
                 gradation_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_alteration' in keys and filter['layer_alteration'] not in ['', None]:
-            params.append(filter['layer_alteration'])
+        if 'alteration' in keys and filter['alteration'] not in ['', None]:
+            params.append(filter['alteration'])
             where.append("""
                 alteration_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_compactness' in keys and filter['layer_compactness'] not in ['', None]:
-            params.append(filter['layer_compactness'])
+        if 'compactness' in keys and filter['compactness'] not in ['', None]:
+            params.append(filter['compactness'])
             where.append("""
                 compactness_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_striae' in keys and filter['layer_striae'] != -1:
-            if filter['layer_striae'] == None:
+        if 'striae' in keys and filter['striae'] != -1:
+            if filter['striae'] == None:
                 where.append("""
                     striae_lay IS NULL
                 """)
             else:
-                params.append(filter['layer_striae'])
+                params.append(filter['striae'])
                 where.append("""
                     striae_lay = %s
                 """ % self.getIdx())
 
-        if 'layer_grain_size_1' in keys and filter['layer_grain_size_1'] not in ['', None]:
-            params.append(filter['layer_grain_size_1'])
+        if 'grain_size_1' in keys and filter['grain_size_1'] not in ['', None]:
+            params.append(filter['grain_size_1'])
             where.append("""
                 grain_size_1_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_grain_size_2' in keys and filter['layer_grain_size_2'] not in ['', None]:
-            params.append(filter['layer_grain_size_2'])
+        if 'grain_size_2' in keys and filter['grain_size_2'] not in ['', None]:
+            params.append(filter['grain_size_2'])
             where.append("""
                 grain_size_2_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_cohesion' in keys and filter['layer_cohesion'] not in ['', None]:
-            params.append(filter['layer_cohesion'])
+        if 'cohesion' in keys and filter['cohesion'] not in ['', None]:
+            params.append(filter['cohesion'])
             where.append("""
                 cohesion_id_cli = %s
             """ % self.getIdx())
 
-        if 'layer_qt_description' in keys and filter['layer_qt_description'] not in ['', None]:
-            params.append(filter['layer_qt_description'])
+        if 'qt_description' in keys and filter['qt_description'] not in ['', None]:
+            params.append(filter['qt_description'])
             where.append("""
                 qt_description_id_cli = %s
             """ % self.getIdx())

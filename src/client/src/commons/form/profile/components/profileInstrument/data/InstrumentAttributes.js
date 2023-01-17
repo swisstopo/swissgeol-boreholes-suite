@@ -70,7 +70,7 @@ export const InstrumentAttributes = [
   {
     id: 7,
     type: "Input",
-    label: "layer_notes",
+    label: "notes",
     value: "notes",
     isVisible: true,
   },
