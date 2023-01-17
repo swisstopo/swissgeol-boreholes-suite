@@ -33,6 +33,7 @@ describe("Test for the borehole form.", () => {
           .click({ force: true })
           .find('[role="option"]')
           .last()
+          .scrollIntoView()
           .click();
         cy.wait("@layer_edit_patch");
       });
