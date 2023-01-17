@@ -31,6 +31,7 @@
 - Removed unused table `bdms.statigraphy_codelist` from database.
 - Removed  `layer.unconrocks_id_cli` and `layer.lithok_id_cli` from database.
 - Changed cardinality of `uscs3` field on `bdms.layer` to m:n.
+- Use c# api to display layer in viewer.
 
 ### Fixed
 
