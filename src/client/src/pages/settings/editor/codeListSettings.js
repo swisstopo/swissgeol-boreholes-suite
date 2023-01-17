@@ -66,10 +66,10 @@ const CodeListSettings = () => {
           produce(oldDomains, draft => {
             const code = draft.find(d => d.id === data.id);
             if (code) {
-              code.textDe = data.textDe;
-              code.textEn = data.textEn;
-              code.textFr = data.textFr;
-              code.textIt = data.textIt;
+              code.De = data.De;
+              code.En = data.En;
+              code.Fr = data.Fr;
+              code.It = data.It;
               code.order = data.order;
             }
           }),
@@ -175,10 +175,10 @@ const CodeListSettings = () => {
                   e.preventDefault();
                   mutation.mutate(
                     produce(code, draft => {
-                      draft.textDe = de;
-                      draft.textFr = fr;
-                      draft.textEn = en;
-                      draft.textIt = it;
+                      draft.De = de;
+                      draft.Fr = fr;
+                      draft.En = en;
+                      draft.It = it;
                       draft.order = order;
                     }),
                   );
@@ -218,10 +218,10 @@ const CodeListSettings = () => {
                           } else {
                             setId(val.id);
                             setGeolcode(val.geolcode);
-                            setDe(val.textDe);
-                            setFr(val.textFr);
-                            setIt(val.textIt);
-                            setEn(val.textEn);
+                            setDe(val.De);
+                            setFr(val.Fr);
+                            setIt(val.It);
+                            setEn(val.En);
                             setOrder(val.order);
                             setCode(val);
                           }
@@ -237,10 +237,10 @@ const CodeListSettings = () => {
                           alignItems="flex-start"
                           spacing={2}>
                           <div style={{ flex: "1 1 0" }}>{val.geolcode}</div>
-                          <div style={{ flex: "1 1 0" }}>{val.textDe}</div>
-                          <div style={{ flex: "1 1 0" }}>{val.textFr}</div>
-                          <div style={{ flex: "1 1 0" }}>{val.textIt}</div>
-                          <div style={{ flex: "1 1 0" }}>{val.textEn}</div>
+                          <div style={{ flex: "1 1 0" }}>{val.De}</div>
+                          <div style={{ flex: "1 1 0" }}>{val.Fr}</div>
+                          <div style={{ flex: "1 1 0" }}>{val.It}</div>
+                          <div style={{ flex: "1 1 0" }}>{val.En}</div>
                           <div style={{ flex: "1 1 0" }}>{val.order}</div>
                           <div style={{ width: "60px" }}></div>
                         </Stack>

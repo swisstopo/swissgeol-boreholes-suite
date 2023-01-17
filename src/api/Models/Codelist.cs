@@ -39,7 +39,7 @@ public class Codelist
     /// Gets or sets the <see cref="Codelist"/>'s english text.
     /// </summary>
     [Column("text_cli_en")]
-    public string TextEn { get; set; }
+    public string En { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s english description.
@@ -51,7 +51,7 @@ public class Codelist
     /// Gets or sets the <see cref="Codelist"/>'s german text.
     /// </summary>
     [Column("text_cli_de")]
-    public string? TextDe { get; set; }
+    public string? De { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s german description.
@@ -63,7 +63,7 @@ public class Codelist
     /// Gets or sets the <see cref="Codelist"/> 's french text.
     /// </summary>
     [Column("text_cli_fr")]
-    public string? TextFr { get; set; }
+    public string? Fr { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s french description.
@@ -75,7 +75,7 @@ public class Codelist
     /// Gets or sets the <see cref="Codelist"/>'s italian text.
     /// </summary>
     [Column("text_cli_it")]
-    public string? TextIt { get; set; }
+    public string? It { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s italian description.
@@ -87,7 +87,7 @@ public class Codelist
     /// Gets or sets the <see cref="Codelist"/>'s romantsch text.
     /// </summary>
     [Column("text_cli_ro")]
-    public string? TextRo { get; set; }
+    public string? Ro { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s romantsch description.
