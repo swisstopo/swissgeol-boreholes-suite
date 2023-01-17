@@ -49,7 +49,7 @@ const dataLoaderState = (state = initialState, action) => {
         return state;
     }
   }
-  if (copy.coreUser) {
+  if (copy.coreDomainList && copy.coreUser) {
     copy.isReady = true;
   }
 
