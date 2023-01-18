@@ -36,13 +36,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.wait(500);
     cy.get("@LV95Y-input").type("1245794");
     // wait edits of all 4 inputs to complete
-    cy.wait([
-      "@location",
-      "@edit_patch",
-      "@edit_patch",
-      "@edit_patch",
-      "@edit_patch",
-    ]);
+    cy.wait(["@location", "@edit_patch", "@edit_patch", "@edit_patch"]);
     // verify automatically filled inputs for LV03
     cy.get("@LV95Y-input").should("have.value", "1'245'794");
     cy.get("@LV03Y-input").should("have.value", "245'794");

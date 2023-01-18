@@ -32,7 +32,7 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v1/borehole/stratigraphy/edit", req => {
     return (req.alias = `stratigraphy_edit_${req.body.action.toLowerCase()}`);
   });
-  cy.intercept("/api/v2/location/identify").as("location");
+  cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v1/setting").as("setting");
 };
 
