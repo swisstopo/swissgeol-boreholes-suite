@@ -153,6 +153,7 @@ const ProfileAttributeList = props => {
                 showAll) && (
                 <Styled.AttributesItem>
                   <DomainTree
+                    data-cy={item.value}
                     levels={item.levels}
                     onSelected={e => updateChange(item.value, e.id, false)}
                     schema={item.schema}
@@ -170,6 +171,7 @@ const ProfileAttributeList = props => {
                 showAll) && (
                 <Styled.AttributesItem>
                   <DateField
+                    data-cy={item.value}
                     date={layer?.[item.value] ? layer[item.value] : null}
                     onChange={selected => {
                       updateChange(item.value, selected, false);

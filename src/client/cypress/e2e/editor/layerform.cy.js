@@ -73,6 +73,12 @@ describe("Test for the borehole form.", () => {
       }
     });
 
+    // stop editing
+    cy.contains("a", "Stop editing").click();
+    cy.wait("@edit_unlock");
+    cy.contains("h3", "Done").click();
+    cy.wait(["@edit_list", "@borehole"]);
+
     // delete the borehole
     cy.get("@borehole_id").then(id => deleteBorehole(id));
   });

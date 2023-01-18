@@ -34,6 +34,7 @@ export const interceptApiCalls = () => {
   });
   cy.intercept("/api/v1/geoapi/location").as("location");
   cy.intercept("/api/v1/setting").as("setting");
+  cy.intercept("api/v1/borehole/codes").as("codes");
 };
 
 /**

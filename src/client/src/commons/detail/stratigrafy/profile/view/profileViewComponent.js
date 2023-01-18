@@ -268,7 +268,7 @@ class ProfileView extends React.Component {
                 </div>
               </div>
             ) : (
-              <Box>
+              <Box data-cy="stratigraphy-layer-details">
                 <div
                   style={{
                     display: "flex",
