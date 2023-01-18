@@ -117,11 +117,11 @@ public class Codelist
     /// Gets the <see cref="Layer"/>s that use this <see cref="Codelist"/>.
     /// </summary>
     [JsonIgnore]
-    public ICollection<Layer> Layers { get; }
+    public ICollection<Layer>? Layers { get; }
 
     /// <summary>
     /// Gets the <see cref="LayerCodelist"/> join table entities.
     /// </summary>
     [JsonIgnore]
-    public ICollection<LayerCodelist> LayerCodelists { get; }
+    public ICollection<LayerCodelist>? LayerCodelists { get; }
 }
