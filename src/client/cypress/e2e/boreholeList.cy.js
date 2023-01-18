@@ -61,9 +61,9 @@ describe("Borehole list tests", () => {
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
 
-    firstRow.contains("td", "02.01.2021");
-    secondRow.contains("td", "29.01.2021");
-    thirdRow.contains("td", "07.02.2021");
+    firstRow.contains("td", "16.01.2021");
+    secondRow.contains("td", "23.01.2021");
+    thirdRow.contains("td", "26.01.2021");
 
     cy.contains("div", "End of drilling date").click();
     cy.wait("@borehole");
@@ -71,9 +71,9 @@ describe("Borehole list tests", () => {
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
 
-    firstRow.contains("td", "22.12.2021");
-    secondRow.contains("td", "20.12.2021");
-    thirdRow.contains("td", "13.12.2021");
+    firstRow.contains("td", "24.12.2021");
+    secondRow.contains("td", "17.12.2021");
+    thirdRow.contains("td", "07.12.2021");
 
     // sort by borehole type (column of original name)
     cy.contains("div", "Borehole type").click();
@@ -88,11 +88,13 @@ describe("Borehole list tests", () => {
   });
 
   it("Boreholes are displayed in correct order with admin login", () => {
+    cy.intercept("/api/v1/borehole").as("borehole");
     loginAsAdmin("/editor");
     cy.get("div[id=map]").should("be.visible");
 
     // sort by creation date
     cy.contains("th", "Creation date").click();
+    cy.wait("@borehole");
     let firstRow = cy.get("tbody").children().first();
     let secondRow = cy.get("tbody").children().eq(1);
     let thirdRow = cy.get("tbody").children().eq(2);
@@ -102,16 +104,18 @@ describe("Borehole list tests", () => {
     thirdRow.contains("td", "31.01.2021");
 
     cy.contains("th", "Creation date").click();
+    cy.wait("@borehole");
     firstRow = cy.get("tbody").children().first();
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
 
     firstRow.contains("td", "04.12.2021");
-    secondRow.contains("td", "21.11.2021");
+    secondRow.contains("td", "22.11.2021");
     thirdRow.contains("td", "09.11.2021");
 
     // sort by creator
     cy.contains("th", "Created by").click();
+    cy.wait("@borehole");
     firstRow = cy.get("tbody").children().first();
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
@@ -121,6 +125,7 @@ describe("Borehole list tests", () => {
     thirdRow.contains("td", "admin");
 
     cy.contains("th", "Created by").click();
+    cy.wait("@borehole");
     firstRow = cy.get("tbody").children().first();
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
@@ -131,6 +136,7 @@ describe("Borehole list tests", () => {
 
     // sort by name
     cy.contains("th", "Original name").click();
+    cy.wait("@borehole");
     firstRow = cy.get("tbody").children().first();
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
@@ -141,6 +147,7 @@ describe("Borehole list tests", () => {
 
     // sort by borehole type
     cy.contains("th", "Borehole type").click();
+    cy.wait("@borehole");
     firstRow = cy.get("tbody").children().first();
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
@@ -151,6 +158,7 @@ describe("Borehole list tests", () => {
 
     // sort by borehole status
     cy.contains("th", "Borehole Status").click();
+    cy.wait("@borehole");
     firstRow = cy.get("tbody").children().first();
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
@@ -161,6 +169,7 @@ describe("Borehole list tests", () => {
 
     // sort by total depth
     cy.contains("th", "Total depth").click();
+    cy.wait("@borehole");
     firstRow = cy.get("tbody").children().first();
     secondRow = cy.get("tbody").children().eq(1);
     thirdRow = cy.get("tbody").children().eq(2);
