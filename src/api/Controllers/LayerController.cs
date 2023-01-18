@@ -24,7 +24,7 @@ public class LayerController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Layer>>> GetAsync([FromQuery] int? profileId = null)
     {
-        var layers = GetLayersWithIncludes();
+        var layers = GetLayersWithIncludes().AsNoTracking();
         if (profileId != null)
         {
             layers = layers.Where(l => l.StratigraphyId == profileId);
@@ -45,7 +45,10 @@ public class LayerController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Layer>> GetByIdAsync(int id)
     {
-        var layer = await GetLayersWithIncludes().SingleOrDefaultAsync(l => l.Id == id).ConfigureAwait(false);
+        var layer = await GetLayersWithIncludes()
+            .AsNoTracking()
+            .SingleOrDefaultAsync(l => l.Id == id)
+            .ConfigureAwait(false);
 
         if (layer == null)
         {
@@ -117,7 +120,6 @@ public class LayerController : ControllerBase
             .Include(l => l.FillKind)
             .Include(l => l.LithologyTopBedrock)
             .Include(l => l.LayerCodelists)
-            .Include(l => l.Codelists)
-            .AsNoTracking();
+            .Include(l => l.Codelists);
     }
 }
