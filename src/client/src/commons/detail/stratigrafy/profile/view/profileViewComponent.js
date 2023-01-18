@@ -40,6 +40,10 @@ class ProfileView extends React.Component {
   getDomainRow(code, fieldName) {
     const { i18n } = this.props;
     const text = code?.[i18n.language] ?? "-";
+    if (fieldName === "layer_lithology_top_bedrock") {
+      fieldName = "lithology_top_bedrock";
+    } // Fixes discrepancy between fieldName translationId and fieldName in visible Fields array.
+
     return this.getRowIfVisible(fieldName, this.getRow(text, fieldName));
   }
 
@@ -63,7 +67,6 @@ class ProfileView extends React.Component {
 
   getVisibleFields() {
     const { domains, layer } = this.props;
-    console.log(layer);
     if (layer !== null && domains.data.hasOwnProperty("layer_kind")) {
       const filtered = domains.data.layer_kind.filter(
         kind => this.props.kind === kind.id,
@@ -151,7 +154,6 @@ class ProfileView extends React.Component {
   getRowIfVisible(name, field) {
     const { domains } = this.props;
     const conf = this.getVisibleFields();
-    console.log(name, field, conf);
 
     if (
       _.has(domains, "data.layer_kind") &&
@@ -344,7 +346,7 @@ class ProfileView extends React.Component {
                 )}
                 {this.getDomainRow(
                   layer.lithologyTopBedrock,
-                  "lithology_top_bedrock",
+                  "layer_lithology_top_bedrock",
                 )}
                 {this.getTextRow(
                   "striae",

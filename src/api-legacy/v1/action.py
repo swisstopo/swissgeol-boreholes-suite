@@ -489,8 +489,8 @@ class Action():
                 ' OR '.join(layer_codelist)
             ))
 
-        if 'lithology_top_bedrock' in keys and filter['lithology_top_bedrock'] not in ['', None]:
-            params.append(filter['lithology_top_bedrock'])
+        if 'layer_lithology_top_bedrock' in keys and filter['layer_lithology_top_bedrock'] not in ['', None]:
+            params.append(filter['layer_lithology_top_bedrock'])
             where.append("""
                 layer.lithology_top_bedrock_id_cli = %s
             """ % self.getIdx())

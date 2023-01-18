@@ -77,12 +77,12 @@ const initialState = {
     grain_granularity: null,
     cohesion: null,
     layer_further_properties: null,
+    layer_lithology_top_bedrock: null,
     uscs_1: null,
     uscs_2: null,
     uscs_3: null,
     uscs_determination: null,
     debris: null,
-    lithology_top_bedrock: null,
 
     //new filters
     casing_name: "",
