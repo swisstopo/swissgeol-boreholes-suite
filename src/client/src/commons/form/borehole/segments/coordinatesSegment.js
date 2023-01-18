@@ -14,6 +14,7 @@ import TranslationText from "../../translationText";
 import { Form, Segment } from "semantic-ui-react";
 import { NumericFormat } from "react-number-format";
 import { parseIfString, getPrecision } from "../../formUtils";
+import { fetchApiV2 } from "../../../../api/fetchApiV2";
 
 const webApilv95tolv03 = "https://geodesy.geo.admin.ch/reframe/lv95tolv03";
 const webApilv03tolv95 = "https://geodesy.geo.admin.ch/reframe/lv03tolv95";
@@ -106,15 +107,38 @@ const CoordinatesSegment = props => {
     }
   }, []);
 
+  const getLocationInfo = useCallback(async (x, y) => {
+    return await fetchApiV2(`location/identify?east=${x}&north=${y}`, "GET");
+  }, []);
+
   //update all coordinates on backend.
   const updateCoordinates = useCallback(
-    (LV95X, LV95Y, LV03X, LV03Y) => {
-      updateNumber(referenceSystems.LV95.fieldName.X, LV95X);
-      updateNumber(referenceSystems.LV95.fieldName.Y, LV95Y);
-      updateNumber(referenceSystems.LV03.fieldName.X, LV03X);
-      updateNumber(referenceSystems.LV03.fieldName.Y, LV03Y);
+    async (LV95X, LV95Y, LV03X, LV03Y) => {
+      try {
+        var location =
+          LV95X && LV95Y ? await getLocationInfo(LV95X, LV95Y) : null;
+
+        updateChange(
+          "location",
+          [
+            LV95X,
+            LV95Y,
+            borehole.data.elevation_z,
+            location?.country,
+            location?.canton,
+            location?.municipality,
+          ],
+          false,
+        );
+      } catch {
+        updateNumber(referenceSystems.LV95.fieldName.X, LV95X);
+        updateNumber(referenceSystems.LV95.fieldName.Y, LV95Y);
+      } finally {
+        updateNumber(referenceSystems.LV03.fieldName.X, LV03X);
+        updateNumber(referenceSystems.LV03.fieldName.Y, LV03Y);
+      }
     },
-    [updateNumber],
+    [borehole.data.elevation_z, getLocationInfo, updateChange, updateNumber],
   );
 
   // reset form values when the borehole changes.
@@ -189,10 +213,7 @@ const CoordinatesSegment = props => {
       },
       { keepErrors: true },
     );
-    updateNumber(referenceSystems.LV95.fieldName.X, null);
-    updateNumber(referenceSystems.LV95.fieldName.Y, null);
-    updateNumber(referenceSystems.LV03.fieldName.X, null);
-    updateNumber(referenceSystems.LV03.fieldName.Y, null);
+    updateCoordinates(null, null, null, null);
     updateNumber("srs", value);
     setReferenceSystem(parseFloat(value));
     setValuesForReferenceSystem("LV03", null, null);

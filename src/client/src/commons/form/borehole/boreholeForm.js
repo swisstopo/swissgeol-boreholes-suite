@@ -251,12 +251,6 @@ class BoreholeForm extends React.Component {
       ...this.props.borehole,
     };
     if (attribute === "location") {
-      if (!this.isNumber(value[0])) {
-        return;
-      }
-      if (!this.isNumber(value[1])) {
-        return;
-      }
       _.set(borehole.data, "location_x", value[0]);
       _.set(borehole.data, "location_y", value[1]);
       if (value[2] !== null && this.isNumber(value[2])) {
