@@ -1,8 +1,10 @@
-import { login, interceptApiCalls } from "../e2e/testHelpers";
+import { login, interceptApiCalls, resetBoreholes } from "../e2e/testHelpers";
 
 describe("Search filter tests", () => {
   beforeEach(() => {
     interceptApiCalls();
+    login("/editor");
+    resetBoreholes();
   });
 
   it("has search filters", () => {
@@ -53,7 +55,6 @@ describe("Search filter tests", () => {
 
   it("checks that the registration filter settings control the filter visibility.", () => {
     // precondition filters not visible
-    login("/editor");
     cy.contains("Registration").click();
     cy.contains("Show all fields")
       .next()
@@ -87,7 +88,6 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes by creator name", () => {
-    login("/editor");
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -105,7 +105,6 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes by creation date", () => {
-    login("/editor");
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 

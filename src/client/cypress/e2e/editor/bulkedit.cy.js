@@ -1,4 +1,4 @@
-import { createBorehole, deleteBorehole, login } from "../testHelpers";
+import { createBorehole, resetBoreholes, login } from "../testHelpers";
 
 describe("Test the borehole bulk edit feature.", () => {
   beforeEach(() => {
@@ -8,16 +8,7 @@ describe("Test the borehole bulk edit feature.", () => {
     });
 
     login("/editor");
-  });
-
-  afterEach(() => {
-    // Delete boreholes if they were created.
-    if (cy.state("aliases")?.borehole_id_1) {
-      cy.get("@borehole_id_1").then(id => deleteBorehole(id));
-    }
-    if (cy.state("aliases")?.borehole_id_2) {
-      cy.get("@borehole_id_2").then(id => deleteBorehole(id));
-    }
+    resetBoreholes();
   });
 
   it("opens the bulk edit dialog with all boreholes selected", () => {
@@ -27,7 +18,6 @@ describe("Test the borehole bulk edit feature.", () => {
   });
 
   it("checks if all toggle buttons do something", () => {
-    cy.wait("@edit_list");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 

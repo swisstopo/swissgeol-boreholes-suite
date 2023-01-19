@@ -1,6 +1,6 @@
 import {
   newEditableBorehole,
-  deleteBorehole,
+  resetBoreholes,
   login,
   interceptApiCalls,
 } from "../testHelpers";
@@ -8,14 +8,9 @@ import {
 describe("Test for the borehole form.", () => {
   beforeEach(() => {
     interceptApiCalls();
-    login("/editor");
-  });
 
-  afterEach(() => {
-    // Delete borehole if it was created.
-    if (cy.state("aliases")?.borehole_id) {
-      cy.get("@borehole_id").then(id => deleteBorehole(id));
-    }
+    login("/editor");
+    resetBoreholes();
   });
 
   it("Creates a layer and fills all dropdowns with multiple selection.", () => {

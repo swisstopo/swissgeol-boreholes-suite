@@ -2,14 +2,14 @@ import {
   newEditableBorehole,
   login,
   interceptApiCalls,
-  deleteBorehole,
+  resetBoreholes,
 } from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
   beforeEach(() => {
     interceptApiCalls();
-
     login("/editor");
+    resetBoreholes();
 
     // Assert map number of boreholes
     cy.get("div[id=map]").should("be.visible");
@@ -17,13 +17,6 @@ describe("Test for the borehole form.", () => {
 
     // Add new borehole
     newEditableBorehole().as("borehole_id");
-  });
-
-  afterEach(() => {
-    // Delete borehole if it was created.
-    if (cy.state("aliases")?.borehole_id) {
-      cy.get("@borehole_id").then(id => deleteBorehole(id));
-    }
   });
 
   it("Adds complete layer and displays it in viewer mode, checks if fields can be optionally hidden.", () => {
@@ -110,11 +103,7 @@ describe("Test for the borehole form.", () => {
     cy.wait("@borehole");
 
     // Click on last table element, added borehole.
-    cy.get(".very.basic.very.compact.table tbody")
-      .children()
-      .last()
-      .scrollIntoView()
-      .click();
+    cy.get(".table tbody").children().last().scrollIntoView().click();
 
     cy.wait("@borehole");
     cy.wait(5000);

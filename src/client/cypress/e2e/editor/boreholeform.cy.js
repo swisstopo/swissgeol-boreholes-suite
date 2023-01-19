@@ -1,4 +1,4 @@
-import { newEditableBorehole, deleteBorehole, login } from "../testHelpers";
+import { newEditableBorehole, resetBoreholes, login } from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
   beforeEach(() => {
@@ -8,13 +8,7 @@ describe("Test for the borehole form.", () => {
     });
 
     login("/editor");
-  });
-
-  afterEach(() => {
-    // Delete borehole if it was created.
-    if (cy.state("aliases")?.borehole_id) {
-      cy.get("@borehole_id").then(id => deleteBorehole(id));
-    }
+    resetBoreholes();
   });
 
   it("Creates a borehole and fills dropdowns.", () => {

@@ -1,7 +1,7 @@
 import {
   interceptApiCalls,
   newUneditableBorehole,
-  deleteBorehole,
+  resetBoreholes,
   delayedType,
   login,
 } from "../testHelpers";
@@ -19,22 +19,12 @@ describe("Instrumentation tests", () => {
     interceptApiCalls();
 
     login("/editor");
-
-    // Assert map number of boreholes
-    cy.get("div[id=map]").should("be.visible");
-    cy.get("tbody").children().should("have.length", 21);
+    resetBoreholes();
 
     // Add new borehole
     newUneditableBorehole().as("borehole_id");
     cy.get('[data-cy="completion-menu-item"]').click();
     cy.get('[data-cy="instrument-menu-item"]').click();
-  });
-
-  afterEach(() => {
-    // Delete borehole if it was created.
-    if (cy.state("aliases")?.borehole_id) {
-      cy.get("@borehole_id").then(id => deleteBorehole(id));
-    }
   });
 
   it("Displays correct messages", () => {

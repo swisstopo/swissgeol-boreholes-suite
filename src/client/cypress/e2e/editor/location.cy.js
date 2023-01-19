@@ -1,5 +1,5 @@
 import {
-  deleteBorehole,
+  resetBoreholes,
   interceptApiCalls,
   newEditableBorehole,
   login,
@@ -8,20 +8,8 @@ import {
 describe("Tests for 'Location' edit page.", () => {
   beforeEach(() => {
     interceptApiCalls();
-
-    login();
-
-    // go to edit
-    cy.get('[data-cy="menu"]').click();
-    cy.contains("h4", "Editor").click();
-    cy.wait("@edit_list");
-  });
-
-  afterEach(() => {
-    // Delete borehole if it was created.
-    if (cy.state("aliases")?.borehole_id) {
-      cy.get("@borehole_id").then(id => deleteBorehole(id));
-    }
+    login("/editor");
+    resetBoreholes();
   });
 
   it("creates and deletes a borehole.", () => {

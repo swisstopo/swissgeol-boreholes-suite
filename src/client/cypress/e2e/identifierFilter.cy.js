@@ -1,27 +1,18 @@
 import {
   interceptApiCalls,
   newEditableBorehole,
-  deleteBorehole,
+  resetBoreholes,
   login,
 } from "./testHelpers";
 
 describe("Tests for filtering data by identifier.", () => {
   beforeEach(() => {
     interceptApiCalls();
-  });
-
-  afterEach(() => {
-    // Delete boreholes if they were created.
-    if (cy.state("aliases")?.borehole_id_1) {
-      cy.get("@borehole_id_1").then(id => deleteBorehole(id));
-    }
-    if (cy.state("aliases")?.borehole_id_2) {
-      cy.get("@borehole_id_2").then(id => deleteBorehole(id));
-    }
+    login("/editor");
+    resetBoreholes();
   });
 
   it("can filter by identifier", () => {
-    login("/editor");
     newEditableBorehole().as("borehole_id");
     let identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');
 
@@ -74,7 +65,6 @@ describe("Tests for filtering data by identifier.", () => {
   });
 
   it("can bulk edit boreholes while filter by identifier is set", () => {
-    login("/editor");
     newEditableBorehole().as("borehole_id");
     let identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');
 

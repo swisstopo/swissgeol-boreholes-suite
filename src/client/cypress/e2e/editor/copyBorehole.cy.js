@@ -2,7 +2,7 @@ import {
   interceptApiCalls,
   login,
   createBorehole,
-  deleteBorehole,
+  resetBoreholes,
 } from "../testHelpers";
 
 describe("Test copying of boreholes", () => {
@@ -11,15 +11,7 @@ describe("Test copying of boreholes", () => {
     cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
 
     login("/editor");
-    cy.wait("@borehole");
-    cy.wait("@edit_list");
-  });
-
-  afterEach(() => {
-    // Delete borehole if it was created.
-    if (cy.state("aliases")?.borehole_id) {
-      cy.get("@borehole_id").then(id => deleteBorehole(id));
-    }
+    resetBoreholes();
   });
 
   it("copies a borehole", () => {
