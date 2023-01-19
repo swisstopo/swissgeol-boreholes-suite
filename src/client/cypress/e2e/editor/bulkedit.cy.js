@@ -11,9 +11,11 @@ describe("Test the borehole bulk edit feature.", () => {
   });
 
   afterEach(() => {
-    // Delete borehole if it was created.
-    if (cy.state("aliases")?.borehole_id) {
+    // Delete boreholes if they were created.
+    if (cy.state("aliases")?.borehole_id_1) {
       cy.get("@borehole_id_1").then(id => deleteBorehole(id));
+    }
+    if (cy.state("aliases")?.borehole_id_2) {
       cy.get("@borehole_id_2").then(id => deleteBorehole(id));
     }
   });

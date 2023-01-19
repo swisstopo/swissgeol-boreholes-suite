@@ -1,4 +1,4 @@
-import { loginAsEditor } from "./testHelpers";
+import { loginAsEditorInViewerMode } from "./testHelpers";
 
 describe("General app tests", () => {
   it("Displays the login page in english by default", () => {
@@ -29,7 +29,7 @@ describe("General app tests", () => {
   });
 
   it("Displays the current host as app title", () => {
-    loginAsEditor();
+    loginAsEditorInViewerMode();
     cy.get('[data-cy="app-title"]').contains("localhost");
   });
 });

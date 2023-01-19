@@ -20,15 +20,14 @@ describe("Instrumentation tests", () => {
 
     login("/editor");
 
-    cy.get('[data-cy="completion-menu-item"]').click();
-    cy.get('[data-cy="instrument-menu-item"]').click();
-
     // Assert map number of boreholes
     cy.get("div[id=map]").should("be.visible");
     cy.get("tbody").children().should("have.length", 21);
 
     // Add new borehole
     newUneditableBorehole().as("borehole_id");
+    cy.get('[data-cy="completion-menu-item"]').click();
+    cy.get('[data-cy="instrument-menu-item"]').click();
   });
 
   afterEach(() => {

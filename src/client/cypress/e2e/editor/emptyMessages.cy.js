@@ -10,7 +10,7 @@ describe("Messages for empty profiles", () => {
     interceptApiCalls();
 
     login("/editor");
-    newUnEditableBorehole().as("borehole_id");
+    newUneditableBorehole().as("borehole_id");
   });
 
   afterEach(() => {

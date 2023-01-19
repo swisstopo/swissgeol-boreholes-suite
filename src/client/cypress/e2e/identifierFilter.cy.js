@@ -11,9 +11,11 @@ describe("Tests for filtering data by identifier.", () => {
   });
 
   afterEach(() => {
-    // Delete borehole if it was created.
-    if (cy.state("aliases")?.borehole_id) {
-      cy.get("@borehole_id").then(id => deleteBorehole(id));
+    // Delete boreholes if they were created.
+    if (cy.state("aliases")?.borehole_id_1) {
+      cy.get("@borehole_id_1").then(id => deleteBorehole(id));
+    }
+    if (cy.state("aliases")?.borehole_id_2) {
       cy.get("@borehole_id_2").then(id => deleteBorehole(id));
     }
   });
