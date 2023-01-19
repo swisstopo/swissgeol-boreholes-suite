@@ -17,6 +17,13 @@ describe("Tests for 'Location' edit page.", () => {
     cy.wait("@edit_list");
   });
 
+  afterEach(() => {
+    // Delete borehole if it was created.
+    if (cy.state("aliases")?.borehole_id) {
+      cy.get("@borehole_id").then(id => deleteBorehole(id));
+    }
+  });
+
   it("creates and deletes a borehole.", () => {
     newEditableBorehole();
 
@@ -73,8 +80,5 @@ describe("Tests for 'Location' edit page.", () => {
     cy.get('[data-cy="identifier"]').contains("Delete").click();
     cy.get('[data-cy="identifier-dropdown"]').should("have.class", "error");
     cy.get('[data-cy="identifier-value"]').should("have.class", "error");
-
-    // delete borehole
-    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 });

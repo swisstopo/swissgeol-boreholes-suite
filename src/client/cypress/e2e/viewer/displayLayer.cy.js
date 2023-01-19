@@ -1,14 +1,32 @@
-import { newEditableBorehole, login, interceptApiCalls } from "../testHelpers";
+import {
+  newEditableBorehole,
+  login,
+  interceptApiCalls,
+  deleteBorehole,
+} from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
   beforeEach(() => {
     interceptApiCalls();
+
+    login("/editor");
+
+    // Assert map number of boreholes
+    cy.get("div[id=map]").should("be.visible");
+    cy.get("tbody").children().should("have.length", 21);
+
+    // Add new borehole
+    newEditableBorehole().as("borehole_id");
+  });
+
+  afterEach(() => {
+    // Delete borehole if it was created.
+    if (cy.state("aliases")?.borehole_id) {
+      cy.get("@borehole_id").then(id => deleteBorehole(id));
+    }
   });
 
   it("Adds complete layer and displays it in viewer mode, checks if fields can be optionally hidden.", () => {
-    login("editor");
-    // create boreholes
-    newEditableBorehole().as("borehole_id");
     //navigate to stratigraphy
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="add-stratigraphy-button"]').click();
@@ -83,9 +101,9 @@ describe("Test for the borehole form.", () => {
     cy.contains("button", "Unselect all").click();
     cy.wait("@codes");
     cy.get(".ui.fitted.checkbox").first().click({ force: true });
+    cy.wait("@codes");
 
     // go to viewer mode
-
     cy.get("i[class='th big icon']").click();
     cy.contains("h4", "Viewer").click();
 

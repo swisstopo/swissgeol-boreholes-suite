@@ -15,6 +15,13 @@ describe("Test copying of boreholes", () => {
     cy.wait("@edit_list");
   });
 
+  afterEach(() => {
+    // Delete borehole if it was created.
+    if (cy.state("aliases")?.borehole_id) {
+      cy.get("@borehole_id").then(id => deleteBorehole(id));
+    }
+  });
+
   it("copies a borehole", () => {
     createBorehole({ "extended.original_name": "NINTIC" }).as("borehole_id_1");
 
@@ -41,6 +48,5 @@ describe("Test copying of boreholes", () => {
 
     cy.contains("a", "Delete").click();
     cy.contains("button", "Delete").click();
-    cy.get("@borehole_id_1").then(id => deleteBorehole(id));
   });
 });

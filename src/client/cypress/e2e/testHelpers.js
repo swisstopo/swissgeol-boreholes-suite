@@ -43,8 +43,11 @@ export const interceptApiCalls = () => {
  */
 export const login = (visitUrl = "/") => {
   cy.intercept("/api/v1/geoapi/canton").as("geoapi");
+  cy.intercept("api/v1/content").as("content");
+
   cy.visit(visitUrl);
-  cy.contains("button", "Login").click();
+  cy.wait("@content");
+  cy.contains("button", "Login").click({ force: true });
   cy.wait("@geoapi");
 };
 
@@ -61,7 +64,7 @@ export const loginAsAdmin = (visitUrl = "/") => {
  * Login into the application as editor.
  * @param {string} visitUrl The url to visit after logging in. Default is the root path.
  */
-export const loginAsEditor = (visitUrl = "/") => {
+export const loginAsEditorInViewerMode = (visitUrl = "/") => {
   cy.intercept("/api/v1/user", editorUser);
   login(visitUrl);
 };

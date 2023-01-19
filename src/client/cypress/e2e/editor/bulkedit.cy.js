@@ -10,6 +10,14 @@ describe("Test the borehole bulk edit feature.", () => {
     login("/editor");
   });
 
+  afterEach(() => {
+    // Delete borehole if it was created.
+    if (cy.state("aliases")?.borehole_id) {
+      cy.get("@borehole_id_1").then(id => deleteBorehole(id));
+      cy.get("@borehole_id_2").then(id => deleteBorehole(id));
+    }
+  });
+
   it("opens the bulk edit dialog with all boreholes selected", () => {
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
@@ -78,9 +86,5 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.contains("button", "Save").click();
     cy.wait("@edit_multipatch").its("response.body.success").should("eq", true);
     cy.wait("@edit_list");
-
-    // delete the boreholes
-    cy.get("@borehole_id_1").then(id => deleteBorehole(id));
-    cy.get("@borehole_id_2").then(id => deleteBorehole(id));
   });
 });

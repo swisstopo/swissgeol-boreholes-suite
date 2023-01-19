@@ -25,8 +25,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
   });
 
   afterEach(() => {
-    // delete borehole
-    cy.get("@borehole_id").then(id => deleteBorehole(id));
+    // Delete borehole if it was created.
+    if (cy.state("aliases")?.borehole_id) {
+      cy.get("@borehole_id").then(id => deleteBorehole(id));
+    }
   });
 
   it("creates new borehole and adds coordinates", () => {

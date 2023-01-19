@@ -10,14 +10,14 @@ describe("Messages for empty profiles", () => {
     interceptApiCalls();
 
     login("/editor");
-    newUneditableBorehole();
+    newUnEditableBorehole().as("borehole_id");
   });
 
   afterEach(() => {
-    // delete borehole
-    cy.get("@edit_create").then(interception => {
-      deleteBorehole(interception.response.body.id);
-    });
+    // Delete borehole if it was created.
+    if (cy.state("aliases")?.borehole_id) {
+      cy.get("@borehole_id").then(id => deleteBorehole(id));
+    }
   });
 
   it("Displays correct messages for stratigraphy", () => {

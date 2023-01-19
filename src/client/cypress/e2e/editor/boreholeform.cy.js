@@ -10,6 +10,13 @@ describe("Test for the borehole form.", () => {
     login("/editor");
   });
 
+  afterEach(() => {
+    // Delete borehole if it was created.
+    if (cy.state("aliases")?.borehole_id) {
+      cy.get("@borehole_id").then(id => deleteBorehole(id));
+    }
+  });
+
   it("Creates a borehole and fills dropdowns.", () => {
     // create boreholes
     newEditableBorehole().as("borehole_id");
@@ -64,8 +71,5 @@ describe("Test for the borehole form.", () => {
         ]);
       }
     });
-
-    // delete the borehole
-    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 });
