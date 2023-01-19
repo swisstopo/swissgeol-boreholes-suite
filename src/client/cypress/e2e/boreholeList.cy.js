@@ -70,39 +70,69 @@ describe("Borehole list tests", () => {
     cy.intercept("/api/v1/borehole/edit").as("editorBorehole");
     loginAsAdmin("/editor");
 
-    cy.wait("@editorBorehole")
+    cy.wait("@editorBorehole");
     cy.get("div[id=map]").should("be.visible");
     cy.get("tbody").children().should("have.length", 21);
 
-    // sort by creation date
+    // sort by creation date descending
+    cy.contains("th", "Creation date").click();
+    cy.wait("@editorBorehole");
+
+    cy.contains("th", "Creation date")
+      .children()
+      .first()
+      .then($icon => {
+        if ($icon.hasClass("up")) {
+          // If the list was sorted ascending click again.
+          cy.contains("th", "Creation date").click();
+        }
+      });
+
+    cy.get("tbody").children().eq(0).contains("td", "04.12.2021");
+    cy.get("tbody").children().eq(1).contains("td", "22.11.2021");
+    cy.get("tbody").children().eq(2).contains("td", "09.11.2021");
+
     cy.contains("th", "Creation date").click();
     cy.wait("@editorBorehole");
     cy.get("tbody").children().eq(0).contains("td", "08.01.2021");
     cy.get("tbody").children().eq(1).contains("td", "19.01.2021");
     cy.get("tbody").children().eq(2).contains("td", "31.01.2021");
 
-    cy.contains("th", "Creation date").click();
-    cy.wait("@editorBorehole");
-    cy.get("tbody").children().eq(0).contains("td", "04.12.2021");
-    cy.get("tbody").children().eq(1).contains("td", "22.11.2021");
-    cy.get("tbody").children().eq(2).contains("td", "09.11.2021");
-
-    // sort by creator
+    // sort by creator descending
     cy.contains("th", "Created by").click();
-    cy.wait("@editorBorehole");
-    cy.get("tbody").children().eq(0).contains("td", "admin");
-    cy.get("tbody").children().eq(1).contains("td", "admin");
-    cy.get("tbody").children().eq(2).contains("td", "admin");
 
-    cy.contains("th", "Created by").click();
-    cy.wait("@editorBorehole");
+    cy.contains("th", "Created by")
+      .children()
+      .first()
+      .then($icon => {
+        if ($icon.hasClass("up")) {
+          // If the list was sorted ascending click again.
+          cy.contains("th", "Created by").click();
+        }
+      });
+
     cy.get("tbody").children().eq(0).contains("td", "publisher");
     cy.get("tbody").children().eq(1).contains("td", "publisher");
     cy.get("tbody").children().eq(2).contains("td", "publisher");
 
-    // sort by name
+    cy.contains("th", "Created by").click();
+    cy.get("tbody").children().eq(0).contains("td", "admin");
+    cy.get("tbody").children().eq(1).contains("td", "admin");
+    cy.get("tbody").children().eq(2).contains("td", "admin");
+
+    // sort by name ascending
     cy.contains("th", "Original name").click();
     cy.wait("@editorBorehole");
+    cy.contains("th", "Original name")
+      .children()
+      .first()
+      .then($icon => {
+        if ($icon.hasClass("down")) {
+          // If the list was sorted descending click again.
+          cy.contains("th", "Original name").click();
+        }
+      });
+
     cy.get("tbody").children().eq(0).contains("td", "Ari Turcotte");
     cy.get("tbody").children().eq(1).contains("td", "Bertha Crist");
     cy.get("tbody").children().eq(2).contains("td", "Braeden Dietrich");
