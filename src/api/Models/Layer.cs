@@ -99,8 +99,7 @@ public class Layer
 
     /// <summary>
     /// Gets or sets the id of the quality of the <see cref="Layer"/>'s description.
-    /// </summary>
-    [JsonIgnore]
+    /// </summary>  
     [Column("qt_description_id_cli")]
     public int? QtDescriptionId { get; set; }
 
@@ -112,7 +111,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s lithology.
     /// </summary>
-    [JsonIgnore]
     [Column("lithology_id_cli")]
     public int? LithologyId { get; set; }
 
@@ -123,8 +121,7 @@ public class Layer
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s chronostratigraphy.
-    /// </summary>
-    [JsonIgnore]
+    /// </summary>  
     [Column("chronostratigraphy_id_cli")]
     public int? ChronostratigraphyId { get; set; }
 
@@ -136,7 +133,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s plasticity.
     /// </summary>
-    [JsonIgnore]
     [Column("plasticity_id_cli")]
     public int? PlasticityId { get; set; }
 
@@ -148,7 +144,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s consitance.
     /// </summary>
-    [JsonIgnore]
     [Column("consistance_id_cli")]
     public int? ConsistanceId { get; set; }
 
@@ -160,7 +155,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s alteration.
     /// </summary>
-    [JsonIgnore]
     [Column("alteration_id_cli")]
     public int? AlterationId { get; set; }
 
@@ -172,7 +166,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s compactness.
     /// </summary>
-    [JsonIgnore]
     [Column("compactness_id_cli")]
     public int? CompactnessId { get; set; }
 
@@ -184,7 +177,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s grain size 1.
     /// </summary>
-    [JsonIgnore]
     [Column("grain_size_1_id_cli")]
     public int? GrainSize1Id { get; set; }
 
@@ -196,7 +188,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s grain size 2.
     /// </summary>
-    [JsonIgnore]
     [Column("grain_size_2_id_cli")]
     public int? GrainSize2Id { get; set; }
 
@@ -208,7 +199,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s cohesion.
     /// </summary>
-    [JsonIgnore]
     [Column("cohesion_id_cli")]
     public int? CohesionId { get; set; }
 
@@ -220,7 +210,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s Uscs 1.
     /// </summary>
-    [JsonIgnore]
     [Column("uscs_1_id_cli")]
     public int? Uscs1Id { get; set; }
 
@@ -232,7 +221,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s Uscs 2.
     /// </summary>
-    [JsonIgnore]
     [Column("uscs_2_id_cli")]
     public int? Uscs2Id { get; set; }
 
@@ -250,7 +238,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s Uscs determination.
     /// </summary>
-    [JsonIgnore]
     [Column("uscs_determination_id_cli")]
     public int? UscsDeterminationId { get; set; }
 
@@ -268,7 +255,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s lithostratigraphy.
     /// </summary>
-    [JsonIgnore]
     [Column("lithostratigraphy_id_cli")]
     public int? LithostratigraphyId { get; set; }
 
@@ -280,7 +266,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s humidity.
     /// </summary>
-    [JsonIgnore]
     [Column("humidity_id_cli")]
     public int? HumidityId { get; set; }
 
@@ -304,7 +289,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s instrument kind.
     /// </summary>
-    [JsonIgnore]
     [Column("instr_kind_id_cli")]
     public int? InstrumentKindId { get; set; }
 
@@ -316,7 +300,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s instrument status.
     /// </summary>
-    [JsonIgnore]
     [Column("instr_status_id_cli")]
     public int? InstrumentStatusId { get; set; }
 
@@ -328,7 +311,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s instrument stratigraphy.
     /// </summary>
-    [JsonIgnore]
     [Column("instr_id_sty_fk")]
     public int? InstrumentCasingId { get; set; }
 
@@ -346,7 +328,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s casing kind.
     /// </summary>
-    [JsonIgnore]
     [Column("casng_kind_id_cli")]
     public int? CasingKindId { get; set; }
 
@@ -358,7 +339,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s casing material.
     /// </summary>
-    [JsonIgnore]
     [Column("casng_material_id_cli")]
     public int? CasingMaterialId { get; set; }
 
@@ -370,7 +350,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s fill material.
     /// </summary>
-    [JsonIgnore]
     [Column("fill_material_id_cli")]
     public int? FillMaterialId { get; set; }
 
@@ -406,7 +385,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s gradation.
     /// </summary>
-    [JsonIgnore]
     [Column("gradation_id_cli")]
     public int? GradationId { get; set; }
 
@@ -424,7 +402,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s fill kind.
     /// </summary>
-    [JsonIgnore]
     [Column("fill_kind_id_cli")]
     public int? FillKindId { get; set; }
 
@@ -436,7 +413,6 @@ public class Layer
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s lithology top bedrock.
     /// </summary>
-    [JsonIgnore]
     [Column("lithology_top_bedrock_id_cli")]
     public int? LithologyTopBedrockId { get; set; }
 

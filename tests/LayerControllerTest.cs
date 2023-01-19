@@ -161,6 +161,7 @@ public class LayerControllerTest
 
         var layerToEdit = context.Layers.Single(c => c.Id == id);
         Assert.AreEqual(3, layerToEdit.CreatedById);
+        Assert.AreEqual(6008, layerToEdit.InstrumentCasingId);
         Assert.AreEqual("Baby grow strategic haptic", layerToEdit.Notes);
 
         // Upate Layer
