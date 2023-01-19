@@ -105,7 +105,7 @@ public class LayerControllerTest
             FillMaterial = null,
             FillMaterialId = 25000306,
             FromDepth = 90,
-            GradationId = 1491193234,
+            GradationId = 30000016,
             GrainSize1 = null,
             GrainSize1Id = 21101004,
             GrainSize2 = null,
@@ -129,7 +129,7 @@ public class LayerControllerTest
             LithologyTopBedrockId = 15104417,
             Lithostratigraphy = null,
             LithostratigraphyId = null,
-            Notes = "Pakistan Rupee Investment Account AGP Engineer",
+            Notes = "Baby grow strategic haptic",
             OriginalUscs = "Bedfordshire",
             Plasticity = null,
             PlasticityId = 21101005,
@@ -155,6 +155,7 @@ public class LayerControllerTest
             CreatedById = 4,
             UpdatedById = 4,
             Creation = new DateTime(2021, 2, 14, 8, 55, 34).ToUniversalTime(),
+            InstrumentCasingId = 0,
             Notes = "Freddy ate more cake than Maria.",
         };
 
@@ -172,10 +173,13 @@ public class LayerControllerTest
         var updatedLayer = updatedContext.Layers.Single(c => c.Id == id);
 
         Assert.AreEqual(4, updatedLayer.CreatedById);
+        Assert.AreEqual(0, updatedLayer.InstrumentCasingId);
         Assert.AreEqual("Freddy ate more cake than Maria.", updatedLayer.Notes);
 
         // Reset edits
-        _ = await controller.EditAsync(originalLayer);
+        var res = await controller.EditAsync(originalLayer);
+        var okRes = res as OkObjectResult;
+        Assert.AreEqual(200, okRes.StatusCode);
     }
 
     [TestMethod]
