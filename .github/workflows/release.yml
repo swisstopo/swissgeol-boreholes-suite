@@ -12,7 +12,7 @@ on:
 env:
   REGISTRY: ghcr.io
   TAG_NAME: ${{ github.event.inputs.TAG_NAME || github.event.release.tag_name }}
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.GH_GEOW_BUILD }}
 
 jobs:
   retag-docker-image:
