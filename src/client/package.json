@@ -60,7 +60,8 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.31.7",
     "license-checker": "^25.0.1",
-    "prettier": "^2.7.1"
+    "prettier": "^2.7.1",
+    "serve": "^14.1.2"
   },
   "scripts": {
     "start": "react-scripts start",

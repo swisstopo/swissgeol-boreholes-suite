@@ -23,7 +23,7 @@ jobs:
 
       - name: Build solution
         run: dotnet build BDMS.sln /warnaserror
-      
+
       - name: Start db and api's
         run: docker-compose up -d minio db api-legacy api
 
@@ -45,7 +45,7 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           build: npm run build --if-present
-          start: npm start
+          start: npx serve -s build
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
           working-directory: ./src/client
