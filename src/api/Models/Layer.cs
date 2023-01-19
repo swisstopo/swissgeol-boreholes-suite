@@ -99,7 +99,7 @@ public class Layer
 
     /// <summary>
     /// Gets or sets the id of the quality of the <see cref="Layer"/>'s description.
-    /// </summary>  
+    /// </summary>
     [Column("qt_description_id_cli")]
     public int? QtDescriptionId { get; set; }
 
@@ -121,7 +121,7 @@ public class Layer
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s chronostratigraphy.
-    /// </summary>  
+    /// </summary>
     [Column("chronostratigraphy_id_cli")]
     public int? ChronostratigraphyId { get; set; }
 
