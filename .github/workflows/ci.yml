@@ -46,3 +46,4 @@ jobs:
           working-directory: ./src/client
         env:
           REACT_APP_VERSION: 0.0.99+dev
+          TZ: Europe/Zurich
