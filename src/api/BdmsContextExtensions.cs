@@ -377,8 +377,9 @@ public static class BdmsContextExtensions
             var start = (i * 10) + 1;
             var range = Enumerable.Range(start, 10);  // ints in range must be different on each loop, so that properties are not repeated in dataset.
             context.Layers.AddRange(range.Select(SeededLayers));
-            context.SaveChanges();
         }
+
+        context.SaveChanges();
 
         // Seed workflows
         var workflow_ids = 5000;
