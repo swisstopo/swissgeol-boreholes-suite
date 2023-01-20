@@ -2,7 +2,9 @@
 using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace BDMS;
 
@@ -14,7 +16,7 @@ public class LocationControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        controller = new LocationController(new HttpClient());
+        controller = new LocationController(new HttpClient(), new Mock<ILogger<LocationController>>().Object);
         controller.ControllerContext.HttpContext = new DefaultHttpContext();
     }
 
