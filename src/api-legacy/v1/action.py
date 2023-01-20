@@ -519,6 +519,12 @@ class Action():
                 uscs_original_lay ILIKE %s
             """ % self.getIdx())
 
+        if 'original_lithology' in keys and filter['original_lithology'] not in ['', None]:
+            params.append(f"%{filter['original_lithology']}%")
+            where.append("""
+                original_lithology ILIKE %s
+            """ % self.getIdx())
+
         if 'layer_borehole' in keys and filter['layer_borehole'] not in ['', None]:
             params.append(filter['layer_borehole'])
             where.append("""

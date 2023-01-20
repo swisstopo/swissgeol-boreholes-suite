@@ -122,6 +122,7 @@ const initialState = {
 
     qt_description: null,
     uscs_original: "",
+    original_lithology: "",
     layer_gradation: null,
 
     spud_date_from: "",
