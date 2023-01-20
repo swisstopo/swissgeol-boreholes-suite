@@ -38,7 +38,7 @@ public static class BdmsContextExtensions
         context.Workgroups.AddRange(workgroupRange.Select(SeededWorkgroups));
         context.SaveChanges();
 
-        // ranges for exsiting tables
+        // ranges for existing tables
         var userRange = Enumerable.Range(1, 5);
         var cantonRange = Enumerable.Range(1, 51);
         var municipalityRange = Enumerable.Range(1, 2371);
