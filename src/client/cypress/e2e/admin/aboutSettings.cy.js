@@ -1,4 +1,8 @@
-import { interceptApiCalls, loginAndResetBoreholes } from "../testHelpers";
+import {
+  interceptApiCalls,
+  loginAndResetBoreholes,
+  login,
+} from "../testHelpers";
 import license from "../../fixtures/license.json";
 
 describe("Admin about page tests", () => {

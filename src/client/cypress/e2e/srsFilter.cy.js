@@ -2,6 +2,7 @@ import {
   interceptApiCalls,
   newEditableBorehole,
   loginAndResetBoreholes,
+  login,
 } from "./testHelpers";
 
 describe("Tests for filtering data by reference system.", () => {

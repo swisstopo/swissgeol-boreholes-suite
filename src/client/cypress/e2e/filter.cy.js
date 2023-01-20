@@ -1,4 +1,8 @@
-import { interceptApiCalls, loginAndResetBoreholes } from "../e2e/testHelpers";
+import {
+  interceptApiCalls,
+  loginAndResetBoreholes,
+  login,
+} from "../e2e/testHelpers";
 
 describe("Search filter tests", () => {
   beforeEach(() => {
