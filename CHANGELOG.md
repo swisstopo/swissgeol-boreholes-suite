@@ -25,7 +25,7 @@
 - Removed unused table `bdms.statigraphy_codelist` from database.
 - Removed  `layer.unconrocks_id_cli` and `layer.lithok_id_cli` from database.
 - Changed cardinality of `uscs3` field on `bdms.layer` to m:n.
-- Get Municipality, Canton, Country from geo.admin.ch service. Remvoed obsolete Canton / Municipality tables.
+- Get Municipality, Canton, Country from geo.admin.ch service. Removed obsolete Canton / Municipality tables.
 
 ### Fixed
 
