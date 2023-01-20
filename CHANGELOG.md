@@ -7,6 +7,7 @@
 ### Added
 
 - Added db constraints for table `layer_codelist`.
+- Display original_lithology field in viewer and editor mode.
 
 ### Changed
 
