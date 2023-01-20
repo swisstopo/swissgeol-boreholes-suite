@@ -254,7 +254,7 @@ public static class BdmsContextExtensions
 
         // Seed stratigraphy
         var stratigraphy_ids = 6000;
-        var stratigraphyRange = Enumerable.Range(stratigraphy_ids, 150);
+        var stratigraphyRange = Enumerable.Range(stratigraphy_ids, 150).ToList();
         var fakeStratigraphies = new Faker<Stratigraphy>()
             .StrictMode(true)
             .RuleFor(o => o.Id, f => stratigraphy_ids++)
@@ -371,7 +371,7 @@ public static class BdmsContextExtensions
 
         Layer SeededLayers(int seed) => fakelayers.UseSeed(seed).Generate();
 
-        for (int i = 0; i < stratigraphyRange.Count(); i++)
+        for (int i = 0; i < stratigraphyRange.Count; i++)
         {
             // Add 10 layers per stratigraphy
             var start = (i * 10) + 1;
