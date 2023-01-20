@@ -123,6 +123,5 @@ public partial class RemoveCantonsMunicipalities : Migration
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-        throw new NotImplementedException();
     }
 }
