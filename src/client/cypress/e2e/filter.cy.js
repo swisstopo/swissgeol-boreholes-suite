@@ -51,6 +51,12 @@ describe("Search filter tests", () => {
     cy.contains("h4", "Editor").click();
 
     cy.contains("Filter by map");
+
+    // reset appearance
+    cy.get('[data-cy="menu"]').click();
+    cy.contains("h4", "Settings").click();
+    cy.contains("Appearance").click();
+    cy.contains("Full").children(".checkbox").click();
   });
 
   it("checks that the registration filter settings control the filter visibility.", () => {
