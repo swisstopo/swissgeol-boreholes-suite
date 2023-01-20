@@ -31,7 +31,7 @@ public class LocationControllerTest
     public async Task IdentifyLv03(double east, double north, string country, string canton, string municipal)
     {
         var response = await controller.IdentifyAsync(east, north, 21781);
-        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         var okResult = response.Result as OkObjectResult;
         var result = okResult.Value as LocationInfo;
         Assert.AreEqual(country, result.Country);
@@ -50,7 +50,7 @@ public class LocationControllerTest
     public async Task IdentifyLv95(double east, double north, string country, string canton, string municipal)
     {
         var response = await controller.IdentifyAsync(east, north);
-        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         var okResult = response.Result as OkObjectResult;
         var result = okResult.Value as LocationInfo;
         Assert.AreEqual(country, result.Country);
