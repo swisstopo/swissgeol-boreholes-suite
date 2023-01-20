@@ -3,8 +3,6 @@ import PropTypes from "prop-types";
 import _ from "lodash";
 import DomainText from "../../form/domain/domainText";
 import DateText from "../../form/dateText";
-import MunicipalityText from "../../form/municipality/municipalityText";
-import CantonText from "../../form/cantons/cantonText";
 import TranslationText from "../../form/translationText";
 import { NumericFormat } from "react-number-format";
 
@@ -367,16 +365,13 @@ class MetaComponent extends React.Component {
             style={{
               flex: "1 1 100%",
             }}>
-            {this.getTextRow("canton", <CantonText id={data.custom.canton} />)}
+            {this.getTextRow("canton", data.custom.canton)}
           </div>
           <div
             style={{
               flex: "1 1 100%",
             }}>
-            {this.getTextRow(
-              "city",
-              <MunicipalityText id={data.custom.municipality} />,
-            )}
+            {this.getTextRow("city", data.custom.municipality)}
           </div>
         </div>
 
