@@ -33,14 +33,14 @@ public class LocationController : Controller
 
         try
         {
-            var httpResponse = await httpClient.GetAsync(requestUri).ConfigureAwait(false);
+            using var httpResponse = await httpClient.GetAsync(requestUri).ConfigureAwait(false);
             httpResponse.EnsureSuccessStatusCode();
 
-            var contentStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            var document = await JsonDocument.ParseAsync(contentStream).ConfigureAwait(false);
+            using var contentStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            using var document = await JsonDocument.ParseAsync(contentStream).ConfigureAwait(false);
 
             var result = new LocationInfo(
-                Country: GetAttributeValueForLayer(document, countryLayer, "bez"),
+                Country: GetAttributeValueForLayer(document, countryLayer, "bbez"),
                 Canton: GetAttributeValueForLayer(document, cantonLayer, "name"),
                 Municipality: GetAttributeValueForLayer(document, municipalityLayer, "gemname"));
 
