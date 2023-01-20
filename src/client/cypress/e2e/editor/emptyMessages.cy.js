@@ -1,16 +1,13 @@
 import {
   interceptApiCalls,
   newUneditableBorehole,
-  resetBoreholes,
-  login,
+  loginAndResetBoreholes,
 } from "../testHelpers";
 
 describe("Messages for empty profiles", () => {
   beforeEach(() => {
     interceptApiCalls();
-
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
     newUneditableBorehole().as("borehole_id");
   });
 

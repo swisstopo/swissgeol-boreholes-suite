@@ -1,15 +1,13 @@
 import {
   newEditableBorehole,
-  login,
   interceptApiCalls,
-  resetBoreholes,
+  loginAndResetBoreholes,
 } from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
   beforeEach(() => {
     interceptApiCalls();
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
 
     // Assert map number of boreholes
     cy.get("div[id=map]").should("be.visible");

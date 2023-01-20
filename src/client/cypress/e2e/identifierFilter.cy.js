@@ -1,15 +1,13 @@
 import {
   interceptApiCalls,
   newEditableBorehole,
-  resetBoreholes,
-  login,
+  loginAndResetBoreholes,
 } from "./testHelpers";
 
 describe("Tests for filtering data by identifier.", () => {
   beforeEach(() => {
     interceptApiCalls();
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
   });
 
   it("can filter by identifier", () => {

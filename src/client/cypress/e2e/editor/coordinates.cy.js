@@ -1,16 +1,14 @@
 import {
   interceptApiCalls,
-  resetBoreholes,
+  loginAndResetBoreholes,
   newEditableBorehole,
   delayedType,
-  login,
 } from "../testHelpers";
 
 describe("Tests for editing coordinates of a borehole.", () => {
   beforeEach(() => {
     interceptApiCalls();
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
 
     newEditableBorehole().as("borehole_id");
 

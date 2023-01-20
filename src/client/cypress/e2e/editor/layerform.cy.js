@@ -1,16 +1,13 @@
 import {
   newEditableBorehole,
-  resetBoreholes,
-  login,
+  loginAndResetBoreholes,
   interceptApiCalls,
 } from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
   beforeEach(() => {
     interceptApiCalls();
-
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
   });
 
   it("Creates a layer and fills all dropdowns with multiple selection.", () => {

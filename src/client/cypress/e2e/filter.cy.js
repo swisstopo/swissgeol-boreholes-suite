@@ -1,10 +1,9 @@
-import { login, interceptApiCalls, resetBoreholes } from "../e2e/testHelpers";
+import { interceptApiCalls, loginAndResetBoreholes } from "../e2e/testHelpers";
 
 describe("Search filter tests", () => {
   beforeEach(() => {
     interceptApiCalls();
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
   });
 
   it("has search filters", () => {

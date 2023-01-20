@@ -1,4 +1,4 @@
-import { newEditableBorehole, resetBoreholes, login } from "../testHelpers";
+import { newEditableBorehole, loginAndResetBoreholes } from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
   beforeEach(() => {
@@ -7,8 +7,7 @@ describe("Test for the borehole form.", () => {
       return (req.alias = `edit_${req.body.action.toLowerCase()}`);
     });
 
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
   });
 
   it("Creates a borehole and fills dropdowns.", () => {

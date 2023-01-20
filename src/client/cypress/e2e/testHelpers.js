@@ -139,18 +139,19 @@ export const deleteBorehole = id => {
     .should("eq", true);
 };
 
-export const resetBoreholes = () => {
+export const loginAndResetBoreholes = () => {
+  login("/editor");
   cy.get("tbody").children().first().should("be.visible");
 
   cy.wait("@edit_list").then(intercept => {
     intercept.response.body.data.forEach(borehole => {
-      if (borehole.id > 1029) deleteBorehole(borehole.id);
+      if (borehole.id > 1029) deleteBorehole(borehole.id); // max id in seed data.
     });
   });
 
   cy.contains("a", "Refresh").click();
   cy.wait("@edit_list");
-  cy.get("tbody").children().should("have.length", 21);
+  cy.get("tbody").children().should("have.length", 21); // number or boreholes visible in editor mode.
 };
 
 export const delayedType = (element, string) => {

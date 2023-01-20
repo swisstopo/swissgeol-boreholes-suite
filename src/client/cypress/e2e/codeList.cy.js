@@ -1,16 +1,14 @@
 import {
   interceptApiCalls,
   loginAsAdmin,
-  login,
   loginAsEditorInViewerMode,
-  resetBoreholes,
+  loginAndResetBoreholes,
 } from "../e2e/testHelpers";
 
 describe("Codelist translations tests", () => {
   beforeEach(() => {
     interceptApiCalls();
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
   });
 
   it("Admin can open codelist translation section", () => {

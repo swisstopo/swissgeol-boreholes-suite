@@ -1,15 +1,13 @@
 import {
   interceptApiCalls,
   loginAsEditorInViewerMode,
-  resetBoreholes,
-  login,
+  loginAndResetBoreholes,
 } from "./testHelpers";
 
 describe("General app tests", () => {
   beforeEach(() => {
     interceptApiCalls();
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
   });
 
   it("Displays the login page in english by default", () => {

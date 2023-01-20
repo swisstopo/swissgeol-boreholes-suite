@@ -1,15 +1,13 @@
 import {
   interceptApiCalls,
   newEditableBorehole,
-  resetBoreholes,
-  login,
+  loginAndResetBoreholes,
 } from "./testHelpers";
 
 describe("Tests for filtering data by reference system.", () => {
   beforeEach(() => {
     interceptApiCalls();
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
   });
 
   function goToEditorLocationFilter() {

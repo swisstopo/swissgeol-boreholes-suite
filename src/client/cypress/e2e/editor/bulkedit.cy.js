@@ -1,4 +1,4 @@
-import { createBorehole, resetBoreholes, login } from "../testHelpers";
+import { createBorehole, loginAndResetBoreholes } from "../testHelpers";
 
 describe("Test the borehole bulk edit feature.", () => {
   beforeEach(() => {
@@ -7,8 +7,7 @@ describe("Test the borehole bulk edit feature.", () => {
       return (req.alias = `edit_${req.body.action.toLowerCase()}`);
     });
 
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
   });
 
   it("opens the bulk edit dialog with all boreholes selected", () => {

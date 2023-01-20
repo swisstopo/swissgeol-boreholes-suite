@@ -1,8 +1,7 @@
 import {
   interceptApiCalls,
-  login,
   createBorehole,
-  resetBoreholes,
+  loginAndResetBoreholes,
 } from "../testHelpers";
 
 describe("Test copying of boreholes", () => {
@@ -10,8 +9,7 @@ describe("Test copying of boreholes", () => {
     interceptApiCalls();
     cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
 
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
   });
 
   it("copies a borehole", () => {

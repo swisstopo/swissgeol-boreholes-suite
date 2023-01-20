@@ -1,16 +1,14 @@
 import {
   loginAsAdmin,
   loginAsEditorInViewerMode,
-  resetBoreholes,
+  loginAndResetBoreholes,
   interceptApiCalls,
-  login,
 } from "../e2e/testHelpers";
 
 describe("Borehole list tests", () => {
   beforeEach(() => {
     interceptApiCalls();
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
   });
 
   it("Boreholes are displayed in correct order with editor login", () => {

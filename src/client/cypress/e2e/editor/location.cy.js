@@ -1,15 +1,13 @@
 import {
-  resetBoreholes,
+  loginAndResetBoreholes,
   interceptApiCalls,
   newEditableBorehole,
-  login,
 } from "../testHelpers";
 
 describe("Tests for 'Location' edit page.", () => {
   beforeEach(() => {
     interceptApiCalls();
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
   });
 
   it("creates and deletes a borehole.", () => {

@@ -1,9 +1,8 @@
 import {
   interceptApiCalls,
   newUneditableBorehole,
-  resetBoreholes,
+  loginAndResetBoreholes,
   delayedType,
-  login,
 } from "../testHelpers";
 
 const addInstrumentLayer = () => {
@@ -17,9 +16,7 @@ const addInstrumentLayer = () => {
 describe("Instrumentation tests", () => {
   beforeEach(() => {
     interceptApiCalls();
-
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
 
     // Add new borehole
     newUneditableBorehole().as("borehole_id");

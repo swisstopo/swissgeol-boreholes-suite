@@ -1,15 +1,13 @@
 import {
   interceptApiCalls,
-  login,
   loginAsAdmin,
-  resetBoreholes,
+  loginAndResetBoreholes,
 } from "../testHelpers";
 
 describe("Admin settings test", () => {
   beforeEach(() => {
     interceptApiCalls();
-    login("/editor");
-    resetBoreholes();
+    loginAndResetBoreholes();
 
     loginAsAdmin("/setting/admin");
 
