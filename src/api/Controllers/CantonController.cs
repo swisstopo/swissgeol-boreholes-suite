@@ -20,14 +20,13 @@ public class CantonController : Controller
     /// Asynchronously gets all existing values (except null) for <see cref="Borehole.Canton"/>/>.
     /// </summary>
     [HttpGet]
-    public async Task<ICollection<string?>> GetAllAsync()
+    public async Task<IEnumerable<string>> GetAllAsync()
     {
-        var cantons = context.Boreholes
+        return await context.Boreholes
             .Select(bho => bho.Canton)
             .Where(c => c != null)
             .Distinct()
-            .AsQueryable();
-
-        return await cantons.ToArrayAsync().ConfigureAwait(false);
+            .ToListAsync<string>()
+            .ConfigureAwait(false);
     }
 }

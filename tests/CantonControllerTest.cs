@@ -38,14 +38,14 @@ public class CantonControllerTest
     [TestCleanup]
     public async Task TestCleanup()
     {
-        Assert.AreEqual(boreholeCount, context.Boreholes.Count(), "Tests need to remove boreholes, they created.");
+        Assert.AreEqual(boreholeCount, context.Boreholes.Count(), "Tests need to remove boreholes they created.");
         await context.DisposeAsync();
     }
 
     [TestMethod]
     public async Task GetAllAsync()
     {
-        var initialAvailableCantons = await controller.GetAllAsync() as ICollection;
+        var initialAvailableCantons = (await controller.GetAllAsync()).ToList();
         CollectionAssert.AllItemsAreNotNull(initialAvailableCantons);
         CollectionAssert.AllItemsAreUnique(initialAvailableCantons);
         CollectionAssert.DoesNotContain(initialAvailableCantons, TestCanton);
@@ -56,7 +56,7 @@ public class CantonControllerTest
         context.Boreholes.Add(borehole2);
         context.SaveChanges();
 
-        var updatedCantons = await controller.GetAllAsync() as ICollection;
+        var updatedCantons = (await controller.GetAllAsync()).ToList();
         CollectionAssert.AllItemsAreNotNull(updatedCantons);
         CollectionAssert.AllItemsAreUnique(updatedCantons);
         CollectionAssert.Contains(updatedCantons, TestCanton);
