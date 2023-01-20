@@ -40,7 +40,7 @@ public class LocationController : Controller
             using var document = await JsonDocument.ParseAsync(contentStream).ConfigureAwait(false);
 
             var result = new LocationInfo(
-                Country: GetAttributeValueForLayer(document, countryLayer, "bbez"),
+                Country: GetAttributeValueForLayer(document, countryLayer, "bez"),
                 Canton: GetAttributeValueForLayer(document, cantonLayer, "name"),
                 Municipality: GetAttributeValueForLayer(document, municipalityLayer, "gemname"));
 
