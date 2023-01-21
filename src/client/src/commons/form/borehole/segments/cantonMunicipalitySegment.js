@@ -21,7 +21,7 @@ const CantonMunicipalitySegment = props => {
               &nbsp;
               <Icon name="map marker" />
             </label>
-            <Input value={country ?? ""} />
+            <Input data-cy="country" value={country ?? ""} />
           </Form.Field>
           <Form.Field>
             <label>
@@ -29,7 +29,7 @@ const CantonMunicipalitySegment = props => {
               &nbsp;
               <Icon name="map marker" />
             </label>
-            <Input value={canton ?? ""} />
+            <Input data-cy="canton" value={canton ?? ""} />
           </Form.Field>
           <Form.Field>
             <label>
@@ -37,7 +37,7 @@ const CantonMunicipalitySegment = props => {
               &nbsp;
               <Icon name="map marker" />
             </label>
-            <Input value={municipality ?? ""} />
+            <Input data-cy="municipality" value={municipality ?? ""} />
           </Form.Field>
         </Form.Group>
       </Form>
