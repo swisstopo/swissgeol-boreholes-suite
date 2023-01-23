@@ -1,9 +1,7 @@
-import { interceptApiCalls, loginAsAdmin } from "../testHelpers";
+import { loginAsAdmin } from "../testHelpers";
 
 describe("Admin settings test", () => {
   beforeEach(() => {
-    interceptApiCalls();
-
     loginAsAdmin("/setting/admin");
 
     cy.get('[data-cy="user-list-table-body"]')

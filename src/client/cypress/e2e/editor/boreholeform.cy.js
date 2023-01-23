@@ -1,15 +1,6 @@
-import { newEditableBorehole, deleteBorehole, login } from "../testHelpers";
+import { newEditableBorehole } from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
-  beforeEach(() => {
-    cy.intercept("/api/v1/borehole").as("borehole");
-    cy.intercept("/api/v1/borehole/edit", req => {
-      return (req.alias = `edit_${req.body.action.toLowerCase()}`);
-    });
-
-    login("/editor");
-  });
-
   it("Creates a borehole and fills dropdowns.", () => {
     // create boreholes
     newEditableBorehole().as("borehole_id");
@@ -64,8 +55,5 @@ describe("Test for the borehole form.", () => {
         ]);
       }
     });
-
-    // delete the borehole
-    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 });

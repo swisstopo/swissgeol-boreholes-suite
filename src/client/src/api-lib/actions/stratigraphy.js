@@ -95,13 +95,6 @@ export function getLayers(id) {
   });
 }
 
-export function getLayer(id) {
-  return fetch("/borehole/stratigraphy/layer", {
-    action: "GET",
-    id: id, // stratigrafy id
-  });
-}
-
 // Create a new layer for the given stratigraphy id
 export function createLayer(id) {
   return fetch("/borehole/stratigraphy/layer/edit", {

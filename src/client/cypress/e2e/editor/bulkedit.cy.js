@@ -1,15 +1,6 @@
-import { createBorehole, deleteBorehole, login } from "../testHelpers";
+import { createBorehole } from "../testHelpers";
 
 describe("Test the borehole bulk edit feature.", () => {
-  beforeEach(() => {
-    cy.intercept("/api/v1/borehole").as("borehole");
-    cy.intercept("/api/v1/borehole/edit", req => {
-      return (req.alias = `edit_${req.body.action.toLowerCase()}`);
-    });
-
-    login("/editor");
-  });
-
   it("opens the bulk edit dialog with all boreholes selected", () => {
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
@@ -17,7 +8,6 @@ describe("Test the borehole bulk edit feature.", () => {
   });
 
   it("checks if all toggle buttons do something", () => {
-    cy.wait("@edit_list");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 
@@ -78,9 +68,5 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.contains("button", "Save").click();
     cy.wait("@edit_multipatch").its("response.body.success").should("eq", true);
     cy.wait("@edit_list");
-
-    // delete the boreholes
-    cy.get("@borehole_id_1").then(id => deleteBorehole(id));
-    cy.get("@borehole_id_2").then(id => deleteBorehole(id));
   });
 });

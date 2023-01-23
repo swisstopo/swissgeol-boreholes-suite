@@ -1,22 +1,6 @@
-import {
-  deleteBorehole,
-  interceptApiCalls,
-  newEditableBorehole,
-  login,
-} from "../testHelpers";
+import { newEditableBorehole } from "../testHelpers";
 
 describe("Tests for 'Location' edit page.", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-
-    login();
-
-    // go to edit
-    cy.get('[data-cy="menu"]').click();
-    cy.contains("h4", "Editor").click();
-    cy.wait("@edit_list");
-  });
-
   it("creates and deletes a borehole.", () => {
     newEditableBorehole();
 
@@ -73,8 +57,5 @@ describe("Tests for 'Location' edit page.", () => {
     cy.get('[data-cy="identifier"]').contains("Delete").click();
     cy.get('[data-cy="identifier-dropdown"]').should("have.class", "error");
     cy.get('[data-cy="identifier-value"]').should("have.class", "error");
-
-    // delete borehole
-    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 });

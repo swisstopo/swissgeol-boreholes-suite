@@ -1,32 +1,13 @@
-import {
-  interceptApiCalls,
-  deleteBorehole,
-  newEditableBorehole,
-  delayedType,
-  login,
-} from "../testHelpers";
+import { newEditableBorehole, delayedType } from "../testHelpers";
 
 describe("Tests for editing coordinates of a borehole.", () => {
   beforeEach(() => {
-    interceptApiCalls();
-
-    login();
-
-    // go to edit
-    cy.get('[data-cy="menu"]').click();
-    cy.contains("h4", "Editor").click();
-    cy.wait("@edit_list");
     newEditableBorehole().as("borehole_id");
 
     cy.get('[data-cy="LV95X"]').as("LV95X-input");
     cy.get('[data-cy="LV95Y"]').as("LV95Y-input");
     cy.get('[data-cy="LV03X"]').as("LV03X-input");
     cy.get('[data-cy="LV03Y"]').as("LV03Y-input");
-  });
-
-  afterEach(() => {
-    // delete borehole
-    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 
   it("creates new borehole and adds coordinates", () => {

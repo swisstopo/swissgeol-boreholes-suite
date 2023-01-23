@@ -457,6 +457,10 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("conf_cli");
 
+                    b.Property<string>("De")
+                        .HasColumnType("text")
+                        .HasColumnName("text_cli_de");
+
                     b.Property<string>("DescriptionDe")
                         .HasColumnType("text")
                         .HasColumnName("description_cli_de");
@@ -478,6 +482,15 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description_cli_ro");
 
+                    b.Property<string>("En")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("text_cli_en");
+
+                    b.Property<string>("Fr")
+                        .HasColumnType("text")
+                        .HasColumnName("text_cli_fr");
+
                     b.Property<int?>("Geolcode")
                         .HasColumnType("integer")
                         .HasColumnName("geolcode");
@@ -486,34 +499,21 @@ namespace BDMS.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("default_cli");
 
+                    b.Property<string>("It")
+                        .HasColumnType("text")
+                        .HasColumnName("text_cli_it");
+
                     b.Property<int?>("Order")
                         .HasColumnType("integer")
                         .HasColumnName("order_cli");
 
+                    b.Property<string>("Ro")
+                        .HasColumnType("text")
+                        .HasColumnName("text_cli_ro");
+
                     b.Property<string>("Schema")
                         .HasColumnType("text")
                         .HasColumnName("schema_cli");
-
-                    b.Property<string>("TextDe")
-                        .HasColumnType("text")
-                        .HasColumnName("text_cli_de");
-
-                    b.Property<string>("TextEn")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("text_cli_en");
-
-                    b.Property<string>("TextFr")
-                        .HasColumnType("text")
-                        .HasColumnName("text_cli_fr");
-
-                    b.Property<string>("TextIt")
-                        .HasColumnType("text")
-                        .HasColumnName("text_cli_it");
-
-                    b.Property<string>("TextRo")
-                        .HasColumnType("text")
-                        .HasColumnName("text_cli_ro");
 
                     b.HasKey("Id");
 
@@ -934,6 +934,28 @@ namespace BDMS.Migrations
                     b.HasIndex("UscsDeterminationId");
 
                     b.ToTable("layer", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.LayerCodelist", b =>
+                {
+                    b.Property<int>("LayerId")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_lay_fk");
+
+                    b.Property<int>("CodelistId")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_cli_fk");
+
+                    b.Property<string>("SchemaName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("code_cli");
+
+                    b.HasKey("LayerId", "CodelistId");
+
+                    b.HasIndex("CodelistId");
+
+                    b.ToTable("layer_codelist", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.Municipality", b =>
@@ -1589,7 +1611,7 @@ namespace BDMS.Migrations
                         .HasForeignKey("HumidityId");
 
                     b.HasOne("BDMS.Models.Stratigraphy", "InstrumentCasing")
-                        .WithMany("Layers")
+                        .WithMany()
                         .HasForeignKey("InstrumentCasingId");
 
                     b.HasOne("BDMS.Models.Codelist", "InstrumentKind")
@@ -1621,7 +1643,7 @@ namespace BDMS.Migrations
                         .HasForeignKey("QtDescriptionId");
 
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
-                        .WithMany()
+                        .WithMany("Layers")
                         .HasForeignKey("StratigraphyId");
 
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
@@ -1695,6 +1717,25 @@ namespace BDMS.Migrations
                     b.Navigation("Uscs2");
 
                     b.Navigation("UscsDetermination");
+                });
+
+            modelBuilder.Entity("BDMS.Models.LayerCodelist", b =>
+                {
+                    b.HasOne("BDMS.Models.Codelist", "Codelist")
+                        .WithMany("LayerCodelists")
+                        .HasForeignKey("CodelistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Layer", "Layer")
+                        .WithMany("LayerCodelists")
+                        .HasForeignKey("LayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Codelist");
+
+                    b.Navigation("Layer");
                 });
 
             modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
@@ -1785,9 +1826,19 @@ namespace BDMS.Migrations
                     b.Navigation("Boreholes");
                 });
 
+            modelBuilder.Entity("BDMS.Models.Codelist", b =>
+                {
+                    b.Navigation("LayerCodelists");
+                });
+
             modelBuilder.Entity("BDMS.Models.File", b =>
                 {
                     b.Navigation("BoreholeFiles");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Layer", b =>
+                {
+                    b.Navigation("LayerCodelists");
                 });
 
             modelBuilder.Entity("BDMS.Models.Municipality", b =>

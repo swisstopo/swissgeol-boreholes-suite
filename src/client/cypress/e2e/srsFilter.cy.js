@@ -1,15 +1,6 @@
-import {
-  interceptApiCalls,
-  newEditableBorehole,
-  deleteBorehole,
-  login,
-} from "./testHelpers";
+import { newEditableBorehole, login } from "./testHelpers";
 
 describe("Tests for filtering data by reference system.", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-  });
-
   function goToEditorLocationFilter() {
     cy.get("i[class='th big icon']").click();
     cy.contains("h4", "Settings").click();
@@ -53,7 +44,6 @@ describe("Tests for filtering data by reference system.", () => {
   });
 
   it("can set filters as editor", () => {
-    login("/editor");
     goToEditorLocationFilter();
 
     cy.contains("div", "Spatial reference system")
@@ -81,7 +71,6 @@ describe("Tests for filtering data by reference system.", () => {
   });
 
   it("can filter by reference system", () => {
-    login("/editor");
     newEditableBorehole().as("borehole_id");
     cy.get('[data-cy="LV03X"]').as("LV03X-input");
     cy.get('[data-cy="LV03Y"]').as("LV03Y-input");
@@ -122,6 +111,5 @@ describe("Tests for filtering data by reference system.", () => {
       .first()
       .click({ force: true });
     cy.get("tbody").children().should("have.length", 22);
-    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 });
