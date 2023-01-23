@@ -1,14 +1,7 @@
-import {
-  newEditableBorehole,
-  interceptApiCalls,
-  loginAndResetBoreholes,
-} from "../testHelpers";
+import { newEditableBorehole } from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
   beforeEach(() => {
-    interceptApiCalls();
-    loginAndResetBoreholes();
-
     // Assert map number of boreholes
     cy.get("div[id=map]").should("be.visible");
     cy.get("tbody").children().should("have.length", 21);

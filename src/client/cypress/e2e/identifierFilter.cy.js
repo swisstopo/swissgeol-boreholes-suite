@@ -1,15 +1,6 @@
-import {
-  interceptApiCalls,
-  newEditableBorehole,
-  loginAndResetBoreholes,
-} from "./testHelpers";
+import { newEditableBorehole } from "./testHelpers";
 
 describe("Tests for filtering data by identifier.", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-    loginAndResetBoreholes();
-  });
-
   it("can filter by identifier", () => {
     newEditableBorehole().as("borehole_id");
     let identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');

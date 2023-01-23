@@ -1,15 +1,6 @@
-import { createBorehole, loginAndResetBoreholes } from "../testHelpers";
+import { createBorehole } from "../testHelpers";
 
 describe("Test the borehole bulk edit feature.", () => {
-  beforeEach(() => {
-    cy.intercept("/api/v1/borehole").as("borehole");
-    cy.intercept("/api/v1/borehole/edit", req => {
-      return (req.alias = `edit_${req.body.action.toLowerCase()}`);
-    });
-
-    loginAndResetBoreholes();
-  });
-
   it("opens the bulk edit dialog with all boreholes selected", () => {
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });

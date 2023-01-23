@@ -1,15 +1,6 @@
-import {
-  interceptApiCalls,
-  loginAndResetBoreholes,
-  login,
-} from "../e2e/testHelpers";
+import { login } from "../e2e/testHelpers";
 
 describe("Search filter tests", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-    loginAndResetBoreholes();
-  });
-
   it("has search filters", () => {
     login();
     cy.contains("Search filters:");

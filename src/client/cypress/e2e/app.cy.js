@@ -1,15 +1,6 @@
-import {
-  interceptApiCalls,
-  loginAsEditorInViewerMode,
-  loginAndResetBoreholes,
-} from "./testHelpers";
+import { loginAsEditorInViewerMode } from "./testHelpers";
 
 describe("General app tests", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-    loginAndResetBoreholes();
-  });
-
   it("Displays the login page in english by default", () => {
     cy.visit("/");
     cy.contains("Sign in");

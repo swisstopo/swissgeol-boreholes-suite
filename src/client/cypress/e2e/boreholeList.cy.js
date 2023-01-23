@@ -1,16 +1,6 @@
-import {
-  loginAsAdmin,
-  loginAsEditorInViewerMode,
-  loginAndResetBoreholes,
-  interceptApiCalls,
-} from "../e2e/testHelpers";
+import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/testHelpers";
 
 describe("Borehole list tests", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-    loginAndResetBoreholes();
-  });
-
   it("Boreholes are displayed in correct order with editor login", () => {
     cy.intercept("/api/v1/borehole").as("borehole");
     loginAsEditorInViewerMode();

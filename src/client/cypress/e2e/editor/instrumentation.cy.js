@@ -1,9 +1,4 @@
-import {
-  interceptApiCalls,
-  newUneditableBorehole,
-  loginAndResetBoreholes,
-  delayedType,
-} from "../testHelpers";
+import { newUneditableBorehole, delayedType } from "../testHelpers";
 
 const addInstrumentLayer = () => {
   cy.wait(1000);
@@ -15,9 +10,6 @@ const addInstrumentLayer = () => {
 
 describe("Instrumentation tests", () => {
   beforeEach(() => {
-    interceptApiCalls();
-    loginAndResetBoreholes();
-
     // Add new borehole
     newUneditableBorehole().as("borehole_id");
     cy.get('[data-cy="completion-menu-item"]').click();

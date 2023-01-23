@@ -1,16 +1,7 @@
-import {
-  interceptApiCalls,
-  loginAndResetBoreholes,
-  login,
-} from "../testHelpers";
+import { login } from "../testHelpers";
 import license from "../../fixtures/license.json";
 
 describe("Admin about page tests", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-    loginAndResetBoreholes();
-  });
-
   it("shows version information linking the corresponding release on GitHub.", () => {
     login("/setting/about");
 

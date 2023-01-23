@@ -1,16 +1,6 @@
-import {
-  interceptApiCalls,
-  newEditableBorehole,
-  loginAndResetBoreholes,
-  login,
-} from "./testHelpers";
+import { newEditableBorehole, login } from "./testHelpers";
 
 describe("Tests for filtering data by reference system.", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-    loginAndResetBoreholes();
-  });
-
   function goToEditorLocationFilter() {
     cy.get("i[class='th big icon']").click();
     cy.contains("h4", "Settings").click();

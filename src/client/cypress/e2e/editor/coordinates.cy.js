@@ -1,15 +1,7 @@
-import {
-  interceptApiCalls,
-  loginAndResetBoreholes,
-  newEditableBorehole,
-  delayedType,
-} from "../testHelpers";
+import { newEditableBorehole, delayedType } from "../testHelpers";
 
 describe("Tests for editing coordinates of a borehole.", () => {
   beforeEach(() => {
-    interceptApiCalls();
-    loginAndResetBoreholes();
-
     newEditableBorehole().as("borehole_id");
 
     cy.get('[data-cy="LV95X"]').as("LV95X-input");

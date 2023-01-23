@@ -1,16 +1,6 @@
-import {
-  interceptApiCalls,
-  loginAsAdmin,
-  loginAsEditorInViewerMode,
-  loginAndResetBoreholes,
-} from "../e2e/testHelpers";
+import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/testHelpers";
 
 describe("Codelist translations tests", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-    loginAndResetBoreholes();
-  });
-
   it("Admin can open codelist translation section", () => {
     // Login and navigate to editor settings
     loginAsAdmin();
