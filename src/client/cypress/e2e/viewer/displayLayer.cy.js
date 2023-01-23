@@ -19,10 +19,11 @@ describe("Test for the borehole form.", () => {
     cy.wait("@layer");
 
     cy.get('[data-cy="styled-layer-0"]').click();
+    cy.contains("Show all fields").children(".checkbox").click();
 
     // fill all dropdowns in layer
     cy.get('[data-cy="domain-dropdown"]')
-      .should("have.length", 18)
+      .should("have.length", 20)
       .each((el, index, list) =>
         cy
           .wrap(el)
@@ -57,6 +58,10 @@ describe("Test for the borehole form.", () => {
       .click()
       .clear()
       .type("Shipping large amounts of almond sandwiches.");
+    cy.get('[data-cy="original_lithology"]')
+      .click()
+      .clear()
+      .type("Free peanuts.");
 
     // fill radio
     cy.get(".ui.radio.checkbox").first().click();
@@ -112,7 +117,7 @@ describe("Test for the borehole form.", () => {
     cy.get(".PrivateSwitchBase-input").click({ force: true });
     cy.get('[data-cy="stratigraphy-layer-details"] h6').should(
       "have.length",
-      31,
+      32,
     );
   });
 });

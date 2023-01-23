@@ -32,7 +32,7 @@ class ProfileView extends React.Component {
         <Typography variant="subtitle2">
           <TranslationText id={fieldName} />
         </Typography>
-        <Typography style={rowStyle}>{text}</Typography>
+        <Typography style={rowStyle}>{text ?? "-"}</Typography>
       </Stack>
     );
   }
@@ -307,6 +307,7 @@ class ProfileView extends React.Component {
                 {this.getDomainRow(layer.qtDescription, "qt_description")}
 
                 {this.getDomainRow(layer.lithology, "lithology")}
+                {this.getTextRow("original_lithology", layer.originalLithology)}
                 {this.getDomainRow(
                   layer.lithostratigraphy,
                   "lithostratigraphy",

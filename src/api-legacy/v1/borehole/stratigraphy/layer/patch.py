@@ -86,6 +86,9 @@ class PatchLayer(Action):
         elif field == 'uscs_original':
             column = 'uscs_original_lay'
 
+        elif field == 'original_lithology':
+            column = 'original_lithology'
+
         elif field == 'uscs_determination':
             column = 'uscs_determination_id_cli'
 
@@ -147,6 +150,7 @@ class PatchLayer(Action):
                 'last',
                 'striae',
                 'uscs_original',
+                'original_lithology',
                 'notes',
                 'instrument_id',
                 'casing_inner_diameter',

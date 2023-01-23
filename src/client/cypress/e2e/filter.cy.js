@@ -104,6 +104,26 @@ describe("Search filter tests", () => {
       });
   });
 
+  it("filters boreholes by original lithology", () => {
+    cy.contains("Stratigraphy").click();
+    cy.contains("Show all fields").children(".checkbox").click();
+
+    // input value
+    cy.contains("Original Lithology")
+      .next()
+      .find("input")
+      .type("Director Toys");
+    cy.wait("@edit_list");
+
+    // check content of table
+    cy.get('[data-cy="borehole-table"] tbody')
+      .children()
+      .should("have.length", 1)
+      .each((el, index, list) => {
+        cy.wrap(el).contains("admin");
+      });
+  });
+
   it("filters boreholes by creation date", () => {
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
