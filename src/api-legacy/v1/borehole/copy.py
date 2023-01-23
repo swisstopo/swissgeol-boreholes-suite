@@ -202,6 +202,7 @@ class CopyBorehole(Action):
                             grain_size_1_id_cli,
                             grain_size_2_id_cli, cohesion_id_cli,
                             uscs_1_id_cli, uscs_2_id_cli, uscs_original_lay,
+                            original_lithology,
                             uscs_determination_id_cli, notes_lay,
                             lithostratigraphy_id_cli, humidity_id_cli, striae_lay,
                             gradation_id_cli
@@ -216,7 +217,7 @@ class CopyBorehole(Action):
                             alteration_id_cli, compactness_id_cli,
                             grain_size_1_id_cli,
                             grain_size_2_id_cli, cohesion_id_cli,
-                            uscs_1_id_cli, uscs_2_id_cli, uscs_original_lay,
+                            uscs_1_id_cli, uscs_2_id_cli, uscs_original_lay,original_lithology,
                             uscs_determination_id_cli, notes_lay,
                             lithostratigraphy_id_cli, humidity_id_cli, striae_lay,
                             gradation_id_cli

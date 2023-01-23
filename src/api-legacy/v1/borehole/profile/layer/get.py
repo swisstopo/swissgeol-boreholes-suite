@@ -222,6 +222,9 @@ class GetGeologyLayer(Action):
             COALESCE(
                 uscs_original_lay, ''
             ) AS uscs_original,
+            COALESCE(
+                original_lithology, ''
+            ) AS original_lithology,
             uscs_determination_id_cli AS uscs_determination,
             COALESCE(
                 mcla107, '{}'::int[]

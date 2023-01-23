@@ -83,6 +83,14 @@ export const stratigraphyData = {
     },
     {
       id: 7,
+      type: "Input",
+      label: "original_lithology",
+      value: "original_lithology",
+      require: false,
+      isVisibleValue: "original_lithology",
+    },
+    {
+      id: 8,
       type: "DomainTree",
       label: "lithostratigraphy",
       value: "lithostratigraphy",
@@ -98,7 +106,7 @@ export const stratigraphyData = {
       isVisibleValue: "lithostratigraphy",
     },
     {
-      id: 8,
+      id: 9,
       type: "DomainTree",
       label: "chronostratigraphy",
       value: "chronostratigraphy",
@@ -115,7 +123,7 @@ export const stratigraphyData = {
       isVisibleValue: "chronostratigraphy",
     },
     {
-      id: 9,
+      id: 10,
       type: "Input",
       label: "uscs_original",
       value: "uscs_original",
@@ -123,7 +131,7 @@ export const stratigraphyData = {
       isVisibleValue: "uscs_original",
     },
     {
-      id: 10,
+      id: 11,
       type: "Dropdown",
       label: "uscs_determination",
       value: "uscs_determination",
@@ -133,7 +141,7 @@ export const stratigraphyData = {
       isVisibleValue: "uscs_determination",
     },
     {
-      id: 11,
+      id: 12,
       type: "Dropdown",
       label: "uscs_1",
       value: "uscs_1",
@@ -143,7 +151,7 @@ export const stratigraphyData = {
       isVisibleValue: "uscs_1",
     },
     {
-      id: 12,
+      id: 13,
       type: "Dropdown",
       label: "grain_size_1",
       value: "grain_size_1",
@@ -153,7 +161,7 @@ export const stratigraphyData = {
       isVisibleValue: "grain_size_1",
     },
     {
-      id: 13,
+      id: 14,
       type: "Dropdown",
       label: "uscs_2",
       value: "uscs_2",
@@ -163,7 +171,7 @@ export const stratigraphyData = {
       isVisibleValue: "uscs_2",
     },
     {
-      id: 14,
+      id: 15,
       type: "Dropdown",
       label: "grain_size_2",
       value: "grain_size_2",
@@ -173,7 +181,7 @@ export const stratigraphyData = {
       isVisibleValue: "grain_size_2",
     },
     {
-      id: 15,
+      id: 16,
       type: "Dropdown",
       label: "uscs_3",
       value: "uscs_3",
@@ -183,7 +191,7 @@ export const stratigraphyData = {
       isVisibleValue: "uscs_3",
     },
     {
-      id: 16,
+      id: 17,
       type: "Dropdown",
       label: "grain_shape",
       value: "grain_shape",
@@ -193,7 +201,7 @@ export const stratigraphyData = {
       isVisibleValue: "grain_shape",
     },
     {
-      id: 17,
+      id: 18,
       type: "Dropdown",
       label: "grain_granularity",
       value: "grain_granularity",
@@ -203,7 +211,7 @@ export const stratigraphyData = {
       isVisibleValue: "grain_granularity",
     },
     {
-      id: 18,
+      id: 19,
       type: "Dropdown",
       label: "organic_component",
       value: "organic_component",
@@ -213,7 +221,7 @@ export const stratigraphyData = {
       isVisibleValue: "organic_component",
     },
     {
-      id: 19,
+      id: 20,
       type: "Dropdown",
       label: "debris",
       value: "debris",
@@ -223,7 +231,7 @@ export const stratigraphyData = {
       isVisibleValue: "debris",
     },
     {
-      id: 20,
+      id: 21,
       type: "Dropdown",
       label: "layer_lithology_top_bedrock",
       value: "lithology_top_bedrock",
@@ -233,7 +241,7 @@ export const stratigraphyData = {
       isVisibleValue: "layer_lithology_top_bedrock",
     },
     {
-      id: 21,
+      id: 22,
       type: "Radio",
       label: "striae",
       value: "striae",
@@ -241,7 +249,7 @@ export const stratigraphyData = {
       isVisibleValue: "striae",
     },
     {
-      id: 22,
+      id: 23,
       type: "Dropdown",
       label: "color",
       value: "color",
@@ -251,7 +259,7 @@ export const stratigraphyData = {
       isVisibleValue: "color",
     },
     {
-      id: 23,
+      id: 24,
       type: "Dropdown",
       label: "consistance",
       value: "consistance",
@@ -261,7 +269,7 @@ export const stratigraphyData = {
       isVisibleValue: "consistance",
     },
     {
-      id: 24,
+      id: 25,
       type: "Dropdown",
       label: "plasticity",
       value: "plasticity",
@@ -271,7 +279,7 @@ export const stratigraphyData = {
       isVisibleValue: "plasticity",
     },
     {
-      id: 25,
+      id: 26,
       type: "Dropdown",
       label: "compactness",
       value: "compactness",
@@ -281,7 +289,7 @@ export const stratigraphyData = {
       isVisibleValue: "compactness",
     },
     {
-      id: 26,
+      id: 27,
       type: "Dropdown",
       label: "cohesion",
       value: "cohesion",
@@ -291,7 +299,7 @@ export const stratigraphyData = {
       isVisibleValue: "cohesion",
     },
     {
-      id: 27,
+      id: 28,
       type: "Dropdown",
       label: "gradation",
       value: "gradation",
@@ -301,7 +309,7 @@ export const stratigraphyData = {
       isVisibleValue: "gradation",
     },
     {
-      id: 28,
+      id: 29,
       type: "Dropdown",
       label: "humidity",
       value: "humidity",
@@ -311,7 +319,7 @@ export const stratigraphyData = {
       isVisibleValue: "humidity",
     },
     {
-      id: 29,
+      id: 30,
       type: "Dropdown",
       label: "alteration",
       value: "alteration",
@@ -321,7 +329,7 @@ export const stratigraphyData = {
       isVisibleValue: "alteration",
     },
     {
-      id: 30,
+      id: 31,
       type: "TextArea",
       label: "notes",
       value: "notes",

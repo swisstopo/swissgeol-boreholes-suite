@@ -191,7 +191,6 @@ const ListFilter = props => {
                         onChange={e =>
                           updateChange(
                             item.value,
-                            // e.target.value === '' ? null : e.target.value,
                             e.target.value === "" ? "" : e.target.value,
                             item?.to,
                             item?.isNumber,

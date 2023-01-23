@@ -144,4 +144,9 @@ export const stratigraphyFieldEditorData = [
     label: "notes",
     value: "notes",
   },
+  {
+    id: 29,
+    label: "original_lithology",
+    value: "original_lithology",
+  },
 ];
