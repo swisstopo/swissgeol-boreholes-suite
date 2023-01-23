@@ -8,6 +8,10 @@
 
 - Added db constraints for table `layer_codelist`.
 
+### Changed
+
+- Use REST API v2 to display layer in viewer mode.
+
 ## v2.0.131 - 2023-01-16
 
 ### Added
@@ -33,7 +37,6 @@
 - Removed unused table `bdms.statigraphy_codelist` from database.
 - Removed  `layer.unconrocks_id_cli` and `layer.lithok_id_cli` from database.
 - Changed cardinality of `uscs3` field on `bdms.layer` to m:n.
-- Use c# api to display layer in viewer.
 
 ### Fixed
 
