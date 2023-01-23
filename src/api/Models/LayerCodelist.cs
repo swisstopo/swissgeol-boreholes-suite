@@ -3,7 +3,7 @@
 namespace BDMS.Models;
 
 /// <summary>
-/// Represents a borehole entity in the database.
+/// Join table entity for a <see cref="Models.Codelist"/> attached to a <see cref="Models.Layer"/>.
 /// </summary>
 [Table("layer_codelist")]
 public class LayerCodelist
