@@ -15,4 +15,5 @@ module.exports = defineConfig({
       });
     },
   },
+  defaultCommandTimeout: 10000,
 });

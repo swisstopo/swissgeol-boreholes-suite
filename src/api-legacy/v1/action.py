@@ -826,16 +826,22 @@ class Action():
                     self.getIdx()
                 ))
 
+            if 'country' in keys and filter['country'] not in ['', None]:
+                params.append(filter['country'])
+                where.append("""
+                    country_bho = %s
+                """ % self.getIdx())
+
             if 'canton' in keys and filter['canton'] not in ['', None]:
-                params.append(int(filter['canton']))
+                params.append(filter['canton'])
                 where.append("""
                     canton_bho = %s
                 """ % self.getIdx())
 
             if 'municipality' in keys and filter['municipality'] not in ['', None]:
-                params.append(int(filter['municipality']))
+                params.append(filter['municipality'])
                 where.append("""
-                    city_bho = %s
+                    municipality_bho = %s
                 """ % self.getIdx())
 
             if 'groundwater' in keys and filter['groundwater'] != -1:

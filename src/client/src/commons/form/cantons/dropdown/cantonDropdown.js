@@ -1,71 +1,66 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
-
-import { loadCantons } from "../../../../api-lib/index";
 
 import { Form, Header } from "semantic-ui-react";
+import { fetchApiV2 } from "../../../../api/fetchApiV2";
 
 class CantonDropdown extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      cantons: [],
       selected: this.props.selected,
     };
     this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
-    const { cantons } = this.props;
-    if (cantons.data.length === 0) this.props.loadCantons();
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.selected !== prevState.selected) {
-      return { selected: nextProps.selected };
+    const { cantons } = this.state;
+    if (cantons.length === 0) {
+      fetchApiV2("canton")
+        .then(cantons =>
+          this.setState({
+            ...this.state,
+            cantons: cantons,
+          }),
+        )
+        .catch(error => console.log(error));
     }
-    return null;
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.cantons.data.length !== nextProps.cantons.data.length) {
-      return true;
-    } else if (this.state.selected !== nextState.selected) {
-      return true;
-    } else if (this.props.selected !== nextProps.selected) {
-      return true;
-    }
-    return false;
+    return (
+      this.state.cantons.length !== nextState.cantons.length ||
+      this.state.selected !== nextState.selected
+    );
   }
 
   handleChange(event, data) {
-    const { onSelected, cantons } = this.props;
-    for (var i = 0; i < cantons.data.length; i++) {
-      let h = cantons.data[i];
-      if (h.id === data.value) {
-        this.setState({ selected: h.id });
-        if (onSelected !== undefined) {
-          onSelected({ ...h });
-        }
-        break;
-      }
-    }
+    const { onSelected } = this.props;
+    this.setState({ selected: data.value });
+    onSelected?.(data.value);
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    return {
+      ...state,
+      selected: props.selected,
+    };
   }
 
   render() {
-    const { cantons } = this.props,
-      { selected } = this.state;
+    const { cantons, selected } = this.state;
     return (
       <Form.Select
         fluid={true}
         search
         selection
         options={
-          cantons.data.map((canton, idx) => ({
+          cantons.map((canton, idx) => ({
             key: "mun-opt-" + idx,
-            value: canton.id,
-            text: canton.name,
-            content: <Header content={canton.name} subheader={canton.cname} />,
+            value: canton,
+            text: canton,
+            content: <Header content={canton} />,
           })) //: null
         }
         value={selected}
@@ -76,24 +71,8 @@ class CantonDropdown extends React.Component {
 }
 
 CantonDropdown.propTypes = {
-  canton: PropTypes.number,
-  selected: PropTypes.number,
+  selected: PropTypes.string,
   onSelected: PropTypes.func,
 };
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    cantons: state.core_canton_list,
-  };
-};
-
-const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    dispatch: dispatch,
-    loadCantons: () => {
-      dispatch(loadCantons());
-    },
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(CantonDropdown);
+export default CantonDropdown;

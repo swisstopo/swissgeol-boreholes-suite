@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Get Municipality, Canton, Country from geo.admin.ch service. Removed obsolete Canton / Municipality tables.
+
 ## v2.0.133 - 2023-01-19
 
 ### Added

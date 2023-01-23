@@ -2,8 +2,6 @@ import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import StratigraphiesComponent from "./stratigrafy/stratigraphiesComponent";
-import MunicipalityText from "../form/municipality/municipalityText";
-import CantonText from "../form/cantons/cantonText";
 import DomainText from "../form/domain/domainText";
 import DateText from "../form/dateText";
 import TranslationText from "../form/translationText";
@@ -113,16 +111,12 @@ class DetailsComponent extends React.Component {
                     color: "#787878",
                     paddingTop: "0.4em",
                   }}>
-                  {/* {detail.borehole.custom.address !== null &&
-                  detail.borehole.custom.address !== ''
-                    ? detail.borehole.custom.address + ', '
-                    : null} */}
-                  <MunicipalityText id={detail.borehole.custom.city} />
-                  {detail.borehole.custom.city !== null &&
-                  detail.borehole.custom.city !== ""
-                    ? ", "
-                    : null}{" "}
-                  <CantonText id={detail.borehole.custom.canton} />
+                  {detail.borehole.custom.municipality}
+                  {detail.borehole.custom.municipality !== null &&
+                  detail.borehole.custom.municipality !== ""
+                    ? ",  "
+                    : " "}
+                  {detail.borehole.custom.canton}
                 </div>
                 <div>
                   <ExportLink

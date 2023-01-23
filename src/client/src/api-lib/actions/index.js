@@ -30,21 +30,6 @@ export function getHeight(easting, northing) {
   });
 }
 
-export function getAddressByPoint(easting, northing) {
-  return axios({
-    url: process.env.PUBLIC_URL + "/api/v1/geoapi/location",
-    timeout: 120000,
-    method: "post",
-    responseType: "json",
-    headers: getAuthorizationHeaders(),
-    data: {
-      action: "LOCATION",
-      easting: easting,
-      northing: northing,
-    },
-  });
-}
-
 export function downloadFile(path, params) {
   return new Promise((resolve, reject) => {
     return axios(process.env.PUBLIC_URL + path, {

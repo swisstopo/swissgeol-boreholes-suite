@@ -185,11 +185,8 @@ if __name__ == "__main__":
         FeedbackHandler,
 
         # Other handlers
-        GeoapiHandler,
         ProjectHandler,
         CodeListHandler,
-        MunicipalityHandler,
-        CantonHandler,
         Wmts,
         Wms,
     )
@@ -261,9 +258,6 @@ if __name__ == "__main__":
 
         # Other handlers
         (r'/api/v1/borehole/codes', CodeListHandler),
-        (r'/api/v1/geoapi/municipality', MunicipalityHandler),
-        (r'/api/v1/geoapi/canton', CantonHandler),
-        (r'/api/v1/geoapi/location', GeoapiHandler),
         (r"/api/v1/geoapi/wmts", Wmts),
         (r"/api/v1/geoapi/wms/swisstopo", Wms),
 

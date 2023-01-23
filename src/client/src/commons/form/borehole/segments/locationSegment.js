@@ -5,17 +5,7 @@ import PointComponent from "../../../map/pointComponent";
 import _ from "lodash";
 
 const LocationSegment = props => {
-  const {
-    size,
-    borehole,
-    user,
-    updateChange,
-    checkLock,
-    updateNumber,
-    cantons,
-    municipalities,
-    zoomToPolygon,
-  } = props;
+  const { size, borehole, user, updateChange, checkLock, updateNumber } = props;
 
   const [mapPointChange, setMapPointChange] = useState(false);
 
@@ -40,10 +30,10 @@ const LocationSegment = props => {
           setMapPointChange={setMapPointChange}></CoordinatesSegment>
         <CantonMunicipalitySegment
           size={size}
-          borehole={borehole}
-          cantons={cantons}
-          municipalities={municipalities}
-          zoomToPolygon={zoomToPolygon}></CantonMunicipalitySegment>
+          country={borehole.data.custom.country}
+          canton={borehole.data.custom.canton}
+          municipality={borehole.data.custom.municipality}
+        />
       </div>
       <div
         style={{
@@ -52,8 +42,12 @@ const LocationSegment = props => {
         }}>
         <PointComponent
           setMapPointChange={setMapPointChange}
-          applyChange={(x, y, height, cid, mid) => {
-            updateChange("location", [x, y, cid, mid, height], false);
+          applyChange={(x, y, height, country, canton, municipality) => {
+            updateChange(
+              "location",
+              [x, y, height, country, canton, municipality],
+              false,
+            );
           }}
           id={borehole.data.id}
           isEditable={borehole.data.lock?.username === user.data.username}

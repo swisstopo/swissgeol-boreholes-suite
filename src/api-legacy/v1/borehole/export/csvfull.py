@@ -160,9 +160,9 @@ class ExportCsvFull(Action):
                 qre.geolcode as qt_reference_elevation,
                 ret.geolcode as reference_elevation_type,
                 
-                ctn.name as canton,
-                -- cantons.name as canton,
-                municipalities.name as city,
+                country_bho as coutry,
+                canton_bho as canton,
+                municipality_bho as city,
 
                 meth.geolcode as drilling_method,
                 to_char(
@@ -554,21 +554,6 @@ class ExportCsvFull(Action):
 
             LEFT JOIN bdms.codelist as cut
                 ON cut.id_cli = cuttings_id_cli
-
-            LEFT JOIN bdms.municipalities
-                ON municipalities.gid = city_bho
-
-            --LEFT JOIN bdms.cantons
-            --    ON cantons.kantonsnum = canton_bho
-
-            LEFT JOIN (
-                SELECT DISTINCT
-                    cantons.kantonsnum,
-                    cantons.name
-				FROM
-                    bdms.cantons
-			) as ctn
-                ON ctn.kantonsnum = canton_bho
 
             LEFT JOIN bdms.codelist as knd
                 ON knd.id_cli = kind_id_cli

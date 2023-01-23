@@ -1,11 +1,10 @@
 import React from "react";
-import MunicipalityDropdown from "../../municipality/dropdown/municipalityDropdown";
 import TranslationText from "../../translationText";
 
-import { Form, Input, Segment, Icon } from "semantic-ui-react";
+import { Form, Segment, Input, Icon } from "semantic-ui-react";
 
 const CantonMunicipalitySegment = props => {
-  const { size, borehole, cantons, municipalities, zoomToPolygon } = props;
+  const { size, country, canton, municipality } = props;
 
   return (
     <Segment>
@@ -16,81 +15,29 @@ const CantonMunicipalitySegment = props => {
         size={size}
         spellCheck="false">
         <Form.Group widths="equal">
-          <Form.Field required>
+          <Form.Field>
             <label>
               <TranslationText id="country" />
+              &nbsp;
+              <Icon name="map marker" />
             </label>
-            <Input value={"Switzerland"} />
+            <Input data-cy="country" value={country ?? ""} />
           </Form.Field>
-          <Form.Field required>
+          <Form.Field>
             <label>
               <TranslationText id="canton" />
               &nbsp;
-              {borehole.data.custom.canton !== null ? (
-                <span
-                  className="link"
-                  onClick={() => {
-                    for (let index = 0; index < cantons.length; index++) {
-                      const canton = cantons[index];
-                      if (canton.id === borehole.data.custom.canton) {
-                        zoomToPolygon(canton.geom.coordinates);
-                        break;
-                      }
-                    }
-                  }}>
-                  <Icon name="map marker" />
-                </span>
-              ) : null}
+              <Icon name="map marker" />
             </label>
-            <Input
-              value={
-                cantons.filter(e => e.id === borehole.data.custom.canton)?.[0]
-                  ?.name ?? ""
-              }
-            />
+            <Input data-cy="canton" value={canton ?? ""} />
           </Form.Field>
-          <Form.Field required>
+          <Form.Field>
             <label>
               <TranslationText id="city" />
               &nbsp;
-              {borehole.data.custom.city !== null ? (
-                <span
-                  className="link"
-                  onClick={() => {
-                    for (
-                      let index = 0;
-                      index < municipalities.length;
-                      index++
-                    ) {
-                      const municipality = municipalities[index];
-                      if (municipality.id === borehole.data.custom.city) {
-                        zoomToPolygon(municipality.geom.coordinates);
-                        break;
-                      }
-                    }
-                  }}>
-                  <Icon name="map marker" />
-                </span>
-              ) : null}
+              <Icon name="map marker" />
             </label>
-            <div style={{ display: "none" }}>
-              <MunicipalityDropdown
-                canton={borehole.data.custom.canton}
-                disabled={borehole.data.custom.canton === null}
-                selected={borehole.data.custom.city}
-              />
-            </div>
-            <Input
-              value={
-                municipalities
-                  ?.filter(
-                    municipality =>
-                      borehole.data.custom.canton === municipality.cid,
-                  )
-                  ?.filter(e => e.id === borehole.data.custom.city)?.[0]
-                  ?.name ?? ""
-              }
-            />
+            <Input data-cy="municipality" value={municipality ?? ""} />
           </Form.Field>
         </Form.Group>
       </Form>

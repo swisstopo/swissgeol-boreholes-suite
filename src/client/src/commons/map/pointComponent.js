@@ -22,7 +22,8 @@ import { get as getProjection } from "ol/proj";
 import { register } from "ol/proj/proj4";
 import proj4 from "proj4";
 import { Segment, Button, Label, Icon } from "semantic-ui-react";
-import { getHeight, getAddressByPoint } from "../../api-lib/index";
+import { getHeight } from "../../api-lib/index";
+import { fetchApiV2 } from "../../api/fetchApiV2";
 
 const projections = {
   "EPSG:21781":
@@ -56,9 +57,8 @@ class PointComponent extends React.Component {
       point: null,
       height: null,
       satellite: false,
-      cid: null,
+      country: null,
       canton: null,
-      mid: null,
       municipality: null,
       address: false,
     };
@@ -290,9 +290,7 @@ class PointComponent extends React.Component {
       {
         point: coordinates,
         height: null,
-        cid: null,
         canton: null,
-        mid: null,
         municipality: null,
         address: true,
       },
@@ -313,12 +311,14 @@ class PointComponent extends React.Component {
       this.lh = false;
     }
     this.lh = setTimeout(
-      function () {
-        getAddressByPoint(coordinates[0], coordinates[1]).then(response => {
-          this.setState({
-            address: false,
-            ...response.data.data,
-          });
+      async function () {
+        var location = await fetchApiV2(
+          `location/identify?east=${coordinates[0]}&north=${coordinates[1]}`,
+          "GET",
+        );
+        this.setState({
+          address: false,
+          ...location,
         });
       }.bind(this),
       500,
@@ -446,8 +446,9 @@ class PointComponent extends React.Component {
                       this.state.height !== null
                         ? parseFloat(this.state.height)
                         : null,
-                      this.state.cid,
-                      this.state.mid,
+                      this.state.country,
+                      this.state.canton,
+                      this.state.municipality,
                     );
                   }
                 }}

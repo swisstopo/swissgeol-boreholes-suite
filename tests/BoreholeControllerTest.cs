@@ -83,7 +83,9 @@ public class BoreholeControllerTest
         Assert.AreEqual(1, copiedBorehole.Workflows.Count);
         Assert.AreEqual(Role.Editor, copiedBorehole.Workflows.First().Role);
         Assert.AreSame(originalBorehole.Kind, copiedBorehole.Kind);
-        Assert.AreSame(originalBorehole.Canton, copiedBorehole.Canton);
+        Assert.AreEqual(originalBorehole.Country, copiedBorehole.Country);
+        Assert.AreEqual(originalBorehole.Canton, copiedBorehole.Canton);
+        Assert.AreEqual(originalBorehole.Municipality, copiedBorehole.Municipality);
 
         Assert.AreNotEqual(originalBorehole.Id, copiedBorehole.Id);
         Assert.AreNotSame(originalBorehole.Stratigraphies, copiedBorehole.Stratigraphies);
@@ -118,7 +120,6 @@ public class BoreholeControllerTest
             .Include(b => b.UpdatedBy)
             .Include(b => b.LockedBy)
             .Include(b => b.Kind)
-            .Include(b => b.Canton)
             .Single(b => b.Id == id);
     }
 

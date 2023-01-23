@@ -8,6 +8,9 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get('[data-cy="LV95Y"]').as("LV95Y-input");
     cy.get('[data-cy="LV03X"]').as("LV03X-input");
     cy.get('[data-cy="LV03Y"]').as("LV03Y-input");
+    cy.get('[data-cy="country"] > input').as("country");
+    cy.get('[data-cy="canton"] > input').as("canton");
+    cy.get('[data-cy="municipality"] > input').as("municipality");
   });
 
   it("creates new borehole and adds coordinates", () => {
@@ -17,25 +20,28 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.wait(500);
     cy.get("@LV95Y-input").type("1245794");
     // wait edits of all 4 inputs to complete
-    cy.wait([
-      "@location",
-      "@edit_patch",
-      "@edit_patch",
-      "@edit_patch",
-      "@edit_patch",
-    ]);
+    cy.wait(["@location", "@edit_patch", "@edit_patch", "@edit_patch"]);
     // verify automatically filled inputs for LV03
     cy.get("@LV95Y-input").should("have.value", "1'245'794");
     cy.get("@LV03Y-input").should("have.value", "245'794");
     cy.get("@LV03X-input").should("have.value", "645'122");
+    // verify location set
+    cy.get("@country").should("have.value", "Schweiz");
+    cy.get("@canton").should("have.value", "Aargau");
+    cy.get("@municipality").should("have.value", "Oberentfelden");
 
     //switch reference system
     cy.get("input[value=20104002]").click();
+    //await all patch requests
+    cy.wait(["@edit_patch", "@edit_patch", "@edit_patch"]);
     // verify all inputs are empty
     cy.get("@LV95X-input").should("be.empty");
     cy.get("@LV95Y-input").should("be.empty");
     cy.get("@LV03X-input").should("be.empty");
     cy.get("@LV03Y-input").should("be.empty");
+    cy.get("@country").should("have.value", "");
+    cy.get("@canton").should("have.value", "");
+    cy.get("@municipality").should("have.value", "");
   });
 
   it("validates inputs", () => {
@@ -90,6 +96,9 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV95Y-input").should("have.value", "");
     cy.get("@LV03X-input").should("have.value", "");
     cy.get("@LV03Y-input").should("have.value", "");
+    cy.get("@country").should("have.value", "");
+    cy.get("@canton").should("have.value", "");
+    cy.get("@municipality").should("have.value", "");
 
     // zoom into map
     cy.get('[class="ol-zoom-in"]').click({ force: true });
@@ -109,6 +118,9 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV95Y-input").should("not.have.value", "");
     cy.get("@LV03X-input").should("not.have.value", "");
     cy.get("@LV03Y-input").should("not.have.value", "");
+    cy.get("@country").should("not.have.value", "");
+    cy.get("@canton").should("not.have.value", "");
+    cy.get("@municipality").should("not.have.value", "");
 
     // verify original reference system has switched to LV95
     cy.get("input[value=20104002]").should("not.be.checked");

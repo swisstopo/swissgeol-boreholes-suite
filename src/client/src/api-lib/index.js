@@ -1,7 +1,6 @@
 import {
   // fetch,
   getHeight,
-  getAddressByPoint,
   uploadFile,
   downloadBorehole,
   downloadAttachment,
@@ -140,14 +139,7 @@ import { loadProjects, createProject } from "./actions/project";
 
 import { loadDomains, patchCodeConfig } from "./actions/domains";
 
-import {
-  loadMunicipalities,
-  getMunicipality,
-  loadCantons,
-  getCanton,
-  getWmts,
-  getWms,
-} from "./actions/geoapi";
+import { getWmts, getWms } from "./actions/geoapi";
 
 import { createFeedback } from "./actions/feedback";
 
@@ -159,7 +151,6 @@ import store, {
 
 export {
   getHeight,
-  getAddressByPoint,
   uploadFile,
   downloadBorehole,
   downloadAttachment,
@@ -266,10 +257,6 @@ export {
   createProject,
   loadDomains,
   patchCodeConfig,
-  loadMunicipalities,
-  getMunicipality,
-  loadCantons,
-  getCanton,
   getWmts,
   getWms,
   createFeedback,

@@ -32,7 +32,7 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v1/borehole/stratigraphy/edit", req => {
     return (req.alias = `stratigraphy_edit_${req.body.action.toLowerCase()}`);
   });
-  cy.intercept("/api/v1/geoapi/location").as("location");
+  cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v1/setting").as("setting");
   cy.intercept("api/v1/borehole/codes").as("codes");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
@@ -43,13 +43,12 @@ export const interceptApiCalls = () => {
  * @param {string} visitUrl The url to visit after logging in. Default is the root path.
  */
 export const login = (visitUrl = "/") => {
-  cy.intercept("/api/v1/geoapi/canton").as("geoapi");
   cy.intercept("api/v1/content").as("content");
-
+  cy.intercept("/api/v1/borehole/codes").as("code");
   cy.visit(visitUrl);
   cy.wait("@content");
   cy.contains("button", "Login").click({ force: true });
-  cy.wait("@geoapi");
+  cy.wait("@code");
 };
 
 /**

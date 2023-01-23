@@ -1,7 +1,6 @@
 const initialState = {
   isFetching: false,
   isReady: false,
-  coreCantonList: false,
   coreDomainList: false,
   coreUser: false,
   terms: false,
@@ -9,27 +8,13 @@ const initialState = {
 
 const dataLoaderState = (state = initialState, action) => {
   const { path } = action;
-  if (
-    path !== "/geoapi/canton" &&
-    path !== "/borehole/codes" &&
-    path !== "/user" &&
-    path !== "/terms"
-  ) {
+  if (path !== "/borehole/codes" && path !== "/user" && path !== "/terms") {
     return state;
   }
   let copy = {
     ...state,
   };
-  if (path === "/geoapi/canton") {
-    switch (action.type) {
-      case "LIST_OK":
-        copy.coreCantonList = true;
-        break;
-
-      default:
-        return state;
-    }
-  } else if (path === "/borehole/codes") {
+  if (path === "/borehole/codes") {
     switch (action.type) {
       case "LIST_OK":
         copy.coreDomainList = true;
@@ -64,7 +49,7 @@ const dataLoaderState = (state = initialState, action) => {
         return state;
     }
   }
-  if (copy.coreUser && copy.coreUser && copy.coreCantonList) {
+  if (copy.coreDomainList && copy.coreUser) {
     copy.isReady = true;
   }
 

@@ -10,7 +10,6 @@ import { Button, Input } from "semantic-ui-react";
 
 import {
   loadDomains,
-  loadCantons,
   loadBoreholes,
   loadSettings,
   loadUser,
@@ -65,7 +64,6 @@ class DataLoader extends React.Component {
     if (!_.isEqual(this.props.user.data, prevProps.user.data)) {
       this.props.loadSettings();
       this.props.loadDomains();
-      this.props.loadCantons();
       this.props.loadBoreholes();
     }
   }
@@ -284,7 +282,6 @@ class DataLoader extends React.Component {
 DataLoader.propTypes = {
   anonymousLogin: PropTypes.func,
   i18n: PropTypes.object,
-  loadCantons: PropTypes.func,
   loadDomains: PropTypes.func,
   loadBoreholes: PropTypes.func,
   loadSettings: PropTypes.func,
@@ -304,9 +301,6 @@ const mapDispatchToProps = dispatch => {
     dispatch: dispatch,
     loadDomains: () => {
       dispatch(loadDomains());
-    },
-    loadCantons: () => {
-      dispatch(loadCantons());
     },
     loadBoreholes: () => {
       dispatch(loadBoreholes());

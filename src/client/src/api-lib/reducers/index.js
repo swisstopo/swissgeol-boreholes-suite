@@ -356,9 +356,9 @@ export function borehole() {
             identifiers: null,
             public_name: "",
             project_name: "",
-            country: "Switzerland",
+            country: null,
             canton: null,
-            city: null,
+            municipality: null,
             address: "",
             landuse: null,
             cuttings: null,
@@ -821,82 +821,6 @@ export function domainsList() {
   };
 }
 
-export function municipalityList() {
-  const initialState = {
-    isFetching: false,
-    rtime: 0, // fetch time
-    fcnt: 0, // fetch counter
-    data: [],
-  };
-  return function municipality(state = initialState, action) {
-    const { path } = action;
-    if (path !== "/geoapi/municipality") {
-      return state;
-    }
-    switch (action.type) {
-      case "LIST": {
-        return {
-          ...initialState,
-          rtime: new Date().getTime(),
-          data: [],
-          isFetching: true,
-        };
-      }
-      case "LIST_OK": {
-        let copy = {
-          ...state,
-          fcnt: state.fcnt + 1,
-          isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
-          data: action.json.data,
-        };
-        return copy;
-      }
-      default: {
-        return state;
-      }
-    }
-  };
-}
-
-export function cantonList() {
-  const initialState = {
-    isFetching: false,
-    rtime: 0, // fetch time
-    fcnt: 0, // fetch counter
-    data: [],
-  };
-  return function canton(state = initialState, action) {
-    const { path } = action;
-    if (path !== "/geoapi/canton") {
-      return state;
-    }
-    switch (action.type) {
-      case "LIST": {
-        return {
-          ...initialState,
-          rtime: new Date().getTime(),
-          data: [],
-          isFetching: true,
-        };
-      }
-      case "LIST_OK": {
-        let copy = {
-          ...state,
-          fcnt: state.fcnt + 1,
-          isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
-          data: action.json.data,
-        };
-        return copy;
-      }
-      default: {
-        return state;
-      }
-    }
-  };
-}
-
 export function layersList() {
   const initialState = {
     isFetching: false,
@@ -949,8 +873,6 @@ export function createReducer(pluginsReducers) {
     core_project_list: projectList(),
     core_stratigraphy_list: stratigraphyList(),
     core_domain_list: domainsList(),
-    core_municipality_list: municipalityList(),
-    core_canton_list: cantonList(),
     core_layers_list: layersList(),
     ...pluginsReducers,
   });

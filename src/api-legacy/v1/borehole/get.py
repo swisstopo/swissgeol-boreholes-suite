@@ -94,8 +94,9 @@ class GetBorehole(Action):
                             COALESCE(
                                 alternate_name_bho, ''
                             ) as alternate_name,
+                            country_bho as country,
                             canton_bho as canton,
-                            city_bho as city,
+                            municipality_bho as municipality,
                             cuttings_id_cli as cuttings,
                             drilling_diameter_bho as drill_diameter,
                             qt_inclination_direction_id_cli as qt_bore_inc_dir,
@@ -255,21 +256,6 @@ class GetBorehole(Action):
 
             LEFT JOIN bdms.users as locker
                 ON locked_by_bho = locker.id_usr
-
-            LEFT JOIN (
-                SELECT DISTINCT
-                    cantons.kantonsnum,
-                    cantons.name
-                FROM
-                    bdms.cantons
-            ) as ctn
-                ON ctn.kantonsnum = canton_bho
-
-            --LEFT JOIN bdms.cantons
-            --    ON kantonsnum = canton_bho
-
-            LEFT JOIN bdms.municipalities
-                ON municipalities.gid = city_bho
 
             LEFT JOIN (
                 SELECT
