@@ -123,7 +123,6 @@ import {
   gapLayer,
   loadLayers,
   getLayers,
-  getLayer,
   patchLayer,
 } from "./actions/stratigraphy";
 
@@ -247,7 +246,6 @@ export {
   gapLayer,
   loadLayers,
   getLayers,
-  getLayer,
   patchLayer,
   getProfile,
   getProfiles,

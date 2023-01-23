@@ -215,17 +215,17 @@ class ExportJson(Action):
                                     facies_description_lay, ''
                                 ) AS facies_description,
                                 last_lay AS last,
-                                layer_qt_description.geolcode AS qt_description,
-                                layer_lithology.geolcode AS lithology,
-                                layer_lithostratigraphy.geolcode AS lithostratigraphy,
-                                layer_chronostratigraphy.geolcode AS chronostratigraphy,
+                                qt_description.geolcode AS qt_description,
+                                lithology.geolcode AS lithology,
+                                lithostratigraphy.geolcode AS lithostratigraphy,
+                                chronostratigraphy.geolcode AS chronostratigraphy,
                                 layer_symbol.geolcode AS symbol,
                                 COALESCE(
                                     mlpr112, '{}'::int[]
                                 ) AS color,
-                                layer_plasticity.geolcode AS plasticity,
+                                plasticityode AS plasticity,
                                 layer_humidity.geolcode AS humidity,
-                                layer_consistance.geolcode AS consistance,
+                                consistance.geolcode AS consistance,
                                 layer_gradation.geolcode AS gradation,
                                 layer_alteration.geolcode AS alteration,
                                 compactness.geolcode AS compactness,
@@ -270,26 +270,26 @@ class ExportJson(Action):
                             INNER JOIN bdms.stratigraphy as stratigraphy
                             ON id_sty_fk = stratigraphy.id_sty
 
-                            LEFT JOIN bdms.codelist as layer_qt_description
-                            ON layer_qt_description.id_cli = layer.qt_description_id_cli
+                            LEFT JOIN bdms.codelist as qt_description
+                            ON qt_description.id_cli = layer.qt_description_id_cli
 
-                            LEFT JOIN bdms.codelist as layer_lithology
-                            ON layer_lithology.id_cli = layer.lithology_id_cli
+                            LEFT JOIN bdms.codelist as lithology
+                            ON lithology.id_cli = layer.lithology_id_cli
 
-                            LEFT JOIN bdms.codelist as layer_lithostratigraphy
-                            ON layer_lithostratigraphy.id_cli = layer.lithostratigraphy_id_cli
+                            LEFT JOIN bdms.codelist as lithostratigraphy
+                            ON lithostratigraphy.id_cli = layer.lithostratigraphy_id_cli
 
-                            LEFT JOIN bdms.codelist as layer_chronostratigraphy
-                            ON layer_chronostratigraphy.id_cli = layer.chronostratigraphy_id_cli
+                            LEFT JOIN bdms.codelist as chronostratigraphy
+                            ON chronostratigraphy.id_cli = layer.chronostratigraphy_id_cli
 
-                            LEFT JOIN bdms.codelist as layer_plasticity
-                            ON layer_plasticity.id_cli = layer.plasticity_id_cli
+                            LEFT JOIN bdms.codelist as plasticity
+                            ON plasticity.id_cli = layer.plasticity_id_cli
 
                             LEFT JOIN bdms.codelist as layer_humidity
                             ON layer_humidity.id_cli = layer.humidity_id_cli
 
-                            LEFT JOIN bdms.codelist as layer_consistance
-                            ON layer_consistance.id_cli = layer.consistance_id_cli
+                            LEFT JOIN bdms.codelist as consistance
+                            ON consistance.id_cli = layer.consistance_id_cli
 
                             LEFT JOIN bdms.codelist as layer_gradation
                             ON layer_gradation.id_cli = layer.gradation_id_cli

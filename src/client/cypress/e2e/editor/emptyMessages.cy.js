@@ -1,23 +1,8 @@
-import {
-  interceptApiCalls,
-  newUneditableBorehole,
-  deleteBorehole,
-  login,
-} from "../testHelpers";
+import { newUneditableBorehole } from "../testHelpers";
 
 describe("Messages for empty profiles", () => {
   beforeEach(() => {
-    interceptApiCalls();
-
-    login("/editor");
-    newUneditableBorehole();
-  });
-
-  afterEach(() => {
-    // delete borehole
-    cy.get("@edit_create").then(interception => {
-      deleteBorehole(interception.response.body.id);
-    });
+    newUneditableBorehole().as("borehole_id");
   });
 
   it("Displays correct messages for stratigraphy", () => {

@@ -1,9 +1,9 @@
-import { loginAsAdmin, loginAsEditor } from "../e2e/testHelpers";
+import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/testHelpers";
 
 describe("Borehole list tests", () => {
   it("Boreholes are displayed in correct order with editor login", () => {
     cy.intercept("/api/v1/borehole").as("borehole");
-    loginAsEditor();
+    loginAsEditorInViewerMode();
 
     cy.get("div[id=map]").should("be.visible");
 

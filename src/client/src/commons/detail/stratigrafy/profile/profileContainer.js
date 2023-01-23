@@ -1,8 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { loadLayers, getLayer } from "../../../../api-lib/index";
+import { loadLayers } from "../../../../api-lib/index";
 import ProfileView from "./view/profileViewComponent";
+import { fetchLayerById } from "../../../../api/fetchApiV2";
 
 class ProfileContainer extends React.Component {
   constructor(props) {
@@ -46,16 +47,12 @@ class ProfileContainer extends React.Component {
             },
             () => {
               if (selected !== null) {
-                getLayer(selected.id)
-                  .then(result => {
-                    this.setState({
-                      isFetchingLayer: false,
-                      layer: result.data.data,
-                    });
-                  })
-                  .catch(err => {
-                    // handling error
+                fetchLayerById(selected.id).then(result => {
+                  this.setState({
+                    isFetchingLayer: false,
+                    layer: result,
                   });
+                });
               }
             },
           );

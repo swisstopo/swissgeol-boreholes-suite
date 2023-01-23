@@ -7,7 +7,7 @@ import {
   Redirect,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
-
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import HomeComponent from "./pages/home/homeComponent";
 import EditorComponent from "./pages/editor/editorComponent";
 import SettingCmp from "./pages/settings/settingCmp";
@@ -32,6 +32,23 @@ const cpaths = [
 ];
 const queryClient = new QueryClient();
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#007CC3",
+      contrastText: "#fff",
+    },
+  },
+  typography: {
+    fontFamily: "Lato",
+    subtitle2: {
+      fontSize: "0.8em",
+      color: "#787878",
+      lineHeight: "1em",
+    },
+  },
+});
+
 class App extends React.Component {
   componentDidMount() {
     // Get the scrollbar width
@@ -51,31 +68,33 @@ class App extends React.Component {
     ) : loader.terms === false ? (
       <AcceptTerms />
     ) : (
-      <QueryClientProvider client={queryClient}>
-        <Router>
-          <Switch>
-            {cpaths.map((route, index) => {
-              return (
-                <Route
-                  component={route.body}
-                  exact={route.exact}
-                  key={index}
-                  path={route.path}
-                />
-              );
-            })}
-            <Route
-              component={r => (
-                <Redirect
-                  to={{
-                    pathname: process.env.PUBLIC_URL + "/",
-                  }}
-                />
-              )}
-            />
-          </Switch>
-        </Router>
-      </QueryClientProvider>
+      <ThemeProvider theme={theme}>
+        <QueryClientProvider client={queryClient}>
+          <Router>
+            <Switch>
+              {cpaths.map((route, index) => {
+                return (
+                  <Route
+                    component={route.body}
+                    exact={route.exact}
+                    key={index}
+                    path={route.path}
+                  />
+                );
+              })}
+              <Route
+                component={r => (
+                  <Redirect
+                    to={{
+                      pathname: process.env.PUBLIC_URL + "/",
+                    }}
+                  />
+                )}
+              />
+            </Switch>
+          </Router>
+        </QueryClientProvider>
+      </ThemeProvider>
     );
   }
 }

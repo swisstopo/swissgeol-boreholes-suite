@@ -12,6 +12,10 @@
 
 - Added db constraints for table `layer_codelist`.
 
+### Changed
+
+- Use REST API v2 to display layer in viewer mode.
+
 ## v2.0.131 - 2023-01-16
 
 ### Added

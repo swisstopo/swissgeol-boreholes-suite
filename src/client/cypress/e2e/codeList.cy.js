@@ -1,4 +1,4 @@
-import { loginAsAdmin, loginAsEditor } from "../e2e/testHelpers";
+import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/testHelpers";
 
 describe("Codelist translations tests", () => {
   it("Admin can open codelist translation section", () => {
@@ -90,7 +90,7 @@ describe("Codelist translations tests", () => {
   });
 
   it("Editor cannot open codelist translation section", () => {
-    loginAsEditor();
+    loginAsEditorInViewerMode();
     cy.get("div[id=map]").should("be.visible");
 
     cy.get("i[class='th big icon']").click();

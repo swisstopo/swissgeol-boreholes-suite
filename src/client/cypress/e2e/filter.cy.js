@@ -1,10 +1,6 @@
-import { login, interceptApiCalls } from "../e2e/testHelpers";
+import { login } from "../e2e/testHelpers";
 
 describe("Search filter tests", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-  });
-
   it("has search filters", () => {
     login();
     cy.contains("Search filters:");
@@ -49,11 +45,16 @@ describe("Search filter tests", () => {
     cy.contains("h4", "Editor").click();
 
     cy.contains("Filter by map");
+
+    // reset appearance
+    cy.get('[data-cy="menu"]').click();
+    cy.contains("h4", "Settings").click();
+    cy.contains("Appearance").click();
+    cy.contains("Full").children(".checkbox").click();
   });
 
   it("checks that the registration filter settings control the filter visibility.", () => {
     // precondition filters not visible
-    login("/editor");
     cy.contains("Registration").click();
     cy.contains("Show all fields")
       .next()
@@ -87,7 +88,6 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes by creator name", () => {
-    login("/editor");
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -105,7 +105,6 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes by creation date", () => {
-    login("/editor");
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 

@@ -1,17 +1,7 @@
-import {
-  interceptApiCalls,
-  newEditableBorehole,
-  deleteBorehole,
-  login,
-} from "./testHelpers";
+import { newEditableBorehole } from "./testHelpers";
 
 describe("Tests for filtering data by identifier.", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-  });
-
   it("can filter by identifier", () => {
-    login("/editor");
     newEditableBorehole().as("borehole_id");
     let identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');
 
@@ -61,11 +51,9 @@ describe("Tests for filtering data by identifier.", () => {
       .first()
       .click();
     cy.get("tbody").children().should("have.length", 22);
-    cy.get("@borehole_id").then(id => deleteBorehole(id));
   });
 
   it("can bulk edit boreholes while filter by identifier is set", () => {
-    login("/editor");
     newEditableBorehole().as("borehole_id");
     let identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');
 
@@ -139,8 +127,5 @@ describe("Tests for filtering data by identifier.", () => {
       .children()
       .first()
       .click();
-
-    cy.get("@borehole_id").then(id => deleteBorehole(id));
-    cy.get("@borehole_id_2").then(id => deleteBorehole(id));
   });
 });

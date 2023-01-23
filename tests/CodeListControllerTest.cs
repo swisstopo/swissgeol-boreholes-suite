@@ -51,10 +51,10 @@ public class CodeListControllerTest
         Assert.AreEqual(null, codeListToTest.Conf);
         Assert.AreEqual(false, codeListToTest.IsDefault);
         Assert.AreEqual("custom.chronostratigraphy_top_bedrock", codeListToTest.Schema);
-        Assert.AreEqual("Mittlerer Jura undifferenziert", codeListToTest.TextDe);
-        Assert.AreEqual("Middle Jurassic undifferenciated", codeListToTest.TextEn);
-        Assert.AreEqual("Jurassique moyen indifférencié", codeListToTest.TextFr);
-        Assert.AreEqual("Giurassico medio indifferenziato", codeListToTest.TextIt);
+        Assert.AreEqual("Mittlerer Jura undifferenziert", codeListToTest.De);
+        Assert.AreEqual("Middle Jurassic undifferenciated", codeListToTest.En);
+        Assert.AreEqual("Jurassique moyen indifférencié", codeListToTest.Fr);
+        Assert.AreEqual("Giurassico medio indifferenziato", codeListToTest.It);
         Assert.AreEqual(142, codeListToTest.Order);
         Assert.AreEqual("jmu", codeListToTest.Code);
     }
@@ -68,11 +68,11 @@ public class CodeListControllerTest
             Id = id,
             Geolcode = id,
             Schema = "borehole_form",
-            TextDe = "Ansatzhöhe Z [müM]",
+            De = "Ansatzhöhe Z [müM]",
             Code = "elevation_z",
-            TextEn = "Elevation Z [masl]",
-            TextFr = "Altitude Z [MsM]",
-            TextIt = "altitudine (quota)",
+            En = "Elevation Z [masl]",
+            Fr = "Altitude Z [MsM]",
+            It = "altitudine (quota)",
             DescriptionEn = "",
             DescriptionDe = "",
             DescriptionFr = "",
@@ -86,17 +86,17 @@ public class CodeListControllerTest
         var codeList = new Codelist
         {
             Id = id,
-            TextDe = "Neuer deutscher Text",
+            De = "Neuer deutscher Text",
             Code = "elevation_z",
-            TextEn = "New english text",
+            En = "New english text",
             DescriptionEn = "",
         };
 
         var codeListToEdit = context.Codelists.Single(c => c.Id == id);
-        Assert.AreEqual("Ansatzhöhe Z [müM]", codeListToEdit.TextDe);
-        Assert.AreEqual("Elevation Z [masl]", codeListToEdit.TextEn);
+        Assert.AreEqual("Ansatzhöhe Z [müM]", codeListToEdit.De);
+        Assert.AreEqual("Elevation Z [masl]", codeListToEdit.En);
         Assert.AreEqual("elevation_z", codeListToEdit.Code);
-        Assert.AreEqual("Altitude Z [MsM]", codeListToEdit.TextFr);
+        Assert.AreEqual("Altitude Z [MsM]", codeListToEdit.Fr);
         Assert.AreEqual("", codeListToEdit.DescriptionEn);
 
         // Upate CodeList
@@ -108,12 +108,12 @@ public class CodeListControllerTest
         var updatedContext = ContextFactory.CreateContext();
         var updatedCodelist = updatedContext.Codelists.Single(c => c.Id == id);
 
-        Assert.AreEqual("Neuer deutscher Text", updatedCodelist.TextDe);
-        Assert.AreEqual("New english text", updatedCodelist.TextEn);
+        Assert.AreEqual("Neuer deutscher Text", updatedCodelist.De);
+        Assert.AreEqual("New english text", updatedCodelist.En);
         Assert.AreEqual("elevation_z", updatedCodelist.Code);
 
         // Emtpy values are deleted
-        Assert.AreEqual(null, updatedCodelist.TextFr);
+        Assert.AreEqual(null, updatedCodelist.Fr);
         Assert.AreEqual("", updatedCodelist.DescriptionEn);
 
         // Reset edits
@@ -138,11 +138,11 @@ public class CodeListControllerTest
             Geolcode = 1020,
             Order = 21,
             Schema = "borehole_form",
-            TextDe = "Bohrgut",
-            TextEn = "Cuttings",
-            TextFr = "Matière forée ",
-            TextIt = "materiale perforato",
-            TextRo = null,
+            De = "Bohrgut",
+            En = "Cuttings",
+            Fr = "Matière forée ",
+            It = "materiale perforato",
+            Ro = null,
         };
 
         var codeList = new Codelist
@@ -159,11 +159,11 @@ public class CodeListControllerTest
             Geolcode = 222,
             Order = 21,
             Schema = "schema_borehole_form",
-            TextDe = "Bohrgut",
-            TextEn = "Cuttings",
-            TextFr = "Matière forée ",
-            TextIt = "materiale perforato",
-            TextRo = null,
+            De = "Bohrgut",
+            En = "Cuttings",
+            Fr = "Matière forée ",
+            It = "materiale perforato",
+            Ro = null,
         };
 
         var codeListToEdit = context.Codelists.Single(c => c.Id == id);
@@ -178,11 +178,11 @@ public class CodeListControllerTest
         Assert.AreEqual(1020, codeListToEdit.Geolcode);
         Assert.AreEqual(21, codeListToEdit.Order);
         Assert.AreEqual("borehole_form", codeListToEdit.Schema);
-        Assert.AreEqual("Bohrgut", codeListToEdit.TextDe);
-        Assert.AreEqual("Cuttings", codeListToEdit.TextEn);
-        Assert.AreEqual("Matière forée ", codeListToEdit.TextFr);
-        Assert.AreEqual("materiale perforato", codeListToEdit.TextIt);
-        Assert.AreEqual(null, codeListToEdit.TextRo);
+        Assert.AreEqual("Bohrgut", codeListToEdit.De);
+        Assert.AreEqual("Cuttings", codeListToEdit.En);
+        Assert.AreEqual("Matière forée ", codeListToEdit.Fr);
+        Assert.AreEqual("materiale perforato", codeListToEdit.It);
+        Assert.AreEqual(null, codeListToEdit.Ro);
 
         // Upate CodeList
         var response = await controller.EditAsync(codeList);
@@ -204,11 +204,11 @@ public class CodeListControllerTest
         Assert.AreEqual(222, updatedCodelist.Geolcode);
         Assert.AreEqual(21, updatedCodelist.Order);
         Assert.AreEqual("schema_borehole_form", updatedCodelist.Schema);
-        Assert.AreEqual("Bohrgut", updatedCodelist.TextDe);
-        Assert.AreEqual("Cuttings", updatedCodelist.TextEn);
-        Assert.AreEqual("Matière forée ", updatedCodelist.TextFr);
-        Assert.AreEqual("materiale perforato", updatedCodelist.TextIt);
-        Assert.AreEqual(null, updatedCodelist.TextRo);
+        Assert.AreEqual("Bohrgut", updatedCodelist.De);
+        Assert.AreEqual("Cuttings", updatedCodelist.En);
+        Assert.AreEqual("Matière forée ", updatedCodelist.Fr);
+        Assert.AreEqual("materiale perforato", updatedCodelist.It);
+        Assert.AreEqual(null, updatedCodelist.Ro);
 
         // Reset edits
         _ = await controller.EditAsync(originalCodeList);
@@ -221,9 +221,9 @@ public class CodeListControllerTest
         var codeList = new Codelist
         {
             Id = id,
-            TextDe = "",
+            De = "",
             Code = "",
-            TextEn = "",
+            En = "",
             DescriptionEn = "",
         };
 

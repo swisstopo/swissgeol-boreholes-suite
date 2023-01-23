@@ -2,6 +2,7 @@
 using Bogus;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using System.Collections.ObjectModel;
 using System.Globalization;
 
 namespace BDMS;
@@ -364,6 +365,8 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Notes, f => f.Random.Words(4).OrNull(f, .05f))
             .RuleFor(o => o.OriginalUscs, f => f.Random.Word().OrNull(f, .05f))
             .RuleFor(o => o.OriginalLithology, f => f.Random.Words(5).OrNull(f, .05f))
+            .RuleFor(o => o.LayerCodelists, _ => new Collection<LayerCodelist>())
+            .RuleFor(o => o.Codelists, _ => new Collection<Codelist>())
             .RuleFor(o => o.Id, f => layer_ids++);
 
         Layer SeededLayers(int seed) => fakelayers.UseSeed(seed).Generate();

@@ -1,16 +1,6 @@
-import {
-  newEditableBorehole,
-  deleteBorehole,
-  login,
-  interceptApiCalls,
-} from "../testHelpers";
+import { newEditableBorehole } from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-    login("/editor");
-  });
-
   it("Creates a layer and fills all dropdowns with multiple selection.", () => {
     // create boreholes
     newEditableBorehole().as("borehole_id");
@@ -33,6 +23,7 @@ describe("Test for the borehole form.", () => {
           .click({ force: true })
           .find('[role="option"]')
           .last()
+          .scrollIntoView()
           .click();
         cy.wait("@layer_edit_patch");
       });
@@ -72,7 +63,10 @@ describe("Test for the borehole form.", () => {
       }
     });
 
-    // delete the borehole
-    cy.get("@borehole_id").then(id => deleteBorehole(id));
+    // stop editing
+    cy.contains("a", "Stop editing").click();
+    cy.wait("@edit_unlock");
+    cy.contains("h3", "Done").click();
+    cy.wait(["@edit_list", "@borehole"]);
   });
 });

@@ -34,6 +34,8 @@ export const interceptApiCalls = () => {
   });
   cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v1/setting").as("setting");
+  cy.intercept("api/v1/borehole/codes").as("codes");
+  cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
 };
 
 /**
@@ -41,9 +43,11 @@ export const interceptApiCalls = () => {
  * @param {string} visitUrl The url to visit after logging in. Default is the root path.
  */
 export const login = (visitUrl = "/") => {
+  cy.intercept("api/v1/content").as("content");
   cy.intercept("/api/v1/borehole/codes").as("code");
   cy.visit(visitUrl);
-  cy.contains("button", "Login").click();
+  cy.wait("@content");
+  cy.contains("button", "Login").click({ force: true });
   cy.wait("@code");
 };
 
@@ -60,7 +64,7 @@ export const loginAsAdmin = (visitUrl = "/") => {
  * Login into the application as editor.
  * @param {string} visitUrl The url to visit after logging in. Default is the root path.
  */
-export const loginAsEditor = (visitUrl = "/") => {
+export const loginAsEditorInViewerMode = (visitUrl = "/") => {
   cy.intercept("/api/v1/user", editorUser);
   login(visitUrl);
 };
@@ -133,6 +137,21 @@ export const deleteBorehole = id => {
   })
     .its("body.success")
     .should("eq", true);
+};
+
+export const loginAndResetBoreholes = () => {
+  login("/editor");
+  cy.get("tbody").children().first().should("be.visible");
+
+  cy.wait("@edit_list").then(intercept => {
+    intercept.response.body.data.forEach(borehole => {
+      if (borehole.id > 1029) deleteBorehole(borehole.id); // max id in seed data.
+    });
+  });
+
+  cy.contains("a", "Refresh").click();
+  cy.wait("@edit_list");
+  cy.get("tbody").children().should("have.length", 21); // number or boreholes visible in editor mode.
 };
 
 export const delayedType = (element, string) => {

@@ -111,7 +111,7 @@ export const casingData = {
     {
       id: 9,
       type: "TextArea",
-      label: "layer_notes",
+      label: "notes",
       value: "notes",
       isNumber: true,
       isVisible: true,

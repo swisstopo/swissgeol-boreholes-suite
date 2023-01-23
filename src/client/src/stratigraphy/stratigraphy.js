@@ -265,6 +265,7 @@ const Stratigraphy = props => {
               factor * (layer[mapping.to] - layer[mapping.from]);
             return (
               <Styled.LayerInfoList
+                data-cy={"stratigraphy-layer-" + idx}
                 key={"stratigraphy-layer-" + idx}
                 onClick={() => handleLayerClick(layer)}
                 onMouseEnter={() => handleMouseEnter(layer)}

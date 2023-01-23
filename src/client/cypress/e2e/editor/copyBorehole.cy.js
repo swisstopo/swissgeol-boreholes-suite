@@ -1,20 +1,6 @@
-import {
-  interceptApiCalls,
-  login,
-  createBorehole,
-  deleteBorehole,
-} from "../testHelpers";
+import { createBorehole } from "../testHelpers";
 
 describe("Test copying of boreholes", () => {
-  beforeEach(() => {
-    interceptApiCalls();
-    cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
-
-    login("/editor");
-    cy.wait("@borehole");
-    cy.wait("@edit_list");
-  });
-
   it("copies a borehole", () => {
     createBorehole({ "extended.original_name": "NINTIC" }).as("borehole_id_1");
 
@@ -41,6 +27,5 @@ describe("Test copying of boreholes", () => {
 
     cy.contains("a", "Delete").click();
     cy.contains("button", "Delete").click();
-    cy.get("@borehole_id_1").then(id => deleteBorehole(id));
   });
 });

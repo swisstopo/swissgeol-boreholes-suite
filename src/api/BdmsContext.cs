@@ -52,7 +52,42 @@ public class BdmsContext : DbContext
                     j => j.HasKey(bf => new { bf.BoreholeId, bf.FileId }));
 
         modelBuilder.Entity<Layer>()
-            .HasOne(b => b.InstrumentCasing)
-            .WithMany(s => s.Layers);
+                .HasMany(l => l.Codelists)
+                .WithMany(c => c.Layers)
+                .UsingEntity<LayerCodelist>(
+                    j => j
+                        .HasOne(lc => lc.Codelist)
+                        .WithMany(c => c.LayerCodelists)
+                        .HasForeignKey(lc => lc.CodelistId),
+                    j => j
+                        .HasOne(lc => lc.Layer)
+                        .WithMany(b => b.LayerCodelists)
+                        .HasForeignKey(l => l.LayerId),
+                    j => j.HasKey(lc => new { lc.LayerId, lc.CodelistId }));
+
+        modelBuilder.Entity<Layer>().HasOne(l => l.Alteration).WithMany().HasForeignKey(l => l.AlterationId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.CasingKind).WithMany().HasForeignKey(l => l.CasingKindId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.CasingMaterial).WithMany().HasForeignKey(l => l.CasingMaterialId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.Chronostratigraphy).WithMany().HasForeignKey(l => l.ChronostratigraphyId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.Cohesion).WithMany().HasForeignKey(l => l.CohesionId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.Compactness).WithMany().HasForeignKey(l => l.CompactnessId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.Consistance).WithMany().HasForeignKey(l => l.ConsistanceId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.FillKind).WithMany().HasForeignKey(l => l.FillKindId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.FillMaterial).WithMany().HasForeignKey(l => l.FillMaterialId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.Gradation).WithMany().HasForeignKey(l => l.GradationId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.GrainSize1).WithMany().HasForeignKey(l => l.GrainSize1Id);
+        modelBuilder.Entity<Layer>().HasOne(l => l.GrainSize2).WithMany().HasForeignKey(l => l.GrainSize2Id);
+        modelBuilder.Entity<Layer>().HasOne(l => l.Humidity).WithMany().HasForeignKey(l => l.HumidityId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.InstrumentKind).WithMany().HasForeignKey(l => l.InstrumentKindId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.InstrumentStatus).WithMany().HasForeignKey(l => l.InstrumentStatusId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.Lithology).WithMany().HasForeignKey(l => l.LithologyId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.LithologyTopBedrock).WithMany().HasForeignKey(l => l.LithologyTopBedrockId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.Lithostratigraphy).WithMany().HasForeignKey(l => l.LithostratigraphyId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.Plasticity).WithMany().HasForeignKey(l => l.PlasticityId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.QtDescription).WithMany().HasForeignKey(l => l.QtDescriptionId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.Uscs1).WithMany().HasForeignKey(l => l.Uscs1Id);
+        modelBuilder.Entity<Layer>().HasOne(l => l.Uscs2).WithMany().HasForeignKey(l => l.Uscs2Id);
+        modelBuilder.Entity<Layer>().HasOne(l => l.UscsDetermination).WithMany().HasForeignKey(l => l.UscsDeterminationId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.InstrumentCasing).WithMany().HasForeignKey(l => l.InstrumentCasingId);
     }
 }
