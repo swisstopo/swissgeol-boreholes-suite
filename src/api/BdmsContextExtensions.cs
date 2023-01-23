@@ -39,7 +39,7 @@ public static class BdmsContextExtensions
         context.Workgroups.AddRange(workgroupRange.Select(SeededWorkgroups));
         context.SaveChanges();
 
-        // ranges for exsiting tables
+        // ranges for existing tables
         var userRange = Enumerable.Range(1, 5);
         var cantonRange = Enumerable.Range(1, 51);
         var municipalityRange = Enumerable.Range(1, 2371);
@@ -255,7 +255,7 @@ public static class BdmsContextExtensions
 
         // Seed stratigraphy
         var stratigraphy_ids = 6000;
-        var stratigraphyRange = Enumerable.Range(stratigraphy_ids, 150);
+        var stratigraphyRange = Enumerable.Range(stratigraphy_ids, 150).ToList();
         var fakeStratigraphies = new Faker<Stratigraphy>()
             .StrictMode(true)
             .RuleFor(o => o.Id, f => stratigraphy_ids++)
@@ -374,14 +374,15 @@ public static class BdmsContextExtensions
 
         Layer SeededLayers(int seed) => fakelayers.UseSeed(seed).Generate();
 
-        for (int i = 0; i < stratigraphyRange.Count(); i++)
+        for (int i = 0; i < stratigraphyRange.Count; i++)
         {
             // Add 10 layers per stratigraphy
             var start = (i * 10) + 1;
             var range = Enumerable.Range(start, 10);  // ints in range must be different on each loop, so that properties are not repeated in dataset.
             context.Layers.AddRange(range.Select(SeededLayers));
-            context.SaveChanges();
         }
+
+        context.SaveChanges();
 
         // Seed workflows
         var workflow_ids = 5000;
