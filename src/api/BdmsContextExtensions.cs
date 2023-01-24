@@ -286,9 +286,9 @@ public static class BdmsContextExtensions
         var layerRange = Enumerable.Range(layer_ids, 1500);
 
         // Each ten layers should be associated with the one stratigraphy or casing.
-        int GetStratigraphyOrCasingId(int currentLayerId)
+        int GetStratigraphyOrCasingId(int currentLayerId, int startId)
         {
-            return 6000 + (int)Math.Floor((double)((currentLayerId - 7000) / 10));
+            return 6000 + (int)Math.Floor((double)((currentLayerId - startId) / 10));
         }
 
         var fakelayers = new Faker<Layer>()
@@ -335,7 +335,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.InstrumentKind, _ => default!)
             .RuleFor(o => o.InstrumentStatusId, f => f.PickRandom(instrumentMaterialIds).OrNull(f, .05f))
             .RuleFor(o => o.InstrumentStatus, _ => default!)
-            .RuleFor(o => o.InstrumentCasingId, f => GetStratigraphyOrCasingId(layer_ids))
+            .RuleFor(o => o.InstrumentCasingId, f => GetStratigraphyOrCasingId(layer_ids, 7000))
             .RuleFor(o => o.InstrumentCasing, _ => default!)
             .RuleFor(o => o.InstrumentCasingLayerId, _ => null)
             .RuleFor(o => o.IsLast, f => layer_ids % 10 == 9)
@@ -347,7 +347,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Plasticity, _ => default!)
             .RuleFor(o => o.QtDescriptionId, f => f.PickRandom(qtDescriptionIds).OrNull(f, .05f))
             .RuleFor(o => o.QtDescription, _ => default!)
-            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(layer_ids))
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(layer_ids, 7000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.IsStriae, f => f.Random.Bool())
             .RuleFor(o => o.IsUndefined, f => f.Random.Bool())
@@ -411,7 +411,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.ToDepth, f => ((lithologicalDescription_ids % 10) + 1) * 10)
             .RuleFor(o => o.QtDescriptionId, f => f.PickRandom(qtDescriptionIds).OrNull(f, .05f))
             .RuleFor(o => o.QtDescription, _ => default!)
-            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(lithologicalDescription_ids))
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(lithologicalDescription_ids, 9000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.Description, f => f.Random.Words(3).OrNull(f, .05f))
             .RuleFor(o => o.Creation, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
