@@ -30,7 +30,7 @@ describe("Tests for filtering data by identifier.", () => {
       .first()
       .check({ force: true });
 
-    cy.get("tbody").children().should("have.length", 22);
+    cy.get("tbody").children().should("have.length", 100);
 
     cy.get('[data-cy="domain-dropdown"]')
       .first()
@@ -50,7 +50,7 @@ describe("Tests for filtering data by identifier.", () => {
       .children()
       .first()
       .click();
-    cy.get("tbody").children().should("have.length", 22);
+    cy.get("tbody").children().should("have.length", 100);
   });
 
   it("can bulk edit boreholes while filter by identifier is set", () => {

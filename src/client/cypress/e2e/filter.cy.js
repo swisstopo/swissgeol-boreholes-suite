@@ -98,7 +98,7 @@ describe("Search filter tests", () => {
     // check content of table
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .should("have.length", 5)
+      .should("have.length", 100)
       .each((el, index, list) => {
         cy.wrap(el).contains("validator");
       });
@@ -118,7 +118,7 @@ describe("Search filter tests", () => {
     // check content of table
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .should("have.length", 1)
+      .should("have.length", 11)
       .each((el, index, list) => {
         cy.wrap(el).contains("admin");
       });
@@ -156,7 +156,7 @@ describe("Search filter tests", () => {
     // check content of table
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .should("have.length", 1)
+      .should("have.length", 9)
       .each((el, index, list) => {
         cy.wrap(el).contains("09.11.2021");
       });

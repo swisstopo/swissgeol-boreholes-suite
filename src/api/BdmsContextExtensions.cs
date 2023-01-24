@@ -9,12 +9,12 @@ namespace BDMS;
 
 #pragma warning disable CA1505
 /// <summary>
-/// The EF database context containing data for the BDMS application.
+/// Contains extensions methods for the BDMS db context.
 /// </summary>
 public static class BdmsContextExtensions
 {
     /// <summary>
-    /// Seed data for <see cref="Workgroup"/>, <see cref="Borehole"/> and <see cref="Stratigraphy"/>.
+    /// Seed test data.
     /// </summary>
     public static void SeedData(this BdmsContext context)
     {
@@ -85,7 +85,7 @@ public static class BdmsContextExtensions
 
         // Seed Boreholes
         var borehole_ids = 1000;
-        var boreholeRange = Enumerable.Range(borehole_ids, 30);
+        var boreholeRange = Enumerable.Range(borehole_ids, 10000).ToList();
         var fakeBoreholes = new Faker<Borehole>()
            .StrictMode(true)
            .RuleFor(o => o.Id, f => borehole_ids++)
@@ -253,7 +253,7 @@ public static class BdmsContextExtensions
 
         // Seed stratigraphy
         var stratigraphy_ids = 6000;
-        var stratigraphyRange = Enumerable.Range(stratigraphy_ids, 150).ToList();
+        var stratigraphyRange = Enumerable.Range(stratigraphy_ids, boreholeRange.Count).ToList();
         var fakeStratigraphies = new Faker<Stratigraphy>()
             .StrictMode(true)
             .RuleFor(o => o.Id, f => stratigraphy_ids++)
@@ -283,7 +283,7 @@ public static class BdmsContextExtensions
 
         // Seed layers
         var layer_ids = 7000;
-        var layerRange = Enumerable.Range(layer_ids, 1500);
+        var layerRange = Enumerable.Range(layer_ids, 150000);
 
         // Each ten layers should be associated with the one stratigraphy or casing.
         int GetStratigraphyOrCasingId(int currentLayerId, int startId)
@@ -384,7 +384,7 @@ public static class BdmsContextExtensions
 
         // Seed workflows
         var workflow_ids = 5000;
-        var workflowRange = Enumerable.Range(workflow_ids, 200);
+        var workflowRange = Enumerable.Range(workflow_ids, boreholeRange.Count);
         var fakeWorkflows = new Faker<Workflow>()
                .StrictMode(true)
                .RuleFor(o => o.Id, f => workflow_ids++)

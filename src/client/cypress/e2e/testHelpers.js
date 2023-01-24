@@ -145,13 +145,13 @@ export const loginAndResetBoreholes = () => {
 
   cy.wait("@edit_list").then(intercept => {
     intercept.response.body.data.forEach(borehole => {
-      if (borehole.id > 1029) deleteBorehole(borehole.id); // max id in seed data.
+      if (borehole.id > 10999) deleteBorehole(borehole.id); // max id in seed data.
     });
   });
 
   cy.contains("a", "Refresh").click();
   cy.wait("@edit_list");
-  cy.get("tbody").children().should("have.length", 21); // number or boreholes visible in editor mode.
+  cy.get("tbody").children().should("have.length", 100); // number or boreholes visible in editor mode (with paging).
 };
 
 export const delayedType = (element, string) => {

@@ -27,12 +27,13 @@ public class LayerControllerTest
     }
 
     [TestMethod]
+    [TestCategory("LongRunning")]
     public async Task GetAllEntriesAsync()
     {
         var response = await controller.GetAsync().ConfigureAwait(false);
         IEnumerable<Layer>? layers = response?.Value;
         Assert.IsNotNull(layers);
-        Assert.AreEqual(1500, layers.Count());
+        Assert.AreEqual(100000, layers.Count());
     }
 
     [TestMethod]
