@@ -81,6 +81,7 @@ public static class BdmsContextExtensions
         List<int> kirostIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
+        List<int> geologicalStratigraphyIds = context.Stratigraphies.Where(c => c.KindId == 3000).Select(s => s.Id).ToList();
 
         // Seed Boreholes
         var borehole_ids = 1000;
@@ -122,9 +123,9 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.QtElevationId, f => f.PickRandom(qtElevationIds).OrNull(f, .1f))
            .RuleFor(o => o.QtElevation, _ => default!)
            .RuleFor(o => o.ProjectName, f => f.Company.CatchPhrase().OrNull(f, .1f))
-           .RuleFor(o => o.Country,  f => f.Address.Country().OrNull(f, 0.01f))
-           .RuleFor(o => o.Canton,  f => f.Address.State().OrNull(f, 0.01f))
-           .RuleFor(o => o.Municipality,  f => f.Address.City().OrNull(f, 0.01f))
+           .RuleFor(o => o.Country, f => f.Address.Country().OrNull(f, 0.01f))
+           .RuleFor(o => o.Canton, f => f.Address.State().OrNull(f, 0.01f))
+           .RuleFor(o => o.Municipality, f => f.Address.City().OrNull(f, 0.01f))
            .RuleFor(o => o.DrillingMethodId, f => f.PickRandom(drillingMethodIds).OrNull(f, .05f))
            .RuleFor(o => o.DrillingMethod, _ => default!)
            .RuleFor(o => o.DrillingDate, f => DateOnly.FromDateTime(f.Date.Past().ToUniversalTime()))
@@ -285,9 +286,9 @@ public static class BdmsContextExtensions
         var layerRange = Enumerable.Range(layer_ids, 1500);
 
         // Each ten layers should be associated with the one stratigraphy or casing.
-        int GetStratigraphyOrCasingId(int currentLayerId)
+        int GetStratigraphyOrCasingId(int currentLayerId, int startId)
         {
-            return 6000 + (int)Math.Floor((double)((currentLayerId - 7000) / 10));
+            return 6000 + (int)Math.Floor((double)((currentLayerId - startId) / 10));
         }
 
         var fakelayers = new Faker<Layer>()
@@ -334,7 +335,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.InstrumentKind, _ => default!)
             .RuleFor(o => o.InstrumentStatusId, f => f.PickRandom(instrumentMaterialIds).OrNull(f, .05f))
             .RuleFor(o => o.InstrumentStatus, _ => default!)
-            .RuleFor(o => o.InstrumentCasingId, f => GetStratigraphyOrCasingId(layer_ids))
+            .RuleFor(o => o.InstrumentCasingId, f => GetStratigraphyOrCasingId(layer_ids, 7000))
             .RuleFor(o => o.InstrumentCasing, _ => default!)
             .RuleFor(o => o.InstrumentCasingLayerId, _ => null)
             .RuleFor(o => o.IsLast, f => layer_ids % 10 == 9)
@@ -346,7 +347,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Plasticity, _ => default!)
             .RuleFor(o => o.QtDescriptionId, f => f.PickRandom(qtDescriptionIds).OrNull(f, .05f))
             .RuleFor(o => o.QtDescription, _ => default!)
-            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(layer_ids))
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(layer_ids, 7000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.IsStriae, f => f.Random.Bool())
             .RuleFor(o => o.IsUndefined, f => f.Random.Bool())
@@ -398,6 +399,40 @@ public static class BdmsContextExtensions
 
         Workflow SeededWorkflows(int seed) => fakeWorkflows.UseSeed(seed).Generate();
         context.Workflows.AddRange(workflowRange.Select(SeededWorkflows));
+        context.SaveChanges();
+
+        // Seed lithologicalDescriptions
+        var lithologicalDescription_ids = 9000;
+        var lithologicalDescriptionRange = Enumerable.Range(lithologicalDescription_ids, 500);
+
+        var fakelithologicalDescriptions = new Faker<LithologicalDescription>()
+            .StrictMode(true)
+            .RuleFor(o => o.FromDepth, f => (lithologicalDescription_ids % 10) * 10)
+            .RuleFor(o => o.ToDepth, f => ((lithologicalDescription_ids % 10) + 1) * 10)
+            .RuleFor(o => o.QtDescriptionId, f => f.PickRandom(qtDescriptionIds).OrNull(f, .05f))
+            .RuleFor(o => o.QtDescription, _ => default!)
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(lithologicalDescription_ids, 9000))
+            .RuleFor(o => o.Stratigraphy, _ => default!)
+            .RuleFor(o => o.Description, f => f.Random.Words(3).OrNull(f, .05f))
+            .RuleFor(o => o.Creation, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Update, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!)
+            .RuleFor(o => o.IsLast, f => lithologicalDescription_ids % 10 == 9)
+            .RuleFor(o => o.Id, f => lithologicalDescription_ids++);
+
+        LithologicalDescription SeededLithologicalDescriptions(int seed) => fakelithologicalDescriptions.UseSeed(seed).Generate();
+
+        for (int i = 0; i < stratigraphyRange.Count; i++)
+        {
+            // Add 10 lithological descriptions per lithological description profile.
+            var start = (i * 10) + 1;
+            var range = Enumerable.Range(start, 10);
+            context.LithologicalDescriptions.AddRange(range.Select(SeededLithologicalDescriptions));
+        }
+
         context.SaveChanges();
 
         // Sync all database sequences

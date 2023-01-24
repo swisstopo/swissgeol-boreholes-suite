@@ -24,6 +24,7 @@ public class BdmsContext : DbContext
     public DbSet<Workflow> Workflows { get; set; }
     public DbSet<Workgroup> Workgroups { get; set; }
     public DbSet<BoreholeFile> BoreholeFiles { get; set; }
+    public DbSet<LithologicalDescription> LithologicalDescriptions { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)
