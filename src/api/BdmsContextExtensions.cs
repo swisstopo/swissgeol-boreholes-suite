@@ -461,7 +461,7 @@ public static class BdmsContextExtensions
 
         for (int i = 0; i < stratigraphyRange.Count; i++)
         {
-            // Add 10 facies descriptions per facies description profile.
+            // Add 10 facies descriptions per stratigraphy.
             var start = (i * 10) + 1;
             var range = Enumerable.Range(start, 10);
             context.FaciesDescriptions.AddRange(range.Select(SeededFaciesDescriptions));
