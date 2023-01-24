@@ -83,7 +83,6 @@ public static class BdmsContextExtensions
         List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> geologicalStratigraphyIds = context.Stratigraphies.Where(c => c.KindId == 3000).Select(s => s.Id).ToList();
 
-
         // Seed Boreholes
         var borehole_ids = 1000;
         var boreholeRange = Enumerable.Range(borehole_ids, 30);
@@ -124,9 +123,9 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.QtElevationId, f => f.PickRandom(qtElevationIds).OrNull(f, .1f))
            .RuleFor(o => o.QtElevation, _ => default!)
            .RuleFor(o => o.ProjectName, f => f.Company.CatchPhrase().OrNull(f, .1f))
-           .RuleFor(o => o.Country,  f => f.Address.Country().OrNull(f, 0.01f))
-           .RuleFor(o => o.Canton,  f => f.Address.State().OrNull(f, 0.01f))
-           .RuleFor(o => o.Municipality,  f => f.Address.City().OrNull(f, 0.01f))
+           .RuleFor(o => o.Country, f => f.Address.Country().OrNull(f, 0.01f))
+           .RuleFor(o => o.Canton, f => f.Address.State().OrNull(f, 0.01f))
+           .RuleFor(o => o.Municipality, f => f.Address.City().OrNull(f, 0.01f))
            .RuleFor(o => o.DrillingMethodId, f => f.PickRandom(drillingMethodIds).OrNull(f, .05f))
            .RuleFor(o => o.DrillingMethod, _ => default!)
            .RuleFor(o => o.DrillingDate, f => DateOnly.FromDateTime(f.Date.Past().ToUniversalTime()))
@@ -428,7 +427,7 @@ public static class BdmsContextExtensions
 
         var fakelithologicalDescriptions = new Faker<LithologicalDescription>()
             .StrictMode(true)
-            .RuleFor(o => o.FromDepth, f => lithologicalDescription_ids % 10 * 10)
+            .RuleFor(o => o.FromDepth, f => (lithologicalDescription_ids % 10) * 10)
             .RuleFor(o => o.ToDepth, f => ((lithologicalDescription_ids % 10) + 1) * 10)
             .RuleFor(o => o.QtDescriptionId, f => f.PickRandom(qtDescriptionIds).OrNull(f, .05f))
             .RuleFor(o => o.QtDescription, _ => default!)
@@ -453,8 +452,8 @@ public static class BdmsContextExtensions
             var range = Enumerable.Range(start, 10);
             context.LithologicalDescriptions.AddRange(range.Select(SeededLithologicalDescriptions));
         }
-        context.SaveChanges();
 
+        context.SaveChanges();
 
         // Sync all database sequences
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.workgroups', 'id_wgp'), {workgroup_ids - 1})");
