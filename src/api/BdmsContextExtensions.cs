@@ -435,6 +435,40 @@ public static class BdmsContextExtensions
 
         context.SaveChanges();
 
+        // Seed faciesDescriptions
+        var faciesDescription_ids = 10_000;
+        var faciesDescriptionRange = Enumerable.Range(faciesDescription_ids, 500);
+
+        var fakeFaciesDescriptions = new Faker<FaciesDescription>()
+            .StrictMode(true)
+            .RuleFor(o => o.FromDepth, f => (faciesDescription_ids % 10) * 10)
+            .RuleFor(o => o.ToDepth, f => ((faciesDescription_ids % 10) + 1) * 10)
+            .RuleFor(o => o.QtDescriptionId, f => f.PickRandom(qtDescriptionIds).OrNull(f, .05f))
+            .RuleFor(o => o.QtDescription, _ => default!)
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(faciesDescription_ids, 10_000))
+            .RuleFor(o => o.Stratigraphy, _ => default!)
+            .RuleFor(o => o.Description, f => f.Random.Words(3).OrNull(f, .05f))
+            .RuleFor(o => o.Creation, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Update, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!)
+            .RuleFor(o => o.IsLast, f => faciesDescription_ids % 10 == 9)
+            .RuleFor(o => o.Id, f => faciesDescription_ids++);
+
+        FaciesDescription SeededFaciesDescriptions(int seed) => fakeFaciesDescriptions.UseSeed(seed).Generate();
+
+        for (int i = 0; i < stratigraphyRange.Count; i++)
+        {
+            // Add 10 facies descriptions per facies description profile.
+            var start = (i * 10) + 1;
+            var range = Enumerable.Range(start, 10);
+            context.FaciesDescriptions.AddRange(range.Select(SeededFaciesDescriptions));
+        }
+
+        context.SaveChanges();
+
         // Sync all database sequences
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.workgroups', 'id_wgp'), {workgroup_ids - 1})");
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.borehole', 'id_bho'), {borehole_ids - 1})");
