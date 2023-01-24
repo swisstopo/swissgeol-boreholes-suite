@@ -4,15 +4,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BDMS.Models;
 
 /// <summary>
-/// Represents a lithological description entity in the database.
+/// Represents a facies description entity in the database.
 /// </summary>
-[Table("lithological_description")]
-public class LithologicalDescription : ILayerDescription
+[Table("facies_description")]
+public class FaciesDescription : ILayerDescription
 {
     /// <summary>
-    /// Gets or sets the <see cref="LithologicalDescription"/>'s id.
+    /// Gets or sets the <see cref="FaciesDescription"/>'s id.
     /// </summary>
-    [Column("id_ldp")]
+    [Column("id_fac")]
     [Key]
     public int Id { get; set; }
 
@@ -24,53 +24,53 @@ public class LithologicalDescription : ILayerDescription
     public Stratigraphy? Stratigraphy { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the <see cref="User"/> who created the <see cref="LithologicalDescription"/>.
+    /// Gets or sets the id of the <see cref="User"/> who created the <see cref="FaciesDescription"/>.
     /// </summary>
     [Column("creator")]
     public int CreatedById { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="User"/> who created the <see cref="LithologicalDescription"/>.
+    /// Gets or sets the <see cref="User"/> who created the <see cref="FaciesDescription"/>.
     /// </summary>
     public User? CreatedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="LithologicalDescription"/>'s creation date.
+    /// Gets or sets the <see cref="FaciesDescription"/>'s creation date.
     /// </summary>
     [Column("creation")]
     public DateTime? Creation { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the <see cref="User"/> who updated the <see cref="LithologicalDescription"/>.
+    /// Gets or sets the id of the <see cref="User"/> who updated the <see cref="FaciesDescription"/>.
     /// </summary>
     [Column("updater")]
     public int UpdatedById { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="User"/> who updated the <see cref="LithologicalDescription"/>.
+    /// Gets or sets the <see cref="User"/> who updated the <see cref="FaciesDescription"/>.
     /// </summary>
     public User? UpdatedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="LithologicalDescription"/>'s update date.
+    /// Gets or sets the <see cref="FaciesDescription"/>'s update date.
     /// </summary>
     [Column("update")]
     public DateTime? Update { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="LithologicalDescription"/>'s description.
+    /// Gets or sets the <see cref="FaciesDescription"/>'s description.
     /// </summary>
     [Column("description")]
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the quality of the <see cref="LithologicalDescription"/>'s description.
+    /// Gets or sets the id of the quality of the <see cref="FaciesDescription"/>'s description.
     /// </summary>
     [Column("qt_description_id")]
     public int? QtDescriptionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the quality of the <see cref="LithologicalDescription"/>'s description.
+    /// Gets or sets the quality of the <see cref="FaciesDescription"/>'s description.
     /// </summary>
     public Codelist? QtDescription { get; set; }
 
