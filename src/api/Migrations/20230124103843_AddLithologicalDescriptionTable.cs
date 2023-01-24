@@ -5,30 +5,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace BDMS.Migrations;
 
-public partial class AddLithologicalDescription : Migration
+public partial class AddLithologicalDescriptionTable : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
     {
-        migrationBuilder.CreateTable(
-            name: "lithological_description_profile",
-            schema: "bdms",
-            columns: table => new
-            {
-                id = table.Column<int>(type: "integer", nullable: false)
-                    .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                id_sty = table.Column<int>(type: "integer", nullable: true),
-            },
-            constraints: table =>
-            {
-                table.PrimaryKey("PK_lithological_description_profile", x => x.id);
-                table.ForeignKey(
-                    name: "FK_lithological_description_profile_stratigraphy_id_sty",
-                    column: x => x.id_sty,
-                    principalSchema: "bdms",
-                    principalTable: "stratigraphy",
-                    principalColumn: "id_sty");
-            });
-
         migrationBuilder.CreateTable(
             name: "lithological_description",
             schema: "bdms",
@@ -36,15 +16,15 @@ public partial class AddLithologicalDescription : Migration
             {
                 id = table.Column<int>(type: "integer", nullable: false)
                     .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                id_ldp = table.Column<int>(type: "integer", nullable: true),
+                id_sty_fk = table.Column<int>(type: "integer", nullable: true),
                 creator = table.Column<int>(type: "integer", nullable: false),
                 creation = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 updater = table.Column<int>(type: "integer", nullable: false),
                 update = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 description = table.Column<string>(type: "text", nullable: true),
                 qt_description_id = table.Column<int>(type: "integer", nullable: true),
-                depth_from_lay = table.Column<double>(type: "double precision", nullable: true),
-                depth_to_lay = table.Column<double>(type: "double precision", nullable: true),
+                depth_from = table.Column<double>(type: "double precision", nullable: true),
+                depth_to = table.Column<double>(type: "double precision", nullable: true),
                 is_last = table.Column<bool>(type: "boolean", nullable: true),
             },
             constraints: table =>
@@ -57,11 +37,11 @@ public partial class AddLithologicalDescription : Migration
                     principalTable: "codelist",
                     principalColumn: "id_cli");
                 table.ForeignKey(
-                    name: "FK_lithological_description_lithological_description_profile_i~",
-                    column: x => x.id_ldp,
+                    name: "FK_lithological_description_stratigraphy_id_sty_fk",
+                    column: x => x.id_sty_fk,
                     principalSchema: "bdms",
-                    principalTable: "lithological_description_profile",
-                    principalColumn: "id");
+                    principalTable: "stratigraphy",
+                    principalColumn: "id_sty");
                 table.ForeignKey(
                     name: "FK_lithological_description_users_creator",
                     column: x => x.creator,
@@ -85,10 +65,10 @@ public partial class AddLithologicalDescription : Migration
             column: "creator");
 
         migrationBuilder.CreateIndex(
-            name: "IX_lithological_description_id_ldp",
+            name: "IX_lithological_description_id_sty_fk",
             schema: "bdms",
             table: "lithological_description",
-            column: "id_ldp");
+            column: "id_sty_fk");
 
         migrationBuilder.CreateIndex(
             name: "IX_lithological_description_qt_description_id",
@@ -101,22 +81,12 @@ public partial class AddLithologicalDescription : Migration
             schema: "bdms",
             table: "lithological_description",
             column: "updater");
-
-        migrationBuilder.CreateIndex(
-            name: "IX_lithological_description_profile_id_sty",
-            schema: "bdms",
-            table: "lithological_description_profile",
-            column: "id_sty");
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.DropTable(
             name: "lithological_description",
-            schema: "bdms");
-
-        migrationBuilder.DropTable(
-            name: "lithological_description_profile",
             schema: "bdms");
     }
 }

@@ -121,4 +121,9 @@ public class Stratigraphy
     /// Gets the <see cref="Layer"/>s associated with the <see cref="Stratigraphy"/>.
     /// </summary>
     public ICollection<Layer> Layers { get; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologicalDescription"/>s associated with the <see cref="Stratigraphy"/>.
+    /// </summary>
+    public ICollection<LithologicalDescription> LithologicalDescriptions { get; }
 }

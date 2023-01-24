@@ -17,15 +17,15 @@ public class LithologicalDescription
     public int Id { get; set; }
 
     /// <summary>
-    /// Gets or sets foreign key for the <see cref="LithologicalDescriptionProfile"/> of the <see cref="LithologicalDescription"/>.
+    /// Gets or sets foreign key for the <see cref="Stratigraphy"/> of the <see cref="LithologicalDescription"/>.
     /// </summary>
-    [Column("id_ldp")]
-    public int? LithologicalDescriptionProfileId { get; set; }
+    [Column("id_sty_fk")]
+    public int? StratigraphyId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="LithologicalDescriptionProfile"/> of the <see cref="LithologicalDescription"/>.
+    /// Gets or sets the <see cref="Stratigraphy"/> of the <see cref="LithologicalDescription"/>.
     /// </summary>
-    public LithologicalDescriptionProfile? LithologicalDescriptionProfile { get; set; }
+    public Stratigraphy? Stratigraphy { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="User"/> who created the <see cref="LithologicalDescription"/>.
@@ -39,7 +39,7 @@ public class LithologicalDescription
     public User? CreatedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s creation date.
+    /// Gets or sets the <see cref="LithologicalDescription"/>'s creation date.
     /// </summary>
     [Column("creation")]
     public DateTime? Creation { get; set; }
@@ -81,17 +81,17 @@ public class LithologicalDescription
     /// <summary>
     /// Gets or sets the <see cref="LithologicalDescription"/>'s upper depth.
     /// </summary>
-    [Column("depth_from_lay")]
+    [Column("depth_from")]
     public double? FromDepth { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="LithologicalDescription"/>'s lower depth.
     /// </summary>
-    [Column("depth_to_lay")]
+    [Column("depth_to")]
     public double? ToDepth { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the <see cref="Layer"/> is the last layer.
+    /// Gets or sets whether the <see cref="LithologicalDescription"/> is the last layer.
     /// </summary>
     [Column("is_last")]
     public bool? IsLast { get; set; }

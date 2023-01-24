@@ -887,23 +887,23 @@ namespace BDMS.Migrations
 
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
-                        .HasColumnName("depth_from_lay");
+                        .HasColumnName("depth_from");
 
                     b.Property<bool?>("IsLast")
                         .HasColumnType("boolean")
                         .HasColumnName("is_last");
 
-                    b.Property<int?>("LithologicalDescriptionProfileId")
-                        .HasColumnType("integer")
-                        .HasColumnName("id_ldp");
-
                     b.Property<int?>("QtDescriptionId")
                         .HasColumnType("integer")
                         .HasColumnName("qt_description_id");
 
+                    b.Property<int?>("StratigraphyId")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_sty_fk");
+
                     b.Property<double?>("ToDepth")
                         .HasColumnType("double precision")
-                        .HasColumnName("depth_to_lay");
+                        .HasColumnName("depth_to");
 
                     b.Property<DateTime?>("Update")
                         .HasColumnType("timestamp with time zone")
@@ -917,33 +917,13 @@ namespace BDMS.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("LithologicalDescriptionProfileId");
-
                     b.HasIndex("QtDescriptionId");
+
+                    b.HasIndex("StratigraphyId");
 
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("lithological_description", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LithologicalDescriptionProfile", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("StratigraphyId")
-                        .HasColumnType("integer")
-                        .HasColumnName("id_sty");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StratigraphyId");
-
-                    b.ToTable("lithological_description_profile", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
@@ -1616,13 +1596,13 @@ namespace BDMS.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BDMS.Models.LithologicalDescriptionProfile", "LithologicalDescriptionProfile")
-                        .WithMany("LithologicalDescriptions")
-                        .HasForeignKey("LithologicalDescriptionProfileId");
-
                     b.HasOne("BDMS.Models.Codelist", "QtDescription")
                         .WithMany()
                         .HasForeignKey("QtDescriptionId");
+
+                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
+                        .WithMany("LithologicalDescriptions")
+                        .HasForeignKey("StratigraphyId");
 
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
                         .WithMany()
@@ -1632,20 +1612,11 @@ namespace BDMS.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("LithologicalDescriptionProfile");
-
                     b.Navigation("QtDescription");
 
-                    b.Navigation("UpdatedBy");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LithologicalDescriptionProfile", b =>
-                {
-                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
-                        .WithMany()
-                        .HasForeignKey("StratigraphyId");
-
                     b.Navigation("Stratigraphy");
+
+                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
@@ -1746,14 +1717,11 @@ namespace BDMS.Migrations
                     b.Navigation("LayerCodelists");
                 });
 
-            modelBuilder.Entity("BDMS.Models.LithologicalDescriptionProfile", b =>
-                {
-                    b.Navigation("LithologicalDescriptions");
-                });
-
             modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
                 {
                     b.Navigation("Layers");
+
+                    b.Navigation("LithologicalDescriptions");
                 });
 
             modelBuilder.Entity("BDMS.Models.User", b =>

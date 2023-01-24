@@ -401,29 +401,9 @@ public static class BdmsContextExtensions
         context.Workflows.AddRange(workflowRange.Select(SeededWorkflows));
         context.SaveChanges();
 
-        // Seed lithologicalDescriptionProfiles
-        var lithologicalDescriptionProfile_ids = 8000;
-        var lithologicalDescriptionProfileRange = Enumerable.Range(lithologicalDescriptionProfile_ids, 50).ToList();
-        var fakelithologicalDescriptionProfiles = new Faker<LithologicalDescriptionProfile>()
-            .StrictMode(true)
-            .RuleFor(o => o.Id, f => lithologicalDescriptionProfile_ids++)
-            .RuleFor(o => o.StratigraphyId, f => f.PickRandom(stratigraphyRange).OrNull(f, .05f))
-            .RuleFor(o => o.Stratigraphy, _ => default!)
-            .RuleFor(o => o.LithologicalDescriptions, _ => default!);
-
-        LithologicalDescriptionProfile SeededLithologicalDescriptionProfiles(int seed) => fakelithologicalDescriptionProfiles.UseSeed(seed).Generate();
-        context.LithologicalDescriptionProfiles.AddRange(lithologicalDescriptionProfileRange.Select(SeededLithologicalDescriptionProfiles));
-        context.SaveChanges();
-
         // Seed lithologicalDescriptions
         var lithologicalDescription_ids = 9000;
         var lithologicalDescriptionRange = Enumerable.Range(lithologicalDescription_ids, 500);
-
-        // Each ten lithological descriptions should be associated with the one lithological description profile.
-        int GetLithologicalDescriptionProfileId(int currentLithologicalDescriptionId)
-        {
-            return 8000 + (int)Math.Floor((double)((currentLithologicalDescriptionId - 9000) / 10));
-        }
 
         var fakelithologicalDescriptions = new Faker<LithologicalDescription>()
             .StrictMode(true)
@@ -431,8 +411,8 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.ToDepth, f => ((lithologicalDescription_ids % 10) + 1) * 10)
             .RuleFor(o => o.QtDescriptionId, f => f.PickRandom(qtDescriptionIds).OrNull(f, .05f))
             .RuleFor(o => o.QtDescription, _ => default!)
-            .RuleFor(o => o.LithologicalDescriptionProfileId, f => GetLithologicalDescriptionProfileId(lithologicalDescription_ids))
-            .RuleFor(o => o.LithologicalDescriptionProfile, _ => default!)
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(lithologicalDescription_ids))
+            .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.Description, f => f.Random.Words(3).OrNull(f, .05f))
             .RuleFor(o => o.Creation, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
             .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
@@ -445,7 +425,7 @@ public static class BdmsContextExtensions
 
         LithologicalDescription SeededLithologicalDescriptions(int seed) => fakelithologicalDescriptions.UseSeed(seed).Generate();
 
-        for (int i = 0; i < lithologicalDescriptionProfileRange.Count; i++)
+        for (int i = 0; i < stratigraphyRange.Count; i++)
         {
             // Add 10 lithological descriptions per lithological description profile.
             var start = (i * 10) + 1;
