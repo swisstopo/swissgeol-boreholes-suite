@@ -8,7 +8,7 @@ namespace BDMS.Models;
 /// Represents a layer entity in the database.
 /// </summary>
 [Table("layer")]
-public class Layer
+public class Layer : ILayerDescription
 {
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s id.
@@ -16,15 +16,11 @@ public class Layer
     [Column("id_lay")]
     public int Id { get; set; }
 
-    /// <summary>
-    /// Gets or sets foreign key for the <see cref="Stratigraphy"/> of the <see cref="Layer"/>.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_sty_fk")]
     public int? StratigraphyId { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/> of the <see cref="Layer"/>.
-    /// </summary>
+    /// <inheritdoc />
     public Stratigraphy? Stratigraphy { get; set; }
 
     /// <summary>
@@ -67,15 +63,11 @@ public class Layer
     [Column("undefined_lay")]
     public bool? IsUndefined { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s upper depth.
-    /// </summary>
+    /// <inheritdoc />
     [Column("depth_from_lay")]
     public double? FromDepth { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s lower depth.
-    /// </summary>
+    /// <inheritdoc />
     [Column("depth_to_lay")]
     public double? ToDepth { get; set; }
 
@@ -91,9 +83,7 @@ public class Layer
     [Column("facies_description_lay")]
     public string? DescriptionFacies { get; set; }
 
-    /// <summary>
-    /// Gets or sets whether the <see cref="Layer"/> is the last layer.
-    /// </summary>
+    /// <inheritdoc />
     [Column("last_lay")]
     public bool? IsLast { get; set; }
 

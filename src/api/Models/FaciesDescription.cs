@@ -7,7 +7,7 @@ namespace BDMS.Models;
 /// Represents a facies description entity in the database.
 /// </summary>
 [Table("facies_description")]
-public class FaciesDescription
+public class FaciesDescription : ILayerDescription
 {
     /// <summary>
     /// Gets or sets the <see cref="FaciesDescription"/>'s id.
@@ -16,15 +16,11 @@ public class FaciesDescription
     [Key]
     public int Id { get; set; }
 
-    /// <summary>
-    /// Gets or sets foreign key for the <see cref="Stratigraphy"/> of the <see cref="FaciesDescription"/>.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_sty_fk")]
     public int? StratigraphyId { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/> of the <see cref="FaciesDescription"/>.
-    /// </summary>
+    /// <inheritdoc />
     public Stratigraphy? Stratigraphy { get; set; }
 
     /// <summary>
@@ -78,21 +74,15 @@ public class FaciesDescription
     /// </summary>
     public Codelist? QtDescription { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="FaciesDescription"/>'s upper depth.
-    /// </summary>
+    /// <inheritdoc />
     [Column("depth_from")]
     public double? FromDepth { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="FaciesDescription"/>'s lower depth.
-    /// </summary>
+    /// <inheritdoc />
     [Column("depth_to")]
     public double? ToDepth { get; set; }
 
-    /// <summary>
-    /// Gets or sets whether the <see cref="FaciesDescription"/> is the last facies description.
-    /// </summary>
+    /// <inheritdoc />
     [Column("is_last")]
     public bool? IsLast { get; set; }
 }
