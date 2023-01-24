@@ -81,6 +81,8 @@ public static class BdmsContextExtensions
         List<int> kirostIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
+        List<int> geologicalStratigraphyIds = context.Stratigraphies.Where(c => c.KindId == 3000).Select(s => s.Id).ToList();
+
 
         // Seed Boreholes
         var borehole_ids = 1000;
@@ -399,6 +401,60 @@ public static class BdmsContextExtensions
         Workflow SeededWorkflows(int seed) => fakeWorkflows.UseSeed(seed).Generate();
         context.Workflows.AddRange(workflowRange.Select(SeededWorkflows));
         context.SaveChanges();
+
+        // Seed lithologicalDescriptionProfiles
+        var lithologicalDescriptionProfile_ids = 8000;
+        var lithologicalDescriptionProfileRange = Enumerable.Range(lithologicalDescriptionProfile_ids, 50).ToList();
+        var fakelithologicalDescriptionProfiles = new Faker<LithologicalDescriptionProfile>()
+            .StrictMode(true)
+            .RuleFor(o => o.Id, f => lithologicalDescriptionProfile_ids++)
+            .RuleFor(o => o.StratigraphyId, f => f.PickRandom(stratigraphyRange).OrNull(f, .05f))
+            .RuleFor(o => o.Stratigraphy, _ => default!)
+            .RuleFor(o => o.LithologicalDescriptions, _ => default!);
+
+        LithologicalDescriptionProfile SeededLithologicalDescriptionProfiles(int seed) => fakelithologicalDescriptionProfiles.UseSeed(seed).Generate();
+        context.LithologicalDescriptionProfiles.AddRange(lithologicalDescriptionProfileRange.Select(SeededLithologicalDescriptionProfiles));
+        context.SaveChanges();
+
+        // Seed lithologicalDescriptions
+        var lithologicalDescription_ids = 9000;
+        var lithologicalDescriptionRange = Enumerable.Range(lithologicalDescription_ids, 500);
+
+        // Each ten lithological descriptions should be associated with the one lithological description profile.
+        int GetLithologicalDescriptionProfileId(int currentLithologicalDescriptionId)
+        {
+            return 8000 + (int)Math.Floor((double)((currentLithologicalDescriptionId - 9000) / 10));
+        }
+
+        var fakelithologicalDescriptions = new Faker<LithologicalDescription>()
+            .StrictMode(true)
+            .RuleFor(o => o.FromDepth, f => lithologicalDescription_ids % 10 * 10)
+            .RuleFor(o => o.ToDepth, f => ((lithologicalDescription_ids % 10) + 1) * 10)
+            .RuleFor(o => o.QtDescriptionId, f => f.PickRandom(qtDescriptionIds).OrNull(f, .05f))
+            .RuleFor(o => o.QtDescription, _ => default!)
+            .RuleFor(o => o.LithologicalDescriptionProfileId, f => GetLithologicalDescriptionProfileId(lithologicalDescription_ids))
+            .RuleFor(o => o.LithologicalDescriptionProfile, _ => default!)
+            .RuleFor(o => o.Description, f => f.Random.Words(3).OrNull(f, .05f))
+            .RuleFor(o => o.Creation, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Update, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!)
+            .RuleFor(o => o.IsLast, f => lithologicalDescription_ids % 10 == 9)
+            .RuleFor(o => o.Id, f => lithologicalDescription_ids++);
+
+        LithologicalDescription SeededLithologicalDescriptions(int seed) => fakelithologicalDescriptions.UseSeed(seed).Generate();
+
+        for (int i = 0; i < lithologicalDescriptionProfileRange.Count; i++)
+        {
+            // Add 10 lithological descriptions per lithological description profile.
+            var start = (i * 10) + 1;
+            var range = Enumerable.Range(start, 10);
+            context.LithologicalDescriptions.AddRange(range.Select(SeededLithologicalDescriptions));
+        }
+        context.SaveChanges();
+
 
         // Sync all database sequences
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.workgroups', 'id_wgp'), {workgroup_ids - 1})");
