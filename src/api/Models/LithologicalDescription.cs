@@ -12,7 +12,7 @@ public class LithologicalDescription : ILayerDescription
     /// <summary>
     /// Gets or sets the <see cref="LithologicalDescription"/>'s id.
     /// </summary>
-    [Column("id")]
+    [Column("id_ldp")]
     [Key]
     public int Id { get; set; }
 

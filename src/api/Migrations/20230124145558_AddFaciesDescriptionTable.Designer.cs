@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20230124130846_AddFaciesDescriptionTable")]
+    [Migration("20230124145558_AddFaciesDescriptionTable")]
     partial class AddFaciesDescriptionTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -933,7 +933,7 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnName("id_ldp");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 

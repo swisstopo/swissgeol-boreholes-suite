@@ -9,6 +9,12 @@ public partial class AddFaciesDescriptionTable : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
     {
+        migrationBuilder.RenameColumn(
+            name: "id",
+            schema: "bdms",
+            table: "lithological_description",
+            newName: "id_ldp");
+
         migrationBuilder.CreateTable(
             name: "facies_description",
             schema: "bdms",
@@ -88,5 +94,11 @@ public partial class AddFaciesDescriptionTable : Migration
         migrationBuilder.DropTable(
             name: "facies_description",
             schema: "bdms");
+
+        migrationBuilder.RenameColumn(
+            name: "id_ldp",
+            schema: "bdms",
+            table: "lithological_description",
+            newName: "id");
     }
 }
