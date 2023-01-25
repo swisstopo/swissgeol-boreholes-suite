@@ -1,5 +1,7 @@
 ﻿using BDMS.Models;
 using Bogus;
+using EFCore.BulkExtensions;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using System.Collections.ObjectModel;
@@ -20,6 +22,8 @@ public static class BdmsContextExtensions
     {
         using var transaction = context.Database.BeginTransaction();
 
+        var bulkConfig = new BulkConfig { SqlBulkCopyOptions = SqlBulkCopyOptions.KeepIdentity };
+
         // Set Bogus Data System Clock
         Bogus.DataSets.Date.SystemClock = () => DateTime.Parse("01.01.2022 00:00:00", new CultureInfo("de_CH", false));
 
@@ -36,8 +40,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Settings, f => null)
            .RuleFor(o => o.Boreholes, _ => default!);
         Workgroup SeededWorkgroups(int seed) => fakeWorkgroups.UseSeed(seed).Generate();
-        context.Workgroups.AddRange(workgroupRange.Select(SeededWorkgroups));
-        context.SaveChanges();
+        context.BulkInsert(workgroupRange.Select(SeededWorkgroups).ToList(), bulkConfig);
 
         // ranges for existing tables
         var userRange = Enumerable.Range(1, 5);
@@ -87,7 +90,7 @@ public static class BdmsContextExtensions
         var borehole_ids = 1000;
         var boreholeRange = Enumerable.Range(borehole_ids, 10000).ToList();
         var fakeBoreholes = new Faker<Borehole>()
-           .StrictMode(true)
+           .StrictMode(false)
            .RuleFor(o => o.Id, f => borehole_ids++)
            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
            .RuleFor(o => o.CreatedBy, _ => default!)
@@ -173,8 +176,7 @@ public static class BdmsContextExtensions
            });
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
-        context.Boreholes.AddRange(boreholeRange.Select(SeededBoreholes));
-        context.SaveChanges();
+        context.BulkInsert(boreholeRange.Select(SeededBoreholes).ToList(), bulkConfig);
 
         // Seed BoringEvents
         var event_ids = 3000;
@@ -189,8 +191,7 @@ public static class BdmsContextExtensions
                .RuleFor(o => o.Payload, f => null);
 
         UserEvent SeededEvents(int seed) => fakeEvents.UseSeed(seed).Generate();
-        context.BoringEvents.AddRange(eventRange.Select(SeededEvents));
-        context.SaveChanges();
+        context.BulkInsert(eventRange.Select(SeededEvents).ToList(), bulkConfig);
 
         // Seed feedback
         var feedback_ids = 4000;
@@ -205,8 +206,7 @@ public static class BdmsContextExtensions
                .RuleFor(o => o.IsFrw, f => f.Random.Bool().OrNull(f, .1f));
 
         Feedback Seededfeedbacks(int seed) => fakefeedbacks.UseSeed(seed).Generate();
-        context.Feedbacks.AddRange(feedbackRange.Select(Seededfeedbacks));
-        context.SaveChanges();
+        context.BulkInsert(feedbackRange.Select(Seededfeedbacks).ToList(), bulkConfig);
 
         // Seed file
         var filesUserRange = Enumerable.Range(1, 6); // Include dedicated user that only has file
@@ -224,8 +224,7 @@ public static class BdmsContextExtensions
                .RuleFor(o => o.Conf, f => null);
 
         Models.File Seededfiles(int seed) => fakefiles.UseSeed(seed).Generate();
-        context.Files.AddRange(fileRange.Select(Seededfiles));
-        context.SaveChanges();
+        context.BulkInsert(fileRange.Select(Seededfiles).ToList(), bulkConfig);
 
         // Seed borehole_files
         var boreholeFileSeeds = Enumerable.Range(0, 30);
@@ -245,11 +244,13 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Public, f => f.Random.Bool(.9f));
 
         BoreholeFile SeededBoreholeFiles(int seed) => fakeBoreholeFiles.UseSeed(seed).Generate();
-        context.BoreholeFiles.AddRange(boreholeFileSeeds
+
+        var filesToInsert = boreholeFileSeeds
             .Select(SeededBoreholeFiles)
             .GroupBy(bf => new { bf.BoreholeId, bf.FileId })
-            .Select(bf => bf.FirstOrDefault()));
-        context.SaveChanges();
+            .Select(bf => bf.FirstOrDefault())
+            .ToList();
+        context.BulkInsert<BoreholeFile>(filesToInsert, bulkConfig);
 
         // Seed stratigraphy
         var stratigraphy_ids = 6000;
@@ -278,8 +279,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Layers, _ => default!);
 
         Stratigraphy Seededstratigraphys(int seed) => fakeStratigraphies.UseSeed(seed).Generate();
-        context.Stratigraphies.AddRange(stratigraphyRange.Select(Seededstratigraphys));
-        context.SaveChanges();
+        context.BulkInsert(stratigraphyRange.Select(Seededstratigraphys).ToList(), bulkConfig);
 
         // Seed layers
         var layer_ids = 7000;
@@ -372,15 +372,16 @@ public static class BdmsContextExtensions
 
         Layer SeededLayers(int seed) => fakelayers.UseSeed(seed).Generate();
 
+        var layersToInsert = new List<Layer>();
         for (int i = 0; i < stratigraphyRange.Count; i++)
         {
             // Add 10 layers per stratigraphy
             var start = (i * 10) + 1;
             var range = Enumerable.Range(start, 10);  // ints in range must be different on each loop, so that properties are not repeated in dataset.
-            context.Layers.AddRange(range.Select(SeededLayers));
+            layersToInsert.AddRange(range.Select(SeededLayers));
         }
 
-        context.SaveChanges();
+        context.BulkInsert(layersToInsert, bulkConfig);
 
         // Seed workflows
         var workflow_ids = 5000;
@@ -398,8 +399,7 @@ public static class BdmsContextExtensions
                .RuleFor(o => o.Finished, f => f.Date.Between(new DateTime(2005, 2, 1).ToUniversalTime(), new DateTime(2022, 1, 1).ToUniversalTime()));
 
         Workflow SeededWorkflows(int seed) => fakeWorkflows.UseSeed(seed).Generate();
-        context.Workflows.AddRange(workflowRange.Select(SeededWorkflows));
-        context.SaveChanges();
+        context.BulkInsert(workflowRange.Select(SeededWorkflows).ToList(), bulkConfig);
 
         // Seed lithologicalDescriptions
         var lithologicalDescription_ids = 9000;
@@ -425,15 +425,16 @@ public static class BdmsContextExtensions
 
         LithologicalDescription SeededLithologicalDescriptions(int seed) => fakelithologicalDescriptions.UseSeed(seed).Generate();
 
+        var lithologicalDescriptionsToInsert = new List<LithologicalDescription>(stratigraphyRange.Count * 10);
         for (int i = 0; i < stratigraphyRange.Count; i++)
         {
-            // Add 10 lithological descriptions per lithological description profile.
+            // Add 10 lithological descriptions per stratigraphy profile.
             var start = (i * 10) + 1;
             var range = Enumerable.Range(start, 10);
-            context.LithologicalDescriptions.AddRange(range.Select(SeededLithologicalDescriptions));
+            lithologicalDescriptionsToInsert.AddRange(range.Select(SeededLithologicalDescriptions));
         }
 
-        context.SaveChanges();
+        context.BulkInsert(lithologicalDescriptionsToInsert, bulkConfig);
 
         // Seed faciesDescriptions
         var faciesDescription_ids = 10_000;
@@ -459,15 +460,16 @@ public static class BdmsContextExtensions
 
         FaciesDescription SeededFaciesDescriptions(int seed) => fakeFaciesDescriptions.UseSeed(seed).Generate();
 
+        var faciesDescriptionsToInsert = new List<FaciesDescription>(stratigraphyRange.Count * 10);
         for (int i = 0; i < stratigraphyRange.Count; i++)
         {
             // Add 10 facies descriptions per stratigraphy.
             var start = (i * 10) + 1;
             var range = Enumerable.Range(start, 10);
-            context.FaciesDescriptions.AddRange(range.Select(SeededFaciesDescriptions));
+            faciesDescriptionsToInsert.AddRange(range.Select(SeededFaciesDescriptions));
         }
 
-        context.SaveChanges();
+        context.BulkInsert(faciesDescriptionsToInsert, bulkConfig);
 
         // Sync all database sequences
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.workgroups', 'id_wgp'), {workgroup_ids - 1})");
