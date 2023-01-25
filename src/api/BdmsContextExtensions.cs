@@ -283,7 +283,6 @@ public static class BdmsContextExtensions
 
         // Seed layers
         var layer_ids = 7000;
-        var layerRange = Enumerable.Range(layer_ids, 150000);
 
         // Each ten layers should be associated with the one stratigraphy or casing.
         int GetStratigraphyOrCasingId(int currentLayerId, int startId)
@@ -403,8 +402,6 @@ public static class BdmsContextExtensions
 
         // Seed lithologicalDescriptions
         var lithologicalDescription_ids = 9000;
-        var lithologicalDescriptionRange = Enumerable.Range(lithologicalDescription_ids, 500);
-
         var fakelithologicalDescriptions = new Faker<LithologicalDescription>()
             .StrictMode(true)
             .RuleFor(o => o.FromDepth, f => (lithologicalDescription_ids % 10) * 10)
@@ -438,8 +435,6 @@ public static class BdmsContextExtensions
 
         // Seed faciesDescriptions
         var faciesDescription_ids = 10_000;
-        var faciesDescriptionRange = Enumerable.Range(faciesDescription_ids, 500);
-
         var fakeFaciesDescriptions = new Faker<FaciesDescription>()
             .StrictMode(true)
             .RuleFor(o => o.FromDepth, f => (faciesDescription_ids % 10) * 10)
