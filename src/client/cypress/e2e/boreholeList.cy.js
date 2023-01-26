@@ -23,39 +23,38 @@ describe("Borehole list tests", () => {
     cy.wait("@borehole");
 
     // contains names
-    cy.contains("td", "Aaliyah Ebert");
-    cy.contains("td", "Aaron O'Hara");
-    cy.contains("td", "Abagail Boyer");
-    cy.contains("td", "Abdullah Johns");
-    cy.contains("td", "Abigale Leannon");
+    cy.contains("td", "Aaliyah Baumbach");
+    cy.contains("td", "Aaron Kuhlman");
+    cy.contains("td", "Abagail Hintz");
+    cy.contains("td", "Abdullah Powlowski");
 
     // contains date (restriction date)
-    cy.contains("td", "03.10.2022");
+    cy.contains("td", "24.06.2022");
 
     // contains total depth
-    cy.contains("td", "1'060.4425068294827 m");
-    cy.contains("td", "987.026608077356 m");
-    cy.contains("td", "946.7183989224576 m");
+    cy.contains("td", "1'877.0624342733354 m");
+    cy.contains("td", "1'836.754225118437 m");
+    cy.contains("td", "1'803.6465355212085 m");
 
     // sort by name descending
     cy.contains("div", "Original name").click();
     cy.wait("@borehole");
-    cy.get("tbody").children().eq(0).contains("td", "Zula Thiel");
-    cy.get("tbody").children().eq(1).contains("td", "Zula Hand");
-    cy.get("tbody").children().eq(2).contains("td", "Zula Hand");
+    cy.get("tbody").children().eq(0).contains("td", "Zula Mills");
+    cy.get("tbody").children().eq(1).contains("td", "Zula Crona");
+    cy.get("tbody").children().eq(2).contains("td", "Zula Crona");
 
     // sort by total depth
     cy.contains("div", "Total depth MD [m]").click();
     cy.wait("@borehole");
-    cy.get("tbody").children().eq(0).contains("td", "15.928386718001397 m");
-    cy.get("tbody").children().eq(1).contains("td", "16.06297586861205 m");
-    cy.get("tbody").children().eq(2).contains("td", "16.197565019222704 m");
+    cy.get("tbody").children().eq(0).contains("td", "0.0058989971903613755 m");
+    cy.get("tbody").children().eq(1).contains("td", "0.1404881478010156 m");
+    cy.get("tbody").children().eq(2).contains("td", "0.27507729841166983 m");
 
     cy.contains("div", "Total depth MD [m]").click();
     cy.wait("@borehole");
-    cy.get("tbody").children().eq(0).contains("td", "1'989.213681774779 m");
-    cy.get("tbody").children().eq(1).contains("td", "1'989.0790926241684 m");
-    cy.get("tbody").children().eq(2).contains("td", "1'988.9445034735577 m");
+    cy.get("tbody").children().eq(0).contains("td", "1'999.6694261206637 m");
+    cy.get("tbody").children().eq(1).contains("td", "1'999.534836970053 m");
+    cy.get("tbody").children().eq(2).contains("td", "1'999.4002478194423 m");
 
     // sort by drilling date
     cy.contains("div", "End of drilling date").click();
@@ -73,9 +72,9 @@ describe("Borehole list tests", () => {
     // sort by borehole type (column of original name)
     cy.contains("div", "Borehole type").click();
     cy.wait("@borehole");
-    cy.get("tbody").children().eq(0).contains("td", "Zelma Heathcote");
-    cy.get("tbody").children().eq(1).contains("td", "Santos Funk");
-    cy.get("tbody").children().eq(2).contains("td", "Mina Reynolds");
+    cy.get("tbody").children().eq(0).contains("td", "Keshaun Dach");
+    cy.get("tbody").children().eq(1).contains("td", "Dean Daniel");
+    cy.get("tbody").children().eq(2).contains("td", "Tierra Lynch");
   });
 
   it("Boreholes are displayed in correct order with admin login", () => {
@@ -101,8 +100,8 @@ describe("Borehole list tests", () => {
         }
       });
 
-    cy.get("tbody").children().eq(0).contains("td", "01.01.2022");
-    cy.get("tbody").children().eq(1).contains("td", "01.01.2022");
+    cy.get("tbody").children().eq(0).contains("td", "31.12.2021");
+    cy.get("tbody").children().eq(1).contains("td", "31.12.2021");
     cy.get("tbody").children().eq(2).contains("td", "31.12.2021");
 
     cy.contains("th", "Creation date").click();
@@ -146,9 +145,9 @@ describe("Borehole list tests", () => {
         }
       });
 
-    cy.get("tbody").children().eq(0).contains("td", "Aaron Durgan");
-    cy.get("tbody").children().eq(1).contains("td", "Aaron O'Hara");
-    cy.get("tbody").children().eq(2).contains("td", "Abagail Boyer");
+    cy.get("tbody").children().eq(0).contains("td", "Aaliyah Kuhlman");
+    cy.get("tbody").children().eq(1).contains("td", "Aaron Waters");
+    cy.get("tbody").children().eq(2).contains("td", "Abagail Hintz");
 
     // sort by borehole type
     cy.contains("th", "Borehole type").click();
@@ -167,8 +166,8 @@ describe("Borehole list tests", () => {
     // sort by total depth
     cy.contains("th", "Total depth").click();
     cy.wait("@editorBorehole");
-    cy.get("tbody").children().eq(0).contains("td", "1'989.213681774779 m");
-    cy.get("tbody").children().eq(1).contains("td", "1'989.0790926241684 m");
-    cy.get("tbody").children().eq(2).contains("td", "1'988.9445034735577 m");
+    cy.get("tbody").children().eq(0).contains("td", "1'999.6694261206637 m");
+    cy.get("tbody").children().eq(1).contains("td", "1'999.534836970053 m");
+    cy.get("tbody").children().eq(2).contains("td", "1'999.4002478194423 m");
   });
 });
