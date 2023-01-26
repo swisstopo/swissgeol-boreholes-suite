@@ -20,8 +20,6 @@ public static class BdmsContextExtensions
     /// </summary>
     public static void SeedData(this BdmsContext context)
     {
-        using var transaction = context.Database.BeginTransaction();
-
         var bulkConfig = new BulkConfig { SqlBulkCopyOptions = SqlBulkCopyOptions.KeepIdentity };
 
         // Set Bogus Data System Clock
@@ -475,8 +473,6 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.stratigraphy', 'id_sty'), {stratigraphy_ids - 1})");
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.layer', 'id_lay'), {layer_ids - 1})");
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.workflow', 'id_wkf'), {workflow_ids - 1})");
-
-        transaction.Commit();
     }
 }
 #pragma warning restore CA1505
