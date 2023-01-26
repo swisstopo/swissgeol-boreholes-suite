@@ -1,4 +1,5 @@
 import store from "../reducers";
+import { useQuery } from "react-query";
 
 /**
  * Fetch data from the C# Api.
@@ -36,9 +37,27 @@ export async function fetchLayersByProfileId(profileId) {
   return await fetchApiV2(`layer?profileId=${profileId}`, "GET");
 }
 
+export const fetchAllCodeLists = async () => {
+  return await fetchApiV2(`codelist`, "GET");
+};
+
+export const updateCodeLists = async codelist => {
+  const response = await fetchApiV2("codelist", "PUT", codelist);
+  return await response.json();
+};
+
 export async function updateLayer(layer) {
   // remove derived objects
   delete layer.createdBy;
   delete layer.updatedBy;
   return await fetchApiV2(`layer`, "PUT", layer);
 }
+
+// Enable using react-query outputs across the application.
+
+// eslint-disable-next-line react-hooks/rules-of-hooks
+export const useDomains = () =>
+  useQuery("domains", async () => {
+    const domains = fetchApiV2(`codelist`, "GET");
+    return domains;
+  });
