@@ -42,8 +42,7 @@ export const fetchAllCodeLists = async () => {
 };
 
 export const updateCodeLists = async codelist => {
-  const response = await fetchApiV2("codelist", "PUT", codelist);
-  return await response.json();
+  return await fetchApiV2("codelist", "PUT", codelist);
 };
 
 export async function updateLayer(layer) {
