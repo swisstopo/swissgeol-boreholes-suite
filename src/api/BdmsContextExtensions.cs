@@ -391,9 +391,9 @@ public static class BdmsContextExtensions
                .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
                .RuleFor(o => o.Borehole, _ => default!)
                .RuleFor(o => o.Notes, f => f.Random.Words(4))
-               .RuleFor(o => o.Role, f => f.PickRandom<Role>())
+               .RuleFor(o => o.Role, _ => Role.Editor)
                .RuleFor(o => o.Started, f => f.Date.Between(new DateTime(1990, 1, 1).ToUniversalTime(), new DateTime(2005, 1, 1).ToUniversalTime()))
-               .RuleFor(o => o.Finished, f => f.Date.Between(new DateTime(2005, 2, 1).ToUniversalTime(), new DateTime(2022, 1, 1).ToUniversalTime()));
+               .RuleFor(o => o.Finished, _ => null);
 
         Workflow SeededWorkflows(int seed) => fakeWorkflows.UseSeed(seed).Generate();
         context.BulkInsert(workflowRange.Select(SeededWorkflows).ToList(), bulkConfig);
