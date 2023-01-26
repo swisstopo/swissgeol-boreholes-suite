@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { useDispatch } from "react-redux";
 import {
   Accordion,
@@ -15,45 +15,13 @@ import { Icon, Form } from "semantic-ui-react";
 import { loadDomains } from "../../../api-lib/index";
 import TranslationText from "../../../commons/form/translationText";
 import produce from "immer";
-import store from "../../../reducers";
+import { updateCodeLists, useDomains } from "../../../api/fetchApiV2";
 
 const CodeListSettings = () => {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
-  const credentials = store.getState().core_user.authentication;
-  const getAllCodeLists = async () => {
-    return await fetch("/api/v2/codelist", {
-      headers: {
-        Authorization: `Basic ${btoa(
-          `${credentials.username}:${credentials.password}`,
-        )}`,
-      },
-    });
-  };
 
-  const updateCodeLists = async codelist => {
-    const response = await fetch("/api/v2/codelist", {
-      method: "PUT",
-      cache: "no-cache",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${btoa(
-          `${credentials.username}:${credentials.password}`,
-        )}`,
-      },
-      body: JSON.stringify(codelist),
-    });
-    // update redux store.
-    dispatch(loadDomains());
-    return await response.json();
-  };
-
-  const domains = useQuery("domains", async () => {
-    const response = await getAllCodeLists();
-    const domains = await response.json();
-    return domains;
-  });
+  const domains = useDomains();
 
   const mutation = useMutation(
     async params => {
@@ -182,6 +150,7 @@ const CodeListSettings = () => {
                       draft.order = order;
                     }),
                   );
+                  dispatch(loadDomains());
                 }}
                 style={{ width: "120px" }}>
                 <span
