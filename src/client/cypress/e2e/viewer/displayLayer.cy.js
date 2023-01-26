@@ -51,6 +51,7 @@ describe("Test for the borehole form.", () => {
     cy.get('[data-cy="depth_from"]').click().clear().type(0);
     cy.get('[data-cy="depth_to"]').click().clear().type(50);
     cy.get('[data-cy="uscs_original"]')
+      .find("input")
       .click()
       .clear()
       .type("Squirrel Milk Bar");
@@ -59,6 +60,7 @@ describe("Test for the borehole form.", () => {
       .clear()
       .type("Shipping large amounts of almond sandwiches.");
     cy.get('[data-cy="original_lithology"]')
+      .find("input")
       .click()
       .clear()
       .type("Free peanuts.");
