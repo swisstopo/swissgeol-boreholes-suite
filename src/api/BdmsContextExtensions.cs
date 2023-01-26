@@ -88,7 +88,7 @@ public static class BdmsContextExtensions
         var borehole_ids = 1_000_000;
         var boreholeRange = Enumerable.Range(borehole_ids, 10000).ToList();
         var fakeBoreholes = new Faker<Borehole>()
-           .StrictMode(false)
+           .StrictMode(true)
            .RuleFor(o => o.Id, f => borehole_ids++)
            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
            .RuleFor(o => o.CreatedBy, _ => default!)
