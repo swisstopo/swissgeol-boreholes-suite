@@ -14,7 +14,7 @@ namespace BDMS;
 [TestClass]
 public class BoreholeControllerTest
 {
-    private const int BoreholeId = 1449;
+    private const int BoreholeId = 1_000_449;
     private const int DefaultWorkgroupId = 1;
 
     private BdmsContext context;

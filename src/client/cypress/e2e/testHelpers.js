@@ -145,7 +145,7 @@ export const loginAndResetBoreholes = () => {
 
   cy.wait("@edit_list").then(intercept => {
     intercept.response.body.data.forEach(borehole => {
-      if (borehole.id > 10999) deleteBorehole(borehole.id); // max id in seed data.
+      if (borehole.id > 1009999) deleteBorehole(borehole.id); // max id in seed data.
     });
   });
 
