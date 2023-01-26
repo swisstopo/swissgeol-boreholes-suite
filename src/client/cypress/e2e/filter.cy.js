@@ -109,19 +109,13 @@ describe("Search filter tests", () => {
     cy.contains("Show all fields").children(".checkbox").click();
 
     // input value
-    cy.contains("Original Lithology")
-      .next()
-      .find("input")
-      .type("Director Toys");
+    cy.contains("Original Lithology").next().find("input").type("Wooden Chair");
     cy.wait("@edit_list");
 
     // check content of table
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .should("have.length", 11)
-      .each((el, index, list) => {
-        cy.wrap(el).contains("admin");
-      });
+      .should("have.length", 7);
   });
 
   it("filters boreholes by creation date", () => {

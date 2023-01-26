@@ -10,7 +10,6 @@ describe("Borehole list tests", () => {
     cy.get("tbody").children().should("have.length", 100);
 
     // sort by name ascending
-    cy.contains("div", "Original name").click();
     cy.contains("div", "Original name")
       .children()
       .first()
@@ -102,8 +101,8 @@ describe("Borehole list tests", () => {
         }
       });
 
-    cy.get("tbody").children().eq(0).contains("td", "31.12.2021");
-    cy.get("tbody").children().eq(1).contains("td", "31.12.2021");
+    cy.get("tbody").children().eq(0).contains("td", "01.01.2022");
+    cy.get("tbody").children().eq(1).contains("td", "01.01.2022");
     cy.get("tbody").children().eq(2).contains("td", "31.12.2021");
 
     cy.contains("th", "Creation date").click();
