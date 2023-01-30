@@ -10,9 +10,7 @@ namespace BDMS.Models;
 [Table("layer")]
 public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s id.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_lay")]
     public int Id { get; set; }
 
@@ -23,37 +21,25 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <inheritdoc />
     public Stratigraphy? Stratigraphy { get; set; }
 
-    /// <summary>
-    /// Gets or sets the id of the <see cref="User"/> who created the <see cref="Layer"/>.
-    /// </summary>
+    /// <inheritdoc />
     [Column("creator_lay")]
     public int? CreatedById { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="User"/> who created the <see cref="Layer"/>.
-    /// </summary>
+    /// <inheritdoc />
     public User? CreatedBy { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s creation date.
-    /// </summary>
+    /// <inheritdoc />
     [Column("creation_lay")]
     public DateTime? Created { get; set; }
 
-    /// <summary>
-    /// Gets or sets the id of the <see cref="User"/> who updated the <see cref="Layer"/>.
-    /// </summary>
+    /// <inheritdoc />
     [Column("updater_lay")]
     public int? UpdatedById { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="User"/> who updated the <see cref="Layer"/>.
-    /// </summary>
+    /// <inheritdoc />
     public User? UpdatedBy { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s update date.
-    /// </summary>
+    /// <inheritdoc />
     [Column("update_lay")]
     public DateTime? Updated { get; set; }
 

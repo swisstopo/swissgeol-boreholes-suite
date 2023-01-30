@@ -8,9 +8,7 @@ namespace BDMS.Models;
 [Table("terms")]
 public class Term : IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="Term"/>'s id.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_tes")]
     public int Id { get; set; }
 

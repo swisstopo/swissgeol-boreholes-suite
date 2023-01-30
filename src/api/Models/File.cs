@@ -8,9 +8,7 @@ namespace BDMS.Models;
 [Table("files")]
 public class File : IChangeTracking, IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="File"/>'s id.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_fil")]
     public int Id { get; set; }
 

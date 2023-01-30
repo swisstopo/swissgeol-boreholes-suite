@@ -10,9 +10,7 @@ namespace BDMS.Models;
 [Table("codelist")]
 public class Codelist : IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="Codelist"/>'s id.
-    /// </summary>
+    /// <inheritdoc />
     [Key]
     [Column("id_cli")]
     public int Id { get; set; }

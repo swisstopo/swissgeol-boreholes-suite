@@ -9,9 +9,7 @@ namespace BDMS.Models;
 [Table("contents")]
 public class Content : IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="Content"/>'s id.
-    /// </summary>
+    /// <inheritdoc />
     [Key]
     [Column("id_cnt")]
     public int Id { get; set; }

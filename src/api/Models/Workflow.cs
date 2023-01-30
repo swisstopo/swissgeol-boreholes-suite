@@ -8,9 +8,7 @@ namespace BDMS.Models;
 [Table("workflow")]
 public class Workflow : IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the workflow id.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_wkf")]
     public int Id { get; set; }
 

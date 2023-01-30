@@ -8,9 +8,7 @@ namespace BDMS.Models;
 [Table("feedbacks")]
 public class Feedback : IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="Feedback"/>'s id.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_feb")]
     public int Id { get; set; }
 

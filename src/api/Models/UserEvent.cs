@@ -8,9 +8,7 @@ namespace BDMS.Models;
 [Table("events")]
 public class UserEvent : IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="UserEvent"/> id.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_evs")]
     public int Id { get; set; }
 

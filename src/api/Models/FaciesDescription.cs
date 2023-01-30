@@ -9,9 +9,7 @@ namespace BDMS.Models;
 [Table("facies_description")]
 public class FaciesDescription : ILayerDescription, IChangeTracking, IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="FaciesDescription"/>'s id.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_fac")]
     [Key]
     public int Id { get; set; }

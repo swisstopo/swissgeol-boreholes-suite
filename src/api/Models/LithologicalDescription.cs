@@ -9,9 +9,7 @@ namespace BDMS.Models;
 [Table("lithological_description")]
 public class LithologicalDescription : ILayerDescription, IChangeTracking, IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="LithologicalDescription"/>'s id.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_ldp")]
     [Key]
     public int Id { get; set; }

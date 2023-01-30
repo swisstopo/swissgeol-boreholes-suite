@@ -9,9 +9,7 @@ namespace BDMS.Models;
 [Table("users")]
 public class User : IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="User"/> id.
-    /// </summary>
+    /// <inheritdoc />
     [Key]
     [Column("id_usr")]
     public int Id { get; set; }

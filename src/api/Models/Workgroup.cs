@@ -9,9 +9,7 @@ namespace BDMS.Models;
 [Table("workgroups")]
 public class Workgroup : IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the workgroup id.
-    /// </summary>
+    /// <inheritdoc />
     [Key]
     [Column("id_wgp")]
     public int Id { get; set; }
