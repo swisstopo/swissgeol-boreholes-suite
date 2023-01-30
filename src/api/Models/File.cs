@@ -6,24 +6,29 @@ namespace BDMS.Models;
 /// Represents a file entity in the database.
 /// </summary>
 [Table("files")]
-public class File
+public class File : IChangeTracking, IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="File"/>'s id.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_fil")]
     public int Id { get; set; }
 
-    /// <summary>
-    /// Gets or sets the id of the <see cref="User"/> who created the <see cref="File"/>.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_usr_fk")]
-    public int? UserId { get; set; }
+    public int? CreatedById { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="User"/> who created the <see cref="File"/>.
-    /// </summary>
-    public User? User { get; set; }
+    /// <inheritdoc />
+    public User? CreatedBy { get; set; }
+
+    /// <inheritdoc />
+    [Column("updated_by_fil")]
+    public int? UpdatedById { get; set; }
+
+    /// <inheritdoc />
+    public User? UpdatedBy { get; set; }
+
+    /// <inheritdoc />
+    [Column("updated_fil")]
+    public DateTime? Updated { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="File"/>'s name.
@@ -47,7 +52,7 @@ public class File
     /// Gets or sets the <see cref="File"/>'s upload date.
     /// </summary>
     [Column("uploaded_fil")]
-    public DateTime? Uploaded { get; set; }
+    public DateTime? Created { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="File"/>'s configuration.

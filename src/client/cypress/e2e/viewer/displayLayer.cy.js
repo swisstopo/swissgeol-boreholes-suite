@@ -4,14 +4,21 @@ describe("Test for the borehole form.", () => {
   beforeEach(() => {
     // Assert map number of boreholes
     cy.get("div[id=map]").should("be.visible");
-    cy.get("tbody").children().should("have.length", 21);
+    cy.get("tbody").children().should("have.length", 100);
 
     // Add new borehole
     newEditableBorehole().as("borehole_id");
   });
 
   it("Adds complete layer and displays it in viewer mode, checks if fields can be optionally hidden.", () => {
-    //navigate to stratigraphy
+    // enter original name
+    cy.contains("label", "Original name")
+      .next()
+      .children("input")
+      .type("BONES-XVII");
+    cy.wait("@edit_patch");
+
+    // navigate to stratigraphy
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="add-stratigraphy-button"]').click();
     cy.wait("@stratigraphy_edit_create");
@@ -100,8 +107,12 @@ describe("Test for the borehole form.", () => {
 
     cy.wait("@borehole");
 
-    // Click on last table element, added borehole.
-    cy.get(".table tbody").children().last().scrollIntoView().click();
+    // Click on the added borehole
+    cy.contains("Location").click();
+    cy.contains("Original name").next().find("input").type("BONES-XVII");
+    cy.wait("@borehole");
+
+    cy.get(".table tbody").children().first().scrollIntoView().click();
 
     cy.wait("@borehole");
     cy.wait(5000);

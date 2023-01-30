@@ -4,7 +4,7 @@ namespace BDMS;
 
 internal static class ContextFactory
 {
-    public static string ConnectionString { get; } = "Host=localhost;Username=SPAWNPLOW;Password=YELLOWSPATULA;Database=bdms";
+    public static string ConnectionString { get; } = "Host=localhost;Username=SPAWNPLOW;Password=YELLOWSPATULA;Database=bdms;CommandTimeout=100";
 
     /// <summary>
     /// Creates an instance of <see cref="BdmsContext"/>.
