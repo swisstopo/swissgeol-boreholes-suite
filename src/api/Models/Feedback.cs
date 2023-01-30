@@ -6,7 +6,7 @@ namespace BDMS.Models;
 /// Represents a feedback entity in the database.
 /// </summary>
 [Table("feedbacks")]
-public class Feedback
+public class Feedback : IIdentifyable
 {
     /// <summary>
     /// Gets or sets the <see cref="Feedback"/>'s id.

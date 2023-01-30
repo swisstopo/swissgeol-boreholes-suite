@@ -7,7 +7,7 @@ namespace BDMS.Models;
 /// Represents a lithological description entity in the database.
 /// </summary>
 [Table("lithological_description")]
-public class LithologicalDescription : ILayerDescription, IChangeTracking
+public class LithologicalDescription : ILayerDescription, IChangeTracking, IIdentifyable
 {
     /// <summary>
     /// Gets or sets the <see cref="LithologicalDescription"/>'s id.

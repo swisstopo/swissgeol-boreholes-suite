@@ -7,7 +7,7 @@ namespace BDMS.Models;
 /// Represents a user entity in the database.
 /// </summary>
 [Table("users")]
-public class User
+public class User : IIdentifyable
 {
     /// <summary>
     /// Gets or sets the <see cref="User"/> id.

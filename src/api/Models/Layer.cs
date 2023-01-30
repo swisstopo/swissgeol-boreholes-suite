@@ -8,7 +8,7 @@ namespace BDMS.Models;
 /// Represents a layer entity in the database.
 /// </summary>
 [Table("layer")]
-public class Layer : ILayerDescription, IChangeTracking
+public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
 {
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s id.

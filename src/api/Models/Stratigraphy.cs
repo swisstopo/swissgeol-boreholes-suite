@@ -6,7 +6,7 @@ namespace BDMS.Models;
 /// Represents a stratigraphy entity in the database.
 /// </summary>
 [Table("stratigraphy")]
-public class Stratigraphy : IChangeTracking
+public class Stratigraphy : IChangeTracking, IIdentifyable
 {
     /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s id.

@@ -7,7 +7,7 @@ namespace BDMS.Models;
 /// Represents a borehole entity in the database.
 /// </summary>
 [Table("borehole")]
-public class Borehole : IChangeTracking
+public class Borehole : IChangeTracking, IIdentifyable
 {
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/> id.

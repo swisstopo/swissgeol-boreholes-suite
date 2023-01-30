@@ -6,7 +6,7 @@ namespace BDMS.Models;
 /// Represents a file entity in the database.
 /// </summary>
 [Table("files")]
-public class File
+public class File : IIdentifyable
 {
     /// <summary>
     /// Gets or sets the <see cref="File"/>'s id.

@@ -7,7 +7,7 @@ namespace BDMS.Models;
 /// Represents a workgroup entity in the database.
 /// </summary>
 [Table("workgroups")]
-public class Workgroup
+public class Workgroup : IIdentifyable
 {
     /// <summary>
     /// Gets or sets the workgroup id.

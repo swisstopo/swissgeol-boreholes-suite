@@ -6,7 +6,7 @@ namespace BDMS.Models;
 /// Represents a workflow entity in the database.
 /// </summary>
 [Table("workflow")]
-public class Workflow
+public class Workflow : IIdentifyable
 {
     /// <summary>
     /// Gets or sets the workflow id.

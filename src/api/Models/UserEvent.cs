@@ -6,7 +6,7 @@ namespace BDMS.Models;
 /// Represents an event entity in the database.
 /// </summary>
 [Table("events")]
-public class UserEvent
+public class UserEvent : IIdentifyable
 {
     /// <summary>
     /// Gets or sets the <see cref="UserEvent"/> id.

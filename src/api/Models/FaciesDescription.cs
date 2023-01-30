@@ -7,7 +7,7 @@ namespace BDMS.Models;
 /// Represents a facies description entity in the database.
 /// </summary>
 [Table("facies_description")]
-public class FaciesDescription : ILayerDescription, IChangeTracking
+public class FaciesDescription : ILayerDescription, IChangeTracking, IIdentifyable
 {
     /// <summary>
     /// Gets or sets the <see cref="FaciesDescription"/>'s id.

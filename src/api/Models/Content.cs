@@ -7,7 +7,7 @@ namespace BDMS.Models;
 /// Represents a content entity in the database.
 /// </summary>
 [Table("contents")]
-public class Content
+public class Content : IIdentifyable
 {
     /// <summary>
     /// Gets or sets the <see cref="Content"/>'s id.

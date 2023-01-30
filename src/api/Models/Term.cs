@@ -6,7 +6,7 @@ namespace BDMS.Models;
 /// Represents a term entity in the database.
 /// </summary>
 [Table("terms")]
-public class Term
+public class Term : IIdentifyable
 {
     /// <summary>
     /// Gets or sets the <see cref="Term"/>'s id.
