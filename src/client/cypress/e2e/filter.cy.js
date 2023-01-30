@@ -152,7 +152,7 @@ describe("Search filter tests", () => {
       .children()
       .should("have.length", 7)
       .each((el, index, list) => {
-        cy.wrap(el).contains("09.11.2021");
+        cy.wrap(el).contains("10.11.2021");
       });
   });
 });
