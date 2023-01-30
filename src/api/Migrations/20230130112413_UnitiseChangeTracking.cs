@@ -19,16 +19,6 @@ public partial class UnitiseChangeTracking : Migration
             table: "facies_description");
 
         migrationBuilder.DropForeignKey(
-            name: "FK_layer_users_creator_lay",
-            schema: "bdms",
-            table: "layer");
-
-        migrationBuilder.DropForeignKey(
-            name: "FK_layer_users_updater_lay",
-            schema: "bdms",
-            table: "layer");
-
-        migrationBuilder.DropForeignKey(
             name: "FK_lithological_description_users_creator",
             schema: "bdms",
             table: "lithological_description");
@@ -358,26 +348,6 @@ public partial class UnitiseChangeTracking : Migration
             schema: "bdms",
             table: "facies_description",
             column: "updater",
-            principalSchema: "bdms",
-            principalTable: "users",
-            principalColumn: "id_usr",
-            onDelete: ReferentialAction.Cascade);
-
-        migrationBuilder.AddForeignKey(
-            name: "FK_layer_users_creator_lay",
-            schema: "bdms",
-            table: "layer",
-            column: "creator_lay",
-            principalSchema: "bdms",
-            principalTable: "users",
-            principalColumn: "id_usr",
-            onDelete: ReferentialAction.Cascade);
-
-        migrationBuilder.AddForeignKey(
-            name: "FK_layer_users_updater_lay",
-            schema: "bdms",
-            table: "layer",
-            column: "updater_lay",
             principalSchema: "bdms",
             principalTable: "users",
             principalColumn: "id_usr",
