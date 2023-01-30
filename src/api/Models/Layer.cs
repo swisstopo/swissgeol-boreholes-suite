@@ -8,7 +8,7 @@ namespace BDMS.Models;
 /// Represents a layer entity in the database.
 /// </summary>
 [Table("layer")]
-public class Layer : ILayerDescription
+public class Layer : ILayerDescription, IChangeTracking
 {
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s id.
@@ -27,7 +27,7 @@ public class Layer : ILayerDescription
     /// Gets or sets the id of the <see cref="User"/> who created the <see cref="Layer"/>.
     /// </summary>
     [Column("creator_lay")]
-    public int CreatedById { get; set; }
+    public int? CreatedById { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="User"/> who created the <see cref="Layer"/>.
@@ -38,13 +38,13 @@ public class Layer : ILayerDescription
     /// Gets or sets the <see cref="Layer"/>'s creation date.
     /// </summary>
     [Column("creation_lay")]
-    public DateTime? Creation { get; set; }
+    public DateTime? Created { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="User"/> who updated the <see cref="Layer"/>.
     /// </summary>
     [Column("updater_lay")]
-    public int UpdatedById { get; set; }
+    public int? UpdatedById { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="User"/> who updated the <see cref="Layer"/>.
@@ -55,7 +55,7 @@ public class Layer : ILayerDescription
     /// Gets or sets the <see cref="Layer"/>'s update date.
     /// </summary>
     [Column("update_lay")]
-    public DateTime? Update { get; set; }
+    public DateTime? Updated { get; set; }
 
     /// <summary>
     /// Gets or sets whether the <see cref="Layer"/> is undefined.

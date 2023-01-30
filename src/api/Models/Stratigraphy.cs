@@ -6,7 +6,7 @@ namespace BDMS.Models;
 /// Represents a stratigraphy entity in the database.
 /// </summary>
 [Table("stratigraphy")]
-public class Stratigraphy
+public class Stratigraphy : IChangeTracking
 {
     /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s id.
@@ -41,7 +41,7 @@ public class Stratigraphy
     /// Gets or sets the <see cref="Stratigraphy"/>'s update date.
     /// </summary>
     [Column("update_sty")]
-    public DateTime? Update { get; set; }
+    public DateTime? Updated { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="User"/> who updated the <see cref="Stratigraphy"/>.
@@ -58,7 +58,7 @@ public class Stratigraphy
     /// Gets or sets the <see cref="Stratigraphy"/>'s creation date.
     /// </summary>
     [Column("creation_sty")]
-    public DateTime? Creation { get; set; }
+    public DateTime? Created { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="User"/> who authored the <see cref="Stratigraphy"/>.
