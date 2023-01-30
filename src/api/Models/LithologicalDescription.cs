@@ -7,11 +7,9 @@ namespace BDMS.Models;
 /// Represents a lithological description entity in the database.
 /// </summary>
 [Table("lithological_description")]
-public class LithologicalDescription : ILayerDescription
+public class LithologicalDescription : ILayerDescription, IChangeTracking, IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="LithologicalDescription"/>'s id.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_ldp")]
     [Key]
     public int Id { get; set; }
@@ -23,39 +21,27 @@ public class LithologicalDescription : ILayerDescription
     /// <inheritdoc />
     public Stratigraphy? Stratigraphy { get; set; }
 
-    /// <summary>
-    /// Gets or sets the id of the <see cref="User"/> who created the <see cref="LithologicalDescription"/>.
-    /// </summary>
+    /// <inheritdoc />
     [Column("creator")]
-    public int CreatedById { get; set; }
+    public int? CreatedById { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="User"/> who created the <see cref="LithologicalDescription"/>.
-    /// </summary>
+    /// <inheritdoc />
     public User? CreatedBy { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="LithologicalDescription"/>'s creation date.
-    /// </summary>
+    /// <inheritdoc />
     [Column("creation")]
-    public DateTime? Creation { get; set; }
+    public DateTime? Created { get; set; }
 
-    /// <summary>
-    /// Gets or sets the id of the <see cref="User"/> who updated the <see cref="LithologicalDescription"/>.
-    /// </summary>
+    /// <inheritdoc />
     [Column("updater")]
-    public int UpdatedById { get; set; }
+    public int? UpdatedById { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="User"/> who updated the <see cref="LithologicalDescription"/>.
-    /// </summary>
+    /// <inheritdoc />
     public User? UpdatedBy { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="LithologicalDescription"/>'s update date.
-    /// </summary>
+    /// <inheritdoc />
     [Column("update")]
-    public DateTime? Update { get; set; }
+    public DateTime? Updated { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="LithologicalDescription"/>'s description.

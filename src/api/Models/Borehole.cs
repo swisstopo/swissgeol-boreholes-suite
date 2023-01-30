@@ -7,46 +7,32 @@ namespace BDMS.Models;
 /// Represents a borehole entity in the database.
 /// </summary>
 [Table("borehole")]
-public class Borehole
+public class Borehole : IChangeTracking, IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/> id.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_bho")]
     public int Id { get; set; }
 
-    /// <summary>
-    /// Gets or sets the id of the <see cref="User"/> who created the <see cref="Borehole"/>.
-    /// </summary>
+    /// <inheritdoc />
     [Column("created_by_bho")]
     public int? CreatedById { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="User"/> who created the <see cref="Borehole"/>.
-    /// </summary>
+    /// <inheritdoc />
     public User? CreatedBy { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/> created date.
-    /// </summary>
+    /// <inheritdoc />
     [Column("created_bho")]
     public DateTime? Created { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/> updated date.
-    /// </summary>
+    /// <inheritdoc />
     [Column("updated_bho")]
     public DateTime? Updated { get; set; }
 
-    /// <summary>
-    /// Gets or sets the id of the <see cref="User"/> who updated the <see cref="Borehole"/>.
-    /// </summary>
+    /// <inheritdoc />
     [Column("updated_by_bho")]
     public int? UpdatedById { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="User"/> who updated the <see cref="Borehole"/>.
-    /// </summary>
+    /// <inheritdoc />
     public User? UpdatedBy { get; set; }
 
     /// <summary>

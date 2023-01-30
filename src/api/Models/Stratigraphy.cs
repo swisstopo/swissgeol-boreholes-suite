@@ -6,11 +6,9 @@ namespace BDMS.Models;
 /// Represents a stratigraphy entity in the database.
 /// </summary>
 [Table("stratigraphy")]
-public class Stratigraphy
+public class Stratigraphy : IChangeTracking, IIdentifyable
 {
-    /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/>'s id.
-    /// </summary>
+    /// <inheritdoc />
     [Column("id_sty")]
     public int Id { get; set; }
 
@@ -37,38 +35,26 @@ public class Stratigraphy
     [Column("date_sty")]
     public DateOnly? Date { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/>'s update date.
-    /// </summary>
+    /// <inheritdoc />
     [Column("update_sty")]
-    public DateTime? Update { get; set; }
+    public DateTime? Updated { get; set; }
 
-    /// <summary>
-    /// Gets or sets the id of the <see cref="User"/> who updated the <see cref="Stratigraphy"/>.
-    /// </summary>
+    /// <inheritdoc />
     [Column("updater_sty")]
     public int? UpdatedById { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="User"/> who updated the <see cref="Stratigraphy"/>.
-    /// </summary>
+    /// <inheritdoc />
     public User? UpdatedBy { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/>'s creation date.
-    /// </summary>
+    /// <inheritdoc />
     [Column("creation_sty")]
-    public DateTime? Creation { get; set; }
+    public DateTime? Created { get; set; }
 
-    /// <summary>
-    /// Gets or sets the id of the <see cref="User"/> who authored the <see cref="Stratigraphy"/>.
-    /// </summary>
+    /// <inheritdoc />
     [Column("author_sty")]
     public int? CreatedById { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="User"/> who authored the <see cref="Stratigraphy"/>.
-    /// </summary>
+    /// <inheritdoc />
     public User? CreatedBy { get; set; }
 
     /// <summary>

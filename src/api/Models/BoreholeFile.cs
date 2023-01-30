@@ -6,7 +6,7 @@ namespace BDMS.Models;
 /// Join table entity for a <see cref="Models.File"/> attached to a <see cref="Models.Borehole"/>.
 /// </summary>
 [Table("borehole_files")]
-public class BoreholeFile
+public class BoreholeFile : IChangeTracking
 {
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/> id.
@@ -47,22 +47,27 @@ public class BoreholeFile
     [Column("attached_bfi")]
     public DateTime? Attached { get; set; }
 
-    /// <summary>
-    /// Gets or sets the timestamp when the <see cref="BoreholeFile"/> was updated.
-    /// </summary>
+    /// <inheritdoc />
+    [Column("created_bfi")]
+    public DateTime? Created { get; set; }
+
+    /// <inheritdoc />
+    [Column("created_by_bfi")]
+    public int? CreatedById { get; set; }
+
+    /// <inheritdoc />
+    public User? CreatedBy { get; set; }
+
+    /// <inheritdoc />
     [Column("update_bfi")]
-    public DateTime? Update { get; set; }
+    public DateTime? Updated { get; set; }
 
-    /// <summary>
-    /// Gets or sets the id of the user that updated the <see cref="BoreholeFile"/>.
-    /// </summary>
+    /// <inheritdoc />
     [Column("updater_bfi")]
-    public int? UpdaterId { get; set; }
+    public int? UpdatedById { get; set; }
 
-    /// <summary>
-    /// Gets or sets the user that updated the <see cref="BoreholeFile"/>.
-    /// </summary>
-    public User? Updater { get; set; }
+    /// <inheritdoc />
+    public User? UpdatedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="BoreholeFile"/> description.
