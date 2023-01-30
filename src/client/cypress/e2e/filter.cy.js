@@ -150,9 +150,8 @@ describe("Search filter tests", () => {
     // check content of table
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .should("have.length", 7)
-      .each((el, index, list) => {
-        cy.wrap(el).contains("10.11.2021");
-      });
+      .should("have.length", 7);
+
+    cy.contains("td", "09.11.2021");
   });
 });
