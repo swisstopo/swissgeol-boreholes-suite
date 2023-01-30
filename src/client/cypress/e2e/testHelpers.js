@@ -139,10 +139,11 @@ export const deleteBorehole = id => {
     .should("eq", true);
 };
 
-export const loginAndResetBoreholes = () => {
+export const loginAndResetState = () => {
   login("/editor");
   cy.get("tbody").children().first().should("be.visible");
 
+  // Reset boreholes
   cy.wait("@edit_list").then(intercept => {
     intercept.response.body.data.forEach(borehole => {
       if (borehole.id > 1029) deleteBorehole(borehole.id); // max id in seed data.
@@ -152,6 +153,20 @@ export const loginAndResetBoreholes = () => {
   cy.contains("a", "Refresh").click();
   cy.wait("@edit_list");
   cy.get("tbody").children().should("have.length", 21); // number or boreholes visible in editor mode.
+
+  // Reset user settings (i.e. table ordering)
+  cy.request({
+    method: "POST",
+    url: "/api/v2/user/resetAllSettings",
+    cache: "no-cache",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${btoa(
+        `${adminUserAuth.user}:${adminUserAuth.password}`,
+      )}`,
+    },
+  });
 };
 
 export const delayedType = (element, string) => {
