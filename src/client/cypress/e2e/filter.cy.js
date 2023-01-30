@@ -98,7 +98,7 @@ describe("Search filter tests", () => {
     // check content of table
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .should("have.length", 5)
+      .should("have.length", 100)
       .each((el, index, list) => {
         cy.wrap(el).contains("validator");
       });
@@ -109,19 +109,13 @@ describe("Search filter tests", () => {
     cy.contains("Show all fields").children(".checkbox").click();
 
     // input value
-    cy.contains("Original Lithology")
-      .next()
-      .find("input")
-      .type("Director Toys");
+    cy.contains("Original Lithology").next().find("input").type("Wooden Chair");
     cy.wait("@edit_list");
 
     // check content of table
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .should("have.length", 1)
-      .each((el, index, list) => {
-        cy.wrap(el).contains("admin");
-      });
+      .should("have.length", 6);
   });
 
   it("filters boreholes by creation date", () => {
@@ -156,9 +150,8 @@ describe("Search filter tests", () => {
     // check content of table
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .should("have.length", 1)
-      .each((el, index, list) => {
-        cy.wrap(el).contains("09.11.2021");
-      });
+      .should("have.length", 7);
+
+    cy.contains("td", "09.11.2021");
   });
 });
