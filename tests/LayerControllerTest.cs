@@ -27,12 +27,13 @@ public class LayerControllerTest
     }
 
     [TestMethod]
+    [TestCategory("LongRunning")]
     public async Task GetAllEntriesAsync()
     {
         var response = await controller.GetAsync().ConfigureAwait(false);
         IEnumerable<Layer>? layers = response?.Value;
         Assert.IsNotNull(layers);
-        Assert.AreEqual(1500, layers.Count());
+        Assert.AreEqual(100000, layers.Count());
     }
 
     [TestMethod]
@@ -45,7 +46,7 @@ public class LayerControllerTest
     [TestMethod]
     public async Task GetEntriesByProfileId()
     {
-        var response = await controller.GetAsync(6009).ConfigureAwait(false);
+        var response = await controller.GetAsync(6_000_009).ConfigureAwait(false);
         IEnumerable<Layer>? layers = response?.Value;
         Assert.IsNotNull(layers);
         Assert.AreEqual(10, layers.Count());
@@ -61,10 +62,10 @@ public class LayerControllerTest
     [TestMethod]
     public async Task GetLayerById()
     {
-        var response = await controller.GetByIdAsync(7005).ConfigureAwait(false);
+        var response = await controller.GetByIdAsync(7_000_005).ConfigureAwait(false);
         var okResult = response.Result as OkObjectResult;
         var layer = okResult.Value as Layer;
-        Assert.AreEqual(7005, layer.Id);
+        Assert.AreEqual(7_000_005, layer.Id);
         Assert.AreEqual(2.274020571389245, layer.CasingInnerDiameter);
         Assert.AreEqual("Tasty Soft Mouse Drive Internal invoice", layer.Notes);
         Assert.AreEqual(15101036, layer.LithologyId);
@@ -73,7 +74,7 @@ public class LayerControllerTest
     [TestMethod]
     public async Task EditLayerWithCompleteLayer()
     {
-        var id = 7089;
+        var id = 7_000_089;
         var originalLayer = new Layer
         {
             Alteration = null,
@@ -112,14 +113,14 @@ public class LayerControllerTest
             GrainSize2Id = 21103009,
             Humidity = null,
             HumidityId = 21105001,
-            Id = 7089,
+            Id = 7_000_089,
             Instrument = "Metal",
             InstrumentKind = null,
             InstrumentKindId = 25000209,
             InstrumentStatus = null,
             InstrumentStatusId = 25000215,
             InstrumentCasing = null,
-            InstrumentCasingId = 6008,
+            InstrumentCasingId = 6_000_008,
             IsLast = true,
             IsStriae = true,
             IsUndefined = false,
@@ -136,7 +137,7 @@ public class LayerControllerTest
             QtDescription = null,
             QtDescriptionId = null,
             Stratigraphy = null,
-            StratigraphyId = 6008,
+            StratigraphyId = 6_000_008,
             ToDepth = 100,
             Updated = new DateTime(2021, 2, 14, 8, 55, 34).ToUniversalTime(),
             UpdatedBy = null,
@@ -161,7 +162,7 @@ public class LayerControllerTest
 
         var layerToEdit = context.Layers.Single(c => c.Id == id);
         Assert.AreEqual(3, layerToEdit.CreatedById);
-        Assert.AreEqual(6008, layerToEdit.InstrumentCasingId);
+        Assert.AreEqual(6_000_008, layerToEdit.InstrumentCasingId);
         Assert.AreEqual("Baby grow strategic haptic", layerToEdit.Notes);
 
         // Upate Layer

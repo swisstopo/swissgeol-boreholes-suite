@@ -60,11 +60,10 @@ class DataLoader extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    // console.log(this.props.i18n.language, this.props.i18n);
     if (!_.isEqual(this.props.user.data, prevProps.user.data)) {
       this.props.loadSettings();
       this.props.loadDomains();
-      this.props.loadBoreholes();
+      this.props.loadBoreholeCount();
     }
   }
 
@@ -142,15 +141,6 @@ class DataLoader extends React.Component {
                   </Markdown>
                 ) : null}
               </div>
-              {/* <div
-                style={{
-                  paddingTop: '1em'
-                }}
-              >
-                For any use of swissforages.ch please respect the disclaimer of
-                the Swiss Confederation and in particular the disclaimer
-                (LINK to DISCLAIMER) of swissforages.ch.
-              </div> */}
             </div>
             <div
               style={{
@@ -283,7 +273,7 @@ DataLoader.propTypes = {
   anonymousLogin: PropTypes.func,
   i18n: PropTypes.object,
   loadDomains: PropTypes.func,
-  loadBoreholes: PropTypes.func,
+  loadBoreholeCount: PropTypes.func,
   loadSettings: PropTypes.func,
   loadUser: PropTypes.func,
   setAuthentication: PropTypes.func,
@@ -302,8 +292,10 @@ const mapDispatchToProps = dispatch => {
     loadDomains: () => {
       dispatch(loadDomains());
     },
-    loadBoreholes: () => {
-      dispatch(loadBoreholes());
+    loadBoreholeCount: () => {
+      // Only load one borehole to get the total borehole count.
+      // We need the count in case of the map only appearance, otherwise the boreholes get loaded by the borehole table.
+      dispatch(loadBoreholes(1, 1));
     },
     loadSettings: () => {
       dispatch(loadSettings());

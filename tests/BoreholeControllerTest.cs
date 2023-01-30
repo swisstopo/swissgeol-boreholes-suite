@@ -14,7 +14,7 @@ namespace BDMS;
 [TestClass]
 public class BoreholeControllerTest
 {
-    private const int BoreholeId = 1001;
+    private const int BoreholeId = 1_004_580;
     private const int DefaultWorkgroupId = 1;
 
     private BdmsContext context;
@@ -77,7 +77,7 @@ public class BoreholeControllerTest
         Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
         var copiedBorehole = GetBorehole((int)copiedBoreholeId);
 
-        Assert.AreEqual("Monique Schneider (Copy)", copiedBorehole.OriginalName);
+        Assert.AreEqual("Ted Goyette (Copy)", copiedBorehole.OriginalName);
         Assert.AreEqual("validator", copiedBorehole.CreatedBy.Name);
         Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
         Assert.AreEqual(1, copiedBorehole.Workflows.Count);
@@ -92,12 +92,12 @@ public class BoreholeControllerTest
         Assert.AreNotEqual(originalBorehole.Stratigraphies.First().Id, copiedBorehole.Stratigraphies.First());
         Assert.AreNotSame(originalBorehole.Stratigraphies.First().Layers, copiedBorehole.Stratigraphies.First().Layers);
         Assert.AreNotEqual(originalBorehole.Stratigraphies.First().Layers.First().Id, copiedBorehole.Stratigraphies.First().Layers.First().Id);
-        Assert.AreEqual("virtual frictionless", copiedBorehole.Stratigraphies.First().Layers.First().Casing);
+        Assert.AreEqual("Tactics Tools & Garden", copiedBorehole.Stratigraphies.First().Layers.First().Casing);
 
         Assert.AreNotSame(originalBorehole.BoreholeFiles, copiedBorehole.BoreholeFiles);
         Assert.AreNotEqual(originalBorehole.BoreholeFiles.First().BoreholeId, copiedBorehole.BoreholeFiles.First().BoreholeId);
         Assert.AreEqual(originalBorehole.BoreholeFiles.First().FileId, copiedBorehole.BoreholeFiles.First().FileId);
-        Assert.AreEqual("Tactics 24/365 Intelligent Concrete Chicken", copiedBorehole.BoreholeFiles.First().Description);
+        Assert.AreEqual(null, copiedBorehole.BoreholeFiles.First().Description);
 
         // delete borehole copy
         var stratigraphiesToRemove = copiedBorehole.Stratigraphies;

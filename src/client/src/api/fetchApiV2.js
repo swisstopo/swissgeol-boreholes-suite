@@ -52,7 +52,12 @@ export const updateLayer = async layer => {
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
 export const useDomains = () =>
-  useQuery("domains", async () => {
+  useQuery("domains", () => {
     const domains = fetchApiV2(`codelist`, "GET");
     return domains;
+  });
+
+export const useLayers = profileId =>
+  useQuery(["layers", profileId], () => {
+    return fetchLayersByProfileId(profileId);
   });
