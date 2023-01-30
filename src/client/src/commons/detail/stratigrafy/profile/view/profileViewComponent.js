@@ -59,23 +59,8 @@ const ProfileView = props => {
   function getVisibleFields() {
     const filtered = layerKindDomains.filter(d => d.id === kind);
     if (layer === null || filtered.length > 1) return null;
-
-    let fields = { ...filtered[0].conf.viewerFields };
-    if (filtered.length > 1) {
-      for (let index = 1; index < filtered.length; index++) {
-        const element = filtered[index];
-
-        fields = _.mergeWith(
-          fields,
-          element.conf.viewerFields,
-          (objValue, srcValue) => {
-            return objValue || srcValue;
-          },
-        );
-      }
-    }
     return {
-      fields: fields,
+      fields: { ...JSON.parse(filtered[0].conf).viewerFields },
     };
   }
 
