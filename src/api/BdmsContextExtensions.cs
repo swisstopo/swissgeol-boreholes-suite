@@ -215,12 +215,15 @@ public static class BdmsContextExtensions
         var fakefiles = new Faker<Models.File>()
                .StrictMode(true)
                .RuleFor(o => o.Id, f => file_ids++)
-               .RuleFor(o => o.UserId, f => f.PickRandom(filesUserRange).OrNull(f, .05f))
-               .RuleFor(o => o.User, _ => default!)
+               .RuleFor(o => o.CreatedById, f => f.PickRandom(filesUserRange).OrNull(f, .05f))
+               .RuleFor(o => o.CreatedBy, _ => default!)
+               .RuleFor(o => o.UpdatedById, _ => default!)
+               .RuleFor(o => o.UpdatedBy, _ => default!)
+               .RuleFor(o => o.Updated, _ => default!)
                .RuleFor(o => o.Name, f => f.Random.Word())
                .RuleFor(o => o.Hash, f => f.Random.Hash())
                .RuleFor(o => o.Type, f => f.Random.Word())
-               .RuleFor(o => o.Uploaded, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
+               .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
                .RuleFor(o => o.Conf, f => null);
 
         Models.File Seededfiles(int seed) => fakefiles.UseSeed(seed).Generate();
@@ -238,9 +241,12 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.UserId, f => f.PickRandom(userRange))
             .RuleFor(o => o.User, f => default!)
             .RuleFor(o => o.Attached, f => f.Date.Past().ToUniversalTime())
-            .RuleFor(o => o.Update, f => f.Date.Past().ToUniversalTime().OrNull(f, .5f))
-            .RuleFor(o => o.UpdaterId, (f, bf) => bf.Update == null ? null : f.PickRandom(userRange))
-            .RuleFor(o => o.Updater, f => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime().OrNull(f, .5f))
+            .RuleFor(o => o.UpdatedById, (f, bf) => bf.Updated == null ? null : f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, f => default!)
+            .RuleFor(o => o.CreatedById, _ => default!)
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Created, _ => default!)
             .RuleFor(o => o.Description, f => f.Random.Words().OrNull(f, .5f))
             .RuleFor(o => o.Public, f => f.Random.Bool(.9f));
 
