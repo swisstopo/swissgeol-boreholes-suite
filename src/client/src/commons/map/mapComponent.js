@@ -533,7 +533,7 @@ class MapComponent extends React.Component {
     const { highlighted } = this.props;
 
     let selected =
-      highlighted !== undefined && highlighted.indexOf(feature.get("id")) > -1;
+      highlighted !== undefined && highlighted.indexOf(feature.getId()) > -1;
     let res = feature.get("restriction_code");
     let fill = null;
     if (res === "f") {
@@ -664,7 +664,7 @@ class MapComponent extends React.Component {
     if (moveend !== undefined) {
       let features = [];
       this.points.forEachFeatureInExtent(extent, function (feature) {
-        features.push(feature.get("id"));
+        features.push(feature.getId());
       });
       if (!_.isEqual(this.state.featureExtent, features)) {
         this.setState(

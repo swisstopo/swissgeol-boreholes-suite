@@ -7,6 +7,7 @@
 - Get Municipality, Canton, Country from geo.admin.ch service. Removed obsolete Canton / Municipality tables.
 - Remove unnecessary units from various labels.
 - Reuse styles in map component.
+- Remove unnecessary JSON attributes when loading borehole geometries.
 
 ### Fixed
 

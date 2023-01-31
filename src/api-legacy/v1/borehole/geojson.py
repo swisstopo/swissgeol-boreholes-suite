@@ -215,19 +215,12 @@ class ListGeojson(Action):
                                             SELECT row_to_json(p)
                                             FROM (
                                                 SELECT
-                                                    id_bho as id,
-                                                    alternate_name_bho
-                                                        as alternate_name,
-                                                    kind_id_cli
-                                                        as kind,
                                                     kd.code_cli
                                                         as kind_code,
                                                     rs.code_cli
                                                         as restriction_code,
                                                     original_name_bho
-                                                        as original_name,
-                                                    total_depth_bho
-                                                        as total_depth
+                                                        as original_name
                                             ) AS p
                                         ) AS properties
 
