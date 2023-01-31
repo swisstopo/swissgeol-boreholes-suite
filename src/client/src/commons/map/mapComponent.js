@@ -534,7 +534,7 @@ class MapComponent extends React.Component {
 
     let selected =
       highlighted !== undefined && highlighted.indexOf(feature.getId()) > -1;
-    let res = feature.get("restriction_code");
+    let res = feature.get("restriction");
     let fill = null;
     if (res === "f") {
       fill = greenFill;
@@ -545,7 +545,7 @@ class MapComponent extends React.Component {
     }
 
     let conf = null;
-    let kind = feature.get("kind_code");
+    let kind = feature.get("kind");
     if (kind === "B") {
       // boreholes
       let image = boreholeStyleCache[res];
@@ -858,7 +858,7 @@ class MapComponent extends React.Component {
                   whiteSpace: "nowrap",
                 }}>
                 {this.state.hover !== null
-                  ? this.state.hover.get("original_name")
+                  ? this.state.hover.get("name")
                   : null}
               </div>
               {this.state.hover === null ||

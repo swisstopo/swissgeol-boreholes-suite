@@ -216,11 +216,11 @@ class ListGeojson(Action):
                                             FROM (
                                                 SELECT
                                                     kd.code_cli
-                                                        as kind_code,
+                                                        as kind,
                                                     rs.code_cli
-                                                        as restriction_code,
+                                                        as restriction,
                                                     original_name_bho
-                                                        as original_name
+                                                        as name
                                             ) AS p
                                         ) AS properties
 
