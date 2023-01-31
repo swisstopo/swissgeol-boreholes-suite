@@ -377,7 +377,7 @@ class WorkflowForm extends React.Component {
                                   workgroup =>
                                     workgroup.id === borehole.data.workgroup.id,
                                 )
-                                .roles.indexOf(borehole.data.role) === -1 ? (
+                                ?.roles.indexOf(borehole.data.role) === -1 ? (
                               <span
                                 style={{
                                   fontSize: "0.9em",
@@ -398,7 +398,7 @@ class WorkflowForm extends React.Component {
                             workgroup =>
                               workgroup.id === borehole.data.workgroup.id,
                           )
-                          .roles.indexOf(borehole.data.role) > -1 ? (
+                          ?.roles.indexOf(borehole.data.role) > -1 ? (
                           <div
                             style={{
                               flex: "1 1 100%",
