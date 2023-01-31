@@ -82,7 +82,7 @@ public class LayerController : ControllerBase
 
         try
         {
-            await context.SaveChangesAsync().ConfigureAwait(false);
+            await context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
             return Ok(layerToUpdate);
         }
         catch (Exception ex)

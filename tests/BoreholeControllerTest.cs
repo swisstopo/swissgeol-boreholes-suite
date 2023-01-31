@@ -1,13 +1,12 @@
 ﻿using BDMS.Authentication;
 using BDMS.Controllers;
 using BDMS.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Security.Claims;
+using static BDMS.Helpers;
 
 namespace BDMS;
 
@@ -26,30 +25,9 @@ public class BoreholeControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.CreateContext();
-        controller = new BoreholeController(context, new Mock<ILogger<BoreholeController>>().Object);
-        controller.ControllerContext.HttpContext = new DefaultHttpContext();
-        SetAdminClaimsPrincipal();
+        controller = new BoreholeController(context, new Mock<ILogger<BoreholeController>>().Object) { ControllerContext = GetControllerContextAdmin() };
 
         boreholeCount = context.Boreholes.Count();
-    }
-
-    private void SetAdminClaimsPrincipal()
-    {
-        SetClaimsPrincipal("admin", PolicyNames.Admin);
-    }
-
-    private void SetClaimsPrincipal(string name, string role)
-    {
-        var adminClaims = new List<Claim>()
-        {
-           new Claim(ClaimTypes.Name, name),
-           new Claim(ClaimTypes.Role, role),
-        };
-
-        var userIdentity = new ClaimsIdentity(adminClaims, "TestAuthType");
-        var userClaimsPrincipal = new ClaimsPrincipal(userIdentity);
-
-        controller.ControllerContext.HttpContext.User = userClaimsPrincipal;
     }
 
     [TestCleanup]
@@ -79,6 +57,7 @@ public class BoreholeControllerTest
 
         Assert.AreEqual("Ted Goyette (Copy)", copiedBorehole.OriginalName);
         Assert.AreEqual("validator", copiedBorehole.CreatedBy.Name);
+        Assert.AreEqual("editor", copiedBorehole.UpdatedBy.Name);
         Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
         Assert.AreEqual(1, copiedBorehole.Workflows.Count);
         Assert.AreEqual(Role.Editor, copiedBorehole.Workflows.First().Role);
@@ -147,7 +126,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithUnknownUser()
     {
-        SetClaimsPrincipal("NON-EXISTENT-NAME", PolicyNames.Admin);
+        controller.HttpContext.SetClaimsPrincipal("NON-EXISTENT-NAME", PolicyNames.Admin);
         var result = await controller.CopyAsync(BoreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
@@ -165,7 +144,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithNonAdminUser()
     {
-        SetClaimsPrincipal("editor", PolicyNames.Viewer);
+        controller.HttpContext.SetClaimsPrincipal("editor", PolicyNames.Viewer);
         var result = await controller.CopyAsync(BoreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
 

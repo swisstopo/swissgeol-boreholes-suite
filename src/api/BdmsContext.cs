@@ -1,6 +1,7 @@
 ﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using System.Security.Claims;
 
 namespace BDMS;
 
@@ -31,6 +32,36 @@ public class BdmsContext : DbContext
         : base(options)
     {
         NpgsqlConnection.GlobalTypeMapper.MapEnum<Role>();
+    }
+
+    /// <summary>
+    /// Update the change information of <see cref="IChangeTracking"/> entities and call <see cref="DbContext.SaveChangesAsync(CancellationToken)" />.
+    /// </summary>
+    public async Task<int> UpdateChangeInformationAndSaveChangesAsync(HttpContext httpContext)
+    {
+        var userName = httpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
+
+        var entities = ChangeTracker.Entries<IChangeTracking>();
+        var user = await Users
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.Name == userName)
+            .ConfigureAwait(false);
+
+        foreach (var entity in entities)
+        {
+            if (entity.State == EntityState.Added)
+            {
+                entity.Entity.Created = DateTime.Now;
+                entity.Entity.CreatedById = user?.Id;
+            }
+            else if (entity.State == EntityState.Modified)
+            {
+                entity.Entity.Updated = DateTime.Now;
+                entity.Entity.UpdatedById = user?.Id;
+            }
+        }
+
+        return await SaveChangesAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />

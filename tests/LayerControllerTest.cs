@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using static BDMS.Helpers;
 
 namespace BDMS;
 
@@ -17,7 +18,7 @@ public class LayerControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.CreateContext();
-        controller = new LayerController(ContextFactory.CreateContext(), new Mock<ILogger<LayerController>>().Object);
+        controller = new LayerController(ContextFactory.CreateContext(), new Mock<ILogger<LayerController>>().Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -162,6 +163,7 @@ public class LayerControllerTest
 
         var layerToEdit = context.Layers.Single(c => c.Id == id);
         Assert.AreEqual(3, layerToEdit.CreatedById);
+        Assert.AreEqual(3, layerToEdit.UpdatedById);
         Assert.AreEqual(6_000_008, layerToEdit.InstrumentCasingId);
         Assert.AreEqual("Baby grow strategic haptic", layerToEdit.Notes);
 
@@ -175,13 +177,14 @@ public class LayerControllerTest
         var updatedLayer = updatedContext.Layers.Single(c => c.Id == id);
 
         Assert.AreEqual(4, updatedLayer.CreatedById);
+        Assert.AreEqual(1, updatedLayer.UpdatedById);
         Assert.AreEqual(0, updatedLayer.InstrumentCasingId);
         Assert.AreEqual("Freddy ate more cake than Maria.", updatedLayer.Notes);
 
         // Reset edits
-        var res = await controller.EditAsync(originalLayer);
-        var okRes = res as OkObjectResult;
-        Assert.AreEqual(200, okRes.StatusCode);
+        var cleanupContext = ContextFactory.CreateContext();
+        cleanupContext.Update(originalLayer);
+        await cleanupContext.SaveChangesAsync();
     }
 
     [TestMethod]
