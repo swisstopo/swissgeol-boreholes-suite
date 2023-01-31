@@ -32,9 +32,9 @@ describe("Borehole list tests", () => {
     cy.contains("td", "24.06.2022");
 
     // contains total depth
-    cy.contains("td", "1'877.0624342733354 m");
-    cy.contains("td", "1'836.754225118437 m");
-    cy.contains("td", "1'803.6465355212085 m");
+    cy.contains("td", "1'877.0624342733354");
+    cy.contains("td", "1'836.754225118437");
+    cy.contains("td", "1'803.6465355212085");
 
     // sort by name descending
     cy.contains("div", "Original name").click();
@@ -46,15 +46,15 @@ describe("Borehole list tests", () => {
     // sort by total depth
     cy.contains("div", "Total depth MD [m]").click();
     cy.wait("@borehole");
-    cy.get("tbody").children().eq(0).contains("td", "0.0058989971903613755 m");
-    cy.get("tbody").children().eq(1).contains("td", "0.1404881478010156 m");
-    cy.get("tbody").children().eq(2).contains("td", "0.27507729841166983 m");
+    cy.get("tbody").children().eq(0).contains("td", "0.0058989971903613755");
+    cy.get("tbody").children().eq(1).contains("td", "0.1404881478010156");
+    cy.get("tbody").children().eq(2).contains("td", "0.27507729841166983");
 
     cy.contains("div", "Total depth MD [m]").click();
     cy.wait("@borehole");
-    cy.get("tbody").children().eq(0).contains("td", "1'999.6694261206637 m");
-    cy.get("tbody").children().eq(1).contains("td", "1'999.534836970053 m");
-    cy.get("tbody").children().eq(2).contains("td", "1'999.4002478194423 m");
+    cy.get("tbody").children().eq(0).contains("td", "1'999.6694261206637");
+    cy.get("tbody").children().eq(1).contains("td", "1'999.534836970053");
+    cy.get("tbody").children().eq(2).contains("td", "1'999.4002478194423");
 
     // sort by drilling date
     cy.contains("div", "End of drilling date").click();
@@ -166,8 +166,8 @@ describe("Borehole list tests", () => {
     // sort by total depth
     cy.contains("th", "Total depth").click();
     cy.wait("@editorBorehole");
-    cy.get("tbody").children().eq(0).contains("td", "1'999.6694261206637 m");
-    cy.get("tbody").children().eq(1).contains("td", "1'999.534836970053 m");
-    cy.get("tbody").children().eq(2).contains("td", "1'999.4002478194423 m");
+    cy.get("tbody").children().eq(0).contains("td", "1'999.6694261206637");
+    cy.get("tbody").children().eq(1).contains("td", "1'999.534836970053");
+    cy.get("tbody").children().eq(2).contains("td", "1'999.4002478194423");
   });
 });

@@ -360,7 +360,6 @@ class BoreholeEditorTable extends TTable {
             value={item.elevation_z}
             displayType="text"
             thousandSeparator="'"
-            suffix={" m"}
           />
         )}
       </Table.Cell>,
@@ -378,7 +377,6 @@ class BoreholeEditorTable extends TTable {
           <NumericFormat
             value={item.total_depth}
             thousandSeparator="'"
-            suffix=" m"
             displayType="text"
           />
         )}

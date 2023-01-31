@@ -157,7 +157,6 @@ class BoreholeTable extends TableComponent {
           <NumericFormat
             value={item.total_depth}
             thousandSeparator="'"
-            suffix=" m"
             displayType="text"
           />
         )}
@@ -173,7 +172,6 @@ class BoreholeTable extends TableComponent {
             <NumericFormat
               value={item.extended.top_bedrock}
               thousandSeparator="'"
-              suffix=" m"
               displayType="text"
             />
           )}
