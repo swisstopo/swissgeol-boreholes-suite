@@ -14,7 +14,10 @@
     "Sabine Brodhag <sabine.brodhag@swisstopo.ch>",
     "Michael Gysi <michael.gysi@swisstopo.ch> (https://github.com/gysimichael)",
     "Oliver Gut <oliver.gut@geowerkstatt.ch> (https://github.com/flenny)",
-    "Daniel Jovanovic <daniel.jovanovic@geowerkstatt.ch> (https://github.com/danjov)"
+    "Daniel Jovanovic <daniel.jovanovic@geowerkstatt.ch> (https://github.com/danjov)",
+    "Mira Bleuler <mira.bleuler@geowerkstatt.ch> (https://github.com/MiraGeowerkstatt)",
+    "Patrick Ackermann <patrick.ackermann@geowerkstatt.ch> (https://github.com/patrickackermann)",
+    "Philipp Lüthi <philipp.luethi@geowerkstatt.ch> (https://github.com/Philippluca)"
   ],
   "dependencies": {
     "@emotion/react": "^11.10.4",
