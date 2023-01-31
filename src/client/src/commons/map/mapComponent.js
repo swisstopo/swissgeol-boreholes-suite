@@ -39,6 +39,38 @@ const projections = {
     "+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs",
 };
 
+const boreholeStyleCache = {};
+const trialpitStyleCache = {};
+const probingStyleCache = {};
+const deepBoreholeStyleCache = {};
+const clusterStyleCache = {};
+
+const blackStroke = new Stroke({ color: "black", width: 1 });
+const greenFill = new Fill({ color: "rgb(33, 186, 69)" });
+const redFill = new Fill({ color: "rgb(220, 0, 24)" });
+const blackFill = new Fill({ color: "rgb(0, 0, 0)" });
+
+const innerSelectedStyle = new Style({
+  image: new Circle({
+    radius: 10,
+    fill: new Fill({ color: "#ffff00" }),
+    stroke: new Stroke({
+      color: "rgba(0, 0, 0, 0.75)",
+      width: 1,
+    }),
+  }),
+});
+
+const outerSelectedStyle = new Style({
+  image: new Circle({
+    radius: 11,
+    stroke: new Stroke({
+      color: "rgba(120, 120, 120, 0.5)",
+      width: 1,
+    }),
+  }),
+});
+
 class MapComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -497,119 +529,129 @@ class MapComponent extends React.Component {
     this.map.updateSize();
   }
 
-  styleFunction(feature, resolution) {
+  styleFunction(feature, _) {
     const { highlighted } = this.props;
 
     let selected =
       highlighted !== undefined && highlighted.indexOf(feature.get("id")) > -1;
     let res = feature.get("restriction_code");
     let fill = null;
-    let fcolor = null;
     if (res === "f") {
-      fcolor = "rgb(33, 186, 69)";
+      fill = greenFill;
     } else if (["b", "g"].indexOf(res) >= 0) {
-      fcolor = "rgb(220, 0, 24)";
+      fill = redFill;
     } else {
-      fcolor = "rgb(0, 0, 0)";
+      fill = blackFill;
     }
-    fill = new Fill({ color: fcolor });
 
     let conf = null;
     let kind = feature.get("kind_code");
     if (kind === "B") {
       // boreholes
-      conf = {
-        image: new Circle({
+      let image = boreholeStyleCache[res];
+      if (!image) {
+        image = new Circle({
           radius: 6,
-          stroke: new Stroke({ color: "black", width: 1 }),
-          fill: new Fill({ color: fcolor }),
-        }),
+          stroke: blackStroke,
+          fill: fill,
+        });
+        boreholeStyleCache[res] = image;
+      }
+
+      conf = {
+        image: image,
       };
     } else if (kind === "SS") {
       // trial pits
-      conf = {
-        image: new RegularShape({
+      let image = trialpitStyleCache[res];
+      if (!image) {
+        image = new RegularShape({
           fill: fill,
-          stroke: new Stroke({ color: "black", width: 1 }),
+          stroke: blackStroke,
           points: 3,
           radius: 8,
           angle: 0,
-        }),
+        });
+        trialpitStyleCache[res] = image;
+      }
+
+      conf = {
+        image: image,
       };
     } else if (kind === "RS") {
       // dynamic probing
-      conf = {
-        image: new RegularShape({
+      let image = probingStyleCache[res];
+      if (!image) {
+        image = new RegularShape({
           fill: fill,
-          stroke: new Stroke({ color: "black", width: 1 }),
+          stroke: blackStroke,
           points: 3,
           radius: 8,
           rotation: Math.PI,
           angle: 0,
-        }),
+        });
+        probingStyleCache[res] = image;
+      }
+
+      conf = {
+        image: image,
       };
     } else {
       // Not set and if(kind==='a'){ // deep boreholes
-      conf = {
-        image: new RegularShape({
+      let image = deepBoreholeStyleCache[res];
+      if (!image) {
+        image = new RegularShape({
           fill: fill,
-          stroke: new Stroke({ color: "black", width: 1 }),
+          stroke: blackStroke,
           points: 4,
           radius: 8,
           rotation: 0.25 * Math.PI,
           angle: 0,
-        }),
+        });
+        deepBoreholeStyleCache[res] = image;
+      }
+
+      conf = {
+        image: image,
       };
     }
 
     if (selected) {
-      return [
-        new Style({
-          image: new Circle({
-            radius: 10,
-            fill: new Fill({ color: "#ffff00" }),
-            stroke: new Stroke({
-              color: "rgba(0, 0, 0, 0.75)",
-              width: 1,
-            }),
-          }),
-        }),
-        new Style({
-          image: new Circle({
-            radius: 11,
-            stroke: new Stroke({
-              color: "rgba(120, 120, 120, 0.5)",
-              width: 1,
-            }),
-          }),
-        }),
-        new Style(conf),
-      ];
+      return [innerSelectedStyle, outerSelectedStyle, new Style(conf)];
     }
+
     return [new Style(conf)];
   }
 
   clusterStyleFunction(length) {
     const circleSize = 8 + length.toString().length * 2.5;
-    return new Style({
-      image: new Circle({
-        radius: circleSize,
-        stroke: new Stroke({
-          color: "rgba(43, 132, 204, 0.5)",
-          width: 8,
+    let clusterStyle = clusterStyleCache[circleSize];
+    if (!clusterStyle) {
+      clusterStyle = new Style({
+        image: new Circle({
+          radius: circleSize,
+          stroke: new Stroke({
+            color: "rgba(43, 132, 204, 0.5)",
+            width: 8,
+          }),
+          fill: new Fill({
+            color: "rgba(43, 132, 204, 1)",
+          }),
         }),
-        fill: new Fill({
-          color: "rgba(43, 132, 204, 1)",
+        text: new Text({
+          text: length.toString(),
+          scale: 1.5,
+          fill: new Fill({
+            color: "#fff",
+          }),
         }),
-      }),
-      text: new Text({
-        text: length.toString(),
-        scale: 1.5,
-        fill: new Fill({
-          color: "#fff",
-        }),
-      }),
-    });
+      });
+      clusterStyleCache[circleSize] = clusterStyle;
+    }
+
+    clusterStyle.text_.text_ = length.toString();
+
+    return clusterStyle;
   }
 
   /*
