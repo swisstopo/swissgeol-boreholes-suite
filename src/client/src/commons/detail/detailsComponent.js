@@ -173,7 +173,6 @@ class DetailsComponent extends React.Component {
                     <NumericFormat
                       value={detail.borehole.total_depth}
                       thousandSeparator="'"
-                      suffix=" m"
                       displayType="text"
                     />
                   </div>
@@ -198,7 +197,6 @@ class DetailsComponent extends React.Component {
                     <NumericFormat
                       value={detail.borehole.elevation_z}
                       thousandSeparator="'"
-                      suffix=" m"
                       displayType="text"
                     />
                   </div>
