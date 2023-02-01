@@ -8,6 +8,7 @@
 - Remove unnecessary units from various labels.
 - Reuse styles in map component.
 - Remove unnecessary JSON attributes when loading borehole geometries.
+- Place `original_lithology` field after `lithology` in viewer/editor settings for _Stratigraphy fields_.
 
 ### Fixed
 
