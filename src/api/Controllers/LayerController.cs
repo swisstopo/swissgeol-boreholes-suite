@@ -89,7 +89,7 @@ public class LayerController : ControllerBase
         {
             var errorMessage = "An error occurred while saving the entity changes.";
             logger.LogError(ex, errorMessage);
-            return Problem(errorMessage, statusCode: StatusCodes.Status400BadRequest);
+            return Problem(errorMessage, statusCode: StatusCodes.Status500InternalServerError);
         }
     }
 

@@ -202,5 +202,6 @@ public class FaciesDescriptionControllerTest
         var response = await controller.CreateAsync(faciesDescription);
         var result = response as ObjectResult;
         Assert.IsInstanceOfType(result.Value, typeof(ProblemDetails));
+        Assert.AreEqual(500, result.StatusCode);
     }
 }

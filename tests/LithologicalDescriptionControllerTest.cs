@@ -202,5 +202,6 @@ public class LithologicalDescriptionControllerTest
         var response = await controller.CreateAsync(lithologicalDescription);
         var result = response as ObjectResult;
         Assert.IsInstanceOfType(result.Value, typeof(ProblemDetails));
+        Assert.AreEqual(500, result.StatusCode);
     }
 }
