@@ -38,7 +38,7 @@ public class LayerControllerTest
     }
 
     [TestMethod]
-    public async Task GetEntriesByProfileIdReturnsNotFoundForInexistantId()
+    public async Task GetEntriesByProfileIdReturnsNotFoundForInexistentId()
     {
         var result = await controller.GetAsync(94578122).ConfigureAwait(false);
         Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
@@ -54,7 +54,7 @@ public class LayerControllerTest
     }
 
     [TestMethod]
-    public async Task GetLayerByInexistantIdReturnsNotFound()
+    public async Task GetLayerByInexistentIdReturnsNotFound()
     {
         var response = await controller.GetByIdAsync(9483157).ConfigureAwait(false);
         Assert.IsInstanceOfType(response.Result, typeof(NotFoundResult));
@@ -193,7 +193,7 @@ public class LayerControllerTest
     }
 
     [TestMethod]
-    public async Task EditWithInexistantIdReturnsNotFound()
+    public async Task EditWithInexistentIdReturnsNotFound()
     {
         var id = 9487794;
         var layer = new Layer

@@ -37,7 +37,7 @@ public class LithologicalDescriptionControllerTest
     }
 
     [TestMethod]
-    public async Task GetEntriesByStratigraphyIdForInexistantId()
+    public async Task GetEntriesByStratigraphyIdForInexistentId()
     {
         var response = await controller.GetAsync(94578122).ConfigureAwait(false);
         IEnumerable<LithologicalDescription>? lithologicalDescriptions = response;
@@ -55,7 +55,7 @@ public class LithologicalDescriptionControllerTest
     }
 
     [TestMethod]
-    public async Task GetLithologicalDescriptionByInexistantId()
+    public async Task GetLithologicalDescriptionByInexistentId()
     {
         var response = await controller.GetByIdAsync(9483157).ConfigureAwait(false);
         Assert.IsInstanceOfType(response.Result, typeof(NotFoundResult));
@@ -141,7 +141,7 @@ public class LithologicalDescriptionControllerTest
     }
 
     [TestMethod]
-    public async Task EditWithInexistantId()
+    public async Task EditWithInexistentId()
     {
         var id = 9487794;
         var lithologicalDescription = new LithologicalDescription
