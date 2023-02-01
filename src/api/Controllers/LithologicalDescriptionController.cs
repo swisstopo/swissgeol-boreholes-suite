@@ -21,7 +21,7 @@ public class LithologicalDescriptionController : BdmsControllerBase<Lithological
     /// </summary>
     /// <param name="stratigraphyId">The id of the stratigraphy referenced in the lithological descriptions to get.</param>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<LithologicalDescription>>> GetAsync([FromQuery] int? stratigraphyId = null)
+    public async Task<IEnumerable<LithologicalDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
     {
         var lithologicalDescriptions = context.LithologicalDescriptions
             .Include(l => l.QtDescription)

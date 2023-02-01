@@ -31,7 +31,7 @@ public class LithologicalDescriptionControllerTest
     public async Task GetAllEntriesAsync()
     {
         var response = await controller.GetAsync().ConfigureAwait(false);
-        IEnumerable<LithologicalDescription>? lithologicalDescriptions = response?.Value;
+        IEnumerable<LithologicalDescription>? lithologicalDescriptions = response;
         Assert.IsNotNull(lithologicalDescriptions);
         Assert.AreEqual(100_000, lithologicalDescriptions.Count());
     }
@@ -40,7 +40,7 @@ public class LithologicalDescriptionControllerTest
     public async Task GetEntriesByStratigraphyIdForInexistantId()
     {
         var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        IEnumerable<LithologicalDescription>? lithologicalDescriptions = response?.Value;
+        IEnumerable<LithologicalDescription>? lithologicalDescriptions = response;
         Assert.IsNotNull(lithologicalDescriptions);
         Assert.AreEqual(0, lithologicalDescriptions.Count());
     }
@@ -49,7 +49,7 @@ public class LithologicalDescriptionControllerTest
     public async Task GetEntriesByStratigraphyId()
     {
         var response = await controller.GetAsync(6_000_095).ConfigureAwait(false);
-        IEnumerable<LithologicalDescription>? lithologicalDescriptions = response?.Value;
+        IEnumerable<LithologicalDescription>? lithologicalDescriptions = response;
         Assert.IsNotNull(lithologicalDescriptions);
         Assert.AreEqual(10, lithologicalDescriptions.Count());
     }

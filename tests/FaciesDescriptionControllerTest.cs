@@ -31,7 +31,7 @@ public class FaciesDescriptionControllerTest
     public async Task GetAllEntriesAsync()
     {
         var response = await controller.GetAsync().ConfigureAwait(false);
-        IEnumerable<FaciesDescription>? faciesDescriptions = response?.Value;
+        IEnumerable<FaciesDescription>? faciesDescriptions = response;
         Assert.IsNotNull(faciesDescriptions);
         Assert.AreEqual(100_000, faciesDescriptions.Count());
     }
@@ -40,7 +40,7 @@ public class FaciesDescriptionControllerTest
     public async Task GetEntriesByStratigraphyIdForInexistantId()
     {
         var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        IEnumerable<FaciesDescription>? faciesDescriptions = response?.Value;
+        IEnumerable<FaciesDescription>? faciesDescriptions = response;
         Assert.IsNotNull(faciesDescriptions);
         Assert.AreEqual(0, faciesDescriptions.Count());
     }
@@ -49,7 +49,7 @@ public class FaciesDescriptionControllerTest
     public async Task GetEntriesByStratigraphyId()
     {
         var response = await controller.GetAsync(6_000_095).ConfigureAwait(false);
-        IEnumerable<FaciesDescription>? faciesDescriptions = response?.Value;
+        IEnumerable<FaciesDescription>? faciesDescriptions = response;
         Assert.IsNotNull(faciesDescriptions);
         Assert.AreEqual(10, faciesDescriptions.Count());
     }

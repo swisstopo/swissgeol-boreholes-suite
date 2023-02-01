@@ -21,7 +21,7 @@ public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
     /// </summary>
     /// <param name="stratigraphyId">The id of the stratigraphy referenced in the facies descriptions to get.</param>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<FaciesDescription>>> GetAsync([FromQuery] int? stratigraphyId = null)
+    public async Task<IEnumerable<FaciesDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
     {
         var faciesDescriptions = context.FaciesDescriptions
             .Include(l => l.QtDescription)
