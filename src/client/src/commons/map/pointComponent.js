@@ -42,7 +42,7 @@ class PointComponent extends React.Component {
   constructor(props) {
     super(props);
     this.lh = false; // loading location queue
-    this.changefeature = this.changefeature.bind(this);
+    this.changefeature = this.updatePointAndGetAddress.bind(this);
     this.styleFunction = this.styleFunction.bind(this);
     this.getAddress = this.getAddress.bind(this);
     this.zoomtopoly = this.zoomtopoly.bind(this);
@@ -156,8 +156,11 @@ class PointComponent extends React.Component {
       }),
     );
 
-    this.position.on("addfeature", this.changefeature, this);
-    this.position.on("changefeature", this.changefeature, this);
+    this.position.on(
+      "addfeature",
+      e => this.updatePointAndGetAddress(e.feature),
+      this,
+    );
 
     if (this.props.x !== 0 && this.props.y !== 0) {
       this.manageMapInteractions();
@@ -184,14 +187,22 @@ class PointComponent extends React.Component {
               this.getAddress(point);
             },
           );
-          this.position.un("changefeature", this.changefeature, this);
-          this.position.un("addfeature", this.changefeature, this);
+
+          this.position.un(
+            "addfeature",
+            e => this.updatePointAndGetAddress(e.feature),
+            this,
+          );
           this.drawOrUpdatePoint(point);
           this.map
             .getView()
             .fit(this.centerFeature.getGeometry(), { resolution: 1 });
-          this.position.on("changefeature", this.changefeature, this);
-          this.position.on("addfeature", this.changefeature, this);
+
+          this.position.on(
+            "addfeature",
+            e => this.updatePointAndGetAddress(e.feature),
+            this,
+          );
         }
       }
     }
@@ -261,6 +272,11 @@ class PointComponent extends React.Component {
         source: this.position,
       });
     }
+
+    this.modify.on("modifyend", e =>
+      this.updatePointAndGetAddress(e.features.array_[0]),
+    );
+
     this.map.addInteraction(this.modify);
     this.map.removeInteraction(this.draw);
   }
@@ -275,13 +291,13 @@ class PointComponent extends React.Component {
     });
   }
 
-  /*
-      Function fired as soon the editing vector source
-      is changed.
-  */
-  changefeature(ev) {
+  /**
+   * Updates the point state and queries the address of the given point location.
+   * This method gets called everytime a feature is added or edited.
+   * @param {Feature} feature
+   */
+  updatePointAndGetAddress(feature) {
     const { changefeature, isEditable } = this.props;
-    let feature = ev.feature;
     let coordinates = feature.getGeometry().getCoordinates();
     if (this.centerFeature === undefined) {
       this.centerFeature = feature;
@@ -329,7 +345,7 @@ class PointComponent extends React.Component {
     const { highlighted } = this.props;
 
     let selected =
-      highlighted !== undefined && highlighted.indexOf(feature.get("id")) > -1;
+      highlighted !== undefined && highlighted.indexOf(feature.getId()) > -1;
 
     let conf = {
       image: new Circle({
