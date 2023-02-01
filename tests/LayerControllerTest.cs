@@ -18,7 +18,7 @@ public class LayerControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.CreateContext();
-        controller = new LayerController(ContextFactory.CreateContext(), new Mock<ILogger<LayerController>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new LayerController(ContextFactory.CreateContext(), new Mock<ILogger<Layer>>().Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
