@@ -37,7 +37,7 @@ public class FaciesDescriptionControllerTest
     }
 
     [TestMethod]
-    public async Task GetEntriesByStratigraphyIdForInexistantId()
+    public async Task GetEntriesByStratigraphyIdForInexistentId()
     {
         var response = await controller.GetAsync(94578122).ConfigureAwait(false);
         IEnumerable<FaciesDescription>? faciesDescriptions = response;
@@ -55,7 +55,7 @@ public class FaciesDescriptionControllerTest
     }
 
     [TestMethod]
-    public async Task GetFaciesDescriptionByInexistantId()
+    public async Task GetFaciesDescriptionByInexistentId()
     {
         var response = await controller.GetByIdAsync(9263667).ConfigureAwait(false);
         Assert.IsInstanceOfType(response.Result, typeof(NotFoundResult));
@@ -141,7 +141,7 @@ public class FaciesDescriptionControllerTest
     }
 
     [TestMethod]
-    public async Task EditWithInexistantId()
+    public async Task EditWithInexistentId()
     {
         var id = 9815784;
         var faciesDescription = new FaciesDescription
