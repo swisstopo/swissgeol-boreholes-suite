@@ -329,7 +329,7 @@ class PointComponent extends React.Component {
     const { highlighted } = this.props;
 
     let selected =
-      highlighted !== undefined && highlighted.indexOf(feature.get("id")) > -1;
+      highlighted !== undefined && highlighted.indexOf(feature.getId()) > -1;
 
     let conf = {
       image: new Circle({
