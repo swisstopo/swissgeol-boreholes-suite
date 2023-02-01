@@ -51,12 +51,12 @@ public class BdmsContext : DbContext
         {
             if (entity.State == EntityState.Added)
             {
-                entity.Entity.Created = DateTime.Now;
+                entity.Entity.Created = DateTime.Now.ToUniversalTime();
                 entity.Entity.CreatedById = user?.Id;
             }
             else if (entity.State == EntityState.Modified)
             {
-                entity.Entity.Updated = DateTime.Now;
+                entity.Entity.Updated = DateTime.Now.ToUniversalTime();
                 entity.Entity.UpdatedById = user?.Id;
             }
         }

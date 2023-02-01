@@ -86,7 +86,6 @@ builder.Services.AddApiVersioning(config =>
 });
 
 var app = builder.Build();
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // Migrate db changes on startup
 using var scope = app.Services.CreateScope();
