@@ -167,24 +167,29 @@ public class LayerControllerTest
         Assert.AreEqual(6_000_008, layerToEdit.InstrumentCasingId);
         Assert.AreEqual("Baby grow strategic haptic", layerToEdit.Notes);
 
-        // Upate Layer
-        var response = await controller.EditAsync(newLayer);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        try
+        {
+            // Update Layer
+            var response = await controller.EditAsync(newLayer);
+            var okResult = response as OkObjectResult;
+            Assert.AreEqual(200, okResult.StatusCode);
 
-        // Assert Updates and unchanged values
-        var updatedContext = ContextFactory.CreateContext();
-        var updatedLayer = updatedContext.Layers.Single(c => c.Id == id);
+            // Assert Updates and unchanged values
+            var updatedContext = ContextFactory.CreateContext();
+            var updatedLayer = updatedContext.Layers.Single(c => c.Id == id);
 
-        Assert.AreEqual(4, updatedLayer.CreatedById);
-        Assert.AreEqual(1, updatedLayer.UpdatedById);
-        Assert.AreEqual(0, updatedLayer.InstrumentCasingId);
-        Assert.AreEqual("Freddy ate more cake than Maria.", updatedLayer.Notes);
-
-        // Reset edits
-        var cleanupContext = ContextFactory.CreateContext();
-        cleanupContext.Update(originalLayer);
-        await cleanupContext.SaveChangesAsync();
+            Assert.AreEqual(4, updatedLayer.CreatedById);
+            Assert.AreEqual(1, updatedLayer.UpdatedById);
+            Assert.AreEqual(0, updatedLayer.InstrumentCasingId);
+            Assert.AreEqual("Freddy ate more cake than Maria.", updatedLayer.Notes);
+        }
+        finally
+        {
+            // Reset edits
+            var cleanupContext = ContextFactory.CreateContext();
+            cleanupContext.Update(originalLayer);
+            await cleanupContext.SaveChangesAsync();
+        }
     }
 
     [TestMethod]
