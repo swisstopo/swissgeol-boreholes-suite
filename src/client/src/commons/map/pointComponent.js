@@ -297,7 +297,7 @@ class PointComponent extends React.Component {
    * @param {Feature} feature
    */
   updatePointAndGetAddress(feature) {
-    const { changefeature, isEditable } = this.props;
+    const { changefeature } = this.props;
     let coordinates = feature.getGeometry().getCoordinates();
     if (this.centerFeature === undefined) {
       this.centerFeature = feature;
@@ -318,7 +318,6 @@ class PointComponent extends React.Component {
         this.getAddress(coordinates);
       },
     );
-    if (isEditable) this.allowModifying();
   }
 
   getAddress(coordinates) {
