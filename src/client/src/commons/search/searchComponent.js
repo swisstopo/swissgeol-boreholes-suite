@@ -8,14 +8,15 @@ import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { Icon, Form, Checkbox } from "semantic-ui-react";
 import TranslationText from "../form/translationText";
-import { LocationSearchData } from "./data/LocationSearchData";
-import { boreholeSearchData } from "./data/boreholeSearchData";
-import { stratigraphySearchData } from "./data/stratigraphySearchData";
+import WorkgroupRadioGroup from "../form/workgroup/radio";
+import * as Styled from "./editor/searchEditorStyles.js";
+import ListFilter from "./components/listFilter";
 import { casingSearchData } from "./data/casingSearchData";
 import { InstrumentSearchData } from "./data/InstrumentSearchData";
 import { fillingSearchData } from "./data/fillingSearchData";
-import * as Styled from "./editor/searchEditorStyles.js";
-import ListFilter from "./components/listFilter";
+import { LocationSearchData } from "./data/LocationSearchData";
+import { boreholeSearchData } from "./data/boreholeSearchData";
+import { stratigraphySearchData } from "./data/stratigraphySearchData";
 class SearchComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -57,6 +58,12 @@ class SearchComponent extends React.Component {
           id: 5,
           name: "filling",
           translationId: "filling",
+          isSelected: false,
+        },
+        {
+          id: 6,
+          name: "workgroup",
+          translationId: "workgroup",
           isSelected: false,
         },
       ],
@@ -122,7 +129,7 @@ class SearchComponent extends React.Component {
     return selectedData;
   }
   render() {
-    const { search, settings } = this.props;
+    const { search, user, settings } = this.props;
     const filter = settings.data.filter;
     return (
       <Styled.Container>
@@ -258,6 +265,18 @@ class SearchComponent extends React.Component {
             )}
           </Styled.FilterContainer>
         ))}
+
+        {this.state?.searchList?.[6]?.name === "workgroup" &&
+          this.state?.searchList?.[6]?.isSelected && (
+            <WorkgroupRadioGroup
+              filter={search.filter.workgroup}
+              onChange={workgroup => {
+                this.props.setFilter("workgroup", workgroup);
+              }}
+              workgroups={user.data.workgroups}
+            />
+          )}
+
         {this.handleButtonSelected() !== null && (
           <Styled.FormFilterContainer>
             <ListFilter
@@ -296,6 +315,7 @@ const mapStateToProps = (state, ownProps) => {
     developer: state.developer,
     search: state.search,
     settings: state.setting,
+    user: state.core_user,
   };
 };
 

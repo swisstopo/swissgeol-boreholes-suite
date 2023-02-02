@@ -10,6 +10,7 @@
 - Remove unnecessary JSON attributes when loading borehole geometries.
 - Place `original_lithology` field after `lithology` in viewer/editor settings for _Stratigraphy fields_.
 - Empty text or numeric fields are always displayed as `-` in the detail sections of the viewer mode.
+- Add workgroup filter to viewer.
 
 ### Fixed
 
