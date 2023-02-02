@@ -154,4 +154,11 @@ describe("Search filter tests", () => {
 
     cy.contains("td", "09.11.2021");
   });
+
+  it("filters boreholes by workgroup in viewer", () => {
+    login();
+    cy.contains("workgroup").click();
+    cy.contains("Default").click();
+    cy.wait("@borehole");
+  });
 });

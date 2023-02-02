@@ -11,6 +11,7 @@ const initialState = {
     refresh: 0,
     borehole_identifier: null,
     identifier_value: "",
+    workgroup: "all",
     original_name: "",
     alternate_name: "",
     project_name: "",
