@@ -1,6 +1,6 @@
 import { newEditableBorehole } from "../testHelpers";
 
-describe("Test for the borehole form.", () => {
+describe("Tests for the layer form.", () => {
   it("Creates a layer and fills all dropdowns with multiple selection.", () => {
     // create boreholes
     newEditableBorehole().as("borehole_id");
@@ -9,7 +9,7 @@ describe("Test for the borehole form.", () => {
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="add-stratigraphy-button"]').click();
     cy.wait("@stratigraphy_edit_create");
-    cy.get('[data-cy="add-layer-button"]').click();
+    cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
 
     cy.get('[data-cy="styled-layer-0"]').click();

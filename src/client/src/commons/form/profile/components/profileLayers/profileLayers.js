@@ -150,6 +150,7 @@ const ProfileLayers = props => {
                 <Tooltip title={t("add")} sx={{}}>
                   <AddCircleIcon
                     sx={{ marginLeft: 1.5 }}
+                    data-cy="add-litho-desc-icon"
                     onClick={addLithologicalDesc}
                   />
                 </Tooltip>

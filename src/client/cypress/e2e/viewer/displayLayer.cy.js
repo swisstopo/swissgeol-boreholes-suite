@@ -22,7 +22,7 @@ describe("Test for the borehole form.", () => {
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="add-stratigraphy-button"]').click();
     cy.wait("@stratigraphy_edit_create");
-    cy.get('[data-cy="add-layer-button"]').click();
+    cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
 
     cy.get('[data-cy="styled-layer-0"]').click();
