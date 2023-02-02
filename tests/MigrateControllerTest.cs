@@ -74,41 +74,28 @@ public class MigrateControllerTest
 
     private async Task AssertRecalculateCoordinatesAsync(bool onlyMissing, int transformedCoordinatesCount, Action<BdmsContext> asserter = default)
     {
-        var context = ContextFactory.CreateContext();
-        var boreholes = context.Boreholes.ToList();
+        Assert.AreEqual(10000, context.Boreholes.Count());
 
-        try
-        {
-            Assert.AreEqual(10000, context.Boreholes.Count());
+        var httpClient = new HttpClient(httpMessageHandler.Object);
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(httpClient).Verifiable();
 
-            var httpClient = new HttpClient(httpMessageHandler.Object);
-            httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(httpClient).Verifiable();
+        var jsonContent = () => JsonContent.Create(new { easting = "9876.543543543543543", northing = "1234.56235623562356235623" });
+        httpMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(m => Regex.IsMatch(m.RequestUri.AbsoluteUri, "easting=\\d{1,}\\.?\\d*&northing=\\d{1,}\\.?\\d*&format=json$")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = jsonContent() })
+            .Verifiable();
 
-            var jsonContent = () => JsonContent.Create(new { easting = "9876.543543543543543", northing = "1234.56235623562356235623" });
-            httpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.Is<HttpRequestMessage>(m => Regex.IsMatch(m.RequestUri.AbsoluteUri, "easting=\\d{1,}\\.?\\d*&northing=\\d{1,}\\.?\\d*&format=json$")),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = jsonContent() })
-                .Verifiable();
+        var result = await controller.RecalculateCoordinates(dryRun: true, onlyMissing: onlyMissing).ConfigureAwait(false) as JsonResult;
 
-            var result = await controller.RecalculateCoordinates(dryRun: false, onlyMissing: onlyMissing).ConfigureAwait(false) as JsonResult;
+        asserter?.Invoke(context);
+        Assert.AreEqual($"{{ transformedCoordinates = {transformedCoordinatesCount}, onlyMissing = {onlyMissing}, dryRun = True, success = True }}", result.Value.ToString());
 
-            asserter?.Invoke(ContextFactory.CreateContext());
-            Assert.AreEqual($"{{ transformedCoordinates = {transformedCoordinatesCount}, onlyMissing = {onlyMissing}, dryRun = False, success = True }}", result.Value.ToString());
-
-            // Verify API calls count.
-            httpMessageHandler.Protected()
-                .Verify("SendAsync", Times.Exactly(transformedCoordinatesCount), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
-        }
-        finally
-        {
-            // Reset test data
-            context.Database.ExecuteSqlRaw("TRUNCATE bdms.borehole CASCADE;");
-            context.Boreholes.AddRange(boreholes);
-            context.SaveChanges();
-        }
+        // Verify API calls count.
+        httpMessageHandler.Protected()
+            .Verify("SendAsync", Times.Exactly(transformedCoordinatesCount), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
     }
 
     private static void AssertBohrungJacquelyn30(BdmsContext context)
