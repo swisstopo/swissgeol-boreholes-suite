@@ -6,15 +6,14 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class LayerController : ControllerBase
+public class LayerController : BdmsControllerBase<Layer>
 {
     private readonly BdmsContext context;
-    private readonly ILogger logger;
 
-    public LayerController(BdmsContext context, ILogger<LayerController> logger)
+    public LayerController(BdmsContext context, ILogger<Layer> logger)
+        : base(context, logger)
     {
         this.context = context;
-        this.logger = logger;
     }
 
     /// <summary>
@@ -56,41 +55,6 @@ public class LayerController : ControllerBase
         }
 
         return Ok(layer);
-    }
-
-    /// <summary>
-    /// Asynchronously updates the <see cref="Layer"/> corresponding to
-    /// the <paramref name="layer"/> with the values to update.
-    /// </summary>
-    /// <param name="layer">The <see cref="Layer"/> to update.</param>
-    [HttpPut]
-    public async Task<IActionResult> EditAsync(Layer layer)
-    {
-        if (layer == null)
-        {
-            return BadRequest(ModelState);
-        }
-
-        var layerToUpdate = await GetLayersWithIncludes().SingleOrDefaultAsync(c => c.Id == layer.Id).ConfigureAwait(false);
-
-        if (layerToUpdate == null)
-        {
-            return NotFound();
-        }
-
-        context.Entry(layerToUpdate).CurrentValues.SetValues(layer);
-
-        try
-        {
-            await context.SaveChangesAsync().ConfigureAwait(false);
-            return Ok(layerToUpdate);
-        }
-        catch (Exception ex)
-        {
-            var errorMessage = "An error occurred while saving the entity changes.";
-            logger.LogError(ex, errorMessage);
-            return Problem(errorMessage, statusCode: StatusCodes.Status400BadRequest);
-        }
     }
 
     private IQueryable<Layer> GetLayersWithIncludes()

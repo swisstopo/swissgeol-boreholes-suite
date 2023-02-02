@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using static BDMS.Helpers;
 
 namespace BDMS;
 
@@ -17,7 +18,7 @@ public class LayerControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.CreateContext();
-        controller = new LayerController(ContextFactory.CreateContext(), new Mock<ILogger<LayerController>>().Object);
+        controller = new LayerController(ContextFactory.CreateContext(), new Mock<ILogger<Layer>>().Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -37,7 +38,7 @@ public class LayerControllerTest
     }
 
     [TestMethod]
-    public async Task GetEntriesByProfileIdReturnsNotFoundForInexistantId()
+    public async Task GetEntriesByProfileIdReturnsNotFoundForInexistentId()
     {
         var result = await controller.GetAsync(94578122).ConfigureAwait(false);
         Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
@@ -53,7 +54,7 @@ public class LayerControllerTest
     }
 
     [TestMethod]
-    public async Task GetLayerByInexistantIdReturnsNotFound()
+    public async Task GetLayerByInexistentIdReturnsNotFound()
     {
         var response = await controller.GetByIdAsync(9483157).ConfigureAwait(false);
         Assert.IsInstanceOfType(response.Result, typeof(NotFoundResult));
@@ -162,30 +163,37 @@ public class LayerControllerTest
 
         var layerToEdit = context.Layers.Single(c => c.Id == id);
         Assert.AreEqual(3, layerToEdit.CreatedById);
+        Assert.AreEqual(3, layerToEdit.UpdatedById);
         Assert.AreEqual(6_000_008, layerToEdit.InstrumentCasingId);
         Assert.AreEqual("Baby grow strategic haptic", layerToEdit.Notes);
 
-        // Upate Layer
-        var response = await controller.EditAsync(newLayer);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        try
+        {
+            // Update Layer
+            var response = await controller.EditAsync(newLayer);
+            var okResult = response as OkObjectResult;
+            Assert.AreEqual(200, okResult.StatusCode);
 
-        // Assert Updates and unchanged values
-        var updatedContext = ContextFactory.CreateContext();
-        var updatedLayer = updatedContext.Layers.Single(c => c.Id == id);
+            // Assert Updates and unchanged values
+            var updatedContext = ContextFactory.CreateContext();
+            var updatedLayer = updatedContext.Layers.Single(c => c.Id == id);
 
-        Assert.AreEqual(4, updatedLayer.CreatedById);
-        Assert.AreEqual(0, updatedLayer.InstrumentCasingId);
-        Assert.AreEqual("Freddy ate more cake than Maria.", updatedLayer.Notes);
-
-        // Reset edits
-        var res = await controller.EditAsync(originalLayer);
-        var okRes = res as OkObjectResult;
-        Assert.AreEqual(200, okRes.StatusCode);
+            Assert.AreEqual(4, updatedLayer.CreatedById);
+            Assert.AreEqual(1, updatedLayer.UpdatedById);
+            Assert.AreEqual(0, updatedLayer.InstrumentCasingId);
+            Assert.AreEqual("Freddy ate more cake than Maria.", updatedLayer.Notes);
+        }
+        finally
+        {
+            // Reset edits
+            var cleanupContext = ContextFactory.CreateContext();
+            cleanupContext.Update(originalLayer);
+            await cleanupContext.SaveChangesAsync();
+        }
     }
 
     [TestMethod]
-    public async Task EditWithInexistantIdReturnsNotFound()
+    public async Task EditWithInexistentIdReturnsNotFound()
     {
         var id = 9487794;
         var layer = new Layer
