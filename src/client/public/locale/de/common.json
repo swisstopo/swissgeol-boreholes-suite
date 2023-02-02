@@ -118,6 +118,8 @@
   "filterbymap": "Mit Karteausschinitt filtern",
   "filterByName": "Nach Name filtern",
   "firstname": "Vorname",
+  "first_add_layer_to_depth": "Erfassen Sie zunächst das Ende des letzten Layers.",
+  "first_add_lithology": "Erfassen Sie zunächst die Lithologie.",
   "flowPublication": "Publikations-Workflow",
   "flowPublicationStatus": "Status der Veröffentlichung",
   "flowRestart": "Neustart des Arbeitsablaufs",

@@ -118,6 +118,8 @@
   "filterbymap": "Filtrare con la mappa",
   "filterByName": "Filtrare per nome",
   "firstname": "Nome",
+  "first_add_layer_to_depth": "Innanzitutto, immettere la fine del livello precedente.",
+  "first_add_lithology": "Innanzitutto, creare la litologia.",
   "flowPublication": "Workflow di pubblicazione",
   "flowPublicationStatus": "Stato della pubblicazione",
   "flowRestart": "Riavviare il workflow",

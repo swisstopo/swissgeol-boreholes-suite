@@ -318,7 +318,7 @@ class WorkflowForm extends React.Component {
                               />
                             </div>
                             {(this.props.user.data.admin === true ||
-                              this.props.user.data.roles.indexOf("PUBLIC") >=
+                              this.props.user.data?.roles.indexOf("PUBLIC") >=
                                 0) &&
                             role === "EDIT" &&
                             this.props.workflow.data.role === "PUBLIC"

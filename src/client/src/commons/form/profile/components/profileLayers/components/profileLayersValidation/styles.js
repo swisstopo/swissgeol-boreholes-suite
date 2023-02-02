@@ -7,6 +7,9 @@ export const LayerContainer = styled.div`
 `;
 
 export const Layer = styled.div`
-  border: 1px solid lightgrey;
-  border-top: ${props => !props.isFirst && "0px"};
+  box-shadow: inset -1px 0 0 lightgrey, inset 0 -1px 0 lightgrey;
+  border-left: 2px solid lightgrey;
+  border-top: ${props => props.isFirst && "1px solid lightgrey"};
+  flex: "1 1 0px",
+  overflowY: "auto",
 `;

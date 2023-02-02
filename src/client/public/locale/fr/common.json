@@ -118,6 +118,8 @@
   "filterbymap": "Filtrer à partir de la carte",
   "filterByName": "Filtrer par nom",
   "firstname": "Prénom",
+  "first_add_layer_to_depth": "D'abord, entrez la fin de la couche précédente.",
+  "first_add_lithology": "D'abord, créez la lithologie.",
   "flowPublication": "Workflow de publication",
   "flowPublicationStatus": "Statut de la publication",
   "flowRestart": "Redémarrer le workflow",
