@@ -25,13 +25,13 @@ const ProfileView = props => {
         <Typography variant="subtitle2">
           <TranslationText id={fieldName} />
         </Typography>
-        <Typography style={rowStyle}>{text ?? "-"}</Typography>
+        <Typography style={rowStyle}>{text ? text : "-"}</Typography>
       </Stack>
     );
   }
 
   function getDomainRow(code, fieldName) {
-    const text = code?.[i18n.language] ?? "-";
+    const text = code?.[i18n.language];
     if (fieldName === "layer_lithology_top_bedrock") {
       fieldName = "lithology_top_bedrock";
     } // Fixes discrepancy between fieldName translationId and fieldName in visible Fields array.
@@ -41,14 +41,16 @@ const ProfileView = props => {
 
   function getDomainRowMultiple(codes, fieldName) {
     const text =
-      codes.length > 0 ? codes.map(code => code[i18n.language]).join(",") : "-";
+      codes.length > 0
+        ? codes.map(code => code[i18n.language]).join(",")
+        : null;
     return getRowIfVisible(fieldName, getRow(text, fieldName));
   }
 
   function getNumericTextRow(fieldName, number) {
-    const text = (
+    const text = number ? (
       <NumericFormat value={number} thousandSeparator="'" displayType="text" />
-    );
+    ) : null;
     return getTextRow(fieldName, text);
   }
 
