@@ -17,6 +17,7 @@
 - Fix partly unresponsive UI by avoiding unnecessary data loading on startup.
 - Fix bug where setting or changing the borehole location on the map in editor mode caused the application to freeze.
 - Disable possibility to draw and move point in detail map when borehole is not locked.
+- When copying a stratigraphy, layer properties with multiple values (i.e. USCS3) were ignored and not copied.
 
 ## v2.0.133 - 2023-01-19
 

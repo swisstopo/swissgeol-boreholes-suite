@@ -147,6 +147,18 @@ class CloneStratigraphy(Action):
                     id_lay
             """, rec[0])
 
+            await self.conn.execute("""
+                INSERT INTO bdms.layer_codelist(
+                    id_lay_fk, id_cli_fk, code_cli
+                )
+                SELECT
+                    $1, id_cli_fk, code_cli
+                FROM
+                    bdms.layer_codelist
+                WHERE
+                    id_lay_fk = $2
+            """, id_lay, rec[0])
+
         return {
             "id": id_sty
         }
