@@ -16,7 +16,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
 
     /// <inheritdoc />
     [Column("id_sty_fk")]
-    public int? StratigraphyId { get; set; }
+    public int StratigraphyId { get; set; }
 
     /// <inheritdoc />
     public Stratigraphy? Stratigraphy { get; set; }

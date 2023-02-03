@@ -159,6 +159,7 @@ public class LayerControllerTest
             Created = new DateTime(2021, 2, 14, 8, 55, 34).ToUniversalTime(),
             InstrumentCasingId = 0,
             Notes = "Freddy ate more cake than Maria.",
+            StratigraphyId = 6_000_010,
         };
 
         var layerToEdit = context.Layers.Single(c => c.Id == id);
