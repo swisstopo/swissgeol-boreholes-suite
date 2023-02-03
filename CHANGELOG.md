@@ -4,7 +4,7 @@
 
 ### Added
 
-- Added new data migration endpoint to recalculate the coordinates depending on whether the original srs is LV03 or LV95 based.
+- Added new data migration endpoint to recalculate the coordinates depending on whether the original spatial reference system is LV03 or LV95 based.
 
 ### Changed
 
