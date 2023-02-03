@@ -6,6 +6,18 @@
       "script": "start",
       "path": "src/client",
       "label": "npm: start",
+      "isBackground": true,
+      "problemMatcher": {
+          "owner": "custom",
+          "pattern": {
+              "regexp": "ˆ$"
+          },
+          "background": {
+              "activeOnStart": true,
+              "beginsPattern": "Compiling...",
+              "endsPattern": "Compiled .*"
+          }
+      }
     }
   ]
 }
