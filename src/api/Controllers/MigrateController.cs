@@ -10,6 +10,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class MigrateController : ControllerBase
 {
+    private const string Lv95ToLv03 = "lv95tolv03";
+    private const string Lv03ToLv95 = "lv03tolv95";
+
     private readonly BdmsContext context;
     private readonly IHttpClientFactory httpClientFactory;
     private readonly ILogger<MigrateController> logger;
@@ -42,6 +45,9 @@ public class MigrateController : ControllerBase
     ///
     /// Example:
     /// https://example.com/api/v2/migrate/recalculatecoordinates?onlymissing=true&dryrun=true
+    ///
+    /// Important:
+    /// In order to use this endpoint, you have to authenticate with an admin user.
     /// ]]>
     [HttpGet("recalculatecoordinates")]
     public async Task<IActionResult> RecalculateCoordinates(bool onlyMissing = true, bool dryRun = true)
@@ -49,47 +55,40 @@ public class MigrateController : ControllerBase
         var httpClient = httpClientFactory.CreateClient(nameof(MigrateController));
         httpClient.BaseAddress = new Uri("https://geodesy.geo.admin.ch/reframe/");
 
-        async Task<(double Easting, double Northing)> TransformCoordinatesAsync(string convertionMethod, double? x, double? y)
-        {
-            var reframeOptions = FormattableString.Invariant($"{convertionMethod}?easting={x}&northing={y}&format=json");
+        logger.LogInformation(
+            "Starting recalculating coordinates with the following options: onlyMissing=<{OnlyMissing}>; dryRun=<{DryRun}>", dryRun, onlyMissing);
 
-            using var response = await httpClient.GetAsync(new Uri(reframeOptions, UriKind.Relative)).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
-
-            var jsonResult = await response.Content.ReadFromJsonAsync<JsonElement>().ConfigureAwait(false);
-            return (
-                double.Parse(jsonResult.GetProperty("easting").GetString()!, CultureInfo.InvariantCulture),
-                double.Parse(jsonResult.GetProperty("northing").GetString()!, CultureInfo.InvariantCulture));
-        }
-
-        logger.LogInformation("Started recalculation coordinates with the following options: onlyMissing=<{OnlyMissing}>; dryRun=<{DryRun}>", dryRun, onlyMissing);
         var transformedCoordinates = 0;
 
         try
         {
             foreach (var borehole in context.Boreholes)
             {
-                if (borehole.OriginalReferenceSystem == ReferenceSystem.LV95)
-                {
-                    if (onlyMissing && borehole.LocationXLV03 != null && borehole.LocationYLV03 != null) continue;
+                var transformDirection = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? Lv95ToLv03 : Lv03ToLv95;
+                var sourceLocationX = transformDirection == Lv95ToLv03 ? borehole.LocationX : borehole.LocationXLV03;
+                var sourceLocationY = transformDirection == Lv95ToLv03 ? borehole.LocationY : borehole.LocationYLV03;
+                var destinationLocationX = transformDirection == Lv95ToLv03 ? borehole.LocationXLV03 : borehole.LocationX;
+                var destinationLocationY = transformDirection == Lv95ToLv03 ? borehole.LocationYLV03 : borehole.LocationY;
+                var setDestinationLocationX = (double x) => transformDirection == Lv95ToLv03 ? borehole.LocationXLV03 = x : borehole.LocationX = x;
+                var setDestinationLocationY = (double y) => transformDirection == Lv95ToLv03 ? borehole.LocationYLV03 = y : borehole.LocationY = y;
 
-                    var (easting, northing) = await TransformCoordinatesAsync(
-                        "lv95tolv03", borehole.LocationX, borehole.LocationY).ConfigureAwait(false);
-                    borehole.LocationXLV03 = easting;
-                    borehole.LocationYLV03 = northing;
-                }
-                else
-                {
-                    if (onlyMissing && borehole.LocationX != null && borehole.LocationY != null) continue;
+                if (onlyMissing && destinationLocationX != null && destinationLocationY != null) continue;
+                if (sourceLocationX == null || sourceLocationY == null) continue;
 
-                    var (easting, northing) = await TransformCoordinatesAsync(
-                        "lv03tolv95", borehole.LocationXLV03, borehole.LocationYLV03).ConfigureAwait(false);
-                    borehole.LocationX = easting;
-                    borehole.LocationY = northing;
+                var reframeOptions = FormattableString.Invariant(
+                    $"{transformDirection}?easting={sourceLocationX}&northing={sourceLocationY}&format=json");
 
-                    // Update geometry when changing LV95 coordinates
-                    borehole.Geometry = new Point(borehole.LocationX.Value, borehole.LocationY.Value) { SRID = 2056 };
-                }
+                using var response = await httpClient.GetAsync(new Uri(reframeOptions, UriKind.Relative)).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
+
+                var jsonResult = await response.Content.ReadFromJsonAsync<JsonElement>().ConfigureAwait(false);
+
+                var originalDecimalPlaces = new List<int> { GetDecimalPlaces(sourceLocationX.Value), GetDecimalPlaces(sourceLocationY.Value) }.OrderByDescending(x => x).First();
+                setDestinationLocationX(Math.Round(double.Parse(jsonResult.GetProperty("easting").GetString()!, CultureInfo.InvariantCulture), originalDecimalPlaces, MidpointRounding.AwayFromZero));
+                setDestinationLocationY(Math.Round(double.Parse(jsonResult.GetProperty("northing").GetString()!, CultureInfo.InvariantCulture), originalDecimalPlaces, MidpointRounding.AwayFromZero));
+
+                // Update geometry (using LV95 coordinates)
+                borehole.Geometry = new Point(borehole.LocationX!.Value, borehole.LocationY!.Value) { SRID = 2056 };
 
                 transformedCoordinates++;
             }
@@ -108,4 +107,10 @@ public class MigrateController : ControllerBase
 
         return new JsonResult(new { transformedCoordinates, onlyMissing, dryRun, success = true });
     }
+
+    /// <summary>
+    /// Gets the number of decimal places for the given <paramref name="value"/>.
+    /// </summary>
+    internal static int GetDecimalPlaces(double value) =>
+        value.ToString(CultureInfo.InvariantCulture).Split('.').Skip(1).FirstOrDefault()?.Length ?? default;
 }

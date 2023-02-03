@@ -102,7 +102,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get("tbody").children().should("have.length", 100);
 
     cy.get('[data-cy="radiobutton-LV03"]').click();
-    cy.get("tbody").children().should("have.length", 1);
+    cy.get("tbody").children().should("have.length", 100);
 
     // click reset label
     cy.get('[data-cy="spatial-reference-filter"]')
