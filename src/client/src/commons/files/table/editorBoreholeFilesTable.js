@@ -129,6 +129,7 @@ export default class EditorBoreholeFilesTable extends Component {
                 this.state.creating === true || this.state.file === null
               }
               loading={this.state.creating}
+              data-cy="attachments-upload-button"
               onClick={() => {
                 this.setState(
                   {
