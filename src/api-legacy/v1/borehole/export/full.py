@@ -172,7 +172,7 @@ class ZippedFullExport(Action):
                 SELECT
                     name_fil,
                     type_fil,
-                    conf_fil,
+                    name_uuid_fil,
                     id_fil
 
                 FROM
@@ -202,21 +202,17 @@ class ZippedFullExport(Action):
                 if file_info is None:
                     raise NotFound()
 
-                # parse che conf (json) column to extract
-                # the key name used in the s3 storage
-                conf = json.loads(file_info[2])
-
                 try:
 
                     f = await get_file.execute(file_info[3])
 
                     # Add the file to the zip file
                     zip_file.writestr(
-                        f'files/{conf["key"]}', f['file'].getvalue()
+                        f'files/{file_info[2]}', f['file'].getvalue()
                     )
 
                 except FileNotFoundError:
-                    not_found.append(conf['key'])
+                    not_found.append(file_info[2])
 
             if len(not_found) > 0:
                 print(f"\033[91m{len(not_found)} files not found 🤔\033[0m")

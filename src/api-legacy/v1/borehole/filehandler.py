@@ -195,7 +195,7 @@ class FileHandler(Producer):
                         val = await conn.fetchrow("""
                             SELECT
 								COALESCE(cnt, 0) cnt,
-                                conf_fil
+                                name_uuid_fil
                             FROM
                                 bdms.files
                             LEFT JOIN (
