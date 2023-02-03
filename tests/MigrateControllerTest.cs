@@ -43,23 +43,23 @@ public class MigrateControllerTest
     [TestMethod]
     public async Task RecalculateCoordinates()
     {
-        await AssertRecalculateCoordinatesAsync(onlyMissing: false, 8097, context =>
+        await AssertRecalculateCoordinatesAsync(onlyMissing: false, 8097, () =>
         {
-            AssertBohrungJacquelyn30(context);
-            AssertUnchangedBohrungLuciaCrist(context);
-            AssertBohrungJonathonAnderson60(context);
-            AssertBohrungPaulaGulgowski(context);
+            AssertBohrungJacquelyn30();
+            AssertUnchangedBohrungLuciaCrist();
+            AssertBohrungJonathonAnderson60();
+            AssertBohrungPaulaGulgowski();
         });
     }
 
     [TestMethod]
     public async Task RecalculateCoordinatesWithMissingDestinationLocationOnly()
     {
-        await AssertRecalculateCoordinatesAsync(onlyMissing: true, 1527, context =>
+        await AssertRecalculateCoordinatesAsync(onlyMissing: true, 1527, () =>
         {
-            AssertUnchangedBohrungLuciaCrist(context);
-            AssertBohrungJonathonAnderson60(context);
-            AssertUnchangedBohrungPaulaGulgowski(context);
+            AssertUnchangedBohrungLuciaCrist();
+            AssertBohrungJonathonAnderson60();
+            AssertUnchangedBohrungPaulaGulgowski();
         });
     }
 
@@ -72,7 +72,7 @@ public class MigrateControllerTest
         Assert.AreEqual(0, MigrateController.GetDecimalPlaces(100));
     }
 
-    private async Task AssertRecalculateCoordinatesAsync(bool onlyMissing, int transformedCoordinatesCount, Action<BdmsContext> asserter = default)
+    private async Task AssertRecalculateCoordinatesAsync(bool onlyMissing, int transformedCoordinatesCount, Action asserter = default)
     {
         Assert.AreEqual(10000, context.Boreholes.Count());
 
@@ -90,7 +90,7 @@ public class MigrateControllerTest
 
         var result = await controller.RecalculateCoordinates(dryRun: true, onlyMissing: onlyMissing).ConfigureAwait(false) as JsonResult;
 
-        asserter?.Invoke(context);
+        asserter?.Invoke();
         Assert.AreEqual($"{{ transformedCoordinates = {transformedCoordinatesCount}, onlyMissing = {onlyMissing}, dryRun = True, success = True }}", result.Value.ToString());
 
         // Verify API calls count.
@@ -98,7 +98,7 @@ public class MigrateControllerTest
             .Verify("SendAsync", Times.Exactly(transformedCoordinatesCount), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
     }
 
-    private static void AssertBohrungJacquelyn30(BdmsContext context)
+    private void AssertBohrungJacquelyn30()
     {
         var bohrung = context.Boreholes.Single(b => b.Id == 1000006);
         Assert.AreEqual("Jacquelyn30", bohrung.AlternateName);
@@ -110,7 +110,7 @@ public class MigrateControllerTest
         Assert.AreEqual(1234.5623562356, bohrung.LocationYLV03);
     }
 
-    private static void AssertUnchangedBohrungLuciaCrist(BdmsContext context)
+    private void AssertUnchangedBohrungLuciaCrist()
     {
         var bohrung = context.Boreholes.Single(b => b.Id == 1000014);
         Assert.AreEqual("Lucia_Crist", bohrung.AlternateName);
@@ -122,7 +122,7 @@ public class MigrateControllerTest
         Assert.AreEqual(null, bohrung.LocationYLV03);
     }
 
-    private static void AssertBohrungJonathonAnderson60(BdmsContext context)
+    private void AssertBohrungJonathonAnderson60()
     {
         var bohrung = context.Boreholes.Single(b => b.Id == 1000005);
         Assert.AreEqual("Jonathon.Anderson60", bohrung.AlternateName);
@@ -134,7 +134,7 @@ public class MigrateControllerTest
         Assert.AreEqual(1234.5623562356, bohrung.LocationYLV03);
     }
 
-    private static void AssertBohrungPaulaGulgowski(BdmsContext context)
+    private void AssertBohrungPaulaGulgowski()
     {
         var bohrung = context.Boreholes.Single(b => b.Id == 1000023);
         Assert.AreEqual("Paula.Gulgowski87", bohrung.AlternateName);
@@ -146,7 +146,7 @@ public class MigrateControllerTest
         Assert.AreEqual(213338, bohrung.LocationYLV03);
     }
 
-    private static void AssertUnchangedBohrungPaulaGulgowski(BdmsContext context)
+    private void AssertUnchangedBohrungPaulaGulgowski()
     {
         var bohrung = context.Boreholes.Single(b => b.Id == 1000023);
         Assert.AreEqual("Paula.Gulgowski87", bohrung.AlternateName);
