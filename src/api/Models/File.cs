@@ -37,6 +37,12 @@ public class File : IChangeTracking, IIdentifyable
     public string Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the unique <see cref="File"/> name.
+    /// </summary>
+    [Column("name_uuid_fil")]
+    public string? NameUuid { get; set; }
+
+    /// <summary>
     /// Gets or sets the <see cref="File"/>'s hash.
     /// </summary>
     [Column("hash_fil")]
@@ -53,12 +59,6 @@ public class File : IChangeTracking, IIdentifyable
     /// </summary>
     [Column("uploaded_fil")]
     public DateTime? Created { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="File"/>'s configuration.
-    /// </summary>
-    [Column("conf_fil", TypeName = "json")]
-    public string? Conf { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>s that have this <see cref="File"/> attached.
