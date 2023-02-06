@@ -222,7 +222,7 @@ public static class BdmsContextExtensions
                .RuleFor(o => o.Hash, f => f.Random.Hash())
                .RuleFor(o => o.Type, f => f.Random.Word())
                .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
-               .RuleFor(o => o.Conf, f => null);
+               .RuleFor(o => o.NameUuid, f => null);
 
         Models.File Seededfiles(int seed) => fakefiles.UseSeed(seed).Generate();
         context.BulkInsert(fileRange.Select(Seededfiles).ToList(), bulkConfig);

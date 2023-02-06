@@ -120,7 +120,7 @@ class SaveFile(FileBase):
                     """
                         INSERT INTO bdms.files (
                             name_fil, hash_fil,
-                            type_fil, conf_fil,
+                            type_fil, name_uuid_fil,
                             id_usr_fk
                         ) VALUES (
                             $1, $2, $3, $4, $5
@@ -130,10 +130,7 @@ class SaveFile(FileBase):
                     file_name,
                     file_hash,
                     content_type,
-                    json.dumps({
-                        'repo': 's3',
-                        'key': file_name_uuid
-                    }),
+                    file_name_uuid,
                     user['id']
                 )
 
@@ -158,7 +155,7 @@ class GetFile(FileBase):
                 SELECT
                     name_fil,
                     type_fil,
-                    conf_fil
+                    name_uuid_fil
 
                 FROM
                     bdms.files
@@ -170,17 +167,15 @@ class GetFile(FileBase):
             if rec is None:
                 raise NotFound()
 
-            conf = json.loads(rec[2])
-
             info = {
                 "contentType": rec[1],
                 "name": rec[0],
-                "conf": conf,
+                "nameUuid": rec[2],
                 "file": BytesIO() # Init the byteio object
             }
 
             # Download the file from s3
-            data = self.s3.get_object(options.s3_bucket_name, conf['key'])
+            data = self.s3.get_object(options.s3_bucket_name, rec[2])
 
             # Write the data stream to the byteio object
             for d in data.stream(32*1024):
@@ -207,7 +202,7 @@ class DeleteFile(FileBase):
                 SELECT
                     name_fil,
                     type_fil,
-                    conf_fil
+                    name_uuid_fil
 
                 FROM
                     bdms.files
@@ -219,11 +214,9 @@ class DeleteFile(FileBase):
             if rec is None:
                 raise NotFound()
 
-            conf = json.loads(rec[2])
-
             # Remove version of an object.
             self.s3.remove_object(
-                options.s3_bucket_name, conf['key'],
+                options.s3_bucket_name, rec[2],
             )
 
             await self.conn.execute("""

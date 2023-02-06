@@ -448,7 +448,7 @@ class ExportSpatiaLite(Action):
                                     uploaded_fil,
                                     'YYYY-MM-DD"T"HH24:MI:SSOF'
                                 ) as uploaded,
-                                conf_fil::TEXT as conf
+                                name_uuid_fil as nameUuid
 
                             FROM
                                 bdms.files
@@ -477,7 +477,7 @@ class ExportSpatiaLite(Action):
                                     fhash,
                                     ftype,
                                     uploaded,
-                                    conf
+                                    nameUuid
                                 ) VALUES (
                                     ?,?,?,?,?,?,?
                                 )
@@ -488,7 +488,7 @@ class ExportSpatiaLite(Action):
                             fle['hash'],
                             fle['type'],
                             fle['uploaded'],
-                            fle['conf']
+                            fle['nameUuid']
                         ))
 
                     bfiles = await self.conn.fetchval(f"""
@@ -718,7 +718,7 @@ class ImportSpatiaLite(Action):
                 rows = conn.execute("""
                     SELECT
                         id, name, description,
-                        fhash, ftype, uploaded, conf
+                        fhash, ftype, uploaded, nameUuid
                     FROM
                         files
                 """).fetchall()
@@ -729,13 +729,13 @@ class ImportSpatiaLite(Action):
                     fname = row[1]
                     fhash = row[3]
                     ftype = row[4]
-                    fconf = row[6]
+                    fnameUuid = row[6]
 
                     # check if a file with the same hash is already present
                     fil = await self.conn.fetchrow("""
                         SELECT
                             id_fil, id_usr_fk, hash_fil,
-                            type_fil, uploaded_fil, conf_fil
+                            type_fil, uploaded_fil, name_uuid_fil
 	                    FROM bdms.files
                         WHERE
                             hash_fil = $1
@@ -752,7 +752,7 @@ class ImportSpatiaLite(Action):
                             """
                                 INSERT INTO bdms.files (
                                     name_fil, hash_fil,
-                                    type_fil, conf_fil,
+                                    type_fil, name_uuid_fil,
                                     id_usr_fk
                                 ) VALUES (
                                     $1, $2, $3, $4, $5
