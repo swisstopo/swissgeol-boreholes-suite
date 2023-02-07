@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useRef,
+  useContext,
+} from "react";
 import * as Styled from "./styles";
 import TranslationText from "../../../translationText";
 import ProfileLayersValidation from "./components/profileLayersValidation";
@@ -12,6 +18,7 @@ import {
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { withTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "react-query";
+import { AlertContext } from "../../../../alert/alertContext";
 
 const ProfileLayers = props => {
   const {
@@ -27,6 +34,7 @@ const ProfileLayers = props => {
   const [selectedLithologicalDescription, setSelectedLithologicalDescription] =
     useState(null);
   const [showDelete, setShowDelete] = useState();
+  const alertContext = useContext(AlertContext);
 
   const mounted = useRef(false);
 
@@ -36,8 +44,7 @@ const ProfileLayers = props => {
 
   const addMutation = useMutation(
     async params => {
-      const result = await addLithologicalDescription(params);
-      return result;
+      return await addLithologicalDescription(params);
     },
     {
       onSuccess: () => {
@@ -88,19 +95,19 @@ const ProfileLayers = props => {
 
   const addLithologicalDesc = () => {
     if (
-      lithoDescQuery?.data[lithoDescQuery?.data.length - 1]?.toDepth === null
+      lithoDescQuery?.data?.length !== 0 &&
+      lithoDescQuery?.data[lithoDescQuery?.data?.length - 1]?.toDepth == null
     ) {
-      alert(t("first_add_layer_to_depth"));
-      return;
+      alertContext.error(t("first_add_layer_to_depth"));
+    } else {
+      setSelectedLithologicalDescription(null);
+      layers?.data?.length !== 0
+        ? addMutation.mutate({
+            stratigraphyId: selectedStratigraphyID,
+            fromDepth: lithoDescQuery?.data?.at(-1)?.toDepth ?? 0,
+          })
+        : alertContext.error(t("first_add_lithology"));
     }
-
-    setSelectedLithologicalDescription(null);
-    layers?.data?.length !== 0
-      ? addMutation.mutate({
-          stratigraphyId: selectedStratigraphyID,
-          fromDepth: lithoDescQuery?.data.at(-1)?.toDepth ?? 0,
-        })
-      : alert(t("first_add_lithology"));
   };
 
   return (

@@ -13,6 +13,8 @@ import EditorComponent from "./pages/editor/editorComponent";
 import SettingCmp from "./pages/settings/settingCmp";
 import DataLoader from "./pages/settings/dataLoader";
 import AcceptTerms from "./pages/term/accept";
+import { AlertProvider } from "./commons/alert/alertContext";
+import { AlertBanner } from "./commons/alert/alertBanner";
 
 const cpaths = [
   {
@@ -112,33 +114,36 @@ class App extends React.Component {
     ) : loader.terms === false ? (
       <AcceptTerms />
     ) : (
-      <ThemeProvider theme={theme}>
-        <QueryClientProvider client={queryClient}>
-          <Router>
-            <Switch>
-              {cpaths.map((route, index) => {
-                return (
-                  <Route
-                    component={route.body}
-                    exact={route.exact}
-                    key={index}
-                    path={route.path}
-                  />
-                );
-              })}
-              <Route
-                component={r => (
-                  <Redirect
-                    to={{
-                      pathname: process.env.PUBLIC_URL + "/",
-                    }}
-                  />
-                )}
-              />
-            </Switch>
-          </Router>
-        </QueryClientProvider>
-      </ThemeProvider>
+      <AlertProvider>
+        <AlertBanner />
+        <ThemeProvider theme={theme}>
+          <QueryClientProvider client={queryClient}>
+            <Router>
+              <Switch>
+                {cpaths.map((route, index) => {
+                  return (
+                    <Route
+                      component={route.body}
+                      exact={route.exact}
+                      key={index}
+                      path={route.path}
+                    />
+                  );
+                })}
+                <Route
+                  component={r => (
+                    <Redirect
+                      to={{
+                        pathname: process.env.PUBLIC_URL + "/",
+                      }}
+                    />
+                  )}
+                />
+              </Switch>
+            </Router>
+          </QueryClientProvider>
+        </ThemeProvider>
+      </AlertProvider>
     );
   }
 }
