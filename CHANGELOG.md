@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.0.169 - 2023-02-07
+
 ### Added
 
 - Added new data migration endpoint to recalculate the coordinates depending on whether the original spatial reference system is LV03 or LV95 based.
