@@ -27,7 +27,7 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     public async Task<IActionResult> CreateAsync(TEntity entity)
     {
         await context.AddAsync(entity).ConfigureAwait(false);
-        return await SaveChangesAsync(() => CreatedAtAction(nameof(TEntity), entity)).ConfigureAwait(false);
+        return await SaveChangesAsync(() => Ok(entity)).ConfigureAwait(false);
     }
 
     /// <summary>
