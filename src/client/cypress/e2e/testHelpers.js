@@ -7,15 +7,11 @@ const adminUserAuth = {
 };
 
 export const interceptApiCalls = () => {
+  // Api V1
   cy.intercept("/api/v1/borehole").as("borehole");
   cy.intercept("/api/v1/borehole/profile/layer").as("layer");
-  cy.intercept("/api/v2/layer/**").as("layer-v2");
-  cy.intercept("/api/v2/layer?profileId=**").as("casing-layers");
   cy.intercept("/api/v1/borehole/edit", req => {
     return (req.alias = `edit_${req.body.action.toLowerCase()}`);
-  });
-  cy.intercept("/api/v1/borehole/stratigraphy/layer/edit", req => {
-    return (req.alias = `layer_edit_${req.body.action.toLowerCase()}`);
   });
   cy.intercept("/api/v1/user/edit", req => {
     return (req.alias = `user_edit_${req.body.action.toLowerCase()}`);
@@ -32,10 +28,17 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v1/borehole/stratigraphy/edit", req => {
     return (req.alias = `stratigraphy_edit_${req.body.action.toLowerCase()}`);
   });
-  cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v1/setting").as("setting");
   cy.intercept("api/v1/borehole/codes").as("codes");
+
+  // Api V2
+  cy.intercept("/api/v2/layer/**").as("layer-v2");
+  cy.intercept("/api/v2/layer?profileId=**").as("casing-layers");
+  cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
+  cy.intercept("/api/v2/lithologicaldescription*").as(
+    "lithological_description",
+  );
 };
 
 /**

@@ -1,7 +1,7 @@
 import { newEditableBorehole } from "../testHelpers";
 
 describe("Tests for the lithological description column.", () => {
-  it("Creates ... ??? ", () => {
+  it("Creates, updates and deletes lithological descriptions ", () => {
     // create boreholes
     newEditableBorehole().as("borehole_id");
 
@@ -12,6 +12,193 @@ describe("Tests for the lithological description column.", () => {
 
     // try add lithological description without lithology
     cy.get('[data-cy="add-litho-desc-icon"]').click();
+    cy.wait("@lithological_description");
+
+    //Assure cannot add lithological description without lithology.
+    cy.get('[data-cy="lithological-description-0"]').should("not.exist");
+
+    // Add three layers
+    cy.get('[data-cy="add-layer-icon"]').click();
+    cy.wait("@layer");
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
+    cy.wait("@layer");
+    cy.contains("Show all fields").children(".checkbox").click();
+    cy.get('[data-cy="depth_to"]').click().clear().type(50);
+    cy.wait("@stratigraphy_layer_edit_patch");
+    cy.wait("@layer");
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
+
+    cy.get('[data-cy="add-layer-icon"]').click();
+    cy.wait("@layer");
+    cy.get('[data-cy="styled-layer-1"] [data-testid="ModeEditIcon"]').click();
+    cy.wait("@layer");
+    cy.contains("Show all fields").children(".checkbox").click();
+    cy.get('[data-cy="depth_to"]').click().clear().type(62.5);
+    cy.wait("@stratigraphy_layer_edit_patch");
+    cy.wait("@layer");
+    cy.get('[data-cy="styled-layer-1"] [data-testid="ClearIcon"]').click();
+
+    cy.get('[data-cy="add-layer-icon"]').click();
+    cy.wait("@layer");
+    cy.get('[data-cy="styled-layer-2"] [data-testid="ModeEditIcon"]').click();
+    cy.wait("@layer");
+    cy.contains("Show all fields").children(".checkbox").click();
+    cy.get('[data-cy="depth_to"]').click().clear().type(120);
+    cy.wait("@stratigraphy_layer_edit_patch");
+    cy.wait("@layer");
+    cy.get('[data-cy="styled-layer-2"] [data-testid="ClearIcon"]').click();
+
+    cy.get('[data-cy="add-litho-desc-icon"]').click();
+    cy.wait("@lithological_description");
+    cy.get('[data-cy="lithological-description-0"]').contains("0 m");
+
+    cy.get(
+      '[data-cy="lithological-description-0"] [data-testid="ModeEditIcon"] ',
+    ).click();
+    cy.get('[data-cy="decription-textfield"]')
+      .click()
+      .clear()
+      .type("A new description.");
+
+    // fill quality dropdown
+    cy.get('[data-cy="qt-decription-select"]')
+      .find('[role="button"]')
+      .click({ force: true });
+
+    cy.get('.MuiPaper-elevation [role="listbox"]')
+      .find('[role="option"]')
+      .last()
+      .click();
+
+    // fill to depth dropdown
+    cy.get('[data-cy="to-depth-select"]')
+      .find('[role="button"]')
+      .click({ force: true });
+
+    cy.get('.MuiPaper-elevation [role="listbox"]')
+      .find('[role="option"]')
+      .eq(1)
+      .click();
+
+    // stop editing
+    cy.get(
+      '[data-cy="lithological-description-0"] [data-testid="ClearIcon"]',
+    ).click();
+
+    cy.get('[data-cy="lithological-description-0"]').contains("0 m");
+    cy.get('[data-cy="lithological-description-0"]').contains(
+      "A new description.",
+    );
+    cy.get('[data-cy="lithological-description-0"]').contains(
+      "Quality of the description: very good",
+    );
+    cy.get('[data-cy="lithological-description-0"]').contains("50 m");
+
+    // add lithological description that stretches two layers.
+    cy.get('[data-cy="add-litho-desc-icon"]').click();
+    cy.wait("@lithological_description");
+    cy.get(
+      '[data-cy="lithological-description-1"] [data-testid="ModeEditIcon"] ',
+    ).click();
+
+    // fill to depth dropdown
+    cy.get('[data-cy="to-depth-select"]')
+      .find('[role="button"]')
+      .click({ force: true });
+
+    cy.get('[role="listbox"]').find('[role="option"]').eq(2).click();
+    cy.wait("@lithological_description");
+
+    // stop editing
+    cy.get(
+      '[data-cy="lithological-description-1"] [data-testid="ClearIcon"]',
+    ).click();
+
+    cy.get('[data-cy="lithological-description-1"]').should(
+      "have.css",
+      "height",
+      "280px",
+    );
+    // delete last layer
+    cy.get(
+      '[data-cy="lithological-description-1"] [data-testid="DeleteIcon"] ',
+    ).click();
+
+    cy.contains("Confirm").click();
+    cy.wait("@lithological_description"); // Delete request
+    cy.wait("@lithological_description"); // Updated get request
+    cy.wait(5000);
+
+    // add two lithological descriptions
+    cy.get('[data-cy="add-litho-desc-icon"]').click();
+    cy.wait("@lithological_description");
+    cy.get(
+      '[data-cy="lithological-description-1"] [data-testid="ModeEditIcon"] ',
+    ).click();
+    cy.get('[data-cy="to-depth-select"]')
+      .find('[role="button"]')
+      .click({ force: true });
+
+    cy.get('.MuiPaper-elevation [role="listbox"]')
+      .find('[role="option"]')
+      .eq(1)
+      .click();
+    cy.wait("@lithological_description");
+    cy.wait("@lithological_description");
+
+    // stop editing
+    cy.get(
+      '[data-cy="lithological-description-1"] [data-testid="ClearIcon"]',
+    ).click();
+    cy.wait("@lithological_description");
+    cy.wait(2000);
+
+    cy.get('[data-cy="add-litho-desc-icon"]').click();
+    cy.wait("@lithological_description");
+    cy.get(
+      '[data-cy="lithological-description-2"] [data-testid="ModeEditIcon"] ',
+    ).click();
+    cy.get('[data-cy="to-depth-select"]')
+      .find('[role="button"]')
+      .click({ force: true });
+
+    cy.get('.MuiPaper-elevation [role="listbox"]')
+      .find('[role="option"]')
+      .eq(1)
+      .click();
+    cy.wait("@lithological_description");
+
+    // stop editing
+    cy.get(
+      '[data-cy="lithological-description-2"] [data-testid="ClearIcon"]',
+    ).click();
+    cy.wait("@lithological_description");
+    cy.wait(2000);
+
+    // delete the one in the middle
+    cy.get(
+      '[data-cy="lithological-description-1"] [data-testid="DeleteIcon"] ',
+    ).click();
+
+    // assert error message
+    cy.get('[data-cy="lithological-description-1"]').contains(
+      "You are about to delete this layer, how do you want to procede?",
+    );
+    cy.contains("Confirm").click();
+    cy.wait("@lithological_description"); // Delete request
+    cy.wait("@lithological_description"); // Updated get request
+    cy.get('[data-cy="lithological-description-1"]').contains(
+      "There is an undefined interval in the sequence",
+    );
+    // refill the middle
+    cy.get(
+      '[data-cy="lithological-description-1"] [data-testid="AddCircleIcon"] ',
+    ).click();
+
+    // assert no error message
+    cy.get('[data-cy="lithological-description-1"]').contains(
+      "Quality of the description: -",
+    );
 
     // stop editing
     cy.contains("a", "Stop editing").click();

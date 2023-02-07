@@ -215,6 +215,7 @@ const LithologicalDescriptionLayers = props => {
           .map((item, index) => (
             <Stack
               direction="row"
+              data-cy={`lithological-description-${index}`}
               sx={{
                 borderTop: index === 0 ? "1px solid lightgrey" : "0px",
                 borderLeft: "1px solid lightgrey",
@@ -248,7 +249,6 @@ const LithologicalDescriptionLayers = props => {
                         sx={{
                           fontWeight: "bold",
                           overflow: "auto",
-                          direction: "rtl",
                           display: "-webkit-box",
                           WebkitLineClamp: "2",
                           WebkitBoxOrient: "vertical",
@@ -275,6 +275,7 @@ const LithologicalDescriptionLayers = props => {
                           {t("layer_depth_from")}
                         </InputLabel>
                         <Select
+                          data-cy="from-depth-select"
                           defaultValue={fromDepth}
                           input={<Input id="from-depth" />}
                           onChange={e => {
@@ -290,6 +291,7 @@ const LithologicalDescriptionLayers = props => {
                         </Select>
                       </FormControl>
                       <TextField
+                        data-cy="decription-textfield"
                         label={t("description")}
                         multiline
                         rows={3}
@@ -311,8 +313,8 @@ const LithologicalDescriptionLayers = props => {
                         <InputLabel htmlFor="qt-description">
                           {t("qt_description")}
                         </InputLabel>
-
                         <Select
+                          data-cy="qt-decription-select"
                           defaultValue={qtDescriptionId}
                           input={<Input id="qt-description" />}
                           onChange={e => {
@@ -337,6 +339,7 @@ const LithologicalDescriptionLayers = props => {
                           {t("layer_depth_to")}
                         </InputLabel>
                         <Select
+                          data-cy="to-depth-select"
                           defaultValue={toDepth}
                           input={<Input id="to-depth" />}
                           onChange={e => {
