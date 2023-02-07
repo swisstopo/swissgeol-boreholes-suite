@@ -12,7 +12,7 @@ describe("Tests for the layer form.", () => {
     cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
 
-    cy.get('[data-cy="styled-layer-0"]').click();
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
 
     // fill all dropdowns with two values
     cy.get('[aria-multiselectable="true"]')
@@ -62,6 +62,7 @@ describe("Tests for the layer form.", () => {
         ]);
       }
     });
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
 
     // stop editing
     cy.contains("a", "Stop editing").click();
