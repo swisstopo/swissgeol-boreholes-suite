@@ -74,5 +74,6 @@
 *.rtf         text eol=crlf
 *.svg         text eol=lf
 
-# *nix shell scripts always use LF (see .editorconfig)
-*.sh eol=lf
+# *nix shell scripts or files used in scripts always use LF (see .editorconfig)
+*.sh          text eol=lf
+CHANGELOG.md  text eol=lf
