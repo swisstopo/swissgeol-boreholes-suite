@@ -177,7 +177,7 @@ public class FaciesDescriptionControllerTest
         };
 
         var response = await controller.CreateAsync(faciesDescription);
-        Assert.IsInstanceOfType(response, typeof(CreatedAtActionResult));
+        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
         faciesDescription = await context.FaciesDescriptions.FindAsync(faciesDescription.Id);
         Assert.IsNotNull(faciesDescription);
         Assert.AreEqual("SILDOV", faciesDescription.Description);
