@@ -99,7 +99,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
            .RuleFor(o => o.Locked, f => f.Date.Past().ToUniversalTime().OrNull(f, .9f))
-           .RuleFor(o => o.WorkgroupId, f => f.PickRandom(workgroupRange).OrNull(f, .2f))
+           .RuleFor(o => o.WorkgroupId, f => 1)
            .RuleFor(o => o.Workgroup, _ => default!)
            .RuleFor(o => o.IsPublic, f => { if (borehole_ids % 10 < 9) return true; else return false; }) // Generate mostly public records.
            .RuleFor(o => o.LocationX, f => { if (borehole_ids % 10 < 5) return f.Random.Int(2477750, 2830750).OrNull(f, .1f); else return f.Random.Double(2477750, 2830750).OrNull(f, .1f); })
