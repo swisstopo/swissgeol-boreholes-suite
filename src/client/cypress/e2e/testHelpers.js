@@ -10,6 +10,8 @@ export const interceptApiCalls = () => {
   // Api V1
   cy.intercept("/api/v1/borehole").as("borehole");
   cy.intercept("/api/v1/borehole/profile/layer").as("layer");
+  cy.intercept("/api/v1/borehole/edit/files?id=**").as("download-file");
+  cy.intercept("/api/v1/borehole/edit/files").as("files");
   cy.intercept("/api/v1/borehole/edit", req => {
     return (req.alias = `edit_${req.body.action.toLowerCase()}`);
   });

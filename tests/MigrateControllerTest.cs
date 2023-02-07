@@ -43,7 +43,7 @@ public class MigrateControllerTest
     [TestMethod]
     public async Task RecalculateCoordinates()
     {
-        await AssertRecalculateCoordinatesAsync(onlyMissing: false, 8097, () =>
+        await AssertRecalculateCoordinatesAsync(onlyMissing: false, 8098, () =>
         {
             AssertBohrungJacquelyn30();
             AssertUnchangedBohrungLuciaCrist();
@@ -55,7 +55,7 @@ public class MigrateControllerTest
     [TestMethod]
     public async Task RecalculateCoordinatesWithMissingDestinationLocationOnly()
     {
-        await AssertRecalculateCoordinatesAsync(onlyMissing: true, 1527, () =>
+        await AssertRecalculateCoordinatesAsync(onlyMissing: true, 1533, () =>
         {
             AssertUnchangedBohrungLuciaCrist();
             AssertBohrungJonathonAnderson60();
@@ -101,11 +101,11 @@ public class MigrateControllerTest
     private void AssertBohrungJacquelyn30()
     {
         var bohrung = context.Boreholes.Single(b => b.Id == 1000006);
-        Assert.AreEqual("Jacquelyn30", bohrung.AlternateName);
+        Assert.AreEqual("Laurence.Padberg3", bohrung.AlternateName);
         Assert.AreEqual(ReferenceSystem.LV95, bohrung.OriginalReferenceSystem);
-        Assert.AreEqual(2562551.5183428312, bohrung.LocationX);
-        Assert.AreEqual(1265907.3354597937, bohrung.LocationY);
-        Assert.AreEqual("POINT (2562551.5183428312 1265907.3354597937)", bohrung.Geometry.ToString());
+        Assert.AreEqual(2626103.1988343936, bohrung.LocationX);
+        Assert.AreEqual(1125366.3469565178, bohrung.LocationY);
+        Assert.AreEqual("POINT (2626103.1988343936 1125366.3469565178)", bohrung.Geometry.ToString());
         Assert.AreEqual(9876.5435435435, bohrung.LocationXLV03);
         Assert.AreEqual(1234.5623562356, bohrung.LocationYLV03);
     }
@@ -113,48 +113,48 @@ public class MigrateControllerTest
     private void AssertUnchangedBohrungLuciaCrist()
     {
         var bohrung = context.Boreholes.Single(b => b.Id == 1000014);
-        Assert.AreEqual("Lucia_Crist", bohrung.AlternateName);
-        Assert.AreEqual(ReferenceSystem.LV95, bohrung.OriginalReferenceSystem);
-        Assert.AreEqual(2525078.5292495643, bohrung.LocationX);
-        Assert.AreEqual(null, bohrung.LocationY);
+        Assert.AreEqual("Brendan.Trantow38", bohrung.AlternateName);
+        Assert.AreEqual(ReferenceSystem.LV03, bohrung.OriginalReferenceSystem);
+        Assert.AreEqual(2622479.1608037096, bohrung.LocationX);
+        Assert.AreEqual(1099464.3374982823, bohrung.LocationY);
         Assert.AreEqual("POINT (2761165 1074306)", bohrung.Geometry.ToString());
-        Assert.AreEqual(706310.53521463671, bohrung.LocationXLV03);
-        Assert.AreEqual(null, bohrung.LocationYLV03);
+        Assert.AreEqual(null, bohrung.LocationXLV03);
+        Assert.AreEqual(224735.18581408318, bohrung.LocationYLV03);
     }
 
     private void AssertBohrungJonathonAnderson60()
     {
         var bohrung = context.Boreholes.Single(b => b.Id == 1000005);
-        Assert.AreEqual("Jonathon.Anderson60", bohrung.AlternateName);
+        Assert.AreEqual("Sherri.Goodwin99", bohrung.AlternateName);
         Assert.AreEqual(ReferenceSystem.LV95, bohrung.OriginalReferenceSystem);
-        Assert.AreEqual(2655485.6419794895, bohrung.LocationX);
-        Assert.AreEqual(1098169.2770996222, bohrung.LocationY);
-        Assert.AreEqual("POINT (2655485.6419794895 1098169.2770996222)", bohrung.Geometry.ToString());
-        Assert.AreEqual(9876.5435435435, bohrung.LocationXLV03);
-        Assert.AreEqual(1234.5623562356, bohrung.LocationYLV03);
+        Assert.AreEqual(2582431.203588229, bohrung.LocationX);
+        Assert.AreEqual(1189604.098138797, bohrung.LocationY);
+        Assert.AreEqual("POINT (2582431.2035882291 1189604.0981387971)", bohrung.Geometry.ToString());
+        Assert.AreEqual(9876.543543544, bohrung.LocationXLV03);
+        Assert.AreEqual(1234.562356236, bohrung.LocationYLV03);
     }
 
     private void AssertBohrungPaulaGulgowski()
     {
         var bohrung = context.Boreholes.Single(b => b.Id == 1000023);
-        Assert.AreEqual("Paula.Gulgowski87", bohrung.AlternateName);
+        Assert.AreEqual("Floyd29", bohrung.AlternateName);
         Assert.AreEqual(ReferenceSystem.LV03, bohrung.OriginalReferenceSystem);
         Assert.AreEqual(9877, bohrung.LocationX);
         Assert.AreEqual(1235, bohrung.LocationY);
         Assert.AreEqual("POINT (9877 1235)", bohrung.Geometry.ToString());
-        Assert.AreEqual(812122, bohrung.LocationXLV03);
-        Assert.AreEqual(213338, bohrung.LocationYLV03);
+        Assert.AreEqual(655269, bohrung.LocationXLV03);
+        Assert.AreEqual(297874, bohrung.LocationYLV03);
     }
 
     private void AssertUnchangedBohrungPaulaGulgowski()
     {
         var bohrung = context.Boreholes.Single(b => b.Id == 1000023);
-        Assert.AreEqual("Paula.Gulgowski87", bohrung.AlternateName);
+        Assert.AreEqual("Floyd29", bohrung.AlternateName);
         Assert.AreEqual(ReferenceSystem.LV03, bohrung.OriginalReferenceSystem);
-        Assert.AreEqual(2747672, bohrung.LocationX);
-        Assert.AreEqual(1189454, bohrung.LocationY);
-        Assert.AreEqual("POINT (2824917 1089615)", bohrung.Geometry.ToString());
-        Assert.AreEqual(812122, bohrung.LocationXLV03);
-        Assert.AreEqual(213338, bohrung.LocationYLV03);
+        Assert.AreEqual(2662527, bohrung.LocationX);
+        Assert.AreEqual(1253325, bohrung.LocationY);
+        Assert.AreEqual("POINT (2593699 1100228)", bohrung.Geometry.ToString());
+        Assert.AreEqual(655269, bohrung.LocationXLV03);
+        Assert.AreEqual(297874, bohrung.LocationYLV03);
     }
 }
