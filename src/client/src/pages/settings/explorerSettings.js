@@ -17,7 +17,7 @@ import { fillingEditorData } from "./data/fillingEditorData";
 import { stratigraphyFieldEditorData } from "./data/stratigraphyFieldEditorData";
 import EditorSettingList from "./components/editorSettingList/editorSettingList";
 import MapSettings from "./components/editorSettingList/mapSettings";
-import { AlertContext } from "../../commons/alert";
+import { AlertContext } from "../../commons/alert/alertContext";
 
 const projections = {
   "EPSG:21781":
