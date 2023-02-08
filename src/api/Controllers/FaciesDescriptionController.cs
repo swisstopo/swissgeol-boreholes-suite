@@ -1,4 +1,6 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +23,7 @@ public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
     /// </summary>
     /// <param name="stratigraphyId">The id of the stratigraphy referenced in the facies descriptions to get.</param>
     [HttpGet]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<FaciesDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
     {
         var faciesDescriptions = context.FaciesDescriptions
@@ -40,6 +43,7 @@ public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
     /// </summary>
     /// <param name="id">The id of the facies description to get.</param>
     [HttpGet("{id}")]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<FaciesDescription>> GetByIdAsync(int id)
     {
         var faciesDescription = await context.FaciesDescriptions

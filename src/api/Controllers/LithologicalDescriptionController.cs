@@ -1,4 +1,6 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +23,7 @@ public class LithologicalDescriptionController : BdmsControllerBase<Lithological
     /// </summary>
     /// <param name="stratigraphyId">The id of the stratigraphy referenced in the lithological descriptions to get.</param>
     [HttpGet]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<LithologicalDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
     {
         var lithologicalDescriptions = context.LithologicalDescriptions
@@ -40,6 +43,7 @@ public class LithologicalDescriptionController : BdmsControllerBase<Lithological
     /// </summary>
     /// <param name="id">The id of the lithological description to get.</param>
     [HttpGet("{id}")]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<LithologicalDescription>> GetByIdAsync(int id)
     {
         var lithologicalDescription = await context.LithologicalDescriptions

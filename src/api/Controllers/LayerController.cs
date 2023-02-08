@@ -1,4 +1,6 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +23,7 @@ public class LayerController : BdmsControllerBase<Layer>
     /// </summary>
     /// <param name="profileId">The id of the profile containing the layers to get.</param>
     [HttpGet]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<Layer>>> GetAsync([FromQuery] int? profileId = null)
     {
         var layers = GetLayersWithIncludes().AsNoTracking();
@@ -42,6 +45,7 @@ public class LayerController : BdmsControllerBase<Layer>
     /// </summary>
     /// <param name="id">The id of layer to get.</param>
     [HttpGet("{id}")]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Layer>> GetByIdAsync(int id)
     {
         var layer = await GetLayersWithIncludes()
