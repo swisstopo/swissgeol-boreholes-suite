@@ -106,7 +106,10 @@ describe("Tests for the lithological description column.", () => {
       .find('[role="button"]')
       .click({ force: true });
 
-    cy.get('[role="listbox"]').find('[role="option"]').eq(2).click();
+    cy.get('.MuiPaper-elevation [role="listbox"]')
+      .find('[role="option"]')
+      .eq(2)
+      .click();
     cy.wait("@lithological_description");
 
     // stop editing
