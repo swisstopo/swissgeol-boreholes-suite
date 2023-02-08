@@ -20,6 +20,7 @@ public class CantonController : Controller
     /// Asynchronously gets all existing values (except null) for <see cref="Borehole.Canton"/>/>.
     /// </summary>
     [HttpGet]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<string>> GetAllAsync()
     {
         return await context.Boreholes
