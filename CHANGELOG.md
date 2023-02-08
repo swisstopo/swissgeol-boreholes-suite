@@ -6,6 +6,10 @@
 
 - Replaced all generic browser alerts with styled alerts.
 
+### Fixed
+
+- Fix bug where selecting the location filter as viewer or editor caused the application to crash.
+
 ## v2.0.169 - 2023-02-07
 
 ### Added

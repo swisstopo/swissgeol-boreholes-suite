@@ -1,7 +1,8 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace BDMS.Controllers;
 
@@ -20,6 +21,7 @@ public class CantonController : Controller
     /// Asynchronously gets all existing values (except null) for <see cref="Borehole.Canton"/>/>.
     /// </summary>
     [HttpGet]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<string>> GetAllAsync()
     {
         return await context.Boreholes
