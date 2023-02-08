@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Replaced all generic browser alerts with styled alerts.
+
 ## v2.0.169 - 2023-02-07
 
 ### Added
@@ -18,7 +22,6 @@
 - Empty text or numeric fields are always displayed as `-` in the detail sections of the viewer mode.
 - Add workgroup filter to viewer.
 - Removed unused table `bdms.geodin_files` from database.
-- Replaced all generic browser alerts with styled alerts.
 
 ### Fixed
 
