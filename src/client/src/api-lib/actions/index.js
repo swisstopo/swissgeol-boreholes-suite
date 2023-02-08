@@ -21,12 +21,6 @@ export function getHeight(easting, northing) {
       northing: northing,
       sr: 2056,
     },
-    // headers: {
-    //   "Access-Control-Allow-Origin": "*",
-    //   "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
-    //   "Access-Control-Allow-Headers": "Origin, Content-Type, X-Auth-Token"
-    // },
-    // withCredentials: true
   });
 }
 
@@ -37,10 +31,6 @@ export function downloadFile(path, params) {
       responseType: "blob",
       headers: getAuthorizationHeaders(),
       params: params,
-      // onDownloadProgress: function(progressEvent) {
-      //   var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-      //   console.info("Progress: ", percentCompleted);
-      // }
     })
       .then(response => {
         const fileName = response.headers["content-disposition"]
@@ -73,10 +63,6 @@ export function downloadFilePost(path, action) {
         headers: getAuthorizationHeaders(),
         data: action,
         method: "POST",
-        // onDownloadProgress: function(progressEvent) {
-        //   var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-        //   console.info("Progress: ", percentCompleted);
-        // }
       },
     )
       .then(response => {
@@ -191,9 +177,6 @@ export function fetch(path, action, method = "post", auth = null) {
               type: action.type + "_CONNECTION_ERROR",
               path: path,
               error: error,
-              // json: error.response.data,
-              // status: error.response.status,
-              // message: error.response.statusText
             });
             reject(error, dispatch);
           });

@@ -24,12 +24,13 @@ import {
   rejectWorkflow,
   resetWorkflow,
 } from "../../../api-lib/index";
-
+import { AlertContext } from "../../alert/alertContext";
 import CommentArea from "./commentArea";
 import DateText from "../dateText";
 import TranslationText from "../../form/translationText";
 
 class WorkflowForm extends React.Component {
+  static contextType = AlertContext;
   constructor(props) {
     super(props);
     this.load = this.load.bind(this);
@@ -84,7 +85,7 @@ class WorkflowForm extends React.Component {
       this.props.borehole.data.lock === null ||
       this.props.borehole.data.lock.username !== this.props.user.data.username
     ) {
-      alert("Borehole not locked");
+      this.context.error("Borehole not locked");
     } else {
       this.props.updateWorkflow(value);
       if (this.updateAttributeDelay !== false) {
@@ -607,7 +608,7 @@ class WorkflowForm extends React.Component {
                       this.props.borehole.data.lock.username !==
                         this.props.user.data.username
                     ) {
-                      alert("Borehole not locked");
+                      this.context.error("Borehole not locked");
                     } else {
                       const borehole = {
                         ...this.props.borehole.data,

@@ -3,9 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-
 import { Route, Switch, withRouter } from "react-router-dom";
-
 import {
   updateBorehole,
   loadBorehole,
@@ -24,8 +22,10 @@ import RestrictionSegment from "./segments/restrictionSegment";
 import BoreholeGeneralSegment from "./segments/boreholeGeneralSegment";
 import BoreholeDetailSegment from "./segments/boreholeDetailSegment";
 import LocationSegment from "./segments/locationSegment";
+import { AlertContext } from "../../alert/alertContext";
 
 class BoreholeForm extends React.Component {
+  static contextType = AlertContext;
   constructor(props) {
     super(props);
     this.checkattribute = false;
@@ -114,14 +114,16 @@ class BoreholeForm extends React.Component {
 
   check(attribute, value) {
     if (this.props.borehole.data.role !== "EDIT") {
-      alert(`Borehole status (${this.props.borehole.data.role}) not editable`);
+      this.context.error(
+        `Borehole status (${this.props.borehole.data.role}) not editable`,
+      );
       return;
     }
     if (
       this.props.borehole.data.lock === null ||
       this.props.borehole.data.lock.username !== this.props.user.data.username
     ) {
-      alert("Borehole not locked");
+      this.context.error("Borehole not locked");
       return;
     }
     // Check for uniqueness and patch
@@ -167,7 +169,7 @@ class BoreholeForm extends React.Component {
                         },
                       );
                     } else if (response.status === 200) {
-                      alert(response.data.message);
+                      this.context.error(response.data.message);
                       if (response.data.error === "E-900") {
                         this.setState(
                           {
@@ -198,14 +200,14 @@ class BoreholeForm extends React.Component {
 
   checkLock() {
     if (this.props.borehole.data.role !== "EDIT") {
-      alert("Borehole status not editable");
+      this.context.error("Borehole status not editable");
       return false;
     }
     if (
       this.props.borehole.data.lock === null ||
       this.props.borehole.data.lock.username !== this.props.user.data.username
     ) {
-      alert("Borehole not locked");
+      this.context.error("Borehole not locked");
       return false;
     }
     return true;
@@ -298,7 +300,7 @@ class BoreholeForm extends React.Component {
                 },
               );
             } else if (response.status === 200) {
-              alert(response.data.message);
+              this.context.error(response.data.message);
               if (response.data.error === "errorLocked") {
                 this.setState(
                   {

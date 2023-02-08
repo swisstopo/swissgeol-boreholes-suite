@@ -17,6 +17,7 @@ import { fillingEditorData } from "./data/fillingEditorData";
 import { stratigraphyFieldEditorData } from "./data/stratigraphyFieldEditorData";
 import EditorSettingList from "./components/editorSettingList/editorSettingList";
 import MapSettings from "./components/editorSettingList/mapSettings";
+import { AlertContext } from "../../commons/alert";
 
 const projections = {
   "EPSG:21781":
@@ -32,6 +33,7 @@ const projections = {
 };
 
 class ExplorerSettings extends React.Component {
+  static contextType = AlertContext;
   constructor(props) {
     super(props);
     _.forEach(projections, function (proj, srs) {
@@ -420,7 +422,7 @@ const mapDispatchToProps = (dispatch, state) => {
     addExplorerMap: (layer, type, result, position = 0) => {
       if (type === "WMS") {
         if (!layer.CRS.includes("EPSG:2056")) {
-          alert("Only EPSG:2056 is supported");
+          this.context.error("Only EPSG:2056 is supported");
         } else {
           dispatch(
             patchSettings(
@@ -449,7 +451,7 @@ const mapDispatchToProps = (dispatch, state) => {
           conf.hasOwnProperty("matrixSet") &&
           !conf.matrixSet.includes("2056")
         ) {
-          alert("Only EPSG:2056 is supported");
+          this.context.error("Only EPSG:2056 is supported");
         } else {
           dispatch(
             patchSettings(
