@@ -291,7 +291,7 @@ const LithologicalDescriptionLayers = props => {
                         </Select>
                       </FormControl>
                       <TextField
-                        data-cy="decription-textfield"
+                        data-cy="description-textfield"
                         label={t("description")}
                         multiline
                         rows={3}

@@ -55,7 +55,9 @@ describe("Tests for the lithological description column.", () => {
     cy.get(
       '[data-cy="lithological-description-0"] [data-testid="ModeEditIcon"] ',
     ).click();
-    cy.get('[data-cy="decription-textfield"]')
+    cy.get('[data-cy="description-textfield"]')
+      .find("textarea")
+      .first()
       .click()
       .clear()
       .type("A new description.");
