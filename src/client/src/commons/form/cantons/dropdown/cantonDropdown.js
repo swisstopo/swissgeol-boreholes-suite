@@ -30,7 +30,7 @@ class CantonDropdown extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
-      this.state.cantons.length !== nextState.cantons.length ||
+      this.state.cantons?.length !== nextState.cantons?.length ||
       this.state.selected !== nextState.selected
     );
   }
@@ -55,14 +55,12 @@ class CantonDropdown extends React.Component {
         fluid={true}
         search
         selection
-        options={
-          cantons.map((canton, idx) => ({
-            key: "mun-opt-" + idx,
-            value: canton,
-            text: canton,
-            content: <Header content={canton} />,
-          })) //: null
-        }
+        options={cantons?.map((canton, idx) => ({
+          key: "mun-opt-" + idx,
+          value: canton,
+          text: canton,
+          content: <Header content={canton} />,
+        }))}
         value={selected}
         onChange={this.handleChange}
       />
