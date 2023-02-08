@@ -22,7 +22,7 @@
   "beforedate": "Before this date",
   "borehole": "Borehole",
   "borehole_identifier": "ID type",
-  "borehole_identifier_value": "Code",
+  "borehole_identifier_value": "ID code",
   "boreholeidentifiers": "ID types",
   "boreholes": "Boreholes",
   "boreholestatus": "Borehole status",
