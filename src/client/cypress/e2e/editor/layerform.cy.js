@@ -25,7 +25,6 @@ describe("Tests for the layer form.", () => {
           .last()
           .scrollIntoView()
           .click();
-        cy.wait("@layer_edit_patch");
       });
 
     cy.get('[aria-multiselectable="true"]')
@@ -37,7 +36,6 @@ describe("Tests for the layer form.", () => {
           .find('[role="option"]')
           .eq(1)
           .click();
-        cy.wait("@layer_edit_patch");
       });
 
     const multipleDropdownValues = [];
