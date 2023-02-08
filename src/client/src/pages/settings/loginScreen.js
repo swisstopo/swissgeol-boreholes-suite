@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { Button, Form, Modal, TextArea } from "semantic-ui-react";
-
+import { AlertContext } from "../../commons/alert/alertContext";
 import LoginPreview from "../../commons/form/loginPreview";
 import TranslationKeys from "../../commons/translationKeys";
 
@@ -14,6 +14,7 @@ import {
 } from "../../api-lib/index";
 
 class LoginScreen extends React.Component {
+  static contextType = AlertContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -81,7 +82,7 @@ class LoginScreen extends React.Component {
               saving: false,
             });
           } else {
-            alert(r.data.message);
+            this.context.error(r.data.message);
             this.setState({
               saving: false,
             });
@@ -100,7 +101,7 @@ class LoginScreen extends React.Component {
           confirmPublication: false,
         });
       } else {
-        alert(r.data.message);
+        this.context.error(r.data.message);
       }
     });
   }

@@ -4,10 +4,11 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 
 import { Form, Button } from "semantic-ui-react";
-
+import { AlertContext } from "../alert/alertContext";
 import { createFeedback } from "../../api-lib/index";
 
 class Feedback extends React.Component {
+  static contextType = AlertContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -92,7 +93,7 @@ class Feedback extends React.Component {
                           message: "",
                         });
                       } else {
-                        alert(response.data.message);
+                        this.context.error(response.data.message);
                         this.setState({
                           sending: false,
                         });

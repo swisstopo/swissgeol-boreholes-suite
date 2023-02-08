@@ -18,11 +18,10 @@ import WorkgroupMultiselect from "../../commons/form/workgroup/multi";
 import SupplierRadioGroup from "../../commons/form/supplier/radio";
 import TranslationText from "../../commons/form/translationText";
 import DateText from "../../commons/form/dateText";
-
+import { AlertContext } from "../../commons/alert/alertContext";
 import DownloadLink from "../../commons/files/downloadlink";
 
 import {
-  // exportDatabase,
   exportDatabaseAsync,
   exportDatabaseStatus,
   exportDatabaseCancel,
@@ -35,15 +34,13 @@ import {
 } from "../../api-lib/index";
 
 class DatabaseSettings extends React.Component {
+  static contextType = AlertContext;
   constructor(props) {
     super(props);
     this.state = {
       export: false,
       restore: false,
       exportWorkgroup: [],
-      // enabledWorkgroups: props.user.data.workgroups.filter(
-      //   w => w.disabled === null && w.supplier === false
-      // ),
       enabledWorkgroups: [],
       importWorkgroup: null,
       importSupplier: null,
@@ -143,8 +140,6 @@ class DatabaseSettings extends React.Component {
         const suppliers = r.data.data.filter(w => w.supplier === true);
         this.setState(
           {
-            // export: false,
-            // exportWorkgroup: [],
             enabledWorkgroups: enabledWorkgroups,
             importWorkgroup: null,
             importSupplier: null,
@@ -167,7 +162,6 @@ class DatabaseSettings extends React.Component {
       } else {
         this.setState(
           {
-            // export: false,
             exportWorkgroup: [],
             enabledWorkgroups: [],
             importWorkgroup: null,
@@ -287,21 +281,11 @@ class DatabaseSettings extends React.Component {
                         response => {
                           console.log(response);
                           if (response.data.success === false) {
-                            alert(response.data.message);
+                            this.context.error(response.data.message);
                           }
                           this.reset();
                         },
                       );
-                      // exportDatabase(
-                      //   this.state.exportWorkgroup
-                      // ).then(
-                      //   response => {
-                      //     if (response.success === false) {
-                      //       alert(response.message);
-                      //     }
-                      //     this.reset();
-                      //   }
-                      // );
                     },
                   );
                 }}
@@ -343,10 +327,7 @@ class DatabaseSettings extends React.Component {
                   <DateText date={this.state.lastExport.date} fromnow />
                   )
                   <br />
-                  <DownloadLink
-                    // caption={file.name}
-                    id={this.state.lastExport.id}
-                  />
+                  <DownloadLink id={this.state.lastExport.id} />
                 </div>
               )
             )}
@@ -392,7 +373,6 @@ class DatabaseSettings extends React.Component {
         {this.state.restore === true ? (
           <Segment style={{ margin: 0 }}>
             <div
-              // style={{ margin: 0 }}
               style={{
                 marginBottom: "1em",
                 padding: "1em",
@@ -534,7 +514,6 @@ class DatabaseSettings extends React.Component {
                 />
                 <div
                   style={{
-                    // textAlign: 'center'
                     marginTop: "1.5em",
                   }}>
                   <Button
@@ -608,9 +587,6 @@ DatabaseSettings.propTypes = {
   t: PropTypes.func,
   workgroups: PropTypes.object,
 };
-
-// DatabaseSettings.defaultProps = {
-// };
 
 const mapStateToProps = state => {
   return {

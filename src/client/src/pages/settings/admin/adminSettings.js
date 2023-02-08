@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import store from "../../../reducers";
+import { AlertContext } from "../../../commons/alert/alertContext";
 
 import {
   Button,
@@ -36,6 +37,7 @@ import TranslationText from "../../../commons/form/translationText";
 import { WorkgroupRoleSettings } from "./workgroupRoleSettings";
 
 class AdminSettings extends React.Component {
+  static contextType = AlertContext;
   constructor(props) {
     super(props);
     this.setRole = this.setRole.bind(this);
@@ -298,7 +300,7 @@ class AdminSettings extends React.Component {
                         this.state.uAdmin,
                       ).then(response => {
                         if (response.data.success === false) {
-                          alert(response.data.message);
+                          this.context.error(response.data.message);
                         } else {
                           this.listUsers();
                         }
@@ -314,7 +316,7 @@ class AdminSettings extends React.Component {
                         this.state.uAdmin,
                       ).then(response => {
                         if (response.data.success === false) {
-                          alert(response.data.message);
+                          this.context.error(response.data.message);
                         } else {
                           this.listUsers();
                         }

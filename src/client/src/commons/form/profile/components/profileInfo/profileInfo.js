@@ -1,4 +1,10 @@
-import React, { useRef, useState, useCallback, useEffect } from "react";
+import React, {
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+  useContext,
+} from "react";
 import * as Styled from "./styles";
 import InfoList from "./components/infoList";
 import InfoCheckBox from "./components/infoCheckBox";
@@ -6,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { getData, sendProfile } from "./api";
 import _ from "lodash";
 import useCasingList from "../../hooks/useCasingList";
+import { AlertContext } from "../../../../alert/alertContext";
 
 const ProfileInfo = props => {
   const {
@@ -19,7 +26,7 @@ const ProfileInfo = props => {
 
   const mounted = useRef(false);
   const { t } = useTranslation();
-
+  const alertContext = useContext(AlertContext);
   const [state, setState] = useState({
     isPatching: false,
     updateAttributeDelay: {},
@@ -56,7 +63,7 @@ const ProfileInfo = props => {
 
   const updateChange = (attribute, value, to = true, isNumber = false) => {
     if (!isEditable) {
-      alert(t("common:errorStartEditing"));
+      alertContext.error(t("common:errorStartEditing"));
       return;
     }
     setState(prevState => ({ ...prevState, isPatching: true }));

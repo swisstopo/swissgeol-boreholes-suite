@@ -17,11 +17,13 @@ import {
 } from "semantic-ui-react";
 
 import { createBorehole, importBoreholeList } from "../../../api-lib/index";
-
+import { AlertContext } from "../../alert/alertContext";
 import SearchEditorComponent from "../../search/editor/searchEditorComponent";
+
 let isMounted = true;
 
 class MenuEditorSearch extends React.Component {
+  static contextType = AlertContext;
   constructor(props) {
     super(props);
     this.updateDimensions = this.updateDimensions.bind(this);
@@ -301,7 +303,7 @@ class MenuEditorSearch extends React.Component {
                           if (response.data.success) {
                             this.props.refresh();
                           } else {
-                            alert(response.data.message);
+                            this.context.error(response.data.message);
                           }
                         },
                       );
@@ -330,7 +332,7 @@ class MenuEditorSearch extends React.Component {
                               modal: false,
                             },
                             () => {
-                              alert(response.data.message);
+                              this.context.error(response.data.message);
                               window.location.reload();
                             },
                           );

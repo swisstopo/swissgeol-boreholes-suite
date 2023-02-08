@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import * as Styled from "./styles";
 import { Icon, Radio, Form, Input } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
@@ -8,6 +8,8 @@ import {
   deleteLayer,
 } from "../../../../../../../api-lib/index";
 import ErrorTypes from "./errorTypes";
+import { AlertContext } from "../../../../../../alert/alertContext";
+
 const ProfileLayersError = props => {
   const {
     title,
@@ -24,6 +26,7 @@ const ProfileLayersError = props => {
   const [resolvingAction, setResolvingAction] = useState(null);
   const [isDelete, setIsDelete] = useState(false);
   const [value, setValue] = useState(null);
+  const alertContext = useContext(AlertContext);
 
   useEffect(() => {
     let e;
@@ -41,15 +44,9 @@ const ProfileLayersError = props => {
       case "topOverlap":
         e = ErrorTypes[2];
         break;
-      // case 'bottomOverlap':
-      //   e = ErrorTypes[2];
-      //   break;
       case "topDisjoint":
         e = ErrorTypes[3];
         break;
-      // case 'bottomDisjoint':
-      //   e = ErrorTypes[3];
-      //   break;
       case "missingLayers":
         e = ErrorTypes[4];
         break;
@@ -99,7 +96,7 @@ const ProfileLayersError = props => {
           if (response.data.success) {
             onUpdated("fixErrors");
           } else {
-            alert(response.data.message);
+            alertContext.error(response.data.message);
           }
         })
         .catch(error => {
@@ -111,7 +108,7 @@ const ProfileLayersError = props => {
           if (response.data.success) {
             onUpdated("fixErrors");
           } else {
-            alert(response.data.message);
+            alertContext.error(response.data.message);
           }
         })
         .catch(error => {
@@ -123,7 +120,7 @@ const ProfileLayersError = props => {
           if (response.data.success) {
             onUpdated("deleteLayer");
           } else {
-            alert(response.data.message);
+            alertContext.error(response.data.message);
           }
         })
         .catch(function (error) {
@@ -143,7 +140,6 @@ const ProfileLayersError = props => {
           }}>
           <Styled.ErrorMessageContainer>
             <Icon name="warning sign" />
-            {/* {title === 'missingTo' && <>Add end of the layer</>} */}
             <TranslationText id={error?.messageId} />
           </Styled.ErrorMessageContainer>
 
@@ -225,7 +221,6 @@ const ProfileLayersError = props => {
         <Styled.SolutionContainer>
           <Styled.ErrorMessageContainer>
             <Icon name="warning sign" />
-            {/* {title === 'missingTo' && <>Add end of the layer</>} */}
             <TranslationText id={error?.messageId} />
           </Styled.ErrorMessageContainer>
 

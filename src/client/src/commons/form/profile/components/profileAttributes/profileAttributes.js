@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useContext,
+} from "react";
 import * as Styled from "./styles";
 import { Checkbox } from "semantic-ui-react";
 import TranslationText from "../../../translationText";
@@ -7,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { getData, sendAttribute } from "./api";
 import ProfileAttributeList from "./components/profileAttributeList/profileAttributeList";
 import { useSelector } from "react-redux";
+import { AlertContext } from "../../../../alert/alertContext";
 
 const ProfileAttributes = props => {
   const { id, isEditable, onUpdated, attribute, reloadAttribute } = props.data;
@@ -14,9 +21,6 @@ const ProfileAttributes = props => {
     codes: state.core_domain_list,
     geocode: "Geol",
   }));
-
-  const { t } = useTranslation();
-
   const [showAll, setShowAll] = useState(false);
   const [state, setState] = useState({
     isFetching: false,
@@ -70,6 +74,8 @@ const ProfileAttributes = props => {
       fill_kind: null,
     },
   });
+  const { t } = useTranslation();
+  const alertContext = useContext(AlertContext);
 
   const mounted = useRef(false);
 
@@ -100,7 +106,7 @@ const ProfileAttributes = props => {
 
   const updateChange = (attribute, value, to = true, isNumber = false) => {
     if (!isEditable) {
-      alert(t("common:errorStartEditing"));
+      alertContext.error(t("common:errorStartEditing"));
       return;
     }
 
