@@ -10,7 +10,7 @@ describe("Search filter tests", () => {
     login();
     cy.contains("span", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
-    let restrictionDropdown = cy.contains("label", "Identifier").next();
+    let restrictionDropdown = cy.contains("label", "ID type").next();
 
     restrictionDropdown.click();
     restrictionDropdown
@@ -109,7 +109,7 @@ describe("Search filter tests", () => {
     cy.contains("Show all fields").children(".checkbox").click();
 
     // input value
-    cy.contains("Original Lithology").next().find("input").type("Wooden Chair");
+    cy.contains("Original lithology").next().find("input").type("Wooden Chair");
     cy.wait("@edit_list");
 
     // check content of table
@@ -157,7 +157,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by workgroup in viewer", () => {
     login();
-    cy.contains("workgroup").click();
+    cy.contains("Workgroup").click();
     cy.contains("Default").click();
     cy.wait("@borehole");
   });

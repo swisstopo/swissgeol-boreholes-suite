@@ -13,7 +13,7 @@ describe("Admin settings test", () => {
     // add user
     cy.get('[placeholder="Username"]').type("Testuser");
     cy.get('[placeholder="Password"]').type("123456");
-    cy.get('[placeholder="Firstname"]').type("Cinnabuns");
+    cy.get('[placeholder="First name"]').type("Cinnabuns");
     cy.get('[placeholder="Surname"]').type("Moonshine");
     cy.get('[data-cy="add-user-button"]').click();
 
@@ -38,7 +38,7 @@ describe("Admin settings test", () => {
       .should("have.length", 7);
 
     // show disabled users
-    cy.contains("show Disabled").click();
+    cy.contains("Show Disabled").click();
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
@@ -56,7 +56,7 @@ describe("Admin settings test", () => {
     cy.get('.modal [data-cy="enable-user-button"]').click();
 
     // show all users
-    cy.contains("show all").click();
+    cy.contains("Show All").click();
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
@@ -78,7 +78,7 @@ describe("Admin settings test", () => {
 
     cy.get('[placeholder="Username"]').type("Bugby");
     cy.get('[placeholder="Password"]').type("Pea%a-boo3Moanihill");
-    cy.get('[placeholder="Firstname"]').type("Doodoohill");
+    cy.get('[placeholder="First name"]').type("Doodoohill");
     cy.get('[placeholder="Surname"]').type("Gummoo");
     cy.get('[data-cy="add-user-button"]').click();
 
@@ -108,7 +108,7 @@ describe("Admin settings test", () => {
     // add non admin user
     cy.get('[placeholder="Username"]').type("Wiggleton");
     cy.get('[placeholder="Password"]').type("Trashbug");
-    cy.get('[placeholder="Firstname"]').type("Chewbrain");
+    cy.get('[placeholder="First name"]').type("Chewbrain");
     cy.get('[placeholder="Surname"]').type("Pimplehill");
     cy.get('[data-cy="add-user-button"]').click();
 
