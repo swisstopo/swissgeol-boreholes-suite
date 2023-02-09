@@ -211,7 +211,7 @@ const LithologicalDescriptionLayers = props => {
     <Box>
       {displayDescriptions &&
         displayDescriptions
-          ?.sort((a, b) => a.fromDepth - b - fromDepth)
+          ?.sort((a, b) => a.fromDepth - b.fromDepth)
           .map((item, index) => (
             <Stack
               direction="row"
