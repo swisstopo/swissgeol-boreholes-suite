@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added new location migration endpoint in order to be able to manually update location information (country_bho, canton_bho and municipality_bho).
+
 ### Changed
 
 - Replaced all generic browser alerts with styled alerts.
