@@ -1,7 +1,6 @@
 ﻿using BDMS.Controllers;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -13,23 +12,23 @@ using System.Text.RegularExpressions;
 namespace BDMS;
 
 [TestClass]
-public class MigrateControllerTest
+public class CoordinateControllerTest
 {
     private BdmsContext context;
-    private MigrateController controller;
+    private CoordinateController controller;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
     private Mock<HttpMessageHandler> httpMessageHandler;
-    private Mock<ILogger<MigrateController>> loggerMock;
+    private Mock<ILogger<CoordinateController>> loggerMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
-        loggerMock = new Mock<ILogger<MigrateController>>();
+        loggerMock = new Mock<ILogger<CoordinateController>>();
         httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
 
-        controller = new MigrateController(context, httpClientFactoryMock.Object, loggerMock.Object);
+        controller = new CoordinateController(context, httpClientFactoryMock.Object, loggerMock.Object);
     }
 
     [TestCleanup]
@@ -41,9 +40,9 @@ public class MigrateControllerTest
     }
 
     [TestMethod]
-    public async Task RecalculateCoordinates()
+    public async Task MigrateCoordinates()
     {
-        await AssertRecalculateCoordinatesAsync(onlyMissing: false, 8097, () =>
+        await AssertMigrateCoordinatesAsync(onlyMissing: false, 8097, () =>
         {
             AssertBohrungJacquelyn30();
             AssertUnchangedBohrungLuciaCrist();
@@ -53,9 +52,9 @@ public class MigrateControllerTest
     }
 
     [TestMethod]
-    public async Task RecalculateCoordinatesWithMissingDestinationLocationOnly()
+    public async Task MigrateCoordinatesWithMissingDestinationLocationOnly()
     {
-        await AssertRecalculateCoordinatesAsync(onlyMissing: true, 1527, () =>
+        await AssertMigrateCoordinatesAsync(onlyMissing: true, 1527, () =>
         {
             AssertUnchangedBohrungLuciaCrist();
             AssertBohrungJonathonAnderson60();
@@ -66,13 +65,13 @@ public class MigrateControllerTest
     [TestMethod]
     public void GetDecimalPlaces()
     {
-        Assert.AreEqual(3, MigrateController.GetDecimalPlaces(1.123));
-        Assert.AreEqual(6, MigrateController.GetDecimalPlaces(100.123456));
-        Assert.AreEqual(2, MigrateController.GetDecimalPlaces(1.01));
-        Assert.AreEqual(0, MigrateController.GetDecimalPlaces(100));
+        Assert.AreEqual(3, CoordinateController.GetDecimalPlaces(1.123));
+        Assert.AreEqual(6, CoordinateController.GetDecimalPlaces(100.123456));
+        Assert.AreEqual(2, CoordinateController.GetDecimalPlaces(1.01));
+        Assert.AreEqual(0, CoordinateController.GetDecimalPlaces(100));
     }
 
-    private async Task AssertRecalculateCoordinatesAsync(bool onlyMissing, int transformedCoordinatesCount, Action asserter = default)
+    private async Task AssertMigrateCoordinatesAsync(bool onlyMissing, int transformedCoordinatesCount, Action asserter = default)
     {
         Assert.AreEqual(10000, context.Boreholes.Count());
 
@@ -88,7 +87,7 @@ public class MigrateControllerTest
             .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = jsonContent() })
             .Verifiable();
 
-        var result = await controller.RecalculateCoordinates(dryRun: true, onlyMissing: onlyMissing).ConfigureAwait(false) as JsonResult;
+        var result = await controller.MigrateAsync(dryRun: true, onlyMissing: onlyMissing).ConfigureAwait(false) as JsonResult;
 
         asserter?.Invoke();
         Assert.AreEqual($"{{ transformedCoordinates = {transformedCoordinatesCount}, onlyMissing = {onlyMissing}, dryRun = True, success = True }}", result.Value.ToString());
