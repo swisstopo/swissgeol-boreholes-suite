@@ -1,4 +1,6 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +24,7 @@ public class CodeListController : ControllerBase
     /// </summary>
     /// <param name="schema">The schema of the codelists to get.</param>
     [HttpGet]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Codelist>> GetAsync(string? schema = null)
     {
         var codeLists = context.Codelists.AsQueryable();
