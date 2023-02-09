@@ -56,7 +56,7 @@ describe("Admin settings test", () => {
     cy.get('.modal [data-cy="enable-user-button"]').click();
 
     // show all users
-    cy.contains("Show all").click();
+    cy.contains("show all").click();
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
@@ -89,7 +89,7 @@ describe("Admin settings test", () => {
     // contains "Yes" in administrator column
     cy.get('[data-cy="user-list-table-body"]')
       .children()
-      .contains("td", "Bugby")
+      .contains("td", "Bugby")§
       .siblings()
       .contains("td", "Yes")
       .click();
