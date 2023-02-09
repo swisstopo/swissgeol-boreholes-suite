@@ -228,7 +228,6 @@ public static class BdmsContextExtensions
         context.BulkInsert(fileRange.Select(Seededfiles).ToList(), bulkConfig);
 
         // Seed borehole_files
-        var boreholeFileSeeds = Enumerable.Range(0, 30);
         var fakeBoreholeFiles = new Faker<BoreholeFile>()
             .StrictMode(true)
             .RuleFor(o => o.FileId, f => f.PickRandom(fileRange))
@@ -249,7 +248,7 @@ public static class BdmsContextExtensions
 
         BoreholeFile SeededBoreholeFiles(int seed) => fakeBoreholeFiles.UseSeed(seed).Generate();
 
-        var filesToInsert = boreholeFileSeeds
+        var filesToInsert = boreholeRange
             .Select(SeededBoreholeFiles)
             .GroupBy(bf => new { bf.BoreholeId, bf.FileId })
             .Select(bf => bf.FirstOrDefault())
@@ -469,6 +468,20 @@ public static class BdmsContextExtensions
         }
 
         context.BulkInsert(faciesDescriptionsToInsert, bulkConfig);
+
+        // Seed layer_codelist table (only for a limited number of layers)
+        var layerRange = Enumerable.Range(7_000_000, 10_000);
+        var layerCodelistRange = Enumerable.Range(0, layerRange.Count() * 3); // Multiply layer range by 3 to generate multiple entries per layer
+        var fakeLayerCodelists = new Faker<LayerCodelist>()
+            .StrictMode(true)
+            .RuleFor(o => o.LayerId, f => f.PickRandom(layerRange))
+            .RuleFor(o => o.CodelistId, f => f.PickRandom(uscsIds))
+            .RuleFor(o => o.SchemaName, "mcla101")
+            .RuleFor(o => o.Layer, _ => default!)
+            .RuleFor(o => o.Codelist, _ => default!);
+
+        LayerCodelist SeededLayerCodelist(int seed) => fakeLayerCodelists.UseSeed(seed).Generate();
+        context.BulkInsert(layerCodelistRange.Select(SeededLayerCodelist).ToList(), bulkConfig);
 
         // Sync all database sequences
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.workgroups', 'id_wgp'), {workgroup_ids - 1})");

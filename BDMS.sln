@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A22DE3B-5FFB-4D89-BBD5-1BB12CA07A36}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		CHANGELOG.md = CHANGELOG.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDMS.Test", "tests\BDMS.Test.csproj", "{4981EB19-F2EE-4F45-A6DD-ED21B61CB3C6}"

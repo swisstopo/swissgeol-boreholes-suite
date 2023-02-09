@@ -13,7 +13,7 @@ namespace BDMS;
 [TestClass]
 public class BoreholeControllerTest
 {
-    private const int BoreholeId = 1_004_580;
+    private const int BoreholeId = 1_007_108;
     private const int DefaultWorkgroupId = 1;
 
     private BdmsContext context;
@@ -41,49 +41,62 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task Copy()
     {
-        var originalBorehole = GetBorehole(BoreholeId);
-        Assert.IsNotNull(originalBorehole?.Stratigraphies?.First()?.Layers, "Precondition: Boreholes has Stratigraphy Layers");
-        Assert.IsNotNull(originalBorehole?.BoreholeFiles?.First()?.File, "Precondition: Borehole has Files");
-        Assert.IsNotNull(originalBorehole?.Canton, "Precondition: Borehole has Canton assigned");
+        Borehole? copiedBorehole = null;
+        
+        try
+        {
+            var originalBorehole = GetBorehole(BoreholeId);
+            Assert.IsNotNull(originalBorehole?.Stratigraphies?.First()?.Layers, "Precondition: Borehole has Stratigraphy Layers");
+            Assert.IsTrue(originalBorehole?.Stratigraphies.First().Layers.Any(x => x.LayerCodelists?.Any() ?? false), "Precondition: Borehole has layers with multiple codelist values");
+            Assert.IsNotNull(originalBorehole?.BoreholeFiles?.First()?.File, "Precondition: Borehole has Files");
+            Assert.IsNotNull(originalBorehole?.Canton, "Precondition: Borehole has Canton assigned");
+            Assert.AreNotEqual(DefaultWorkgroupId, originalBorehole.Workgroup.Id, "Precondition: Target Workgroup is different");
 
-        var result = await controller.CopyAsync(BoreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var result = await controller.CopyAsync(BoreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
 
-        var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
-        Assert.IsNotNull(copiedBoreholeId);
-        Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
-        var copiedBorehole = GetBorehole((int)copiedBoreholeId);
+            var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
+            Assert.IsNotNull(copiedBoreholeId);
+            Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
+            copiedBorehole = GetBorehole((int)copiedBoreholeId);
 
-        Assert.AreEqual("Lavina Erdman (Copy)", copiedBorehole.OriginalName);
-        Assert.AreEqual("validator", copiedBorehole.CreatedBy.Name);
-        Assert.AreEqual("editor", copiedBorehole.UpdatedBy.Name);
-        Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
-        Assert.AreEqual(1, copiedBorehole.Workflows.Count);
-        Assert.AreEqual(Role.Editor, copiedBorehole.Workflows.First().Role);
-        Assert.AreSame(originalBorehole.Kind, copiedBorehole.Kind);
-        Assert.AreEqual(originalBorehole.Country, copiedBorehole.Country);
-        Assert.AreEqual(originalBorehole.Canton, copiedBorehole.Canton);
-        Assert.AreEqual(originalBorehole.Municipality, copiedBorehole.Municipality);
+            Assert.AreEqual("Alva Marquardt (Copy)", copiedBorehole.OriginalName);
+            Assert.AreEqual("controller", copiedBorehole.CreatedBy.Name);
+            Assert.AreEqual("admin", copiedBorehole.UpdatedBy.Name);
+            Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
+            Assert.AreEqual(1, copiedBorehole.Workflows.Count);
+            Assert.AreEqual(Role.Editor, copiedBorehole.Workflows.First().Role);
+            Assert.AreSame(originalBorehole.Kind, copiedBorehole.Kind);
+            Assert.AreEqual(originalBorehole.Country, copiedBorehole.Country);
+            Assert.AreEqual(originalBorehole.Canton, copiedBorehole.Canton);
+            Assert.AreEqual(originalBorehole.Municipality, copiedBorehole.Municipality);
 
-        Assert.AreNotEqual(originalBorehole.Id, copiedBorehole.Id);
-        Assert.AreNotSame(originalBorehole.Stratigraphies, copiedBorehole.Stratigraphies);
-        Assert.AreNotEqual(originalBorehole.Stratigraphies.First().Id, copiedBorehole.Stratigraphies.First());
-        Assert.AreNotSame(originalBorehole.Stratigraphies.First().Layers, copiedBorehole.Stratigraphies.First().Layers);
-        Assert.AreNotEqual(originalBorehole.Stratigraphies.First().Layers.First().Id, copiedBorehole.Stratigraphies.First().Layers.First().Id);
-        Assert.AreEqual("Tactics Tools & Garden", copiedBorehole.Stratigraphies.First().Layers.First().Casing);
+            var originalStratigraphy = originalBorehole.Stratigraphies.First();
+            var copiedstratigraphy = copiedBorehole.Stratigraphies.First();
+            Assert.AreNotEqual(originalBorehole.Id, copiedBorehole.Id);
+            Assert.AreNotSame(originalBorehole.Stratigraphies, copiedBorehole.Stratigraphies);
+            Assert.AreNotEqual(originalStratigraphy.Id, copiedstratigraphy.Id);
+            Assert.AreNotSame(originalStratigraphy.Layers, copiedstratigraphy.Layers);
+            Assert.AreNotEqual(originalStratigraphy.Layers.First().Id, copiedstratigraphy.Layers.First().Id);
+            Assert.AreEqual("Buckinghamshire withdrawal", copiedstratigraphy.Layers.First().Casing);
 
-        Assert.AreNotSame(originalBorehole.BoreholeFiles, copiedBorehole.BoreholeFiles);
-        Assert.AreNotEqual(originalBorehole.BoreholeFiles.First().BoreholeId, copiedBorehole.BoreholeFiles.First().BoreholeId);
-        Assert.AreEqual(originalBorehole.BoreholeFiles.First().FileId, copiedBorehole.BoreholeFiles.First().FileId);
-        Assert.AreEqual(null, copiedBorehole.BoreholeFiles.First().Description);
+            Assert.AreNotSame(originalBorehole.BoreholeFiles, copiedBorehole.BoreholeFiles);
+            Assert.AreNotEqual(originalBorehole.BoreholeFiles.First().BoreholeId, copiedBorehole.BoreholeFiles.First().BoreholeId);
+            Assert.AreEqual(originalBorehole.BoreholeFiles.First().FileId, copiedBorehole.BoreholeFiles.First().FileId);
+            Assert.AreEqual(null, copiedBorehole.BoreholeFiles.First().Description);
 
-        // delete borehole copy
-        var stratigraphiesToRemove = copiedBorehole.Stratigraphies;
-        var layersToRemove = stratigraphiesToRemove.SelectMany(s => s.Layers);
-        context.Layers.RemoveRange(layersToRemove);
-        context.Stratigraphies.RemoveRange(stratigraphiesToRemove);
-        context.Boreholes.Remove(copiedBorehole);
-        context.SaveChanges();
+            Assert.AreNotSame(originalStratigraphy.Layers.First().LayerCodelists, copiedstratigraphy.Layers.First().LayerCodelists);
+            Assert.AreEqual(originalStratigraphy.Layers.First().LayerCodelists.Count, copiedstratigraphy.Layers.First().LayerCodelists.Count);
+        }
+        finally
+        {
+            // Delete borehole copy
+            if (copiedBorehole != null)
+            {
+                context.Boreholes.Remove(copiedBorehole);
+                context.SaveChanges();
+            }
+        }
     }
 
     private Borehole GetBorehole(int id)
@@ -93,7 +106,7 @@ public class BoreholeControllerTest
             .Include(b => b.Files)
             .Include(b => b.Workflows)
             .Include(b => b.Workgroup)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerCodelists)
             .Include(b => b.CreatedBy)
             .Include(b => b.UpdatedBy)
             .Include(b => b.LockedBy)

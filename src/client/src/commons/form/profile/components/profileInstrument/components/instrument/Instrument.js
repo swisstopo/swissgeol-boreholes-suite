@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import * as Styled from "./styles";
 import { Input, Form, Button } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
@@ -13,6 +13,7 @@ import {
 } from "../../../../../../../api/fetchApiV2";
 import { NumericFormat } from "react-number-format";
 import { parseIfString } from "../../../../../formUtils";
+import { AlertContext } from "../../../../../../alert/alertContext";
 import produce from "immer";
 
 const Instrument = props => {
@@ -29,6 +30,7 @@ const Instrument = props => {
   const { t } = useTranslation();
   const [casingLayers, setCasingLayers] = useState([]);
   const [instrument, setInstrument] = useState([]);
+  const alertContext = useContext(AlertContext);
 
   const fetchCasingLayers = useCallback(instrumentCasingId => {
     if (instrumentCasingId) {
@@ -57,7 +59,7 @@ const Instrument = props => {
 
   const updateInstrument = (attribute, value) => {
     if (!isEditable) {
-      alert(t("common:errorStartEditing"));
+      alertContext.error(t("common:errorStartEditing"));
       return;
     }
 

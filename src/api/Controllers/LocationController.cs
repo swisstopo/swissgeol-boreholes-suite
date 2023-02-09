@@ -1,4 +1,6 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
@@ -25,6 +27,7 @@ public class LocationController : Controller
     }
 
     [HttpGet("identify")]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<LocationInfo>> IdentifyAsync([Required] double east, [Required] double north, int srid = 2056)
     {
         var point = string.Join(',', east, north);

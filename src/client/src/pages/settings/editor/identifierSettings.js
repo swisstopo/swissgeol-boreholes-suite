@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
+import { AlertContext } from "../../../commons/alert/alertContext";
 
 import {
   Button,
@@ -18,10 +19,10 @@ import {
   deleteIdentifier,
   updateIdentifier,
 } from "../../../api-lib/index";
-
 import TranslationText from "../../../commons/form/translationText";
 
 class IdentifierSettings extends React.Component {
+  static contextType = AlertContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -280,7 +281,9 @@ class IdentifierSettings extends React.Component {
                   if (r.data.success === true) {
                     this.props.listIdentifier();
                   } else if (r.data.error === "E-205") {
-                    alert(t("messages:identifierDeletionAlreadyUsed"));
+                    this.context.error(
+                      t("messages:identifierDeletionAlreadyUsed"),
+                    );
                   }
                   this.reset();
                   this.handleCloseConfirmDelete();

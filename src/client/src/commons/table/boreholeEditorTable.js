@@ -27,10 +27,11 @@ import {
   deleteBoreholes,
   exportDatabaseById,
 } from "../../api-lib/index";
-
+import { AlertContext } from "../alert/alertContext";
 import store from "../../reducers";
 
 class BoreholeEditorTable extends TTable {
+  static contextType = AlertContext;
   constructor(props) {
     super(props);
 
@@ -169,7 +170,7 @@ class BoreholeEditorTable extends TTable {
                 _.pullAll(response.data.data, this.state.selected),
               ).then(response => {
                 if (response.success === false) {
-                  alert(response.message);
+                  this.context.error(response.message);
                 }
               });
             }
@@ -180,7 +181,7 @@ class BoreholeEditorTable extends TTable {
       } else {
         exportDatabaseById(this.state.selected).then(response => {
           if (response.success === false) {
-            alert(response.message);
+            this.context.error(response.message);
           }
         });
       }

@@ -32,7 +32,7 @@ jobs:
 
       - name: Collect Docker image metadata
         id: meta-api-legacy
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-api-legacy
           labels: |
@@ -44,7 +44,7 @@ jobs:
 
       - name: Collect Docker image metadata
         id: meta-api
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-api
           labels: |
@@ -56,7 +56,7 @@ jobs:
 
       - name: Collect Docker image metadata
         id: meta-client
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-client
           labels: |
@@ -74,7 +74,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image (api-legacy)
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: ./src/api-legacy
           push: true
@@ -87,7 +87,7 @@ jobs:
           cache-to: type=inline
 
       - name: Build and push Docker image (api)
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: ./src/api
           push: true
@@ -100,7 +100,7 @@ jobs:
           cache-to: type=inline
 
       - name: Build and push Docker image (client)
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: ./src/client
           target: deploy

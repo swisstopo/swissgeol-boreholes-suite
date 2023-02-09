@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import _ from "lodash";
 import Highlighter from "react-highlight-words";
 
@@ -13,11 +13,13 @@ import {
   Segment,
 } from "semantic-ui-react";
 import { getWms } from "../../../../api-lib/index";
+import { AlertContext } from "../../../../commons/alert/alertContext";
 import TranslationText from "../../../../commons/form/translationText";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
 import WMSCapabilities from "ol/format/WMSCapabilities";
 
 const MapSettings = props => {
+  const alertContext = useContext(AlertContext);
   const {
     setting,
     i18n,
@@ -148,7 +150,7 @@ const MapSettings = props => {
                                   wms: null,
                                   wmts: null,
                                 });
-                                alert(
+                                alertContext.error(
                                   "Sorry, only Web Map Services (WMS) and " +
                                     "Web Map Tile Service (WMTS) are supported",
                                 );
