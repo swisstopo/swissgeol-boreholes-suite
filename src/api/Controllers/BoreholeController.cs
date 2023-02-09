@@ -1,4 +1,6 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -26,6 +28,7 @@ public class BoreholeController : ControllerBase
     /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>.</param>
     /// <returns>The id of the newly created <see cref="Borehole"/>.</returns>
     [HttpPost("copy")]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<int>> CopyAsync([Required]int id, [Required]int workgroupId)
     {
         logger.LogInformation("Copy borehole with id <{BoreholeId}> to workgroup with id <{WorkgroupId}>", id, workgroupId);

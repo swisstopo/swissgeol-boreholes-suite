@@ -10,6 +10,7 @@
 
 - Fix bug where selecting the location filter as viewer or editor caused the application to crash.
 - When copying a borehole, layer properties with multiple values (i.e. USCS3) were ignored and not copied.
+- Copying a borehole was not allowed as non-admin user.
 
 ## v2.0.169 - 2023-02-07
 
