@@ -64,9 +64,9 @@ class BoreholeEditorTable extends TTable {
   }
 
   componentDidMount() {
-    const { filter } = this.props;
+    const { filter, store } = this.props;
     this.props.clear();
-    this.props.loadData(1, filter);
+    this.props.loadData(store.page, filter);
   }
   reorder(orderby) {
     const { filter, loadData, store } = this.props;
