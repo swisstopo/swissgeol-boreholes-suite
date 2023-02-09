@@ -81,10 +81,12 @@ const LithologicalDescriptionLayers = props => {
     lithologicalDescriptions
       .sort((a, b) => a.fromDepth - b.fromDepth)
       .forEach((lithologicalDescription, index) => {
-        const previousLithologicalDescription = lithologicalDescriptions[index - 1];
+        const previousLithologicalDescription =
+          lithologicalDescriptions[index - 1];
         if (
           index !== 0 &&
-          lithologicalDescription.fromDepth !== previousLithologicalDescription.toDepth
+          lithologicalDescription.fromDepth !==
+            previousLithologicalDescription.toDepth
         ) {
           tempDescriptions.push({
             id: null,
@@ -125,9 +127,13 @@ const LithologicalDescriptionLayers = props => {
           deleteMutation.mutate(lithologicalDescription.id);
         }
         // case if fromDepth of layer changed
-        if (!selectableFromDepths?.includes(lithologicalDescription.fromDepth)) {
+        if (
+          !selectableFromDepths?.includes(lithologicalDescription.fromDepth)
+        ) {
           let closest = selectableFromDepths?.sort(
-            (a, b) => Math.abs(lithologicalDescription.fromDepth - a) - Math.abs(lithologicalDescription.fromDepth - b),
+            (a, b) =>
+              Math.abs(lithologicalDescription.fromDepth - a) -
+              Math.abs(lithologicalDescription.fromDepth - b),
           )[0];
           // case if layer is deleted with expansion
           if (lithologicalDescription.toDepth === closest) {
@@ -142,7 +148,9 @@ const LithologicalDescriptionLayers = props => {
         // case if toDepth of layer changed
         if (!selectableToDepths?.includes(lithologicalDescription.toDepth)) {
           let closest = selectableToDepths?.sort(
-            (a, b) => Math.abs(lithologicalDescription.toDepth - a) - Math.abs(lithologicalDescription.toDepth - b),
+            (a, b) =>
+              Math.abs(lithologicalDescription.toDepth - a) -
+              Math.abs(lithologicalDescription.toDepth - b),
           )[0];
           // case if layer is deleted with expansion
           if (lithologicalDescription.fromDepth === closest) {
