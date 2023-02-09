@@ -157,7 +157,7 @@ describe("Borehole list tests", () => {
     cy.get("tbody").children().eq(2).contains("td", "other");
 
     // sort by borehole status
-    cy.contains("th", "Borehole Status").click();
+    cy.contains("th", "Borehole status").click();
     cy.wait("@editorBorehole");
     cy.get("tbody").children().eq(0).contains("td", "open, no completion");
     cy.get("tbody").children().eq(1).contains("td", "open, no completion");
