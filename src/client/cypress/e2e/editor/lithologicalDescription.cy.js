@@ -187,7 +187,7 @@ describe("Tests for the lithological description column.", () => {
 
     // assert error message
     cy.get('[data-cy="lithological-description-1"]').contains(
-      "You are about to delete this layer, how do you want to procede?",
+      "You are about to delete this layer, how do you want to proceed?",
     );
     cy.contains("Confirm").click();
     cy.wait("@lithological_description"); // delete request
