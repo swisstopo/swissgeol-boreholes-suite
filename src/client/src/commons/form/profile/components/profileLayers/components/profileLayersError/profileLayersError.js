@@ -139,7 +139,7 @@ const ProfileLayersError = props => {
       {!isDelete && (
         <Styled.Row
           onClick={() => {
-            setShowSolution(id);
+            isEditable && setShowSolution(id);
           }}>
           <Styled.ErrorMessageContainer>
             <Icon name="warning sign" />
