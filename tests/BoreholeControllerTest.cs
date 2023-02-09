@@ -42,7 +42,7 @@ public class BoreholeControllerTest
     public async Task Copy()
     {
         Borehole? copiedBorehole = null;
-        
+
         try
         {
             var originalBorehole = GetBorehole(BoreholeId);
