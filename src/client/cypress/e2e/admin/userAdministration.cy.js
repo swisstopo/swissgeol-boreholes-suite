@@ -56,7 +56,7 @@ describe("Admin settings test", () => {
     cy.get('.modal [data-cy="enable-user-button"]').click();
 
     // show all users
-    cy.contains("show all").click();
+    cy.contains("Show All").click();
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
