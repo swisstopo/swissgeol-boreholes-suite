@@ -14,10 +14,10 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="add-litho-desc-icon"]').click();
     cy.wait("@lithological_description");
 
-    //Assure cannot add lithological description without lithology.
+    // assure cannot add lithological description without lithology
     cy.get('[data-cy="lithological-description-0"]').should("not.exist");
 
-    // Add three layers
+    // add three layers
     cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
@@ -96,7 +96,7 @@ describe("Tests for the lithological description column.", () => {
     );
     cy.get('[data-cy="lithological-description-0"]').contains("50 m");
 
-    // add lithological description that stretches two layers.
+    // add lithological description that stretches two layers
     cy.get('[data-cy="add-litho-desc-icon"]').click();
     cy.wait("@lithological_description");
     cy.get(
@@ -130,8 +130,8 @@ describe("Tests for the lithological description column.", () => {
     ).click();
 
     cy.contains("Confirm").click();
-    cy.wait("@lithological_description"); // Delete request
-    cy.wait("@lithological_description"); // Updated get request
+    cy.wait("@lithological_description"); // delete request
+    cy.wait("@lithological_description"); // updated get request
     cy.wait(5000);
 
     // add two lithological descriptions
@@ -190,8 +190,8 @@ describe("Tests for the lithological description column.", () => {
       "You are about to delete this layer, how do you want to procede?",
     );
     cy.contains("Confirm").click();
-    cy.wait("@lithological_description"); // Delete request
-    cy.wait("@lithological_description"); // Updated get request
+    cy.wait("@lithological_description"); // delete request
+    cy.wait("@lithological_description"); // updated get request
     cy.get('[data-cy="lithological-description-1"]').contains(
       "There is an undefined interval in the sequence",
     );

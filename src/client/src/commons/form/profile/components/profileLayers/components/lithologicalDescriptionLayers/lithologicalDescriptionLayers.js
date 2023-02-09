@@ -44,7 +44,7 @@ const LithologicalDescriptionLayers = props => {
   const [displayDescriptions, setDisplayDescriptions] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(0);
 
-  // React-query mutations and queries.
+  // react-query mutations and queries
   const queryClient = useQueryClient();
   const domains = useDomains();
 
@@ -76,19 +76,20 @@ const LithologicalDescriptionLayers = props => {
   const selectableToDepths = layers?.data?.map(l => l.depth_to);
 
   useEffect(() => {
-    // Include empty items in description column to signal missing descriptions.
+    // include empty items in description column to signal missing descriptions
     const tempDescriptions = [];
     lithologicalDescriptions
       .sort((a, b) => a.fromDepth - b.fromDepth)
-      .forEach((d, index) => {
+      .forEach((lithologicalDescription, index) => {
+        const previousLithologicalDescription = lithologicalDescriptions[index - 1];
         if (
           index !== 0 &&
-          d.fromDepth !== lithologicalDescriptions[index - 1].toDepth
+          lithologicalDescription.fromDepth !== previousLithologicalDescription.toDepth
         ) {
           tempDescriptions.push({
             id: null,
-            fromDepth: lithologicalDescriptions[index - 1].toDepth,
-            toDepth: d.fromDepth,
+            fromDepth: previousLithologicalDescription.toDepth,
+            toDepth: lithologicalDescription.fromDepth,
             description: (
               <Stack
                 direction="row"
@@ -105,52 +106,50 @@ const LithologicalDescriptionLayers = props => {
             qtDescription: null,
           });
         }
-        tempDescriptions.push(d);
+        tempDescriptions.push(lithologicalDescription);
       });
     setDisplayDescriptions(tempDescriptions);
   }, [lithologicalDescriptions, layers, t]);
 
   useEffect(() => {
     if (isEditable && layers?.data?.length > 0) {
-      // Update depth for lithological descriptions if layer depths change.
+      // update depth for lithological descriptions if layer depths change
       const selectableFromDepths = layers?.data?.map(l => l.depth_from);
       const selectableToDepths = layers?.data?.map(l => l.depth_to);
-
-      lithologicalDescriptions.forEach(d => {
-        // case if layer was deleted.
+      lithologicalDescriptions.forEach(lithologicalDescription => {
+        // case if layer was deleted
         if (
-          !selectableFromDepths?.includes(d.fromDepth) &&
-          !selectableToDepths?.includes(d.toDepth)
+          !selectableFromDepths?.includes(lithologicalDescription.fromDepth) &&
+          !selectableToDepths?.includes(lithologicalDescription.toDepth)
         ) {
-          deleteMutation.mutate(d.id);
+          deleteMutation.mutate(lithologicalDescription.id);
         }
-
-        // case if fromDepth of layer changed.
-        if (!selectableFromDepths?.includes(d.fromDepth)) {
+        // case if fromDepth of layer changed
+        if (!selectableFromDepths?.includes(lithologicalDescription.fromDepth)) {
           let closest = selectableFromDepths?.sort(
-            (a, b) => Math.abs(d.fromDepth - a) - Math.abs(d.fromDepth - b),
+            (a, b) => Math.abs(lithologicalDescription.fromDepth - a) - Math.abs(lithologicalDescription.fromDepth - b),
           )[0];
-          // case if layer is deleted with expansion.
-          if (d.toDepth === closest) {
-            deleteMutation.mutate(d.id);
+          // case if layer is deleted with expansion
+          if (lithologicalDescription.toDepth === closest) {
+            deleteMutation.mutate(lithologicalDescription.id);
           } else {
             updateMutation.mutate({
-              ...d,
+              ...lithologicalDescription,
               fromDepth: closest,
             });
           }
         }
-        // case if toDepth of layer changed.
-        if (!selectableToDepths?.includes(d.toDepth)) {
+        // case if toDepth of layer changed
+        if (!selectableToDepths?.includes(lithologicalDescription.toDepth)) {
           let closest = selectableToDepths?.sort(
-            (a, b) => Math.abs(d.toDepth - a) - Math.abs(d.toDepth - b),
+            (a, b) => Math.abs(lithologicalDescription.toDepth - a) - Math.abs(lithologicalDescription.toDepth - b),
           )[0];
-          // case if layer is deleted with expansion.
-          if (d.fromDepth === closest) {
-            deleteMutation.mutate(d.id);
+          // case if layer is deleted with expansion
+          if (lithologicalDescription.fromDepth === closest) {
+            deleteMutation.mutate(lithologicalDescription.id);
           } else {
             updateMutation.mutate({
-              ...d,
+              ...lithologicalDescription,
               toDepth: closest,
             });
           }
