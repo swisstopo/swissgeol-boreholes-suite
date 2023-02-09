@@ -42,7 +42,7 @@ public class BoreholeController : ControllerBase
         }
 
         var borehole = await context.Boreholes
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerCodelists)
             .Include(b => b.Workflows)
             .Include(b => b.BoreholeFiles)
             .AsNoTracking()
@@ -62,6 +62,10 @@ public class BoreholeController : ControllerBase
             foreach (var layer in stratigraphy.Layers)
             {
                 layer.Id = 0;
+                foreach (var layerCode in layer.LayerCodelists)
+                {
+                    layerCode.LayerId = 0;
+                }
             }
         }
 
