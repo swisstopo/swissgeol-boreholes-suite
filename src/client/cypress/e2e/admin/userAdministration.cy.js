@@ -89,7 +89,7 @@ describe("Admin settings test", () => {
     // contains "Yes" in administrator column
     cy.get('[data-cy="user-list-table-body"]')
       .children()
-      .contains("td", "Bugby")§
+      .contains("td", "Bugby")
       .siblings()
       .contains("td", "Yes")
       .click();
