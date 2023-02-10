@@ -1,6 +1,6 @@
 import { newEditableBorehole } from "../testHelpers";
 
-describe("Test for the borehole form.", () => {
+describe("Tests for the layer form.", () => {
   it("Creates a layer and fills all dropdowns with multiple selection.", () => {
     // create boreholes
     newEditableBorehole().as("borehole_id");
@@ -9,10 +9,10 @@ describe("Test for the borehole form.", () => {
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="add-stratigraphy-button"]').click();
     cy.wait("@stratigraphy_edit_create");
-    cy.get('[data-cy="add-layer-button"]').click();
+    cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
 
-    cy.get('[data-cy="styled-layer-0"]').click();
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
 
     // fill all dropdowns with two values
     cy.get('[aria-multiselectable="true"]')
@@ -25,7 +25,7 @@ describe("Test for the borehole form.", () => {
           .last()
           .scrollIntoView()
           .click();
-        cy.wait("@layer_edit_patch");
+        cy.wait("@stratigraphy_layer_edit_patch");
       });
 
     cy.get('[aria-multiselectable="true"]')
@@ -37,7 +37,7 @@ describe("Test for the borehole form.", () => {
           .find('[role="option"]')
           .eq(1)
           .click();
-        cy.wait("@layer_edit_patch");
+        cy.wait("@stratigraphy_layer_edit_patch");
       });
 
     const multipleDropdownValues = [];
@@ -62,6 +62,7 @@ describe("Test for the borehole form.", () => {
         ]);
       }
     });
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
 
     // stop editing
     cy.contains("a", "Stop editing").click();

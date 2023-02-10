@@ -43,10 +43,54 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: "Lato",
+    subtitle1: {
+      fontSize: "13px",
+      color: "black",
+      lineHeight: "1.4em",
+    },
     subtitle2: {
-      fontSize: "0.8em",
+      fontSize: "10px",
       color: "#787878",
-      lineHeight: "1em",
+      lineHeight: "1.4em",
+    },
+  },
+  components: {
+    MuiButton: {
+      variants: [
+        {
+          props: { variant: "delete" },
+          style: {
+            backgroundColor: "rgb(219, 40, 40)",
+            color: "white",
+            textTransform: "none",
+            fontWeight: "bold",
+            fontSize: "0.8em",
+            height: "2.5em",
+            marginRight: "0.5em",
+            marginBottom: "0.5em",
+            "&:hover": {
+              backgroundColor: "rgba(219, 40, 40, 0.6)",
+            },
+          },
+        },
+        {
+          props: { variant: "cancel" },
+          style: {
+            color: "rgba(0, 0, 0, 0.6)",
+            borderColor: "rgba(0, 0, 0, 0.6)",
+            textTransform: "none",
+            fontWeight: "bold",
+            fontSize: "0.8em",
+            height: "2.5em",
+            marginRight: "0.5em",
+            marginBottom: "0.5em",
+            border: "1px solid rgba(0, 0, 0, 0.6)",
+            "&:hover": {
+              backgroundColor: "white",
+            },
+          },
+        },
+      ],
     },
   },
 });

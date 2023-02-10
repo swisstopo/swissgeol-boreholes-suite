@@ -13,7 +13,7 @@ export const ErrorCard = styled.div`
   border-right: ${props => props.isInside && "0px"};
   border-top: ${props => !props.isInside && "0px"};
   border-bottom: ${props => props.isFirstInList && "0px"};
-
+  min-height: 10em;
   border-bottom: ${props => props.isDelete && "0px"};
   flex: ${props => props.isDelete && "6"};
   /* :hover {

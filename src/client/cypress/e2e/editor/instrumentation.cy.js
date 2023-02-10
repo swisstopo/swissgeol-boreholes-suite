@@ -102,15 +102,17 @@ describe("Instrumentation tests", () => {
 
     delayedType(cy.get('[data-cy="name"]'), "Moonshine Bike");
 
-    cy.get('[data-cy="add-layer-button"]').click();
+    cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
-    cy.get('[data-cy="styled-layer-0"]').click();
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
     delayedType(cy.get('[data-cy="casing_id"]'), "Moonshine Veal");
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
 
-    cy.get('[data-cy="add-layer-button"]').click();
+    cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
-    cy.get('[data-cy="styled-layer-1"]').click();
+    cy.get('[data-cy="styled-layer-1"] [data-testid="ModeEditIcon"]').click();
     delayedType(cy.get('[data-cy="casing_id"]'), "Moonshine Honey");
+    cy.get('[data-cy="styled-layer-1"] [data-testid="ClearIcon"]').click();
 
     // Second casing
     cy.get('[data-cy="add-stratigraphy-button"]').click();
@@ -121,19 +123,23 @@ describe("Instrumentation tests", () => {
     cy.contains("div", "Unknown").click();
     delayedType(cy.get('[data-cy="name"]'), "Sunshine Bike");
 
-    cy.get('[data-cy="add-layer-button"]').click();
+    cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
     cy.wait("@stratigraphy_layer_edit_create");
 
-    cy.get('[data-cy="styled-layer-0"]').click();
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
     delayedType(cy.get('[data-cy="casing_id"]'), "Sunshine Veal");
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
 
-    cy.get('[data-cy="add-layer-button"]').click();
+    cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
     cy.wait("@stratigraphy_layer_edit_create");
 
-    cy.get('[data-cy="styled-layer-1"]').scrollIntoView().click();
+    cy.get('[data-cy="styled-layer-1"] [data-testid="ModeEditIcon"]')
+      .scrollIntoView()
+      .click();
     delayedType(cy.get('[data-cy="casing_id"]'), "Sunshine Honey");
+    cy.get('[data-cy="styled-layer-1"] [data-testid="ClearIcon"]').click();
 
     // Add instrument
     cy.get('[data-cy="instrument-menu-item"]').click();

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added functionality to edit lithological description seperately from lithology.
+
 ### Changed
 
 - Replaced all generic browser alerts with styled alerts.

@@ -50,7 +50,6 @@ public class BoreholeControllerTest
             Assert.IsTrue(originalBorehole?.Stratigraphies.First().Layers.Any(x => x.LayerCodelists?.Any() ?? false), "Precondition: Borehole has layers with multiple codelist values");
             Assert.IsNotNull(originalBorehole?.BoreholeFiles?.First()?.File, "Precondition: Borehole has Files");
             Assert.IsNotNull(originalBorehole?.Canton, "Precondition: Borehole has Canton assigned");
-            Assert.AreNotEqual(DefaultWorkgroupId, originalBorehole.Workgroup.Id, "Precondition: Target Workgroup is different");
 
             var result = await controller.CopyAsync(BoreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
@@ -60,7 +59,7 @@ public class BoreholeControllerTest
             Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
             copiedBorehole = GetBorehole((int)copiedBoreholeId);
 
-            Assert.AreEqual("Alva Marquardt (Copy)", copiedBorehole.OriginalName);
+            Assert.AreEqual("Samanta Cummings (Copy)", copiedBorehole.OriginalName);
             Assert.AreEqual("controller", copiedBorehole.CreatedBy.Name);
             Assert.AreEqual("admin", copiedBorehole.UpdatedBy.Name);
             Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);

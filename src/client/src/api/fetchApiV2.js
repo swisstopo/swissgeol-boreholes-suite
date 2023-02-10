@@ -25,7 +25,12 @@ export async function fetchApiV2(url, method, payload = null) {
     body: payload && JSON.stringify(payload),
   });
   if (response.ok) {
-    return await response.json();
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+      return await response.json();
+    } else {
+      return await response.text();
+    }
   }
 }
 
@@ -40,6 +45,33 @@ export const fetchAllCodeLists = async () =>
 
 export const updateCodeLists = async codelist =>
   await fetchApiV2(`codelist`, "PUT", codelist);
+
+export const fetchLithologicalDescriptionsByProfileId = async profileId => {
+  return await fetchApiV2(
+    `lithologicaldescription?stratigraphyId=${profileId}`,
+    "GET",
+  );
+};
+
+export const addLithologicalDescription = async lithologicalDescription => {
+  return await fetchApiV2(
+    `lithologicaldescription`,
+    "POST",
+    lithologicalDescription,
+  );
+};
+
+export const updateLithologicalDescription = async lithologicalDescription => {
+  return await fetchApiV2(
+    `lithologicaldescription`,
+    "PUT",
+    lithologicalDescription,
+  );
+};
+
+export const deleteLithologicalDescription = async id => {
+  return await fetchApiV2(`lithologicaldescription?id=${id}`, "DELETE");
+};
 
 export const updateLayer = async layer => {
   // remove derived objects
@@ -60,4 +92,11 @@ export const useDomains = () =>
 export const useLayers = profileId =>
   useQuery(["layers", profileId], () => {
     return fetchLayersByProfileId(profileId);
+  });
+
+export const useLithoDescription = selectedStratigraphyID =>
+  useQuery({
+    queryKey: ["lithoDesc", selectedStratigraphyID],
+    queryFn: () =>
+      fetchLithologicalDescriptionsByProfileId(selectedStratigraphyID),
   });
