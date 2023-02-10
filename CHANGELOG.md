@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.0.182 - 2023-02-10
+
 ### Changed
 
 - Replaced all generic browser alerts with styled alerts.
