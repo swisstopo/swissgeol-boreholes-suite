@@ -8,22 +8,22 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class MigrateController : ControllerBase
+public class CoordinateController : ControllerBase
 {
     private const string Lv95ToLv03 = "lv95tolv03";
     private const string Lv03ToLv95 = "lv03tolv95";
 
     private readonly BdmsContext context;
     private readonly IHttpClientFactory httpClientFactory;
-    private readonly ILogger<MigrateController> logger;
+    private readonly ILogger<CoordinateController> logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MigrateController"/> class.
+    /// Initializes a new instance of the <see cref="CoordinateController"/> class.
     /// </summary>
     /// <param name="context">The EF database context containing data for the BDMS application.</param>
     /// <param name="httpClientFactory">A factory abstraction that can create <see cref="HttpClient"/> instance.</param>
     /// <param name="logger">The <see cref="ILoggerFactory"/>.</param>
-    public MigrateController(BdmsContext context, IHttpClientFactory httpClientFactory, ILogger<MigrateController> logger)
+    public CoordinateController(BdmsContext context, IHttpClientFactory httpClientFactory, ILogger<CoordinateController> logger)
     {
         this.context = context;
         this.httpClientFactory = httpClientFactory;
@@ -44,15 +44,15 @@ public class MigrateController : ControllerBase
     /// => {"easting": "2645999.9249287224", "northing": "1149499.663239225"}
     ///
     /// Example:
-    /// https://example.com/api/v2/migrate/recalculatecoordinates?onlymissing=true&dryrun=true
+    /// https://example.com/api/v2/coordinate/migrate?onlymissing=true&dryrun=true
     ///
     /// Important:
     /// In order to use this endpoint, you have to authenticate with an admin user.
     /// ]]>
-    [HttpGet("recalculatecoordinates")]
-    public async Task<IActionResult> RecalculateCoordinates(bool onlyMissing = true, bool dryRun = true)
+    [HttpGet("migrate")]
+    public async Task<IActionResult> MigrateAsync(bool onlyMissing = true, bool dryRun = true)
     {
-        var httpClient = httpClientFactory.CreateClient(nameof(MigrateController));
+        var httpClient = httpClientFactory.CreateClient(nameof(CoordinateController));
         httpClient.BaseAddress = new Uri("https://geodesy.geo.admin.ch/reframe/");
 
         logger.LogInformation(

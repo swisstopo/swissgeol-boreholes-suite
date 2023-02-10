@@ -6,6 +6,12 @@
 
 ### Added
 
+- Added new location migration endpoint in order to be able to manually update location information (country_bho, canton_bho and municipality_bho).
+
+## v2.0.183 - 2023-02-10
+
+### Added
+
 - Added functionality to edit lithological description seperately from lithology.
 
 ### Changed

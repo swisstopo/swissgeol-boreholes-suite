@@ -12,7 +12,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class LocationController : Controller
 {
-    private readonly HttpClient httpClient;
+    private readonly BdmsContext context;
+    private readonly IHttpClientFactory httpClientFactory;
     private readonly ILogger<LocationController> logger;
 
     private readonly string apiUri = "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?geometryType=esriGeometryPoint&geometry={0}&tolerance=0&layers=all:{1}&returnGeometry=false&sr={2}";
@@ -20,16 +21,92 @@ public class LocationController : Controller
     private readonly string cantonLayer = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill";
     private readonly string municipalityLayer = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill";
 
-    public LocationController(HttpClient httpClient, ILogger<LocationController> logger)
+    // Spatial reference identifier (SRID)
+    private readonly int sridLv95 = 2056;
+    private readonly int sridLv03 = 21781;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LocationController"/> class.
+    /// </summary>
+    /// <param name="context">The EF database context containing data for the BDMS application.</param>
+    /// <param name="httpClientFactory">A factory abstraction that can create <see cref="HttpClient"/> instance.</param>
+    /// <param name="logger">The <see cref="ILoggerFactory"/>.</param>
+    public LocationController(BdmsContext context, IHttpClientFactory httpClientFactory, ILogger<LocationController> logger)
     {
-        this.httpClient = httpClient;
+        this.context = context;
+        this.httpClientFactory = httpClientFactory;
         this.logger = logger;
+    }
+
+    /// <summary>
+    /// Asynchronously updates location information (country_bho, canton_bho and municipality_bho)
+    /// using the coordinates from the original reference system.
+    /// </summary>
+    /// <param name="onlyMissing">Default: true; Indicates whether or not only boreholes with missing location
+    /// information should be updated.</param>
+    /// <param name="dryRun">Default: true; Indicates wheter or not changes get written to the database.</param>
+    /// <![CDATA[
+    /// Example:
+    /// https://example.com/api/v2/location/migrate?onlymissing=true&dryrun=true
+    ///
+    /// Important:
+    /// In order to use this endpoint, you have to authenticate with an admin user.
+    /// ]]>
+    [HttpGet("migrate")]
+    public async Task<IActionResult> MigrateAsync(bool onlyMissing = true, bool dryRun = true)
+    {
+        logger.LogInformation(
+            "Starting updating borehole locations with the following options: onlyMissing=<{OnlyMissing}>; dryRun=<{DryRun}>", dryRun, onlyMissing);
+
+        var updatedBoreholes = 0;
+
+        try
+        {
+            foreach (var borehole in context.Boreholes)
+            {
+                // Use origin spatial reference system
+                var locationX = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
+                var locationY = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationY : borehole.LocationYLV03;
+                var srid = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? sridLv95 : sridLv03;
+
+                // Skip empty ones
+                if (locationX == null || locationY == null) continue;
+
+                // Skip if location information is already set (if configured)
+                if (onlyMissing &&
+                    !string.IsNullOrWhiteSpace(borehole.Country) &&
+                    !string.IsNullOrWhiteSpace(borehole.Canton) &&
+                    !string.IsNullOrWhiteSpace(borehole.Municipality)) continue;
+
+                var locationInfo = await IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
+                borehole.Country = locationInfo.Country;
+                borehole.Canton = locationInfo.Canton;
+                borehole.Municipality = locationInfo.Municipality;
+
+                updatedBoreholes++;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex.Message, ex);
+            return Problem(detail: ex.Message);
+        }
+
+        if (!dryRun)
+        {
+            await context.SaveChangesAsync().ConfigureAwait(false);
+            logger.LogInformation("Successfully updated <{Count}> borehole locations.", updatedBoreholes);
+        }
+
+        return new JsonResult(new { updatedBoreholes, onlyMissing, dryRun, success = true });
     }
 
     [HttpGet("identify")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<LocationInfo>> IdentifyAsync([Required] double east, [Required] double north, int srid = 2056)
+    public async Task<LocationInfo> IdentifyAsync([Required] double east, [Required] double north, int srid = 2056)
     {
+        var httpClient = httpClientFactory.CreateClient(nameof(LocationController));
+
         var point = string.Join(',', east, north);
         var layers = string.Join(',', countryLayer, cantonLayer, municipalityLayer);
         var requestUri = new Uri(string.Format(CultureInfo.InvariantCulture, apiUri, point, layers, srid));
@@ -47,7 +124,7 @@ public class LocationController : Controller
                 Canton: GetAttributeValueForLayer(document, cantonLayer, "name"),
                 Municipality: GetAttributeValueForLayer(document, municipalityLayer, "gemname"));
 
-            return Ok(result);
+            return result;
         }
         catch (HttpRequestException ex)
         {
