@@ -2,6 +2,8 @@ name: CI
 
 on:
   push:
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   ci:
@@ -18,7 +20,7 @@ jobs:
 
       - name: Build solution
         run: dotnet build BDMS.sln -c Release /warnaserror
-      
+
       - name: Start db and api's
         run: docker-compose up -d minio db api-legacy api
 
