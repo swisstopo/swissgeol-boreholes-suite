@@ -73,13 +73,10 @@ public class LocationControllerTest
     {
         httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
 
-        var response = await controller.IdentifyAsync(east, north, 21781);
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
-        var okResult = response.Result as OkObjectResult;
-        var result = okResult.Value as LocationInfo;
-        Assert.AreEqual(country, result.Country);
-        Assert.AreEqual(canton, result.Canton);
-        Assert.AreEqual(municipal, result.Municipality);
+        var locationInfo = await controller.IdentifyAsync(east, north, 21781);
+        Assert.AreEqual(country, locationInfo.Country);
+        Assert.AreEqual(canton, locationInfo.Canton);
+        Assert.AreEqual(municipal, locationInfo.Municipality);
     }
 
     [TestMethod]
@@ -94,13 +91,10 @@ public class LocationControllerTest
     {
         httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
 
-        var response = await controller.IdentifyAsync(east, north);
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
-        var okResult = response.Result as OkObjectResult;
-        var result = okResult.Value as LocationInfo;
-        Assert.AreEqual(country, result.Country);
-        Assert.AreEqual(canton, result.Canton);
-        Assert.AreEqual(municipal, result.Municipality);
+        var locationInfo = await controller.IdentifyAsync(east, north);
+        Assert.AreEqual(country, locationInfo.Country);
+        Assert.AreEqual(canton, locationInfo.Canton);
+        Assert.AreEqual(municipal, locationInfo.Municipality);
     }
 
     private async Task AssertMigrateLocationAsync(bool onlyMissing, int updatedBoreholesCount, Action asserter = default)

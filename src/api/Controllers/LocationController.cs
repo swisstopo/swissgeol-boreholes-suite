@@ -78,8 +78,7 @@ public class LocationController : Controller
                     !string.IsNullOrWhiteSpace(borehole.Canton) &&
                     !string.IsNullOrWhiteSpace(borehole.Municipality)) continue;
 
-                var result = await IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
-                var locationInfo = ((OkObjectResult?)result.Result).Value as LocationInfo;
+                var locationInfo = await IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
                 borehole.Country = locationInfo.Country;
                 borehole.Canton = locationInfo.Canton;
                 borehole.Municipality = locationInfo.Municipality;
@@ -104,7 +103,7 @@ public class LocationController : Controller
 
     [HttpGet("identify")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<LocationInfo>> IdentifyAsync([Required] double east, [Required] double north, int srid = 2056)
+    public async Task<LocationInfo> IdentifyAsync([Required] double east, [Required] double north, int srid = 2056)
     {
         var httpClient = httpClientFactory.CreateClient(nameof(LocationController));
 
@@ -125,7 +124,7 @@ public class LocationController : Controller
                 Canton: GetAttributeValueForLayer(document, cantonLayer, "name"),
                 Municipality: GetAttributeValueForLayer(document, municipalityLayer, "gemname"));
 
-            return Ok(result);
+            return result;
         }
         catch (HttpRequestException ex)
         {
