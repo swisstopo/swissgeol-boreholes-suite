@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.0.184 - 2023-02-10
+
 ### Added
 
 - Added functionality to edit lithological description seperately from lithology.
