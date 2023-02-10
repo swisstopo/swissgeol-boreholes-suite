@@ -177,7 +177,7 @@ public class LithologicalDescriptionControllerTest
         };
 
         var response = await controller.CreateAsync(lithologicalDescription);
-        Assert.IsInstanceOfType(response, typeof(CreatedAtActionResult));
+        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
         lithologicalDescription = await context.LithologicalDescriptions.FindAsync(lithologicalDescription.Id);
         Assert.IsNotNull(lithologicalDescription);
         Assert.AreEqual("SPOLYP", lithologicalDescription.Description);

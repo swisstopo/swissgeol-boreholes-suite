@@ -1,7 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Icon, Popup } from "semantic-ui-react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import ClearIcon from "@mui/icons-material/Clear";
+import { Stack, Tooltip } from "@mui/material";
 import TranslationText from "../../../../../translationText";
 import { NumericFormat } from "react-number-format";
+import { withTranslation } from "react-i18next";
 import * as Styled from "./styles";
 
 const ProfileLayersList = props => {
@@ -14,6 +19,7 @@ const ProfileLayersList = props => {
     setSelectedLayer,
     item,
   } = props.data;
+  const { t } = props;
   const [isTopHasWarning, setIsTopHasWarning] = useState(false);
   const [isBottomHasWarning, setIsBottomHasWarning] = useState(false);
   const [showTopPopup, setShowTopPopup] = useState(false);
@@ -67,11 +73,14 @@ const ProfileLayersList = props => {
   return (
     <>
       <Styled.MyCard
-        onClick={() => setSelectedLayer(item)}
+        onClick={() => {
+          !isEditable && setSelectedLayer(item);
+        }}
         style={{
           backgroundColor: selectedLayer?.id === item?.id && "lightgrey",
         }}>
         <Styled.CardPattern
+          id="pattern"
           b={item?.rgb?.[2]}
           g={item?.rgb?.[1]}
           r={item?.rgb?.[0]}
@@ -87,8 +96,8 @@ const ProfileLayersList = props => {
         />
         {showDelete !== item?.id && (
           <>
-            <Styled.CardInfo>
-              <Styled.Text warning={isTopHasWarning}>
+            <Styled.CardInfo id="info">
+              <Styled.Text warning={isTopHasWarning} id="text">
                 {isTopHasWarning && (
                   <Icon name="warning sign" style={{ color: "red" }} />
                 )}
@@ -183,19 +192,30 @@ const ProfileLayersList = props => {
               </Styled.Text>
             </Styled.CardInfo>
             {isEditable && (
-              <Styled.CardButtonContainer>
-                <Styled.CardButton
-                  basic
-                  color="red"
-                  icon
-                  onClick={e => {
-                    e.stopPropagation();
-                    setShowDelete(item?.id);
-                  }}
-                  size="mini">
-                  <Icon name="trash alternate outline" />
-                </Styled.CardButton>
-              </Styled.CardButtonContainer>
+              <Stack
+                direction="row"
+                sx={{ marginLeft: "auto", padding: "3px" }}>
+                {selectedLayer?.id !== item?.id && (
+                  <>
+                    <Tooltip title={t("edit")}>
+                      <ModeEditIcon onClick={() => setSelectedLayer(item)} />
+                    </Tooltip>
+                    <Tooltip title={t("delete")}>
+                      <DeleteIcon
+                        sx={{ color: "red", opacity: 0.7 }}
+                        onClick={() => {
+                          setShowDelete(item?.id);
+                        }}
+                      />
+                    </Tooltip>
+                  </>
+                )}
+                {selectedLayer?.id === item?.id && (
+                  <Tooltip title={t("stop-editing")}>
+                    <ClearIcon onClick={() => setSelectedLayer(null)} />
+                  </Tooltip>
+                )}
+              </Stack>
             )}
           </>
         )}
@@ -204,4 +224,4 @@ const ProfileLayersList = props => {
   );
 };
 
-export default ProfileLayersList;
+export default withTranslation()(ProfileLayersList);

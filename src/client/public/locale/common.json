@@ -115,6 +115,8 @@
   "filterbymap": "",
   "filterByName": "",
   "firstname": "",
+  "first_add_layer_to_depth": "",
+  "first_add_lithology": "",
   "flowPublication": "",
   "flowPublicationStatus": "",
   "flowRestart": "",

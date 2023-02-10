@@ -22,10 +22,10 @@ describe("Test for the borehole form.", () => {
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="add-stratigraphy-button"]').click();
     cy.wait("@stratigraphy_edit_create");
-    cy.get('[data-cy="add-layer-button"]').click();
+    cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
 
-    cy.get('[data-cy="styled-layer-0"]').click();
     cy.contains("Show all fields").children(".checkbox").click();
 
     // fill all dropdowns in layer
@@ -51,7 +51,7 @@ describe("Test for the borehole form.", () => {
           .find('[role="option"]')
           .eq(1)
           .click();
-        cy.wait("@layer_edit_patch");
+        cy.wait("@stratigraphy_layer_edit_patch");
       });
 
     // fill text fields
@@ -82,6 +82,8 @@ describe("Test for the borehole form.", () => {
         cy.wrap(el).scrollIntoView().click();
         cy.get('.modal [role="listitem"]').eq(5).click();
       });
+
+    cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
 
     // stop editing
     cy.contains("a", "Stop editing").click();

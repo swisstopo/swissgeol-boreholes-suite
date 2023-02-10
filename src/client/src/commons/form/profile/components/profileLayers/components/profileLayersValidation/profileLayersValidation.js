@@ -2,6 +2,7 @@ import React from "react";
 import ProfileLayersError from "../profileLayersError";
 import ProfileLayersList from "../profileLayersList";
 import * as Styled from "./styles";
+import { Box } from "@mui/material";
 
 export const ProfileLayersValidation = props => {
   const {
@@ -15,10 +16,10 @@ export const ProfileLayersValidation = props => {
     setSelectedLayer,
   } = props.data;
   return (
-    <Styled.LayerContainer>
+    <Box data-cy="styled-layer-container">
       {/* validation before all layers */}
       {layers?.validation && layers?.validation?.missingLayers && (
-        <div style={{ borderTop: "1px solid lightgrey" }}>
+        <div style={{ borderTop: "1px solid lightgrey", flex: "1 1 0px" }}>
           <ProfileLayersError
             data={{
               title: "missingLayers",
@@ -112,7 +113,7 @@ export const ProfileLayersValidation = props => {
               />
             </div>
           ))}
-    </Styled.LayerContainer>
+    </Box>
   );
 };
 

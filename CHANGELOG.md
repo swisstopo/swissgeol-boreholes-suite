@@ -6,6 +6,12 @@
 
 - Added new location migration endpoint in order to be able to manually update location information (country_bho, canton_bho and municipality_bho).
 
+## v2.0.183 - 2023-02-10
+
+### Added
+
+- Added functionality to edit lithological description seperately from lithology.
+
 ### Changed
 
 - Replaced all generic browser alerts with styled alerts.
@@ -14,6 +20,7 @@
 
 - Fix bug where selecting the location filter as viewer or editor caused the application to crash.
 - When copying a borehole, layer properties with multiple values (i.e. USCS3) were ignored and not copied.
+- Copying a borehole was not allowed as non-admin user.
 
 ## v2.0.169 - 2023-02-07
 
