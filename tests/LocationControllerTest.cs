@@ -42,20 +42,22 @@ public class LocationControllerTest
     [TestMethod]
     public async Task MigrateLocations()
     {
-        await AssertMigrateLocationAsync(onlyMissing: false, 8097, () =>
+        await AssertMigrateLocationAsync(onlyMissing: false, 8098, () =>
         {
-            AssertBohrungFlorenceOberbrunner();
-            AssertBohrungPaulaGulgowski();
+            AssertBohrungAndyLang();
+            AssertBohrungByronWest();
+            AssertUnchangedBohrungTashaWalsh();
         });
     }
 
     [TestMethod]
     public async Task MigrateLocationsWithMissingLocationsOnly()
     {
-        await AssertMigrateLocationAsync(onlyMissing: true, 232, () =>
+        await AssertMigrateLocationAsync(onlyMissing: true, 254, () =>
         {
-            AssertBohrungFlorenceOberbrunner();
-            AssertUnchangedBohrungPaulaGulgowski();
+            AssertBohrungAndyLang();
+            AssertUnchangedBohrungByronWest();
+            AssertUnchangedBohrungTashaWalsh();
         });
     }
 
@@ -136,31 +138,41 @@ public class LocationControllerTest
             .Verify("SendAsync", Times.Exactly(updatedBoreholesCount), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
     }
 
-    private void AssertBohrungPaulaGulgowski()
+    private void AssertBohrungByronWest()
     {
-        var bohrung = context.Boreholes.Single(b => b.Id == 1000023);
-        Assert.AreEqual("Paula.Gulgowski87", bohrung.AlternateName);
-        Assert.AreEqual(ReferenceSystem.LV03, bohrung.OriginalReferenceSystem);
+        var bohrung = context.Boreholes.Single(b => b.Id == 1000039);
+        Assert.AreEqual("Byron_West", bohrung.AlternateName);
+        Assert.AreEqual(ReferenceSystem.LV95, bohrung.OriginalReferenceSystem);
         Assert.AreEqual("RAGETRINITY", bohrung.Country);
         Assert.AreEqual("SLEEPYMONKEY", bohrung.Canton);
         Assert.AreEqual("REDSOURCE", bohrung.Municipality);
     }
 
-    private void AssertUnchangedBohrungPaulaGulgowski()
+    private void AssertUnchangedBohrungByronWest()
     {
-        var bohrung = context.Boreholes.Single(b => b.Id == 1000023);
-        Assert.AreEqual("Paula.Gulgowski87", bohrung.AlternateName);
-        Assert.AreEqual(ReferenceSystem.LV03, bohrung.OriginalReferenceSystem);
-        Assert.AreEqual("Benin", bohrung.Country);
-        Assert.AreEqual("North Carolina", bohrung.Canton);
-        Assert.AreEqual("Beahanville", bohrung.Municipality);
+        var bohrung = context.Boreholes.Single(b => b.Id == 1000039);
+        Assert.AreEqual("Byron_West", bohrung.AlternateName);
+        Assert.AreEqual(ReferenceSystem.LV95, bohrung.OriginalReferenceSystem);
+        Assert.AreEqual("Northern Mariana Islands", bohrung.Country);
+        Assert.AreEqual("South Dakota", bohrung.Canton);
+        Assert.AreEqual("Lake Chayamouth", bohrung.Municipality);
     }
 
-    private void AssertBohrungFlorenceOberbrunner()
+    private void AssertUnchangedBohrungTashaWalsh()
     {
-        var bohrung = context.Boreholes.Single(b => b.Id == 1000024);
-        Assert.AreEqual("Florence.Oberbrunner55", bohrung.AlternateName);
-        Assert.AreEqual(ReferenceSystem.LV03, bohrung.OriginalReferenceSystem);
+        var bohrung = context.Boreholes.Single(b => b.Id == 1000029);
+        Assert.AreEqual("Tasha.Walsh", bohrung.AlternateName);
+        Assert.AreEqual(ReferenceSystem.LV95, bohrung.OriginalReferenceSystem);
+        Assert.AreEqual("British Indian Ocean Territory (Chagos Archipelago)", bohrung.Country);
+        Assert.AreEqual("North Carolina", bohrung.Canton);
+        Assert.AreEqual("New Nathen", bohrung.Municipality);
+    }
+
+    private void AssertBohrungAndyLang()
+    {
+        var bohrung = context.Boreholes.Single(b => b.Id == 1000115);
+        Assert.AreEqual("Andy.Lang", bohrung.AlternateName);
+        Assert.AreEqual(ReferenceSystem.LV95, bohrung.OriginalReferenceSystem);
         Assert.AreEqual("RAGETRINITY", bohrung.Country);
         Assert.AreEqual("SLEEPYMONKEY", bohrung.Canton);
         Assert.AreEqual("REDSOURCE", bohrung.Municipality);
