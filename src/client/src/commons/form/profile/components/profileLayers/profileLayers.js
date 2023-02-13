@@ -19,6 +19,7 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { withTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "react-query";
 import { AlertContext } from "../../../../alert/alertContext";
+import { profileKind } from "../../constance";
 
 const ProfileLayers = props => {
   const {
@@ -28,6 +29,7 @@ const ProfileLayers = props => {
     setSelectedLayer,
     reloadLayer,
     onUpdated,
+    stratigraphyKind,
   } = props.data;
   const { t } = props;
   const [layers, setLayers] = useState(null);
@@ -111,6 +113,19 @@ const ProfileLayers = props => {
     }
   };
 
+  const getColumnTitle = stratigraphyKind => {
+    switch (stratigraphyKind) {
+      case profileKind.STRATIGRAPHY:
+        return <Typography>{t("lithology")}</Typography>;
+      case profileKind.CASING:
+        return <Typography>{t("add")}</Typography>;
+      case profileKind.FILLING:
+        return <Typography>{t("add")}</Typography>;
+      default:
+        <></>;
+    }
+  };
+
   return (
     <Styled.Container>
       <Stack direction="row" sx={{ overflow: "auto" }}>
@@ -118,7 +133,7 @@ const ProfileLayers = props => {
           <Stack
             direction="row"
             sx={{ marginBottom: 1, marginRight: 0.5, marginLeft: 0.5 }}>
-            <Typography>{t("lithology")}</Typography>
+            {getColumnTitle(stratigraphyKind)}
             {isEditable && selectedStratigraphyID !== null && (
               <Tooltip title={t("add")}>
                 <AddCircleIcon
@@ -144,39 +159,40 @@ const ProfileLayers = props => {
             />
           )}
         </Stack>
-        {selectedLayer === null && (
-          <Stack direction="column">
-            <Stack
-              direction="row"
-              sx={{
-                marginBottom: 1,
-                marginRight: 0.5,
-                marginLeft: 0.5,
-              }}>
-              <Typography>{t("lithological_description")}</Typography>
-              {isEditable && selectedStratigraphyID !== null && (
-                <Tooltip title={t("add")} sx={{}}>
-                  <AddCircleIcon
-                    sx={{ marginLeft: 1.5 }}
-                    data-cy="add-litho-desc-icon"
-                    onClick={addLithologicalDesc}
-                  />
-                </Tooltip>
+        {selectedLayer === null &&
+          stratigraphyKind === profileKind.STRATIGRAPHY && (
+            <Stack direction="column">
+              <Stack
+                direction="row"
+                sx={{
+                  marginBottom: 1,
+                  marginRight: 0.5,
+                  marginLeft: 0.5,
+                }}>
+                <Typography>{t("lithological_description")}</Typography>
+                {isEditable && selectedStratigraphyID !== null && (
+                  <Tooltip title={t("add")} sx={{}}>
+                    <AddCircleIcon
+                      sx={{ marginLeft: 1.5 }}
+                      data-cy="add-litho-desc-icon"
+                      onClick={addLithologicalDesc}
+                    />
+                  </Tooltip>
+                )}
+              </Stack>
+              {lithoDescQuery?.data?.length > 0 && (
+                <LithologicalDescriptionLayers
+                  isEditable={isEditable}
+                  lithologicalDescriptions={lithoDescQuery?.data}
+                  setSelectedDescription={setSelectedLithologicalDescription}
+                  selectedDescription={selectedLithologicalDescription}
+                  layers={layers}
+                  addMutation={addMutation}
+                  selectedStratigraphyID={selectedStratigraphyID}
+                />
               )}
             </Stack>
-            {lithoDescQuery?.data?.length > 0 && (
-              <LithologicalDescriptionLayers
-                isEditable={isEditable}
-                lithologicalDescriptions={lithoDescQuery?.data}
-                setSelectedDescription={setSelectedLithologicalDescription}
-                selectedDescription={selectedLithologicalDescription}
-                layers={layers}
-                addMutation={addMutation}
-                selectedStratigraphyID={selectedStratigraphyID}
-              />
-            )}
-          </Stack>
-        )}
+          )}
       </Stack>
       {layers?.data?.length === 0 && (
         <Styled.Empty>
