@@ -12,6 +12,7 @@ import LithologicalDescriptionInput from "./lithologicalDescriptionInput";
 import LithologicalDescriptionDisplay from "./lithologicalDescriptionDisplay";
 import LithologicalDescriptionDeleteDialog from "./lithologicalDescriptionDeleteDialog";
 import ActionButtons from "./actionButtons";
+import { useTheme } from "@mui/material/styles";
 
 const LithologicalDescriptionLayers = props => {
   const {
@@ -32,6 +33,7 @@ const LithologicalDescriptionLayers = props => {
     useState(0);
 
   const { t } = useTranslation();
+  const theme = useTheme();
 
   // react-query mutations and queries
   const queryClient = useQueryClient();
@@ -81,7 +83,7 @@ const LithologicalDescriptionLayers = props => {
                 direction="row"
                 alignItems="center"
                 gap={1}
-                sx={{ color: "#9f3a38" }}>
+                sx={{ color: theme.palette.error.main }}>
                 <Typography sx={{ fontWeight: "bold" }}>
                   {t("errorGap")}
                 </Typography>
@@ -220,7 +222,7 @@ const LithologicalDescriptionLayers = props => {
                 padding: "5px",
                 backgroundColor:
                   item.id === null || item.id === descriptionIdSelectedForDelete
-                    ? "#fff6f6"
+                    ? theme.palette.error.background
                     : selectedDescription?.id === item?.id && "lightgrey",
                 "&:hover": {
                   backgroundColor: "#ebebeb",

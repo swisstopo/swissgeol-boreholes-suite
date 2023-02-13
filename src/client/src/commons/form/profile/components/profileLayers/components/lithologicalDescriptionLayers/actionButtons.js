@@ -5,6 +5,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { useTheme } from "@mui/material/styles";
 
 const ActionButtons = props => {
   const {
@@ -16,6 +17,7 @@ const ActionButtons = props => {
     setDescriptionIdSelectedForDelete,
   } = props;
   const { t } = useTranslation();
+  const theme = useTheme();
 
   return (
     <Stack direction="row" sx={{ marginLeft: "auto", padding: "3px" }}>
@@ -37,7 +39,7 @@ const ActionButtons = props => {
         item.id === null && (
           <Tooltip title={t("add")}>
             <AddCircleIcon
-              style={{ color: "#9f3a38" }}
+              style={{ color: theme.palette.error.main }}
               onClick={() => {
                 addMutation.mutate({
                   stratigraphyId: selectedStratigraphyID,
