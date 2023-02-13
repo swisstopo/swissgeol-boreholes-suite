@@ -201,6 +201,7 @@ const Profile = props => {
                 },
                 reloadLayer,
                 onUpdated,
+                stratigraphyKind,
               }}
             />
           </Styled.FirstColumn>
