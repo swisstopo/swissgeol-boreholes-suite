@@ -4,8 +4,6 @@
 
 ## v2.0.186 - 2023-02-13
 
-## v2.0.184 - 2023-02-10
-
 ### Added
 
 - Added new location migration endpoint in order to be able to manually update location information (country_bho, canton_bho and municipality_bho).
