@@ -231,8 +231,7 @@ const LithologicalDescriptionLayers = props => {
               {descriptionIdSelectedForDelete !== item.id && (
                 <>
                   {selectedDescription !== item && (
-                    <LithologicalDescriptionDisplay
-                      item={item}></LithologicalDescriptionDisplay>
+                    <LithologicalDescriptionDisplay item={item} />
                   )}
                   {selectedDescription?.id === item?.id && (
                     <LithologicalDescriptionInput
@@ -245,9 +244,8 @@ const LithologicalDescriptionLayers = props => {
                       selectableFromDepths={selectableFromDepths}
                       qtDescriptionId={qtDescriptionId}
                       setQtDescriptionId={setQtDescriptionId}
-                      selectableToDepths={
-                        selectableToDepths
-                      }></LithologicalDescriptionInput>
+                      selectableToDepths={selectableToDepths}
+                    />
                   )}
                   {isEditable && (
                     <ActionButtons
@@ -258,9 +256,8 @@ const LithologicalDescriptionLayers = props => {
                       }
                       addMutation={addMutation}
                       selectedDescription={selectedDescription}
-                      selectedStratigraphyID={
-                        selectedStratigraphyID
-                      }></ActionButtons>
+                      selectedStratigraphyID={selectedStratigraphyID}
+                    />
                   )}
                 </>
               )}
@@ -270,9 +267,8 @@ const LithologicalDescriptionLayers = props => {
                   setDescriptionIdSelectedForDelete={
                     setDescriptionIdSelectedForDelete
                   }
-                  deleteMutation={
-                    deleteMutation
-                  }></LithologicalDescriptionDeleteDialog>
+                  deleteMutation={deleteMutation}
+                />
               )}
             </Stack>
           ))}
