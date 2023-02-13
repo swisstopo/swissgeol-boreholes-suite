@@ -69,16 +69,12 @@ const LithologicalDescriptionLayers = props => {
     lithologicalDescriptions
       .sort((a, b) => a.fromDepth - b.fromDepth)
       .forEach((lithologicalDescription, index) => {
-        const previousLithologicalDescription =
-          lithologicalDescriptions[index - 1];
-        if (
-          index !== 0 &&
-          lithologicalDescription.fromDepth !==
-            previousLithologicalDescription.toDepth
-        ) {
+        const expectedFromDepth =
+          index == 0 ? 0 : lithologicalDescriptions[index - 1]?.toDepth;
+        if (lithologicalDescription.fromDepth !== expectedFromDepth) {
           tempDescriptions.push({
             id: null,
-            fromDepth: previousLithologicalDescription.toDepth,
+            fromDepth: expectedFromDepth,
             toDepth: lithologicalDescription.fromDepth,
             description: (
               <Stack
@@ -92,7 +88,6 @@ const LithologicalDescriptionLayers = props => {
                 <WarningIcon />
               </Stack>
             ),
-
             qtDescription: null,
           });
         }
