@@ -13,13 +13,10 @@ import { useTranslation } from "react-i18next";
 
 const LithologicalDescriptionInput = props => {
   const {
-    fromDepth,
+    item,
     setFromDepth,
-    description,
     setDescription,
-    toDepth,
     setToDepth,
-    qtDescriptionId,
     setQtDescriptionId,
     selectableToDepths,
     selectableFromDepths,
@@ -33,7 +30,7 @@ const LithologicalDescriptionInput = props => {
         <InputLabel htmlFor="from-depth">{t("layer_depth_from")}</InputLabel>
         <Select
           data-cy="from-depth-select"
-          defaultValue={fromDepth}
+          defaultValue={item.fromDepth}
           input={<Input id="from-depth" />}
           onChange={e => {
             e.stopPropagation();
@@ -54,7 +51,7 @@ const LithologicalDescriptionInput = props => {
         rows={3}
         placeholder={t("description")}
         hiddenLabel
-        value={description}
+        value={item.description}
         onChange={e => {
           setDescription(e.target.value);
         }}
@@ -67,7 +64,7 @@ const LithologicalDescriptionInput = props => {
         <InputLabel htmlFor="qt-description">{t("qt_description")}</InputLabel>
         <Select
           data-cy="qt-decription-select"
-          defaultValue={qtDescriptionId}
+          defaultValue={item.qtDescriptionId}
           input={<Input id="qt-description" />}
           onChange={e => {
             e.stopPropagation();
@@ -87,7 +84,7 @@ const LithologicalDescriptionInput = props => {
         <InputLabel htmlFor="to-depth">{t("layer_depth_to")}</InputLabel>
         <Select
           data-cy="to-depth-select"
-          defaultValue={toDepth}
+          defaultValue={item.toDepth}
           input={<Input id="to-depth" />}
           onChange={e => {
             e.stopPropagation();
@@ -97,7 +94,7 @@ const LithologicalDescriptionInput = props => {
             <em>{t("reset")}</em>
           </MenuItem>
           {selectableToDepths
-            ?.filter(d => d > fromDepth)
+            ?.filter(d => d > item.fromDepth)
             .map(d => (
               <MenuItem value={d}>{d}</MenuItem>
             ))}

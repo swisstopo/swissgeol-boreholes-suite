@@ -235,16 +235,13 @@ const LithologicalDescriptionLayers = props => {
                   )}
                   {selectedDescription?.id === item?.id && (
                     <LithologicalDescriptionInput
-                      fromDepth={fromDepth}
                       setFromDepth={setFromDepth}
-                      description={description}
                       setDescription={setDescription}
-                      toDepth={toDepth}
                       setToDepth={setToDepth}
-                      selectableFromDepths={selectableFromDepths}
-                      qtDescriptionId={qtDescriptionId}
                       setQtDescriptionId={setQtDescriptionId}
+                      selectableFromDepths={selectableFromDepths}
                       selectableToDepths={selectableToDepths}
+                      item={item}
                     />
                   )}
                   {isEditable && (
