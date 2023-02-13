@@ -70,7 +70,7 @@ const LithologicalDescriptionLayers = props => {
       .sort((a, b) => a.fromDepth - b.fromDepth)
       .forEach((lithologicalDescription, index) => {
         const expectedFromDepth =
-          index == 0 ? 0 : lithologicalDescriptions[index - 1]?.toDepth;
+          index === 0 ? 0 : lithologicalDescriptions[index - 1]?.toDepth;
         if (lithologicalDescription.fromDepth !== expectedFromDepth) {
           tempDescriptions.push({
             id: null,
