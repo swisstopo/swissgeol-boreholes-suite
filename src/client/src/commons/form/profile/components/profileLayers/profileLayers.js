@@ -97,6 +97,7 @@ const ProfileLayers = props => {
 
   const addLithologicalDesc = () => {
     if (
+      lithoDescQuery?.data &&
       lithoDescQuery?.data?.length !== 0 &&
       lithoDescQuery?.data[lithoDescQuery?.data?.length - 1]?.toDepth == null
     ) {

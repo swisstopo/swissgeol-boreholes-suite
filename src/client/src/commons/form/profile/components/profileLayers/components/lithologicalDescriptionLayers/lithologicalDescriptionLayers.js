@@ -24,7 +24,7 @@ import {
 } from "../../../../../../../api/fetchApiV2";
 import produce from "immer";
 import { useMutation, useQueryClient } from "react-query";
-import { withTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 const LithologicalDescriptionLayers = props => {
   const {
@@ -35,7 +35,6 @@ const LithologicalDescriptionLayers = props => {
     layers,
     addMutation,
     selectedStratigraphyID,
-    t,
   } = props;
   const [fromDepth, setFromDepth] = useState(null);
   const [toDepth, setToDepth] = useState(null);
@@ -43,6 +42,8 @@ const LithologicalDescriptionLayers = props => {
   const [qtDescriptionId, setQtDescriptionId] = useState(null);
   const [displayDescriptions, setDisplayDescriptions] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(0);
+
+  const { t, i18n } = useTranslation();
 
   // react-query mutations and queries
   const queryClient = useQueryClient();
@@ -264,7 +265,8 @@ const LithologicalDescriptionLayers = props => {
                       </Typography>
                       {item.id !== null && (
                         <Typography variant="subtitle2">
-                          {t("qt_description")}: {item.qtDescription?.en ?? "-"}
+                          {t("qt_description")}:{" "}
+                          {item.qtDescription?.[i18n.language] ?? "-"}
                         </Typography>
                       )}
                       <Typography variant="subtitle1">
@@ -334,7 +336,9 @@ const LithologicalDescriptionLayers = props => {
                           {domains?.data
                             ?.filter(d => d.schema === "qt_description")
                             .map(d => (
-                              <MenuItem value={d.id}>{d.en}</MenuItem>
+                              <MenuItem value={d.id}>
+                                {d[i18n.language]}
+                              </MenuItem>
                             ))}
                         </Select>
                       </FormControl>
@@ -451,4 +455,4 @@ const LithologicalDescriptionLayers = props => {
     </Box>
   );
 };
-export default withTranslation()(LithologicalDescriptionLayers);
+export default LithologicalDescriptionLayers;
