@@ -96,7 +96,7 @@ const LithologicalDescriptionLayers = props => {
         tempDescriptions.push(lithologicalDescription);
       });
     setDisplayDescriptions(tempDescriptions);
-  }, [lithologicalDescriptions, layers, t]);
+  }, [lithologicalDescriptions, layers, t, theme]);
 
   useEffect(() => {
     if (isEditable && layers?.data?.length > 0) {
