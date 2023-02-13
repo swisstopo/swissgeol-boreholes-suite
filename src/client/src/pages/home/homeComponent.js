@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 import _ from "lodash";
 import { Route, Switch, withRouter } from "react-router-dom";
@@ -87,7 +88,7 @@ class HomeComponent extends React.Component {
   }
 
   getTable(id) {
-    const { checkout, history, home, search } = this.props;
+    const { checkout, history, home, search, t } = this.props;
     return (
       <div
         style={{
@@ -110,6 +111,11 @@ class HomeComponent extends React.Component {
               style={{
                 fontWeight: "bold",
               }}>
+              {checkout.cart.length === 1
+                ? t("common:oneSelected")
+                : t("common:someSelected", {
+                    howMany: checkout.cart.length,
+                  })}
               {checkout.cart.length === 1 ? "One" : checkout.cart.length}{" "}
               borehole{checkout.cart.length > 1 ? "s" : null} selected.
             </span>{" "}
@@ -123,7 +129,7 @@ class HomeComponent extends React.Component {
                 textDecoration: "underline",
                 cursor: "pointer",
               }}>
-              Reset selection
+              {t("common:reset")}
             </span>
             ) &nbsp; Export as:&nbsp;
             <Checkbox
@@ -631,5 +637,8 @@ const mapDispatchToProps = dispatch => {
 };
 
 export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(HomeComponent), // withTranslation('home')(HomeComponent))
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  )(withTranslation(["common"])(HomeComponent)),
 );
