@@ -140,11 +140,12 @@ const ProfileLayers = props => {
     }
   };
 
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  const cellStyle = {
     verticalAlign: "top",
     padding: "0",
     width: "50%",
-  }));
+    minHeight: "10em",
+  };
 
   return (
     <Styled.Container>
@@ -192,7 +193,7 @@ const ProfileLayers = props => {
           </TableHead>
           <TableBody>
             <TableRow>
-              <StyledTableCell>
+              <td style={cellStyle}>
                 {layers !== null && layers?.data?.length !== 0 && (
                   <ProfileLayersValidation
                     data={{
@@ -207,11 +208,11 @@ const ProfileLayers = props => {
                     }}
                   />
                 )}
-              </StyledTableCell>
+              </td>
               {selectedLayer === null &&
                 stratigraphyKind === profileKind.STRATIGRAPHY &&
                 lithoDescQuery?.data?.length > 0 && (
-                  <StyledTableCell>
+                  <td style={cellStyle}>
                     <LithologicalDescriptionLayers
                       isEditable={isEditable}
                       lithologicalDescriptions={lithoDescQuery?.data}
@@ -223,7 +224,7 @@ const ProfileLayers = props => {
                       addMutation={addMutation}
                       selectedStratigraphyID={selectedStratigraphyID}
                     />
-                  </StyledTableCell>
+                  </td>
                 )}
             </TableRow>
           </TableBody>

@@ -229,7 +229,7 @@ const LithologicalDescriptionLayers = props => {
               isFirst={index === 0 ? true : false}>
               {descriptionIdSelectedForDelete !== item.id && (
                 <>
-                  {selectedDescription !== item && (
+                  {selectedDescription?.id !== item?.id && (
                     <LithologicalDescriptionDisplay item={item} />
                   )}
                   {selectedDescription?.id === item?.id && (
