@@ -243,6 +243,7 @@ const LithologicalDescriptionLayers = props => {
                       setQtDescriptionId={setQtDescriptionId}
                       selectableFromDepths={selectableFromDepths}
                       selectableToDepths={selectableToDepths}
+                      lithologicalDescriptions={lithologicalDescriptions}
                       item={item}
                     />
                   )}
