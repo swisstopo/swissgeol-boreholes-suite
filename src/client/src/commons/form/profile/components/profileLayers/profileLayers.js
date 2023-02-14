@@ -21,7 +21,6 @@ import {
   Typography,
   TableCell,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import {
   addLithologicalDescription,
   useLithoDescription,
