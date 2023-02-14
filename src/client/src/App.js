@@ -40,6 +40,10 @@ const theme = createTheme({
       main: "#007CC3",
       contrastText: "#fff",
     },
+    error: {
+      main: "#9f3a38",
+      background: "#fff6f6",
+    },
   },
   typography: {
     fontFamily: "Lato",

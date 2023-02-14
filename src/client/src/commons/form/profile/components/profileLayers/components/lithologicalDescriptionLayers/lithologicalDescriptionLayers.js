@@ -1,30 +1,18 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  MenuItem,
-  FormControl,
-  Select,
-  InputLabel,
-  Input,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import {
   updateLithologicalDescription,
-  useDomains,
   deleteLithologicalDescription,
 } from "../../../../../../../api/fetchApiV2";
 import produce from "immer";
 import { useMutation, useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
+import LithologicalDescriptionInput from "./lithologicalDescriptionInput";
+import LithologicalDescriptionDisplay from "./lithologicalDescriptionDisplay";
+import LithologicalDescriptionDeleteDialog from "./lithologicalDescriptionDeleteDialog";
+import ActionButtons from "./actionButtons";
+import { useTheme } from "@mui/material/styles";
 
 const LithologicalDescriptionLayers = props => {
   const {
@@ -41,13 +29,14 @@ const LithologicalDescriptionLayers = props => {
   const [description, setDescription] = useState(null);
   const [qtDescriptionId, setQtDescriptionId] = useState(null);
   const [displayDescriptions, setDisplayDescriptions] = useState(null);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(0);
+  const [descriptionIdSelectedForDelete, setDescriptionIdSelectedForDelete] =
+    useState(0);
 
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const theme = useTheme();
 
   // react-query mutations and queries
   const queryClient = useQueryClient();
-  const domains = useDomains();
 
   const deleteMutation = useMutation(
     async id => {
@@ -82,37 +71,32 @@ const LithologicalDescriptionLayers = props => {
     lithologicalDescriptions
       .sort((a, b) => a.fromDepth - b.fromDepth)
       .forEach((lithologicalDescription, index) => {
-        const previousLithologicalDescription =
-          lithologicalDescriptions[index - 1];
-        if (
-          index !== 0 &&
-          lithologicalDescription.fromDepth !==
-            previousLithologicalDescription.toDepth
-        ) {
+        const expectedFromDepth =
+          index === 0 ? 0 : lithologicalDescriptions[index - 1]?.toDepth;
+        if (lithologicalDescription.fromDepth !== expectedFromDepth) {
           tempDescriptions.push({
             id: null,
-            fromDepth: previousLithologicalDescription.toDepth,
+            fromDepth: expectedFromDepth,
             toDepth: lithologicalDescription.fromDepth,
             description: (
               <Stack
                 direction="row"
                 alignItems="center"
                 gap={1}
-                sx={{ color: "#9f3a38" }}>
+                sx={{ color: theme.palette.error.main }}>
                 <Typography sx={{ fontWeight: "bold" }}>
                   {t("errorGap")}
                 </Typography>
                 <WarningIcon />
               </Stack>
             ),
-
             qtDescription: null,
           });
         }
         tempDescriptions.push(lithologicalDescription);
       });
     setDisplayDescriptions(tempDescriptions);
-  }, [lithologicalDescriptions, layers, t]);
+  }, [lithologicalDescriptions, layers, t, theme]);
 
   useEffect(() => {
     if (isEditable && layers?.data?.length > 0) {
@@ -237,8 +221,8 @@ const LithologicalDescriptionLayers = props => {
                 overflowY: "auto",
                 padding: "5px",
                 backgroundColor:
-                  item.id === null || item.id === showDeleteDialog
-                    ? "#fff6f6"
+                  item.id === null || item.id === descriptionIdSelectedForDelete
+                    ? theme.palette.error.background
                     : selectedDescription?.id === item?.id && "lightgrey",
                 "&:hover": {
                   backgroundColor: "#ebebeb",
@@ -246,209 +230,44 @@ const LithologicalDescriptionLayers = props => {
               }}
               key={index}
               isFirst={index === 0 ? true : false}>
-              {showDeleteDialog !== item.id && (
+              {descriptionIdSelectedForDelete !== item.id && (
                 <>
                   {selectedDescription !== item && (
-                    <Stack direction="column" justifyContent="space-between">
-                      <Typography variant="subtitle1">
-                        {item.fromDepth} m
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontWeight: "bold",
-                          overflow: "auto",
-                          display: "-webkit-box",
-                          WebkitLineClamp: "2",
-                          WebkitBoxOrient: "vertical",
-                        }}>
-                        {item.description}
-                      </Typography>
-                      {item.id !== null && (
-                        <Typography variant="subtitle2">
-                          {t("qt_description")}:{" "}
-                          {item.qtDescription?.[i18n.language] ?? "-"}
-                        </Typography>
-                      )}
-                      <Typography variant="subtitle1">
-                        {item.toDepth} m
-                      </Typography>
-                    </Stack>
+                    <LithologicalDescriptionDisplay item={item} />
                   )}
                   {selectedDescription?.id === item?.id && (
-                    <Stack direction="column" sx={{ width: "100%" }}>
-                      <FormControl
-                        variant="standard"
-                        sx={{ minWidth: 120 }}
-                        size="small">
-                        <InputLabel htmlFor="from-depth">
-                          {t("layer_depth_from")}
-                        </InputLabel>
-                        <Select
-                          data-cy="from-depth-select"
-                          defaultValue={fromDepth}
-                          input={<Input id="from-depth" />}
-                          onChange={e => {
-                            e.stopPropagation();
-                            setFromDepth(e.target.value);
-                          }}>
-                          <MenuItem value="">
-                            <em>{t("reset")}</em>
-                          </MenuItem>
-                          {selectableFromDepths.map(d => (
-                            <MenuItem value={d}>{d}</MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <TextField
-                        data-cy="description-textfield"
-                        label={t("description")}
-                        multiline
-                        rows={3}
-                        placeholder={t("description")}
-                        hiddenLabel
-                        value={description}
-                        onChange={e => {
-                          setDescription(e.target.value);
-                        }}
-                        variant="standard"
-                        type="text"
-                        size="small"
-                        sx={{ overflow: "auto" }}
-                      />
-                      <FormControl
-                        variant="standard"
-                        sx={{ minWidth: 120 }}
-                        size="small">
-                        <InputLabel htmlFor="qt-description">
-                          {t("qt_description")}
-                        </InputLabel>
-                        <Select
-                          data-cy="qt-decription-select"
-                          defaultValue={qtDescriptionId}
-                          input={<Input id="qt-description" />}
-                          onChange={e => {
-                            e.stopPropagation();
-                            setQtDescriptionId(e.target.value);
-                          }}>
-                          <MenuItem value="">
-                            <em>{t("reset")}</em>
-                          </MenuItem>
-                          {domains?.data
-                            ?.filter(d => d.schema === "qt_description")
-                            .map(d => (
-                              <MenuItem value={d.id}>
-                                {d[i18n.language]}
-                              </MenuItem>
-                            ))}
-                        </Select>
-                      </FormControl>
-                      <FormControl
-                        variant="standard"
-                        sx={{ minWidth: 120 }}
-                        size="small">
-                        <InputLabel htmlFor="to-depth">
-                          {t("layer_depth_to")}
-                        </InputLabel>
-                        <Select
-                          data-cy="to-depth-select"
-                          defaultValue={toDepth}
-                          input={<Input id="to-depth" />}
-                          onChange={e => {
-                            e.stopPropagation();
-                            setToDepth(e.target.value);
-                          }}>
-                          <MenuItem value="">
-                            <em>{t("reset")}</em>
-                          </MenuItem>
-                          {selectableToDepths
-                            ?.filter(d => d > fromDepth)
-                            .map(d => (
-                              <MenuItem value={d}>{d}</MenuItem>
-                            ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
+                    <LithologicalDescriptionInput
+                      setFromDepth={setFromDepth}
+                      setDescription={setDescription}
+                      setToDepth={setToDepth}
+                      setQtDescriptionId={setQtDescriptionId}
+                      selectableFromDepths={selectableFromDepths}
+                      selectableToDepths={selectableToDepths}
+                      item={item}
+                    />
                   )}
                   {isEditable && (
-                    <Stack
-                      direction="row"
-                      sx={{ marginLeft: "auto", padding: "3px" }}>
-                      {selectedDescription?.id !== item?.id &&
-                      item.id !== null ? (
-                        <>
-                          <Tooltip title={t("edit")}>
-                            <ModeEditIcon
-                              onClick={() => changeSelectionAndSubmit(item)}
-                            />
-                          </Tooltip>
-                          <Tooltip title={t("delete")}>
-                            <DeleteIcon
-                              sx={{ color: "red", opacity: 0.7 }}
-                              onClick={() => {
-                                setShowDeleteDialog(item.id);
-                              }}
-                            />
-                          </Tooltip>
-                        </>
-                      ) : (
-                        item.id === null && (
-                          <Tooltip title={t("add")}>
-                            <AddCircleIcon
-                              style={{ color: "#9f3a38" }}
-                              onClick={() => {
-                                addMutation.mutate({
-                                  stratigraphyId: selectedStratigraphyID,
-                                  fromDepth: item.fromDepth,
-                                  toDepth: item.toDepth,
-                                });
-                              }}
-                            />
-                          </Tooltip>
-                        )
-                      )}
-                      {selectedDescription?.id === item?.id && (
-                        <Tooltip title={t("stop-editing")}>
-                          <ClearIcon
-                            onClick={() => changeSelectionAndSubmit(null)}
-                          />
-                        </Tooltip>
-                      )}
-                    </Stack>
+                    <ActionButtons
+                      item={item}
+                      changeSelectionAndSubmit={changeSelectionAndSubmit}
+                      setDescriptionIdSelectedForDelete={
+                        setDescriptionIdSelectedForDelete
+                      }
+                      addMutation={addMutation}
+                      selectedDescription={selectedDescription}
+                      selectedStratigraphyID={selectedStratigraphyID}
+                    />
                   )}
                 </>
               )}
-              {showDeleteDialog === item.id && (
-                <Stack
-                  alignItems="flex-start"
-                  sx={{ width: "100%", color: "#9f3a38" }}>
-                  <Stack direction="row" alignItems="center" gap={1}>
-                    <WarningIcon />
-                    <Typography sx={{ fontWeight: "bold" }}>
-                      {t("errorAttention")}
-                    </Typography>{" "}
-                  </Stack>
-                  <Typography sx={{ color: "#9f3a38" }} variant="subtitle2">
-                    {t("deletelayerconfirmation")}
-                  </Typography>
-                  <Box alignSelf="flex-end" sx={{ marginTop: "auto" }}>
-                    <Button
-                      variant="cancel"
-                      size="small"
-                      startIcon={<ClearIcon />}
-                      onClick={() => setShowDeleteDialog(null)}>
-                      {t("cancel")}
-                    </Button>
-                    <Button
-                      variant="delete"
-                      size="small"
-                      startIcon={<DeleteIcon />}
-                      onClick={() => {
-                        deleteMutation.mutate(item.id);
-                      }}>
-                      {t("confirm")}
-                    </Button>
-                  </Box>
-                </Stack>
+              {descriptionIdSelectedForDelete === item.id && (
+                <LithologicalDescriptionDeleteDialog
+                  item={item}
+                  setDescriptionIdSelectedForDelete={
+                    setDescriptionIdSelectedForDelete
+                  }
+                  deleteMutation={deleteMutation}
+                />
               )}
             </Stack>
           ))}
