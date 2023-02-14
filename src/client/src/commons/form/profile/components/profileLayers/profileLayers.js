@@ -21,6 +21,7 @@ import {
   Typography,
   TableCell,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import {
   addLithologicalDescription,
   useLithoDescription,
@@ -139,9 +140,20 @@ const ProfileLayers = props => {
     }
   };
 
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    verticalAlign: "top",
+    padding: "0",
+    width: "50%",
+  }));
+
   return (
     <Styled.Container>
-      <TableContainer sx={{ minHeight: "10em" }}>
+      <TableContainer
+        sx={{
+          minHeight: "10em",
+          overflow: selectedLayer ? "hidden" : "",
+          borderBottom: layers?.data?.length > 0 ? "1px solid lightgrey" : "",
+        }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
@@ -180,7 +192,7 @@ const ProfileLayers = props => {
           </TableHead>
           <TableBody>
             <TableRow>
-              <TableCell style={{ verticalAlign: "top", padding: "0" }}>
+              <StyledTableCell>
                 {layers !== null && layers?.data?.length !== 0 && (
                   <ProfileLayersValidation
                     data={{
@@ -195,11 +207,11 @@ const ProfileLayers = props => {
                     }}
                   />
                 )}
-              </TableCell>
+              </StyledTableCell>
               {selectedLayer === null &&
                 stratigraphyKind === profileKind.STRATIGRAPHY &&
                 lithoDescQuery?.data?.length > 0 && (
-                  <TableCell style={{ verticalAlign: "top", padding: "0" }}>
+                  <StyledTableCell>
                     <LithologicalDescriptionLayers
                       isEditable={isEditable}
                       lithologicalDescriptions={lithoDescQuery?.data}
@@ -211,7 +223,7 @@ const ProfileLayers = props => {
                       addMutation={addMutation}
                       selectedStratigraphyID={selectedStratigraphyID}
                     />
-                  </TableCell>
+                  </StyledTableCell>
                 )}
             </TableRow>
           </TableBody>

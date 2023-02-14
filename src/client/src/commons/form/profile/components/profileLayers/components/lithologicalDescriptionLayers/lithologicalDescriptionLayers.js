@@ -215,7 +215,6 @@ const LithologicalDescriptionLayers = props => {
                   selectedDescription?.id === item.id
                     ? "16em"
                     : calculateLayerWidth(item?.fromDepth, item?.toDepth),
-                width: "30em",
                 overflowY: "auto",
                 padding: "5px",
                 backgroundColor:
