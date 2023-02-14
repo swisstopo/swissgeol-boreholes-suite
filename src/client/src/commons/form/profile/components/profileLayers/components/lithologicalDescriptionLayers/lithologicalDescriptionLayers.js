@@ -209,8 +209,6 @@ const LithologicalDescriptionLayers = props => {
               direction="row"
               data-cy={`lithological-description-${index}`}
               sx={{
-                borderTop: index === 0 ? "1px solid lightgrey" : "0px",
-                borderLeft: "1px solid lightgrey",
                 boxShadow: "inset -1px 0 0 lightgrey, inset 0 -1px 0 lightgrey",
                 flex: "1 1 100%",
                 height:

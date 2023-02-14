@@ -8,8 +8,7 @@ export const LayerContainer = styled.div`
 
 export const Layer = styled.div`
   box-shadow: inset -1px 0 0 lightgrey, inset 0 -1px 0 lightgrey;
-  border-left: 2px solid lightgrey;
-  border-top: ${props => props.isFirst && "1px solid lightgrey"};
+  border-left: 1px solid lightgrey;
   flex: "1 1 0px",
   overflowY: "auto",
 `;
