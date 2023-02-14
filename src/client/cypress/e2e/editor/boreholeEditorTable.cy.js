@@ -9,7 +9,7 @@ describe("Borehole editor table tests", () => {
     cy.get("a").should("have.class", "item").contains("4").click();
     cy.wait("@edit_list");
 
-    cy.get("tbody").children().eq(0).contains("td", "Wilson").click();
+    cy.get("tbody").children().eq(0).contains("td", "Giovani").click();
     cy.get('[data-cy="done-menu-item"]').click();
     cy.wait("@edit_list");
 
@@ -24,16 +24,16 @@ describe("Borehole editor table tests", () => {
     cy.contains("th", "Original name").click();
     cy.wait("@edit_list");
 
-    cy.get("tbody").children().eq(0).contains("td", "Aaliyah");
+    cy.get("tbody").children().eq(0).contains("td", "Aaron");
     cy.get("tbody").children().eq(1).contains("td", "Aaron");
-    cy.get("tbody").children().eq(2).contains("td", "Abagail");
+    cy.get("tbody").children().eq(2).contains("td", "Aaron");
 
     // navigate to page 2
     cy.get("a").should("have.class", "item").contains("2").click();
     cy.wait("@edit_list");
 
-    cy.get("tbody").children().eq(0).contains("td", "Alfonzo");
-    cy.get("tbody").children().eq(1).contains("td", "Alford");
-    cy.get("tbody").children().eq(2).contains("td", "Alfred");
+    cy.get("tbody").children().eq(0).contains("td", "Albin");
+    cy.get("tbody").children().eq(1).contains("td", "Albina");
+    cy.get("tbody").children().eq(2).contains("td", "Alden");
   });
 });
