@@ -484,13 +484,11 @@ class MapComponent extends React.Component {
     }
     if (!_.isEqual(searchState.filter, prevProps.searchState.filter)) {
       if (
-        !_.isEqual(
+        _.isEqual(
           searchState.filter.extent,
           prevProps.searchState.filter.extent,
         )
       ) {
-        console.info("extent changed..");
-      } else {
         refresh = true;
         if (this.timeoutFilter !== null) {
           clearTimeout(this.timeoutFilter);

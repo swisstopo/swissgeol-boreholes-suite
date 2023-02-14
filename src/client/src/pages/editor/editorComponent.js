@@ -18,8 +18,6 @@ import MenuContainer from "../../commons/menu/menuContainer";
 import WorkflowForm from "../../commons/form/workflow/workflowForm";
 import MultipleForm from "../../commons/form/multiple/multipleForm";
 
-// const EditorComponent = function (props) {
-
 class EditorComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -50,7 +48,6 @@ class EditorComponent extends React.Component {
           }}>
           <div
             style={{
-              // borderRight: 'thin solid #dfe0e0',
               boxShadow: "rgba(0, 0, 0, 0.17) 2px 6px 6px 0px",
               display: "flex",
               flexDirection: "column",
@@ -64,9 +61,6 @@ class EditorComponent extends React.Component {
               />
               <Route
                 component={MenuEditorForm}
-                // onTimeout={()=>{
-
-                // }}
                 path={process.env.PUBLIC_URL + "/editor/:id"}
               />
             </Switch>
@@ -87,29 +81,19 @@ class EditorComponent extends React.Component {
                   <div
                     style={{
                       flex: "1 1.5 100%",
-                      // padding: "1em",
-                      // boxShadow: 'rgba(0, 0, 0, 0.5) 0px 0px 8px 0px inset',
                       display: "flex",
                       flexDirection: "column",
                     }}>
                     <Modal
                       onUnmount={() => {
-                        // props.multipleSelected(null);
                         props.loadEditingBoreholes(
                           props.editor.page,
                           props.search.filter,
                           props.editor.direction,
                         );
                       }}
-                      // open={props.store.mselected}
                       open={Array.isArray(props.store.mselected)}>
-                      <Modal.Content
-                        style={
-                          {
-                            // maxHeight: '600px',
-                            // overflowY: 'auto'
-                          }
-                        }>
+                      <Modal.Content>
                         <MultipleForm selected={props.store.mselected} />
                       </Modal.Content>
                     </Modal>
@@ -120,13 +104,6 @@ class EditorComponent extends React.Component {
                         height: "50%",
                       }}>
                       <MapComponent
-                        // centerto={
-                        //   search.center2selected
-                        //   && setting.data.appearance.explorer !== 0 ?
-                        //     detail.borehole !== null?
-                        //       detail.borehole.id : null
-                        //     : null
-                        // }
                         searchState={{
                           ...props.search,
                         }}
@@ -143,7 +120,6 @@ class EditorComponent extends React.Component {
                           this.props.filterByExtent(extent);
                         }}
                         selected={id => {
-                          // this.props.boreholeSeleced(id);
                           if (id !== null) {
                             props.lock(id);
                           }
@@ -154,10 +130,6 @@ class EditorComponent extends React.Component {
                         setmapfilter={checked => {
                           this.props.setmapfilter(checked);
                         }}
-                        // zoomto={
-                        //   search.zoom2selected
-                        //   && setting.data.appearance.explorer !== 0
-                        // }
                       />
                     </div>
                     <div
@@ -245,8 +217,6 @@ class EditorComponent extends React.Component {
       </div>
     );
   }
-
-  // }
 }
 
 EditorComponent.propTypes = {

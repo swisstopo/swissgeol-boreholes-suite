@@ -38,8 +38,6 @@ class HomeComponent extends React.Component {
           display: "flex",
           flexDirection: "row",
           border: "1px solid rgb(204, 204, 204)",
-          // border: setting.data.appearance.explorer === 1?
-          //   '1px solid #787878': '1px solid #cccccc',
           position: "relative",
           overflow: "hidden",
           zIndex: 1,
@@ -72,7 +70,6 @@ class HomeComponent extends React.Component {
             this.props.filterByExtent(extent);
           }}
           selected={id => {
-            // this.props.boreholeSeleced(id);
             if (id === null) {
               history.push(process.env.PUBLIC_URL);
             } else {
@@ -202,8 +199,6 @@ class HomeComponent extends React.Component {
             }, 250);
           }}
           onSelected={borehole => {
-            // this.props.boreholeSeleced(borehole.id);
-
             if (borehole === null) {
               history.push(process.env.PUBLIC_URL);
             } else {
@@ -266,7 +261,6 @@ class HomeComponent extends React.Component {
                         }}
                       />
                     </Switch>
-                    {/* {this.getDetails()} */}
                     {this.getMap()}
                   </div>
                 );
@@ -296,7 +290,6 @@ class HomeComponent extends React.Component {
                           overflow: "hidden",
                           display: "flex",
                           flexDirection: "column",
-                          // margin: '1em',
                           minHeight: "300px",
                         }}>
                         {this.getMap()}
