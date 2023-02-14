@@ -109,8 +109,8 @@ const ProfileLayers = props => {
         ? addMutation.mutate({
             stratigraphyId: selectedStratigraphyID,
             fromDepth: newFromDepth,
-            toDepth: layers.data.find(l => l.depth_from === newFromDepth)
-              .depth_to,
+            toDepth: layers?.data.find(l => l.depth_from === newFromDepth)
+              ?.depth_to,
           })
         : alertContext.error(t("first_add_lithology"));
     }

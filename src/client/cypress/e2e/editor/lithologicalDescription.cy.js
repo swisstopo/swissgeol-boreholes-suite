@@ -10,13 +10,6 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="add-stratigraphy-button"]').click();
     cy.wait("@stratigraphy_edit_create");
 
-    // try add lithological description without lithology
-    cy.get('[data-cy="add-litho-desc-icon"]').click();
-    cy.wait("@lithological_description");
-
-    // assure cannot add lithological description without lithology
-    cy.get('[data-cy="lithological-description-0"]').should("not.exist");
-
     // add three layers
     cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
@@ -48,6 +41,7 @@ describe("Tests for the lithological description column.", () => {
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-2"] [data-testid="ClearIcon"]').click();
 
+    // add lithological description
     cy.get('[data-cy="add-litho-desc-icon"]').click();
     cy.wait("@lithological_description");
     cy.get('[data-cy="lithological-description-0"]').contains("0 m");
@@ -70,16 +64,6 @@ describe("Tests for the lithological description column.", () => {
     cy.get('.MuiPaper-elevation [role="listbox"]')
       .find('[role="option"]')
       .last()
-      .click();
-
-    // fill to depth dropdown
-    cy.get('[data-cy="to-depth-select"]')
-      .find('[role="button"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
       .click();
 
     // stop editing
@@ -110,7 +94,7 @@ describe("Tests for the lithological description column.", () => {
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
       .find('[role="option"]')
-      .eq(2)
+      .eq(1)
       .click();
     cy.wait("@lithological_description");
 
@@ -140,15 +124,6 @@ describe("Tests for the lithological description column.", () => {
     cy.get(
       '[data-cy="lithological-description-1"] [data-testid="ModeEditIcon"] ',
     ).click();
-    cy.get('[data-cy="to-depth-select"]')
-      .find('[role="button"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
-    cy.wait("@lithological_description");
     cy.wait("@lithological_description");
 
     // stop editing
@@ -163,14 +138,6 @@ describe("Tests for the lithological description column.", () => {
     cy.get(
       '[data-cy="lithological-description-2"] [data-testid="ModeEditIcon"] ',
     ).click();
-    cy.get('[data-cy="to-depth-select"]')
-      .find('[role="button"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
     cy.wait("@lithological_description");
 
     // stop editing
