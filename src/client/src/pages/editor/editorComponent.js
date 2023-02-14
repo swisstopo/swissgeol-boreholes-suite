@@ -127,8 +127,8 @@ class EditorComponent extends React.Component {
                         //       detail.borehole.id : null
                         //     : null
                         // }
-                        filter={{
-                          ...props.search.filter,
+                        searchState={{
+                          ...props.search,
                         }}
                         highlighted={
                           this.state.hover !== null ? [this.state.hover.id] : []

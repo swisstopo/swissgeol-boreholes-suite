@@ -52,8 +52,8 @@ class HomeComponent extends React.Component {
                 : null
               : null
           }
-          filter={{
-            ...search.filter,
+          searchState={{
+            ...search,
           }}
           highlighted={
             !_.isNil(detail.borehole)
