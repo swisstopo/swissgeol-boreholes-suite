@@ -99,7 +99,7 @@ const LithologicalDescriptionInput = props => {
         rows={3}
         placeholder={t("description")}
         hiddenLabel
-        value={item.description}
+        defaultValue={item.description ?? ""}
         onChange={e => {
           setDescription(e.target.value);
         }}
