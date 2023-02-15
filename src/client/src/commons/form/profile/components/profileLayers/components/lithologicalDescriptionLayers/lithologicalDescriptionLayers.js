@@ -66,7 +66,7 @@ const LithologicalDescriptionLayers = props => {
     .fill(null)
     .map(() => createRef(null));
 
-  // store previous lenght of list
+  // store previous length of list
   const prevLengthRef = useRef(0);
 
   const lastDescriptionRef = descriptionRefs[displayDescriptions?.length - 1];
