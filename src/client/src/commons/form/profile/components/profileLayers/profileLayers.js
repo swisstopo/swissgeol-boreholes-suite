@@ -108,14 +108,14 @@ const ProfileLayers = props => {
   const addLithologicalDesc = () => {
     if (
       lithoDescQuery?.data &&
-      lithoDescQuery?.data?.length !== 0 &&
+      lithoDescQuery?.data?.length &&
       lithoDescQuery?.data[lithoDescQuery?.data?.length - 1]?.toDepth == null
     ) {
       alertContext.error(t("first_add_layer_to_depth"));
     } else {
       setSelectedLithologicalDescription(null);
       const newFromDepth = lithoDescQuery?.data?.at(-1)?.toDepth ?? 0;
-      layers?.data?.length !== 0
+      layers?.data?.length
         ? addMutation.mutate({
             stratigraphyId: selectedStratigraphyID,
             fromDepth: newFromDepth,
@@ -152,7 +152,7 @@ const ProfileLayers = props => {
         sx={{
           minHeight: "10em",
           overflow: selectedLayer ? "hidden" : "",
-          borderBottom: layers?.data?.length > 0 ? "1px solid lightgrey" : "",
+          borderBottom: layers?.data?.length ? "1px solid lightgrey" : "",
         }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -193,7 +193,7 @@ const ProfileLayers = props => {
           <TableBody>
             <TableRow>
               <td style={cellStyle}>
-                {layers !== null && layers?.data?.length !== 0 && (
+                {layers !== null && layers?.data?.length && (
                   <ProfileLayersValidation
                     data={{
                       layers,
@@ -210,7 +210,7 @@ const ProfileLayers = props => {
               </td>
               {selectedLayer === null &&
                 stratigraphyKind === profileKind.STRATIGRAPHY &&
-                lithoDescQuery?.data?.length > 0 && (
+                lithoDescQuery?.data?.length && (
                   <td style={cellStyle}>
                     <LithologicalDescriptionLayers
                       isEditable={isEditable}
