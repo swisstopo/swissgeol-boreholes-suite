@@ -64,14 +64,20 @@ class BoreholeEditorTable extends TTable {
   }
 
   componentDidMount() {
-    const { filter } = this.props;
+    const { filter, store, sort } = this.props;
     this.props.clear();
-    this.props.loadData(1, filter);
+    this.props.loadData(
+      store.page,
+      filter,
+      sort?.column ?? "creation",
+      sort?.direction,
+    );
   }
   reorder(orderby) {
-    const { filter, loadData, store } = this.props;
+    const { filter, loadData, store, onReorder } = this.props;
     let dir = store.direction === "DESC" ? "ASC" : "DESC";
     loadData(store.page, filter, orderby, dir);
+    onReorder(orderby, dir);
   }
   add2selection(id) {
     const { selected } = this.state;
@@ -605,7 +611,7 @@ const mapDispatchToProps = dispatch => {
         path: "/borehole",
       });
     },
-    loadData: (page, filter = {}, orderby = "creation", direction = null) => {
+    loadData: (page, filter = {}, orderby = null, direction = null) => {
       dispatch(loadEditingBoreholes(page, 100, filter, orderby, direction));
     },
   };

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Memorize table and map state when navigating through the application.
+
 ## v2.0.186 - 2023-02-13
 
 ### Added

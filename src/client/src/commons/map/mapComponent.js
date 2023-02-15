@@ -299,7 +299,7 @@ class MapComponent extends React.Component {
       }
     }
 
-    getGeojson(this.props.filter)
+    getGeojson(this.props.searchState.filter)
       .then(
         function (response) {
           if (response.data.success) {
@@ -402,7 +402,12 @@ class MapComponent extends React.Component {
             this.points.addFeatures(
               new GeoJSON().readFeatures(response.data.data),
             );
-            this.map.getView().fit(this.points.getExtent());
+
+            let extent = this.props.searchState.extent?.length
+              ? this.props.searchState.extent
+              : this.points.getExtent();
+
+            this.map.getView().fit(extent);
             this.moveEnd();
           }
         }.bind(this),
@@ -413,7 +418,8 @@ class MapComponent extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { centerto, filter, highlighted, hover, layers, zoomto } = this.props;
+    const { centerto, searchState, highlighted, hover, layers, zoomto } =
+      this.props;
     let refresh = false;
 
     // Check overlays apparence
@@ -476,17 +482,20 @@ class MapComponent extends React.Component {
       }
       refresh = true;
     }
-    if (!_.isEqual(filter, prevProps.filter)) {
-      if (!_.isEqual(filter.extent, prevProps.filter.extent)) {
-        console.info("extent changed..");
-      } else {
+    if (!_.isEqual(searchState.filter, prevProps.searchState.filter)) {
+      if (
+        _.isEqual(
+          searchState.filter.extent,
+          prevProps.searchState.filter.extent,
+        )
+      ) {
         refresh = true;
         if (this.timeoutFilter !== null) {
           clearTimeout(this.timeoutFilter);
         }
         this.timeoutFilter = setTimeout(() => {
           this.points.clear(true);
-          getGeojson(filter)
+          getGeojson(searchState.filter)
             .then(
               function (response) {
                 if (response.data.success) {
@@ -880,7 +889,7 @@ class MapComponent extends React.Component {
 
 MapComponent.propTypes = {
   centerto: PropTypes.number,
-  filter: PropTypes.object,
+  searchState: PropTypes.object,
   highlighted: PropTypes.array,
   hover: PropTypes.func,
   layers: PropTypes.object,
@@ -891,7 +900,7 @@ MapComponent.propTypes = {
 
 MapComponent.defaultProps = {
   highlighted: [],
-  filter: {},
+  searchState: {},
   layers: {},
   zoomto: false,
   centerto: null,
