@@ -101,6 +101,7 @@
   "errorOverlap": "",
   "errorEndPoint": "",
   "errorStartEditing": "",
+  "errorStartEditingWrongStatus": "",
   "errrorStartPoint": "",
   "errorStartWrong": "",
   "errorWrongDepth": "",

@@ -113,9 +113,12 @@ class BoreholeForm extends React.Component {
   }
 
   check(attribute, value) {
+    const { t } = this.props;
     if (this.props.borehole.data.role !== "EDIT") {
       this.context.error(
-        `Borehole status (${this.props.borehole.data.role}) not editable`,
+        t("common:errorStartEditingWrongStatus", {
+          status: this.props.borehole.data.role,
+        }),
       );
       return;
     }
@@ -123,7 +126,7 @@ class BoreholeForm extends React.Component {
       this.props.borehole.data.lock === null ||
       this.props.borehole.data.lock.username !== this.props.user.data.username
     ) {
-      this.context.error("Borehole not locked");
+      this.context.error(t("common:errorStartEditing"));
       return;
     }
     // Check for uniqueness and patch
@@ -199,15 +202,20 @@ class BoreholeForm extends React.Component {
   }
 
   checkLock() {
+    const { t } = this.props;
     if (this.props.borehole.data.role !== "EDIT") {
-      this.context.error("Borehole status not editable");
+      this.context.error(
+        t("common:errorStartEditingWrongStatus", {
+          status: this.props.borehole.data.role,
+        }),
+      );
       return false;
     }
     if (
       this.props.borehole.data.lock === null ||
       this.props.borehole.data.lock.username !== this.props.user.data.username
     ) {
-      this.context.error("Borehole not locked");
+      this.context.error(t("common:errorStartEditing"));
       return false;
     }
     return true;

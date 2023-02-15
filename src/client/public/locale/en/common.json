@@ -102,6 +102,7 @@
   "errorOneerror": "One error found",
   "errorOverlap": "Overlapping layers",
   "errorStartEditing": "You should press the 'start editing' button",
+  "errorStartEditingWrongStatus": "Borehole with status {{status}} not editable",
   "errorStartWrong": "First layer does not start at the reference level",
   "errorWrongDepth": "Incorrect borehole end depth",
   "errorWrongDepthSolution1": "End depth of last layer ({{lDepth}}) does not equal the borehole end depth {{bDepth}}.",

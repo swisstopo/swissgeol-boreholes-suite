@@ -102,6 +102,7 @@
   "errorOneerror": "Ein Fehler gefunden",
   "errorOverlap": "Überlappende Schichten",
   "errorStartEditing": "Sie sollten die Schaltfläche 'Bearbeitung beginnen' drücken",
+  "errorStartEditingWrongStatus": "Bohrung mit dem Status {{status}} kann nicht editiert werden.",
   "errorStartWrong": "Erste Schicht beginnt nicht auf dem Referenzniveau",
   "errorWrongDepth": "Falsche Bohrendteufe",
   "errorWrongDepthSolution1": "Tiefe der letzten Schicht ({{lDepth}} m) stimmt nicht mit der Endteufe ({{bDepth}}) überein.",

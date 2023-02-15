@@ -102,6 +102,7 @@
   "errorOneerror": "Un errore trovato",
   "errorOverlap": "Sovrapposizione di strati",
   "errorStartEditing": "Per favore premere il pulsante 'iniziare la modifica'",
+  "errorStartEditingWrongStatus": "Perforazione con stato {{status}} non modificabile",
   "errorStartWrong": "Il primo strato non inizia dalla riferimento della quota",
   "errorWrongDepth": "Profondità di perforazione finale errata",
   "errorWrongDepthSolution1": "La profondità dell'ultimo strato ({{lDepth}}) non coincide con quanto dichiarato nei metadati della perforazione ({{bDepth}})",

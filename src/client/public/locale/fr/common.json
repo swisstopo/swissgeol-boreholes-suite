@@ -102,6 +102,7 @@
   "errorOneerror": "Une erreur trouvée",
   "errorOverlap": "Des couches se recouvrent",
   "errorStartEditing": "Veuillez appuyer sur le bouton 'Commencer l'édition'",
+  "errorStartEditingWrongStatus": "Forage avec le statut {{status}} non modifiable",
   "errorStartWrong": "La première couche ne débute pas au niveau de la référence altitudinale",
   "errorWrongDepth": "Profondeur finale erronée",
   "errorWrongDepthSolution1": "La profondeur de la dernière couche ({{lDepth}}m) ne coïncide pas avec la profondeur totale du forage ({{bDepth}}m)",
