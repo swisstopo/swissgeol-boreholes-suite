@@ -104,10 +104,13 @@ const ProfileLayers = props => {
       alertContext.error(t("first_add_layer_to_depth"));
     } else {
       setSelectedLithologicalDescription(null);
+      const newFromDepth = lithoDescQuery?.data?.at(-1)?.toDepth ?? 0;
       layers?.data?.length !== 0
         ? addMutation.mutate({
             stratigraphyId: selectedStratigraphyID,
-            fromDepth: lithoDescQuery?.data?.at(-1)?.toDepth ?? 0,
+            fromDepth: newFromDepth,
+            toDepth: layers?.data.find(l => l.depth_from === newFromDepth)
+              ?.depth_to,
           })
         : alertContext.error(t("first_add_lithology"));
     }
