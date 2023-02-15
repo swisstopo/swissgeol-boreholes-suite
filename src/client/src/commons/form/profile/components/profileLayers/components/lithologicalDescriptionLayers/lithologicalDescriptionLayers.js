@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createRef, useRef } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import {
@@ -61,6 +61,27 @@ const LithologicalDescriptionLayers = props => {
       },
     },
   );
+
+  const descriptionRefs = Array(displayDescriptions?.length)
+    .fill(null)
+    .map(() => createRef(null));
+
+  // store previous lenght of list
+  const prevLengthRef = useRef(0);
+
+  const lastDescriptionRef = descriptionRefs[displayDescriptions?.length - 1];
+
+  useEffect(() => {
+    // scroll to the last item in the list
+    if (
+      lastDescriptionRef?.current &&
+      displayDescriptions?.length > prevLengthRef.current
+    ) {
+      lastDescriptionRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+    // update the previous length
+    prevLengthRef.current = displayDescriptions?.length;
+  }, [displayDescriptions, lastDescriptionRef]);
 
   const selectableFromDepths = layers?.data?.map(l => l.depth_from);
   const selectableToDepths = layers?.data?.map(l => l.depth_to);
@@ -226,6 +247,7 @@ const LithologicalDescriptionLayers = props => {
                 },
               }}
               key={index}
+              ref={descriptionRefs[index]}
               isFirst={index === 0 ? true : false}>
               {descriptionIdSelectedForDelete !== item.id && (
                 <>
