@@ -248,6 +248,9 @@ const LithologicalDescriptionLayers = props => {
               }}
               key={index}
               ref={descriptionRefs[index]}
+              onClick={() => {
+                if (isEditable) changeSelectionAndSubmit(item);
+              }}
               isFirst={index === 0 ? true : false}>
               {descriptionIdSelectedForDelete !== item.id && (
                 <>
