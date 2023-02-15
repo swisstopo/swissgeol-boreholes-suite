@@ -5,6 +5,7 @@
 ### Changed
 
 - Memorize table and map state when navigating through the application.
+- When leaving settings page, correctly navigate back to the previously selected mode (viewer or editor).
 
 ### Fixed
 

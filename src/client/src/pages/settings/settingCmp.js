@@ -35,7 +35,7 @@ const SettingCmp = props => {
             flexDirection: "column",
             width: "250px",
           }}>
-          <MenuSettings />
+          <MenuSettings mode={props.mode} />
         </div>
         <div
           style={{

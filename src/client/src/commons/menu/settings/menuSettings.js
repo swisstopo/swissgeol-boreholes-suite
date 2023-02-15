@@ -6,12 +6,12 @@ import { withRouter } from "react-router-dom";
 import ListItem from "../components/listItem";
 
 const MenuSettings = props => {
-  const { history, t, location } = props;
+  const { history, t, location, mode } = props;
 
   return (
     <div>
       <ListItem
-        path="/"
+        path={mode === "viewer" ? "/" : "/editor"}
         name="done"
         location={location}
         history={history}

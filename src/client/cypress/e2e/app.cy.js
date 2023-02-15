@@ -1,4 +1,4 @@
-import { loginAsEditorInViewerMode } from "./testHelpers";
+import { loginAsAdmin, loginAsEditorInViewerMode } from "./testHelpers";
 
 describe("General app tests", () => {
   it("Displays the login page in english by default", () => {
@@ -31,5 +31,22 @@ describe("General app tests", () => {
   it("Displays the current host as app title", () => {
     loginAsEditorInViewerMode();
     cy.get('[data-cy="app-title"]').contains("localhost");
+  });
+
+  it("Correctly navigates back and forth from settings", () => {
+    // correctly navigate back to viewer mode
+    loginAsAdmin();
+    cy.get('[data-cy="menu"]').click();
+    cy.get('[data-cy="settings-list-item"]').click();
+    cy.contains("h3", "Done").click();
+    cy.contains("span", "Viewer");
+
+    // correctly navigate back to editor mode
+    cy.get('[data-cy="menu"]').click();
+    cy.get('[data-cy="editor-list-item"]').click();
+    cy.get('[data-cy="menu"]').click();
+    cy.get('[data-cy="settings-list-item"]').click();
+    cy.contains("h3", "Done").click();
+    cy.contains("span", "Editor");
   });
 });
