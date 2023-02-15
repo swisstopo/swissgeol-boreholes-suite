@@ -149,15 +149,21 @@ export const loginAndResetState = () => {
   cy.get("tbody").children().first().should("be.visible");
 
   // Reset boreholes
+  let resetOccurred = false;
   cy.wait("@edit_list").then(intercept => {
     intercept.response.body.data.forEach(borehole => {
-      if (borehole.id > 1009999) deleteBorehole(borehole.id); // max id in seed data.
+      if (borehole.id > 1009999) {
+        resetOccurred = true;
+        deleteBorehole(borehole.id); // max id in seed data.
+      }
     });
   });
 
-  cy.contains("a", "Refresh").click();
-  cy.wait("@edit_list");
-  cy.get("tbody").children().should("have.length", 100); // number or boreholes visible in editor mode (with paging).
+  if (resetOccurred) {
+    cy.contains("a", "Refresh").click();
+    cy.wait("@edit_list");
+    cy.get("tbody").children().should("have.length", 100); // number or boreholes visible in editor mode (with paging).
+  }
 
   // Reset user settings (i.e. table ordering)
   cy.request({
