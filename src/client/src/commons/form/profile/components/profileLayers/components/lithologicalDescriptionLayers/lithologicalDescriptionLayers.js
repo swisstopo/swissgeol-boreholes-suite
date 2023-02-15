@@ -209,15 +209,12 @@ const LithologicalDescriptionLayers = props => {
               direction="row"
               data-cy={`lithological-description-${index}`}
               sx={{
-                borderTop: index === 0 ? "1px solid lightgrey" : "0px",
-                borderLeft: "1px solid lightgrey",
                 boxShadow: "inset -1px 0 0 lightgrey, inset 0 -1px 0 lightgrey",
                 flex: "1 1 100%",
                 height:
                   selectedDescription?.id === item.id
                     ? "16em"
                     : calculateLayerWidth(item?.fromDepth, item?.toDepth),
-                width: "30em",
                 overflowY: "auto",
                 padding: "5px",
                 backgroundColor:
@@ -232,7 +229,7 @@ const LithologicalDescriptionLayers = props => {
               isFirst={index === 0 ? true : false}>
               {descriptionIdSelectedForDelete !== item.id && (
                 <>
-                  {selectedDescription !== item && (
+                  {selectedDescription?.id !== item?.id && (
                     <LithologicalDescriptionDisplay item={item} />
                   )}
                   {selectedDescription?.id === item?.id && (
