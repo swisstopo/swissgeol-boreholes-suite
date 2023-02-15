@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 import _ from "lodash";
 import { Route, Switch, withRouter } from "react-router-dom";
@@ -37,8 +38,6 @@ class HomeComponent extends React.Component {
           display: "flex",
           flexDirection: "row",
           border: "1px solid rgb(204, 204, 204)",
-          // border: setting.data.appearance.explorer === 1?
-          //   '1px solid #787878': '1px solid #cccccc',
           position: "relative",
           overflow: "hidden",
           zIndex: 1,
@@ -51,8 +50,8 @@ class HomeComponent extends React.Component {
                 : null
               : null
           }
-          filter={{
-            ...search.filter,
+          searchState={{
+            ...search,
           }}
           highlighted={
             !_.isNil(detail.borehole)
@@ -71,7 +70,6 @@ class HomeComponent extends React.Component {
             this.props.filterByExtent(extent);
           }}
           selected={id => {
-            // this.props.boreholeSeleced(id);
             if (id === null) {
               history.push(process.env.PUBLIC_URL);
             } else {
@@ -87,7 +85,7 @@ class HomeComponent extends React.Component {
   }
 
   getTable(id) {
-    const { checkout, history, home, search } = this.props;
+    const { checkout, history, home, search, t } = this.props;
     return (
       <div
         style={{
@@ -110,6 +108,11 @@ class HomeComponent extends React.Component {
               style={{
                 fontWeight: "bold",
               }}>
+              {checkout.cart.length === 1
+                ? t("common:oneSelected")
+                : t("common:someSelected", {
+                    howMany: checkout.cart.length,
+                  })}
               {checkout.cart.length === 1 ? "One" : checkout.cart.length}{" "}
               borehole{checkout.cart.length > 1 ? "s" : null} selected.
             </span>{" "}
@@ -123,7 +126,7 @@ class HomeComponent extends React.Component {
                 textDecoration: "underline",
                 cursor: "pointer",
               }}>
-              Reset selection
+              {t("common:reset")}
             </span>
             ) &nbsp; Export as:&nbsp;
             <Checkbox
@@ -196,8 +199,6 @@ class HomeComponent extends React.Component {
             }, 250);
           }}
           onSelected={borehole => {
-            // this.props.boreholeSeleced(borehole.id);
-
             if (borehole === null) {
               history.push(process.env.PUBLIC_URL);
             } else {
@@ -260,7 +261,6 @@ class HomeComponent extends React.Component {
                         }}
                       />
                     </Switch>
-                    {/* {this.getDetails()} */}
                     {this.getMap()}
                   </div>
                 );
@@ -290,7 +290,6 @@ class HomeComponent extends React.Component {
                           overflow: "hidden",
                           display: "flex",
                           flexDirection: "column",
-                          // margin: '1em',
                           minHeight: "300px",
                         }}>
                         {this.getMap()}
@@ -631,5 +630,8 @@ const mapDispatchToProps = dispatch => {
 };
 
 export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(HomeComponent), // withTranslation('home')(HomeComponent))
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  )(withTranslation(["common"])(HomeComponent)),
 );
