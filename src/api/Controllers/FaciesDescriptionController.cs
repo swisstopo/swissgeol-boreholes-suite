@@ -59,4 +59,9 @@ public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
 
         return Ok(faciesDescription);
     }
+
+    /// <inheritdoc />
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public override Task<IActionResult> EditAsync(FaciesDescription entity)
+        => base.EditAsync(entity);
 }

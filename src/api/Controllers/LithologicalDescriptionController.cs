@@ -59,4 +59,9 @@ public class LithologicalDescriptionController : BdmsControllerBase<Lithological
 
         return Ok(lithologicalDescription);
     }
+
+    /// <inheritdoc />
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public override Task<IActionResult> EditAsync(LithologicalDescription entity)
+        => base.EditAsync(entity);
 }
