@@ -25,6 +25,7 @@ class EditorComponent extends React.Component {
     this.state = {
       hover: null,
       maphover: null,
+      sort: null,
     };
   }
 
@@ -173,6 +174,15 @@ class EditorComponent extends React.Component {
                             props.lock(borehole.id);
                           }
                         }}
+                        onReorder={(column, direction) => {
+                          this.setState({
+                            sort: {
+                              column: column,
+                              direction: direction,
+                            },
+                          });
+                        }}
+                        sort={this.state.sort}
                       />
                     </div>
                   </div>
