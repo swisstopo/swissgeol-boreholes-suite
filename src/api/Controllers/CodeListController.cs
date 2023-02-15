@@ -43,6 +43,7 @@ public class CodeListController : ControllerBase
     /// </summary>
     /// <param name="codelist"> The <see cref="Codelist"/> to update.</param>
     [HttpPut]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> EditAsync(Codelist codelist)
     {
         if (codelist == null)

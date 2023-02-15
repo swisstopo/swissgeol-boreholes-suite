@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Memorize table and map state when navigating through the application.
+
+### Fixed
+
+- Creating or editing lithological descriptions was not allowed for non-admin users.
+
 ## v2.0.186 - 2023-02-13
 
 ### Added

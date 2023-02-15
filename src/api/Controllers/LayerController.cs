@@ -61,6 +61,11 @@ public class LayerController : BdmsControllerBase<Layer>
         return Ok(layer);
     }
 
+    /// <inheritdoc />
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public override Task<IActionResult> EditAsync(Layer entity)
+        => base.EditAsync(entity);
+
     private IQueryable<Layer> GetLayersWithIncludes()
     {
         return context.Layers

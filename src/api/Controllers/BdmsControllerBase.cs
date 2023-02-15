@@ -35,7 +35,7 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     /// </summary>
     /// <param name="entity">The entity to update.</param>
     [HttpPut]
-    public async Task<IActionResult> EditAsync(TEntity entity)
+    public virtual async Task<IActionResult> EditAsync(TEntity entity)
     {
         if (entity == null)
         {
