@@ -81,11 +81,12 @@ class WorkflowForm extends React.Component {
   }
 
   handleChange(value) {
+    const { t } = this.props;
     if (
       this.props.borehole.data.lock === null ||
       this.props.borehole.data.lock.username !== this.props.user.data.username
     ) {
-      this.context.error("Borehole not locked");
+      this.context.error(t("common:errorStartEditing"));
     } else {
       this.props.updateWorkflow(value);
       if (this.updateAttributeDelay !== false) {
@@ -608,7 +609,7 @@ class WorkflowForm extends React.Component {
                       this.props.borehole.data.lock.username !==
                         this.props.user.data.username
                     ) {
-                      this.context.error("Borehole not locked");
+                      this.context.error(t("common:errorStartEditing"));
                     } else {
                       const borehole = {
                         ...this.props.borehole.data,
