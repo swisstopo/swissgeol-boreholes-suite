@@ -71,6 +71,11 @@ public class LayerController : BdmsControllerBase<Layer>
     public override Task<IActionResult> DeleteAsync(int id)
         => base.DeleteAsync(id);
 
+    /// <inheritdoc />
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public override Task<IActionResult> CreateAsync(Layer entity)
+        => base.CreateAsync(entity);
+
     private IQueryable<Layer> GetLayersWithIncludes()
     {
         return context.Layers
