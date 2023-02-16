@@ -59,7 +59,7 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     /// </summary>
     /// <param name="id">The id of the entity to delete.</param>
     [HttpDelete]
-    public async Task<IActionResult> DeleteAsync(int id)
+    public virtual async Task<IActionResult> DeleteAsync(int id)
     {
         var entityToDelete = await context.FindAsync(typeof(TEntity), id).ConfigureAwait(false);
         if (entityToDelete == null)
