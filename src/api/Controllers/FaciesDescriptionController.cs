@@ -69,4 +69,9 @@ public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
     [Authorize(Policy = PolicyNames.Viewer)]
     public override Task<IActionResult> DeleteAsync(int id)
         => base.DeleteAsync(id);
+
+    /// <inheritdoc />
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public override Task<IActionResult> CreateAsync(FaciesDescription entity)
+        => base.CreateAsync(entity);
 }

@@ -44,6 +44,7 @@ class Feedback extends React.Component {
   }
 
   render() {
+    const { t } = this.props;
     return (
       <Form
         style={{
@@ -51,18 +52,18 @@ class Feedback extends React.Component {
         }}>
         <Form.Select
           fluid
-          label="Tag"
+          label={t("feedbackTag")}
           name="tag"
           onChange={this.handleChange}
           options={this.state.tags}
-          placeholder="Select a tag describing your feedback"
+          placeholder={t("feedbackTagPlaceholder")}
           value={this.state.tag}
         />
         <Form.TextArea
-          label="Message"
+          label={t("feedbackMessage")}
           name="message"
           onChange={this.handleChange}
-          placeholder="Write here your feedback..."
+          placeholder={t("feedbackMessagePlaceholder")}
           value={this.state.message}
         />
         {this.state.sent === true ? (
@@ -71,7 +72,7 @@ class Feedback extends React.Component {
               this.props.onFinised();
             }}
             secondary>
-            Close
+            {t("close")}
           </Button>
         ) : (
           <Button
@@ -104,7 +105,7 @@ class Feedback extends React.Component {
               );
             }}
             primary>
-            Send
+            {t("feedbackSend")}
           </Button>
         )}
       </Form>
