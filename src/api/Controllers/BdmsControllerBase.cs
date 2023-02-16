@@ -24,7 +24,7 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     /// </summary>
     /// <param name="entity">The entity to create.</param>
     [HttpPost]
-    public async Task<IActionResult> CreateAsync(TEntity entity)
+    public virtual async Task<IActionResult> CreateAsync(TEntity entity)
     {
         await context.AddAsync(entity).ConfigureAwait(false);
         return await SaveChangesAsync(() => Ok(entity)).ConfigureAwait(false);
