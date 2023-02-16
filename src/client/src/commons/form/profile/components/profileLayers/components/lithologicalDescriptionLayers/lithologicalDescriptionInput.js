@@ -39,7 +39,7 @@ const LithologicalDescriptionInput = props => {
     );
     // only allow selecting depths in the gap above the layer
     if (closestTopLayer !== undefined) {
-      // and depths that smaller than the bottom of the layer above
+      // and depths that are smaller than the bottom of the layer above
       options = options.filter(o => o >= closestTopLayer?.toDepth);
       if (closestTopLayer.toDepth === item.fromDepth) {
         options = options.filter(d => d >= item.fromDepth);
