@@ -47,6 +47,7 @@ const ProfileLayers = props => {
     useState(null);
   const [showDelete, setShowDelete] = useState();
   const alertContext = useContext(AlertContext);
+  const [deleteParams, setDeleteParams] = useState(null);
 
   const mounted = useRef(false);
 
@@ -205,6 +206,7 @@ const ProfileLayers = props => {
                       selectedStratigraphyID,
                       setSelectedLayer: setSelectedLayerFunc,
                     }}
+                    setDeleteParams={setDeleteParams}
                   />
                 )}
               </td>
@@ -222,6 +224,7 @@ const ProfileLayers = props => {
                       layers={layers}
                       addMutation={addMutation}
                       selectedStratigraphyID={selectedStratigraphyID}
+                      deleteParams={deleteParams}
                     />
                   </td>
                 )}

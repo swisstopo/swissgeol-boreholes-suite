@@ -201,7 +201,8 @@ const ProfileLayersList = props => {
                     <Tooltip title={t("delete")}>
                       <DeleteIcon
                         sx={{ color: "red", opacity: 0.7 }}
-                        onClick={() => {
+                        onClick={e => {
+                          e.stopPropagation();
                           setShowDelete(item?.id);
                         }}
                       />
