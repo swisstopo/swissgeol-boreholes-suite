@@ -18,8 +18,7 @@ const LithologicalDescriptionInput = props => {
     setDescription,
     setToDepth,
     setQtDescriptionId,
-    selectableToDepths,
-    selectableFromDepths,
+    seletcableDepths,
     lithologicalDescriptions,
   } = props;
   const { t, i18n } = useTranslation();
@@ -33,13 +32,15 @@ const LithologicalDescriptionInput = props => {
 
   const getFromDepthOptions = () => {
     // get all depths that are not yet in use and that are smaller than toDepth
-    let options = selectableFromDepths.filter(
+    let options = seletcableDepths.filter(
       d =>
         !lithologicalDescriptions.map(l => l.fromDepth).includes(d) &&
         d < item.toDepth,
     );
     // only allow selecting depths in the gap above the layer
     if (closestTopLayer !== undefined) {
+      // and depths that smaller than the bottom of the layer above
+      options = options.filter(o => o >= closestTopLayer?.toDepth);
       if (closestTopLayer.toDepth === item.fromDepth) {
         options = options.filter(d => d >= item.fromDepth);
       } else {
@@ -53,13 +54,15 @@ const LithologicalDescriptionInput = props => {
 
   const getToDepthOptions = () => {
     // get all depths that are not yet in use and that are greater than fromDepth
-    let options = selectableToDepths.filter(
+    let options = seletcableDepths.filter(
       d =>
         !lithologicalDescriptions.map(l => l.toDepth).includes(d) &&
         d > item.fromDepth,
     );
     // only allow selecting depths in the gap below the layer
     if (closestBottomLayer !== undefined) {
+      // and greater than the top of the layer below
+      options = options.filter(o => o <= closestBottomLayer?.fromDepth);
       if (closestBottomLayer.fromDepth === item.toDepth) {
         options = options.filter(d => d <= item.toDepth);
       } else {
