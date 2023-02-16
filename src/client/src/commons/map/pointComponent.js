@@ -299,6 +299,16 @@ class PointComponent extends React.Component {
   updatePointAndGetAddress(feature) {
     const { changefeature } = this.props;
     let coordinates = feature.getGeometry().getCoordinates();
+
+    // remove last feature if necessary, so that
+    // only one point at the same time is visible.
+    var features = this.position.getFeatures();
+    var currentFeatureIndex = features.indexOf(feature);
+    var lastFeature = features[currentFeatureIndex - 1];
+    if (lastFeature) {
+      this.position.removeFeature(lastFeature);
+    }
+
     if (this.centerFeature === undefined) {
       this.centerFeature = feature;
     }

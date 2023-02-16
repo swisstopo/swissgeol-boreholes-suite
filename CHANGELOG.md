@@ -10,6 +10,7 @@
 ### Fixed
 
 - Creating, editing or deleting lithological descriptions was not allowed for non-admin users.
+- When creating and locating a new borehole, each click added a new point on the map .
 
 ## v2.0.186 - 2023-02-13
 
