@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ProfileLayersError from "../profileLayersError";
 import ProfileLayersList from "../profileLayersList";
 import * as Styled from "./styles";
@@ -15,6 +15,8 @@ export const ProfileLayersValidation = props => {
     selectedStratigraphyID,
     setSelectedLayer,
   } = props.data;
+  const { setDeleteParams } = props;
+
   return (
     <Box data-cy="styled-layer-container">
       {/* validation before all layers */}
@@ -28,6 +30,7 @@ export const ProfileLayersValidation = props => {
               isInside: false,
               onUpdated: onUpdated,
             }}
+            setDeleteParams={setDeleteParams}
           />
         </div>
       )}
@@ -62,6 +65,7 @@ export const ProfileLayersValidation = props => {
                       onUpdated: onUpdated,
                     }}
                     key={index}
+                    setDeleteParams={setDeleteParams}
                   />
                 ))}
 
@@ -90,6 +94,7 @@ export const ProfileLayersValidation = props => {
                   layerLength: layers?.data.length,
                   closeDelete: () => setShowDelete(),
                 }}
+                setDeleteParams={setDeleteParams}
               />
             )}
           </Styled.Layer>
@@ -110,6 +115,7 @@ export const ProfileLayersValidation = props => {
                   onUpdated: onUpdated,
                 }}
                 key={index}
+                setDeleteParams={setDeleteParams}
               />
             </div>
           ))}

@@ -47,6 +47,7 @@ const ProfileLayers = props => {
     useState(null);
   const [showDelete, setShowDelete] = useState();
   const alertContext = useContext(AlertContext);
+  const [deleteParams, setDeleteParams] = useState(null);
 
   const mounted = useRef(false);
 
@@ -193,7 +194,7 @@ const ProfileLayers = props => {
           <TableBody>
             <TableRow>
               <td style={cellStyle}>
-                {layers !== null && layers?.data?.length && (
+                {layers?.data?.length > 0 && (
                   <ProfileLayersValidation
                     data={{
                       layers,
@@ -205,12 +206,13 @@ const ProfileLayers = props => {
                       selectedStratigraphyID,
                       setSelectedLayer: setSelectedLayerFunc,
                     }}
+                    setDeleteParams={setDeleteParams}
                   />
                 )}
               </td>
               {selectedLayer === null &&
                 stratigraphyKind === profileKind.STRATIGRAPHY &&
-                lithoDescQuery?.data?.length && (
+                lithoDescQuery?.data?.length > 0 && (
                   <td style={cellStyle}>
                     <LithologicalDescriptionLayers
                       isEditable={isEditable}
@@ -222,6 +224,7 @@ const ProfileLayers = props => {
                       layers={layers}
                       addMutation={addMutation}
                       selectedStratigraphyID={selectedStratigraphyID}
+                      deleteParams={deleteParams}
                     />
                   </td>
                 )}

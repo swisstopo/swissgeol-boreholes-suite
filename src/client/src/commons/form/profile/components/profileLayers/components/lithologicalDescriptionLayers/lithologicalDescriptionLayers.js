@@ -23,6 +23,7 @@ const LithologicalDescriptionLayers = props => {
     layers,
     addMutation,
     selectedStratigraphyID,
+    deleteParams,
   } = props;
   const [fromDepth, setFromDepth] = useState(null);
   const [toDepth, setToDepth] = useState(null);
@@ -119,59 +120,40 @@ const LithologicalDescriptionLayers = props => {
     setDisplayDescriptions(tempDescriptions);
   }, [lithologicalDescriptions, layers, t, theme]);
 
+  // updates lithological description if layer is deleted
   useEffect(() => {
-    if (isEditable && layers?.data?.length > 0) {
-      // update depth for lithological descriptions if layer depths change
-      const selectableFromDepths = layers?.data?.map(l => l.depth_from);
-      const selectableToDepths = layers?.data?.map(l => l.depth_to);
-      lithologicalDescriptions.forEach(lithologicalDescription => {
-        // case if layer was deleted
-        if (
-          !selectableFromDepths?.includes(lithologicalDescription.fromDepth) &&
-          !selectableToDepths?.includes(lithologicalDescription.toDepth)
-        ) {
-          deleteMutation.mutate(lithologicalDescription.id);
-        }
-        // case if fromDepth of layer changed
-        if (
-          !selectableFromDepths?.includes(lithologicalDescription.fromDepth)
-        ) {
-          let closest = selectableFromDepths?.sort(
-            (a, b) =>
-              Math.abs(lithologicalDescription.fromDepth - a) -
-              Math.abs(lithologicalDescription.fromDepth - b),
-          )[0];
-          // case if layer is deleted with expansion
-          if (lithologicalDescription.toDepth === closest) {
-            deleteMutation.mutate(lithologicalDescription.id);
-          } else {
-            updateMutation.mutate({
-              ...lithologicalDescription,
-              fromDepth: closest,
-            });
-          }
-        }
-        // case if toDepth of layer changed
-        if (!selectableToDepths?.includes(lithologicalDescription.toDepth)) {
-          let closest = selectableToDepths?.sort(
-            (a, b) =>
-              Math.abs(lithologicalDescription.toDepth - a) -
-              Math.abs(lithologicalDescription.toDepth - b),
-          )[0];
-          // case if layer is deleted with expansion
-          if (lithologicalDescription.fromDepth === closest) {
-            deleteMutation.mutate(lithologicalDescription.id);
-          } else {
-            updateMutation.mutate({
-              ...lithologicalDescription,
-              toDepth: closest,
-            });
-          }
-        }
-      });
+    if (deleteParams && lithologicalDescriptions.length) {
+      const { resolvingAction, layer } = deleteParams;
+      // delete description if the layer was deleted with extention
+      if (resolvingAction !== 0) {
+        deleteMutation.mutate(
+          lithologicalDescriptions?.find(
+            d => d.fromDepth === layer.fromDepth && d.toDepth === layer.toDepth,
+          ).id,
+        );
+      }
+      // case: extend upper layer to bottom
+      if (resolvingAction == 1) {
+        const upperDescription = lithologicalDescriptions?.find(
+          d => d.toDepth === layer.fromDepth,
+        );
+        updateMutation.mutate({
+          ...upperDescription,
+          toDepth: layer.toDepth,
+        });
+      }
+      // case: extend lower layer to top
+      if (resolvingAction == 2) {
+        const lowerDerscription = lithologicalDescriptions?.find(
+          d => d.fromDepth === layer.toDepth,
+        );
+        updateMutation.mutate({
+          ...lowerDerscription,
+          fromDepth: layer.fromDepth,
+        });
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layers, isEditable]);
+  }, [deleteParams]);
 
   const changeSelectionAndSubmit = item => {
     if (selectedDescription) {
@@ -249,7 +231,8 @@ const LithologicalDescriptionLayers = props => {
               key={index}
               ref={descriptionRefs[index]}
               onClick={() => {
-                if (isEditable) changeSelectionAndSubmit(item);
+                if (isEditable && selectedDescription?.id !== item?.id)
+                  changeSelectionAndSubmit(item);
               }}
               isFirst={index === 0 ? true : false}>
               {descriptionIdSelectedForDelete !== item.id && (

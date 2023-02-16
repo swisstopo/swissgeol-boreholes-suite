@@ -7,6 +7,7 @@ import {
   addBedrock,
   deleteLayer,
 } from "../../../../../../../api-lib/index";
+import { fetchLayerById } from "../../../../../../../api/fetchApiV2";
 import ErrorTypes from "./errorTypes";
 import { AlertContext } from "../../../../../../alert/alertContext";
 
@@ -21,6 +22,7 @@ const ProfileLayersError = props => {
     layerLength,
     closeDelete,
   } = props.data;
+  const { setDeleteParams } = props;
   const [showSolution, setShowSolution] = useState();
   const [error, setError] = useState();
   const [resolvingAction, setResolvingAction] = useState(null);
@@ -115,17 +117,24 @@ const ProfileLayersError = props => {
           console.error(error);
         });
     } else if (isDelete) {
-      deleteLayer(id, resolvingAction, +value)
-        .then(response => {
-          if (response.data.success) {
-            onUpdated("deleteLayer");
-          } else {
-            alertContext.error(response.data.message);
-          }
-        })
-        .catch(function (error) {
-          console.error(error);
+      fetchLayerById(id).then(response => {
+        setDeleteParams({
+          id: id,
+          resolvingAction: resolvingAction,
+          layer: response,
         });
+        deleteLayer(id, resolvingAction, +value)
+          .then(response => {
+            if (response.data.success) {
+              onUpdated("deleteLayer");
+            } else {
+              alertContext.error(response.data.message);
+            }
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+      });
     }
   };
   return (
