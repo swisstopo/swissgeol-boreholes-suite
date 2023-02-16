@@ -40,6 +40,7 @@ describe("Tests for the lithological description column.", () => {
     cy.wait("@stratigraphy_layer_edit_patch");
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-2"] [data-testid="ClearIcon"]').click();
+    cy.wait("@lithological_description");
 
     // add lithological description
     cy.get('[data-cy="add-litho-desc-icon"]').click();

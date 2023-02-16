@@ -73,9 +73,7 @@ const ProfileLayersList = props => {
   return (
     <>
       <Styled.MyCard
-        onClick={() => {
-          !isEditable && setSelectedLayer(item);
-        }}
+        onClick={() => setSelectedLayer(item)}
         style={{
           backgroundColor: selectedLayer?.id === item?.id && "lightgrey",
         }}>

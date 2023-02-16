@@ -193,7 +193,7 @@ const ProfileLayers = props => {
           <TableBody>
             <TableRow>
               <td style={cellStyle}>
-                {layers !== null && layers?.data?.length > 0 && (
+                {layers?.data?.length > 0 && (
                   <ProfileLayersValidation
                     data={{
                       layers,

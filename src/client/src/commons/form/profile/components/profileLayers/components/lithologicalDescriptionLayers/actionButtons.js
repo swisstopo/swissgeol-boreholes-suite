@@ -53,7 +53,12 @@ const ActionButtons = props => {
       )}
       {selectedDescription?.id === item?.id && (
         <Tooltip title={t("stop-editing")}>
-          <ClearIcon onClick={() => changeSelectionAndSubmit(null)} />
+          <ClearIcon
+            onClick={e => {
+              e.stopPropagation();
+              changeSelectionAndSubmit(null);
+            }}
+          />
         </Tooltip>
       )}
     </Stack>
