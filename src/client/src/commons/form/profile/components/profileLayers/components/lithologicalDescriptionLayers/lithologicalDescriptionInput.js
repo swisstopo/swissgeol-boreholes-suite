@@ -18,7 +18,7 @@ const LithologicalDescriptionInput = props => {
     setDescription,
     setToDepth,
     setQtDescriptionId,
-    seletcableDepths,
+    selectableDepths,
     lithologicalDescriptions,
   } = props;
   const { t, i18n } = useTranslation();
@@ -32,7 +32,7 @@ const LithologicalDescriptionInput = props => {
 
   const getFromDepthOptions = () => {
     // get all depths that are not yet in use and that are smaller than toDepth
-    let options = seletcableDepths.filter(
+    let options = selectableDepths.filter(
       d =>
         !lithologicalDescriptions.map(l => l.fromDepth).includes(d) &&
         d < item.toDepth,
@@ -54,7 +54,7 @@ const LithologicalDescriptionInput = props => {
 
   const getToDepthOptions = () => {
     // get all depths that are not yet in use and that are greater than fromDepth
-    let options = seletcableDepths.filter(
+    let options = selectableDepths.filter(
       d =>
         !lithologicalDescriptions.map(l => l.toDepth).includes(d) &&
         d > item.fromDepth,

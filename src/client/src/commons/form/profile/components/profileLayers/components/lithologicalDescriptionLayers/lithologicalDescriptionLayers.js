@@ -247,7 +247,7 @@ const LithologicalDescriptionLayers = props => {
                       setDescription={setDescription}
                       setToDepth={setToDepth}
                       setQtDescriptionId={setQtDescriptionId}
-                      seletcableDepths={selectableFromDepths.concat(
+                      selectableDepths={selectableFromDepths.concat(
                         selectableToDepths.filter(
                           d => !selectableFromDepths.includes(d),
                         ),
