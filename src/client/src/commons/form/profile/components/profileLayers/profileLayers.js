@@ -193,7 +193,7 @@ const ProfileLayers = props => {
           <TableBody>
             <TableRow>
               <td style={cellStyle}>
-                {layers !== null && layers?.data?.length && (
+                {layers !== null && layers?.data?.length > 0 && (
                   <ProfileLayersValidation
                     data={{
                       layers,
@@ -210,7 +210,7 @@ const ProfileLayers = props => {
               </td>
               {selectedLayer === null &&
                 stratigraphyKind === profileKind.STRATIGRAPHY &&
-                lithoDescQuery?.data?.length && (
+                lithoDescQuery?.data?.length > 0 && (
                   <td style={cellStyle}>
                     <LithologicalDescriptionLayers
                       isEditable={isEditable}
