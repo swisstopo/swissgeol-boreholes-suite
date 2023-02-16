@@ -5,10 +5,11 @@
 ### Changed
 
 - Memorize table and map state when navigating through the application.
+- When leaving settings page, correctly navigate back to the previously selected mode (viewer or editor).
 
 ### Fixed
 
-- Creating or editing lithological descriptions was not allowed for non-admin users.
+- Creating, editing or deleting lithological descriptions was not allowed for non-admin users.
 
 ## v2.0.186 - 2023-02-13
 
