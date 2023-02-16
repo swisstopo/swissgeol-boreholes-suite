@@ -10,7 +10,7 @@
 ### Fixed
 
 - Creating, editing or deleting lithological descriptions was not allowed for non-admin users.
-- Add missing translations when editing a locked borehole.
+- Add missing translations when editing a locked borehole or giving feedback.
 
 ## v2.0.186 - 2023-02-13
 
