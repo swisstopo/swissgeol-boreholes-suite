@@ -27,7 +27,7 @@ class TableComponent extends React.Component {
     this.props.loadData(1, filter); //, setting.orderby, setting.direction);
   }
   componentDidUpdate(prevProps) {
-    const { filter, activeItem } = this.props;
+    const { filter, activeItem, store } = this.props;
     let state = null;
     if (!_.isEqual(filter, prevProps.filter)) {
       if (this.delay) {
@@ -54,7 +54,7 @@ class TableComponent extends React.Component {
       this.setState(state, () => {
         this.delay = setTimeout(
           function () {
-            this.props.loadData(1, filter); //, setting.orderby, setting.direction);
+            this.props.loadData(store.page, filter); //, setting.orderby, setting.direction);
           }.bind(this),
           10,
         );
