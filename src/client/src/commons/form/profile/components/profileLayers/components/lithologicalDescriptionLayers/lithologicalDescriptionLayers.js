@@ -183,7 +183,8 @@ const LithologicalDescriptionLayers = props => {
       updateMutation.mutate(updatedDescription);
     }
     selectItem(null);
-  }, [description, qtDescriptionId, toDepth, fromDepth, selectItem]);
+    // eslint-disable-next-line
+  }, [description, qtDescriptionId, toDepth, fromDepth, selectedDescription]);
 
   const calculateLayerWidth = (fromDepth, toDepth) => {
     if (selectableFromDepths && selectableToDepths) {
