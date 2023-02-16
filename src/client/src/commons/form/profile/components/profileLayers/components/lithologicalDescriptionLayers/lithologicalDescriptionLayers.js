@@ -133,7 +133,7 @@ const LithologicalDescriptionLayers = props => {
         );
       }
       // case: extend upper layer to bottom
-      if (resolvingAction == 1) {
+      if (resolvingAction === 1) {
         const upperDescription = lithologicalDescriptions?.find(
           d => d.toDepth === layer.fromDepth,
         );
@@ -143,7 +143,7 @@ const LithologicalDescriptionLayers = props => {
         });
       }
       // case: extend lower layer to top
-      if (resolvingAction == 2) {
+      if (resolvingAction === 2) {
         const lowerDerscription = lithologicalDescriptions?.find(
           d => d.fromDepth === layer.toDepth,
         );
@@ -153,6 +153,7 @@ const LithologicalDescriptionLayers = props => {
         });
       }
     }
+    // eslint-disable-next-line
   }, [deleteParams]);
 
   const changeSelectionAndSubmit = item => {

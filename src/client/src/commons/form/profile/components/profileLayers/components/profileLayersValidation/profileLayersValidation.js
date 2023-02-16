@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import ProfileLayersError from "../profileLayersError";
 import ProfileLayersList from "../profileLayersList";
 import * as Styled from "./styles";
