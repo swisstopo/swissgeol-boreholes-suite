@@ -302,9 +302,9 @@ class PointComponent extends React.Component {
 
     // remove last feature if necessary, so that
     // only one point at the same time is visible.
-    var features = this.position.getFeatures();
-    var currentFeatureIndex = features.indexOf(feature);
-    var lastFeature = features[currentFeatureIndex - 1];
+    const features = this.position.getFeatures();
+    const currentFeatureIndex = features.indexOf(feature);
+    const lastFeature = features[currentFeatureIndex - 1];
     if (lastFeature) {
       this.position.removeFeature(lastFeature);
     }
