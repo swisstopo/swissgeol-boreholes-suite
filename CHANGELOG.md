@@ -10,6 +10,7 @@
 ### Fixed
 
 - Creating, editing or deleting lithological descriptions was not allowed for non-admin users.
+- Fix internal error when adding a backfill with _no casing_.
 
 ## v2.0.186 - 2023-02-13
 
