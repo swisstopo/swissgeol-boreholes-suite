@@ -13,7 +13,6 @@ class TableComponent extends React.Component {
     this.uid = _.uniqueId();
     this.add2selection = this.add2selection.bind(this);
     this.inSelection = this.inSelection.bind(this);
-    // this.deleteList = this.deleteList.bind(this);
     const { activeItem, filter } = this.props;
     this.state = {
       activeItem: activeItem !== undefined ? activeItem : null,
@@ -24,7 +23,7 @@ class TableComponent extends React.Component {
   }
   componentDidMount() {
     const { filter } = this.props;
-    this.props.loadData(1, filter); //, setting.orderby, setting.direction);
+    this.props.loadData(1, filter);
   }
   componentDidUpdate(prevProps) {
     const { filter, activeItem, store } = this.props;
@@ -54,7 +53,7 @@ class TableComponent extends React.Component {
       this.setState(state, () => {
         this.delay = setTimeout(
           function () {
-            this.props.loadData(store.page, filter); //, setting.orderby, setting.direction);
+            this.props.loadData(store.page, filter);
           }.bind(this),
           10,
         );
@@ -103,44 +102,6 @@ class TableComponent extends React.Component {
       onHover(selected);
     }
   }
-  // deleteList() {
-  //   const {
-  //     filter
-  //   } = this.props;
-  //   if (this.state.all === true || this.state.selected.length > 0) {
-  //     if (this.state.all === true) {
-  //       getdBoreholeIds(filter).then((response) => {
-  //         if (
-  //           response.data.success
-  //         ) {
-  //           deleteBoreholes(
-  //             _.pullAll(response.data.data, this.state.selected)
-  //           ).then(() => {
-  //             this.setState({
-  //               selected: [],
-  //               all: false
-  //             }, () => {
-  //               this.props.loadData(1, filter);
-  //             });
-  //           });
-  //         }
-  //       }).catch((err) => {
-  //         console.log(err);
-  //       });
-  //     } else {
-  //       deleteBoreholes(
-  //         this.state.selected
-  //       ).then(() => {
-  //         this.setState({
-  //           selected: [],
-  //           all: false
-  //         }, () => {
-  //           this.props.loadData(1, filter);
-  //         });
-  //       });
-  //     }
-  //   }
-  // }
 
   add2selection(id) {
     const { selected } = this.state;
@@ -197,76 +158,6 @@ class TableComponent extends React.Component {
           style={{
             textAlign: "center",
           }}>
-          {/* {
-            all === true || selected.length > 0 ?
-              <div
-                style={{
-                  backgroundColor: '#FFEB3B',
-                  color: 'black',
-                  textAlign: 'center',
-                  padding: '0.5em'
-                }}
-              >
-                <span
-                  style={{
-                    fontWeight: 'bold'
-                  }}
-                >
-                  {
-                    all === true ?
-                      'All' :
-                      selected.length === 1 ?
-                        'One' :
-                        selected.length
-                  } borehole{
-                    all === true || selected.length > 1 ?
-                      's' : null
-                  } selected.
-                </span> (
-                <span
-                  onClick={() => {
-                    this.setState({
-                      selected: [],
-                      all: false
-                    });
-                  }}
-                  style={{
-                    color: '#2196f3',
-                    textDecoration: 'underline',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Reset selection
-                </span>) <Button
-                  color='black'
-                  onClick={() => {
-                    this.handleMultipleClick();
-                  }}
-                  size='mini'
-                >
-                  Bulk editing
-                </Button> {
-                  all === false && selected.length === 1 ?
-                    <Button
-                      primary
-                      onClick={() => {
-                        console.log('clone click');
-                      }}
-                      size='mini'
-                    >
-                      Clone
-                  </Button> : null
-                } <Button
-                  negative
-                  onClick={() => {
-                    this.deleteList();
-                  }}
-                  size='mini'
-                >
-                  Delete
-                </Button>
-              </div> : null
-          } */}
           <Table basic="very" compact="very" fixed>
             <Table.Header>{this.getHeader()}</Table.Header>
           </Table>
@@ -275,16 +166,11 @@ class TableComponent extends React.Component {
           style={{
             flex: "1 1 0%",
             overflowY: "auto",
-            // border: 'thin solid #d2d2d2',
-            // padding: '0px 1em'
           }}>
           <Table basic="very" compact="very" fixed selectable>
             <Table.Body>
               {store.data.map((item, idx) => (
                 <Table.Row
-                  // active={
-                  //   activeItem === item.id || this.props.highlight === item.id
-                  // }
                   key={this.uid + "_" + idx}
                   onClick={e => {
                     if (all === true || selected.length > 0) {
@@ -303,8 +189,6 @@ class TableComponent extends React.Component {
                         : this.props.highlight === item.id
                         ? "lightgrey"
                         : "white",
-                    // cursor: all === true || selected.length > 0 ?
-                    //   'copy' : 'pointer'
                   }}>
                   {this.getCols(item, idx)}
                 </Table.Row>
