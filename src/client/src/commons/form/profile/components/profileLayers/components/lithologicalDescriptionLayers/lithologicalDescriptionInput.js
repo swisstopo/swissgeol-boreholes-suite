@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   MenuItem,
   FormControl,
@@ -20,6 +20,7 @@ const LithologicalDescriptionInput = props => {
     setQtDescriptionId,
     selectableDepths,
     lithologicalDescriptions,
+    submitUpdate,
   } = props;
   const { t, i18n } = useTranslation();
   const domains = useDomains();
@@ -73,6 +74,19 @@ const LithologicalDescriptionInput = props => {
     options.push(item.toDepth);
     return options.sort((a, b) => a - b);
   };
+
+  const submitUpdateRef = useRef();
+
+  useEffect(() => {
+    submitUpdateRef.current = submitUpdate;
+  }, [submitUpdate]);
+
+  useEffect(() => {
+    // clean up function runs whenever component unmounts
+    return () => {
+      submitUpdateRef.current();
+    };
+  }, []);
 
   const fromDepthOptions = getFromDepthOptions();
   const toDepthOptions = getToDepthOptions();

@@ -1,4 +1,10 @@
-import React, { useState, useEffect, createRef, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  createRef,
+  useRef,
+  useCallback,
+} from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import {
@@ -156,15 +162,7 @@ const LithologicalDescriptionLayers = props => {
     // eslint-disable-next-line
   }, [deleteParams]);
 
-  const changeSelectionAndSubmit = item => {
-    if (selectedDescription) {
-      submit({
-        fromDepth: fromDepth,
-        toDepth: toDepth,
-        description: description,
-        qtDescriptionId: qtDescriptionId,
-      });
-    }
+  const selectItem = item => {
     if (item) {
       setFromDepth(item.fromDepth);
       setToDepth(item.toDepth);
@@ -174,15 +172,18 @@ const LithologicalDescriptionLayers = props => {
     setSelectedDescription(item);
   };
 
-  const submit = formData => {
-    const updatedDescription = produce(selectedDescription, draft => {
-      draft.fromDepth = parseFloat(formData.fromDepth);
-      draft.toDepth = parseFloat(formData.toDepth);
-      draft.description = formData.description;
-      draft.qtDescriptionId = parseInt(formData.qtDescriptionId);
-    });
-    updateMutation.mutate(updatedDescription);
-  };
+  const submitUpdate = useCallback(() => {
+    if (selectedDescription) {
+      const updatedDescription = produce(selectedDescription, draft => {
+        draft.fromDepth = parseFloat(fromDepth);
+        draft.toDepth = parseFloat(toDepth);
+        draft.description = description;
+        draft.qtDescriptionId = parseInt(qtDescriptionId);
+      });
+      updateMutation.mutate(updatedDescription);
+    }
+    selectItem(null);
+  }, [description, qtDescriptionId, toDepth, fromDepth, selectItem]);
 
   const calculateLayerWidth = (fromDepth, toDepth) => {
     if (selectableFromDepths && selectableToDepths) {
@@ -233,7 +234,7 @@ const LithologicalDescriptionLayers = props => {
               ref={descriptionRefs[index]}
               onClick={() => {
                 if (isEditable && selectedDescription?.id !== item?.id)
-                  changeSelectionAndSubmit(item);
+                  selectItem(item);
               }}
               isFirst={index === 0 ? true : false}>
               {descriptionIdSelectedForDelete !== item.id && (
@@ -253,13 +254,14 @@ const LithologicalDescriptionLayers = props => {
                         ),
                       )}
                       lithologicalDescriptions={lithologicalDescriptions}
+                      submitUpdate={submitUpdate}
                       item={item}
                     />
                   )}
                   {isEditable && (
                     <ActionButtons
                       item={item}
-                      changeSelectionAndSubmit={changeSelectionAndSubmit}
+                      selectItem={selectItem}
                       setDescriptionIdSelectedForDelete={
                         setDescriptionIdSelectedForDelete
                       }
