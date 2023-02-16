@@ -408,6 +408,13 @@ class MapComponent extends React.Component {
               : this.points.getExtent();
 
             this.map.getView().fit(extent);
+
+            if (this.props.searchState.resolution) {
+              this.map
+                .getView()
+                .setResolution(this.props.searchState.resolution);
+            }
+
             this.moveEnd();
           }
         }.bind(this),
@@ -681,7 +688,7 @@ class MapComponent extends React.Component {
             featureExtent: features,
           },
           () => {
-            moveend(features, extent);
+            moveend(extent, this.map.getView().getResolution());
           },
         );
       }

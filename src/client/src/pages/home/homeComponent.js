@@ -66,8 +66,8 @@ class HomeComponent extends React.Component {
             }
           }}
           layers={setting.data.map.explorer}
-          moveend={(features, extent) => {
-            this.props.filterByExtent(extent);
+          moveend={(extent, resolution) => {
+            this.props.filterByExtent(extent, resolution);
           }}
           selected={id => {
             if (id === null) {
@@ -615,10 +615,11 @@ const mapDispatchToProps = dispatch => {
         id: id,
       });
     },
-    filterByExtent: extent => {
+    filterByExtent: (extent, resolution) => {
       dispatch({
         type: "SEARCH_EXTENT_CHANGED",
         extent: extent,
+        resolution: resolution,
       });
     },
     resetCart: () => {
