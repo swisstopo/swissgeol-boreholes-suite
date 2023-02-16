@@ -217,7 +217,8 @@ class MenuComponent extends React.Component {
                   }}
                   style={{
                     padding: "0.5em",
-                  }}>
+                  }}
+                  data-cy="editor-list-item">
                   <List.Icon name="edit" verticalAlign="middle" />
                   <List.Content>
                     <List.Header as="h4">Editor</List.Header>
@@ -235,7 +236,8 @@ class MenuComponent extends React.Component {
                 }}
                 style={{
                   padding: "0.5em",
-                }}>
+                }}
+                data-cy="settings-list-item">
                 <List.Icon name="cog" verticalAlign="middle" />
                 <List.Content>
                   <List.Header as="h4">
