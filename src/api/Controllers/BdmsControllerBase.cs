@@ -24,7 +24,7 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     /// </summary>
     /// <param name="entity">The entity to create.</param>
     [HttpPost]
-    public async Task<IActionResult> CreateAsync(TEntity entity)
+    public virtual async Task<IActionResult> CreateAsync(TEntity entity)
     {
         await context.AddAsync(entity).ConfigureAwait(false);
         return await SaveChangesAsync(() => Ok(entity)).ConfigureAwait(false);
@@ -59,7 +59,7 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     /// </summary>
     /// <param name="id">The id of the entity to delete.</param>
     [HttpDelete]
-    public async Task<IActionResult> DeleteAsync(int id)
+    public virtual async Task<IActionResult> DeleteAsync(int id)
     {
         var entityToDelete = await context.FindAsync(typeof(TEntity), id).ConfigureAwait(false);
         if (entityToDelete == null)

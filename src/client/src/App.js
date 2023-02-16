@@ -16,22 +16,6 @@ import AcceptTerms from "./pages/term/accept";
 import { AlertProvider } from "./commons/alert/alertContext";
 import { AlertBanner } from "./commons/alert/alertBanner";
 
-const cpaths = [
-  {
-    path: process.env.PUBLIC_URL + "/editor",
-    exact: false,
-    body: EditorComponent,
-  },
-  {
-    path: process.env.PUBLIC_URL + "/setting/:id",
-    exact: true,
-    body: SettingCmp,
-  },
-  {
-    path: process.env.PUBLIC_URL + "/",
-    body: HomeComponent,
-  },
-];
 const queryClient = new QueryClient();
 
 const theme = createTheme({
@@ -113,6 +97,7 @@ class App extends React.Component {
 
   render() {
     const { loader } = this.props;
+    let mode = "viewer";
     return loader.isReady === false ? (
       <DataLoader />
     ) : loader.terms === false ? (
@@ -124,16 +109,29 @@ class App extends React.Component {
           <QueryClientProvider client={queryClient}>
             <Router>
               <Switch>
-                {cpaths.map((route, index) => {
-                  return (
-                    <Route
-                      component={route.body}
-                      exact={route.exact}
-                      key={index}
-                      path={route.path}
-                    />
-                  );
-                })}
+                <Route
+                  render={props => {
+                    mode = "editor";
+                    return <EditorComponent {...props} />;
+                  }}
+                  exact={false}
+                  key={0}
+                  path={process.env.PUBLIC_URL + "/editor"}
+                />
+                <Route
+                  render={props => <SettingCmp {...props} mode={mode} />}
+                  exact={true}
+                  key={1}
+                  path={process.env.PUBLIC_URL + "/setting/:id"}
+                />
+                <Route
+                  render={props => {
+                    mode = "viewer";
+                    return <HomeComponent {...props} />;
+                  }}
+                  key={2}
+                  path={process.env.PUBLIC_URL + "/"}
+                />
                 <Route
                   component={r => (
                     <Redirect
