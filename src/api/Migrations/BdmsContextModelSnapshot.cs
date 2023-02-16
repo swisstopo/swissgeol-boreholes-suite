@@ -628,10 +628,6 @@ namespace BDMS.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Conf")
-                        .HasColumnType("json")
-                        .HasColumnName("conf_fil");
-
                     b.Property<DateTime?>("Created")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("uploaded_fil");
@@ -649,6 +645,10 @@ namespace BDMS.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("name_fil");
+
+                    b.Property<string>("NameUuid")
+                        .HasColumnType("text")
+                        .HasColumnName("name_uuid_fil");
 
                     b.Property<string>("Type")
                         .IsRequired()
