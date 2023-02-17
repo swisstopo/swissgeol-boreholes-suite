@@ -143,6 +143,17 @@ class TableComponent extends React.Component {
     console.error("Please overwrite getCols method");
   }
 
+  onTableScroll() {
+    const { scrollPosition, onScrollChange } = this.props;
+
+    // remember current scroll position
+    var currentScrollPosition =
+      document.getElementById("borehole-table").scrollTop;
+    if (scrollPosition !== currentScrollPosition) {
+      onScrollChange(currentScrollPosition);
+    }
+  }
+
   render() {
     const { store, filter } = this.props;
     const { activeItem, selected, all } = this.state;
@@ -166,7 +177,9 @@ class TableComponent extends React.Component {
           style={{
             flex: "1 1 0%",
             overflowY: "auto",
-          }}>
+          }}
+          id="borehole-table"
+          onScroll={() => this.onTableScroll()}>
           <Table basic="very" compact="very" fixed selectable>
             <Table.Body>
               {store.data.map((item, idx) => (

@@ -25,6 +25,7 @@ class HomeComponent extends React.Component {
       fullcsv: false,
       shp: false,
       refresh: 0,
+      tableScrollPosition: 0,
     };
   }
 
@@ -204,6 +205,12 @@ class HomeComponent extends React.Component {
             } else {
               history.push(process.env.PUBLIC_URL + "/" + borehole.id);
             }
+          }}
+          scrollPosition={this.state.tableScrollPosition}
+          onScrollChange={position => {
+            this.setState({
+              tableScrollPosition: position,
+            });
           }}
         />
       </div>

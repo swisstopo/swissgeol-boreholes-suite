@@ -26,6 +26,7 @@ class EditorComponent extends React.Component {
       hover: null,
       maphover: null,
       sort: null,
+      tableScrollPosition: 0,
     };
   }
 
@@ -183,6 +184,12 @@ class EditorComponent extends React.Component {
                           });
                         }}
                         sort={this.state.sort}
+                        scrollPosition={this.state.tableScrollPosition}
+                        onScrollChange={position => {
+                          this.setState({
+                            tableScrollPosition: position,
+                          });
+                        }}
                       />
                     </div>
                   </div>
