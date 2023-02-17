@@ -10,7 +10,7 @@ import { useTheme } from "@mui/material/styles";
 const ActionButtons = props => {
   const {
     item,
-    changeSelectionAndSubmit,
+    selectItem,
     addMutation,
     selectedDescription,
     selectedStratigraphyID,
@@ -24,7 +24,7 @@ const ActionButtons = props => {
       {selectedDescription?.id !== item?.id && item.id !== null ? (
         <>
           <Tooltip title={t("edit")}>
-            <ModeEditIcon onClick={() => changeSelectionAndSubmit(item)} />
+            <ModeEditIcon onClick={() => selectItem(item)} />
           </Tooltip>
           <Tooltip title={t("delete")}>
             <DeleteIcon
@@ -58,7 +58,7 @@ const ActionButtons = props => {
           <ClearIcon
             onClick={e => {
               e.stopPropagation();
-              changeSelectionAndSubmit(null);
+              selectItem(null);
             }}
           />
         </Tooltip>
