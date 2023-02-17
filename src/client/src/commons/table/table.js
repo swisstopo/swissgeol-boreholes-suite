@@ -9,9 +9,7 @@ class TTable extends React.Component {
     super(props);
     this.delay = false;
     this.uid = _.uniqueId();
-    // this.add2selection = this.add2selection.bind(this);
     this.inSelection = this.inSelection.bind(this);
-    // this.deleteList = this.deleteList.bind(this);
     const { activeItem, filter } = this.props;
     this.state = {
       activeItem: activeItem !== undefined ? activeItem : null,
@@ -43,7 +41,7 @@ class TTable extends React.Component {
         () => {
           this.delay = setTimeout(
             function () {
-              this.props.loadData(1, filter); //, setting.orderby, setting.direction);
+              this.props.loadData(1, filter);
             }.bind(this),
             10,
           );
@@ -196,9 +194,7 @@ TTable.propTypes = {
   highlight: PropTypes.number,
   loadData: PropTypes.func,
   onHover: PropTypes.func,
-  // onMultiple: PropTypes.func,
   onSelected: PropTypes.func,
-  // setting: PropTypes.object,
   store: PropTypes.shape({
     activePage: PropTypes.number,
     data: PropTypes.array,
