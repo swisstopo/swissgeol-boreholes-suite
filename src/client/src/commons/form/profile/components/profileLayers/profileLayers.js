@@ -11,6 +11,8 @@ import ProfileLayersValidation from "./components/profileLayersValidation";
 import LithologicalDescriptionLayers from "./components/lithologicalDescriptionLayers/lithologicalDescriptionLayers";
 import { createLayerApi, getData } from "./api";
 import {
+  Box,
+  CircularProgress,
   Stack,
   TableContainer,
   TableHead,
@@ -148,96 +150,106 @@ const ProfileLayers = props => {
   };
 
   return (
-    <Styled.Container>
-      <TableContainer
-        sx={{
-          minHeight: "10em",
-          overflow: selectedLayer ? "hidden" : "",
-          borderBottom: layers?.data?.length ? "1px solid lightgrey" : "",
-        }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <Stack direction="row">
-                  {getColumnTitle(stratigraphyKind)}
-                  {isEditable && selectedStratigraphyID !== null && (
-                    <Tooltip title={t("add")}>
-                      <AddCircleIcon
-                        sx={{ marginLeft: 1.5 }}
-                        data-cy="add-layer-icon"
-                        onClick={createNewLayer}
-                      />
-                    </Tooltip>
-                  )}
-                </Stack>
-              </TableCell>
-              {selectedLayer === null &&
-                stratigraphyKind === profileKind.STRATIGRAPHY && (
+    <>
+      {layers?.data && !lithoDescQuery.isLoading ? (
+        <Styled.Container>
+          <TableContainer
+            sx={{
+              minHeight: "10em",
+              overflow: selectedLayer ? "hidden" : "",
+              borderBottom: layers?.data?.length ? "1px solid lightgrey" : "",
+            }}>
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead sx={{ zIndex: 0 }}>
+                <TableRow>
                   <TableCell>
                     <Stack direction="row">
-                      <Typography>{t("lithological_description")}</Typography>
+                      {getColumnTitle(stratigraphyKind)}
                       {isEditable && selectedStratigraphyID !== null && (
-                        <Tooltip title={t("add")} sx={{}}>
+                        <Tooltip title={t("add")}>
                           <AddCircleIcon
                             sx={{ marginLeft: 1.5 }}
-                            data-cy="add-litho-desc-icon"
-                            onClick={addLithologicalDesc}
+                            data-cy="add-layer-icon"
+                            onClick={createNewLayer}
                           />
                         </Tooltip>
                       )}
                     </Stack>
                   </TableCell>
-                )}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              <td style={cellStyle}>
-                {layers?.data?.length > 0 && (
-                  <ProfileLayersValidation
-                    data={{
-                      layers,
-                      isEditable,
-                      onUpdated,
-                      selectedLayer,
-                      showDelete,
-                      setShowDelete,
-                      selectedStratigraphyID,
-                      setSelectedLayer: setSelectedLayerFunc,
-                    }}
-                    setDeleteParams={setDeleteParams}
-                  />
-                )}
-              </td>
-              {selectedLayer === null &&
-                stratigraphyKind === profileKind.STRATIGRAPHY &&
-                lithoDescQuery?.data?.length > 0 && (
+                  {selectedLayer === null &&
+                    stratigraphyKind === profileKind.STRATIGRAPHY && (
+                      <TableCell>
+                        <Stack direction="row">
+                          <Typography>
+                            {t("lithological_description")}
+                          </Typography>
+                          {isEditable && selectedStratigraphyID !== null && (
+                            <Tooltip title={t("add")} sx={{}}>
+                              <AddCircleIcon
+                                sx={{ marginLeft: 1.5 }}
+                                data-cy="add-litho-desc-icon"
+                                onClick={addLithologicalDesc}
+                              />
+                            </Tooltip>
+                          )}
+                        </Stack>
+                      </TableCell>
+                    )}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
                   <td style={cellStyle}>
-                    <LithologicalDescriptionLayers
-                      isEditable={isEditable}
-                      lithologicalDescriptions={lithoDescQuery?.data}
-                      setSelectedDescription={
-                        setSelectedLithologicalDescription
-                      }
-                      selectedDescription={selectedLithologicalDescription}
-                      layers={layers}
-                      addMutation={addMutation}
-                      selectedStratigraphyID={selectedStratigraphyID}
-                      deleteParams={deleteParams}
-                    />
+                    {layers?.data?.length > 0 && (
+                      <ProfileLayersValidation
+                        data={{
+                          layers,
+                          isEditable,
+                          onUpdated,
+                          selectedLayer,
+                          showDelete,
+                          setShowDelete,
+                          selectedStratigraphyID,
+                          setSelectedLayer: setSelectedLayerFunc,
+                        }}
+                        setDeleteParams={setDeleteParams}
+                      />
+                    )}
                   </td>
-                )}
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-      {layers?.data?.length === 0 && (
-        <Styled.Empty>
-          <TranslationText id="nothingToShow" />
-        </Styled.Empty>
+                  {selectedLayer === null &&
+                    stratigraphyKind === profileKind.STRATIGRAPHY &&
+                    lithoDescQuery?.data?.length > 0 && (
+                      <td style={cellStyle}>
+                        <LithologicalDescriptionLayers
+                          isEditable={isEditable}
+                          lithologicalDescriptions={lithoDescQuery?.data}
+                          setSelectedDescription={
+                            setSelectedLithologicalDescription
+                          }
+                          selectedDescription={selectedLithologicalDescription}
+                          layers={layers}
+                          addMutation={addMutation}
+                          selectedStratigraphyID={selectedStratigraphyID}
+                          deleteParams={deleteParams}
+                        />
+                      </td>
+                    )}
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+          {layers?.data?.length === 0 && (
+            <Styled.Empty>
+              <TranslationText id="nothingToShow" />
+            </Styled.Empty>
+          )}
+        </Styled.Container>
+      ) : (
+        <Box display="flex" justifyContent="center" pt={5}>
+          <CircularProgress />
+        </Box>
       )}
-    </Styled.Container>
+    </>
   );
 };
 
