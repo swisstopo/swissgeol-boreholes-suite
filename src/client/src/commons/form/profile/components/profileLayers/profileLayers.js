@@ -8,7 +8,7 @@ import React, {
 import * as Styled from "./styles";
 import TranslationText from "../../../translationText";
 import ProfileLayersValidation from "./components/profileLayersValidation";
-import LithologicalDescriptionLayers from "./components/lithologicalDescriptionLayers/lithologicalDescriptionLayers";
+import DescriptionLayers from "./components/descriptionLayers/descriptionLayers";
 import { createLayerApi, getData } from "./api";
 import {
   Box,
@@ -45,8 +45,7 @@ const ProfileLayers = props => {
   } = props.data;
   const { t } = props;
   const [layers, setLayers] = useState(null);
-  const [selectedLithologicalDescription, setSelectedLithologicalDescription] =
-    useState(null);
+  const [selecteDescription, setSelectedDescription] = useState(null);
   const [showDelete, setShowDelete] = useState();
   const alertContext = useContext(AlertContext);
   const [deleteParams, setDeleteParams] = useState(null);
@@ -104,11 +103,11 @@ const ProfileLayers = props => {
       setSelectedLayer(null);
     } else {
       setSelectedLayer(item);
-      setSelectedLithologicalDescription(null);
+      setSelectedDescription(null);
     }
   };
 
-  const addLithologicalDesc = () => {
+  const addDescription = () => {
     if (
       lithoDescQuery?.data &&
       lithoDescQuery?.data?.length &&
@@ -116,7 +115,7 @@ const ProfileLayers = props => {
     ) {
       alertContext.error(t("first_add_layer_to_depth"));
     } else {
-      setSelectedLithologicalDescription(null);
+      setSelectedDescription(null);
       const newFromDepth = lithoDescQuery?.data?.at(-1)?.toDepth ?? 0;
       layers?.data?.length
         ? addMutation.mutate({
@@ -188,7 +187,7 @@ const ProfileLayers = props => {
                               <AddCircleIcon
                                 sx={{ marginLeft: 1.5 }}
                                 data-cy="add-litho-desc-icon"
-                                onClick={addLithologicalDesc}
+                                onClick={addDescription}
                               />
                             </Tooltip>
                           )}
@@ -220,13 +219,11 @@ const ProfileLayers = props => {
                     stratigraphyKind === profileKind.STRATIGRAPHY &&
                     lithoDescQuery?.data?.length > 0 && (
                       <td style={cellStyle}>
-                        <LithologicalDescriptionLayers
+                        <DescriptionLayers
                           isEditable={isEditable}
-                          lithologicalDescriptions={lithoDescQuery?.data}
-                          setSelectedDescription={
-                            setSelectedLithologicalDescription
-                          }
-                          selectedDescription={selectedLithologicalDescription}
+                          descriptions={lithoDescQuery?.data}
+                          setSelectedDescription={setSelectedDescription}
+                          selectedDescription={selecteDescription}
                           layers={layers}
                           addMutation={addMutation}
                           selectedStratigraphyID={selectedStratigraphyID}
