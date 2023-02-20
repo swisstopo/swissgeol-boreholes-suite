@@ -14,6 +14,7 @@
 - Add missing translations when editing a locked borehole, giving feedback or deleting an ID type.
 - Fix internal error when adding a backfill with _no casing_.
 - Fix internal error in viewer/editor settings for _Stratigraphy fields_ when clicking _Select all_.
+- Fix error when downloading a borehole profile.
 
 ## v2.0.186 - 2023-02-13
 
