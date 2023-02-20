@@ -44,6 +44,7 @@ describe("Tests for filtering data by reference system.", () => {
   });
 
   it("can set filters as editor", () => {
+    login("/editor");
     goToEditorLocationFilter();
 
     cy.contains("div", "Spatial reference system")

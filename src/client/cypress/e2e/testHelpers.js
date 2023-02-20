@@ -82,6 +82,7 @@ export const newEditableBorehole = () => {
 };
 
 export const newUneditableBorehole = () => {
+  login("/editor");
   cy.contains("a", "New").click();
   cy.contains("button", "Create").click();
   const id = waitForCreation();
@@ -145,25 +146,21 @@ export const deleteBorehole = id => {
 };
 
 export const loginAndResetState = () => {
-  login("/editor");
-  cy.get("tbody").children().first().should("be.visible");
-
   // Reset boreholes
-  let resetOccurred = false;
-  cy.wait("@edit_list").then(intercept => {
-    intercept.response.body.data.forEach(borehole => {
-      if (borehole.id > 1009999) {
-        resetOccurred = true;
-        deleteBorehole(borehole.id); // max id in seed data.
-      }
-    });
+  cy.request({
+    method: "POST",
+    url: "/api/v1/borehole/edit",
+    body: {
+      action: "IDS",
+    },
+    auth: adminUserAuth,
+  }).then(response => {
+    response.body.data
+      .filter(id => id > 1009999) // max id in seed data.
+      .forEach(id => {
+        deleteBorehole(id);
+      });
   });
-
-  if (resetOccurred) {
-    cy.contains("a", "Refresh").click();
-    cy.wait("@edit_list");
-    cy.get("tbody").children().should("have.length", 100); // number or boreholes visible in editor mode (with paging).
-  }
 
   // Reset user settings (i.e. table ordering)
   cy.request({
