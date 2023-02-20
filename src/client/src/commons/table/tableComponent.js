@@ -26,7 +26,7 @@ class TableComponent extends React.Component {
     this.props.loadData(1, filter);
   }
   componentDidUpdate(prevProps) {
-    const { filter, activeItem, store } = this.props;
+    const { filter, activeItem, store, scrollPosition } = this.props;
     let state = null;
     if (!_.isEqual(filter, prevProps.filter)) {
       if (this.delay) {
@@ -58,6 +58,16 @@ class TableComponent extends React.Component {
           10,
         );
       });
+    }
+
+    // Reset scroll position after data has been fetched
+    if (prevProps.store.isFetching && !store.isFetching) {
+      var boreholeTable = document.getElementById("borehole-table");
+      var currentScrollPosition = boreholeTable.scrollTop;
+
+      if (scrollPosition && scrollPosition !== currentScrollPosition) {
+        boreholeTable.scrollTo(0, scrollPosition);
+      }
     }
   }
   handleClick(selected) {
@@ -144,13 +154,15 @@ class TableComponent extends React.Component {
   }
 
   onTableScroll() {
-    const { scrollPosition, onScrollChange } = this.props;
+    const { scrollPosition, onScrollChange, store } = this.props;
 
     // remember current scroll position
-    var currentScrollPosition =
-      document.getElementById("borehole-table").scrollTop;
-    if (scrollPosition !== currentScrollPosition) {
-      onScrollChange(currentScrollPosition);
+    if (!store.isFetching) {
+      var currentScrollPosition =
+        document.getElementById("borehole-table").scrollTop;
+      if (scrollPosition !== currentScrollPosition) {
+        onScrollChange(currentScrollPosition);
+      }
     }
   }
 

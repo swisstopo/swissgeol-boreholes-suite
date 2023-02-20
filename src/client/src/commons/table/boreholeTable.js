@@ -13,16 +13,6 @@ import { Button, Icon, Segment, Table } from "semantic-ui-react";
 import { loadBoreholes } from "../../api-lib/index";
 
 class BoreholeTable extends TableComponent {
-  componentDidUpdate() {
-    const { scrollPosition } = this.props;
-
-    var boreholeTable = document.getElementById("borehole-table");
-    var currentScrollPosition = boreholeTable.scrollTop;
-
-    if (scrollPosition && scrollPosition !== currentScrollPosition) {
-      boreholeTable.scrollTo(0, scrollPosition);
-    }
-  }
   reorder(orderby) {
     const { filter, loadData, store } = this.props;
     let dir = store.direction === "DESC" ? "ASC" : "DESC";

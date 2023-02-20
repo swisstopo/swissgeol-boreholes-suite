@@ -74,17 +74,6 @@ class BoreholeEditorTable extends TTable {
     );
   }
 
-  componentDidUpdate() {
-    const { scrollPosition } = this.props;
-
-    var boreholeTable = document.getElementById("borehole-table");
-    var currentScrollPosition = boreholeTable.scrollTop;
-
-    if (scrollPosition && scrollPosition !== currentScrollPosition) {
-      boreholeTable.scrollTo(0, scrollPosition);
-    }
-  }
-
   reorder(orderby) {
     const { filter, loadData, store, onReorder } = this.props;
     let dir = store.direction === "DESC" ? "ASC" : "DESC";

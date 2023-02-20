@@ -26,7 +26,7 @@ class TTable extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { filter } = this.props;
+    const { filter, store, scrollPosition } = this.props;
     // Reload data if filters has changed
     if (!_.isEqual(filter, prevProps.filter)) {
       if (this.delay) {
@@ -47,6 +47,16 @@ class TTable extends React.Component {
           );
         },
       );
+    }
+
+    // Reset scroll position after data has been fetched
+    if (prevProps.store.isFetching && !store.isFetching) {
+      var boreholeTable = document.getElementById("borehole-table");
+      var currentScrollPosition = boreholeTable.scrollTop;
+
+      if (scrollPosition && scrollPosition !== currentScrollPosition) {
+        boreholeTable.scrollTo(0, scrollPosition);
+      }
     }
   }
 
