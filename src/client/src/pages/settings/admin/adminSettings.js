@@ -2,8 +2,8 @@ import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
-import store from "../../../reducers";
 import { AlertContext } from "../../../commons/alert/alertContext";
+import { fetchUsers } from "../../../api/fetchApiV2";
 
 import {
   Button,
@@ -115,24 +115,14 @@ class AdminSettings extends React.Component {
   }
 
   async listUsers() {
-    const credentials = store.getState().core_user.authentication;
-    const response = await fetch("/api/v2/user", {
-      headers: {
-        Authorization: `Basic ${btoa(
-          `${credentials.username}:${credentials.password}`,
-        )}`,
-      },
+    const users = await fetchUsers();
+    this.setState({
+      users: users,
     });
 
-    if (response.ok) {
-      const users = await response.json();
-      this.setState({
-        users: users,
-      });
-      // immediately update currently selected user.
-      if (this.state.user) {
-        this.setState({ user: users.find(u => u.id === this.state.user.id) });
-      }
+    // immediately update currently selected user.
+    if (this.state.user) {
+      this.setState({ user: users.find(u => u.id === this.state.user.id) });
     }
   }
 

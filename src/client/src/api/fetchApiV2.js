@@ -100,3 +100,5 @@ export const useLithoDescription = selectedStratigraphyID =>
     queryFn: () =>
       fetchLithologicalDescriptionsByProfileId(selectedStratigraphyID),
   });
+
+export const fetchUsers = async () => await fetchApiV2("user", "GET");
