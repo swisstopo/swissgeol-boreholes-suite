@@ -61,7 +61,8 @@ class MenuExplorer extends React.Component {
                 onClick={e => {
                   history.push(process.env.PUBLIC_URL);
                 }}
-                primary>
+                primary
+                data-cy="back-to-list-button">
                 <Icon name="caret left" />
                 <TranslationText id="back_to_list" />
               </Button>
