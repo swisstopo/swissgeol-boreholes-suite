@@ -245,7 +245,7 @@
   "msgEnablingWorkgroup": "Die Arbeitsgruppe \"{{workgroup}}\" wird wieder aktiviert. Benutzer, die zu dieser Arbeitsgruppe gehören, können Änderungen basierend auf ihren Rollen vornehmen.",
   "msgFillingEmpty": "Keine Hinterfüllung verfügbar",
   "msgIdentifierAlreadyUsed": "ID Typ bereits vergeben",
-  "msgIdentifierDeletionAlreadyUsed": "ID Typ wird genutzt und kann daher nicht gelöscht werden",
+  "msgIdentifierDeletionAlreadyUsed": "Dieser ID Typ wird verwendet und kann daher nicht gelöscht werden",
   "msgInstrumentsEmpty": "Kein Instrument verfügbar",
   "msgReenablingTip": "Sie können ihn später wieder aktivieren",
   "msgStartigraphyEmpty": "Keine Stratigraphie verfügbar",

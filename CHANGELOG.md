@@ -11,7 +11,7 @@
 
 - Creating, editing or deleting lithological descriptions was not allowed for non-admin users.
 - When creating and locating a new borehole, each click added a new point on the map.
-- Add missing translations when editing a locked borehole or giving feedback.
+- Add missing translations when editing a locked borehole, giving feedback or deleting an ID type.
 - Fix internal error when adding a backfill with _no casing_.
 
 ## v2.0.186 - 2023-02-13
