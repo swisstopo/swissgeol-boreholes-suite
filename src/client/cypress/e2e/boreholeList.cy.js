@@ -170,4 +170,50 @@ describe("Borehole list tests", () => {
     cy.get("tbody").children().eq(1).contains("td", "1'999.3616966527707");
     cy.get("tbody").children().eq(2).contains("td", "1'999.212604015699");
   });
+
+  it("preserves column sorting and active page when navigating", () => {
+    loginAsEditorInViewerMode();
+
+    // sort by name ascending
+    cy.contains("div", "Original name")
+      .children()
+      .first()
+      .then($icon => {
+        if (!$icon.hasClass("up")) {
+          // Sort list ascending
+          cy.contains("div", "Original name").click();
+        }
+      });
+
+    cy.wait("@borehole");
+
+    cy.get("tbody").children().eq(0).contains("td", "Aaron");
+    cy.get("tbody").children().eq(1).contains("td", "Aaron");
+    cy.get("tbody").children().eq(2).contains("td", "Aaron");
+
+    // navigate to page 4
+    cy.get("a").should("have.class", "item").contains("4").click();
+    cy.wait("@borehole");
+
+    cy.get("tbody").children().eq(0).contains("td", "Araceli");
+    cy.get("tbody").children().eq(1).contains("td", "Aracely");
+    cy.get("tbody").children().eq(2).contains("td", "Aracely");
+
+    // open first borehole
+    cy.get("tbody").children().eq(0).contains("td", "Araceli").click();
+    cy.wait("@borehole");
+
+    // verify current page is 4
+    cy.get("a").should("have.class", "active item").contains("4");
+
+    // return to list
+    cy.get('[data-cy="back-to-list-button"]').click();
+    cy.wait("@borehole");
+
+    // verify current page is still 4
+    cy.get("a").should("have.class", "active item").contains("4");
+    cy.get("tbody").children().eq(0).contains("td", "Araceli");
+    cy.get("tbody").children().eq(1).contains("td", "Aracely");
+    cy.get("tbody").children().eq(2).contains("td", "Aracely");
+  });
 });

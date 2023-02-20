@@ -9,9 +9,7 @@ class TTable extends React.Component {
     super(props);
     this.delay = false;
     this.uid = _.uniqueId();
-    // this.add2selection = this.add2selection.bind(this);
     this.inSelection = this.inSelection.bind(this);
-    // this.deleteList = this.deleteList.bind(this);
     const { activeItem, filter } = this.props;
     this.state = {
       activeItem: activeItem !== undefined ? activeItem : null,
@@ -28,7 +26,7 @@ class TTable extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { filter } = this.props;
+    const { filter, store, scrollPosition } = this.props;
     // Reload data if filters has changed
     if (!_.isEqual(filter, prevProps.filter)) {
       if (this.delay) {
@@ -43,12 +41,22 @@ class TTable extends React.Component {
         () => {
           this.delay = setTimeout(
             function () {
-              this.props.loadData(1, filter); //, setting.orderby, setting.direction);
+              this.props.loadData(1, filter);
             }.bind(this),
             10,
           );
         },
       );
+    }
+
+    // Reset scroll position after data has been fetched
+    if (prevProps.store.isFetching && !store.isFetching) {
+      var boreholeTable = document.getElementById("borehole-table");
+      var currentScrollPosition = boreholeTable.scrollTop;
+
+      if (scrollPosition && scrollPosition !== currentScrollPosition) {
+        boreholeTable.scrollTo(0, scrollPosition);
+      }
     }
   }
 
@@ -101,6 +109,17 @@ class TTable extends React.Component {
     console.error("Please overwrite getCols method");
   }
 
+  onTableScroll() {
+    const { scrollPosition, onScrollChange } = this.props;
+
+    // remember current scroll position
+    var currentScrollPosition =
+      document.getElementById("borehole-table").scrollTop;
+    if (scrollPosition !== currentScrollPosition) {
+      onScrollChange(currentScrollPosition);
+    }
+  }
+
   render() {
     const { store, filter } = this.props;
     const { activeItem, selected, all } = this.state;
@@ -128,7 +147,9 @@ class TTable extends React.Component {
           style={{
             flex: "1 1 0%",
             overflowY: "auto",
-          }}>
+          }}
+          id="borehole-table"
+          onScroll={() => this.onTableScroll()}>
           <Table basic="very" compact="very" fixed selectable>
             <Table.Body>
               {store.data.map((item, idx) => (
@@ -183,9 +204,7 @@ TTable.propTypes = {
   highlight: PropTypes.number,
   loadData: PropTypes.func,
   onHover: PropTypes.func,
-  // onMultiple: PropTypes.func,
   onSelected: PropTypes.func,
-  // setting: PropTypes.object,
   store: PropTypes.shape({
     activePage: PropTypes.number,
     data: PropTypes.array,
