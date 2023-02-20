@@ -13,6 +13,7 @@
 - When creating and locating a new borehole, each click added a new point on the map.
 - Add missing translations when editing a locked borehole or giving feedback.
 - Fix internal error when adding a backfill with _no casing_.
+- Fix internal error in viewer/editor settings for _Stratigraphy fields_ when clicking _Select all_.
 
 ## v2.0.186 - 2023-02-13
 
