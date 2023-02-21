@@ -103,6 +103,8 @@ export const deleteFaciesDescription = async id => {
   return await fetchApiV2(`faciesdescription?id=${id}`, "DELETE");
 };
 
+export const fetchUsers = async () => await fetchApiV2("user", "GET");
+
 // Enable using react-query outputs across the application.
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
