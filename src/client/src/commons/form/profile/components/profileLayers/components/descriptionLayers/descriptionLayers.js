@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  createRef,
-  useRef,
-  useCallback,
-} from "react";
+import React, { useState, useEffect, createRef, useRef } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import produce from "immer";
@@ -62,7 +56,7 @@ const DescriptionLayers = props => {
     }
     // update the previous length
     prevLengthRef.current = displayDescriptions?.length;
-  }, [displayDescriptions, lastDescriptionRef]);
+  }, [displayDescriptions, lastDescriptionRef, selectedDescription]);
 
   const selectableFromDepths = layers?.data?.map(l => l.depth_from);
   const selectableToDepths = layers?.data?.map(l => l.depth_to);
@@ -251,7 +245,7 @@ const DescriptionLayers = props => {
                   )}
                 </>
               )}
-              {descriptionIdSelectedForDelete === item.id && (
+              {item.id && descriptionIdSelectedForDelete === item.id && (
                 <DescriptionDeleteDialog
                   item={item}
                   setDescriptionIdSelectedForDelete={
