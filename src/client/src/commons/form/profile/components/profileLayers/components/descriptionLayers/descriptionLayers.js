@@ -52,11 +52,11 @@ const DescriptionLayers = props => {
     // scroll to the last item in the list
     if (
       lastDescriptionRef?.current &&
-      displayDescriptions?.length > prevLengthRef.current
+      displayDescriptions?.length > prevLengthRef.current &&
+      // prevents scrolling when existing layer depths is changed so that an undefined interval is produced while editing.
+      !selectedDescription
     ) {
       lastDescriptionRef.current.scrollIntoView({
-        alignToTop: true,
-        scrollIntoViewOptions: { block: "start", inline: "start" },
         behavior: "smooth",
       });
     }
