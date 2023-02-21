@@ -36,7 +36,8 @@ const DescriptionDeleteDialog = props => {
           variant="delete"
           size="small"
           startIcon={<DeleteIcon />}
-          onClick={() => {
+          onClick={e => {
+            e.stopPropagation();
             deleteMutation.mutate(item.id);
           }}>
           {t("confirm")}
