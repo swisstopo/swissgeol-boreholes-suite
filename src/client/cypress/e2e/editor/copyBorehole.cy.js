@@ -1,7 +1,8 @@
-import { createBorehole } from "../testHelpers";
+import { createBorehole, login } from "../testHelpers";
 
 describe("Test copying of boreholes", () => {
   it("copies a borehole", () => {
+    login("/editor");
     createBorehole({ "extended.original_name": "NINTIC" }).as("borehole_id_1");
 
     cy.get('[data-cy="borehole-table"] tbody')

@@ -1,8 +1,9 @@
-import { newEditableBorehole } from "../testHelpers";
+import { newEditableBorehole, login } from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
   beforeEach(() => {
     // Assert map number of boreholes
+    login("/editor");
     cy.get("div[id=map]").should("be.visible");
     cy.get("tbody").children().should("have.length", 100);
 
