@@ -45,15 +45,15 @@ export const updateLayer = async layer => {
   // remove derived objects
   delete layer.createdBy;
   delete layer.updatedBy;
-  return await fetchApiV2(`layer`, "PUT", layer);
+  return await fetchApiV2("layer", "PUT", layer);
 };
 
 // codelists
 export const fetchAllCodeLists = async () =>
-  await fetchApiV2(`codelist`, "GET");
+  await fetchApiV2("codelist", "GET");
 
 export const updateCodeLists = async codelist =>
-  await fetchApiV2(`codelist`, "PUT", codelist);
+  await fetchApiV2("codelist", "PUT", codelist);
 
 // lithological descriptions
 export const fetchLithologicalDescriptionsByProfileId = async profileId => {
@@ -65,7 +65,7 @@ export const fetchLithologicalDescriptionsByProfileId = async profileId => {
 
 export const addLithologicalDescription = async lithologicalDescription => {
   return await fetchApiV2(
-    `lithologicaldescription`,
+    "lithologicaldescription",
     "POST",
     lithologicalDescription,
   );
@@ -73,7 +73,7 @@ export const addLithologicalDescription = async lithologicalDescription => {
 
 export const updateLithologicalDescription = async lithologicalDescription => {
   return await fetchApiV2(
-    `lithologicaldescription`,
+    "lithologicaldescription",
     "PUT",
     lithologicalDescription,
   );
@@ -92,11 +92,11 @@ export const fetchFaciesDescriptionsByProfileId = async profileId => {
 };
 
 export const addFaciesDescription = async faciesDescription => {
-  return await fetchApiV2(`faciesdescription`, "POST", faciesDescription);
+  return await fetchApiV2("faciesdescription", "POST", faciesDescription);
 };
 
 export const updateFaciesDescription = async faciesDescription => {
-  return await fetchApiV2(`faciesdescription`, "PUT", faciesDescription);
+  return await fetchApiV2("faciesdescription", "PUT", faciesDescription);
 };
 
 export const deleteFaciesDescription = async id => {
@@ -108,7 +108,7 @@ export const deleteFaciesDescription = async id => {
 // eslint-disable-next-line react-hooks/rules-of-hooks
 export const useDomains = () =>
   useQuery("domains", () => {
-    const domains = fetchApiV2(`codelist`, "GET");
+    const domains = fetchApiV2("codelist", "GET");
     return domains;
   });
 
@@ -117,15 +117,19 @@ export const useLayers = profileId =>
     return fetchLayersByProfileId(profileId);
   });
 
+export const lithologicalDescriptionQueryKey = "lithoDesc";
+
 export const useLithoDescription = selectedStratigraphyID =>
   useQuery({
-    queryKey: ["lithoDesc", selectedStratigraphyID],
+    queryKey: [lithologicalDescriptionQueryKey, selectedStratigraphyID],
     queryFn: () =>
       fetchLithologicalDescriptionsByProfileId(selectedStratigraphyID),
   });
 
+export const faciesDescriptionQueryKey = "faciesDesc";
+
 export const useFaciesDescription = selectedStratigraphyID =>
   useQuery({
-    queryKey: ["faciesDesc", selectedStratigraphyID],
+    queryKey: [faciesDescriptionQueryKey, selectedStratigraphyID],
     queryFn: () => fetchFaciesDescriptionsByProfileId(selectedStratigraphyID),
   });

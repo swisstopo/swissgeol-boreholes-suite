@@ -32,7 +32,10 @@ import {
   addFaciesDescription,
   updateFaciesDescription,
   deleteFaciesDescription,
+  lithologicalDescriptionQueryKey,
+  faciesDescriptionQueryKey,
 } from "../../../../../api/fetchApiV2";
+
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { withTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "react-query";
@@ -69,31 +72,35 @@ const ProfileLayers = props => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["lithoDesc"] });
+        queryClient.invalidateQueries({
+          queryKey: [lithologicalDescriptionQueryKey],
+        });
       },
     },
   );
 
   const deleteLithologicalDescriptionMutation = useMutation(
     async id => {
-      const result = await deleteLithologicalDescription(id);
-      return result;
+      return await deleteLithologicalDescription(id);
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["lithoDesc"] });
+        queryClient.invalidateQueries({
+          queryKey: [lithologicalDescriptionQueryKey],
+        });
       },
     },
   );
 
   const updateLithologicalDescriptionMutation = useMutation(
     async params => {
-      const result = await updateLithologicalDescription(params);
-      return result;
+      return await updateLithologicalDescription(params);
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["lithoDesc"] });
+        queryClient.invalidateQueries({
+          queryKey: [lithologicalDescriptionQueryKey],
+        });
       },
     },
   );
@@ -104,31 +111,35 @@ const ProfileLayers = props => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["faciesDesc"] });
+        queryClient.invalidateQueries({
+          queryKey: [faciesDescriptionQueryKey],
+        });
       },
     },
   );
 
   const deleteFaciesDescriptionMutation = useMutation(
     async id => {
-      const result = await deleteFaciesDescription(id);
-      return result;
+      return await deleteFaciesDescription(id);
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["faciesDesc"] });
+        queryClient.invalidateQueries({
+          queryKey: [faciesDescriptionQueryKey],
+        });
       },
     },
   );
 
   const updateFaciesDescriptionMutation = useMutation(
     async params => {
-      const result = await updateFaciesDescription(params);
-      return result;
+      return await updateFaciesDescription(params);
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["faciesDesc"] });
+        queryClient.invalidateQueries({
+          queryKey: [faciesDescriptionQueryKey],
+        });
       },
     },
   );
