@@ -559,8 +559,8 @@ class bdmsPdf():
         self.drawLeftTextBox2(
             0, current_y,
             column_width, box_height,
-            'none', 'contentB',  _('city'),
-            'content', f"{self.profile['city']}"
+            'none', 'contentB',  _('municipality'),
+            'content', f"{self.profile['municipality']}"
         )
 
         # current_y += box_height
