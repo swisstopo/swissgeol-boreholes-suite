@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added functionality to edit facies description seperately from lithology.
+
 ### Changed
 
 - Memorize table and map state when navigating through the application.

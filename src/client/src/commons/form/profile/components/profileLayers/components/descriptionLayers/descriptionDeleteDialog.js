@@ -6,7 +6,7 @@ import WarningIcon from "@mui/icons-material/Warning";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 
-const LithologicalDescriptionDeleteDialog = props => {
+const DescriptionDeleteDialog = props => {
   const { item, setDescriptionIdSelectedForDelete, deleteMutation } = props;
   const { t } = useTranslation();
   const theme = useTheme();
@@ -45,4 +45,4 @@ const LithologicalDescriptionDeleteDialog = props => {
     </Stack>
   );
 };
-export default LithologicalDescriptionDeleteDialog;
+export default DescriptionDeleteDialog;

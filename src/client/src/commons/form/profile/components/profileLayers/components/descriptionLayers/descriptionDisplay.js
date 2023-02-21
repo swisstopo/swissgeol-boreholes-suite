@@ -2,7 +2,7 @@ import React from "react";
 import { Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const LithologicalDescriptionDisplay = props => {
+const DescriptionDisplay = props => {
   const { item } = props;
   const { t, i18n } = useTranslation();
 
@@ -28,4 +28,4 @@ const LithologicalDescriptionDisplay = props => {
     </Stack>
   );
 };
-export default LithologicalDescriptionDisplay;
+export default DescriptionDisplay;
