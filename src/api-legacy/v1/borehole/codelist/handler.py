@@ -24,11 +24,6 @@ class CodeListHandler(Viewer):
                     action = ListCodeList(conn=conn)
 
                 elif action == 'PATCH':
-                    # Temporary workaround waiting for multiple
-                    # stratigraphy type creation
-                    if self.user['admin'] is False:
-                        raise AuthorizationException()
-
                     request['code_id'] =  await conn.fetchval("""
                         SELECT
                             id_cli

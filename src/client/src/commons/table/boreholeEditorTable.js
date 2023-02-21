@@ -73,6 +73,7 @@ class BoreholeEditorTable extends TTable {
       sort?.direction,
     );
   }
+
   reorder(orderby) {
     const { filter, loadData, store, onReorder } = this.props;
     let dir = store.direction === "DESC" ? "ASC" : "DESC";
@@ -319,15 +320,6 @@ class BoreholeEditorTable extends TTable {
           {item.workgroup !== null ? item.workgroup.name : null}
         </span>
         <br />
-        {/* {
-          item.percentage < 100 ?
-            null :
-            <Icon
-              color='green'
-              name='check circle'
-            />
-        } {item.percentage}% */}
-
         <TranslationText id={`status${item.role.toLowerCase()}`} />
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
