@@ -114,8 +114,6 @@ class HomeComponent extends React.Component {
                 : t("common:someSelected", {
                     howMany: checkout.cart.length,
                   })}
-              {checkout.cart.length === 1 ? "One" : checkout.cart.length}{" "}
-              borehole{checkout.cart.length > 1 ? "s" : null} selected.
             </span>{" "}
             (
             <span
