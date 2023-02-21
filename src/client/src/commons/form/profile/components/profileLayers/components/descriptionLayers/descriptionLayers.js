@@ -109,7 +109,7 @@ const DescriptionLayers = props => {
         deleteMutation.mutate(
           descriptions?.find(
             d => d.fromDepth === layer.fromDepth && d.toDepth === layer.toDepth,
-          ).id,
+          )?.id,
         );
       }
       // case: extend upper layer to bottom
