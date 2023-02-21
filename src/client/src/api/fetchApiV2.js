@@ -80,6 +80,11 @@ export const updateLayer = async layer => {
   return await fetchApiV2(`layer`, "PUT", layer);
 };
 
+// stratigraphy
+export const copyStratigraphy = async id => {
+  return await fetchApiV2(`stratigraphy/copy?id=${id}`, "POST");
+};
+
 // Enable using react-query outputs across the application.
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
