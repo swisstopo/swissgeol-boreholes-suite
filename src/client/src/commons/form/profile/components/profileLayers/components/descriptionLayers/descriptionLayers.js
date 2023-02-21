@@ -7,12 +7,7 @@ import React, {
 } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
-import {
-  updateLithologicalDescription,
-  deleteLithologicalDescription,
-} from "../../../../../../../api/fetchApiV2";
 import produce from "immer";
-import { useMutation, useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
 import DescriptionInput from "./descriptionInput";
 import DescriptionDisplay from "./descriptionDisplay";
@@ -28,6 +23,8 @@ const DescriptionLayers = props => {
     selectedDescription,
     layers,
     addMutation,
+    updateMutation,
+    deleteMutation,
     selectedStratigraphyID,
     deleteParams,
   } = props;
@@ -41,33 +38,6 @@ const DescriptionLayers = props => {
 
   const { t } = useTranslation();
   const theme = useTheme();
-
-  // react-query mutations and queries
-  const queryClient = useQueryClient();
-
-  const deleteMutation = useMutation(
-    async id => {
-      const result = await deleteLithologicalDescription(id);
-      return result;
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["lithoDesc"] });
-      },
-    },
-  );
-
-  const updateMutation = useMutation(
-    async params => {
-      const result = await updateLithologicalDescription(params);
-      return result;
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["lithoDesc"] });
-      },
-    },
-  );
 
   const descriptionRefs = Array(displayDescriptions?.length)
     .fill(null)
@@ -84,7 +54,11 @@ const DescriptionLayers = props => {
       lastDescriptionRef?.current &&
       displayDescriptions?.length > prevLengthRef.current
     ) {
-      lastDescriptionRef.current.scrollIntoView({ behavior: "smooth" });
+      lastDescriptionRef.current.scrollIntoView({
+        alignToTop: true,
+        scrollIntoViewOptions: { block: "start", inline: "start" },
+        behavior: "smooth",
+      });
     }
     // update the previous length
     prevLengthRef.current = displayDescriptions?.length;
@@ -213,7 +187,7 @@ const DescriptionLayers = props => {
           .map((item, index) => (
             <Stack
               direction="row"
-              data-cy={`lithological-description-${index}`}
+              data-cy={`description-${index}`}
               sx={{
                 boxShadow: "inset -1px 0 0 lightgrey, inset 0 -1px 0 lightgrey",
                 flex: "1 1 100%",

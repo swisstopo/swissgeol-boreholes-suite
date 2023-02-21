@@ -34,18 +34,28 @@ export async function fetchApiV2(url, method, payload = null) {
   }
 }
 
+// layers
 export const fetchLayerById = async id =>
   await fetchApiV2(`layer/${id}`, "GET");
 
 export const fetchLayersByProfileId = async profileId =>
   await fetchApiV2(`layer?profileId=${profileId}`, "GET");
 
+export const updateLayer = async layer => {
+  // remove derived objects
+  delete layer.createdBy;
+  delete layer.updatedBy;
+  return await fetchApiV2(`layer`, "PUT", layer);
+};
+
+// codelists
 export const fetchAllCodeLists = async () =>
   await fetchApiV2(`codelist`, "GET");
 
 export const updateCodeLists = async codelist =>
   await fetchApiV2(`codelist`, "PUT", codelist);
 
+// lithological descriptions
 export const fetchLithologicalDescriptionsByProfileId = async profileId => {
   return await fetchApiV2(
     `lithologicaldescription?stratigraphyId=${profileId}`,
@@ -73,11 +83,24 @@ export const deleteLithologicalDescription = async id => {
   return await fetchApiV2(`lithologicaldescription?id=${id}`, "DELETE");
 };
 
-export const updateLayer = async layer => {
-  // remove derived objects
-  delete layer.createdBy;
-  delete layer.updatedBy;
-  return await fetchApiV2(`layer`, "PUT", layer);
+// facies descriptions
+export const fetchFaciesDescriptionsByProfileId = async profileId => {
+  return await fetchApiV2(
+    `faciesdescription?stratigraphyId=${profileId}`,
+    "GET",
+  );
+};
+
+export const addFaciesDescription = async faciesDescription => {
+  return await fetchApiV2(`faciesdescription`, "POST", faciesDescription);
+};
+
+export const updateFaciesDescription = async faciesDescription => {
+  return await fetchApiV2(`faciesdescription`, "PUT", faciesDescription);
+};
+
+export const deleteFaciesDescription = async id => {
+  return await fetchApiV2(`faciesdescription?id=${id}`, "DELETE");
 };
 
 // Enable using react-query outputs across the application.
@@ -99,4 +122,10 @@ export const useLithoDescription = selectedStratigraphyID =>
     queryKey: ["lithoDesc", selectedStratigraphyID],
     queryFn: () =>
       fetchLithologicalDescriptionsByProfileId(selectedStratigraphyID),
+  });
+
+export const useFaciesDescription = selectedStratigraphyID =>
+  useQuery({
+    queryKey: ["faciesDesc", selectedStratigraphyID],
+    queryFn: () => fetchFaciesDescriptionsByProfileId(selectedStratigraphyID),
   });

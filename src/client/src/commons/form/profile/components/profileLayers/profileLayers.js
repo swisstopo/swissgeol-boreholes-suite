@@ -26,6 +26,12 @@ import {
 import {
   addLithologicalDescription,
   useLithoDescription,
+  updateLithologicalDescription,
+  deleteLithologicalDescription,
+  useFaciesDescription,
+  addFaciesDescription,
+  updateFaciesDescription,
+  deleteFaciesDescription,
 } from "../../../../../api/fetchApiV2";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { withTranslation } from "react-i18next";
@@ -55,14 +61,74 @@ const ProfileLayers = props => {
   // React-query mutations and queries.
   const queryClient = useQueryClient();
   const lithoDescQuery = useLithoDescription(selectedStratigraphyID);
+  const faciesDescQuery = useFaciesDescription(selectedStratigraphyID);
 
-  const addMutation = useMutation(
+  const addLithologicalDescriptionMutation = useMutation(
     async params => {
       return await addLithologicalDescription(params);
     },
     {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["lithoDesc"] });
+      },
+    },
+  );
+
+  const deleteLithologicalDescriptionMutation = useMutation(
+    async id => {
+      const result = await deleteLithologicalDescription(id);
+      return result;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["lithoDesc"] });
+      },
+    },
+  );
+
+  const updateLithologicalDescriptionMutation = useMutation(
+    async params => {
+      const result = await updateLithologicalDescription(params);
+      return result;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["lithoDesc"] });
+      },
+    },
+  );
+
+  const addFaciesDescriptionMutation = useMutation(
+    async params => {
+      return await addFaciesDescription(params);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["faciesDesc"] });
+      },
+    },
+  );
+
+  const deleteFaciesDescriptionMutation = useMutation(
+    async id => {
+      const result = await deleteFaciesDescription(id);
+      return result;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["faciesDesc"] });
+      },
+    },
+  );
+
+  const updateFaciesDescriptionMutation = useMutation(
+    async params => {
+      const result = await updateFaciesDescription(params);
+      return result;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["faciesDesc"] });
       },
     },
   );
@@ -107,18 +173,18 @@ const ProfileLayers = props => {
     }
   };
 
-  const addDescription = () => {
+  const addDescription = (query, mutation) => {
     if (
-      lithoDescQuery?.data &&
-      lithoDescQuery?.data?.length &&
-      lithoDescQuery?.data[lithoDescQuery?.data?.length - 1]?.toDepth == null
+      query?.data &&
+      query?.data?.length &&
+      query?.data[query?.data?.length - 1]?.toDepth == null
     ) {
       alertContext.error(t("first_add_layer_to_depth"));
     } else {
       setSelectedDescription(null);
-      const newFromDepth = lithoDescQuery?.data?.at(-1)?.toDepth ?? 0;
+      const newFromDepth = query?.data?.at(-1)?.toDepth ?? 0;
       layers?.data?.length
-        ? addMutation.mutate({
+        ? mutation.mutate({
             stratigraphyId: selectedStratigraphyID,
             fromDepth: newFromDepth,
             toDepth: layers?.data.find(l => l.depth_from === newFromDepth)
@@ -144,7 +210,7 @@ const ProfileLayers = props => {
   const cellStyle = {
     verticalAlign: "top",
     padding: "0",
-    width: "50%",
+    width: "33%",
     minHeight: "10em",
   };
 
@@ -187,7 +253,34 @@ const ProfileLayers = props => {
                               <AddCircleIcon
                                 sx={{ marginLeft: 1.5 }}
                                 data-cy="add-litho-desc-icon"
-                                onClick={addDescription}
+                                onClick={() =>
+                                  addDescription(
+                                    lithoDescQuery,
+                                    addLithologicalDescriptionMutation,
+                                  )
+                                }
+                              />
+                            </Tooltip>
+                          )}
+                        </Stack>
+                      </TableCell>
+                    )}
+                  {selectedLayer === null &&
+                    stratigraphyKind === profileKind.STRATIGRAPHY && (
+                      <TableCell>
+                        <Stack direction="row">
+                          <Typography>{t("facies_description")}</Typography>
+                          {isEditable && selectedStratigraphyID !== null && (
+                            <Tooltip title={t("add")} sx={{}}>
+                              <AddCircleIcon
+                                sx={{ marginLeft: 1.5 }}
+                                data-cy="add-facies-desc-icon"
+                                onClick={() =>
+                                  addDescription(
+                                    faciesDescQuery,
+                                    addFaciesDescriptionMutation,
+                                  )
+                                }
                               />
                             </Tooltip>
                           )}
@@ -225,7 +318,27 @@ const ProfileLayers = props => {
                           setSelectedDescription={setSelectedDescription}
                           selectedDescription={selecteDescription}
                           layers={layers}
-                          addMutation={addMutation}
+                          addMutation={addLithologicalDescriptionMutation}
+                          deleteMutation={deleteLithologicalDescriptionMutation}
+                          updateMutation={updateLithologicalDescriptionMutation}
+                          selectedStratigraphyID={selectedStratigraphyID}
+                          deleteParams={deleteParams}
+                        />
+                      </td>
+                    )}
+                  {selectedLayer === null &&
+                    stratigraphyKind === profileKind.STRATIGRAPHY &&
+                    faciesDescQuery?.data?.length > 0 && (
+                      <td style={cellStyle}>
+                        <DescriptionLayers
+                          isEditable={isEditable}
+                          descriptions={faciesDescQuery?.data}
+                          setSelectedDescription={setSelectedDescription}
+                          selectedDescription={selecteDescription}
+                          layers={layers}
+                          addMutation={addFaciesDescriptionMutation}
+                          deleteMutation={deleteFaciesDescriptionMutation}
+                          updateMutation={updateFaciesDescriptionMutation}
                           selectedStratigraphyID={selectedStratigraphyID}
                           deleteParams={deleteParams}
                         />
