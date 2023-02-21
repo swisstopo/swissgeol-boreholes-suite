@@ -1,13 +1,15 @@
-import { createBorehole } from "../testHelpers";
+import { createBorehole, login } from "../testHelpers";
 
 describe("Test the borehole bulk edit feature.", () => {
   it("opens the bulk edit dialog with all boreholes selected", () => {
+    login("/editor");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.wait("@edit_ids");
   });
 
   it("checks if all toggle buttons do something", () => {
+    login("/editor");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 
@@ -22,6 +24,8 @@ describe("Test the borehole bulk edit feature.", () => {
   });
 
   it("fills all bulkedit fields and saves.", () => {
+    login("/editor");
+
     // create boreholes
     createBorehole({ "extended.original_name": "NINTIC" }).as("borehole_id_1");
     createBorehole({ "extended.original_name": "LOMONE" }).as("borehole_id_2");

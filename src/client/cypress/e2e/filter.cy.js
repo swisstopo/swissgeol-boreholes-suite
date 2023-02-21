@@ -55,6 +55,7 @@ describe("Search filter tests", () => {
 
   it("checks that the registration filter settings control the filter visibility.", () => {
     // precondition filters not visible
+    login("/editor");
     cy.contains("Registration").click();
     cy.contains("Show all fields")
       .next()
@@ -88,6 +89,7 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes by creator name", () => {
+    login("/editor");
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -105,6 +107,7 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes by original lithology", () => {
+    login("/editor");
     cy.contains("Stratigraphy").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -119,6 +122,7 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes by creation date", () => {
+    login("/editor");
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
