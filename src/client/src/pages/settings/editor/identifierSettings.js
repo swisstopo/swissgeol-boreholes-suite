@@ -268,7 +268,7 @@ class IdentifierSettings extends React.Component {
                   if (r.data.success === true) {
                     this.props.listIdentifier();
                   } else if (r.data.error === "E-205") {
-                    this.context.error(t("identifierDeletionAlreadyUsed"));
+                    this.context.error(t("msgIdentifierDeletionAlreadyUsed"));
                   }
                   this.reset();
                   this.handleCloseConfirmDelete();
