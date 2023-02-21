@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import * as Styled from "./styles";
 import Instrument from "./components/instrument";
-import { Button } from "semantic-ui-react";
+import { Button, Loader } from "semantic-ui-react";
 import TranslationText from "../../../translationText";
 import { profileKind } from "../../constance";
 import {
@@ -28,6 +28,7 @@ const ProfileInstrument = props => {
   const [instruments, setInstruments] = useState([]);
   const [instrumentProfileId, setInstrumentProfileId] = useState(null);
   const [reload, setReload] = useState(0);
+  const [isLoadingData, setIsLoadingData] = useState(false);
 
   const createStratigraphy = useCallback(boreholeID => {
     createNewStratigraphy(boreholeID, profileKind.INSTRUMENT).then(id => {
@@ -36,12 +37,14 @@ const ProfileInstrument = props => {
   }, []);
 
   const getInstrumentProfile = useCallback(() => {
+    setIsLoadingData(true);
     getProfile(borehole.data.id, profileKind.INSTRUMENT).then(response => {
       if (response.length > 0) {
         setInstrumentProfileId(response[0].id);
       } else if (response.length === 0) {
         createStratigraphy(borehole.data.id);
       }
+      setIsLoadingData(false);
     });
   }, [borehole, createStratigraphy]);
 
@@ -50,8 +53,10 @@ const ProfileInstrument = props => {
   }, [getInstrumentProfile]);
 
   const setData = useCallback(instrumentID => {
+    setIsLoadingData(true);
     getData(instrumentID).then(response => {
       setInstruments(response);
+      setIsLoadingData(false);
     });
   }, []);
 
@@ -113,13 +118,15 @@ const ProfileInstrument = props => {
         </Styled.ButtonContainer>
       )}
 
-      {filterInstrumentsByProfile().length === 0 && (
+      {isLoadingData ? (
+        <Loader active />
+      ) : filterInstrumentsByProfile().length === 0 ? (
         <Styled.Empty data-cy="instrument-message">
           <TranslationText
             id={borehole.data.lock ? "msgAddInstrument" : "msgInstrumentsEmpty"}
           />
         </Styled.Empty>
-      )}
+      ) : null}
 
       {filterInstrumentsByProfile().length > 0 && (
         <Styled.ListContainer data-cy="instrument-list">

@@ -11,6 +11,7 @@ import { stratigraphyData } from "./data/stratigraphydata";
 import ProfileInstrument from "./components/profileInstrument/profileInstrument";
 import TranslationText from "../translationText";
 import { profileKind } from "./constance";
+import { Loader } from "semantic-ui-react";
 
 const Profile = props => {
   const { user, borehole } = useSelector(state => ({
@@ -29,6 +30,7 @@ const Profile = props => {
   const [stratigraphyKind, setStratigraphyKind] = useState(null);
   const [hasInstrumentWithoutCasing, setHasInstrumentWithoutCasing] =
     useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(false);
 
   const onUpdated = attribute => {
     if (
@@ -139,10 +141,14 @@ const Profile = props => {
           setSelectedStratigraphy={set}
           setSelectedStratigraphyNull={setSelectedStratigraphyNull}
           hasInstrumentWithoutCasing={hasInstrumentWithoutCasing}
+          setIsLoadingData={setIsLoadingData}
         />
       )}
 
-      {!selectedStratigraphy &&
+      {isLoadingData && <Loader active />}
+
+      {!isLoadingData &&
+        !selectedStratigraphy &&
         stratigraphyKind !== profileKind.INSTRUMENT &&
         stratigraphyKind !== profileKind.CASING &&
         stratigraphyKind !== profileKind.FILLING && (
@@ -157,79 +163,88 @@ const Profile = props => {
           </Styled.Empty>
         )}
 
-      {!selectedStratigraphy && stratigraphyKind === profileKind.CASING && (
-        <Styled.Empty data-cy="casing-message">
-          <TranslationText
-            id={borehole.data.lock ? "msgAddCasing" : "msgCasingEmpty"}
-          />
-        </Styled.Empty>
-      )}
-
-      {!selectedStratigraphy && stratigraphyKind === profileKind.FILLING && (
-        <Styled.Empty data-cy="backfill-message">
-          <TranslationText
-            id={borehole.data.lock ? "msgAddBackfill" : "msgBackfillEmpty"}
-          />
-        </Styled.Empty>
-      )}
-
-      {stratigraphyKind !== profileKind.INSTRUMENT && selectedStratigraphy && (
-        <Styled.Container>
-          <Styled.FirstColumn>
-            <ProfileInfo
-              data={{
-                kind: stratigraphyKind,
-                selectedStratigraphyID: selectedStratigraphy
-                  ? selectedStratigraphy.id
-                  : null,
-                isEditable,
-                onUpdated,
-                attribute: attributesBasedKind?.profileInfo,
-                boreholeID: borehole.data.id,
-              }}
+      {!isLoadingData &&
+        !selectedStratigraphy &&
+        stratigraphyKind === profileKind.CASING && (
+          <Styled.Empty data-cy="casing-message">
+            <TranslationText
+              id={borehole.data.lock ? "msgAddCasing" : "msgCasingEmpty"}
             />
+          </Styled.Empty>
+        )}
 
-            <ProfileLayers
-              data={{
-                selectedStratigraphyID: selectedStratigraphy
-                  ? selectedStratigraphy.id
-                  : null,
-                isEditable,
-                selectedLayer,
-                setSelectedLayer: e => {
-                  setSelectedLayer(e);
-                },
-                reloadLayer,
-                onUpdated,
-                stratigraphyKind,
-              }}
+      {!isLoadingData &&
+        !selectedStratigraphy &&
+        stratigraphyKind === profileKind.FILLING && (
+          <Styled.Empty data-cy="backfill-message">
+            <TranslationText
+              id={borehole.data.lock ? "msgAddBackfill" : "msgBackfillEmpty"}
             />
-          </Styled.FirstColumn>
-          {selectedLayer !== null && (
-            <Styled.SecondColumn>
-              <ProfileAttributes
+          </Styled.Empty>
+        )}
+
+      {!isLoadingData &&
+        stratigraphyKind !== profileKind.INSTRUMENT &&
+        selectedStratigraphy && (
+          <Styled.Container>
+            <Styled.FirstColumn>
+              <ProfileInfo
                 data={{
-                  id: selectedLayer ? selectedLayer.id : null,
+                  kind: stratigraphyKind,
+                  selectedStratigraphyID: selectedStratigraphy
+                    ? selectedStratigraphy.id
+                    : null,
                   isEditable,
                   onUpdated,
-                  reloadAttribute,
-                  attribute: attributesBasedKind?.profileAttribute,
+                  attribute: attributesBasedKind?.profileInfo,
+                  boreholeID: borehole.data.id,
                 }}
               />
-            </Styled.SecondColumn>
-          )}
-        </Styled.Container>
-      )}
-      {stratigraphyKind === profileKind.INSTRUMENT && borehole.data.id && (
-        <ProfileInstrument
-          borehole={borehole}
-          selectedStratigraphyID={selectedStratigraphy?.id}
-          isEditable={isEditable}
-          reloadLayer={reloadLayer}
-          onUpdated={onUpdated}
-          setHasInstrumentWithoutCasing={setHasInstrumentWithoutCasing}
-        />
-      )}
+
+              <ProfileLayers
+                data={{
+                  selectedStratigraphyID: selectedStratigraphy
+                    ? selectedStratigraphy.id
+                    : null,
+                  isEditable,
+                  selectedLayer,
+                  setSelectedLayer: e => {
+                    setSelectedLayer(e);
+                  },
+                  reloadLayer,
+                  onUpdated,
+                  stratigraphyKind,
+                }}
+              />
+            </Styled.FirstColumn>
+            {selectedLayer !== null && (
+              <Styled.SecondColumn>
+                <ProfileAttributes
+                  data={{
+                    id: selectedLayer ? selectedLayer.id : null,
+                    isEditable,
+                    onUpdated,
+                    reloadAttribute,
+                    attribute: attributesBasedKind?.profileAttribute,
+                  }}
+                />
+              </Styled.SecondColumn>
+            )}
+          </Styled.Container>
+        )}
+      {!isLoadingData &&
+        stratigraphyKind === profileKind.INSTRUMENT &&
+        borehole.data.id && (
+          <ProfileInstrument
+            borehole={borehole}
+            selectedStratigraphyID={selectedStratigraphy?.id}
+            isEditable={isEditable}
+            reloadLayer={reloadLayer}
+            onUpdated={onUpdated}
+            setHasInstrumentWithoutCasing={setHasInstrumentWithoutCasing}
+            setIsLoadingData={setIsLoadingData}
+          />
+        )}
     </Styled.MainContainer>
   );
 };
