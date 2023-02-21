@@ -33,9 +33,10 @@ export function downloadFile(path, params) {
       params: params,
     })
       .then(response => {
-        const fileName = response.headers["content-disposition"]
-          .split("; ")[1]
-          .replace("filename=", "");
+        const fileName =
+          response.headers["content-disposition"]
+            ?.split("; ")[1]
+            ?.replace("filename=", "") ?? "export-" + params.id + ".pdf";
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement("a");
         link.href = url;
