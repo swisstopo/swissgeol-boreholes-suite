@@ -136,17 +136,7 @@ const DescriptionLayers = props => {
     // eslint-disable-next-line
   }, [deleteParams]);
 
-  const selectItem = item => {
-    if (item) {
-      setFromDepth(item.fromDepth);
-      setToDepth(item.toDepth);
-      setDescription(item.description);
-      setQtDescriptionId(item.qtDescriptionId);
-    }
-    setSelectedDescription(item);
-  };
-
-  const submitUpdate = useCallback(() => {
+  useEffect(() => {
     if (selectedDescription) {
       const updatedDescription = produce(selectedDescription, draft => {
         draft.fromDepth = parseFloat(fromDepth);
@@ -156,9 +146,18 @@ const DescriptionLayers = props => {
       });
       updateMutation.mutate(updatedDescription);
     }
-    selectItem(null);
     // eslint-disable-next-line
-  }, [description, qtDescriptionId, toDepth, fromDepth, selectedDescription]);
+  }, [description, qtDescriptionId, toDepth, fromDepth]);
+
+  const selectItem = item => {
+    if (item) {
+      setFromDepth(item.fromDepth);
+      setToDepth(item.toDepth);
+      setDescription(item.description);
+      setQtDescriptionId(item.qtDescriptionId);
+    }
+    setSelectedDescription(item);
+  };
 
   const calculateLayerWidth = (fromDepth, toDepth) => {
     if (selectableFromDepths && selectableToDepths) {
@@ -220,6 +219,10 @@ const DescriptionLayers = props => {
                   {selectedDescription?.id === item?.id && (
                     <DescriptionInput
                       setFromDepth={setFromDepth}
+                      description={description}
+                      qtDescriptionId={qtDescriptionId}
+                      fromDepth={fromDepth}
+                      toDepth={toDepth}
                       setDescription={setDescription}
                       setToDepth={setToDepth}
                       setQtDescriptionId={setQtDescriptionId}
@@ -229,8 +232,9 @@ const DescriptionLayers = props => {
                         ),
                       )}
                       lithologicalDescriptions={descriptions}
-                      submitUpdate={submitUpdate}
                       item={item}
+                      updateMutation={updateMutation}
+                      selectItem={selectItem}
                     />
                   )}
                   {isEditable && (
