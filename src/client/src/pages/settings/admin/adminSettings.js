@@ -14,6 +14,7 @@ import {
   Modal,
   Table,
   Form,
+  Loader,
 } from "semantic-ui-react";
 
 import {
@@ -601,127 +602,135 @@ class AdminSettings extends React.Component {
                 </div>
               </Modal.Actions>
             </Modal>
-            <Table celled compact selectable size="small">
-              <Table.Header>
-                <Table.Row>
-                  <Table.HeaderCell>
-                    <TranslationText id="username" />
-                  </Table.HeaderCell>
-                  <Table.HeaderCell>
-                    <TranslationText id="firstname" />
-                  </Table.HeaderCell>
-                  <Table.HeaderCell>
-                    <TranslationText id="lastname" />
-                  </Table.HeaderCell>
-                  <Table.HeaderCell
-                    colSpan="2"
-                    style={{
-                      width: "4em",
-                    }}>
-                    <TranslationText id="admin" />
-                  </Table.HeaderCell>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body data-cy="user-list-table-body">
-                {this.state.users &&
-                  this.state.users.map((currentUser, idx) =>
-                    (this.state.usersSearch !== "" &&
-                      (currentUser.name
-                        .toUpperCase()
-                        .includes(this.state.usersSearch.toUpperCase()) ||
-                        currentUser.firstName
+            {this.state.users ? (
+              <Table celled compact selectable size="small">
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell>
+                      <TranslationText id="username" />
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>
+                      <TranslationText id="firstname" />
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>
+                      <TranslationText id="lastname" />
+                    </Table.HeaderCell>
+                    <Table.HeaderCell
+                      colSpan="2"
+                      style={{
+                        width: "4em",
+                      }}>
+                      <TranslationText id="admin" />
+                    </Table.HeaderCell>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body data-cy="user-list-table-body">
+                  {this.state.users &&
+                    this.state.users.map((currentUser, idx) =>
+                      (this.state.usersSearch !== "" &&
+                        (currentUser.name
                           .toUpperCase()
                           .includes(this.state.usersSearch.toUpperCase()) ||
-                        currentUser.lastName
-                          .toUpperCase()
-                          .includes(this.state.usersSearch.toUpperCase()))) ||
-                    (this.state.usersSearch === "" &&
-                      (this.state.usersFilter === "all" ||
-                        (this.state.usersFilter === "disabled" &&
-                          currentUser.disabledAt !== null) ||
-                        (this.state.usersFilter === "enabled" &&
-                          currentUser.disabledAt === null))) ? (
-                      <Table.Row
-                        active={this.state.uId === currentUser.id}
-                        error={currentUser.disabledAt !== null}
-                        key={"stng-1-" + currentUser.id}
-                        onClick={() => {
-                          if (this.state.uId === currentUser.id) {
-                            this.reset();
-                          } else {
-                            this.setState({
-                              user: currentUser,
-                              uId: currentUser.id,
-                              uAdmin: currentUser.isAdmin,
-                              uUsername: currentUser.name,
-                              uPassword: "",
-                              uFirstname: currentUser.firstName,
-                              uLastname: currentUser.lastName,
-                              uDisabled: currentUser.disabledAt,
-                            });
-                          }
-                        }}>
-                        <Table.Cell>
-                          {currentUser.disabledAt !== null ? (
-                            <Label
-                              circular
-                              color={"red"}
-                              empty
-                              style={{
-                                marginRight: "1em",
-                              }}
-                            />
-                          ) : null}
-                          {currentUser.name}{" "}
-                          {currentUser.disabledAt !== null ? (
-                            <span
-                              style={{
-                                color: "#787878",
-                                fontStyle: "italic",
-                                marginLeft: "0.5em",
-                              }}>
-                              <TranslationText id="disabled" />
-                              &nbsp;
-                              <DateText date={currentUser.disabledAt} fromnow />
-                              &nbsp;(
-                              <DateText date={currentUser.disabledAt} hours />)
-                            </span>
-                          ) : null}
-                        </Table.Cell>
-                        <Table.Cell>{currentUser.firstName}</Table.Cell>
-                        <Table.Cell>{currentUser.lastName}</Table.Cell>
-                        <Table.Cell textAlign="center">
-                          {currentUser.isAdmin === true ? (
-                            <TranslationText id="yes" />
-                          ) : (
-                            <TranslationText id="no" />
-                          )}
-                        </Table.Cell>
-                        <Table.Cell
-                          style={{
-                            textAlign: "center",
-                            width: "4em",
-                          }}>
-                          <span
-                            className="linker link"
-                            onClick={e => {
-                              e.stopPropagation();
+                          currentUser.firstName
+                            .toUpperCase()
+                            .includes(this.state.usersSearch.toUpperCase()) ||
+                          currentUser.lastName
+                            .toUpperCase()
+                            .includes(this.state.usersSearch.toUpperCase()))) ||
+                      (this.state.usersSearch === "" &&
+                        (this.state.usersFilter === "all" ||
+                          (this.state.usersFilter === "disabled" &&
+                            currentUser.disabledAt !== null) ||
+                          (this.state.usersFilter === "enabled" &&
+                            currentUser.disabledAt === null))) ? (
+                        <Table.Row
+                          active={this.state.uId === currentUser.id}
+                          error={currentUser.disabledAt !== null}
+                          key={"stng-1-" + currentUser.id}
+                          onClick={() => {
+                            if (this.state.uId === currentUser.id) {
+                              this.reset();
+                            } else {
                               this.setState({
-                                deleteUser: currentUser,
+                                user: currentUser,
+                                uId: currentUser.id,
+                                uAdmin: currentUser.isAdmin,
+                                uUsername: currentUser.name,
+                                uPassword: "",
+                                uFirstname: currentUser.firstName,
+                                uLastname: currentUser.lastName,
+                                uDisabled: currentUser.disabledAt,
                               });
-                            }}>
+                            }
+                          }}>
+                          <Table.Cell>
                             {currentUser.disabledAt !== null ? (
-                              <TranslationText id="enable" />
+                              <Label
+                                circular
+                                color={"red"}
+                                empty
+                                style={{
+                                  marginRight: "1em",
+                                }}
+                              />
+                            ) : null}
+                            {currentUser.name}{" "}
+                            {currentUser.disabledAt !== null ? (
+                              <span
+                                style={{
+                                  color: "#787878",
+                                  fontStyle: "italic",
+                                  marginLeft: "0.5em",
+                                }}>
+                                <TranslationText id="disabled" />
+                                &nbsp;
+                                <DateText
+                                  date={currentUser.disabledAt}
+                                  fromnow
+                                />
+                                &nbsp;(
+                                <DateText date={currentUser.disabledAt} hours />
+                                )
+                              </span>
+                            ) : null}
+                          </Table.Cell>
+                          <Table.Cell>{currentUser.firstName}</Table.Cell>
+                          <Table.Cell>{currentUser.lastName}</Table.Cell>
+                          <Table.Cell textAlign="center">
+                            {currentUser.isAdmin === true ? (
+                              <TranslationText id="yes" />
                             ) : (
-                              <TranslationText id="disable" />
+                              <TranslationText id="no" />
                             )}
-                          </span>
-                        </Table.Cell>
-                      </Table.Row>
-                    ) : null,
-                  )}
-              </Table.Body>
-            </Table>
+                          </Table.Cell>
+                          <Table.Cell
+                            style={{
+                              textAlign: "center",
+                              width: "4em",
+                            }}>
+                            <span
+                              className="linker link"
+                              onClick={e => {
+                                e.stopPropagation();
+                                this.setState({
+                                  deleteUser: currentUser,
+                                });
+                              }}>
+                              {currentUser.disabledAt !== null ? (
+                                <TranslationText id="enable" />
+                              ) : (
+                                <TranslationText id="disable" />
+                              )}
+                            </span>
+                          </Table.Cell>
+                        </Table.Row>
+                      ) : null,
+                    )}
+                </Table.Body>
+              </Table>
+            ) : (
+              <Loader active />
+            )}
           </div>
         </div>
         <div
