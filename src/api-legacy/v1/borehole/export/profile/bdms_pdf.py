@@ -45,26 +45,13 @@ settings= {
         'left': 9, # margin left
         'pad': 1 # text pad from box
     },
-    # 'svgpath': '/home/maxi/Documents/2019/projects/swisstopo/tables/Signaturen/'
     'svgpath': path.abspath(path.dirname(__file__))+'/svg_pattern/'
 }
-
-# def _(s):
-#     return s
 
 def frange(x, y, jump):
     while x < y:
         yield x
         x += jump
-
-# def random_color():
-#     rgbl=[255,0,255]
-#     random.shuffle(rgbl)
-#     return tuple(rgbl)
-
-# COLORS = [(139, 0, 0), 
-#           (0, 100, 0),
-#           (0, 0, 139)]
 
 def random_color():
     return random.choice([
@@ -72,16 +59,6 @@ def random_color():
         (0, 100, 0),
         (0, 0, 139)
     ])
-
-"""
-def coord(x, y, unit=mm):
-    ""
-    http://stackoverflow.com/questions/4726011/wrap-text-in-a-table-reportlab
-    Helper class to help position in Canvas objects
-    ""
-    x, y = x * unit, height -  y * unit
-    return x, y
-"""
 
 # PDF GENERATOR
 # =================
@@ -119,9 +96,6 @@ class bdmsPdf():
         self.pStyle.fontName = self.settings['textStyles'][style][0]
         self.pStyle.textColor = colors.Color(*(self.settings['textStyles'][style][2]))
         self.pStyle.leading = 1.2 * self.settings['textStyles'][style][1] * mm
-        #self.pStyle.borderPadding = 1 * mm
-        #self.pStyle.borderWidth = 1
-        #self.pStyle.borderColor = colors.Color(*(self.settings['textStyles'][style][2]))
         
     def setBoxStyle(self, style):
         self.c.setLineWidth(
@@ -559,18 +533,9 @@ class bdmsPdf():
         self.drawLeftTextBox2(
             0, current_y,
             column_width, box_height,
-            'none', 'contentB',  _('city'),
-            'content', f"{self.profile['city']}"
+            'none', 'contentB',  _('municipality'),
+            'content', f"{self.profile['municipality']}"
         )
-
-        # current_y += box_height
-
-        # self.drawLeftTextBox2(
-        #     0, current_y,
-        #     column_width, box_height,
-        #     'none', 'contentB',  _('address'),
-        #     'content', f"{self.profile['address']}"
-        # )
 
         current_y += box_height
 
@@ -641,15 +606,6 @@ class bdmsPdf():
 
         current_y += box_height
 
-        # self.drawLeftTextBox2(
-        #     column_width, current_y,
-        #     column_width, box_height,
-        #     'none', 'contentB',  _('auth_n'),
-        #     'content', '{}'.format(self.profile['auth_n'] or '-')
-        # )
-
-        # current_y += box_height
-
         self.drawLeftTextBox2(
             column_width, current_y,
             column_width, box_height,
@@ -687,22 +643,6 @@ class bdmsPdf():
         )
 
         current_y += box_height
-
-        # self.drawLeftTextBox2(
-        #     column_width, current_y,
-        #     column_width, box_height,
-        #     'none', 'contentB',  _('logged_by'),
-        #     'content', '{}'.format(self.profile['logged_by'] or '-')
-        # )
-
-        # current_y += box_height
-
-        # self.drawLeftTextBox2(
-        #     column_width, current_y,
-        #     column_width, box_height,
-        #     'none', 'contentB',  _('checked_by'),
-        #     'content', '{}'.format(self.profile['checked_by'] or '-')
-        # )
 
         profile_y = max(profile_y, current_y)
 
