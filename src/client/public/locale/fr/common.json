@@ -245,7 +245,7 @@
   "msgEnablingWorkgroup": "Vous êtes sur le point de réactiver le groupe de travail \"{{workgroup}}\". Les utilisateurs appartenant à ce groupe de travail pourront faire des modifications en fonction de leurs rôles.",
   "msgFillingEmpty": "Aucun remplissage disponible",
   "msgIdentifierAlreadyUsed": "Le type d'ID est déjà utilisé",
-  "msgIdentifierDeletionAlreadyUsed": "Le type d'ID ne peut pas être supprimé lorsqu'il est utilisé",
+  "msgIdentifierDeletionAlreadyUsed": "Ce type d'ID ne peut pas être supprimé lorsqu'il est utilisé",
   "msgInstrumentsEmpty": "Aucune instrumentation disponible",
   "msgReenablingTip": "Vous pourrez le réactiver plus tard",
   "msgStartigraphyEmpty": "Aucune stratigraphie disponible",

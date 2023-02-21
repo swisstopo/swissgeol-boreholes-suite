@@ -305,6 +305,7 @@ const search = (
         return {
           ...state,
           extent: action.extent,
+          resolution: action.resolution,
           filter: {
             ...state.filter,
             extent: action.extent,
@@ -314,6 +315,7 @@ const search = (
       return {
         ...state,
         extent: action.extent,
+        resolution: action.resolution,
       };
     }
 

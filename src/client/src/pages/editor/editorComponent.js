@@ -26,6 +26,7 @@ class EditorComponent extends React.Component {
       hover: null,
       maphover: null,
       sort: null,
+      tableScrollPosition: 0,
     };
   }
 
@@ -117,8 +118,8 @@ class EditorComponent extends React.Component {
                           });
                         }}
                         layers={props.setting.data.map.explorer}
-                        moveend={(features, extent) => {
-                          this.props.filterByExtent(extent);
+                        moveend={(extent, resolution) => {
+                          this.props.filterByExtent(extent, resolution);
                         }}
                         selected={id => {
                           if (id !== null) {
@@ -183,6 +184,12 @@ class EditorComponent extends React.Component {
                           });
                         }}
                         sort={this.state.sort}
+                        scrollPosition={this.state.tableScrollPosition}
+                        onScrollChange={position => {
+                          this.setState({
+                            tableScrollPosition: position,
+                          });
+                        }}
                       />
                     </div>
                   </div>
@@ -264,10 +271,11 @@ const mapDispatchToProps = (dispatch, ownprops) => {
         selected: project,
       });
     },
-    filterByExtent: extent => {
+    filterByExtent: (extent, resolution) => {
       dispatch({
         type: "SEARCH_EXTENT_CHANGED",
         extent: extent,
+        resolution: resolution,
       });
     },
     setmapfilter: active => {

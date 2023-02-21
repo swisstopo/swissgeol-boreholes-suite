@@ -11,6 +11,8 @@ import ProfileLayersValidation from "./components/profileLayersValidation";
 import LithologicalDescriptionLayers from "./components/lithologicalDescriptionLayers/lithologicalDescriptionLayers";
 import { createLayerApi, getData } from "./api";
 import {
+  Box,
+  CircularProgress,
   Stack,
   TableContainer,
   TableHead,
@@ -147,6 +149,14 @@ const ProfileLayers = props => {
     minHeight: "10em",
   };
 
+  if (!layers?.data || !lithoDescQuery.isSuccess) {
+    return (
+      <Box display="flex" justifyContent="center" pt={5}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Styled.Container>
       <TableContainer
@@ -156,7 +166,7 @@ const ProfileLayers = props => {
           borderBottom: layers?.data?.length ? "1px solid lightgrey" : "",
         }}>
         <Table stickyHeader aria-label="sticky table">
-          <TableHead>
+          <TableHead sx={{ zIndex: 0 }}>
             <TableRow>
               <TableCell>
                 <Stack direction="row">

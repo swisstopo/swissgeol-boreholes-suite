@@ -4,14 +4,7 @@ import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { AlertContext } from "../../../commons/alert/alertContext";
 
-import {
-  Button,
-  Icon,
-  Form,
-  // Popup,
-  Modal,
-  Header,
-} from "semantic-ui-react";
+import { Button, Icon, Form, Modal, Header } from "semantic-ui-react";
 
 import {
   listIdentifier,
@@ -125,7 +118,6 @@ class IdentifierSettings extends React.Component {
                   flex: "0 0 0% !important",
                 }}>
                 <Form.Button
-                  // disabled={this.state.identifier===''}
                   icon
                   label="&nbsp;"
                   onClick={e => {
@@ -137,7 +129,6 @@ class IdentifierSettings extends React.Component {
                         it: this.state.it,
                         en: this.state.en,
                       }).then(response => {
-                        // this.reset();
                         this.props.listIdentifier();
                       });
                     } else {
@@ -259,13 +250,9 @@ class IdentifierSettings extends React.Component {
         <Modal
           closeIcon
           onClose={this.handleCloseConfirmDelete}
-          // onOpen={this.handleOpenConfirmDelete}
           open={this.state.isOpenConfirmDelete}
           size="mini">
-          <Header
-            content={<TranslationText id="deleteForever" />}
-            // icon='archive'
-          />
+          <Header content={<TranslationText id="deleteForever" />} />
           <Modal.Content>
             <p>
               <TranslationText id="sure" />
@@ -281,9 +268,7 @@ class IdentifierSettings extends React.Component {
                   if (r.data.success === true) {
                     this.props.listIdentifier();
                   } else if (r.data.error === "E-205") {
-                    this.context.error(
-                      t("messages:identifierDeletionAlreadyUsed"),
-                    );
+                    this.context.error(t("msgIdentifierDeletionAlreadyUsed"));
                   }
                   this.reset();
                   this.handleCloseConfirmDelete();
@@ -325,4 +310,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation(["common", "messages"])(IdentifierSettings));
+)(withTranslation(["common"])(IdentifierSettings));

@@ -307,6 +307,7 @@ const searchEditor = (
         return {
           ...state,
           extent: action.extent,
+          resolution: action.resolution,
           filter: {
             ...state.filter,
             extent: action.extent,
@@ -316,6 +317,7 @@ const searchEditor = (
       return {
         ...state,
         extent: action.extent,
+        resolution: action.resolution,
       };
     }
     case "SEARCH_EDITOR_FILTER_RESET_CREATED_DATE": {

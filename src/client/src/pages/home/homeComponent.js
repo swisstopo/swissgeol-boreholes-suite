@@ -25,6 +25,7 @@ class HomeComponent extends React.Component {
       fullcsv: false,
       shp: false,
       refresh: 0,
+      tableScrollPosition: 0,
     };
   }
 
@@ -66,8 +67,8 @@ class HomeComponent extends React.Component {
             }
           }}
           layers={setting.data.map.explorer}
-          moveend={(features, extent) => {
-            this.props.filterByExtent(extent);
+          moveend={(extent, resolution) => {
+            this.props.filterByExtent(extent, resolution);
           }}
           selected={id => {
             if (id === null) {
@@ -204,6 +205,12 @@ class HomeComponent extends React.Component {
             } else {
               history.push(process.env.PUBLIC_URL + "/" + borehole.id);
             }
+          }}
+          scrollPosition={this.state.tableScrollPosition}
+          onScrollChange={position => {
+            this.setState({
+              tableScrollPosition: position,
+            });
           }}
         />
       </div>
@@ -615,10 +622,11 @@ const mapDispatchToProps = dispatch => {
         id: id,
       });
     },
-    filterByExtent: extent => {
+    filterByExtent: (extent, resolution) => {
       dispatch({
         type: "SEARCH_EXTENT_CHANGED",
         extent: extent,
+        resolution: resolution,
       });
     },
     resetCart: () => {
