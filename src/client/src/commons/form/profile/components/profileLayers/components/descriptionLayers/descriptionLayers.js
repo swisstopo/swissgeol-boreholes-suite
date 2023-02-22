@@ -7,27 +7,24 @@ import React, {
 } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
-import {
-  updateLithologicalDescription,
-  deleteLithologicalDescription,
-} from "../../../../../../../api/fetchApiV2";
 import produce from "immer";
-import { useMutation, useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
-import LithologicalDescriptionInput from "./lithologicalDescriptionInput";
-import LithologicalDescriptionDisplay from "./lithologicalDescriptionDisplay";
-import LithologicalDescriptionDeleteDialog from "./lithologicalDescriptionDeleteDialog";
+import DescriptionInput from "./descriptionInput";
+import DescriptionDisplay from "./descriptionDisplay";
+import DescriptionDeleteDialog from "./descriptionDeleteDialog";
 import ActionButtons from "./actionButtons";
 import { useTheme } from "@mui/material/styles";
 
-const LithologicalDescriptionLayers = props => {
+const DescriptionLayers = props => {
   const {
     isEditable,
-    lithologicalDescriptions,
+    descriptions,
     setSelectedDescription,
     selectedDescription,
     layers,
     addMutation,
+    updateMutation,
+    deleteMutation,
     selectedStratigraphyID,
     deleteParams,
   } = props;
@@ -41,33 +38,6 @@ const LithologicalDescriptionLayers = props => {
 
   const { t } = useTranslation();
   const theme = useTheme();
-
-  // react-query mutations and queries
-  const queryClient = useQueryClient();
-
-  const deleteMutation = useMutation(
-    async id => {
-      const result = await deleteLithologicalDescription(id);
-      return result;
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["lithoDesc"] });
-      },
-    },
-  );
-
-  const updateMutation = useMutation(
-    async params => {
-      const result = await updateLithologicalDescription(params);
-      return result;
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["lithoDesc"] });
-      },
-    },
-  );
 
   const descriptionRefs = Array(displayDescriptions?.length)
     .fill(null)
@@ -84,7 +54,11 @@ const LithologicalDescriptionLayers = props => {
       lastDescriptionRef?.current &&
       displayDescriptions?.length > prevLengthRef.current
     ) {
-      lastDescriptionRef.current.scrollIntoView({ behavior: "smooth" });
+      lastDescriptionRef.current.scrollIntoView({
+        alignToTop: true,
+        scrollIntoViewOptions: { block: "start", inline: "start" },
+        behavior: "smooth",
+      });
     }
     // update the previous length
     prevLengthRef.current = displayDescriptions?.length;
@@ -96,16 +70,16 @@ const LithologicalDescriptionLayers = props => {
   useEffect(() => {
     // include empty items in description column to signal missing descriptions
     const tempDescriptions = [];
-    lithologicalDescriptions
+    descriptions
       .sort((a, b) => a.fromDepth - b.fromDepth)
-      .forEach((lithologicalDescription, index) => {
+      .forEach((description, index) => {
         const expectedFromDepth =
-          index === 0 ? 0 : lithologicalDescriptions[index - 1]?.toDepth;
-        if (lithologicalDescription.fromDepth !== expectedFromDepth) {
+          index === 0 ? 0 : descriptions[index - 1]?.toDepth;
+        if (description.fromDepth !== expectedFromDepth) {
           tempDescriptions.push({
             id: null,
             fromDepth: expectedFromDepth,
-            toDepth: lithologicalDescription.fromDepth,
+            toDepth: description.fromDepth,
             description: (
               <Stack
                 direction="row"
@@ -121,26 +95,26 @@ const LithologicalDescriptionLayers = props => {
             qtDescription: null,
           });
         }
-        tempDescriptions.push(lithologicalDescription);
+        tempDescriptions.push(description);
       });
     setDisplayDescriptions(tempDescriptions);
-  }, [lithologicalDescriptions, layers, t, theme]);
+  }, [descriptions, layers, t, theme]);
 
-  // updates lithological description if layer is deleted
+  // updates description if layer is deleted
   useEffect(() => {
-    if (deleteParams && lithologicalDescriptions.length) {
+    if (deleteParams && descriptions.length) {
       const { resolvingAction, layer } = deleteParams;
       // delete description if the layer was deleted with extention
       if (resolvingAction !== 0) {
         deleteMutation.mutate(
-          lithologicalDescriptions?.find(
+          descriptions?.find(
             d => d.fromDepth === layer.fromDepth && d.toDepth === layer.toDepth,
-          ).id,
+          )?.id,
         );
       }
       // case: extend upper layer to bottom
       if (resolvingAction === 1) {
-        const upperDescription = lithologicalDescriptions?.find(
+        const upperDescription = descriptions?.find(
           d => d.toDepth === layer.fromDepth,
         );
         updateMutation.mutate({
@@ -150,7 +124,7 @@ const LithologicalDescriptionLayers = props => {
       }
       // case: extend lower layer to top
       if (resolvingAction === 2) {
-        const lowerDerscription = lithologicalDescriptions?.find(
+        const lowerDerscription = descriptions?.find(
           d => d.fromDepth === layer.toDepth,
         );
         updateMutation.mutate({
@@ -213,7 +187,7 @@ const LithologicalDescriptionLayers = props => {
           .map((item, index) => (
             <Stack
               direction="row"
-              data-cy={`lithological-description-${index}`}
+              data-cy={`description-${index}`}
               sx={{
                 boxShadow: "inset -1px 0 0 lightgrey, inset 0 -1px 0 lightgrey",
                 flex: "1 1 100%",
@@ -241,10 +215,10 @@ const LithologicalDescriptionLayers = props => {
               {descriptionIdSelectedForDelete !== item.id && (
                 <>
                   {selectedDescription?.id !== item?.id && (
-                    <LithologicalDescriptionDisplay item={item} />
+                    <DescriptionDisplay item={item} />
                   )}
                   {selectedDescription?.id === item?.id && (
-                    <LithologicalDescriptionInput
+                    <DescriptionInput
                       setFromDepth={setFromDepth}
                       setDescription={setDescription}
                       setToDepth={setToDepth}
@@ -254,7 +228,7 @@ const LithologicalDescriptionLayers = props => {
                           d => !selectableFromDepths.includes(d),
                         ),
                       )}
-                      lithologicalDescriptions={lithologicalDescriptions}
+                      lithologicalDescriptions={descriptions}
                       submitUpdate={submitUpdate}
                       item={item}
                     />
@@ -274,7 +248,7 @@ const LithologicalDescriptionLayers = props => {
                 </>
               )}
               {descriptionIdSelectedForDelete === item.id && (
-                <LithologicalDescriptionDeleteDialog
+                <DescriptionDeleteDialog
                   item={item}
                   setDescriptionIdSelectedForDelete={
                     setDescriptionIdSelectedForDelete
@@ -287,4 +261,4 @@ const LithologicalDescriptionLayers = props => {
     </Box>
   );
 };
-export default LithologicalDescriptionLayers;
+export default DescriptionLayers;
