@@ -13,6 +13,9 @@ const DescriptionDeleteDialog = props => {
 
   return (
     <Stack
+      onClick={e => {
+        e.stopPropagation();
+      }}
       alignItems="flex-start"
       sx={{ width: "100%", color: theme.palette.error.main }}>
       <Stack direction="row" alignItems="center" gap={1}>
@@ -29,14 +32,16 @@ const DescriptionDeleteDialog = props => {
           variant="cancel"
           size="small"
           startIcon={<ClearIcon />}
-          onClick={() => setDescriptionIdSelectedForDelete(null)}>
+          onClick={e => {
+            setDescriptionIdSelectedForDelete(0);
+          }}>
           {t("cancel")}
         </Button>
         <Button
           variant="delete"
           size="small"
           startIcon={<DeleteIcon />}
-          onClick={() => {
+          onClick={e => {
             deleteMutation.mutate(item.id);
           }}>
           {t("confirm")}
