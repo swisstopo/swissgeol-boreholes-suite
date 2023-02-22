@@ -33,10 +33,30 @@ class TableComponent extends React.Component {
         clearTimeout(this.delay);
         this.delay = false;
       }
-      state = {
-        selected: [],
-        all: false,
-      };
+      this.setState(
+        {
+          selected: [],
+          all: false,
+        },
+        () => {
+          this.delay = setTimeout(
+            function () {
+              // Always load first page when filter changes
+              this.props.loadData(1, filter);
+            }.bind(this),
+            10,
+          );
+        },
+      );
+    } else if (state !== null) {
+      this.setState(state, () => {
+        this.delay = setTimeout(
+          function () {
+            this.props.loadData(store.page, filter);
+          }.bind(this),
+          10,
+        );
+      });
     }
 
     if (activeItem !== prevProps.activeItem) {
@@ -47,17 +67,6 @@ class TableComponent extends React.Component {
       } else {
         state["activeItem"] = activeItem;
       }
-    }
-
-    if (state !== null) {
-      this.setState(state, () => {
-        this.delay = setTimeout(
-          function () {
-            this.props.loadData(store.page, filter);
-          }.bind(this),
-          10,
-        );
-      });
     }
 
     // Reset scroll position after data has been fetched
