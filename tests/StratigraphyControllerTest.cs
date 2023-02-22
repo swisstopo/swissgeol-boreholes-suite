@@ -82,15 +82,19 @@ public class StratigraphyControllerTest
         }
         finally
         {
-            // Delete stratigraphy copy
-            if (copiedStratigraphy != null)
-            {
-                context.Layers.RemoveRange(copiedStratigraphy.Layers);
-                context.LithologicalDescriptions.RemoveRange(copiedStratigraphy.LithologicalDescriptions);
-                context.FaciesDescriptions.RemoveRange(copiedStratigraphy.FaciesDescriptions);
-                context.Stratigraphies.Remove(copiedStratigraphy);
-                context.SaveChanges();
-            }
+            RemoveStratigraphy(copiedStratigraphy);
+        }
+    }
+
+    private void RemoveStratigraphy(Stratigraphy? copiedStratigraphy)
+    {
+        if (copiedStratigraphy != null)
+        {
+            context.Layers.RemoveRange(copiedStratigraphy.Layers);
+            context.LithologicalDescriptions.RemoveRange(copiedStratigraphy.LithologicalDescriptions);
+            context.FaciesDescriptions.RemoveRange(copiedStratigraphy.FaciesDescriptions);
+            context.Stratigraphies.Remove(copiedStratigraphy);
+            context.SaveChanges();
         }
     }
 
@@ -135,19 +139,23 @@ public class StratigraphyControllerTest
     [TestMethod]
     public async Task CopyWithNonAdminUser()
     {
-        controller.HttpContext.SetClaimsPrincipal("editor", PolicyNames.Viewer);
-        var result = await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+        Stratigraphy? copiedStratigraphy = null;
 
-        // delete stratigraphy copy
-        var copiedStratigraphyId = ((OkObjectResult?)result.Result)?.Value;
-        Assert.IsNotNull(copiedStratigraphyId);
-        Assert.IsInstanceOfType(copiedStratigraphyId, typeof(int));
-        var copiedStratigraphy = context.Stratigraphies.Single(s => s.Id == (int)copiedStratigraphyId);
-        context.Layers.RemoveRange(copiedStratigraphy.Layers);
-        context.LithologicalDescriptions.RemoveRange(copiedStratigraphy.LithologicalDescriptions);
-        context.FaciesDescriptions.RemoveRange(copiedStratigraphy.FaciesDescriptions);
-        context.Stratigraphies.Remove(copiedStratigraphy);
-        context.SaveChanges();
+        try
+        {
+            controller.HttpContext.SetClaimsPrincipal("editor", PolicyNames.Viewer);
+            var result = await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+
+            // delete stratigraphy copy
+            var copiedStratigraphyId = ((OkObjectResult?)result.Result)?.Value;
+            Assert.IsNotNull(copiedStratigraphyId);
+            Assert.IsInstanceOfType(copiedStratigraphyId, typeof(int));
+            copiedStratigraphy = context.Stratigraphies.Single(s => s.Id == (int)copiedStratigraphyId);
+        }
+        finally
+        {
+            RemoveStratigraphy(copiedStratigraphy);
+        }
     }
 }

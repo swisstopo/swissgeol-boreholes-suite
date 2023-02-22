@@ -99,20 +99,24 @@ public class BoreholeControllerTest
         }
         finally
         {
-            // Delete borehole copy
-            if (copiedBorehole != null)
-            {
-                var stratigraphiesToRemove = copiedBorehole.Stratigraphies;
-                var layersToRemove = stratigraphiesToRemove.SelectMany(s => s.Layers);
-                var lithologicalDescriptionsToRemove = stratigraphiesToRemove.SelectMany(s => s.LithologicalDescriptions);
-                var faciesDescriptionsToRemove = stratigraphiesToRemove.SelectMany(s => s.FaciesDescriptions);
-                context.Layers.RemoveRange(layersToRemove);
-                context.LithologicalDescriptions.RemoveRange(lithologicalDescriptionsToRemove);
-                context.FaciesDescriptions.RemoveRange(faciesDescriptionsToRemove);
-                context.Stratigraphies.RemoveRange(stratigraphiesToRemove);
-                context.Boreholes.Remove(copiedBorehole);
-                context.SaveChanges();
-            }
+            RemoveBorhole(copiedBorehole);
+        }
+    }
+
+    private void RemoveBorhole(Borehole? copiedBorehole)
+    {
+        if (copiedBorehole != null)
+        {
+            var stratigraphiesToRemove = copiedBorehole.Stratigraphies;
+            var layersToRemove = stratigraphiesToRemove.SelectMany(s => s.Layers);
+            var lithologicalDescriptionsToRemove = stratigraphiesToRemove.SelectMany(s => s.LithologicalDescriptions);
+            var faciesDescriptionsToRemove = stratigraphiesToRemove.SelectMany(s => s.FaciesDescriptions);
+            context.Layers.RemoveRange(layersToRemove);
+            context.LithologicalDescriptions.RemoveRange(lithologicalDescriptionsToRemove);
+            context.FaciesDescriptions.RemoveRange(faciesDescriptionsToRemove);
+            context.Stratigraphies.RemoveRange(stratigraphiesToRemove);
+            context.Boreholes.Remove(copiedBorehole);
+            context.SaveChanges();
         }
     }
 
@@ -175,24 +179,20 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithNonAdminUser()
     {
-        controller.HttpContext.SetClaimsPrincipal("editor", PolicyNames.Viewer);
-        var result = await controller.CopyAsync(BoreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-
-        // delete borehole copy
-        var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
-        Assert.IsNotNull(copiedBoreholeId);
-        Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
-        var copiedBorehole = context.Boreholes.Single(b => b.Id == (int)copiedBoreholeId);
-        var stratigraphiesToRemove = copiedBorehole.Stratigraphies;
-        var layersToRemove = stratigraphiesToRemove.SelectMany(s => s.Layers);
-        var lithologicalDescriptionsToRemove = stratigraphiesToRemove.SelectMany(s => s.LithologicalDescriptions);
-        var faciesDescriptionsToRemove = stratigraphiesToRemove.SelectMany(s => s.FaciesDescriptions);
-        context.Layers.RemoveRange(layersToRemove);
-        context.LithologicalDescriptions.RemoveRange(lithologicalDescriptionsToRemove);
-        context.FaciesDescriptions.RemoveRange(faciesDescriptionsToRemove);
-        context.Stratigraphies.RemoveRange(stratigraphiesToRemove);
-        context.Boreholes.Remove(copiedBorehole);
-        context.SaveChanges();
+        Borehole? copiedBorehole = null;
+        try
+        {
+            controller.HttpContext.SetClaimsPrincipal("editor", PolicyNames.Viewer);
+            var result = await controller.CopyAsync(BoreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
+            Assert.IsNotNull(copiedBoreholeId);
+            Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
+            copiedBorehole = context.Boreholes.Single(b => b.Id == (int)copiedBoreholeId);
+        }
+        finally
+        {
+            RemoveBorhole(copiedBorehole);
+        }
     }
 }
