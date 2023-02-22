@@ -6,6 +6,7 @@ import {
   createStratigraphy,
   createInstrument,
 } from "../../../../../../api-lib/index";
+import { useQuery } from "react-query";
 
 let stratigraphyId = null;
 export const createNewStratigraphy = async (id, kind) => {
@@ -38,6 +39,14 @@ export const getProfile = async (id, kind) => {
       console.error(error);
     });
   return profiles;
+};
+
+export const useProfiles = (boreholeId, kind) => {
+  return useQuery(
+    ["profiles", boreholeId, kind],
+    () => getProfile(boreholeId, kind),
+    { staleTime: 5000 },
+  );
 };
 
 let data = [];
