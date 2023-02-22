@@ -16,6 +16,7 @@ const ProfileHeader = props => {
     setSelectedStratigraphy,
     setSelectedStratigraphyNull,
     hasInstrumentWithoutCasing,
+    setIsLoadingData,
   } = props;
 
   const [profiles, setProfiles] = useState([]);
@@ -58,12 +59,14 @@ const ProfileHeader = props => {
   const setData = useCallback(
     (id, kind) => {
       let myKind = kind !== profileKind.INSTRUMENT ? kind : profileKind.CASING;
+      setIsLoadingData(true);
       getData(id, myKind).then(data => {
         setProfiles(data);
         setSpecialData(data);
+        setIsLoadingData(false);
       });
     },
-    [setSpecialData],
+    [setSpecialData, setIsLoadingData],
   );
 
   useEffect(() => {

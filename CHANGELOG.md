@@ -10,6 +10,7 @@
 
 - Memorize table and map state when navigating through the application.
 - When leaving settings page, correctly navigate back to the previously selected mode (viewer or editor).
+- Display loader icon when fetching data for stratigraphy or users.
 
 ### Fixed
 
@@ -18,6 +19,7 @@
 - Add missing translations when editing a locked borehole, giving feedback or deleting an ID type.
 - Fix internal error when adding a backfill with _no casing_.
 - Fix internal error in viewer/editor settings for _Stratigraphy fields_ when clicking _Select all_.
+- Fix error when downloading a borehole profile.
 - Fix bug where a facies description with a height of 0 could be created.
 
 ## v2.0.186 - 2023-02-13
