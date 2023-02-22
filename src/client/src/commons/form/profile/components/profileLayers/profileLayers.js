@@ -242,7 +242,7 @@ const ProfileLayers = props => {
           borderBottom: layers?.data?.length ? "1px solid lightgrey" : "",
         }}>
         <Table stickyHeader aria-label="sticky table">
-          <TableHead sx={{ zIndex: 0 }}>
+          <TableHead>
             <TableRow>
               <TableCell>
                 <Stack direction="row">
