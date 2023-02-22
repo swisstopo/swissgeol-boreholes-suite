@@ -4,7 +4,7 @@ import { withTranslation } from "react-i18next";
 import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
-
+import "./dateField.css";
 import { enGB, fr, it, de } from "date-fns/esm/locale";
 
 import { Input } from "semantic-ui-react";
@@ -73,6 +73,7 @@ class DateField extends React.Component {
         showYearDropdown
         style={{
           width: "100%",
+          backgroundColor: "blue",
         }}
       />
     );

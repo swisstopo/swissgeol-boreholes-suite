@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   MenuItem,
   FormControl,
@@ -20,18 +20,16 @@ const LithologicalDescriptionInput = props => {
     setQtDescriptionId,
     selectableDepths,
     lithologicalDescriptions,
-    submitUpdate,
   } = props;
+  const [fromDepthOptions, setFromDepthOptions] = useState();
+  const [toDepthOptions, setToDepthOptions] = useState();
+
   const { t, i18n } = useTranslation();
   const domains = useDomains();
 
-  const closestTopLayer =
-    lithologicalDescriptions[lithologicalDescriptions.indexOf(item) - 1];
-
-  const closestBottomLayer =
-    lithologicalDescriptions[lithologicalDescriptions.indexOf(item) + 1];
-
-  const getFromDepthOptions = () => {
+  const getFromDepthOptions = useCallback(() => {
+    const closestTopLayer =
+      lithologicalDescriptions[lithologicalDescriptions.indexOf(item) - 1];
     // get all depths that are not yet in use and that are smaller than toDepth
     let options = selectableDepths.filter(
       d =>
@@ -51,9 +49,11 @@ const LithologicalDescriptionInput = props => {
     // keep currently selected option
     options.push(item.fromDepth);
     return options.sort((a, b) => a - b);
-  };
+  }, [item, selectableDepths, lithologicalDescriptions]);
 
-  const getToDepthOptions = () => {
+  const getToDepthOptions = useCallback(() => {
+    const closestBottomLayer =
+      lithologicalDescriptions[lithologicalDescriptions.indexOf(item) + 1];
     // get all depths that are not yet in use and that are greater than fromDepth
     let options = selectableDepths.filter(
       d =>
@@ -73,30 +73,19 @@ const LithologicalDescriptionInput = props => {
     // keep currently selected option
     options.push(item.toDepth);
     return options.sort((a, b) => a - b);
-  };
-
-  const submitUpdateRef = useRef();
+  }, [item, selectableDepths, lithologicalDescriptions]);
 
   useEffect(() => {
-    submitUpdateRef.current = submitUpdate;
-  }, [submitUpdate]);
-
-  useEffect(() => {
-    // clean up function runs whenever component unmounts
-    return () => {
-      submitUpdateRef.current();
-    };
-  }, []);
-
-  const fromDepthOptions = getFromDepthOptions();
-  const toDepthOptions = getToDepthOptions();
+    setFromDepthOptions(getFromDepthOptions());
+    setToDepthOptions(getToDepthOptions());
+  }, [getFromDepthOptions, getToDepthOptions]);
 
   return (
     <Stack direction="column" sx={{ width: "100%" }}>
       <FormControl variant="standard" sx={{ minWidth: 120 }} size="small">
         <InputLabel htmlFor="from-depth">{t("layer_depth_from")}</InputLabel>
         <Select
-          disabled={fromDepthOptions.length === 1}
+          disabled={fromDepthOptions?.length === 1}
           data-cy="from-depth-select"
           defaultValue={item.fromDepth}
           input={<Input id="from-depth" />}
@@ -104,7 +93,7 @@ const LithologicalDescriptionInput = props => {
             e.stopPropagation();
             setFromDepth(e.target.value);
           }}>
-          {fromDepthOptions.map(d => (
+          {fromDepthOptions?.map(d => (
             <MenuItem value={d}>{d}</MenuItem>
           ))}
         </Select>
@@ -148,7 +137,7 @@ const LithologicalDescriptionInput = props => {
       <FormControl variant="standard" sx={{ minWidth: 120 }} size="small">
         <InputLabel htmlFor="to-depth">{t("layer_depth_to")}</InputLabel>
         <Select
-          disabled={toDepthOptions.length === 1}
+          disabled={toDepthOptions?.length === 1}
           data-cy="to-depth-select"
           defaultValue={item.toDepth}
           input={<Input id="to-depth" />}
@@ -156,7 +145,7 @@ const LithologicalDescriptionInput = props => {
             e.stopPropagation();
             setToDepth(e.target.value);
           }}>
-          {toDepthOptions.map(d => (
+          {toDepthOptions?.map(d => (
             <MenuItem value={d}>{d}</MenuItem>
           ))}
         </Select>
