@@ -31,7 +31,6 @@ const ActionButtons = props => {
               sx={{ color: "red", opacity: 0.7 }}
               onClick={e => {
                 e.stopPropagation();
-
                 setDescriptionIdSelectedForDelete(item.id);
               }}
             />

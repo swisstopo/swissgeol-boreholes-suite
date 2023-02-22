@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  createRef,
-  useRef,
-  useCallback,
-} from "react";
+import React, { useState, useEffect, createRef, useRef } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import produce from "immer";
@@ -54,17 +48,17 @@ const DescriptionLayers = props => {
     // scroll to the last item in the list
     if (
       lastDescriptionRef?.current &&
-      displayDescriptions?.length > prevLengthRef.current
+      displayDescriptions?.length > prevLengthRef.current &&
+      // prevents scrolling when existing layer depths is changed so that an undefined interval is produced while editing.
+      !selectedDescription
     ) {
       lastDescriptionRef.current.scrollIntoView({
-        alignToTop: true,
-        scrollIntoViewOptions: { block: "start", inline: "start" },
         behavior: "smooth",
       });
     }
     // update the previous length
     prevLengthRef.current = displayDescriptions?.length;
-  }, [displayDescriptions, lastDescriptionRef]);
+  }, [displayDescriptions, lastDescriptionRef, selectedDescription]);
 
   useEffect(() => {
     // include empty items in description column to signal missing descriptions
@@ -135,17 +129,7 @@ const DescriptionLayers = props => {
     // eslint-disable-next-line
   }, [deleteParams]);
 
-  const selectItem = item => {
-    if (item) {
-      setFromDepth(item.fromDepth);
-      setToDepth(item.toDepth);
-      setDescription(item.description);
-      setQtDescriptionId(item.qtDescriptionId);
-    }
-    setSelectedDescription(item);
-  };
-
-  const submitUpdate = useCallback(() => {
+  useEffect(() => {
     if (selectedDescription) {
       const updatedDescription = produce(selectedDescription, draft => {
         draft.fromDepth = parseFloat(fromDepth);
@@ -155,9 +139,18 @@ const DescriptionLayers = props => {
       });
       updateMutation.mutate(updatedDescription);
     }
-    selectItem(null);
     // eslint-disable-next-line
-  }, [description, qtDescriptionId, toDepth, fromDepth, selectedDescription]);
+  }, [description, qtDescriptionId, toDepth, fromDepth]);
+
+  const selectItem = item => {
+    if (item) {
+      setFromDepth(item.fromDepth);
+      setToDepth(item.toDepth);
+      setDescription(item.description);
+      setQtDescriptionId(item.qtDescriptionId);
+    }
+    setSelectedDescription(item);
+  };
 
   // calculate selectable depths and gaps
   useEffect(() => {
@@ -271,13 +264,18 @@ const DescriptionLayers = props => {
                     {isItemSelected && (
                       <DescriptionInput
                         setFromDepth={setFromDepth}
+                        description={description}
+                        qtDescriptionId={qtDescriptionId}
+                        fromDepth={fromDepth}
+                        toDepth={toDepth}
                         setDescription={setDescription}
                         setToDepth={setToDepth}
                         setQtDescriptionId={setQtDescriptionId}
                         selectableDepths={selectableDepths}
                         lithologicalDescriptions={descriptions}
-                        submitUpdate={submitUpdate}
                         item={item}
+                        updateMutation={updateMutation}
+                        selectItem={selectItem}
                       />
                     )}
                     {isEditable && (
