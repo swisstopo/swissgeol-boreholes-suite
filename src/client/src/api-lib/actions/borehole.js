@@ -1,5 +1,4 @@
 import { fetch, uploadFile } from "./index";
-import produce from "immer";
 
 export function loadBoreholes(
   page = undefined,
@@ -158,14 +157,9 @@ export function checkBorehole(attribute, text) {
 }
 
 export function getGeojson(filter = {}) {
-  // extent filter is not relevant for map features.
-  const filterWithoutExtent = produce(filter, draft => {
-    delete draft.extent;
-  });
-
   return fetch("/borehole", {
     action: "GEOJSON",
-    filter: filterWithoutExtent,
+    filter: filter,
   });
 }
 
