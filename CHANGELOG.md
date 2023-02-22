@@ -20,6 +20,7 @@
 - Fix internal error when adding a backfill with _no casing_.
 - Fix internal error in viewer/editor settings for _Stratigraphy fields_ when clicking _Select all_.
 - Fix error when downloading a borehole profile.
+- Fix broken layout of _lithological description_ and _facies description_ columns when a gap of more than one layer was created in the _lithology_ column.
 
 ## v2.0.186 - 2023-02-13
 
