@@ -42,7 +42,8 @@ const ActionButtons = props => {
           <Tooltip title={t("add")}>
             <AddCircleIcon
               style={{ color: theme.palette.error.main }}
-              onClick={() => {
+              onClick={e => {
+                e.stopPropagation();
                 addMutation.mutate({
                   stratigraphyId: selectedStratigraphyID,
                   fromDepth: item.fromDepth,
