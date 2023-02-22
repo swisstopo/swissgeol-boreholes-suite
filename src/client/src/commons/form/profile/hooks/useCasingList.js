@@ -1,19 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { profileKind } from "../constance";
 import { useTranslation } from "react-i18next";
-import { getProfile } from "../components/profileInstrument/api";
-import { useQuery } from "react-query";
+import { useProfiles } from "../components/profileInstrument/api";
 
 export default function useCasingList(boreholeID) {
   const { t } = useTranslation();
 
   const [casing, setCasing] = useState([]);
   const mounted = useRef(false);
-  const { data: profiles } = useQuery(
-    ["profile", boreholeID, profileKind.CASING],
-    () => getProfile(boreholeID, profileKind.CASING),
-    { staleTime: 5000 },
-  );
+  const { data: profiles } = useProfiles(boreholeID, profileKind.CASING);
 
   useEffect(() => {
     mounted.current = true;
