@@ -102,6 +102,14 @@ public class BoreholeControllerTest
             // Delete borehole copy
             if (copiedBorehole != null)
             {
+                var stratigraphiesToRemove = copiedBorehole.Stratigraphies;
+                var layersToRemove = stratigraphiesToRemove.SelectMany(s => s.Layers);
+                var lithologicalDescriptionsToRemove = stratigraphiesToRemove.SelectMany(s => s.LithologicalDescriptions);
+                var faciesDescriptionsToRemove = stratigraphiesToRemove.SelectMany(s => s.FaciesDescriptions);
+                context.Layers.RemoveRange(layersToRemove);
+                context.LithologicalDescriptions.RemoveRange(lithologicalDescriptionsToRemove);
+                context.FaciesDescriptions.RemoveRange(faciesDescriptionsToRemove);
+                context.Stratigraphies.RemoveRange(stratigraphiesToRemove);
                 context.Boreholes.Remove(copiedBorehole);
                 context.SaveChanges();
             }

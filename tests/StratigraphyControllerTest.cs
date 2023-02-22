@@ -85,6 +85,9 @@ public class StratigraphyControllerTest
             // Delete stratigraphy copy
             if (copiedStratigraphy != null)
             {
+                context.Layers.RemoveRange(copiedStratigraphy.Layers);
+                context.LithologicalDescriptions.RemoveRange(copiedStratigraphy.LithologicalDescriptions);
+                context.FaciesDescriptions.RemoveRange(copiedStratigraphy.FaciesDescriptions);
                 context.Stratigraphies.Remove(copiedStratigraphy);
                 context.SaveChanges();
             }
