@@ -326,6 +326,7 @@ const ProfileLayers = props => {
                       setShowDelete,
                       selectedStratigraphyID,
                       setSelectedLayer: setSelectedLayerFunc,
+                      isStratigraphy,
                     }}
                     setDeleteParams={setDeleteParams}
                   />
