@@ -275,14 +275,22 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Kind, _ => default!)
             .RuleFor(o => o.Name, f => f.Name.FullName())
             .RuleFor(o => o.Notes, f => f.Rant.Review())
-            .RuleFor(o => o.IsPrimary, f => f.Random.Bool())
+            .RuleFor(o => o.IsPrimary, _ => false)
             .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
             .RuleFor(o => o.UpdatedBy, _ => default!)
             .RuleFor(o => o.Layers, _ => default!);
 
         Stratigraphy Seededstratigraphys(int seed) => fakeStratigraphies.UseSeed(seed).Generate();
-        context.BulkInsert(stratigraphyRange.Select(Seededstratigraphys).ToList(), bulkConfig);
+        var stratigraphies = stratigraphyRange.Select(Seededstratigraphys).ToList();
+
+        // Set primary stratigraphies
+        foreach (var s in stratigraphies.GroupBy(x => x.BoreholeId).Select(x => x.First()))
+        {
+            s.IsPrimary = true;
+        }
+
+        context.BulkInsert(stratigraphies, bulkConfig);
 
         // Seed layers
         var layer_ids = 7_000_000;
