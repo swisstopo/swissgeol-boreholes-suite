@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import * as Styled from "./styles";
-import { Icon, Radio, Form, Input } from "semantic-ui-react";
+import { Icon, Radio } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
 import {
   gapLayer,
