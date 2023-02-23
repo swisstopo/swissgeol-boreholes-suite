@@ -12,6 +12,7 @@
 - When leaving settings page, correctly navigate back to the previously selected mode (viewer or editor).
 - Display loader icon when fetching data for stratigraphy or users.
 - Improved loading time of instrument list.
+- Removed _set manually_ from resolving options when deleting a lithology layer.
 
 ### Fixed
 
