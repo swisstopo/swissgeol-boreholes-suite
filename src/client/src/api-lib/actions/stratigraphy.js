@@ -65,14 +65,6 @@ export function deleteStratigraphy(id) {
   });
 }
 
-// Create a new layer for the given stratigraphy id
-export function cloneStratigraphy(id) {
-  return fetch("/borehole/stratigraphy/edit", {
-    action: "CLONE",
-    id: id, // stratigraphy id
-  });
-}
-
 // Create a new stratigraphy for the given borehole id
 export function addBedrock(id) {
   return fetch("/borehole/stratigraphy/edit", {

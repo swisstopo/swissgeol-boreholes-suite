@@ -105,6 +105,11 @@ export const deleteFaciesDescription = async id => {
 
 export const fetchUsers = async () => await fetchApiV2("user", "GET");
 
+// stratigraphy
+export const copyStratigraphy = async id => {
+  return await fetchApiV2(`stratigraphy/copy?id=${id}`, "POST");
+};
+
 // Enable using react-query outputs across the application.
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
