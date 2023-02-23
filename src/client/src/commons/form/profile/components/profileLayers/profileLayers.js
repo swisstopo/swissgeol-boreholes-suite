@@ -234,7 +234,7 @@ const ProfileLayers = props => {
   const hasLithoDescriptions = lithoDescQuery?.data?.length > 0;
   const hasFaciesDescriptions = faciesDescQuery?.data?.length > 0;
 
-  if (!hasLayers || !lithoDescQuery.isSuccess) {
+  if (!layersWithValidation?.data || !lithoDescQuery.isSuccess) {
     return (
       <Box display="flex" justifyContent="center" pt={5}>
         <CircularProgress />
