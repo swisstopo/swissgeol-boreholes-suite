@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, createRef, useRef } from "react";
 import ProfileLayersError from "../profileLayersError";
 import ProfileLayersList from "../profileLayersList";
 import * as Styled from "./styles";
@@ -16,6 +16,25 @@ export const ProfileLayersValidation = props => {
     setSelectedLayer,
   } = props.data;
   const { setDeleteParams } = props;
+
+  // add refs to layers to allow scroll behaviour
+  const layerRefs = Array(layers?.data?.length)
+    .fill(null)
+    .map(() => createRef(null));
+
+  // store previous length of list
+  const prevLengthRef = useRef(0);
+  const lastLayerRef = layerRefs[layers?.data?.length - 1];
+
+  useEffect(() => {
+    // scroll to the last item in the list
+    if (lastLayerRef?.current && layers?.data?.length > prevLengthRef.current) {
+      console.log("scroll");
+      lastLayerRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+    // update the previous length
+    prevLengthRef.current = layers?.data?.length;
+  }, [layers.data, lastLayerRef]);
 
   return (
     <Box data-cy="styled-layer-container">
@@ -39,6 +58,7 @@ export const ProfileLayersValidation = props => {
         layers?.data.map((item, index) => (
           <Styled.Layer
             key={item.id}
+            ref={layerRefs[index]}
             data-cy={"styled-layer-" + index}
             isFirst={index === 0 ? true : false}>
             {/* validation before each layer */}
