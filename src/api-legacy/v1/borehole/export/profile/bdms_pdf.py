@@ -341,10 +341,6 @@ class bdmsPdf():
                 )
                 paratext = '<br/>'.join([
                     '<u>{}</u>: {}'.format(
-                        _('description'),
-                        l['lithological_description'] or '-'
-                    ),
-                    '<u>{}</u>: {}'.format(
                         _('lithology'),
                         l['lithology'] or '-'
                     ),

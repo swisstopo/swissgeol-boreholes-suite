@@ -208,12 +208,6 @@ class ExportJson(Action):
                                 ) as updater,
                                 depth_from_lay AS depth_from,
                                 depth_to_lay AS depth_to,
-                                COALESCE(
-                                    lithological_description_lay, ''
-                                ) AS lithological_description,
-                                COALESCE(
-                                    facies_description_lay, ''
-                                ) AS facies_description,
                                 last_lay AS last,
                                 qt_description.geolcode AS qt_description,
                                 lithology.geolcode AS lithology,

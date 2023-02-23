@@ -266,12 +266,6 @@ class ExportCsvFull(Action):
                     name_sty as stratigraphy_name,
                     depth_from_lay AS depth_from,
                     depth_to_lay AS depth_to,
-                    COALESCE(
-                        lithological_description_lay, ''
-                    ) AS lithological_description,
-                    COALESCE(
-                        facies_description_lay, ''
-                    ) AS facies_description,
                     lay_qt_desc.geolcode AS qt_description,
                     lay_lith.geolcode AS lithology,
                     lay_lith_stra.geolcode AS lithostratigraphy,
