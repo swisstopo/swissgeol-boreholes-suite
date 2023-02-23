@@ -13,6 +13,7 @@
 - When leaving settings page, correctly navigate back to the previously selected mode (viewer or editor).
 - Display loader icon when fetching data for stratigraphy or users.
 - Remove _lithological description_ and _facies description_ from lithology layer in viewer mode, editor mode and in settings.
+- Removed _set manually_ from resolving options when deleting a lithology layer.
 
 ### Fixed
 
