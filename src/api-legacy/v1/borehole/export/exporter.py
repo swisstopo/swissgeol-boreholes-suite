@@ -190,6 +190,8 @@ class ExportHandler(Viewer):
                                     WHERE
                                         id_bho_fk = $1
                                     AND
+                                        kind_id_cli = 3000
+                                    AND
                                         primary_sty IS TRUE
                                 """, bid)
 
