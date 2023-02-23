@@ -29,7 +29,6 @@ export const ProfileLayersValidation = props => {
   useEffect(() => {
     // scroll to the last item in the list
     if (lastLayerRef?.current && layers?.data?.length > prevLengthRef.current) {
-      console.log("scroll");
       lastLayerRef.current.scrollIntoView({ behavior: "smooth" });
     }
     // update the previous length
