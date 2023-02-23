@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { Icon, Popup } from "semantic-ui-react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
@@ -11,15 +11,15 @@ import * as Styled from "./styles";
 
 const ProfileLayersList = props => {
   const {
-    layers,
     isEditable,
     selectedLayer,
     showDelete,
     setShowDelete,
     setSelectedLayer,
+    itemWithValidation,
     item,
   } = props.data;
-  const { t } = props;
+  const { t, i18n } = props;
   const [isTopHasWarning, setIsTopHasWarning] = useState(false);
   const [isBottomHasWarning, setIsBottomHasWarning] = useState(false);
   const [showTopPopup, setShowTopPopup] = useState(false);
@@ -27,19 +27,19 @@ const ProfileLayersList = props => {
 
   const checkHasWarning = useCallback(() => {
     if (
-      item?.depth_from === null ||
-      item?.validation?.topOverlap ||
-      item?.validation?.topDisjoint ||
-      item?.validation?.invertedDepth
+      itemWithValidation?.depth_from === null ||
+      itemWithValidation?.validation?.topOverlap ||
+      itemWithValidation?.validation?.topDisjoint ||
+      itemWithValidation?.validation?.invertedDepth
     ) {
       setIsTopHasWarning(true);
     } else {
       setIsTopHasWarning(false);
     }
     if (
-      item?.depth_from === null ||
-      item?.validation?.missingFrom ||
-      item?.validation?.invertedDepth
+      itemWithValidation?.depth_from === null ||
+      itemWithValidation?.validation?.missingFrom ||
+      itemWithValidation?.validation?.invertedDepth
     ) {
       setShowTopPopup(true);
     } else {
@@ -47,52 +47,140 @@ const ProfileLayersList = props => {
     }
 
     if (
-      item?.depth_to === null ||
-      item?.validation?.bottomOverlap ||
-      item?.validation?.bottomDisjoint ||
-      item?.validation?.invertedDepth
+      itemWithValidation?.depth_to === null ||
+      itemWithValidation?.validation?.bottomOverlap ||
+      itemWithValidation?.validation?.bottomDisjoint ||
+      itemWithValidation?.validation?.invertedDepth
     ) {
       setIsBottomHasWarning(true);
     } else {
       setIsBottomHasWarning(false);
     }
     if (
-      item?.depth_to === null ||
-      item?.validation?.missingTo ||
-      item?.validation?.invertedDepth
+      itemWithValidation?.depth_to === null ||
+      itemWithValidation?.validation?.missingTo ||
+      itemWithValidation?.validation?.invertedDepth
     ) {
       setShowBottomPopup(true);
     } else {
       setShowBottomPopup(false);
     }
-  }, [item]);
+  }, [itemWithValidation]);
   useEffect(() => {
     checkHasWarning();
   }, [checkHasWarning]);
 
+  const mainProps = useMemo(() => {
+    const lithology = item?.lithology && item?.lithology?.[i18n.language];
+    const uscs1 = item?.uscs1 && item?.uscs1?.[i18n.language];
+    const grainSize1 = item?.grainSize1 && item?.grainSize1?.[i18n.language];
+    const uscs2 = item?.uscs2 && item?.uscs2?.[i18n.language];
+    const grainSize2 = item?.grainSize2 && item?.grainSize2?.[i18n.language];
+    const strings = [lithology, uscs1, grainSize1, uscs2, grainSize2];
+
+    return strings.filter(s => s !== null).join(", ");
+  }, [item, i18n.language]);
+
+  const secondaryProps = useMemo(() => {
+    let uscs3 = [];
+    item?.codelists
+      .filter(c => c.schema === "mcla101")
+      .forEach(element => {
+        uscs3.push(element[i18n.language]);
+      });
+
+    let grainshape = [];
+    item?.codelists
+      .filter(c => c.schema === "mlpr110")
+      .forEach(element => {
+        grainshape.push(element[i18n.language]);
+      });
+
+    let angularity = [];
+    item?.codelists
+      .filter(c => c.schema === "mlpr115")
+      .forEach(element => {
+        angularity.push(element[i18n.language]);
+      });
+
+    let organicCompounds = [];
+    item?.codelists
+      .filter(c => c.schema === "mlpr108")
+      .forEach(element => {
+        organicCompounds.push(element[i18n.language]);
+      });
+
+    let debris = [];
+    item?.codelists
+      .filter(c => c.schema === "mcla107")
+      .forEach(element => {
+        debris.push(element[i18n.language]);
+      });
+
+    const striae = item?.isStriae && t("striae");
+
+    let color = [];
+    item?.codelists
+      .filter(c => c.schema === "mlpr112")
+      .forEach(element => {
+        color.push(element[i18n.language]);
+      });
+
+    const consistance = item?.consistance && item?.consistance?.[i18n.language];
+    const plasticity = item?.plasticity && item?.plasticity?.[i18n.language];
+    const compactness = item?.compactness && item?.compactness?.[i18n.language];
+    const cohesion = item?.cohesion && item?.cohesion?.[i18n.language];
+    const gradation = item?.gradation && item?.gradation?.[i18n.language];
+    const humidity = item?.humidity && item?.humidity?.[i18n.language];
+    const alteration = item?.alteration && item?.alteration?.[i18n.language];
+
+    const strings = [
+      uscs3,
+      grainshape,
+      angularity,
+      organicCompounds,
+      debris,
+      striae,
+      color,
+      consistance,
+      plasticity,
+      compactness,
+      cohesion,
+      gradation,
+      humidity,
+      alteration,
+    ];
+
+    return strings
+      .flat()
+      .filter(s => s !== null)
+      .join(", ");
+  }, [item, i18n.language]);
+
+  const isItemSelected = selectedLayer?.id === itemWithValidation?.id;
   return (
     <>
       <Styled.MyCard
-        onClick={() => setSelectedLayer(item)}
+        onClick={() => setSelectedLayer(itemWithValidation)}
         style={{
-          backgroundColor: selectedLayer?.id === item?.id && "lightgrey",
+          backgroundColor: isItemSelected && "lightgrey",
         }}>
         <Styled.CardPattern
           id="pattern"
-          b={item?.rgb?.[2]}
-          g={item?.rgb?.[1]}
-          r={item?.rgb?.[0]}
+          b={itemWithValidation?.rgb?.[2]}
+          g={itemWithValidation?.rgb?.[1]}
+          r={itemWithValidation?.rgb?.[0]}
           style={{
-            backgroundImage: item?.pattern
+            backgroundImage: itemWithValidation?.pattern
               ? 'url("' +
                 process.env.PUBLIC_URL +
                 "/img/lit/" +
-                item?.pattern +
+                itemWithValidation?.pattern +
                 '")'
               : "",
           }}
         />
-        {showDelete !== item?.id && (
+        {showDelete !== itemWithValidation?.id && (
           <>
             <Styled.CardInfo id="info">
               <Styled.Text warning={isTopHasWarning} id="text">
@@ -103,7 +191,7 @@ const ProfileLayersList = props => {
                   <Popup
                     basic
                     content={
-                      item?.validation?.invertedDepth ? (
+                      itemWithValidation?.validation?.invertedDepth ? (
                         <TranslationText id="invertedDepth" />
                       ) : (
                         <TranslationText id="errrorStartPoint" />
@@ -112,50 +200,45 @@ const ProfileLayersList = props => {
                     position="bottom left"
                     trigger={
                       <div>
-                        {item?.validation?.invertedDepth && item?.depth_from} m
+                        {itemWithValidation?.validation?.invertedDepth &&
+                          itemWithValidation?.depth_from}{" "}
+                        m
                       </div>
                     }
                   />
                 ) : (
                   <NumericFormat
-                    value={item?.depth_from}
+                    value={itemWithValidation?.depth_from}
                     thousandSeparator="'"
                     suffix=" m"
                     displayType="text"
                   />
                 )}
               </Styled.Text>
+
               <Styled.Text
                 bold
-                warning={item?.validation?.bedrockLitStratiWrong}>
-                {item?.title ? (
-                  <Styled.DomainTxt
-                    id={item?.title}
-                    schema={layers?.config.title}
-                  />
-                ) : (
-                  "-"
-                )}
+                style={{
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  display: "-webkit-box",
+                  WebkitLineClamp: "2",
+                  WebkitBoxOrient: "vertical",
+                  lineHeight: "1.2",
+                }}>
+                {mainProps}
               </Styled.Text>
-              <Styled.Text warning={item?.validation?.bedrockChronoWrong}>
-                {item?.subtitle ? (
-                  <Styled.DomainTxt
-                    id={item?.subtitle}
-                    schema={layers?.config.subtitle}
-                  />
-                ) : (
-                  "-"
-                )}
-              </Styled.Text>
-              <Styled.Text small warning={item?.validation?.bedrockLitPetWrong}>
-                {item?.description ? (
-                  <Styled.DomainTxt
-                    id={item?.description}
-                    schema={layers?.config.description}
-                  />
-                ) : (
-                  "-"
-                )}
+              <Styled.Text
+                small
+                style={{
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  display: "-webkit-box",
+                  WebkitLineClamp: "3",
+                  WebkitBoxOrient: "vertical",
+                  lineHeight: "1.3",
+                }}>
+                {secondaryProps}
               </Styled.Text>
               <Styled.Text warning={isBottomHasWarning}>
                 {isBottomHasWarning && (
@@ -165,7 +248,7 @@ const ProfileLayersList = props => {
                   <Popup
                     basic
                     content={
-                      item?.validation?.invertedDepth ? (
+                      itemWithValidation?.validation?.invertedDepth ? (
                         <TranslationText id="invertedDepth" />
                       ) : (
                         <TranslationText id="errorEndPoint" />
@@ -175,13 +258,15 @@ const ProfileLayersList = props => {
                     position="bottom left"
                     trigger={
                       <div>
-                        {item?.validation?.invertedDepth && item?.depth_to} m
+                        {itemWithValidation?.validation?.invertedDepth &&
+                          itemWithValidation?.depth_to}{" "}
+                        m
                       </div>
                     }
                   />
                 ) : (
                   <NumericFormat
-                    value={item?.depth_to}
+                    value={itemWithValidation?.depth_to}
                     thousandSeparator="'"
                     suffix=" m"
                     displayType="text"
@@ -193,23 +278,25 @@ const ProfileLayersList = props => {
               <Stack
                 direction="row"
                 sx={{ marginLeft: "auto", padding: "3px" }}>
-                {selectedLayer?.id !== item?.id && (
+                {!isItemSelected && (
                   <>
                     <Tooltip title={t("edit")}>
-                      <ModeEditIcon onClick={() => setSelectedLayer(item)} />
+                      <ModeEditIcon
+                        onClick={() => setSelectedLayer(itemWithValidation)}
+                      />
                     </Tooltip>
                     <Tooltip title={t("delete")}>
                       <DeleteIcon
                         sx={{ color: "red", opacity: 0.7 }}
                         onClick={e => {
                           e.stopPropagation();
-                          setShowDelete(item?.id);
+                          setShowDelete(itemWithValidation?.id);
                         }}
                       />
                     </Tooltip>
                   </>
                 )}
-                {selectedLayer?.id === item?.id && (
+                {isItemSelected && (
                   <Tooltip title={t("stop-editing")}>
                     <ClearIcon onClick={() => setSelectedLayer(null)} />
                   </Tooltip>

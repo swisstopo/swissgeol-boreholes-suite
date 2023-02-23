@@ -7,6 +7,7 @@ import { Box } from "@mui/material";
 export const ProfileLayersValidation = props => {
   const {
     layers,
+    layersWithValidation,
     isEditable,
     onUpdated,
     selectedLayer,
@@ -20,23 +21,24 @@ export const ProfileLayersValidation = props => {
   return (
     <Box data-cy="styled-layer-container">
       {/* validation before all layers */}
-      {layers?.validation && layers?.validation?.missingLayers && (
-        <div style={{ borderTop: "1px solid lightgrey", flex: "1 1 0px" }}>
-          <ProfileLayersError
-            data={{
-              title: "missingLayers",
-              isEditable,
-              id: layers?.data?.[0].id,
-              isInside: false,
-              onUpdated: onUpdated,
-            }}
-            setDeleteParams={setDeleteParams}
-          />
-        </div>
-      )}
+      {layersWithValidation?.validation &&
+        layersWithValidation?.validation?.missingLayers && (
+          <div style={{ borderTop: "1px solid lightgrey", flex: "1 1 0px" }}>
+            <ProfileLayersError
+              data={{
+                title: "missingLayers",
+                isEditable,
+                id: layersWithValidation?.data?.[0].id,
+                isInside: false,
+                onUpdated: onUpdated,
+              }}
+              setDeleteParams={setDeleteParams}
+            />
+          </div>
+        )}
       {/* layers list */}
-      {layers?.data &&
-        layers?.data.map((item, index) => (
+      {layersWithValidation?.data &&
+        layersWithValidation?.data.map((item, index) => (
           <Styled.Layer
             key={item.id}
             data-cy={"styled-layer-" + index}
@@ -71,8 +73,8 @@ export const ProfileLayersValidation = props => {
 
             <ProfileLayersList
               data={{
-                item,
-                layers,
+                itemWithValidation: item,
+                item: layers?.data?.find(l => l.id === item.id),
                 isEditable,
                 selectedLayer,
                 showDelete,
@@ -91,7 +93,7 @@ export const ProfileLayersValidation = props => {
                   isInside: true,
                   onUpdated: onUpdated,
                   layerIndex: index,
-                  layerLength: layers?.data.length,
+                  layerLength: layersWithValidation?.data.length,
                   closeDelete: () => setShowDelete(),
                 }}
                 setDeleteParams={setDeleteParams}
@@ -101,8 +103,8 @@ export const ProfileLayersValidation = props => {
         ))}
 
       {/* validation after all layers */}
-      {layers?.validation &&
-        Object.keys(layers?.validation)
+      {layersWithValidation?.validation &&
+        Object.keys(layersWithValidation?.validation)
           .filter(key => key !== "missingLayers")
           .map((key, index) => (
             <div key={index}>

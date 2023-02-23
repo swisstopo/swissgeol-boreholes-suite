@@ -34,6 +34,7 @@ import {
   deleteFaciesDescription,
   lithologicalDescriptionQueryKey,
   faciesDescriptionQueryKey,
+  useLayers,
 } from "../../../../../api/fetchApiV2";
 
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -53,11 +54,12 @@ const ProfileLayers = props => {
     stratigraphyKind,
   } = props.data;
   const { t } = props;
-  const [layers, setLayers] = useState(null);
+  const [layersWithValidation, setLayersWithValidation] = useState(null);
   const [selecteDescription, setSelectedDescription] = useState(null);
   const [showDelete, setShowDelete] = useState();
   const alertContext = useContext(AlertContext);
   const [deleteParams, setDeleteParams] = useState(null);
+  const layers = useLayers(selectedStratigraphyID);
 
   const mounted = useRef(false);
 
@@ -148,7 +150,7 @@ const ProfileLayers = props => {
     // Todo: use get layers from new api.
     getData(stratigraphyID).then(res => {
       if (mounted.current) {
-        setLayers(res);
+        setLayersWithValidation(res);
       }
     });
   }, []);
@@ -159,7 +161,7 @@ const ProfileLayers = props => {
     if (selectedStratigraphyID && mounted.current) {
       setData(selectedStratigraphyID);
     } else {
-      setLayers(null);
+      setLayersWithValidation(null);
     }
     return () => {
       mounted.current = false;
@@ -194,12 +196,13 @@ const ProfileLayers = props => {
     } else {
       setSelectedDescription(null);
       const newFromDepth = query?.data?.at(-1)?.toDepth ?? 0;
-      layers?.data?.length
+      layersWithValidation?.data?.length
         ? mutation.mutate({
             stratigraphyId: selectedStratigraphyID,
             fromDepth: newFromDepth,
-            toDepth: layers?.data.find(l => l.depth_from === newFromDepth)
-              ?.depth_to,
+            toDepth: layersWithValidation?.data.find(
+              l => l.depth_from === newFromDepth,
+            )?.depth_to,
           })
         : alertContext.error(t("first_add_lithology"));
     }
@@ -225,7 +228,13 @@ const ProfileLayers = props => {
     minHeight: "10em",
   };
 
-  if (!layers?.data || !lithoDescQuery.isSuccess) {
+  const isLayerSelected = selectedLayer !== null;
+  const isStratigraphy = stratigraphyKind === profileKind.STRATIGRAPHY;
+  const hasLayers = layersWithValidation?.data?.length > 0;
+  const hasLithoDescriptions = lithoDescQuery?.data?.length > 0;
+  const hasFaciesDescriptions = faciesDescQuery?.data?.length > 0;
+
+  if (!hasLayers || !lithoDescQuery.isSuccess) {
     return (
       <Box display="flex" justifyContent="center" pt={5}>
         <CircularProgress />
@@ -238,8 +247,8 @@ const ProfileLayers = props => {
       <TableContainer
         sx={{
           minHeight: "10em",
-          overflow: selectedLayer ? "hidden" : "",
-          borderBottom: layers?.data?.length ? "1px solid lightgrey" : "",
+          overflow: isLayerSelected ? "hidden" : "",
+          borderBottom: hasLayers ? "1px solid lightgrey" : "",
         }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -258,58 +267,57 @@ const ProfileLayers = props => {
                   )}
                 </Stack>
               </TableCell>
-              {selectedLayer === null &&
-                stratigraphyKind === profileKind.STRATIGRAPHY && (
-                  <TableCell>
-                    <Stack direction="row">
-                      <Typography>{t("lithological_description")}</Typography>
-                      {isEditable && selectedStratigraphyID !== null && (
-                        <Tooltip title={t("add")} sx={{}}>
-                          <AddCircleIcon
-                            sx={{ marginLeft: 1.5 }}
-                            data-cy="add-litho-desc-icon"
-                            onClick={() =>
-                              addDescription(
-                                lithoDescQuery,
-                                addLithologicalDescriptionMutation,
-                              )
-                            }
-                          />
-                        </Tooltip>
-                      )}
-                    </Stack>
-                  </TableCell>
-                )}
-              {selectedLayer === null &&
-                stratigraphyKind === profileKind.STRATIGRAPHY && (
-                  <TableCell>
-                    <Stack direction="row">
-                      <Typography>{t("facies_description")}</Typography>
-                      {isEditable && selectedStratigraphyID !== null && (
-                        <Tooltip title={t("add")} sx={{}}>
-                          <AddCircleIcon
-                            sx={{ marginLeft: 1.5 }}
-                            data-cy="add-facies-desc-icon"
-                            onClick={() =>
-                              addDescription(
-                                faciesDescQuery,
-                                addFaciesDescriptionMutation,
-                              )
-                            }
-                          />
-                        </Tooltip>
-                      )}
-                    </Stack>
-                  </TableCell>
-                )}
+              {isStratigraphy && !isLayerSelected && (
+                <TableCell>
+                  <Stack direction="row">
+                    <Typography>{t("lithological_description")}</Typography>
+                    {isEditable && selectedStratigraphyID !== null && (
+                      <Tooltip title={t("add")} sx={{}}>
+                        <AddCircleIcon
+                          sx={{ marginLeft: 1.5 }}
+                          data-cy="add-litho-desc-icon"
+                          onClick={() =>
+                            addDescription(
+                              lithoDescQuery,
+                              addLithologicalDescriptionMutation,
+                            )
+                          }
+                        />
+                      </Tooltip>
+                    )}
+                  </Stack>
+                </TableCell>
+              )}
+              {isStratigraphy && !isLayerSelected && (
+                <TableCell>
+                  <Stack direction="row">
+                    <Typography>{t("facies_description")}</Typography>
+                    {isEditable && selectedStratigraphyID !== null && (
+                      <Tooltip title={t("add")} sx={{}}>
+                        <AddCircleIcon
+                          sx={{ marginLeft: 1.5 }}
+                          data-cy="add-facies-desc-icon"
+                          onClick={() =>
+                            addDescription(
+                              faciesDescQuery,
+                              addFaciesDescriptionMutation,
+                            )
+                          }
+                        />
+                      </Tooltip>
+                    )}
+                  </Stack>
+                </TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
               <td style={cellStyle}>
-                {layers?.data?.length > 0 && (
+                {hasLayers && (
                   <ProfileLayersValidation
                     data={{
+                      layersWithValidation,
                       layers,
                       isEditable,
                       onUpdated,
@@ -323,47 +331,43 @@ const ProfileLayers = props => {
                   />
                 )}
               </td>
-              {selectedLayer === null &&
-                stratigraphyKind === profileKind.STRATIGRAPHY &&
-                lithoDescQuery?.data?.length > 0 && (
-                  <td style={cellStyle}>
-                    <DescriptionLayers
-                      isEditable={isEditable}
-                      descriptions={lithoDescQuery?.data}
-                      setSelectedDescription={setSelectedDescription}
-                      selectedDescription={selecteDescription}
-                      layers={layers}
-                      addMutation={addLithologicalDescriptionMutation}
-                      deleteMutation={deleteLithologicalDescriptionMutation}
-                      updateMutation={updateLithologicalDescriptionMutation}
-                      selectedStratigraphyID={selectedStratigraphyID}
-                      deleteParams={deleteParams}
-                    />
-                  </td>
-                )}
-              {selectedLayer === null &&
-                stratigraphyKind === profileKind.STRATIGRAPHY &&
-                faciesDescQuery?.data?.length > 0 && (
-                  <td style={cellStyle}>
-                    <DescriptionLayers
-                      isEditable={isEditable}
-                      descriptions={faciesDescQuery?.data}
-                      setSelectedDescription={setSelectedDescription}
-                      selectedDescription={selecteDescription}
-                      layers={layers}
-                      addMutation={addFaciesDescriptionMutation}
-                      deleteMutation={deleteFaciesDescriptionMutation}
-                      updateMutation={updateFaciesDescriptionMutation}
-                      selectedStratigraphyID={selectedStratigraphyID}
-                      deleteParams={deleteParams}
-                    />
-                  </td>
-                )}
+              {isStratigraphy && !isLayerSelected && hasLithoDescriptions && (
+                <td style={cellStyle}>
+                  <DescriptionLayers
+                    isEditable={isEditable}
+                    descriptions={lithoDescQuery?.data}
+                    setSelectedDescription={setSelectedDescription}
+                    selectedDescription={selecteDescription}
+                    layers={layersWithValidation}
+                    addMutation={addLithologicalDescriptionMutation}
+                    deleteMutation={deleteLithologicalDescriptionMutation}
+                    updateMutation={updateLithologicalDescriptionMutation}
+                    selectedStratigraphyID={selectedStratigraphyID}
+                    deleteParams={deleteParams}
+                  />
+                </td>
+              )}
+              {isStratigraphy && !isLayerSelected && hasFaciesDescriptions && (
+                <td style={cellStyle}>
+                  <DescriptionLayers
+                    isEditable={isEditable}
+                    descriptions={faciesDescQuery?.data}
+                    setSelectedDescription={setSelectedDescription}
+                    selectedDescription={selecteDescription}
+                    layers={layersWithValidation}
+                    addMutation={addFaciesDescriptionMutation}
+                    deleteMutation={deleteFaciesDescriptionMutation}
+                    updateMutation={updateFaciesDescriptionMutation}
+                    selectedStratigraphyID={selectedStratigraphyID}
+                    deleteParams={deleteParams}
+                  />
+                </td>
+              )}
             </TableRow>
           </TableBody>
         </Table>
       </TableContainer>
-      {layers?.data?.length === 0 && (
+      {!hasLayers && (
         <Styled.Empty>
           <TranslationText id="nothingToShow" />
         </Styled.Empty>
