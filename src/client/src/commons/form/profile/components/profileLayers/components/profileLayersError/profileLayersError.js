@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import * as Styled from "./styles";
-import { Icon, Radio, Form, Input } from "semantic-ui-react";
+import { Icon, Radio } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
 import {
   gapLayer,
@@ -27,7 +27,6 @@ const ProfileLayersError = props => {
   const [error, setError] = useState();
   const [resolvingAction, setResolvingAction] = useState(null);
   const [isDelete, setIsDelete] = useState(false);
-  const [value, setValue] = useState(null);
   const alertContext = useContext(AlertContext);
 
   useEffect(() => {
@@ -74,15 +73,10 @@ const ProfileLayersError = props => {
       title === "extendlower"
     )
       return 2;
-    if (title === "setmanually") return 3;
   };
   const handleResolvingAction = (e, { value }) => {
     e.stopPropagation();
     setResolvingAction(value);
-  };
-  const handleValue = (e, { value }) => {
-    e.stopPropagation();
-    setValue(value);
   };
   const onCancelClicked = () => {
     setShowSolution();
@@ -123,7 +117,7 @@ const ProfileLayersError = props => {
           resolvingAction: resolvingAction,
           layer: response,
         });
-        deleteLayer(id, resolvingAction, +value)
+        deleteLayer(id, resolvingAction)
           .then(response => {
             if (response.data.success) {
               onUpdated("deleteLayer");
@@ -254,11 +248,6 @@ const ProfileLayersError = props => {
               )}
             </div>
           ))}
-          {resolvingAction === 3 && (
-            <Form.Field>
-              <Input onChange={handleValue} type="number" />
-            </Form.Field>
-          )}
           <Styled.CardButtonContainer>
             <Styled.CardButton
               basic

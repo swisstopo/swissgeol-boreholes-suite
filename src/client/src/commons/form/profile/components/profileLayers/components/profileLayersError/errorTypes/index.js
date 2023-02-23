@@ -28,7 +28,7 @@ const ErrorTypes = [
   {
     id: 6,
     messageId: "errorAttention",
-    solutions: ["deletelayer", "extendupper", "extendlower", "setmanually"],
+    solutions: ["deletelayer", "extendupper", "extendlower"],
   },
 ];
 

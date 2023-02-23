@@ -12,6 +12,7 @@
 - Memorize table and map state when navigating through the application.
 - When leaving settings page, correctly navigate back to the previously selected mode (viewer or editor).
 - Display loader icon when fetching data for stratigraphy or users.
+- Removed _set manually_ from resolving options when deleting a lithology layer.
 
 ### Fixed
 
