@@ -155,7 +155,7 @@ const ProfileLayersList = props => {
       .flat()
       .filter(s => s !== null)
       .join(", ");
-  }, [item, i18n.language]);
+  }, [item, i18n.language, t]);
 
   const isItemSelected = selectedLayer?.id === itemWithValidation?.id;
   return (
