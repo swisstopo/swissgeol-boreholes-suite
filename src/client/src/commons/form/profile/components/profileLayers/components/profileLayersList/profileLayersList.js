@@ -117,7 +117,7 @@ const ProfileLayersList = props => {
         debris.push(element[i18n.language]);
       });
 
-    const striae = item?.isStriae && t("striae");
+    const striae = item?.isStriae ? t("striae") : null;
 
     let color = [];
     item?.codelists
