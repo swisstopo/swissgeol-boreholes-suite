@@ -33,6 +33,7 @@ const DescriptionDeleteDialog = props => {
           size="small"
           startIcon={<ClearIcon />}
           onClick={e => {
+            e.stopPropagation();
             setDescriptionIdSelectedForDelete(0);
           }}>
           {t("cancel")}
@@ -42,6 +43,7 @@ const DescriptionDeleteDialog = props => {
           size="small"
           startIcon={<DeleteIcon />}
           onClick={e => {
+            e.stopPropagation();
             deleteMutation.mutate(item.id);
           }}>
           {t("confirm")}

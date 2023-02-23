@@ -22,6 +22,7 @@
 - Fix internal error in viewer/editor settings for _Stratigraphy fields_ when clicking _Select all_.
 - Fix error when downloading a borehole profile.
 - Fix bug where a facies description with a height of 0 could be created.
+- Fix broken layout of _lithological description_ and _facies description_ columns when a gap of more than one layer was created in the _lithology_ column.
 
 ## v2.0.186 - 2023-02-13
 
