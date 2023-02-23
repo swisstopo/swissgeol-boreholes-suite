@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  createRef,
-  useRef,
-  useCallback,
-} from "react";
+import React, { useState, useEffect, createRef, useRef } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import produce from "immer";
@@ -35,6 +29,8 @@ const DescriptionLayers = props => {
   const [displayDescriptions, setDisplayDescriptions] = useState(null);
   const [descriptionIdSelectedForDelete, setDescriptionIdSelectedForDelete] =
     useState(0);
+  const [selectableDepths, setSelectableDepth] = useState([]);
+  const [gaps, setGaps] = useState([]);
 
   const { t } = useTranslation();
   const theme = useTheme();
@@ -52,20 +48,17 @@ const DescriptionLayers = props => {
     // scroll to the last item in the list
     if (
       lastDescriptionRef?.current &&
-      displayDescriptions?.length > prevLengthRef.current
+      displayDescriptions?.length > prevLengthRef.current &&
+      // prevents scrolling when existing layer depths is changed so that an undefined interval is produced while editing.
+      !selectedDescription
     ) {
       lastDescriptionRef.current.scrollIntoView({
-        alignToTop: true,
-        scrollIntoViewOptions: { block: "start", inline: "start" },
         behavior: "smooth",
       });
     }
     // update the previous length
     prevLengthRef.current = displayDescriptions?.length;
-  }, [displayDescriptions, lastDescriptionRef]);
-
-  const selectableFromDepths = layers?.data?.map(l => l.depth_from);
-  const selectableToDepths = layers?.data?.map(l => l.depth_to);
+  }, [displayDescriptions, lastDescriptionRef, selectedDescription]);
 
   useEffect(() => {
     // include empty items in description column to signal missing descriptions
@@ -136,6 +129,19 @@ const DescriptionLayers = props => {
     // eslint-disable-next-line
   }, [deleteParams]);
 
+  useEffect(() => {
+    if (selectedDescription) {
+      const updatedDescription = produce(selectedDescription, draft => {
+        draft.fromDepth = parseFloat(fromDepth);
+        draft.toDepth = parseFloat(toDepth);
+        draft.description = description;
+        draft.qtDescriptionId = parseInt(qtDescriptionId);
+      });
+      updateMutation.mutate(updatedDescription);
+    }
+    // eslint-disable-next-line
+  }, [description, qtDescriptionId, toDepth, fromDepth]);
+
   const selectItem = item => {
     if (item) {
       setFromDepth(item.fromDepth);
@@ -146,37 +152,68 @@ const DescriptionLayers = props => {
     setSelectedDescription(item);
   };
 
-  const submitUpdate = useCallback(() => {
-    if (selectedDescription) {
-      const updatedDescription = produce(selectedDescription, draft => {
-        draft.fromDepth = parseFloat(fromDepth);
-        draft.toDepth = parseFloat(toDepth);
-        draft.description = description;
-        draft.qtDescriptionId = parseInt(qtDescriptionId);
-      });
-      updateMutation.mutate(updatedDescription);
-    }
-    selectItem(null);
-    // eslint-disable-next-line
-  }, [description, qtDescriptionId, toDepth, fromDepth, selectedDescription]);
-
-  const calculateLayerWidth = (fromDepth, toDepth) => {
+  // calculate selectable depths and gaps
+  useEffect(() => {
+    const selectableFromDepths = layers?.data?.map(l => l.depth_from);
+    const selectableToDepths = layers?.data?.map(l => l.depth_to);
     if (selectableFromDepths && selectableToDepths) {
-      const completeDepths = selectableToDepths
+      const selectableDepths = selectableToDepths
         .concat(
           selectableFromDepths.filter(
             item => selectableToDepths.indexOf(item) < 0,
           ),
         )
         .sort((a, b) => a - b);
-      const layerDistance =
-        (completeDepths.indexOf(toDepth) - completeDepths.indexOf(fromDepth)) *
-        10;
-      if (layerDistance < 10) return "10em";
-      return layerDistance + "em";
-    } else {
-      return "10em";
+
+      const missingFromDepths = displayDescriptions
+        ?.map(d => d.fromDepth)
+        .filter(d => !selectableFromDepths.includes(d));
+      const missingToDepths = displayDescriptions
+        ?.map(d => d.toDepth)
+        .filter(d => !selectableToDepths.includes(d));
+
+      const missingDepths = missingFromDepths?.filter(d =>
+        missingToDepths.includes(d),
+      );
+
+      const gaps = [];
+      for (let i = 0; i < selectableDepths.length; i++) {
+        const gap = missingDepths?.filter(
+          d => d > selectableDepths[i] && d < selectableDepths[i + 1],
+        );
+        gaps.push(gap);
+      }
+
+      setGaps(gaps);
+      setSelectableDepth(selectableDepths);
     }
+  }, [layers?.data, displayDescriptions]);
+
+  const calculateLayerHeight = (fromDepth, toDepth) => {
+    // case height must be reduced because of gaps in lithology.
+    if (
+      !selectableDepths.includes(fromDepth) ||
+      (!selectableDepths.includes(toDepth) && gaps?.length)
+    ) {
+      const gapLength = gaps.find(
+        g => g?.includes(fromDepth) || g?.includes(toDepth),
+      )?.length;
+
+      if (gapLength) {
+        return 10 / (gapLength + 1);
+      } else {
+        return 10;
+      }
+    }
+    // case height must be enhanced because descriptions stretching several lithology layers.
+
+    const layerDistance =
+      (selectableDepths.indexOf(toDepth) -
+        selectableDepths.indexOf(fromDepth)) *
+      10;
+
+    if (layerDistance < 10) return 10;
+    return layerDistance;
   };
 
   return (
@@ -184,80 +221,89 @@ const DescriptionLayers = props => {
       {displayDescriptions &&
         displayDescriptions
           ?.sort((a, b) => a.fromDepth - b.fromDepth)
-          .map((item, index) => (
-            <Stack
-              direction="row"
-              data-cy={`description-${index}`}
-              sx={{
-                boxShadow: "inset -1px 0 0 lightgrey, inset 0 -1px 0 lightgrey",
-                flex: "1 1 100%",
-                height:
-                  selectedDescription?.id === item.id
-                    ? "16em"
-                    : calculateLayerWidth(item?.fromDepth, item?.toDepth),
-                overflowY: "auto",
-                padding: "5px",
-                backgroundColor:
-                  item.id === null || item.id === descriptionIdSelectedForDelete
-                    ? theme.palette.error.background
-                    : selectedDescription?.id === item?.id && "lightgrey",
-                "&:hover": {
-                  backgroundColor: "#ebebeb",
-                },
-              }}
-              key={index}
-              ref={descriptionRefs[index]}
-              onClick={() => {
-                if (isEditable && selectedDescription?.id !== item?.id)
-                  selectItem(item);
-              }}
-              isFirst={index === 0 ? true : false}>
-              {descriptionIdSelectedForDelete !== item.id && (
-                <>
-                  {selectedDescription?.id !== item?.id && (
-                    <DescriptionDisplay item={item} />
-                  )}
-                  {selectedDescription?.id === item?.id && (
-                    <DescriptionInput
-                      setFromDepth={setFromDepth}
-                      setDescription={setDescription}
-                      setToDepth={setToDepth}
-                      setQtDescriptionId={setQtDescriptionId}
-                      selectableDepths={selectableFromDepths.concat(
-                        selectableToDepths.filter(
-                          d => !selectableFromDepths.includes(d),
-                        ),
-                      )}
-                      lithologicalDescriptions={descriptions}
-                      submitUpdate={submitUpdate}
-                      item={item}
-                    />
-                  )}
-                  {isEditable && (
-                    <ActionButtons
-                      item={item}
-                      selectItem={selectItem}
-                      setDescriptionIdSelectedForDelete={
-                        setDescriptionIdSelectedForDelete
-                      }
-                      addMutation={addMutation}
-                      selectedDescription={selectedDescription}
-                      selectedStratigraphyID={selectedStratigraphyID}
-                    />
-                  )}
-                </>
-              )}
-              {descriptionIdSelectedForDelete === item.id && (
-                <DescriptionDeleteDialog
-                  item={item}
-                  setDescriptionIdSelectedForDelete={
-                    setDescriptionIdSelectedForDelete
-                  }
-                  deleteMutation={deleteMutation}
-                />
-              )}
-            </Stack>
-          ))}
+          .map((item, index) => {
+            const calculatedHeight = calculateLayerHeight(
+              item?.fromDepth,
+              item?.toDepth,
+            );
+            const isItemSelected = selectedDescription?.id === item?.id;
+            const isItemToDelete = item.id === descriptionIdSelectedForDelete;
+            return (
+              <Stack
+                direction="row"
+                data-cy={`description-${index}`}
+                sx={{
+                  boxShadow:
+                    "inset -1px 0 0 lightgrey, inset 0 -1px 0 lightgrey",
+                  flex: "1 1 100%",
+                  height: isItemSelected ? "16em" : calculatedHeight + "em",
+                  overflowY: "auto",
+                  padding: "5px",
+                  backgroundColor:
+                    item.id === null || isItemToDelete
+                      ? theme.palette.error.background
+                      : isItemSelected && "lightgrey",
+                  "&:hover": {
+                    backgroundColor: "#ebebeb",
+                  },
+                }}
+                key={index}
+                ref={descriptionRefs[index]}
+                onClick={() => {
+                  if (isEditable && !isItemSelected) selectItem(item);
+                }}
+                isFirst={index === 0 ? true : false}>
+                {!isItemToDelete && (
+                  <>
+                    {!isItemSelected && (
+                      <DescriptionDisplay
+                        item={item}
+                        layerHeight={calculatedHeight}
+                      />
+                    )}
+                    {isItemSelected && (
+                      <DescriptionInput
+                        setFromDepth={setFromDepth}
+                        description={description}
+                        qtDescriptionId={qtDescriptionId}
+                        fromDepth={fromDepth}
+                        toDepth={toDepth}
+                        setDescription={setDescription}
+                        setToDepth={setToDepth}
+                        setQtDescriptionId={setQtDescriptionId}
+                        selectableDepths={selectableDepths}
+                        lithologicalDescriptions={descriptions}
+                        item={item}
+                        updateMutation={updateMutation}
+                        selectItem={selectItem}
+                      />
+                    )}
+                    {isEditable && (
+                      <ActionButtons
+                        item={item}
+                        selectItem={selectItem}
+                        setDescriptionIdSelectedForDelete={
+                          setDescriptionIdSelectedForDelete
+                        }
+                        addMutation={addMutation}
+                        selectedDescription={selectedDescription}
+                        selectedStratigraphyID={selectedStratigraphyID}
+                      />
+                    )}
+                  </>
+                )}
+                {isItemToDelete && (
+                  <DescriptionDeleteDialog
+                    item={item}
+                    setDescriptionIdSelectedForDelete={
+                      setDescriptionIdSelectedForDelete
+                    }
+                    deleteMutation={deleteMutation}
+                  />
+                )}
+              </Stack>
+            );
+          })}
     </Box>
   );
 };

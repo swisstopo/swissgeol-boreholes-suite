@@ -11,6 +11,7 @@
 - Memorize table and map state when navigating through the application.
 - When leaving settings page, correctly navigate back to the previously selected mode (viewer or editor).
 - Display loader icon when fetching data for stratigraphy or users.
+- Improved loading time of instrument list.
 
 ### Fixed
 
@@ -20,6 +21,8 @@
 - Fix internal error when adding a backfill with _no casing_.
 - Fix internal error in viewer/editor settings for _Stratigraphy fields_ when clicking _Select all_.
 - Fix error when downloading a borehole profile.
+- Fix bug where a facies description with a height of 0 could be created.
+- Fix broken layout of _lithological description_ and _facies description_ columns when a gap of more than one layer was created in the _lithology_ column.
 - Fix bug where lithological descriptions where not copied when copying boreholes or stratigraphies.
 
 ## v2.0.186 - 2023-02-13
