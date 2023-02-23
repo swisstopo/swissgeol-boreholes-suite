@@ -74,14 +74,24 @@ const ProfileLayersList = props => {
     const lithology = item?.lithology && item?.lithology?.[i18n.language];
     const uscs1 = item?.uscs1 && item?.uscs1?.[i18n.language];
     const grainSize1 = item?.grainSize1 && item?.grainSize1?.[i18n.language];
-    const uscs2 = item?.uscs2 && item?.uscs2?.[i18n.language];
-    const grainSize2 = item?.grainSize2 && item?.grainSize2?.[i18n.language];
-    const strings = [lithology, uscs1, grainSize1, uscs2, grainSize2];
+    let color = [];
+    item?.codelists
+      .filter(c => c.schema === "mlpr112")
+      .forEach(element => {
+        color.push(element[i18n.language]);
+      });
+    const strings = [lithology, uscs1, grainSize1, color];
 
-    return strings.filter(s => s !== null).join(", ");
+    return strings
+      .flat()
+      .filter(s => s !== null)
+      .join(", ");
   }, [item, i18n.language]);
 
   const secondaryProps = useMemo(() => {
+    const uscs2 = item?.uscs2 && item?.uscs2?.[i18n.language];
+    const grainSize2 = item?.grainSize2 && item?.grainSize2?.[i18n.language];
+
     let uscs3 = [];
     item?.codelists
       .filter(c => c.schema === "mcla101")
@@ -119,13 +129,6 @@ const ProfileLayersList = props => {
 
     const striae = item?.isStriae ? t("striae") : null;
 
-    let color = [];
-    item?.codelists
-      .filter(c => c.schema === "mlpr112")
-      .forEach(element => {
-        color.push(element[i18n.language]);
-      });
-
     const consistance = item?.consistance && item?.consistance?.[i18n.language];
     const plasticity = item?.plasticity && item?.plasticity?.[i18n.language];
     const compactness = item?.compactness && item?.compactness?.[i18n.language];
@@ -135,13 +138,14 @@ const ProfileLayersList = props => {
     const alteration = item?.alteration && item?.alteration?.[i18n.language];
 
     const strings = [
+      uscs2,
+      grainSize2,
       uscs3,
       grainshape,
       angularity,
       organicCompounds,
       debris,
       striae,
-      color,
       consistance,
       plasticity,
       compactness,
