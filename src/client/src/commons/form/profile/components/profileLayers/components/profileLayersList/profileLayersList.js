@@ -71,9 +71,9 @@ const ProfileLayersList = props => {
   }, [checkHasWarning]);
 
   const mainProps = useMemo(() => {
-    const lithology = item?.lithology && item?.lithology?.[i18n.language];
-    const uscs1 = item?.uscs1 && item?.uscs1?.[i18n.language];
-    const grainSize1 = item?.grainSize1 && item?.grainSize1?.[i18n.language];
+    const lithology = item?.lithology?.[i18n.language] ?? null;
+    const uscs1 = item?.uscs1?.[i18n.language] ?? null;
+    const grainSize1 = item?.grainSize1?.[i18n.language] ?? null;
     let color = [];
     item?.codelists
       .filter(c => c.schema === "mlpr112")
@@ -89,8 +89,8 @@ const ProfileLayersList = props => {
   }, [item, i18n.language]);
 
   const secondaryProps = useMemo(() => {
-    const uscs2 = item?.uscs2 && item?.uscs2?.[i18n.language];
-    const grainSize2 = item?.grainSize2 && item?.grainSize2?.[i18n.language];
+    const uscs2 = item?.uscs2?.[i18n.language] ?? null;
+    const grainSize2 = item?.grainSize2?.[i18n.language] ?? null;
 
     let uscs3 = [];
     item?.codelists
@@ -129,13 +129,13 @@ const ProfileLayersList = props => {
 
     const striae = item?.isStriae ? t("striae") : null;
 
-    const consistance = item?.consistance && item?.consistance?.[i18n.language];
-    const plasticity = item?.plasticity && item?.plasticity?.[i18n.language];
-    const compactness = item?.compactness && item?.compactness?.[i18n.language];
-    const cohesion = item?.cohesion && item?.cohesion?.[i18n.language];
-    const gradation = item?.gradation && item?.gradation?.[i18n.language];
-    const humidity = item?.humidity && item?.humidity?.[i18n.language];
-    const alteration = item?.alteration && item?.alteration?.[i18n.language];
+    const consistance = item?.consistance?.[i18n.language] ?? null;
+    const plasticity = item?.plasticity?.[i18n.language] ?? null;
+    const compactness = item?.compactness?.[i18n.language] ?? null;
+    const cohesion = item?.cohesion?.[i18n.language] ?? null;
+    const gradation = item?.gradation?.[i18n.language] ?? null;
+    const humidity = item?.humidity?.[i18n.language] ?? null;
+    const alteration = item?.alteration?.[i18n.language] ?? null;
 
     const strings = [
       uscs2,
