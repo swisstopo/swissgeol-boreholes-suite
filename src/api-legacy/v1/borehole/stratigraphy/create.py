@@ -31,9 +31,7 @@ class CreateStratigraphy(Action):
                     bdms.stratigraphy
                 WHERE
                     id_bho_fk = $1
-                AND
-                    kind_id_cli = $2
-            """, id, kind)
+            """, id)
 
             primary_sty = True if cnt == 0 else False
 
