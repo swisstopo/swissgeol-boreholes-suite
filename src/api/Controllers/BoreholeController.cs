@@ -29,7 +29,7 @@ public class BoreholeController : ControllerBase
     /// <returns>The id of the newly created <see cref="Borehole"/>.</returns>
     [HttpPost("copy")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<int>> CopyAsync([Required]int id, [Required]int workgroupId)
+    public async Task<ActionResult<int>> CopyAsync([Required] int id, [Required] int workgroupId)
     {
         logger.LogInformation("Copy borehole with id <{BoreholeId}> to workgroup with id <{WorkgroupId}>", id, workgroupId);
 
@@ -46,6 +46,8 @@ public class BoreholeController : ControllerBase
 
         var borehole = await context.Boreholes
             .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
             .Include(b => b.Workflows)
             .Include(b => b.BoreholeFiles)
             .AsNoTracking()
@@ -69,6 +71,16 @@ public class BoreholeController : ControllerBase
                 {
                     layerCode.LayerId = 0;
                 }
+            }
+
+            foreach (var lithologicalDescription in stratigraphy.LithologicalDescriptions)
+            {
+                lithologicalDescription.Id = 0;
+            }
+
+            foreach (var faciesDescription in stratigraphy.FaciesDescriptions)
+            {
+                faciesDescription.Id = 0;
             }
         }
 
