@@ -5,13 +5,13 @@
 ### Added
 
 - Added functionality to edit facies description seperately from lithology.
+- Added functionality to scroll to newly created lithology layer.
 
 ### Changed
 
 - Memorize table and map state when navigating through the application.
 - When leaving settings page, correctly navigate back to the previously selected mode (viewer or editor).
 - Display loader icon when fetching data for stratigraphy or users.
-- Improved loading time of instrument list.
 
 ### Fixed
 
