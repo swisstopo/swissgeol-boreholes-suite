@@ -1,22 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 import { profileKind } from "../constance";
 import { useTranslation } from "react-i18next";
-import { useProfiles } from "../components/profileInstrument/api";
+import { getProfile } from "../components/profileInstrument/api";
 
 export default function useCasingList(boreholeID) {
   const { t } = useTranslation();
 
   const [casing, setCasing] = useState([]);
   const mounted = useRef(false);
-  const { data: profiles } = useProfiles(boreholeID, profileKind.CASING);
 
   useEffect(() => {
     mounted.current = true;
 
-    if (profiles) {
+    getProfile(boreholeID, profileKind.CASING).then(response => {
       const temp = [{ key: 1, value: 0, text: t("common:no_casing") }];
-      if (profiles.length > 0) {
-        profiles.forEach(e => {
+      if (response.length > 0) {
+        response.forEach(e => {
           temp.push({
             key: e.id,
             value: e.id,
@@ -27,12 +26,12 @@ export default function useCasingList(boreholeID) {
       if (mounted.current) {
         setCasing(temp);
       }
-    }
+    });
 
     return () => {
       mounted.current = false;
     };
-  }, [t, profiles]);
+  }, [boreholeID, t]);
 
   return { casing };
 }
