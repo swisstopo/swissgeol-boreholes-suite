@@ -17,12 +17,6 @@ class PatchLayer(Action):
         elif field == 'depth_to':
             column = 'depth_to_lay'
 
-        elif field == 'lithological_description':
-            column = 'lithological_description_lay'
-
-        elif field == 'facies_description':
-            column = 'facies_description_lay'
-
         elif field == 'last':
             column = 'last_lay'
 
@@ -145,8 +139,6 @@ class PatchLayer(Action):
             if field in [
                 'depth_from',
                 'depth_to',
-                'lithological_description',
-                'facies_description',
                 'last',
                 'striae',
                 'uscs_original',

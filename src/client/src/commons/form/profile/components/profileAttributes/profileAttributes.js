@@ -32,8 +32,6 @@ const ProfileAttributes = props => {
       kind: null,
       depth_from: null,
       depth_to: null,
-      lithological_description: "",
-      facies_description: "",
       last: null,
       qt_description: null,
       lithology: null,
