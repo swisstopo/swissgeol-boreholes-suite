@@ -137,7 +137,6 @@ if __name__ == "__main__":
 
         # user handlers
         SettingHandler,
-        DownloadHandler,
         UserHandler,
         AdminHandler,
         WorkgroupAdminHandler,
@@ -146,8 +145,6 @@ if __name__ == "__main__":
         BoreholeViewerHandler,
         BoreholeProducerHandler,
         ExportHandler,
-        ExportAdminHandler,
-        ImportAdminHandler,
         FileHandler,
 
         # Identifier handlers
@@ -205,9 +202,6 @@ if __name__ == "__main__":
 
         # Borehole handlers
         (r'/api/v1/setting', SettingHandler),
-        (r'/api/v1/setting/download', DownloadHandler),
-        (r'/api/v1/setting/export', ExportAdminHandler),
-        (r'/api/v1/setting/import', ImportAdminHandler),
         (r'/api/v1/user', UserHandler),
         (r'/api/v1/user/edit', AdminHandler),
 

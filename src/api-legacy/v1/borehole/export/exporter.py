@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 from bms.v1.handlers import Viewer
-from bms.v1.borehole.export import (
-    ExportSimpleCsv,
-    ExportShapefile,
-    ExportCsv,
-    ExportCsvFull
-)
 from PyPDF2 import PdfFileWriter, PdfFileReader
 from io import BytesIO
 import zipfile
@@ -69,98 +63,6 @@ class ExportHandler(Viewer):
 
                 output = None
                 output_stream = None
-
-                if len(arguments['format']) > 1:
-
-                    self.set_header(
-                        "Content-Type",
-                        "application/zip"
-                    )
-                    self.set_header(
-                        "Content-Disposition",
-                        "inline; filename=export-%s.zip" % now.strftime(
-                                "%Y%m%d%H%M%S"
-                        )
-                    )
-
-                    output = BytesIO()
-                    output_stream = zipfile.ZipFile(
-                        output,
-                        mode="w",
-                        compression=zipfile.ZIP_DEFLATED
-                    )
-
-                if 'csv' in arguments['format']:
-
-                    # action = ExportSimpleCsv(conn)
-                    action = ExportCsv(conn)
-                    if arguments is None:
-                        csvfile = await action.execute(
-                            user=self.user
-                        )
-
-                    else:
-                        csvfile = await action.execute(
-                            filter=arguments,
-                            user=self.user
-                        )
-
-                    if output_stream is not None:
-                        output_stream.writestr(
-                            'export-%s.csv' % now.strftime(
-                                    "%Y%m%d%H%M%S"
-                            ),
-                            csvfile.getvalue()
-                        )
-
-                    else:
-                        self.set_header(
-                            "Content-Type",
-                            "text/csv"
-                        )
-                        self.set_header(
-                            "Content-Disposition",
-                            "inline; filename=export-%s.csv" % now.strftime(
-                                    "%Y%m%d%H%M%S"
-                            )
-                        )
-                        self.write(csvfile.getvalue())
-
-                if 'fullcsv' in arguments['format']:
-
-                    # action = ExportSimpleCsv(conn)
-                    action = ExportCsvFull(conn)
-                    if arguments is None:
-                        csvfile = await action.execute(
-                            user=self.user
-                        )
-
-                    else:
-                        csvfile = await action.execute(
-                            filter=arguments,
-                            user=self.user
-                        )
-
-                    if output_stream is not None:
-                        output_stream.writestr(
-                            'full-export-%s.csv' % now.strftime(
-                                    "%Y%m%d%H%M%S"
-                            ),
-                            csvfile.getvalue()
-                        )
-
-                    else:
-                        self.set_header(
-                            "Content-Type",
-                            "text/csv"
-                        )
-                        self.set_header(
-                            "Content-Disposition",
-                            "inline; filename=full-export-%s.csv" % now.strftime(
-                                    "%Y%m%d%H%M%S"
-                            )
-                        )
-                        self.write(csvfile.getvalue())
 
                 if 'pdf' in arguments['format']:
 
@@ -450,63 +352,6 @@ class ExportHandler(Viewer):
                             )
                         )
                         self.write(working_file.getvalue())
-
-                if 'shape' in arguments['format']:
-
-                    shpA = ExportShapefile(conn)
-
-                    if arguments is None:
-                        shp, shx, dbf, prj = await shpA.execute(
-                            user=self.user
-                        )
-                    else:
-                        shp, shx, dbf, prj = await shpA.execute(
-                            filter=arguments,
-                            user=self.user
-                        )
-
-                    if output_stream is None:
-                        self.set_header(
-                            "Content-Type",
-                            "application/zip"
-                        )
-                        self.set_header(
-                            "Content-Disposition",
-                            "inline; filename=export-%s.zip" % now.strftime(
-                                    "%Y%m%d%H%M%S"
-                            )
-                        )
-                        output = BytesIO()
-                        output_stream = zipfile.ZipFile(
-                            output,
-                            mode="w",
-                            compression=zipfile.ZIP_DEFLATED
-                        )
-
-                    output_stream.writestr(
-                        'export-%s.shp' % now.strftime(
-                                "%Y%m%d%H%M%S"
-                        ),
-                        shp.getvalue()
-                    )
-                    output_stream.writestr(
-                        'export-%s.shx' % now.strftime(
-                                "%Y%m%d%H%M%S"
-                        ),
-                        shx.getvalue()
-                    )
-                    output_stream.writestr(
-                        'export-%s.dbf' % now.strftime(
-                                "%Y%m%d%H%M%S"
-                        ),
-                        dbf.getvalue()
-                    )
-                    output_stream.writestr(
-                        'export-%s.prj' % now.strftime(
-                                "%Y%m%d%H%M%S"
-                        ),
-                        prj.getvalue()
-                    )
 
             if output_stream is not None:
                 output_stream.close()

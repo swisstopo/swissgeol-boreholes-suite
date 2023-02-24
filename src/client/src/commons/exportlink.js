@@ -17,22 +17,8 @@ class ExportLink extends React.Component {
   render() {
     const props = this.props;
 
-    if (props.id.lenght === 0) {
+    if (props.id.length === 0) {
       return null;
-    }
-
-    let frmt = [];
-    if (props.pdf === true) {
-      frmt.push("pdf");
-    }
-    if (props.shp === true) {
-      frmt.push("shape");
-    }
-    if (props.csv === true) {
-      frmt.push("csv");
-    }
-    if (props.fullcsv === true) {
-      frmt.push("fullcsv");
     }
 
     return (
@@ -53,7 +39,7 @@ class ExportLink extends React.Component {
                 () => {
                   downloadBorehole({
                     lang: props.i18n.language,
-                    format: frmt.join(","),
+                    format: "pdf",
                     id: props.id.join(","),
                   }).then(() => {
                     this.setState({
@@ -78,23 +64,15 @@ class ExportLink extends React.Component {
 }
 
 ExportLink.propTypes = {
-  csv: PropTypes.bool,
-  fullcsv: PropTypes.bool,
   i18n: PropTypes.shape({
     language: PropTypes.string,
   }),
   id: PropTypes.array,
-  pdf: PropTypes.bool,
-  shp: PropTypes.bool,
   style: PropTypes.object,
 };
 
 ExportLink.defaultProps = {
   id: [],
-  pdf: true,
-  shape: false,
-  csv: false,
-  fullcsv: false,
 };
 
 export default withTranslation()(ExportLink);

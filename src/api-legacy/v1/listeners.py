@@ -3,15 +3,13 @@
 import asyncio
 import json
 from tornado.options import options
-from bms.v1.borehole.export.full import ZippedFullExport2Storage
 from bms.v1.feedback import ForwardFeedback
 import traceback
 
 class EventListener():
 
     actions = [
-        'FEEDBACK.CREATE',
-        'DATABASE.EXPORT'
+        'FEEDBACK.CREATE'
     ]
 
     def __init__(self, application):
@@ -54,10 +52,6 @@ class EventListener():
                     "tls": options.smtp_tls,
                     "starttls": options.smtp_starttls,
                 }
-
-            elif action == 'DATABASE.EXPORT':
-                exe = ZippedFullExport2Storage(self.conn)
-                request['id'] = id
 
             else:
                 print(f"Action unknown: {action}")

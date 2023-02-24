@@ -25,7 +25,6 @@ import {
   loadEditingBoreholes,
   getdBoreholeIds,
   deleteBoreholes,
-  exportDatabaseById,
 } from "../../api-lib/index";
 import { AlertContext } from "../alert/alertContext";
 import store from "../../reducers";
@@ -162,34 +161,6 @@ class BoreholeEditorTable extends TTable {
               this.props.loadData(1, filter);
             },
           );
-        });
-      }
-    }
-  }
-  exportList() {
-    const { filter } = this.props;
-    if (this.state.all === true || this.state.selected.length > 0) {
-      if (this.state.all === true) {
-        getdBoreholeIds(filter)
-          .then(response => {
-            if (response.data.success) {
-              exportDatabaseById(
-                _.pullAll(response.data.data, this.state.selected),
-              ).then(response => {
-                if (response.success === false) {
-                  this.context.error(response.message);
-                }
-              });
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      } else {
-        exportDatabaseById(this.state.selected).then(response => {
-          if (response.success === false) {
-            this.context.error(response.message);
-          }
         });
       }
     }
@@ -436,15 +407,6 @@ class BoreholeEditorTable extends TTable {
               {t("common:reset")}
             </span>
             ) &nbsp;
-            <Button
-              color="black"
-              onClick={() => {
-                this.exportList();
-              }}
-              size="mini">
-              {t("common:export")}
-            </Button>
-            &nbsp;
             <Button
               color="black"
               onClick={() => {

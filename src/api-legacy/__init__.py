@@ -50,14 +50,12 @@ from bms.v1.borehole.profile.layer.producer import ProfileLayerProducerHandler
 
 # ACTION Handlers exports
 from bms.v1.borehole.export.exporter import ExportHandler
-from bms.v1.borehole.export.admin import ExportAdminHandler, ImportAdminHandler
 
 # Stratigraphy's layers handlers
 from bms.v1.borehole.stratigraphy.layer.producer import LayerProducerHandler
 from bms.v1.borehole.stratigraphy.layer.viewer import LayerViewerHandler
 
 from bms.v1.setting.handler import SettingHandler
-from bms.v1.setting.download import DownloadHandler
 
 from bms.v1.borehole.project.handler import ProjectHandler
 from bms.v1.borehole.codelist.handler import CodeListHandler

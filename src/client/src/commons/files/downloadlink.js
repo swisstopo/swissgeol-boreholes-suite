@@ -44,14 +44,6 @@ class DownloadLink extends React.Component {
                         downloading: false,
                       });
                     });
-                  } else if (this.props.type === "export") {
-                    exportDownload({
-                      id: props.id,
-                    }).then(() => {
-                      this.setState({
-                        downloading: false,
-                      });
-                    });
                   }
                 },
               );
