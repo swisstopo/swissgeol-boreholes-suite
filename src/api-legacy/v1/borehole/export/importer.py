@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from tornado.options import options
-from bms.v1.borehole.export.spatialite import ImportSpatiaLite
 from bms.v1.exceptions import WrongParameter
 from bms.v1.action import Action
 from bms.v1.utils.files import S3Upload

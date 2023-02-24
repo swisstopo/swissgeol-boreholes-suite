@@ -11,7 +11,6 @@ import DetailsContainer from "../../commons/detail/detailsContainer";
 import MapComponent from "../../commons/map/mapComponent";
 import MenuExplorer from "../../commons/menu/explorer/menuExplorer";
 import MenuContainer from "../../commons/menu/menuContainer";
-import { Checkbox } from "semantic-ui-react";
 
 class HomeComponent extends React.Component {
   constructor(props) {
@@ -20,10 +19,6 @@ class HomeComponent extends React.Component {
     this.getMap = this.getMap.bind(this);
     this.getTable = this.getTable.bind(this);
     this.state = {
-      pdf: true,
-      csv: false,
-      fullcsv: false,
-      shp: false,
       refresh: 0,
       tableScrollPosition: 0,
     };
@@ -127,55 +122,11 @@ class HomeComponent extends React.Component {
               }}>
               {t("common:reset")}
             </span>
-            ) &nbsp; Export as:&nbsp;
-            <Checkbox
-              checked={this.state.pdf}
-              label="PDF"
-              onChange={() => {
-                this.setState({
-                  pdf: !this.state.pdf,
-                });
-              }}
-            />{" "}
-            &nbsp;&nbsp;
-            <Checkbox
-              checked={this.state.csv}
-              label="CSV"
-              onChange={() => {
-                this.setState({
-                  csv: !this.state.csv,
-                });
-              }}
-            />{" "}
-            &nbsp;&nbsp;
-            <Checkbox
-              checked={this.state.fullcsv}
-              label="Full-CSV"
-              onChange={() => {
-                this.setState({
-                  fullcsv: !this.state.fullcsv,
-                });
-              }}
-            />{" "}
-            &nbsp;&nbsp;
-            <Checkbox
-              checked={this.state.shp}
-              label="Shape File"
-              onChange={() => {
-                this.setState({
-                  shp: !this.state.shp,
-                });
-              }}
-            />{" "}
-            &nbsp;&nbsp;
+            ) &nbsp;&nbsp;
             <ExportLink
-              csv={this.state.csv}
-              fullcsv={this.state.fullcsv}
               id={checkout.cart.map(k => {
                 return k.id;
               })}
-              pdf={this.state.pdf}
-              shp={this.state.shp}
               style={{
                 fontSize: "0.8em",
               }}

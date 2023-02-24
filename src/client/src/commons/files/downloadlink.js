@@ -4,7 +4,7 @@ import { withTranslation } from "react-i18next";
 
 import { Icon } from "semantic-ui-react";
 
-import { downloadAttachment, exportDownload } from "../../api-lib/index";
+import { downloadAttachment } from "../../api-lib/index";
 
 class DownloadLink extends React.Component {
   constructor(props) {
@@ -38,14 +38,6 @@ class DownloadLink extends React.Component {
                 () => {
                   if (this.props.type === "attachment") {
                     downloadAttachment({
-                      id: props.id,
-                    }).then(() => {
-                      this.setState({
-                        downloading: false,
-                      });
-                    });
-                  } else if (this.props.type === "export") {
-                    exportDownload({
                       id: props.id,
                     }).then(() => {
                       this.setState({

@@ -7,24 +7,17 @@ import {
   Button,
   Divider,
   Message,
-  Icon,
   Segment,
   Form,
   Radio,
 } from "semantic-ui-react";
 
 import WorkgroupRadioGroup from "../../commons/form/workgroup/radio";
-import WorkgroupMultiselect from "../../commons/form/workgroup/multi";
 import SupplierRadioGroup from "../../commons/form/supplier/radio";
 import TranslationText from "../../commons/form/translationText";
-import DateText from "../../commons/form/dateText";
 import { AlertContext } from "../../commons/alert/alertContext";
-import DownloadLink from "../../commons/files/downloadlink";
 
 import {
-  exportDatabaseAsync,
-  exportDatabaseStatus,
-  exportDatabaseCancel,
   importDatabaseWorkgroup,
   importDatabaseSupplier,
   importDatabaseNewSupplier,
@@ -54,10 +47,7 @@ class DatabaseSettings extends React.Component {
       importing: false,
 
       fetchingStatus: true,
-      lastExport: null,
     };
-    this.checkStatus = this.checkStatus.bind(this);
-    this.countExportableBoreholes = this.countExportableBoreholes.bind(this);
     this.reset = this.reset.bind(this);
   }
 
@@ -71,135 +61,42 @@ class DatabaseSettings extends React.Component {
     }
   }
 
-  checkStatus() {
-    this.setState(
-      {
-        fetchingStatus: true,
-      },
-      () => {
-        exportDatabaseStatus().then(r => {
-          if (r.data.success === true) {
-            const status = r.data.data.status;
-
-            // No exports have been done so far
-            if (status === "empty") {
-              this.setState(
-                {
-                  fetchingStatus: false,
-                  lastExport: null,
-                },
-                () => {
-                  if (this.timer) {
-                    clearInterval(this.timer);
-                    this.timer = null;
-                  }
-                },
-              );
-
-              // an export is currently running
-            } else if (status === "running") {
-              this.setState(
-                {
-                  fetchingStatus: true,
-                  lastExport: null,
-                },
-                () => {
-                  if (!this.timer) {
-                    this.timer = setInterval(() => {
-                      this.checkStatus();
-                    }, 2000);
-                  }
-                },
-              );
-
-              // an export is finished and ready to be downloaded
-            } else if (status === "done") {
-              this.setState(
-                {
-                  fetchingStatus: false,
-                  lastExport: r.data.data,
-                },
-                () => {
-                  if (this.timer) {
-                    clearInterval(this.timer);
-                    this.timer = null;
-                  }
-                },
-              );
-            }
-          }
-        });
-      },
-    );
-  }
-
   reset() {
     getWorkgroups().then(r => {
       if (r.data.success === true) {
         const enabledWorkgroups = r.data.data.filter(w => w.disabled === null);
         const suppliers = r.data.data.filter(w => w.supplier === true);
-        this.setState(
-          {
-            enabledWorkgroups: enabledWorkgroups,
-            importWorkgroup: null,
-            importSupplier: null,
-            importType: "existingWorkgroup",
-            file: null,
-            supplierName: "",
-            suppliers: suppliers,
-            supplier: null,
+        this.setState({
+          enabledWorkgroups: enabledWorkgroups,
+          importWorkgroup: null,
+          importSupplier: null,
+          importType: "existingWorkgroup",
+          file: null,
+          supplierName: "",
+          suppliers: suppliers,
+          supplier: null,
 
-            exporting: false,
-            importing: false,
+          importing: false,
 
-            fetchingStatus: true,
-            lastExport: null,
-          },
-          () => {
-            this.checkStatus();
-          },
-        );
+          fetchingStatus: true,
+        });
       } else {
-        this.setState(
-          {
-            exportWorkgroup: [],
-            enabledWorkgroups: [],
-            importWorkgroup: null,
-            importSupplier: null,
-            importType: "existingWorkgroup",
-            file: null,
-            supplierName: "",
-            suppliers: [],
-            supplier: null,
+        this.setState({
+          enabledWorkgroups: [],
+          importWorkgroup: null,
+          importSupplier: null,
+          importType: "existingWorkgroup",
+          file: null,
+          supplierName: "",
+          suppliers: [],
+          supplier: null,
 
-            exporting: false,
-            importing: false,
+          importing: false,
 
-            fetchingStatus: true,
-            lastExport: null,
-          },
-          () => {
-            this.checkStatus();
-          },
-        );
+          fetchingStatus: true,
+        });
       }
     });
-  }
-
-  countExportableBoreholes() {
-    const { enabledWorkgroups, exportWorkgroup } = this.state;
-
-    if (exportWorkgroup.length === 0) {
-      return 0;
-    }
-    const selected = enabledWorkgroups.filter(
-      w => exportWorkgroup.indexOf(w.id) > -1,
-    );
-    let total = 0;
-    selected.forEach(el => {
-      total += el.boreholes;
-    });
-    return total;
   }
 
   render() {
@@ -210,131 +107,6 @@ class DatabaseSettings extends React.Component {
           padding: "2em",
           flex: 1,
         }}>
-        <div
-          onClick={() => {
-            this.setState({
-              export: !this.state.export,
-            });
-          }}
-          style={{
-            flexDirection: "row",
-            display: "flex",
-            cursor: "pointer",
-            backgroundColor: this.state.export ? "#f5f5f5" : "#fff",
-            padding: 10,
-          }}>
-          <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}>
-              <TranslationText id="export" />
-            </div>
-            <TranslationText id="export_database" />
-          </div>
-          <div
-            style={{
-              flex: 1,
-              textAlign: "right",
-            }}>
-            <Button color="red" size="small">
-              {this.state.export === true ? t("collapse") : t("expand")}
-            </Button>
-          </div>
-        </div>
-        {this.state.export === true ? (
-          <Segment style={{ margin: 0 }}>
-            <WorkgroupMultiselect
-              key="web-bdms-db-setting-1"
-              nameKey="name"
-              onChange={workgroup => {
-                this.setState({
-                  exportWorkgroup: workgroup,
-                });
-              }}
-              workgroups={this.state.enabledWorkgroups}
-            />
-            <div
-              key="web-bdms-db-setting-2"
-              style={{
-                marginTop: "1.5em",
-              }}>
-              <Button
-                disabled={
-                  this.state.exporting === true ||
-                  this.state.exportWorkgroup.length === 0
-                }
-                loading={
-                  this.state.fetchingStatus === true ||
-                  this.state.exporting === true
-                }
-                onClick={() => {
-                  this.setState(
-                    {
-                      exporting: true,
-                    },
-                    () => {
-                      exportDatabaseAsync(this.state.exportWorkgroup).then(
-                        response => {
-                          console.log(response);
-                          if (response.data.success === false) {
-                            this.context.error(response.data.message);
-                          }
-                          this.reset();
-                        },
-                      );
-                    },
-                  );
-                }}
-                primary
-                size="small">
-                <TranslationText id="export" /> &nbsp; (
-                {this.countExportableBoreholes()}
-                &nbsp;
-                <TranslationText id="boreholes" />)
-              </Button>
-            </div>
-            {this.state.fetchingStatus === true ? (
-              <div>
-                <Divider />
-                <Icon loading name="spinner" />
-                &nbsp;
-                <TranslationText id="exportInProgress" />
-                ... &nbsp; (
-                <span
-                  onClick={() => {
-                    exportDatabaseCancel();
-                  }}
-                  style={{
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                    color: "rgb(33, 133, 208)",
-                  }}>
-                  <TranslationText id="cancel" />
-                </span>
-                )
-              </div>
-            ) : (
-              this.state.lastExport !== null && (
-                <div>
-                  <Divider />
-                  <TranslationText id="lastExport" />:
-                  <br />
-                  <DateText date={this.state.lastExport.date} hours /> (
-                  <DateText date={this.state.lastExport.date} fromnow />
-                  )
-                  <br />
-                  <DownloadLink id={this.state.lastExport.id} />
-                </div>
-              )
-            )}
-          </Segment>
-        ) : (
-          <Divider style={{ margin: 0 }} />
-        )}
         <div
           onClick={() => {
             this.setState({

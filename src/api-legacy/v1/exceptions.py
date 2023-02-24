@@ -81,7 +81,3 @@ class Locked(BmsException):
             f"Borehole: '{id}' locked.",
             'errorLocked', data
         )
-
-class ExportAlreadyRunning(BmsException):
-    def __init__(self):
-        super().__init__("Export Already Running", 'E-206')

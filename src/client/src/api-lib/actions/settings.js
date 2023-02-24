@@ -1,4 +1,4 @@
-import { downloadFilePost, downloadFile, fetch, uploadFile } from "./index";
+import { downloadFile, fetch, uploadFile } from "./index";
 
 export function loadSettings() {
   return fetch("/setting", {
@@ -30,41 +30,8 @@ export function patchEditorSettings(tree, value, key = null) {
   return fetch("/setting", payload);
 }
 
-export function exportDatabase(workgroups) {
-  return downloadFilePost("/setting/export", {
-    action: "EXPORT",
-    workgroup: workgroups,
-  });
-}
-
-export function exportDatabaseStatus() {
-  return fetch("/setting/export", {
-    action: "EXPORT_STATUS",
-  });
-}
-
-export function exportDatabaseCancel() {
-  return fetch("/setting/export", {
-    action: "EXPORT_CANCEL",
-  });
-}
-
-export function exportDatabaseAsync(workgroups) {
-  return fetch("/setting/export", {
-    action: "DATABASE.EXPORT",
-    workgroup: workgroups,
-  });
-}
-
 export function exportDownload(params) {
   return downloadFile("/setting/export/download", params);
-}
-
-export function exportDatabaseById(ids) {
-  return downloadFilePost("/setting/export", {
-    action: "EXPORT_BY_ID",
-    ids: ids,
-  });
 }
 
 export function importDatabaseWorkgroup(id, file) {

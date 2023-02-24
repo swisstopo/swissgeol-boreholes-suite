@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from tornado.options import options
-from bms.v1.borehole.export.status import ExportStatus
 from bms.v1.handlers import Admin
 import traceback
 from bms.v1.exceptions import (
@@ -34,14 +33,6 @@ class DownloadHandler(Admin):
             )
 
             async with self.pool.acquire() as conn:
-
-                event_payload = await (
-                    ExportStatus(conn)
-                ).execute()
-
-                if event_payload['status'] != 'done':
-                    raise Exception("Export not ready")
-
                 # Initialize GetFile Action
                 file_info = await (
                     GetFile(conn)
