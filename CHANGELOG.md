@@ -14,6 +14,7 @@
 - Display loader icon when fetching data for stratigraphy or users.
 - Remove _lithological description_ and _facies description_ from lithology layer in viewer mode, editor mode and in settings.
 - Removed _set manually_ from resolving options when deleting a lithology layer.
+- Display lithology layer details in lithology column in editor mode.
 
 ### Fixed
 
@@ -26,6 +27,7 @@
 - Fix bug where a facies description with a height of 0 could be created.
 - Fix broken layout of _lithological description_ and _facies description_ columns when a gap of more than one layer was created in the _lithology_ column.
 - Fix bug where lithological descriptions where not copied when copying boreholes or stratigraphies.
+- Fix bug where coordinates were not updated when pasted in the coordinate input.
 
 ## v2.0.186 - 2023-02-13
 
