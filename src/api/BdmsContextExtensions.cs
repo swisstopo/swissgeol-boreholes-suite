@@ -469,6 +469,38 @@ public static class BdmsContextExtensions
 
         context.BulkInsert(faciesDescriptionsToInsert, bulkConfig);
 
+        // Seed chronostratigraphy
+        var chronostratigraphy_ids = 11_000_000;
+        var fakeChronostratigraphies = new Faker<ChronostratigraphyLayer>()
+            .StrictMode(true)
+            .RuleFor(o => o.FromDepth, f => (chronostratigraphy_ids % 10) * 10)
+            .RuleFor(o => o.ToDepth, f => ((chronostratigraphy_ids % 10) + 1) * 10)
+            .RuleFor(o => o.ChronostratigraphyId, f => f.PickRandom(chronostratigraphyTopBedrockIds).OrNull(f, .05f))
+            .RuleFor(o => o.Chronostratigraphy, _ => default!)
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(chronostratigraphy_ids, 11_000_000))
+            .RuleFor(o => o.Stratigraphy, _ => default!)
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!)
+            .RuleFor(o => o.IsLast, f => chronostratigraphy_ids % 10 == 9)
+            .RuleFor(o => o.Id, f => chronostratigraphy_ids++);
+
+        ChronostratigraphyLayer SeededChronostratigraphies(int seed) => fakeChronostratigraphies.UseSeed(seed).Generate();
+
+        var chronostratigraphiesToInsert = new List<ChronostratigraphyLayer>(stratigraphyRange.Count * 10);
+        for (int i = 0; i < stratigraphyRange.Count; i++)
+        {
+            // Add 10 chronostratigraphies per stratigraphy.
+            var start = (i * 10) + 1;
+            var range = Enumerable.Range(start, 10);
+            chronostratigraphiesToInsert.AddRange(range.Select(SeededChronostratigraphies));
+        }
+
+        context.BulkInsert(chronostratigraphiesToInsert, bulkConfig);
+
         // Seed layer_codelist table (only for a limited number of layers)
         var layerRange = Enumerable.Range(7_000_000, 10_000);
         var layerCodelistRange = Enumerable.Range(0, layerRange.Count() * 3); // Multiply layer range by 3 to generate multiple entries per layer
