@@ -1,6 +1,7 @@
 ﻿using BDMS.Controllers;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -57,6 +58,7 @@ public class CodeListControllerTest
         Assert.AreEqual("Giurassico medio indifferenziato", codeListToTest.It);
         Assert.AreEqual(142, codeListToTest.Order);
         Assert.AreEqual("jmu", codeListToTest.Code);
+        Assert.AreEqual(new LTree("15001001.15001049.15001065.15001070.15001168"), codeListToTest.Path);
     }
 
     [TestMethod]
