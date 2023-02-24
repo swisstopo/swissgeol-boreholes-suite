@@ -13,10 +13,20 @@ import { useTranslation } from "react-i18next";
 import { getData, sendAttribute } from "./api";
 import ProfileAttributeList from "./components/profileAttributeList/profileAttributeList";
 import { useSelector } from "react-redux";
+import { useQueryClient } from "react-query";
 import { AlertContext } from "../../../../alert/alertContext";
+import { layerQueryKey } from "../../../../../api/fetchApiV2";
 
 const ProfileAttributes = props => {
-  const { id, isEditable, onUpdated, attribute, reloadAttribute } = props.data;
+  const {
+    id,
+    isEditable,
+    onUpdated,
+    attribute,
+    reloadAttribute,
+    selectedStratigraphyID,
+  } = props.data;
+
   const { codes, geocode } = useSelector(state => ({
     codes: state.core_domain_list,
     geocode: "Geol",
@@ -75,6 +85,7 @@ const ProfileAttributes = props => {
     },
   });
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const alertContext = useContext(AlertContext);
 
   const mounted = useRef(false);
@@ -131,6 +142,9 @@ const ProfileAttributes = props => {
       sendAttribute(state?.layer?.id, attribute, value).then(response => {
         if (response) {
           onUpdated(attribute);
+          queryClient.invalidateQueries({
+            queryKey: [layerQueryKey, selectedStratigraphyID],
+          });
         }
       });
     }, 500);

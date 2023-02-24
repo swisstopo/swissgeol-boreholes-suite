@@ -119,8 +119,10 @@ export const useDomains = () =>
     return domains;
   });
 
+export const layerQueryKey = "layers";
+
 export const useLayers = profileId =>
-  useQuery(["layers", profileId], () => {
+  useQuery([layerQueryKey, profileId], () => {
     return fetchLayersByProfileId(profileId);
   });
 
