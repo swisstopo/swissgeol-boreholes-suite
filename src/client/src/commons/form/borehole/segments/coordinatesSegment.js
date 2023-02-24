@@ -225,38 +225,38 @@ const CoordinatesSegment = props => {
     const currentFieldName =
       referenceSystems[referenceSystem].fieldName[direction];
 
-    let LV95X = null;
-    let LV95Y = null;
-    let LV03X = null;
-    let LV03Y = null;
-
     const LV95XFormValue = getValues(referenceSystems.LV95.fieldName.X);
     const LV95YFormValue = getValues(referenceSystems.LV95.fieldName.Y);
     const LV03XFormValue = getValues(referenceSystems.LV03.fieldName.X);
     const LV03YFormValue = getValues(referenceSystems.LV03.fieldName.Y);
 
-    if (LV95XFormValue)
-      LV95X =
-        currentFieldName === referenceSystems.LV95.fieldName.X
-          ? value
-          : parseIfString(LV95XFormValue);
-    if (LV95YFormValue)
-      LV95Y =
-        currentFieldName === referenceSystems.LV95.fieldName.Y
-          ? value
-          : parseIfString(LV95YFormValue);
+    const LV95X =
+      currentFieldName === referenceSystems.LV95.fieldName.X
+        ? value
+        : LV95XFormValue
+        ? parseIfString(LV95XFormValue)
+        : null;
 
-    if (LV03XFormValue)
-      LV03X =
-        currentFieldName === referenceSystems.LV03.fieldName.X
-          ? value
-          : parseIfString(LV03XFormValue);
+    const LV95Y =
+      currentFieldName === referenceSystems.LV95.fieldName.Y
+        ? value
+        : LV95XFormValue
+        ? parseIfString(LV95YFormValue)
+        : null;
 
-    if (LV03YFormValue)
-      LV03Y =
-        currentFieldName === referenceSystems.LV03.fieldName.Y
-          ? value
-          : parseIfString(LV03YFormValue);
+    const LV03X =
+      currentFieldName === referenceSystems.LV03.fieldName.X
+        ? value
+        : LV03XFormValue
+        ? parseIfString(LV03XFormValue)
+        : null;
+
+    const LV03Y =
+      currentFieldName === referenceSystems.LV03.fieldName.Y
+        ? value
+        : LV03XFormValue
+        ? parseIfString(LV03YFormValue)
+        : null;
 
     return {
       LV95: {
@@ -287,7 +287,6 @@ const CoordinatesSegment = props => {
           direction,
           floatValue,
         );
-
         const completeLV95 = coordinates.LV95.X > 0 && coordinates.LV95.Y > 0;
         const completeLV03 = coordinates.LV03.X > 0 && coordinates.LV03.Y > 0;
 
