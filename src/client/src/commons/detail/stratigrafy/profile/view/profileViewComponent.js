@@ -229,11 +229,6 @@ const ProfileView = props => {
               {getNumericTextRow("layer_depth_from", layer.fromDepth)}
               {getNumericTextRow("layer_depth_to", layer.toDepth)}
               {getTextRow(
-                "lithological_description",
-                layer.descriptionLithological,
-              )}
-              {getTextRow("facies_description", layer.descriptionFacies)}
-              {getTextRow(
                 "layer_last",
                 layer.isLast === true
                   ? t("common:yes")

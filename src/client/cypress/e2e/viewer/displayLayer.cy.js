@@ -133,7 +133,7 @@ describe("Test for the borehole form.", () => {
     cy.get(".PrivateSwitchBase-input").click({ force: true });
     cy.get('[data-cy="stratigraphy-layer-details"] h6').should(
       "have.length",
-      32,
+      30,
     );
   });
 });
