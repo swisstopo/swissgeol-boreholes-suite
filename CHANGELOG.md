@@ -15,6 +15,7 @@
 - Remove _lithological description_ and _facies description_ from lithology layer in viewer mode, editor mode and in settings.
 - Removed _set manually_ from resolving options when deleting a lithology layer.
 - Display lithology layer details in lithology column in editor mode.
+- Immediately delete layers in _casing_ and _backfill_ columns, without showing a delete dialog.
 
 ### Fixed
 
