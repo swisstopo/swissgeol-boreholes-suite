@@ -194,7 +194,7 @@ class CopyBorehole(Action):
                         INSERT INTO bdms.layer(
                             creator_lay, updater_lay,
                             undefined_lay, id_sty_fk, depth_from_lay, depth_to_lay,
-                            lithological_description_lay, facies_description_lay, last_lay,
+                            last_lay,
                             qt_description_id_cli, lithology_top_bedrock_id_cli,
                             chronostratigraphy_id_cli,
                             plasticity_id_cli, consistance_id_cli,
@@ -210,7 +210,7 @@ class CopyBorehole(Action):
                         SELECT
                             $1, $2,
                             undefined_lay, $3, depth_from_lay, depth_to_lay,
-                            lithological_description_lay, facies_description_lay, last_lay,
+                            last_lay,
                             qt_description_id_cli, lithology_top_bedrock_id_cli,
                             chronostratigraphy_id_cli,
                             plasticity_id_cli, consistance_id_cli,

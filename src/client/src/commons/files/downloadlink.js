@@ -4,7 +4,7 @@ import { withTranslation } from "react-i18next";
 
 import { Icon } from "semantic-ui-react";
 
-import { downloadAttachment, exportDownload } from "../../api-lib/index";
+import { downloadAttachment } from "../../api-lib/index";
 
 class DownloadLink extends React.Component {
   constructor(props) {

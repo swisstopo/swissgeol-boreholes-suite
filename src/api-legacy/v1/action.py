@@ -573,18 +573,6 @@ class Action():
                 depth_to_lay <= %s
             """ % self.getIdx())
 
-        if 'layer_lithological_description' in keys and filter['layer_description'] not in ['', None]:
-            params.append(f"%{filter['layer_description']}%")
-            where.append("""
-                lithological_description_lay ILIKE %s
-            """ % self.getIdx())
-
-        if 'layer_facies_description' in keys and filter['layer_geology'] not in ['', None]:
-            params.append(f"%{filter['layer_geology']}%")
-            where.append("""
-                facies_description_lay ILIKE %s
-            """ % self.getIdx())
-
         if 'lithology' in keys and filter['lithology'] not in ['', None]:
             params.append(filter['lithology'])
             where.append("""

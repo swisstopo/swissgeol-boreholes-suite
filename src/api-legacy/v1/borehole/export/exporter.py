@@ -249,8 +249,6 @@ class ExportHandler(Viewer):
                                                         ) as lithology,
                                                         -- cli_lithology.text_cli_{lan} as lithology,
                                                         cli_lithology.conf_cli as conf_lithology,
-                                                        lithological_description_lay as lithological_description,
-                                                        facies_description_lay as facies_description,
                                                         name_sty as name_st,
                                                         notes_lay as notes
                                                     FROM
