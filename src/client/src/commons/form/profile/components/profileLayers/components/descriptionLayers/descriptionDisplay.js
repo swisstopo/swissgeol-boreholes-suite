@@ -17,7 +17,7 @@ const DescriptionDisplay = props => {
         }}>
         {item.fromDepth} m
       </Typography>
-      {layerHeight === 10 && (
+      {layerHeight >= 10 && (
         <>
           <Typography
             sx={{
