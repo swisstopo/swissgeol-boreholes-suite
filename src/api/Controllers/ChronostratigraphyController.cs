@@ -26,16 +26,16 @@ public class ChronostratigraphyController : BdmsControllerBase<Chronostratigraph
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<ChronostratigraphyLayer>> GetAsync([FromQuery] int? stratigraphyId = null)
     {
-        var chronostratigraphies = context.Chronostratigraphies
+        var chronostratigraphyLayers = context.ChronostratigraphyLayers
             .Include(c => c.Chronostratigraphy)
             .AsNoTracking();
 
         if (stratigraphyId != null)
         {
-            chronostratigraphies = chronostratigraphies.Where(l => l.StratigraphyId == stratigraphyId);
+            chronostratigraphyLayers = chronostratigraphyLayers.Where(l => l.StratigraphyId == stratigraphyId);
         }
 
-        return await chronostratigraphies.ToListAsync().ConfigureAwait(false);
+        return await chronostratigraphyLayers.ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -46,18 +46,18 @@ public class ChronostratigraphyController : BdmsControllerBase<Chronostratigraph
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<ChronostratigraphyLayer>> GetByIdAsync(int id)
     {
-        var chronostratigraphy = await context.Chronostratigraphies
+        var chronostratigraphyLayer = await context.ChronostratigraphyLayers
             .Include(c => c.Chronostratigraphy)
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)
             .ConfigureAwait(false);
 
-        if (chronostratigraphy == null)
+        if (chronostratigraphyLayer == null)
         {
             return NotFound();
         }
 
-        return Ok(chronostratigraphy);
+        return Ok(chronostratigraphyLayer);
     }
 
     /// <inheritdoc />

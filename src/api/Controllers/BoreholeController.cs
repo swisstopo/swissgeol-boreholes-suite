@@ -48,7 +48,7 @@ public class BoreholeController : ControllerBase
             .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerCodelists)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Chronostratigraphies)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
             .Include(b => b.Workflows)
             .Include(b => b.BoreholeFiles)
             .AsNoTracking()
@@ -84,7 +84,7 @@ public class BoreholeController : ControllerBase
                 faciesDescription.Id = 0;
             }
 
-            foreach (var chronostratigraphy in stratigraphy.Chronostratigraphies)
+            foreach (var chronostratigraphy in stratigraphy.ChronostratigraphyLayers)
             {
                 chronostratigraphy.Id = 0;
             }

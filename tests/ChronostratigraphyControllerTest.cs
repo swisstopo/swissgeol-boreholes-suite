@@ -105,7 +105,7 @@ public class ChronostratigraphyControllerTest
             ChronostratigraphyId = 15_001_057,
         };
 
-        var chronostratigraphyToEdit = context.Chronostratigraphies.Single(c => c.Id == id);
+        var chronostratigraphyToEdit = context.ChronostratigraphyLayers.Single(c => c.Id == id);
         Assert.AreEqual(2, chronostratigraphyToEdit.CreatedById);
         Assert.AreEqual(5, chronostratigraphyToEdit.UpdatedById);
         Assert.AreEqual(6_000_003, chronostratigraphyToEdit.StratigraphyId);
@@ -120,7 +120,7 @@ public class ChronostratigraphyControllerTest
 
             // Assert Updates and unchanged values
             var updatedContext = ContextFactory.CreateContext();
-            var updatedChronostratigraphy = updatedContext.Chronostratigraphies.Single(c => c.Id == id);
+            var updatedChronostratigraphy = updatedContext.ChronostratigraphyLayers.Single(c => c.Id == id);
 
             Assert.AreEqual(3, updatedChronostratigraphy.CreatedById);
             Assert.AreEqual(1, updatedChronostratigraphy.UpdatedById);
@@ -173,7 +173,7 @@ public class ChronostratigraphyControllerTest
 
         var response = await controller.CreateAsync(chronostratigraphy);
         Assert.IsInstanceOfType(response, typeof(OkObjectResult));
-        chronostratigraphy = await context.Chronostratigraphies.FindAsync(chronostratigraphy.Id);
+        chronostratigraphy = await context.ChronostratigraphyLayers.FindAsync(chronostratigraphy.Id);
         Assert.IsNotNull(chronostratigraphy);
         Assert.AreEqual(15001036, chronostratigraphy.ChronostratigraphyId);
 

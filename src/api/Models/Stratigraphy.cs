@@ -121,5 +121,5 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="ChronostratigraphyLayer"/>s associated with the <see cref="Stratigraphy"/>.
     /// </summary>
-    public ICollection<ChronostratigraphyLayer> Chronostratigraphies { get; }
+    public ICollection<ChronostratigraphyLayer> ChronostratigraphyLayers { get; }
 }
