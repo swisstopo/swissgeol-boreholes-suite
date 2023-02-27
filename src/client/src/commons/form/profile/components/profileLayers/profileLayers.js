@@ -250,7 +250,10 @@ const ProfileLayers = props => {
           overflow: isLayerSelected ? "hidden" : "",
           borderBottom: hasLayers ? "1px solid lightgrey" : "",
         }}>
-        <Table stickyHeader aria-label="sticky table">
+        <Table
+          stickyHeader
+          aria-label="sticky table"
+          sx={{ borderCollapse: "collapse" }}>
           <TableHead>
             <TableRow>
               <TableCell>
@@ -312,7 +315,7 @@ const ProfileLayers = props => {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
+            <TableRow sx={{ borderLeft: "1px solid lightgrey" }}>
               <td style={cellStyle}>
                 {hasLayers && (
                   <ProfileLayersValidation

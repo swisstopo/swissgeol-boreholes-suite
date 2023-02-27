@@ -134,8 +134,7 @@ const ProfileLayersError = props => {
   return (
     <Styled.ErrorCard
       isDelete={isDelete}
-      isFirstInList={error?.messageId === "errorStartWrong"}
-      isInside={isInside}>
+      isFirstInList={error?.messageId === "errorStartWrong"}>
       {!isDelete && (
         <Styled.Row
           onClick={() => {
