@@ -69,4 +69,9 @@ public class ChronostratigraphyController : BdmsControllerBase<Chronostratigraph
     [Authorize(Policy = PolicyNames.Viewer)]
     public override Task<IActionResult> DeleteAsync(int id)
         => base.DeleteAsync(id);
+
+    /// <inheritdoc />
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public override Task<IActionResult> CreateAsync(ChronostratigraphyLayer entity)
+        => base.CreateAsync(entity);
 }
