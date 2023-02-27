@@ -42,7 +42,7 @@ export const ProfileLayersValidation = props => {
       {/* validation before all layers */}
       {layersWithValidation?.validation &&
         layersWithValidation?.validation?.missingLayers && (
-          <div style={{ borderTop: "1px solid lightgrey", flex: "1 1 0px" }}>
+          <div style={{ flex: "1 1 0px" }}>
             <ProfileLayersError
               data={{
                 title: "missingLayers",

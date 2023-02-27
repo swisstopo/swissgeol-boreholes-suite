@@ -29,7 +29,7 @@ const DescriptionLayers = props => {
   const [displayDescriptions, setDisplayDescriptions] = useState(null);
   const [descriptionIdSelectedForDelete, setDescriptionIdSelectedForDelete] =
     useState(0);
-  const [selectableDepths, setSelectableDepth] = useState([]);
+  const [selectableDepths, setSelectableDepths] = useState([]);
   const [gaps, setGaps] = useState([]);
 
   const { t } = useTranslation();
@@ -185,7 +185,9 @@ const DescriptionLayers = props => {
       }
 
       setGaps(gaps);
-      setSelectableDepth(selectableDepths);
+      // Include 0 depths as option, if first lithology layer is missing.
+      if (!selectableDepths.includes(0)) selectableDepths.unshift(0);
+      setSelectableDepths(selectableDepths);
     }
   }, [layers?.data, displayDescriptions]);
 
@@ -217,7 +219,7 @@ const DescriptionLayers = props => {
   };
 
   return (
-    <Box>
+    <Box sx={{ boxShadow: "-1px 0 0 lightgrey" }}>
       {displayDescriptions &&
         displayDescriptions
           ?.sort((a, b) => a.fromDepth - b.fromDepth)
