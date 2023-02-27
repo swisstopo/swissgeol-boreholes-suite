@@ -219,7 +219,7 @@ const DescriptionLayers = props => {
   };
 
   return (
-    <Box>
+    <Box sx={{ boxShadow: "-1px 0 0 lightgrey" }}>
       {displayDescriptions &&
         displayDescriptions
           ?.sort((a, b) => a.fromDepth - b.fromDepth)
