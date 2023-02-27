@@ -81,6 +81,16 @@ const ProfileLayersList = props => {
     checkHasWarning();
   }, [checkHasWarning]);
 
+  const uselessStrings = useMemo(
+    () => [
+      "keine Angaben",
+      "sans indication",
+      "senza indicazioni",
+      "not specified",
+    ],
+    [],
+  );
+
   const mainProps = useMemo(() => {
     const lithology = item?.lithology?.[i18n.language] ?? null;
     const uscs1 = item?.uscs1?.[i18n.language] ?? null;
@@ -95,9 +105,9 @@ const ProfileLayersList = props => {
 
     return strings
       .flat()
-      .filter(s => s !== null)
+      .filter(s => !uselessStrings.includes(s) && s !== null)
       .join(", ");
-  }, [item, i18n.language]);
+  }, [item, i18n.language, uselessStrings]);
 
   const secondaryProps = useMemo(() => {
     const uscs2 = item?.uscs2?.[i18n.language] ?? null;
@@ -168,9 +178,9 @@ const ProfileLayersList = props => {
 
     return strings
       .flat()
-      .filter(s => s !== null)
+      .filter(s => !uselessStrings.includes(s) && s !== null)
       .join(", ");
-  }, [item, i18n.language, t]);
+  }, [item, i18n.language, t, uselessStrings]);
 
   const isItemSelected = selectedLayer?.id === itemWithValidation?.id;
 
