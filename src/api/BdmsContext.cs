@@ -54,6 +54,8 @@ public class BdmsContext : DbContext
             {
                 entity.Entity.Created = DateTime.Now.ToUniversalTime();
                 entity.Entity.CreatedById = user?.Id;
+                entity.Entity.Updated = DateTime.Now.ToUniversalTime();
+                entity.Entity.UpdatedById = user?.Id;
             }
             else if (entity.State == EntityState.Modified)
             {
