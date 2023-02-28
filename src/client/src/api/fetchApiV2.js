@@ -6,24 +6,36 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
  * @param {*} url The resource url.
  * @param {*} method The HTTP request method to apply (e.g. GET, PUT, POST...).
  * @param {*} payload The payload of the HTTP request (optional).
+ * @param {*} isFileUpload Boolean indicating wheather the request is used to upload a file, defaults to false.
  * @returns The HTTP response as JSON.
  */
 
-export async function fetchApiV2(url, method, payload = null) {
+export async function fetchApiV2(
+  url,
+  method,
+  payload = null,
+  isFileUpload = false,
+) {
   const baseUrl = "/api/v2/";
   const credentials = store.getState().core_user.authentication;
+  const body = isFileUpload ? payload : JSON.stringify(payload);
+  let headers = {
+    Authorization: `Basic ${btoa(
+      `${credentials.username}:${credentials.password}`,
+    )}`,
+  };
+  if (!isFileUpload)
+    headers = { ...headers, "Content-Type": "application/json" };
   const response = await fetch(baseUrl + url, {
     method: method,
     cache: "no-cache",
     credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Basic ${btoa(
-        `${credentials.username}:${credentials.password}`,
-      )}`,
-    },
-    body: payload && JSON.stringify(payload),
+    headers: headers,
+    body: payload && body,
   });
+  if (isFileUpload) {
+    return response;
+  }
   if (response.ok) {
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -33,6 +45,16 @@ export async function fetchApiV2(url, method, payload = null) {
     }
   }
 }
+
+// boreholes
+export const importBoreholes = async (workgroupId, csvFile) => {
+  return await fetchApiV2(
+    `upload?workgroupId=${workgroupId}`,
+    "POST",
+    csvFile,
+    true,
+  );
+};
 
 // layers
 export const fetchLayerById = async id =>
