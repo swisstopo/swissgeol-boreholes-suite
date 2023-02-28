@@ -135,7 +135,7 @@ public class UploadController : ControllerBase
                         PurposeId = GetValueOrNull(fields, purposeIdIndex, typeof(int)),
                         SpudDate = GetValueOrNull(fields, spudDateIndex, typeof(DateOnly)),
                         CuttingsId = GetValueOrNull(fields, cuttingsIdIndex, typeof(int)),
-                        StatusId =  GetValueOrNull(fields, statusIdIndex, typeof(int)),
+                        StatusId = GetValueOrNull(fields, statusIdIndex, typeof(int)),
                         Inclination = GetValueOrNull(fields, inclinationIndex, typeof(double)),
                         InclinationDirection = GetValueOrNull(fields, inclinationDirectionIndex, typeof(double)),
                         QtInclinationDirectionId = GetValueOrNull(fields, qtInclinationDirectionIdIndex, typeof(int)),
