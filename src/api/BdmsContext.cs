@@ -27,6 +27,7 @@ public class BdmsContext : DbContext
     public DbSet<BoreholeFile> BoreholeFiles { get; set; }
     public DbSet<LithologicalDescription> LithologicalDescriptions { get; set; }
     public DbSet<FaciesDescription> FaciesDescriptions { get; set; }
+    public DbSet<ChronostratigraphyLayer> ChronostratigraphyLayers { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)

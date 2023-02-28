@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -110,6 +111,12 @@ public class Codelist : IIdentifyable
     /// </summary>
     [Column("default_cli")]
     public bool? IsDefault { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Path of this <see cref="Codelist"/> in a tree structure.
+    /// </summary>
+    [Column("path_cli")]
+    public LTree? Path { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Layer"/>s that use this <see cref="Codelist"/>.

@@ -50,6 +50,7 @@ public class BoreholeControllerTest
             Assert.IsTrue(originalBorehole?.Stratigraphies.First().Layers.Any(x => x.LayerCodelists?.Any() ?? false), "Precondition: Borehole has layers with multiple codelist values");
             Assert.IsNotNull(originalBorehole?.Stratigraphies?.First()?.LithologicalDescriptions, "Precondition: Borehole has Stratigraphy LithologicalDescriptions");
             Assert.IsNotNull(originalBorehole?.Stratigraphies?.First()?.FaciesDescriptions, "Precondition: Borehole has Stratigraphy FaciesDescriptions");
+            Assert.IsNotNull(originalBorehole?.Stratigraphies?.First()?.ChronostratigraphyLayers, "Precondition: Borehole has Chronostratigraphy");
             Assert.IsNotNull(originalBorehole?.BoreholeFiles?.First()?.File, "Precondition: Borehole has Files");
             Assert.IsNotNull(originalBorehole?.Canton, "Precondition: Borehole has Canton assigned");
 
@@ -89,6 +90,10 @@ public class BoreholeControllerTest
             Assert.AreNotEqual(originalStratigraphy.FaciesDescriptions.First().Id, copiedstratigraphy.FaciesDescriptions.First().Id);
             Assert.AreEqual("Buckinghamshire withdrawal collaborative", copiedstratigraphy.FaciesDescriptions.First().Description);
 
+            Assert.AreNotSame(originalStratigraphy.ChronostratigraphyLayers, copiedstratigraphy.ChronostratigraphyLayers);
+            Assert.AreNotEqual(originalStratigraphy.ChronostratigraphyLayers.First().Id, copiedstratigraphy.ChronostratigraphyLayers.First().Id);
+            Assert.AreEqual(15001040, copiedstratigraphy.ChronostratigraphyLayers.First().ChronostratigraphyId);
+
             Assert.AreNotSame(originalBorehole.BoreholeFiles, copiedBorehole.BoreholeFiles);
             Assert.AreNotEqual(originalBorehole.BoreholeFiles.First().BoreholeId, copiedBorehole.BoreholeFiles.First().BoreholeId);
             Assert.AreEqual(originalBorehole.BoreholeFiles.First().FileId, copiedBorehole.BoreholeFiles.First().FileId);
@@ -111,9 +116,11 @@ public class BoreholeControllerTest
             var layersToRemove = stratigraphiesToRemove.SelectMany(s => s.Layers);
             var lithologicalDescriptionsToRemove = stratigraphiesToRemove.SelectMany(s => s.LithologicalDescriptions);
             var faciesDescriptionsToRemove = stratigraphiesToRemove.SelectMany(s => s.FaciesDescriptions);
+            var chronostratigraphiesToRemove = stratigraphiesToRemove.SelectMany(s => s.ChronostratigraphyLayers);
             context.Layers.RemoveRange(layersToRemove);
             context.LithologicalDescriptions.RemoveRange(lithologicalDescriptionsToRemove);
             context.FaciesDescriptions.RemoveRange(faciesDescriptionsToRemove);
+            context.ChronostratigraphyLayers.RemoveRange(chronostratigraphiesToRemove);
             context.Stratigraphies.RemoveRange(stratigraphiesToRemove);
             context.Boreholes.Remove(copiedBorehole);
             context.SaveChanges();
@@ -130,6 +137,7 @@ public class BoreholeControllerTest
             .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerCodelists)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
             .Include(b => b.CreatedBy)
             .Include(b => b.UpdatedBy)
             .Include(b => b.LockedBy)

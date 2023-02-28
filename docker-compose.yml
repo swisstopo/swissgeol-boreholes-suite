@@ -10,7 +10,7 @@ services:
       - ./data/minio:/data
     command: server /data -console-address ":9002"
   db:
-    image: postgis/postgis:12-2.5-alpine
+    image: postgis/postgis:14-3.3-alpine
     volumes:
       - ./db:/docker-entrypoint-initdb.d
     ports:

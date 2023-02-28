@@ -117,4 +117,9 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     /// Gets the <see cref="FaciesDescription"/>s associated with the <see cref="Stratigraphy"/>.
     /// </summary>
     public ICollection<FaciesDescription> FaciesDescriptions { get; }
+
+    /// <summary>
+    /// Gets the <see cref="ChronostratigraphyLayer"/>s associated with the <see cref="Stratigraphy"/>.
+    /// </summary>
+    public ICollection<ChronostratigraphyLayer> ChronostratigraphyLayers { get; }
 }
