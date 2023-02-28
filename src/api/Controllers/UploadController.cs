@@ -23,8 +23,11 @@ public class UploadController : ControllerBase
     }
 
     /// <summary>
-    /// Uploads a csv file to import  <see cref="Borehole"/>s.
+    /// Receives an uploaded csv file to import one or several <see cref="Borehole"/>(s).
     /// </summary>
+    /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
+    /// <param name="file">The <see cref="IFormFile"/> containing the csv records that were uploaded.</param>
+    /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile file)
@@ -102,56 +105,53 @@ public class UploadController : ControllerBase
                 var fields = parser.ReadFields();
                 if (fields.Length > 0)
                 {
-                    var dateCultureInfo = new CultureInfo("de_CH", false);
-                    var numberCultureInfo = CultureInfo.InvariantCulture;
-
                     var borehole = new Borehole
                     {
-                        OriginalName = string.IsNullOrEmpty(fields[originalNameIndex]) ? null : fields[originalNameIndex],
-                        ProjectName = string.IsNullOrEmpty(fields[projectNameIndex]) ? null : fields[projectNameIndex],
-                        AlternateName = string.IsNullOrEmpty(fields[alternateNameIndex]) ? null : fields[alternateNameIndex],
-                        Date = string.IsNullOrEmpty(fields[dateIndex]) ? null : DateTime.Parse(fields[dateIndex], dateCultureInfo).ToUniversalTime(),
-                        RestrictionId = string.IsNullOrEmpty(fields[restrictionIdIndex]) ? null : int.Parse(fields[restrictionIdIndex], numberCultureInfo),
-                        RestrictionUntil = string.IsNullOrEmpty(fields[restrictionUntilIndex]) ? null : DateOnly.Parse(fields[restrictionUntilIndex], dateCultureInfo),
-                        Municipality = string.IsNullOrEmpty(fields[municipalityIndex]) ? null : fields[municipalityIndex],
-                        Canton = string.IsNullOrEmpty(fields[cantonIndex]) ? null : fields[cantonIndex],
-                        Country = string.IsNullOrEmpty(fields[countryIndex]) ? null : fields[countryIndex],
-                        OriginalReferenceSystem = (ReferenceSystem)int.Parse(fields[originalReferenceSystemIndex], numberCultureInfo),
-                        LocationX = string.IsNullOrEmpty(fields[locationXLV95Index]) ? null : double.Parse(fields[locationXLV95Index], numberCultureInfo),
-                        LocationY = string.IsNullOrEmpty(fields[locationYLV95Index]) ? null : double.Parse(fields[locationYLV95Index], numberCultureInfo),
-                        LocationXLV03 = string.IsNullOrEmpty(fields[locationXLV03Index]) ? null : double.Parse(fields[locationXLV03Index], numberCultureInfo),
-                        LocationYLV03 = string.IsNullOrEmpty(fields[locationYLV03Index]) ? null : double.Parse(fields[locationYLV03Index], numberCultureInfo),
-                        QtLocationId = string.IsNullOrEmpty(fields[qtLocationIdIndex]) ? null : int.Parse(fields[qtLocationIdIndex], numberCultureInfo),
-                        ElevationZ = string.IsNullOrEmpty(fields[elevationZIndex]) ? null : double.Parse(fields[elevationZIndex], numberCultureInfo),
-                        QtElevationId = string.IsNullOrEmpty(fields[qtElevationIdIndex]) ? null : int.Parse(fields[qtElevationIdIndex], numberCultureInfo),
-                        ReferenceElevation = string.IsNullOrEmpty(fields[referenceElevationIndex]) ? null : double.Parse(fields[referenceElevationIndex], numberCultureInfo),
-                        ReferenceElevationTypeId = string.IsNullOrEmpty(fields[referenceElevationTypeIdIndex]) ? null : int.Parse(fields[referenceElevationTypeIdIndex], numberCultureInfo),
-                        QtReferenceElevationId = string.IsNullOrEmpty(fields[qtReferenceElevationIdIndex]) ? null : int.Parse(fields[qtReferenceElevationIdIndex], numberCultureInfo),
-                        HrsId = string.IsNullOrEmpty(fields[hrsIdIndex]) ? null : int.Parse(fields[hrsIdIndex], numberCultureInfo),
-                        KindId = string.IsNullOrEmpty(fields[kindIdIndex]) ? null : int.Parse(fields[kindIdIndex], numberCultureInfo),
-                        DrillingDate = string.IsNullOrEmpty(fields[drillingDateIndex]) ? null : DateOnly.Parse(fields[drillingDateIndex], dateCultureInfo),
-                        DrillingDiameter = string.IsNullOrEmpty(fields[drillingDiameterIndex]) ? null : double.Parse(fields[drillingDiameterIndex], numberCultureInfo),
-                        DrillingMethodId = string.IsNullOrEmpty(fields[drillingMethodIdIndex]) ? null : int.Parse(fields[drillingMethodIdIndex], numberCultureInfo),
-                        PurposeId = string.IsNullOrEmpty(fields[purposeIdIndex]) ? null : int.Parse(fields[purposeIdIndex], numberCultureInfo),
-                        SpudDate = string.IsNullOrEmpty(fields[spudDateIndex]) ? null : DateOnly.Parse(fields[spudDateIndex], dateCultureInfo),
-                        CuttingsId = string.IsNullOrEmpty(fields[cuttingsIdIndex]) ? null : int.Parse(fields[cuttingsIdIndex], numberCultureInfo),
-                        StatusId = string.IsNullOrEmpty(fields[statusIdIndex]) ? null : int.Parse(fields[statusIdIndex], numberCultureInfo),
-                        Inclination = string.IsNullOrEmpty(fields[inclinationIndex]) ? null : double.Parse(fields[inclinationIndex], numberCultureInfo),
-                        InclinationDirection = string.IsNullOrEmpty(fields[inclinationDirectionIndex]) ? null : double.Parse(fields[inclinationDirectionIndex], numberCultureInfo),
-                        QtInclinationDirectionId = string.IsNullOrEmpty(fields[qtInclinationDirectionIdIndex]) ? null : int.Parse(fields[qtInclinationDirectionIdIndex], numberCultureInfo),
-                        Remarks = string.IsNullOrEmpty(fields[originalNameIndex]) ? null : fields[remarksIndex],
-                        TotalDepth = string.IsNullOrEmpty(fields[totalDepthIndex]) ? null : double.Parse(fields[totalDepthIndex], numberCultureInfo),
-                        QtDepthId = string.IsNullOrEmpty(fields[qtDepthIdIndex]) ? null : int.Parse(fields[qtDepthIdIndex], numberCultureInfo),
-                        TotalDepthTvd = string.IsNullOrEmpty(fields[totalDepthTvdIndex]) ? null : int.Parse(fields[totalDepthTvdIndex], numberCultureInfo),
-                        QtTotalDepthTvdId = string.IsNullOrEmpty(fields[qtTotalDepthTvdIdIndex]) ? null : int.Parse(fields[qtTotalDepthTvdIdIndex], numberCultureInfo),
-                        TopBedrock = string.IsNullOrEmpty(fields[topBedrockIndex]) ? null : double.Parse(fields[topBedrockIndex], numberCultureInfo),
-                        QtTopBedrockId = string.IsNullOrEmpty(fields[qtTopBedrockIdIndex]) ? null : int.Parse(fields[qtTopBedrockIdIndex], numberCultureInfo),
-                        TopBedrockTvd = string.IsNullOrEmpty(fields[topBedrockTvdIndex]) ? null : double.Parse(fields[topBedrockTvdIndex], numberCultureInfo),
-                        QtTopBedrockTvdId = string.IsNullOrEmpty(fields[qtTopBedrockTvdIdIndex]) ? null : int.Parse(fields[qtTopBedrockTvdIdIndex], numberCultureInfo),
-                        HasGroundwater = string.IsNullOrEmpty(fields[hasGroundwaterIndex]) ? null : bool.Parse(fields[hasGroundwaterIndex]),
-                        LithologyTopBedrockId = string.IsNullOrEmpty(fields[lithologyTopBedrockIdIndex]) ? null : int.Parse(fields[lithologyTopBedrockIdIndex], numberCultureInfo),
-                        ChronostratigraphyId = string.IsNullOrEmpty(fields[chronostratigraphyIdIndex]) ? null : int.Parse(fields[chronostratigraphyIdIndex], numberCultureInfo),
-                        LithostratigraphyId = string.IsNullOrEmpty(fields[lithostratigraphyIdIndex]) ? null : int.Parse(fields[lithostratigraphyIdIndex], numberCultureInfo),
+                        OriginalName = GetValueOrNull(fields, originalNameIndex, typeof(string)),
+                        ProjectName = GetValueOrNull(fields, projectNameIndex, typeof(string)),
+                        AlternateName = GetValueOrNull(fields, alternateNameIndex, typeof(string)),
+                        Date = GetValueOrNull(fields, dateIndex, typeof(DateTime)),
+                        RestrictionId = GetValueOrNull(fields, restrictionIdIndex, typeof(int)),
+                        RestrictionUntil = GetValueOrNull(fields, restrictionUntilIndex, typeof(DateOnly)),
+                        Municipality = GetValueOrNull(fields, municipalityIndex, typeof(string)),
+                        Canton = GetValueOrNull(fields, cantonIndex, typeof(string)),
+                        Country = GetValueOrNull(fields, countryIndex, typeof(string)),
+                        OriginalReferenceSystem = (ReferenceSystem)GetValueOrNull(fields, originalReferenceSystemIndex, typeof(int)),
+                        LocationX = GetValueOrNull(fields, locationXLV95Index, typeof(double)),
+                        LocationY = GetValueOrNull(fields, locationYLV95Index, typeof(double)),
+                        LocationXLV03 = GetValueOrNull(fields, locationXLV03Index, typeof(double)),
+                        LocationYLV03 = GetValueOrNull(fields, locationYLV03Index, typeof(double)),
+                        QtLocationId = GetValueOrNull(fields, qtLocationIdIndex, typeof(int)),
+                        ElevationZ = GetValueOrNull(fields, elevationZIndex, typeof(double)),
+                        QtElevationId = GetValueOrNull(fields, qtElevationIdIndex, typeof(int)),
+                        ReferenceElevation = GetValueOrNull(fields, referenceElevationIndex, typeof(double)),
+                        ReferenceElevationTypeId = GetValueOrNull(fields, referenceElevationTypeIdIndex, typeof(int)),
+                        QtReferenceElevationId = GetValueOrNull(fields, qtReferenceElevationIdIndex, typeof(int)),
+                        HrsId = GetValueOrNull(fields, hrsIdIndex, typeof(int)),
+                        KindId = GetValueOrNull(fields, kindIdIndex, typeof(int)),
+                        DrillingDate = GetValueOrNull(fields, drillingDateIndex, typeof(DateOnly)),
+                        DrillingDiameter = GetValueOrNull(fields, drillingDiameterIndex, typeof(double)),
+                        DrillingMethodId = GetValueOrNull(fields, drillingMethodIdIndex, typeof(int)),
+                        PurposeId = GetValueOrNull(fields, purposeIdIndex, typeof(int)),
+                        SpudDate = GetValueOrNull(fields, spudDateIndex, typeof(DateOnly)),
+                        CuttingsId = GetValueOrNull(fields, cuttingsIdIndex, typeof(int)),
+                        StatusId =  GetValueOrNull(fields, statusIdIndex, typeof(int)),
+                        Inclination = GetValueOrNull(fields, inclinationIndex, typeof(double)),
+                        InclinationDirection = GetValueOrNull(fields, inclinationDirectionIndex, typeof(double)),
+                        QtInclinationDirectionId = GetValueOrNull(fields, qtInclinationDirectionIdIndex, typeof(int)),
+                        Remarks = GetValueOrNull(fields, originalNameIndex, typeof(string)),
+                        TotalDepth = GetValueOrNull(fields, totalDepthIndex, typeof(double)),
+                        QtDepthId = GetValueOrNull(fields, qtDepthIdIndex, typeof(int)),
+                        TotalDepthTvd = GetValueOrNull(fields, totalDepthTvdIndex, typeof(int)),
+                        QtTotalDepthTvdId = GetValueOrNull(fields, qtTotalDepthTvdIdIndex, typeof(int)),
+                        TopBedrock = GetValueOrNull(fields, topBedrockIndex, typeof(double)),
+                        QtTopBedrockId = GetValueOrNull(fields, qtTopBedrockIdIndex, typeof(int)),
+                        TopBedrockTvd = GetValueOrNull(fields, topBedrockTvdIndex, typeof(double)),
+                        QtTopBedrockTvdId = GetValueOrNull(fields, qtTopBedrockTvdIdIndex, typeof(int)),
+                        HasGroundwater = GetValueOrNull(fields, hasGroundwaterIndex, typeof(bool)),
+                        LithologyTopBedrockId = GetValueOrNull(fields, lithologyTopBedrockIdIndex, typeof(int)),
+                        ChronostratigraphyId = GetValueOrNull(fields, chronostratigraphyIdIndex, typeof(int)),
+                        LithostratigraphyId = GetValueOrNull(fields, lithostratigraphyIdIndex, typeof(int)),
 
                         WorkgroupId = workgroupId,
                     };
@@ -178,7 +178,7 @@ public class UploadController : ControllerBase
             {
                 UserId = user.Id,
                 BoreholeId = b.Id,
-                Role = Role.Editor, // take from user.
+                Role = Role.Editor,
                 Started = DateTime.Now.ToUniversalTime(),
                 Finished = null,
             };
@@ -188,6 +188,53 @@ public class UploadController : ControllerBase
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         return boreholeCountResult;
+    }
+
+    private dynamic? GetValueOrNull(string[] fields, int idx, Type type)
+    {
+        var dateCultureInfo = new CultureInfo("de_CH", false);
+        var numberCultureInfo = CultureInfo.InvariantCulture;
+
+        if (string.IsNullOrEmpty(fields[idx]))
+        {
+            return null;
+        }
+        else
+        {
+            if (type == typeof(string))
+            {
+                return fields[idx];
+            }
+
+            if (type == typeof(int))
+            {
+                return int.Parse(fields[idx], numberCultureInfo);
+            }
+
+            if (type == typeof(double))
+            {
+                return double.Parse(fields[idx], numberCultureInfo);
+            }
+
+            if (type == typeof(bool))
+            {
+                return bool.Parse(fields[idx]);
+            }
+
+            if (type == typeof(DateOnly))
+            {
+                return DateOnly.Parse(fields[idx], dateCultureInfo);
+            }
+
+            if (type == typeof(DateTime))
+            {
+                return DateTime.Parse(fields[idx], dateCultureInfo).ToUniversalTime();
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 
     private async Task<ActionResult<int>> SaveChangesAsync(Func<ActionResult<int>> successResult)
