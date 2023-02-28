@@ -30,6 +30,7 @@
 - Fix broken layout of _lithological description_ and _facies description_ columns when a gap of more than one layer was created in the _lithology_ column.
 - Fix bug where lithological descriptions where not copied when copying boreholes or stratigraphies.
 - Fix bug where coordinates were not updated when pasted in the coordinate input.
+- Empty text or numeric fields are always displayed as `-` in the detail sections of the viewer mode.
 
 ## v2.0.186 - 2023-02-13
 
