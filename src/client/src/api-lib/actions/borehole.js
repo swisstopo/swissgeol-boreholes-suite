@@ -63,17 +63,6 @@ export function copyBorehole(boreholeId, workgroupId) {
   });
 }
 
-export function importBoreholeList(id, file) {
-  return uploadFile(
-    "/borehole/edit/import",
-    {
-      action: "IMPORTCSV",
-      id: id,
-    },
-    file,
-  );
-}
-
 export function lockBorehole(id) {
   return fetch("/borehole/edit", {
     type: "LOCK",
