@@ -362,5 +362,17 @@
   "import": "Importare",
   "to": "fino a",
   "searchFilterRegistration": "Filtri specifici alla cattura",
-  "registration": "Cattura"
+  "registration": "Cattura",
+  "eon": "Eon",
+  "era": "Era",
+  "period": "Periodo",
+  "epoch": "Epoca",
+  "subepoch": "Sub-Epoche",
+  "age": "Piano",
+  "subage": "Sub-Stufe",
+  "errorInvalidEntry": "Voce non valida",
+  "errorFromDepthTooLow": "dalla profondità è troppo bassa",
+  "errorToDepthTooHigh": "la profondità è troppo alta",
+  "errorFromDepthGreaterThanToDepth": "dalla profondità è maggiore della profondità",
+  "edit": "modifica"
 }

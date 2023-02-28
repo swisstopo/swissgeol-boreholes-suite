@@ -158,6 +158,7 @@ class MenuEditorForm extends React.Component {
               </List.Header>
             </List.Content>
           </List.Item>
+
           <List.Item
             active={
               location.pathname ===
@@ -167,6 +168,10 @@ class MenuEditorForm extends React.Component {
                 "/stratigraphy"
             }
             onClick={() => {
+              this.setState({
+                stratigraphyIsVisible: !this.state.stratigraphyIsVisible,
+              });
+
               history.push(
                 process.env.PUBLIC_URL +
                   "/editor/" +
@@ -176,6 +181,7 @@ class MenuEditorForm extends React.Component {
             }}
             style={{
               padding: "1em",
+              display: "flex",
               borderLeft:
                 location.pathname ===
                 process.env.PUBLIC_URL +
@@ -195,8 +201,64 @@ class MenuEditorForm extends React.Component {
                 <TranslationText firstUpperCase id="stratigraphy" />
               </List.Header>
             </List.Content>
+            <div style={{ marginLeft: "2em" }}>
+              {!this.state.stratigraphyIsVisible && (
+                <List.Icon
+                  name="angle down"
+                  size="big"
+                  verticalAlign="middle"
+                />
+              )}
+              {this.state.stratigraphyIsVisible && (
+                <List.Icon name="angle up" size="big" verticalAlign="middle" />
+              )}
+            </div>
           </List.Item>
-          {/* Completion */}
+          {this.state.stratigraphyIsVisible && (
+            <>
+              <List.Item
+                active={
+                  location.pathname ===
+                  process.env.PUBLIC_URL +
+                    "/editor/" +
+                    match.params.id +
+                    "/stratigraphy/chronostratigraphy"
+                }
+                onClick={() => {
+                  history.push(
+                    process.env.PUBLIC_URL +
+                      "/editor/" +
+                      match.params.id +
+                      "/stratigraphy/chronostratigraphy",
+                  );
+                }}
+                style={{
+                  padding: "1em",
+                  paddingLeft: 40,
+                  display: "flex",
+                  borderLeft:
+                    location.pathname ===
+                    process.env.PUBLIC_URL +
+                      "/editor/" +
+                      match.params.id +
+                      "/completion/casing"
+                      ? "0.25em solid rgb(237, 29, 36)"
+                      : null,
+                }}>
+                <List.Icon
+                  name="align justify"
+                  size="large"
+                  verticalAlign="middle"
+                />
+                <List.Content>
+                  <List.Header as="h3" data-cy="casing-menu-item">
+                    <TranslationText firstUpperCase id="chronostratigraphy" />
+                  </List.Header>
+                </List.Content>
+              </List.Item>
+            </>
+          )}
+
           <List.Item
             onClick={() => {
               this.setState({

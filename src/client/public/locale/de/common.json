@@ -362,5 +362,17 @@
   "import": "Importieren",
   "to": "bis",
   "searchFilterRegistration": "Suchfilter Erfassung",
-  "registration": "Erfassung"
+  "registration": "Erfassung",
+  "eon": "Äon",
+  "era": "Ära",
+  "period": "Periode",
+  "epoch": "Epoche",
+  "subepoch": "Sub-Epoche",
+  "age": "Stufe",
+  "subage": "Sub-Stufe",
+  "errorInvalidEntry": "Ungültige Eingabe",
+  "errorFromDepthTooLow": "von Tiefe ist zu klein",
+  "errorToDepthTooHigh": "zu Tiefe ist zu gross",
+  "errorFromDepthGreaterThanToDepth": "von Tiefe ist grösser als zu Tiefe",
+  "edit": "Bearbeiten"
 }

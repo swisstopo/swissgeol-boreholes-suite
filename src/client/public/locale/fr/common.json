@@ -362,5 +362,17 @@
   "import": "Importer",
   "to": "à",
   "searchFilterRegistration": "Filtres par enregistrement",
-  "registration": "Enregistrement"
+  "registration": "Enregistrement",
+  "eon": "Eon",
+  "era": "Ere",
+  "period": "Période",
+  "epoch": "Epoque",
+  "subepoch": "Sub-Epoche",
+  "age": "Etage",
+  "subage": "Sub-Stufe",
+  "errorInvalidEntry": "Entrée invalide",
+  "errorFromDepthTooLow": "de la profondeur est trop faible",
+  "errorToDepthTooHigh": "de la profondeur est trop élevée",
+  "errorFromDepthGreaterThanToDepth": "de la profondeur est supérieure à la profondeur",
+  "edit": "éditer"
 }

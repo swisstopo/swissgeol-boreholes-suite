@@ -362,5 +362,17 @@
   "import": "Import",
   "to": "to",
   "searchFilterRegistration": "Registration filters",
-  "registration": "Registration"
+  "registration": "Registration",
+  "eon": "Eon",
+  "era": "Era",
+  "period": "Period",
+  "epoch": "Time",
+  "subepoch": "Sub-Epoche",
+  "age": "Stage",
+  "subage": "Sub-Stufe",
+  "errorInvalidEntry": "Invalid entry",
+  "errorFromDepthTooLow": "from depth is too low",
+  "errorToDepthTooHigh": "to depth is too high",
+  "errorFromDepthGreaterThanToDepth": "from depth is greater than to depth",
+  "edit": "edit"
 }
