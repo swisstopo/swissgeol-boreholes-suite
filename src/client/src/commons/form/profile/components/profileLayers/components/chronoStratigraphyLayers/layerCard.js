@@ -331,7 +331,7 @@ const LayerCard = ({
           <Card
             square
             variant="outlined"
-            sx={{ height: "14em", display: "flex" }}>
+            sx={{ height: `${height}px`, display: "flex", overflow: "auto" }}>
             {cardContent}
           </Card>
         </ClickAwayListener>
