@@ -41,7 +41,12 @@ public class UploadController : ControllerBase
             return BadRequest("No file uploaded.");
         }
 
-        var boreholes = ReadBoreholesFromCsv(file);
+        var boreholes = ReadBoreholesFromCsv(file)
+            .Select(b =>
+            {
+                b.WorkgroupId = workgroupId;
+                return b;
+            }).ToList();
 
         await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
         var boreholeCountResult = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
@@ -71,7 +76,6 @@ public class UploadController : ControllerBase
 
         return boreholeCountResult;
     }
-
 
     private List<Borehole> ReadBoreholesFromCsv(IFormFile file)
     {
