@@ -137,18 +137,20 @@ const LithologyLayers = props => {
         ...props.style,
       }}>
       <Styled.FirstColumn>
-        {data?.map((layer, idx) => (
-          <div key={"stratigraphy-minimap-layer-" + idx}>
-            <Styled.FirstLayerList
-              backgroundColor={handleColor(layer)}
-              backgroundImage={handlePattern(layer)}
-              height={(layer.toDepth - layer.fromDepth) * state.pxm + "px"}
-              style={{
-                border: "thin solid rgb(100, 100, 100)",
-              }}
-            />
-          </div>
-        ))}
+        {data
+          ?.sort((a, b) => a.fromDepth - b.fromDepth)
+          ?.map((layer, idx) => (
+            <div key={"stratigraphy-minimap-layer-" + idx}>
+              <Styled.FirstLayerList
+                backgroundColor={handleColor(layer)}
+                backgroundImage={handlePattern(layer)}
+                height={(layer.toDepth - layer.fromDepth) * state.pxm + "px"}
+                style={{
+                  border: "thin solid rgb(100, 100, 100)",
+                }}
+              />
+            </div>
+          ))}
         <Draggable
           axis="y"
           bounds="parent"
