@@ -172,7 +172,7 @@ export const useChronostratigraphyMutations = () => {
   const queryClient = useQueryClient();
   const useAddChronostratigraphy = useMutation(
     async chronostratigraphy => {
-      return await fetchApiV2(`chronostratigraphy`, "POST", chronostratigraphy);
+      return await fetchApiV2("chronostratigraphy", "POST", chronostratigraphy);
     },
     {
       onSuccess: () => {
@@ -184,7 +184,7 @@ export const useChronostratigraphyMutations = () => {
   );
   const useUpdateChronostratigraphy = useMutation(
     async chronostratigraphy => {
-      return await fetchApiV2(`chronostratigraphy`, "PUT", chronostratigraphy);
+      return await fetchApiV2("chronostratigraphy", "PUT", chronostratigraphy);
     },
     {
       onSuccess: () => {
