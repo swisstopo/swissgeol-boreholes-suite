@@ -31,6 +31,7 @@
 - Fix bug where lithological descriptions where not copied when copying boreholes or stratigraphies.
 - Fix bug where coordinates were not updated when pasted in the coordinate input.
 - Enable translation of transparency label in map settings.
+- Remove unnecessary Italian text in publish confirmation modal.
 
 ## v2.0.186 - 2023-02-13
 
