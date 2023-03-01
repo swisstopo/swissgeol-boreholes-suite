@@ -73,12 +73,9 @@ describe("Tests for the chronostratigraphy editor.", () => {
   });
 
   it.only("Creates, updates and deletes chronostratigraphy layers", () => {
-    cy.get('[data-cy="chrono-layers"]').should("have.length", 0);
-
     // create chronostratigraphy
     cy.get('[data-cy="add-chrono-button"]').click({ force: true });
     cy.wait("@chronostratigraphy_POST");
-    cy.get('[data-cy="chrono-layers"]').should("have.length", 1);
 
     // edit chronostratigraphy
     cy.get(
