@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import * as Styled from "./lithologyLayersstyles";
+import * as Styled from "./lithologyLayerStyles";
 import PropTypes from "prop-types";
 import Draggable from "react-draggable";
 import { NumericFormat } from "react-number-format";
