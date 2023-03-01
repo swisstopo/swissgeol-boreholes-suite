@@ -26,7 +26,16 @@ const ChronostratigraphyPanel = ({ selectedStratigraphyID, isEditable }) => {
   const { t } = useTranslation();
 
   const [header, setHeader] = useState(getHeader(t));
-  const [navigationState, setNavigationState] = useState(null);
+  const [navigationState, setNavigationState] = useState({
+    minimapCursor: "grab",
+    scale: 1,
+    // Distance from top in px
+    top: 0,
+    // pixel / meter
+    pxm: 0,
+    // height of this component in pixels
+    height: 0,
+  });
 
   useEffect(() => {
     return setHeader(getHeader(t));
@@ -89,7 +98,8 @@ const ChronostratigraphyPanel = ({ selectedStratigraphyID, isEditable }) => {
         <LithologyLayers
           stratigraphyId={selectedStratigraphyID}
           isEditable={isEditable}
-          onNavigationChanged={setNavigationState}
+          navigationState={navigationState}
+          setNavigationState={setNavigationState}
         />
       </Box>
 
@@ -98,6 +108,7 @@ const ChronostratigraphyPanel = ({ selectedStratigraphyID, isEditable }) => {
         selectedStratigraphyID={selectedStratigraphyID}
         isEditable={isEditable}
         navigationState={navigationState}
+        setNavigationState={setNavigationState}
       />
     </Stack>
   );

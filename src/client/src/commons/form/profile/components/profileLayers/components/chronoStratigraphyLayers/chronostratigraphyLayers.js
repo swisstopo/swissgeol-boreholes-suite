@@ -37,7 +37,8 @@ const ChronostratigraphyLayers = ({
   selectedStratigraphyID,
   isEditable,
   sx,
-  navigationState: state,
+  navigationState,
+  setNavigationState,
 }) => {
   const { data: chronostratigraphyQueryData } = useChronostratigraphies(
     selectedStratigraphyID,
@@ -62,7 +63,7 @@ const ChronostratigraphyLayers = ({
   layers
     .sort((a, b) => a.fromDepth - b.fromDepth || a.toDepth - b.toDepth)
     .forEach((layer, index) => {
-      const factor = state?.pxm / (state?.scale ?? 1);
+      const factor = navigationState?.pxm / (navigationState?.scale ?? 1);
 
       const previousLayerToDepth = index === 0 ? 0 : layers[index - 1]?.toDepth;
       const nextLayerFromDepth =
@@ -103,10 +104,22 @@ const ChronostratigraphyLayers = ({
             <IconButton
               aria-label={t("add")}
               onClick={() => {
+                const newFromDepth = layers.at(-1)?.toDepth ?? 0;
+                const newToDepth = newFromDepth + 10;
                 addChronostratigraphy({
                   stratigraphyId: selectedStratigraphyID,
-                  fromDepth: layers.at(-1)?.toDepth ?? 0,
-                  toDepth: (layers.at(-1)?.toDepth ?? 0) + 10,
+                  fromDepth: newFromDepth,
+                  toDepth: newToDepth,
+                });
+
+                // adjust navigation state to make new layer visible
+                setNavigationState({
+                  ...navigationState,
+                  top:
+                    Math.min(
+                      navigationState?.height * (1 - navigationState?.scale),
+                      newFromDepth * navigationState?.pxm,
+                    ) || 0,
                 });
               }}
               data-cy="add-chrono-button">
@@ -166,7 +179,7 @@ const ChronostratigraphyLayers = ({
         <Box
           sx={{
             position: "absolute",
-            top: -state?.top / (state?.scale ?? 1),
+            top: -navigationState?.top / (navigationState?.scale ?? 1),
           }}
           data-cy="chrono-layers">
           {layerDisplayStack}

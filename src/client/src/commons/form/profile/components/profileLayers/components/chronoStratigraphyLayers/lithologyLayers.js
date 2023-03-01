@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import * as Styled from "./lithologyLayersstyles";
 import PropTypes from "prop-types";
 import Draggable from "react-draggable";
@@ -7,21 +7,11 @@ import { useLayers } from "../../../../../../../api/fetchApiV2";
 import { CircularProgress } from "@mui/material";
 
 const LithologyLayers = props => {
-  const { stratigraphyId, onNavigationChanged, unit } = props;
+  const { stratigraphyId, navigationState, setNavigationState, unit } = props;
 
   const { data } = useLayers(stratigraphyId);
 
   const element = useRef(null);
-  const [state, setState] = useState({
-    minimapCursor: "grab",
-    scale: 1,
-    // Distance from top in px
-    top: 0,
-    // pixel / meter
-    pxm: 0,
-    // height of this component in pixels
-    height: 0,
-  });
 
   useEffect(() => {
     updateDimensions();
@@ -31,12 +21,6 @@ const LithologyLayers = props => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (typeof onNavigationChanged === "function") {
-      onNavigationChanged(state);
-    }
-  }, [onNavigationChanged, state]);
 
   const handleColor = layer =>
     `rgb(${(
@@ -51,7 +35,7 @@ const LithologyLayers = props => {
   const handleOnWheel = event => {
     event.stopPropagation();
 
-    let scale = state?.scale;
+    let scale = navigationState?.scale;
     let factor = 0.05;
     if (scale >= 0.75) {
       factor = 0.1;
@@ -71,14 +55,16 @@ const LithologyLayers = props => {
       scale += factor;
     }
 
-    const rangeHeight = scale * state?.height;
+    const rangeHeight = scale * navigationState?.height;
 
-    let topOfLense = state?.top;
-    if (state?.top + rangeHeight > state?.height) {
-      topOfLense = state?.top - (state?.top + rangeHeight - state?.height);
+    let topOfLense = navigationState?.top;
+    if (navigationState?.top + rangeHeight > navigationState?.height) {
+      topOfLense =
+        navigationState?.top -
+        (navigationState?.top + rangeHeight - navigationState?.height);
     }
 
-    setState(prevState => ({
+    setNavigationState(prevState => ({
       ...prevState,
       scale: Math.min(Math.max(0.02, scale), 1),
       top: topOfLense < 0 ? 0 : topOfLense,
@@ -86,20 +72,20 @@ const LithologyLayers = props => {
   };
 
   const handleStart = (e, data) => {
-    setState(prevState => ({
+    setNavigationState(prevState => ({
       ...prevState,
       minimapCursor: "grabbing",
     }));
   };
 
   const handleDrag = (e, data) => {
-    if (data.y !== state?.top) {
-      setState(prevState => ({ ...prevState, top: data.y }));
+    if (data.y !== navigationState?.top) {
+      setNavigationState(prevState => ({ ...prevState, top: data.y }));
     }
   };
 
   const handleStop = (e, data) => {
-    setState(prevState => ({
+    setNavigationState(prevState => ({
       ...prevState,
       minimapCursor: "grab",
     }));
@@ -108,7 +94,7 @@ const LithologyLayers = props => {
   const updateDimensions = () => {
     if (element !== undefined && element !== null && data) {
       const newHeight = element.current?.clientHeight;
-      setState(prevState => ({
+      setNavigationState(prevState => ({
         ...prevState,
         height: newHeight,
         pxm:
@@ -120,7 +106,7 @@ const LithologyLayers = props => {
     }
   };
 
-  const lensHeight = state?.scale * state.height;
+  const lensHeight = navigationState?.scale * navigationState.height;
 
   const titleLimit = 30;
   const subTitleLimit = 50;
@@ -144,7 +130,9 @@ const LithologyLayers = props => {
               <Styled.FirstLayerList
                 backgroundColor={handleColor(layer)}
                 backgroundImage={handlePattern(layer)}
-                height={(layer.toDepth - layer.fromDepth) * state.pxm + "px"}
+                height={
+                  (layer.toDepth - layer.fromDepth) * navigationState.pxm + "px"
+                }
                 style={{
                   border: "thin solid rgb(100, 100, 100)",
                 }}
@@ -159,17 +147,20 @@ const LithologyLayers = props => {
           onStart={handleStart}
           onStop={handleStop}
           position={{
-            y: state.top,
+            y: navigationState.top,
             x: 0,
           }}>
           <Styled.LensContainer
-            cursor={state.minimapCursor}
+            cursor={navigationState.minimapCursor}
             height={lensHeight + "px"}>
             {lensHeight >= 40 && (
               <>
                 <Styled.LensNumber>
                   <NumericFormat
-                    value={parseInt(state.top / state.pxm, 10)}
+                    value={parseInt(
+                      navigationState.top / navigationState.pxm,
+                      10,
+                    )}
                     thousandSeparator="'"
                     displayType="text"
                     suffix={" " + unit}
@@ -178,7 +169,10 @@ const LithologyLayers = props => {
                 <div style={{ flex: "1 1 100%" }} />
                 <Styled.LensNumber>
                   <NumericFormat
-                    value={parseInt((state.top + lensHeight) / state.pxm, 10)}
+                    value={parseInt(
+                      (navigationState.top + lensHeight) / navigationState.pxm,
+                      10,
+                    )}
                     thousandSeparator="'"
                     displayType="text"
                     suffix={" " + unit}
@@ -191,10 +185,12 @@ const LithologyLayers = props => {
       </Styled.FirstColumn>
 
       <Styled.ColumnsContainer>
-        <Styled.ShakingColumns offset={`${-state.top / state.scale}px`}>
+        <Styled.ShakingColumns
+          offset={`${-navigationState.top / navigationState.scale}px`}>
           {data.map((layer, idx) => {
             const layerHeight =
-              (state.pxm / state.scale) * (layer.toDepth - layer.fromDepth);
+              (navigationState.pxm / navigationState.scale) *
+              (layer.toDepth - layer.fromDepth);
             return (
               <Styled.LayerInfoList
                 data-cy={"stratigraphy-layer-" + idx}
@@ -225,12 +221,14 @@ const LithologyLayers = props => {
 
 LithologyLayers.propTypes = {
   stratigraphyId: PropTypes.number,
+  navigationState: PropTypes.object,
   onNavigationChanged: PropTypes.func,
   unit: PropTypes.string,
 };
 
 LithologyLayers.defaultProps = {
   stratigraphyId: null,
+  navigationState: null,
   onNavigationChanged: null,
   unit: "m",
 };
