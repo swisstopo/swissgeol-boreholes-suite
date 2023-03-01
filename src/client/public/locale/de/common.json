@@ -372,7 +372,7 @@
   "subage": "Sub-Stufe",
   "errorInvalidEntry": "Ungültige Eingabe",
   "errorFromDepthTooLow": "von Tiefe ist zu klein",
-  "errorToDepthTooHigh": "zu Tiefe ist zu gross",
-  "errorFromDepthGreaterThanToDepth": "von Tiefe ist grösser als zu Tiefe",
+  "errorToDepthTooHigh": "bis Tiefe ist zu gross",
+  "errorFromDepthGreaterThanToDepth": "von Tiefe ist grösser als bis Tiefe",
   "edit": "Bearbeiten"
 }
