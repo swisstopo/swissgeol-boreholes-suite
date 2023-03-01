@@ -121,6 +121,7 @@ const ChronostratigraphyLayers = ({
                 color="inherit"
                 variant="text"
                 startIcon={h.isVisible ? <Visibility /> : <VisibilityOff />}
+                sx={{ paddingLeft: "1em" }}
                 onClick={() => {
                   setHeader(
                     header.map((h, headerIndex) =>
