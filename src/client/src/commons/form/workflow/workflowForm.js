@@ -459,11 +459,7 @@ class WorkflowForm extends React.Component {
                                 open={this.state.modal > 0}
                                 size="mini">
                                 <Header
-                                  content={
-                                    <TranslationText
-                                      id={t(`version:${role}`)}
-                                    />
-                                  }
+                                  content={t(`version:${role}`)}
                                   // icon='archive'
                                 />
                                 <Modal.Content>
