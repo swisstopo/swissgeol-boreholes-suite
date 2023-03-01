@@ -39,10 +39,14 @@ const LithologyLayers = props => {
   }, [onNavigationChanged, state]);
 
   const handleColor = layer =>
-    `rgb(${JSON.parse(layer.lithostratigraphy.conf)?.color.join()})`;
+    `rgb(${(
+      JSON.parse(layer?.lithostratigraphy?.conf ?? null)?.color ?? [
+        255, 255, 255,
+      ]
+    ).join()})`;
 
   const handlePattern = layer =>
-    `url(/img/lit/${JSON.parse(layer.lithology.conf)?.image})`;
+    `url(/img/lit/${JSON.parse(layer?.lithology?.conf ?? null)?.image})`;
 
   const handleOnWheel = event => {
     event.stopPropagation();

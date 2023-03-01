@@ -251,7 +251,7 @@ class MenuEditorForm extends React.Component {
                   verticalAlign="middle"
                 />
                 <List.Content>
-                  <List.Header as="h3" data-cy="casing-menu-item">
+                  <List.Header as="h3" data-cy="chronostratigraphy-menu-item">
                     <TranslationText firstUpperCase id="chronostratigraphy" />
                   </List.Header>
                 </List.Content>

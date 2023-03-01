@@ -108,7 +108,8 @@ const ChronostratigraphyLayers = ({
                   fromDepth: layers.at(-1)?.toDepth ?? 0,
                   toDepth: (layers.at(-1)?.toDepth ?? 0) + 10,
                 });
-              }}>
+              }}
+              data-cy="add-chrono-button">
               <AddCircle />
             </IconButton>
           )}
@@ -128,7 +129,8 @@ const ChronostratigraphyLayers = ({
                         : h,
                     ),
                   );
-                }}>
+                }}
+                data-cy={`chrono-visibility-${index}`}>
                 <Typography noWrap>{h.title}</Typography>
               </Button>
             ))}
@@ -164,7 +166,8 @@ const ChronostratigraphyLayers = ({
           sx={{
             position: "absolute",
             top: -state?.top / (state?.scale ?? 1),
-          }}>
+          }}
+          data-cy="chrono-layers">
           {layerDisplayStack}
         </Box>
       </Box>

@@ -471,8 +471,6 @@ class BoreholeForm extends React.Component {
               "/editor/:id/stratigraphy/chronostratigraphy"
             }
             render={() => (
-              // <ChronoPanel />
-
               <Profile
                 id={parseInt(this.props.match.params.id, 10)}
                 kind="stratigraphy"
