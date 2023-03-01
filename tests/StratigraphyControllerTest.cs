@@ -77,6 +77,10 @@ public class StratigraphyControllerTest
             Assert.AreNotEqual(originalStratigraphy.FaciesDescriptions.First().Id, copiedStratigraphy.FaciesDescriptions.First().Id);
             Assert.AreEqual("Drives olive mobile", copiedStratigraphy.FaciesDescriptions.First().Description);
 
+            Assert.AreNotSame(originalStratigraphy.ChronostratigraphyLayers, copiedStratigraphy.ChronostratigraphyLayers);
+            Assert.AreNotEqual(originalStratigraphy.ChronostratigraphyLayers.First().Id, copiedStratigraphy.ChronostratigraphyLayers.First().Id);
+            Assert.AreEqual(15001164, copiedStratigraphy.ChronostratigraphyLayers.First().ChronostratigraphyId);
+
             Assert.AreNotSame(originalStratigraphy.Layers.First().LayerCodelists, copiedStratigraphy.Layers.First().LayerCodelists);
             Assert.AreEqual(originalStratigraphy.Layers.First().LayerCodelists.Count, copiedStratigraphy.Layers.First().LayerCodelists.Count);
         }
@@ -93,6 +97,7 @@ public class StratigraphyControllerTest
             context.Layers.RemoveRange(copiedStratigraphy.Layers);
             context.LithologicalDescriptions.RemoveRange(copiedStratigraphy.LithologicalDescriptions);
             context.FaciesDescriptions.RemoveRange(copiedStratigraphy.FaciesDescriptions);
+            context.ChronostratigraphyLayers.RemoveRange(copiedStratigraphy.ChronostratigraphyLayers);
             context.Stratigraphies.Remove(copiedStratigraphy);
             context.SaveChanges();
         }
@@ -108,6 +113,7 @@ public class StratigraphyControllerTest
             .Include(s => s.Layers).ThenInclude(l => l.LayerCodelists)
             .Include(s => s.LithologicalDescriptions)
             .Include(s => s.FaciesDescriptions)
+            .Include(s => s.ChronostratigraphyLayers)
             .Single(s => s.Id == id);
     }
 
