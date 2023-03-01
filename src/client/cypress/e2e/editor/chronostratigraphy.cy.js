@@ -72,7 +72,7 @@ describe("Tests for the chronostratigraphy editor.", () => {
     cy.wait("@edit_lock");
   });
 
-  it.only("Creates, updates and deletes chronostratigraphy layers", () => {
+  it("Creates, updates and deletes chronostratigraphy layers", () => {
     // create chronostratigraphy
     cy.get('[data-cy="add-chrono-button"]').click({ force: true });
     cy.wait("@chronostratigraphy_POST");
