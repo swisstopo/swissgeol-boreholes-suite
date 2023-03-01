@@ -160,36 +160,26 @@ class MenuEditorForm extends React.Component {
           </List.Item>
 
           <List.Item
-            active={
-              location.pathname ===
-              process.env.PUBLIC_URL +
-                "/editor/" +
-                match.params.id +
-                "/stratigraphy"
-            }
             onClick={() => {
               this.setState({
                 stratigraphyIsVisible: !this.state.stratigraphyIsVisible,
               });
-
-              history.push(
-                process.env.PUBLIC_URL +
-                  "/editor/" +
-                  match.params.id +
-                  "/stratigraphy",
-              );
             }}
             style={{
               padding: "1em",
               display: "flex",
-              borderLeft:
-                location.pathname ===
+              borderLeft: [
                 process.env.PUBLIC_URL +
                   "/editor/" +
                   match.params.id +
-                  "/stratigraphy"
-                  ? "0.25em solid rgb(237, 29, 36)"
-                  : null,
+                  "/stratigraphy",
+                process.env.PUBLIC_URL +
+                  "/editor/" +
+                  match.params.id +
+                  "/stratigraphy/chronostratigraphy",
+              ].includes(location.pathname)
+                ? "0.25em solid rgb(237, 29, 36)"
+                : null,
             }}>
             <List.Icon
               name="align justify"
@@ -222,6 +212,46 @@ class MenuEditorForm extends React.Component {
                   process.env.PUBLIC_URL +
                     "/editor/" +
                     match.params.id +
+                    "/stratigraphy"
+                }
+                onClick={() => {
+                  history.push(
+                    process.env.PUBLIC_URL +
+                      "/editor/" +
+                      match.params.id +
+                      "/stratigraphy",
+                  );
+                }}
+                style={{
+                  padding: "1em",
+                  paddingLeft: 40,
+                  display: "flex",
+                  borderLeft:
+                    location.pathname ===
+                    process.env.PUBLIC_URL +
+                      "/editor/" +
+                      match.params.id +
+                      "/stratigraphy"
+                      ? "0.25em solid rgb(237, 29, 36)"
+                      : null,
+                }}>
+                <List.Icon
+                  name="align justify"
+                  size="large"
+                  verticalAlign="middle"
+                />
+                <List.Content>
+                  <List.Header as="h3" data-cy="lithology-menu-item">
+                    <TranslationText firstUpperCase id="lithology" />
+                  </List.Header>
+                </List.Content>
+              </List.Item>
+              <List.Item
+                active={
+                  location.pathname ===
+                  process.env.PUBLIC_URL +
+                    "/editor/" +
+                    match.params.id +
                     "/stratigraphy/chronostratigraphy"
                 }
                 onClick={() => {
@@ -241,7 +271,7 @@ class MenuEditorForm extends React.Component {
                     process.env.PUBLIC_URL +
                       "/editor/" +
                       match.params.id +
-                      "/completion/casing"
+                      "/stratigraphy/chronostratigraphy"
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
