@@ -57,7 +57,7 @@ const LayerGap = ({ previousLayer, nextLayer, isEditable, height }) => {
                   })
                 }>
                 <IconTypography
-                  text={t("errorGapSolution2")}
+                  text={t("errorGapSolution_extendUpperLayer")}
                   icon={<ArrowDownward />}
                 />
               </CardActionArea>
@@ -72,7 +72,7 @@ const LayerGap = ({ previousLayer, nextLayer, isEditable, height }) => {
                 })
               }>
               <IconTypography
-                text={t("errorGapSolution1")}
+                text={t("errorGapSolution_fillWithUndefined")}
                 icon={<AddCircle />}
               />
             </CardActionArea>
@@ -86,7 +86,7 @@ const LayerGap = ({ previousLayer, nextLayer, isEditable, height }) => {
                   })
                 }>
                 <IconTypography
-                  text={t("errorGapSolution3")}
+                  text={t("errorGapSolution_extendLowerToZero")}
                   icon={<ArrowUpward />}
                 />
               </CardActionArea>
@@ -101,7 +101,7 @@ const LayerGap = ({ previousLayer, nextLayer, isEditable, height }) => {
                   })
                 }>
                 <IconTypography
-                  text={t("errorGapSolution4")}
+                  text={t("errorGapSolution_extendLowerLayer")}
                   icon={<ArrowUpward />}
                 />
               </CardActionArea>

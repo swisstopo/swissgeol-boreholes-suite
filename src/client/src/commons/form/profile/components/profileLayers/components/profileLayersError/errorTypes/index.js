@@ -12,17 +12,27 @@ const ErrorTypes = [
   {
     id: 2,
     messageId: "errorOverlap",
-    solutions: ["errorGapSolution2", "errorGapSolution4"],
+    solutions: [
+      "errorGapSolution_extendUpperLayer",
+      "errorGapSolution_extendLowerLayer",
+    ],
   },
   {
     id: 3,
     messageId: "errorGap",
-    solutions: ["errorGapSolution1", "errorGapSolution2", "errorGapSolution4"],
+    solutions: [
+      "errorGapSolution_fillWithUndefined",
+      "errorGapSolution_extendUpperLayer",
+      "errorGapSolution_extendLowerLayer",
+    ],
   },
   {
     id: 4,
     messageId: "errorStartWrong",
-    solutions: ["errorGapSolution1", "errorGapSolution3"],
+    solutions: [
+      "errorGapSolution_fillWithUndefined",
+      "errorGapSolution_extendLowerToZero",
+    ],
   },
   { id: 5, messageId: "errorWrongDepth", solutions: ["errorWrongDepth"] },
   {
