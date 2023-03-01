@@ -63,6 +63,7 @@ const ChronostratigraphyLayers = ({
   layers
     .sort((a, b) => a.fromDepth - b.fromDepth || a.toDepth - b.toDepth)
     .forEach((layer, index) => {
+      // scale aware factor to convert meter to pixel
       const factor = navigationState?.pxm / (navigationState?.scale ?? 1);
 
       const previousLayerToDepth = index === 0 ? 0 : layers[index - 1]?.toDepth;
@@ -105,7 +106,7 @@ const ChronostratigraphyLayers = ({
               aria-label={t("add")}
               onClick={() => {
                 const newFromDepth = layers.at(-1)?.toDepth ?? 0;
-                const newToDepth = newFromDepth + 10;
+                const newToDepth = newFromDepth + 10; // new layer is created with a depth of 10m
                 addChronostratigraphy({
                   stratigraphyId: selectedStratigraphyID,
                   fromDepth: newFromDepth,
