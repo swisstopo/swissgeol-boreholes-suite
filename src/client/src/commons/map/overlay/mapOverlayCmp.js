@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import { Button, Checkbox, Icon, Popup } from "semantic-ui-react";
+import TranslationText from "../../form/translationText";
 
 class MapOverlayComponent extends React.Component {
   constructor(props) {
@@ -71,7 +72,7 @@ class MapOverlayComponent extends React.Component {
                   color: "#787878",
                   fontSize: "0.8em",
                 }}>
-                Trasparenza ({layer.transparency}%)
+                <TranslationText id={"transparency"} /> ({layer.transparency}%)
               </div>
               <div
                 style={{
