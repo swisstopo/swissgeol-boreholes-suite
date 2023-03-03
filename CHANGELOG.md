@@ -30,6 +30,7 @@
 - Fix broken layout of _lithological description_ and _facies description_ columns when a gap of more than one layer was created in the _lithology_ column.
 - Fix bug where lithological descriptions where not copied when copying boreholes or stratigraphies.
 - Fix bug where coordinates were not updated when pasted in the coordinate input.
+- Enable translation of transparency label in map settings.
 
 ## v2.0.186 - 2023-02-13
 
