@@ -1,16 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { Button, Checkbox, Icon, Popup } from "semantic-ui-react";
+import { Button, Checkbox, Icon } from "semantic-ui-react";
 import TranslationText from "../../form/translationText";
 
 class MapOverlayComponent extends React.Component {
   constructor(props) {
     super(props);
     this.transparency = false;
-    this.state = {
-      selectedLayer: null,
-    };
   }
 
   render() {
@@ -20,7 +17,6 @@ class MapOverlayComponent extends React.Component {
       moveDown,
       moveUp,
       saveTransparency,
-      setSelectedLayer,
       setTransparency,
       toggleVisibility,
     } = this.props;
@@ -55,18 +51,6 @@ class MapOverlayComponent extends React.Component {
                   }}
                 />
               </div>
-              {
-                // layer.queryable === false?
-                //   <div
-                //     style={{
-                //       color: '#787878',
-                //       fontSize: '0.8em',
-                //       textAlign: 'right'
-                //     }}
-                //   >
-                //     (not queriable)
-                //   </div>: null
-              }
               <div
                 style={{
                   color: "#787878",
@@ -145,7 +129,6 @@ MapOverlayComponent.propTypes = {
   moveDown: PropTypes.func,
   moveUp: PropTypes.func,
   saveTransparency: PropTypes.func,
-  setSelectedLayer: PropTypes.func,
   setTransparency: PropTypes.func,
   toggleVisibility: PropTypes.func,
 };

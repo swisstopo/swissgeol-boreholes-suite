@@ -14,7 +14,6 @@ const MapOverlay = props => {
       moveDown={props.moveDown}
       moveUp={props.moveUp}
       saveTransparency={props.saveTransparency}
-      setSelectedLayer={props.setSelectedLayer}
       setTransparency={props.setTransparency}
       toggleVisibility={props.toggleVisibility}
     />
@@ -25,7 +24,6 @@ MapOverlay.propTypes = {
   moveDown: PropTypes.func,
   moveUp: PropTypes.func,
   saveTransparency: PropTypes.func,
-  setSelectedLayer: PropTypes.func,
   setTransparency: PropTypes.func,
   setting: PropTypes.object,
   toggleVisibility: PropTypes.func,
@@ -45,26 +43,23 @@ const mapDispatchToProps = dispatch => {
         patchSettings(
           "map.explorer",
           layer.visibility !== undefined ? !layer.visibility : true,
-          [layer.Identifier, "visibility"],
         ),
       );
     },
-    setTransparency: (layer, value) => {
+    setTransparency: (_, value) => {
       dispatch({
         disableFetching: true,
         path: "/setting",
         type: "PATCH",
         tree: "map.explorer",
         value: value,
-        key: [layer.Identifier, "transparency"],
       });
     },
-    saveTransparency: (layer, index) => {
+    saveTransparency: (layer, _) => {
       dispatch(
         patchSettings(
           "map.explorer",
           layer.transparency !== undefined ? layer.transparency : 0,
-          [layer.Identifier, "transparency"],
         ),
       );
     },
@@ -73,7 +68,6 @@ const mapDispatchToProps = dispatch => {
         patchSettings(
           "map.explorer",
           layer.position !== undefined ? layer.position - 1 : 0,
-          [layer.Identifier, "position"],
         ),
       );
     },
@@ -82,7 +76,6 @@ const mapDispatchToProps = dispatch => {
         patchSettings(
           "map.explorer",
           layer.position !== undefined ? layer.position + 1 : 0,
-          [layer.Identifier, "position"],
         ),
       );
     },
