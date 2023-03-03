@@ -50,7 +50,6 @@ class WorkflowForm extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    // const { refresh } = this.props;
     if (
       this.props.id !== null &&
       (this.props.id !== prevProps.id ||
@@ -459,15 +458,11 @@ class WorkflowForm extends React.Component {
                                 open={this.state.modal > 0}
                                 size="mini">
                                 <Header
-                                  content={t(`version:${role}`)}
-                                  // icon='archive'
+                                  content={t(
+                                    `status-submit-msg-${role.toLowerCase()}`,
+                                  )}
                                 />
                                 <Modal.Content>
-                                  <p>
-                                    {this.state.modal === 2 ? (
-                                      <TranslationText id="pubblicazione" />
-                                    ) : null}
-                                  </p>
                                   <p>
                                     <TranslationText id="sure" />
                                   </p>
