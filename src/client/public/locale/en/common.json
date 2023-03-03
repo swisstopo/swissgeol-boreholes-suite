@@ -332,6 +332,7 @@
   "total_depth_tvd": "Total depth TVD [m]",
   "total_depth_tvd_qt": "+/- Total depth TVD [m]",
   "totaldepth": "Total depth MD [m]",
+  "transparency": "Transparency",
   "type": "Type",
   "updateDate": "Update date",
   "updatedBy": "Updated by",
