@@ -18,6 +18,7 @@
 - Display lithology layer details in lithology column in editor mode.
 - Immediately delete layers in _casing_ and _backfill_ columns, without showing a delete dialog.
 - Removed export functionality.
+- Removed blue info button of displayed maps in map settings.
 
 ### Fixed
 
@@ -31,6 +32,10 @@
 - Fix broken layout of _lithological description_ and _facies description_ columns when a gap of more than one layer was created in the _lithology_ column.
 - Fix bug where lithological descriptions where not copied when copying boreholes or stratigraphies.
 - Fix bug where coordinates were not updated when pasted in the coordinate input.
+- Empty text or numeric fields are always displayed as `-` in the detail sections of the viewer mode.
+- Enable translation of transparency label in map settings.
+- Remove unnecessary Italian text in publish confirmation modal.
+- Add status submit message in all languages. 
 
 ## v2.0.186 - 2023-02-13
 

@@ -47,6 +47,7 @@ public class StratigraphyController : ControllerBase
             .Include(s => s.Layers).ThenInclude(l => l.LayerCodelists)
             .Include(s => s.LithologicalDescriptions)
             .Include(s => s.FaciesDescriptions)
+            .Include(s => s.ChronostratigraphyLayers)
             .AsNoTracking()
             .SingleOrDefaultAsync(b => b.Id == id)
             .ConfigureAwait(false);
@@ -76,6 +77,11 @@ public class StratigraphyController : ControllerBase
         foreach (var faciesDescription in stratigraphy.FaciesDescriptions)
         {
             faciesDescription.Id = 0;
+        }
+
+        foreach (var chronostratigraphy in stratigraphy.ChronostratigraphyLayers)
+        {
+            chronostratigraphy.Id = 0;
         }
 
         stratigraphy.Name += " (Clone)";

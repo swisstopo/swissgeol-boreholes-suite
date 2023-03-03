@@ -1,7 +1,7 @@
 import { newEditableBorehole, login } from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
-  beforeEach(() => {
+  it("Adds complete layer and displays it in viewer mode, checks if fields can be optionally hidden.", () => {
     // Assert map number of boreholes
     login("/editor");
     cy.get("div[id=map]").should("be.visible");
@@ -9,9 +9,7 @@ describe("Test for the borehole form.", () => {
 
     // Add new borehole
     newEditableBorehole().as("borehole_id");
-  });
 
-  it("Adds complete layer and displays it in viewer mode, checks if fields can be optionally hidden.", () => {
     // enter original name
     cy.contains("label", "Original name")
       .next()
@@ -135,5 +133,20 @@ describe("Test for the borehole form.", () => {
       "have.length",
       30,
     );
+  });
+
+  it("Checks if null values are displayed as dash.", () => {
+    login();
+
+    // Select borehole Abdiel Auer
+    cy.get("tbody").children().contains("td", "Abdiel Auer").click();
+
+    // Check if null value is set to dash.
+    cy.get('[data-cy="restriction-label"]').contains("div", "-");
+    cy.get('[data-cy="restriction_until-label"]').contains("div", "-");
+    cy.get('[data-cy="kind-label"]').contains("div", "-");
+
+    // Check if qt_depth is set to unknown.
+    cy.get('[data-cy="qt_depth-label"]').contains("div", "unknown");
   });
 });
