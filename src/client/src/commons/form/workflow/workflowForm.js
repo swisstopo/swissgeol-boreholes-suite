@@ -50,7 +50,6 @@ class WorkflowForm extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    // const { refresh } = this.props;
     if (
       this.props.id !== null &&
       (this.props.id !== prevProps.id ||
@@ -462,7 +461,6 @@ class WorkflowForm extends React.Component {
                                   content={t(
                                     `status-submit-msg-${role.toLowerCase()}`,
                                   )}
-                                  // icon='archive'
                                 />
                                 <Modal.Content>
                                   <p>
