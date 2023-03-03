@@ -40,9 +40,7 @@ const ChronostratigraphyLayers = ({
   navigationState,
   setNavigationState,
 }) => {
-  const { data: chronostratigraphyQueryData } = useChronostratigraphies(
-    selectedStratigraphyID,
-  );
+  const { data: layers } = useChronostratigraphies(selectedStratigraphyID);
   const { t } = useTranslation();
   const {
     add: { mutate: addChronostratigraphy },
@@ -54,47 +52,44 @@ const ChronostratigraphyLayers = ({
     return setHeader(getHeader(t));
   }, [t]);
 
-  if (!chronostratigraphyQueryData) {
+  if (!layers) {
     return <CircularProgress />;
   }
 
   const layerDisplayStack = [];
-  const layers = chronostratigraphyQueryData || [];
-  layers
-    .sort((a, b) => a.fromDepth - b.fromDepth || a.toDepth - b.toDepth)
-    .forEach((layer, index) => {
-      // scale aware factor to convert meter to pixel
-      const factor = navigationState?.pxm / (navigationState?.scale ?? 1);
+  layers.forEach((layer, index) => {
+    // scale aware factor to convert meter to pixel
+    const factor = navigationState?.pxm / (navigationState?.scale ?? 1);
 
-      const previousLayerToDepth = index === 0 ? 0 : layers[index - 1]?.toDepth;
-      const nextLayerFromDepth =
-        index === layers.length - 1
-          ? Number.MAX_VALUE
-          : layers[index + 1]?.fromDepth;
+    const previousLayerToDepth = index === 0 ? 0 : layers[index - 1]?.toDepth;
+    const nextLayerFromDepth =
+      index === layers.length - 1
+        ? Number.MAX_VALUE
+        : layers[index + 1]?.fromDepth;
 
-      if (layer.fromDepth > previousLayerToDepth) {
-        layerDisplayStack.push(
-          <LayerGap
-            key={-index}
-            previousLayer={layers[index - 1]}
-            nextLayer={layers[index]}
-            isEditable={isEditable}
-            height={(layers[index].fromDepth - previousLayerToDepth) * factor}
-          />,
-        );
-      }
+    if (layer.fromDepth > previousLayerToDepth) {
       layerDisplayStack.push(
-        <LayerCard
-          key={layer.id}
-          layer={layer}
-          minFromDepth={previousLayerToDepth}
-          maxToDepth={nextLayerFromDepth}
-          header={header}
+        <LayerGap
+          key={-index}
+          previousLayer={layers[index - 1]}
+          nextLayer={layers[index]}
           isEditable={isEditable}
-          height={(layer.toDepth - layer.fromDepth) * factor}
+          height={(layers[index].fromDepth - previousLayerToDepth) * factor}
         />,
       );
-    });
+    }
+    layerDisplayStack.push(
+      <LayerCard
+        key={layer.id}
+        layer={layer}
+        minFromDepth={previousLayerToDepth}
+        maxToDepth={nextLayerFromDepth}
+        header={header}
+        isEditable={isEditable}
+        height={(layer.toDepth - layer.fromDepth) * factor}
+      />,
+    );
+  });
 
   return (
     <Box sx={{ ...sx, display: "flex", flexDirection: "column" }}>
