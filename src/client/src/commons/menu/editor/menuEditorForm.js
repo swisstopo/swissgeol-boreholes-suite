@@ -421,56 +421,6 @@ class MenuEditorForm extends React.Component {
               </List.Item>
             </>
           )}
-          {/* hydrogeology */}
-          {/* <List.Item
-            active={
-              location.pathname ===
-              process.env.PUBLIC_URL +
-                '/editor/' +
-                match.params.id +
-                '/hydrogeology'
-            }
-            onClick={() => {
-              history.push(
-                process.env.PUBLIC_URL +
-                  '/editor/' +
-                  match.params.id +
-                  '/hydrogeology',
-              );
-            }}
-            style={{
-              padding: '1em',
-              display: 'flex',
-              borderLeft:
-                location.pathname ===
-                process.env.PUBLIC_URL +
-                  '/editor/' +
-                  match.params.id +
-                  '/hydrogeology'
-                  ? '0.25em solid rgb(237, 29, 36)'
-                  : null,
-            }}>
-            <img
-              src={process.env.PUBLIC_URL + '/img/Hydrogeology.png'}
-              style={{
-                height: '20px',
-                paddingRight: '1em',
-                opacity:
-                  location.pathname ===
-                  process.env.PUBLIC_URL +
-                    '/editor/' +
-                    match.params.id +
-                    '/hydrogeology'
-                    ? 1
-                    : 0.5,
-              }}
-            />
-            <List.Content>
-              <List.Header as="h3">
-                Hydrogeology
-              </List.Header>
-            </List.Content>
-          </List.Item> */}
 
           <List.Item
             active={
