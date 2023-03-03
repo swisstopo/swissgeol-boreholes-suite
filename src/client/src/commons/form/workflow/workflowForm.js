@@ -459,7 +459,9 @@ class WorkflowForm extends React.Component {
                                 open={this.state.modal > 0}
                                 size="mini">
                                 <Header
-                                  content={t(`version:${role}`)}
+                                  content={t(
+                                    `status-submit-msg-${role.toLowerCase()}`,
+                                  )}
                                   // icon='archive'
                                 />
                                 <Modal.Content>
