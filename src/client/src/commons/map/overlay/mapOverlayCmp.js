@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import { Button, Checkbox, Icon, Popup } from "semantic-ui-react";
+import { Button, Checkbox, Icon } from "semantic-ui-react";
 import TranslationText from "../../form/translationText";
 
 class MapOverlayComponent extends React.Component {
@@ -20,7 +20,6 @@ class MapOverlayComponent extends React.Component {
       moveDown,
       moveUp,
       saveTransparency,
-      setSelectedLayer,
       setTransparency,
       toggleVisibility,
     } = this.props;
@@ -55,18 +54,6 @@ class MapOverlayComponent extends React.Component {
                   }}
                 />
               </div>
-              {
-                // layer.queryable === false?
-                //   <div
-                //     style={{
-                //       color: '#787878',
-                //       fontSize: '0.8em',
-                //       textAlign: 'right'
-                //     }}
-                //   >
-                //     (not queriable)
-                //   </div>: null
-              }
               <div
                 style={{
                   color: "#787878",
@@ -108,62 +95,6 @@ class MapOverlayComponent extends React.Component {
                   />
                 </div>
                 <div>
-                  {setSelectedLayer === undefined ? null : layer.queryable ===
-                    false ? (
-                    <Popup
-                      content="Not queryable"
-                      on="hover"
-                      trigger={
-                        <Icon.Group size="large">
-                          <Icon color="red" name="dont" />
-                          <Icon name="info" size="tiny" />
-                        </Icon.Group>
-                      }
-                    />
-                  ) : (
-                    <Button
-                      active={
-                        this.state.selectedLayer !== null &&
-                        this.state.selectedLayer.Identifier === layer.Identifier
-                      }
-                      circular
-                      color={
-                        this.state.selectedLayer !== null &&
-                        this.state.selectedLayer.Identifier === layer.Identifier
-                          ? "blue"
-                          : null
-                      }
-                      compact
-                      icon
-                      onClick={() => {
-                        if (
-                          this.state.selectedLayer !== null &&
-                          this.state.selectedLayer.Identifier ===
-                            layer.Identifier
-                        ) {
-                          this.setState(
-                            {
-                              selectedLayer: null,
-                            },
-                            () => {
-                              setSelectedLayer(null);
-                            },
-                          );
-                        } else {
-                          this.setState(
-                            {
-                              selectedLayer: layer,
-                            },
-                            () => {
-                              setSelectedLayer(layer);
-                            },
-                          );
-                        }
-                      }}
-                      size="mini">
-                      <Icon name="info" />
-                    </Button>
-                  )}
                   <Button
                     circular
                     compact

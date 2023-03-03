@@ -17,6 +17,7 @@
 - Display lithology layer details in lithology column in editor mode.
 - Immediately delete layers in _casing_ and _backfill_ columns, without showing a delete dialog.
 - Removed export functionality.
+- Removed blue info button of displayed maps in map settings.
 
 ### Fixed
 
