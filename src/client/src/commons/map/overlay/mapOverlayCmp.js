@@ -8,6 +8,9 @@ class MapOverlayComponent extends React.Component {
   constructor(props) {
     super(props);
     this.transparency = false;
+    this.state = {
+      selectedLayer: null,
+    };
   }
 
   render() {
@@ -129,6 +132,7 @@ MapOverlayComponent.propTypes = {
   moveDown: PropTypes.func,
   moveUp: PropTypes.func,
   saveTransparency: PropTypes.func,
+  setSelectedLayer: PropTypes.func,
   setTransparency: PropTypes.func,
   toggleVisibility: PropTypes.func,
 };
