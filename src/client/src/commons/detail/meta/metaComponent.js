@@ -56,7 +56,7 @@ class MetaComponent extends React.Component {
     } else {
       coordinates = (
         <NumericFormat
-          value={values[0]}
+          value={values[0] ?? "-"}
           thousandSeparator="'"
           displayType="text"
         />
@@ -292,12 +292,14 @@ class MetaComponent extends React.Component {
             padding: padding,
           }}>
           <div
+            data-cy="restriction-label"
             style={{
               flex: "1 1 100%",
             }}>
             {this.getDomainRow("restriction", data.restriction, "restriction")}
           </div>
           <div
+            data-cy="restriction_until-label"
             style={{
               flex: "1 1 100%",
             }}>
@@ -382,6 +384,7 @@ class MetaComponent extends React.Component {
             padding: padding,
           }}>
           <div
+            data-cy="kind-label"
             style={{
               display: "flex",
               flexDirection: "row",
@@ -491,11 +494,12 @@ class MetaComponent extends React.Component {
             )}
           </div>
           <div
+            data-cy="qt_depth-label"
             style={{
               flex: "1 1 100%",
             }}>
             {this.getDomainRow(
-              "custom.qt_depth",
+              "custom.qt_top_bedrock",
               data.custom.qt_depth,
               "qt_depth",
             )}
