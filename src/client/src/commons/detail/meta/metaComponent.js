@@ -59,7 +59,6 @@ class MetaComponent extends React.Component {
           value={values[0] ?? "-"}
           thousandSeparator="'"
           displayType="text"
-          defaultValue="-"
         />
       );
     }
