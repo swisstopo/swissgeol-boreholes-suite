@@ -11,12 +11,16 @@ import {
 import FilesTableComponent from "./filesTableComponent";
 import TranslationText from "../../form/translationText";
 import { Button } from "semantic-ui-react";
+import { AlertContext } from "../../alert/alertContext";
 
 export default class EditorBoreholeFilesTable extends Component {
   static propTypes = {
     id: PropTypes.number,
     unlocked: PropTypes.bool,
+    t: PropTypes.func,
   };
+
+  static contextType = AlertContext;
 
   constructor(props, context) {
     super(props, context);
@@ -103,6 +107,7 @@ export default class EditorBoreholeFilesTable extends Component {
   }
 
   render() {
+    const { t } = this.props;
     return this.props.id ? (
       <div
         className="flex_col flex_fill"
@@ -140,6 +145,13 @@ export default class EditorBoreholeFilesTable extends Component {
                       this.props.id,
                       this.state.file,
                     ).then(r => {
+                      if (r.data.success === false) {
+                        this.context.error(
+                          t(
+                            "Diese Datei wurde für diese Bohrung breits hochgeladen.",
+                          ),
+                        );
+                      }
                       this.input.value = "";
                       this.setState(
                         {
