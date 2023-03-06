@@ -1,5 +1,5 @@
 import store from "../reducers";
-import { useQuery } from "react-query";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 
 /**
  * Fetch data from the C# Api.
@@ -119,6 +119,18 @@ export const useDomains = () =>
     return domains;
   });
 
+export const useDomainSchema = schema =>
+  useQuery(
+    ["domains", schema],
+    async () => {
+      return await fetchApiV2(`codelist?schema=${schema}`, "GET");
+    },
+    {
+      staleTime: 10 * (60 * 1000), // 10 mins
+      cacheTime: 15 * (60 * 1000), // 15 mins
+    },
+  );
+
 export const layerQueryKey = "layers";
 
 export const useLayers = profileId =>
@@ -142,3 +154,65 @@ export const useFaciesDescription = selectedStratigraphyID =>
     queryKey: [faciesDescriptionQueryKey, selectedStratigraphyID],
     queryFn: () => fetchFaciesDescriptionsByProfileId(selectedStratigraphyID),
   });
+
+export const chronostratigraphiesQueryKey = "chronostratigraphies";
+
+export const useChronostratigraphies = stratigraphyID =>
+  useQuery({
+    queryKey: [chronostratigraphiesQueryKey, stratigraphyID],
+    queryFn: async () => {
+      return await fetchApiV2(
+        `chronostratigraphy?stratigraphyId=${stratigraphyID}`,
+        "GET",
+      );
+    },
+  });
+
+export const useChronostratigraphyMutations = () => {
+  const queryClient = useQueryClient();
+  const useAddChronostratigraphy = useMutation(
+    async chronostratigraphy => {
+      return await fetchApiV2("chronostratigraphy", "POST", chronostratigraphy);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [chronostratigraphiesQueryKey],
+        });
+      },
+    },
+  );
+  const useUpdateChronostratigraphy = useMutation(
+    async chronostratigraphy => {
+      return await fetchApiV2("chronostratigraphy", "PUT", chronostratigraphy);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [chronostratigraphiesQueryKey],
+        });
+      },
+    },
+  );
+  const useDeleteChronostratigraphy = useMutation(
+    async chronostratigraphyId => {
+      return await fetchApiV2(
+        `chronostratigraphy?id=${chronostratigraphyId}`,
+        "DELETE",
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [chronostratigraphiesQueryKey],
+        });
+      },
+    },
+  );
+
+  return {
+    add: useAddChronostratigraphy,
+    update: useUpdateChronostratigraphy,
+    delete: useDeleteChronostratigraphy,
+  };
+};

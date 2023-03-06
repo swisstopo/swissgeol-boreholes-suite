@@ -166,7 +166,7 @@ describe("Instrumentation tests", () => {
 
     casingDropDown.contains("Moonshine Bike");
 
-    cy.wait("@casing-layers");
+    cy.wait("@layer-by-profileId");
 
     // Choose second casingLayer
     let casingLayerDropDown = cy

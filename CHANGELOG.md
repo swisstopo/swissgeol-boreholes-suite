@@ -6,6 +6,7 @@
 
 - Added functionality to edit facies description seperately from lithology.
 - Added functionality to scroll to newly created lithology layer.
+- Add separate panel to edit chronostratigraphy layers.
 
 ### Changed
 

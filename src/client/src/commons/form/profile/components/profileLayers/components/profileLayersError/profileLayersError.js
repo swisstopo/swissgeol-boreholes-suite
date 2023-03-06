@@ -65,11 +65,19 @@ const ProfileLayersError = props => {
   }, [title, id]);
 
   const resolving = title => {
-    if (title === "errorGapSolution1" || title === "deletelayer") return 0;
-    if (title === "errorGapSolution2" || title === "extendupper") return 1;
     if (
-      title === "errorGapSolution3" ||
-      title === "errorGapSolution4" ||
+      title === "errorGapSolution_fillWithUndefined" ||
+      title === "deletelayer"
+    )
+      return 0;
+    if (
+      title === "errorGapSolution_extendUpperLayer" ||
+      title === "extendupper"
+    )
+      return 1;
+    if (
+      title === "errorGapSolution_extendLowerToZero" ||
+      title === "errorGapSolution_extendLowerLayer" ||
       title === "extendlower"
     )
       return 2;

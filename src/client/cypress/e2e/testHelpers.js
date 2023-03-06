@@ -1,7 +1,7 @@
 import adminUser from "../fixtures/adminUser.json";
 import editorUser from "../fixtures/editorUser.json";
 
-const adminUserAuth = {
+export const adminUserAuth = {
   user: "admin",
   password: "swissforages",
 };
@@ -35,12 +35,15 @@ export const interceptApiCalls = () => {
 
   // Api V2
   cy.intercept("/api/v2/layer/**").as("layer-v2");
-  cy.intercept("/api/v2/layer?profileId=**").as("casing-layers");
+  cy.intercept("/api/v2/layer?profileId=**").as("layer-by-profileId");
   cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
   cy.intercept("/api/v2/lithologicaldescription*").as(
     "lithological_description",
   );
+  cy.intercept("/api/v2/chronostratigraphy*", req => {
+    return (req.alias = `chronostratigraphy_${req.method}`);
+  });
 };
 
 /**
