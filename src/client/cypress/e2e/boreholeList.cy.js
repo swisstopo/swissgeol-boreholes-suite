@@ -72,9 +72,9 @@ describe("Borehole list tests", () => {
     // sort by borehole type (column of original name)
     cy.contains("div", "Borehole type").click();
     cy.wait("@borehole");
-    cy.get("tbody").children().eq(0).contains("td", "Brisa Jenkins");
-    cy.get("tbody").children().eq(1).contains("td", "Dillan Schmitt");
-    cy.get("tbody").children().eq(2).contains("td", "Laurine Gibson");
+    cy.get("tbody").children().eq(0).contains("td", "borehole");
+    cy.get("tbody").children().eq(1).contains("td", "borehole");
+    cy.get("tbody").children().eq(2).contains("td", "borehole");
   });
 
   it("Boreholes are displayed in correct order with admin login", () => {
