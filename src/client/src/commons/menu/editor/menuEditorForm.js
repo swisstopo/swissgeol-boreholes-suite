@@ -127,27 +127,18 @@ class MenuEditorForm extends React.Component {
           <List.Item
             active={
               location.pathname ===
-              process.env.PUBLIC_URL +
-                "/editor/" +
-                match.params.id +
-                "/borehole"
+              `${process.env.PUBLIC_URL}/editor/${match.params.id}/borehole`
             }
             onClick={() => {
               history.push(
-                process.env.PUBLIC_URL +
-                  "/editor/" +
-                  match.params.id +
-                  "/borehole",
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/borehole`,
               );
             }}
             style={{
               padding: "1em",
               borderLeft:
                 location.pathname ===
-                process.env.PUBLIC_URL +
-                  "/editor/" +
-                  match.params.id +
-                  "/borehole"
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/borehole`
                   ? "0.25em solid rgb(237, 29, 36)"
                   : null,
             }}>
@@ -160,36 +151,20 @@ class MenuEditorForm extends React.Component {
           </List.Item>
 
           <List.Item
-            active={
-              location.pathname ===
-              process.env.PUBLIC_URL +
-                "/editor/" +
-                match.params.id +
-                "/stratigraphy"
-            }
             onClick={() => {
               this.setState({
                 stratigraphyIsVisible: !this.state.stratigraphyIsVisible,
               });
-
-              history.push(
-                process.env.PUBLIC_URL +
-                  "/editor/" +
-                  match.params.id +
-                  "/stratigraphy",
-              );
             }}
             style={{
               padding: "1em",
               display: "flex",
-              borderLeft:
-                location.pathname ===
-                process.env.PUBLIC_URL +
-                  "/editor/" +
-                  match.params.id +
-                  "/stratigraphy"
-                  ? "0.25em solid rgb(237, 29, 36)"
-                  : null,
+              borderLeft: [
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy`,
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy/chronostratigraphy`,
+              ].includes(location.pathname)
+                ? "0.25em solid rgb(237, 29, 36)"
+                : null,
             }}>
             <List.Icon
               name="align justify"
@@ -219,17 +194,11 @@ class MenuEditorForm extends React.Component {
               <List.Item
                 active={
                   location.pathname ===
-                  process.env.PUBLIC_URL +
-                    "/editor/" +
-                    match.params.id +
-                    "/stratigraphy/chronostratigraphy"
+                  `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy`
                 }
                 onClick={() => {
                   history.push(
-                    process.env.PUBLIC_URL +
-                      "/editor/" +
-                      match.params.id +
-                      "/stratigraphy/chronostratigraphy",
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy`,
                   );
                 }}
                 style={{
@@ -238,10 +207,38 @@ class MenuEditorForm extends React.Component {
                   display: "flex",
                   borderLeft:
                     location.pathname ===
-                    process.env.PUBLIC_URL +
-                      "/editor/" +
-                      match.params.id +
-                      "/completion/casing"
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy`
+                      ? "0.25em solid rgb(237, 29, 36)"
+                      : null,
+                }}>
+                <List.Icon
+                  name="align justify"
+                  size="large"
+                  verticalAlign="middle"
+                />
+                <List.Content>
+                  <List.Header as="h3" data-cy="lithology-menu-item">
+                    <TranslationText firstUpperCase id="lithology" />
+                  </List.Header>
+                </List.Content>
+              </List.Item>
+              <List.Item
+                active={
+                  location.pathname ===
+                  `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy/chronostratigraphy`
+                }
+                onClick={() => {
+                  history.push(
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy/chronostratigraphy`,
+                  );
+                }}
+                style={{
+                  padding: "1em",
+                  paddingLeft: 40,
+                  display: "flex",
+                  borderLeft:
+                    location.pathname ===
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy/chronostratigraphy`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -269,18 +266,9 @@ class MenuEditorForm extends React.Component {
               padding: "0.9em",
               display: "flex",
               borderLeft: [
-                process.env.PUBLIC_URL +
-                  "/editor/" +
-                  match.params.id +
-                  "/completion/casing",
-                process.env.PUBLIC_URL +
-                  "/editor/" +
-                  match.params.id +
-                  "/completion/filling",
-                process.env.PUBLIC_URL +
-                  "/editor/" +
-                  match.params.id +
-                  "/completion/instruments",
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/casing`,
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/filling`,
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/instruments`,
               ].includes(location.pathname)
                 ? "0.25em solid rgb(237, 29, 36)"
                 : null,
@@ -317,17 +305,11 @@ class MenuEditorForm extends React.Component {
               <List.Item
                 active={
                   location.pathname ===
-                  process.env.PUBLIC_URL +
-                    "/editor/" +
-                    match.params.id +
-                    "/completion/casing"
+                  `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/casing`
                 }
                 onClick={() => {
                   history.push(
-                    process.env.PUBLIC_URL +
-                      "/editor/" +
-                      match.params.id +
-                      "/completion/casing",
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/casing`,
                   );
                 }}
                 style={{
@@ -336,10 +318,7 @@ class MenuEditorForm extends React.Component {
                   display: "flex",
                   borderLeft:
                     location.pathname ===
-                    process.env.PUBLIC_URL +
-                      "/editor/" +
-                      match.params.id +
-                      "/completion/casing"
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/casing`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -351,10 +330,7 @@ class MenuEditorForm extends React.Component {
                     paddingRight: "1em",
                     opacity:
                       location.pathname ===
-                      process.env.PUBLIC_URL +
-                        "/editor/" +
-                        match.params.id +
-                        "/completion/casing"
+                      `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/casing`
                         ? 1
                         : 0.5,
                   }}
@@ -368,17 +344,11 @@ class MenuEditorForm extends React.Component {
               <List.Item
                 active={
                   location.pathname ===
-                  process.env.PUBLIC_URL +
-                    "/editor/" +
-                    match.params.id +
-                    "/completion/instruments"
+                  `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/instruments`
                 }
                 onClick={() => {
                   history.push(
-                    process.env.PUBLIC_URL +
-                      "/editor/" +
-                      match.params.id +
-                      "/completion/instruments",
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/instruments`,
                   );
                 }}
                 style={{
@@ -387,10 +357,7 @@ class MenuEditorForm extends React.Component {
                   display: "flex",
                   borderLeft:
                     location.pathname ===
-                    process.env.PUBLIC_URL +
-                      "/editor/" +
-                      match.params.id +
-                      "/completion/instruments"
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/instruments`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -402,10 +369,7 @@ class MenuEditorForm extends React.Component {
                     paddingRight: "1em",
                     opacity:
                       location.pathname ===
-                      process.env.PUBLIC_URL +
-                        "/editor/" +
-                        match.params.id +
-                        "/completion/instruments"
+                      `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/instruments`
                         ? 1
                         : 0.5,
                   }}
@@ -419,17 +383,11 @@ class MenuEditorForm extends React.Component {
               <List.Item
                 active={
                   location.pathname ===
-                  process.env.PUBLIC_URL +
-                    "/editor/" +
-                    match.params.id +
-                    "/completion/filling"
+                  `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/filling`
                 }
                 onClick={() => {
                   history.push(
-                    process.env.PUBLIC_URL +
-                      "/editor/" +
-                      match.params.id +
-                      "/completion/filling",
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/filling`,
                   );
                 }}
                 style={{
@@ -438,10 +396,7 @@ class MenuEditorForm extends React.Component {
                   display: "flex",
                   borderLeft:
                     location.pathname ===
-                    process.env.PUBLIC_URL +
-                      "/editor/" +
-                      match.params.id +
-                      "/completion/filling"
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/filling`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -453,10 +408,7 @@ class MenuEditorForm extends React.Component {
                     paddingRight: "1em",
                     opacity:
                       location.pathname ===
-                      process.env.PUBLIC_URL +
-                        "/editor/" +
-                        match.params.id +
-                        "/completion/filling"
+                      `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/filling`
                         ? 1
                         : 0.5,
                   }}
@@ -469,81 +421,22 @@ class MenuEditorForm extends React.Component {
               </List.Item>
             </>
           )}
-          {/* hydrogeology */}
-          {/* <List.Item
-            active={
-              location.pathname ===
-              process.env.PUBLIC_URL +
-                '/editor/' +
-                match.params.id +
-                '/hydrogeology'
-            }
-            onClick={() => {
-              history.push(
-                process.env.PUBLIC_URL +
-                  '/editor/' +
-                  match.params.id +
-                  '/hydrogeology',
-              );
-            }}
-            style={{
-              padding: '1em',
-              display: 'flex',
-              borderLeft:
-                location.pathname ===
-                process.env.PUBLIC_URL +
-                  '/editor/' +
-                  match.params.id +
-                  '/hydrogeology'
-                  ? '0.25em solid rgb(237, 29, 36)'
-                  : null,
-            }}>
-            <img
-              src={process.env.PUBLIC_URL + '/img/Hydrogeology.png'}
-              style={{
-                height: '20px',
-                paddingRight: '1em',
-                opacity:
-                  location.pathname ===
-                  process.env.PUBLIC_URL +
-                    '/editor/' +
-                    match.params.id +
-                    '/hydrogeology'
-                    ? 1
-                    : 0.5,
-              }}
-            />
-            <List.Content>
-              <List.Header as="h3">
-                Hydrogeology
-              </List.Header>
-            </List.Content>
-          </List.Item> */}
 
           <List.Item
             active={
               location.pathname ===
-              process.env.PUBLIC_URL +
-                "/editor/" +
-                match.params.id +
-                "/attachments"
+              `${process.env.PUBLIC_URL}/editor/${match.params.id}/attachments`
             }
             onClick={() => {
               history.push(
-                process.env.PUBLIC_URL +
-                  "/editor/" +
-                  match.params.id +
-                  "/attachments",
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/attachments`,
               );
             }}
             style={{
               padding: "1em",
               borderLeft:
                 location.pathname ===
-                process.env.PUBLIC_URL +
-                  "/editor/" +
-                  match.params.id +
-                  "/attachments"
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/attachments`
                   ? "0.25em solid rgb(237, 29, 36)"
                   : null,
             }}>
