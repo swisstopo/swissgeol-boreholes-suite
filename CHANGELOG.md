@@ -21,6 +21,7 @@
 - Removed blue info button of displayed maps in map settings.
 - Update Chronostratigraphy Codelist entries.
 - Make Lithology a sub-menu of Stratigraphy.
+- Display Chronostratigraphy colors in chronostratigraphy editor.
 
 ### Fixed
 
