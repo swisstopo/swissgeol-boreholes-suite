@@ -16,6 +16,19 @@ namespace BDMS;
 public static class BdmsContextExtensions
 {
     /// <summary>
+    /// Seed test data but only if the database is not yet seeded.
+    /// </summary>
+    public static void EnsureSeeded(this BdmsContext context)
+    {
+        // Check the content of the table that is seeded first.
+        // The default workgroup is inserted by migrations.
+        if (context.Workgroups.Count() <= 1)
+        {
+            context.SeedData();
+        }
+    }
+
+    /// <summary>
     /// Seed test data.
     /// </summary>
     public static void SeedData(this BdmsContext context)
