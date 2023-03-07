@@ -34,6 +34,7 @@
 - Enable translation of transparency label in map settings.
 - Remove unnecessary Italian text in publish confirmation modal.
 - Add status submit message in all languages. 
+- Display dash for empty coordinate values.
 
 ## v2.0.186 - 2023-02-13
 
