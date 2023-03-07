@@ -147,9 +147,7 @@ export default class EditorBoreholeFilesTable extends Component {
                     ).then(r => {
                       if (r.data.success === false) {
                         this.context.error(
-                          t(
-                            "Diese Datei wurde für diese Bohrung breits hochgeladen.",
-                          ),
+                          t("errorDuplicatedUploadPerBorehole"),
                         );
                       }
                       this.input.value = "";

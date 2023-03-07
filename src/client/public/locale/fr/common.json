@@ -86,6 +86,7 @@
   "enabling": "Activer {{what}}",
   "english": "Anglais",
   "errorAttention": "Attention",
+  "errorDuplicatedUploadPerBorehole": "Ce fichier a déjà été téléchargé pour ce forage et ne peut pas être téléchargé une deuxième fois.",
   "errorEndPoint": "Veuillez ajouter la terminaison du forage",
   "errorGap": "Il y a une lacune dans la succession des couches",
   "errorGapSolution_fillWithUndefined": "Remplir la lacune avec une 'strate non définie'",
