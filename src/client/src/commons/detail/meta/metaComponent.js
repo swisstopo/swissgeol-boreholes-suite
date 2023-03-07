@@ -37,7 +37,10 @@ class MetaComponent extends React.Component {
 
   getNumericTextRow(schema, ...values) {
     let coordinates;
-    if (values?.length === 2) {
+    if (
+      values?.length === 2 &&
+      values.every(currentValue => !_.isNil(currentValue))
+    ) {
       coordinates = (
         <>
           <NumericFormat
@@ -316,6 +319,7 @@ class MetaComponent extends React.Component {
             padding: padding,
           }}>
           <div
+            data-cy="coordinates-div"
             style={{
               flex: "1 1 100%",
             }}>
