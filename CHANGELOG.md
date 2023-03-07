@@ -19,6 +19,7 @@
 - Immediately delete layers in _casing_ and _backfill_ columns, without showing a delete dialog.
 - Removed export functionality.
 - Removed blue info button of displayed maps in map settings.
+- Update Chronostratigraphy Codelist entries.
 - Make Lithology a sub-menu of Stratigraphy.
 
 ### Fixed

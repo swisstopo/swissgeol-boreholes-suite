@@ -95,8 +95,7 @@ context.Database.Migrate();
 
 if (app.Environment.IsDevelopment())
 {
-    // Only seed if no borehole data.
-    if (!context.Boreholes.Any()) context.SeedData();
+    context.EnsureSeeded();
 }
 
 app.UseSwagger();
