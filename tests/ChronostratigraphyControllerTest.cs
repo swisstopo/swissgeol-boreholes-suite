@@ -70,7 +70,7 @@ public class ChronostratigraphyControllerTest
         Assert.AreEqual(11_000_014, chronostratigraphy.Id);
         Assert.AreEqual(40, chronostratigraphy.FromDepth);
         Assert.AreEqual(50, chronostratigraphy.ToDepth);
-        Assert.AreEqual(15_001_086, chronostratigraphy.ChronostratigraphyId);
+        Assert.AreEqual(15_001_078, chronostratigraphy.ChronostratigraphyId);
         Assert.AreEqual(6_000_001, chronostratigraphy.StratigraphyId);
     }
 
@@ -88,7 +88,7 @@ public class ChronostratigraphyControllerTest
             Id = 11_000_039,
             IsLast = true,
             Chronostratigraphy = null,
-            ChronostratigraphyId = 15_001_098,
+            ChronostratigraphyId = 15_001_087,
             Updated = new DateTime(2021, 6, 27, 4, 22,  39).ToUniversalTime(),
             UpdatedBy = null,
             UpdatedById = 5,
@@ -109,7 +109,7 @@ public class ChronostratigraphyControllerTest
         Assert.AreEqual(2, chronostratigraphyToEdit.CreatedById);
         Assert.AreEqual(5, chronostratigraphyToEdit.UpdatedById);
         Assert.AreEqual(6_000_003, chronostratigraphyToEdit.StratigraphyId);
-        Assert.AreEqual(15_001_098, chronostratigraphyToEdit.ChronostratigraphyId);
+        Assert.AreEqual(15_001_087, chronostratigraphyToEdit.ChronostratigraphyId);
 
         try
         {
@@ -203,5 +203,44 @@ public class ChronostratigraphyControllerTest
         var result = response as ObjectResult;
         Assert.IsInstanceOfType(result.Value, typeof(ProblemDetails));
         Assert.AreEqual(500, result.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task GetEntriesByProfileIdLayerSorting()
+    {
+        var stratigraphyId = 6_000_009;
+        var createdLayerIds = new List<int>();
+
+        try
+        {
+            // create layers out of order
+            await CreateLayer(createdLayerIds, new ChronostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 130, ToDepth = 140 });
+            await CreateLayer(createdLayerIds, new ChronostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 100, ToDepth = 110 });
+            await CreateLayer(createdLayerIds, new ChronostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 120, ToDepth = 130 });
+
+            var layers = await controller.GetAsync(stratigraphyId).ConfigureAwait(false);
+            Assert.IsNotNull(layers);
+            Assert.AreEqual(13, layers.Count());
+            for (int i = 1; i < layers.Count(); i++)
+            {
+                Assert.IsTrue(layers.ElementAt(i - 1).FromDepth <= layers.ElementAt(i).FromDepth, "Expected layers to be sorted by FromDepth but after {0} followed {1}", layers.ElementAt(i - 1).FromDepth, layers.ElementAt(i).FromDepth);
+            }
+        }
+        finally
+        {
+            foreach (var layerId in createdLayerIds)
+            {
+                await controller.DeleteAsync(layerId).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private async Task CreateLayer(List<int> layerIds, ChronostratigraphyLayer layer)
+    {
+        var response = await controller.CreateAsync(layer);
+        if (response is OkObjectResult result && result.Value is IIdentifyable responseLayer)
+        {
+            layerIds.Add(responseLayer.Id);
+        }
     }
 }

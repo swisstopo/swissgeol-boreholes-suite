@@ -35,7 +35,7 @@ public class ChronostratigraphyController : BdmsControllerBase<Chronostratigraph
             chronostratigraphyLayers = chronostratigraphyLayers.Where(l => l.StratigraphyId == stratigraphyId);
         }
 
-        return await chronostratigraphyLayers.ToListAsync().ConfigureAwait(false);
+        return await chronostratigraphyLayers.OrderBy(l => l.FromDepth).ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>

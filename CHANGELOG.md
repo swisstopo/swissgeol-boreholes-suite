@@ -6,6 +6,7 @@
 
 - Added functionality to edit facies description seperately from lithology.
 - Added functionality to scroll to newly created lithology layer.
+- Add separate panel to edit chronostratigraphy layers.
 
 ### Changed
 
@@ -17,6 +18,10 @@
 - Display lithology layer details in lithology column in editor mode.
 - Immediately delete layers in _casing_ and _backfill_ columns, without showing a delete dialog.
 - Removed export functionality.
+- Removed blue info button of displayed maps in map settings.
+- Update Chronostratigraphy Codelist entries.
+- Make Lithology a sub-menu of Stratigraphy.
+- Display chronostratigraphy colors in chronostratigraphy editor.
 
 ### Fixed
 

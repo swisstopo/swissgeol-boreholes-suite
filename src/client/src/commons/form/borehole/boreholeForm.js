@@ -464,6 +464,28 @@ class BoreholeForm extends React.Component {
               />
             )}
           />
+          <Route
+            exact
+            path={
+              process.env.PUBLIC_URL +
+              "/editor/:id/stratigraphy/chronostratigraphy"
+            }
+            render={() => (
+              <Profile
+                id={parseInt(this.props.match.params.id, 10)}
+                kind="stratigraphy"
+                isChronostratigraphy={true}
+                unlocked={
+                  !(
+                    this.props.borehole.data.role !== "EDIT" ||
+                    this.props.borehole.data.lock === null ||
+                    this.props.borehole.data.lock.username !==
+                      this.props.user.data.username
+                  )
+                }
+              />
+            )}
+          />
 
           <Route
             exact

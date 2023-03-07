@@ -7,6 +7,7 @@ describe("Tests for the lithological description column.", () => {
 
     // navigate to stratigraphy
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
+    cy.get('[data-cy="lithology-menu-item"]').click();
     cy.get('[data-cy="add-stratigraphy-button"]').click();
     cy.wait("@stratigraphy_edit_create");
 

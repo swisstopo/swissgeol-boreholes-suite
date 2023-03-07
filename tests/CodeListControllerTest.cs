@@ -31,7 +31,7 @@ public class CodeListControllerTest
     public async Task GetAllEntriesAsync()
     {
         var codeLists = await controller.GetAsync();
-        Assert.AreEqual(2403, codeLists.Count());
+        Assert.AreEqual(2389, codeLists.Count());
     }
 
     [TestMethod]
@@ -45,20 +45,20 @@ public class CodeListControllerTest
     public async Task GetEntriesBySchema()
     {
         var codeLists = await controller.GetAsync("custom.chronostratigraphy_top_bedrock");
-        Assert.AreEqual(149, codeLists.Count());
-        var codeListToTest = codeLists.Single(c => c.Id == 15001168);
-        Assert.AreEqual(15001168, codeListToTest.Id);
-        Assert.AreEqual(15001168, codeListToTest.Geolcode);
-        Assert.AreEqual(null, codeListToTest.Conf);
+        Assert.AreEqual(135, codeLists.Count());
+        var codeListToTest = codeLists.Single(c => c.Id == 15001070);
+        Assert.AreEqual(15001070, codeListToTest.Id);
+        Assert.AreEqual(15001070, codeListToTest.Geolcode);
+        Assert.AreEqual("{\"color\":[128,207,216]}", codeListToTest.Conf);
         Assert.AreEqual(false, codeListToTest.IsDefault);
         Assert.AreEqual("custom.chronostratigraphy_top_bedrock", codeListToTest.Schema);
-        Assert.AreEqual("Mittlerer Jura undifferenziert", codeListToTest.De);
-        Assert.AreEqual("Middle Jurassic undifferenciated", codeListToTest.En);
-        Assert.AreEqual("Jurassique moyen indifférencié", codeListToTest.Fr);
-        Assert.AreEqual("Giurassico medio indifferenziato", codeListToTest.It);
-        Assert.AreEqual(142, codeListToTest.Order);
-        Assert.AreEqual("jmu", codeListToTest.Code);
-        Assert.AreEqual(new LTree("15001001.15001049.15001065.15001070.15001168"), codeListToTest.Path);
+        Assert.AreEqual("Mittlerer Jura", codeListToTest.De);
+        Assert.AreEqual("Middle Jurassic", codeListToTest.En);
+        Assert.AreEqual("Jurassique moyen", codeListToTest.Fr);
+        Assert.AreEqual("Giurassico Medio", codeListToTest.It);
+        Assert.AreEqual(70, codeListToTest.Order);
+        Assert.AreEqual("jm", codeListToTest.Code);
+        Assert.AreEqual(new LTree("15001001.15001049.15001065.15001070"), codeListToTest.Path);
     }
 
     [TestMethod]
