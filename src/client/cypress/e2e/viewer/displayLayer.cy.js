@@ -1,4 +1,4 @@
-import { newEditableBorehole, login } from "../testHelpers";
+import { newEditableBorehole, login, createBorehole } from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
   it("Adds complete layer and displays it in viewer mode, checks if fields can be optionally hidden.", () => {
@@ -136,18 +136,11 @@ describe("Test for the borehole form.", () => {
     );
   });
 
-  it.only("Checks if null values are displayed as dash.", () => {
-    // create boreholes
-    newEditableBorehole().as("borehole_id");
+  it("Checks if null values are displayed as dash.", () => {
+    createBorehole({ "extended.original_name": "A1_Borehole" });
+    login();
 
-    cy.contains("div", "Original name").type("A1_Borehole");
-    // stop editing
-    cy.contains("a", "Stop editing").click();
-
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Viewer").click();
-
-    // Select borehole Abdiel Auer
+    // Select borehole A1_Borehole
     cy.get("tbody").children().contains("td", "A1_Borehole").click();
 
     // Check if null value is set to dash.

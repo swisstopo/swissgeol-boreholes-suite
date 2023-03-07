@@ -38,8 +38,7 @@
 - Empty text or numeric fields are always displayed as `-` in the detail sections of the viewer mode.
 - Enable translation of transparency label in map settings.
 - Remove unnecessary Italian text in publish confirmation modal.
-- Add status submit message in all languages. 
-- Display dash for empty coordinate values.
+- Add status submit message in all languages.
 
 ## v2.0.186 - 2023-02-13
 
