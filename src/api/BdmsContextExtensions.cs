@@ -56,8 +56,8 @@ public static class BdmsContextExtensions
         // ranges for existing tables
         var userRange = Enumerable.Range(1, 5);
 
-        // local codelists
-        List<Codelist> codelists = context.Codelists.ToList();
+        // local codelists, ordered by id because the order after migrations is not guaranteed
+        List<Codelist> codelists = context.Codelists.OrderBy(c => c.Id).ToList();
         List<int> kindIds = codelists.Where(c => c.Schema == "kind").Select(s => s.Id).ToList();
         List<int> srsIds = codelists.Where(c => c.Schema == "srs").Select(s => s.Id).ToList();
         List<int> hrsIds = codelists.Where(c => c.Schema == "hrs").Select(s => s.Id).ToList();
