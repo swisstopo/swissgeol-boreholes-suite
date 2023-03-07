@@ -71,6 +71,7 @@ const LayerCard = ({
             (accu[level] = accu[level] || []).push({
               label: d[i18n.language],
               id: d.id,
+              color: JSON.parse(d.conf ?? null)?.color,
             });
             return accu;
           }, []),
@@ -82,17 +83,29 @@ const LayerCard = ({
   // one element for each header
   useEffect(() => {
     if (layer && schemaData && options) {
-      const selection =
+      const selections =
         schemaData
           .find(c => c.id === layer.chronostratigraphyId)
           ?.path?.split(".")
-          ?.map((id, index) => options[index].find(c => c.id === +id)) ?? [];
+          ?.map((id, index) => options[index].find(c => c.id === +id) ?? {}) ??
+        [];
+
+      // set color of empty path elements to the closest defined parent
+      let currentColor = selections[0]?.color ?? null;
+      for (let i = 1; i < selections.length; i++) {
+        const selection = selections[i];
+        if (selection.color) {
+          currentColor = selection.color;
+        } else {
+          selection.color = currentColor;
+        }
+      }
 
       // make selection array the same length as header array
       setSelection(
-        selection
+        selections
           .slice(0, header.length)
-          .concat(Array(header.length - selection.length).fill(null)),
+          .concat(Array(header.length - selections.length).fill(null)),
       );
     }
   }, [header.length, layer, options, schemaData]);
@@ -147,6 +160,22 @@ const LayerCard = ({
     },
     [layer, maxToDepth, updateChronostratigraphy, t],
   );
+
+  const handleLayerChange = (newValue, index) => {
+    if (!newValue) {
+      // layer at index was deleted, search defined parent value
+      let i = index - 1;
+      while (i >= 0 && !selection[i]?.id) {
+        i--;
+      }
+      newValue = selection[i] ?? null;
+    }
+
+    updateChronostratigraphy({
+      ...layer,
+      chronostratigraphyId: newValue?.id ?? null,
+    });
+  };
 
   if (!schemaData || !layer || !options || !selection) {
     return (
@@ -235,6 +264,9 @@ const LayerCard = ({
                   sx={{
                     paddingTop: "0",
                     paddingBottom: "0",
+                    backgroundColor: selectedItem?.color
+                      ? `rgb(${selectedItem?.color?.join()})`
+                      : "transparent",
                     borderBottom: "none",
                     borderLeft:
                       index === 0 ? "none" : "solid 1px rgba(0, 0, 0, 0.12)",
@@ -250,18 +282,13 @@ const LayerCard = ({
                     <Autocomplete
                       size="small"
                       options={options[index] ?? []}
-                      value={selectedItem}
+                      value={selectedItem?.label ? selectedItem : null}
                       renderInput={params => (
                         <TextField {...params} label={header[index].title} />
                       )}
-                      onChange={(event, value) => {
-                        updateChronostratigraphy({
-                          ...layer,
-                          chronostratigraphyId: value
-                            ? value.id
-                            : selection[index - 1]?.id ?? null,
-                        });
-                      }}
+                      onChange={(event, value) =>
+                        handleLayerChange(value, index)
+                      }
                     />
                   )}
                 </TableCell>
@@ -296,11 +323,15 @@ const LayerCard = ({
   );
 
   const cardContent = (
-    <Stack sx={{ flex: "1" }}>
-      {headerBar}
+    <Box sx={{ flex: "1", display: "flex", position: "relative" }}>
+      <Box sx={{ position: "absolute", top: "0", left: "0", right: "0" }}>
+        {headerBar}
+      </Box>
       {contentPart}
-      {footerBar}
-    </Stack>
+      <Box sx={{ position: "absolute", bottom: "0", left: "0", right: "0" }}>
+        {footerBar}
+      </Box>
+    </Box>
   );
 
   return (
@@ -332,7 +363,9 @@ const LayerCard = ({
             square
             variant="outlined"
             sx={{ height: `${height}px`, display: "flex", overflow: "auto" }}>
-            {cardContent}
+            <Box sx={{ minHeight: "14em", flex: "1", display: "flex" }}>
+              {cardContent}
+            </Box>
           </Card>
         </ClickAwayListener>
       )}
