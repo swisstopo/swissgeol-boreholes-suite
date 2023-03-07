@@ -25,21 +25,21 @@ describe("Tests for the chronostratigraphy editor.", () => {
             lithologyId: 15101044,
             lithostratigraphyId: 15200091,
             fromDepth: 0,
-            toDepth: 45,
+            toDepth: 25,
           },
           {
             lithologyId: 15102027,
-            fromDepth: 45,
-            toDepth: 65,
+            fromDepth: 25,
+            toDepth: 35,
           },
           {
-            fromDepth: 65,
-            toDepth: 75,
+            fromDepth: 35,
+            toDepth: 40,
           },
           {
             lithostratigraphyId: 15200235,
-            fromDepth: 75,
-            toDepth: 80,
+            fromDepth: 40,
+            toDepth: 43,
           },
         ].forEach(layer => {
           cy.request({
