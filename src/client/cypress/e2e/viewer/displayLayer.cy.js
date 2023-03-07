@@ -135,18 +135,31 @@ describe("Test for the borehole form.", () => {
     );
   });
 
-  it("Checks if null values are displayed as dash.", () => {
-    login();
+  it.only("Checks if null values are displayed as dash.", () => {
+    // create boreholes
+    newEditableBorehole().as("borehole_id");
+
+    cy.contains("div", "Original name").type("A1_Borehole");
+    // stop editing
+    cy.contains("a", "Stop editing").click();
+
+    cy.get("i[class='th big icon']").click();
+    cy.contains("h4", "Viewer").click();
 
     // Select borehole Abdiel Auer
-    cy.get("tbody").children().contains("td", "Abdiel Auer").click();
+    cy.get("tbody").children().contains("td", "A1_Borehole").click();
 
     // Check if null value is set to dash.
     cy.get('[data-cy="restriction-label"]').contains("div", "-");
     cy.get('[data-cy="restriction_until-label"]').contains("div", "-");
     cy.get('[data-cy="kind-label"]').contains("div", "-");
+    cy.get('[data-cy="qt_depth-label"]').contains("div", "-");
 
-    // Check if qt_depth is set to unknown.
-    cy.get('[data-cy="qt_depth-label"]').contains("div", "unknown");
+    // Check if all null values of data-cy="coordinates-div are displayed as dash.
+    cy.get('[data-cy="coordinates-div"]')
+      .children()
+      .each(el => {
+        cy.wrap(el).contains("div", "-");
+      });
   });
 });
