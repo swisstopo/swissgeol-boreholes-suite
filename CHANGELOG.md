@@ -22,6 +22,7 @@
 - Update Chronostratigraphy Codelist entries.
 - Make Lithology a sub-menu of Stratigraphy.
 - Display chronostratigraphy colors in chronostratigraphy editor.
+- Remove height reference system column from editor view list.
 
 ### Fixed
 
