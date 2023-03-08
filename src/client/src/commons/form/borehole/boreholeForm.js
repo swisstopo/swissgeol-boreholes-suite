@@ -501,7 +501,6 @@ class BoreholeForm extends React.Component {
                       this.props.user.data.username
                   )
                 }
-                t={this.props.t}
               />
             )}
           />

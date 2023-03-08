@@ -12,8 +12,9 @@ import FilesTableComponent from "./filesTableComponent";
 import TranslationText from "../../form/translationText";
 import { Button } from "semantic-ui-react";
 import { AlertContext } from "../../alert/alertContext";
+import { withTranslation } from "react-i18next";
 
-export default class EditorBoreholeFilesTable extends Component {
+class EditorBoreholeFilesTable extends Component {
   static propTypes = {
     id: PropTypes.number,
     unlocked: PropTypes.bool,
@@ -193,3 +194,5 @@ export default class EditorBoreholeFilesTable extends Component {
     );
   }
 }
+
+export default withTranslation(["common"])(EditorBoreholeFilesTable);
