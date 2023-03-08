@@ -22,6 +22,7 @@
 - Update Chronostratigraphy Codelist entries.
 - Make Lithology a sub-menu of Stratigraphy.
 - Display chronostratigraphy colors in chronostratigraphy editor.
+- Migrate chronostratigraphy _Middle Jurassic undifferenciated_ to _Middle Jurassic_.
 
 ### Fixed
 

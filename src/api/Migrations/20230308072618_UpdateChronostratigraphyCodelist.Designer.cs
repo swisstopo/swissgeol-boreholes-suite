@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20230306082558_UpdateChronostratigraphyCodelist")]
+    [Migration("20230308072618_UpdateChronostratigraphyCodelist")]
     partial class UpdateChronostratigraphyCodelist
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
