@@ -257,7 +257,6 @@ class BoreholeEditorTable extends TTable {
         {this.getHeaderLabel("kind")}
         {this.getHeaderLabel("restriction")}
         {this.getHeaderLabel("elevation_z")}
-        {this.getHeaderLabel("hrs", true)}
         {this.getHeaderLabel("drilling_end_date")}
         {this.getHeaderLabel("boreholestatus")}
         {this.getHeaderLabel("totaldepth")}
@@ -332,9 +331,6 @@ class BoreholeEditorTable extends TTable {
             thousandSeparator="'"
           />
         )}
-      </Table.Cell>,
-      <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
-        <DomainText id={item.hrs} schema="hrs" />
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         <DateText date={item.drilling_date} />
@@ -515,10 +511,7 @@ class BoreholeEditorTable extends TTable {
                   {t("common:delete")}
                 </Button>
               }>
-              <Header
-                content={t("common:deleteForever")}
-                // icon='archive'
-              />
+              <Header content={t("common:deleteForever")} />
               <Modal.Content>
                 <p>{t("common:sure")}</p>
               </Modal.Content>
