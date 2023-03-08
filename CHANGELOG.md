@@ -25,7 +25,6 @@
 - Migrate chronostratigraphy _Middle Jurassic undifferenciated_ to _Middle Jurassic_.
 - Remove height reference system column from editor view list.
 
-
 ### Fixed
 
 - Creating, editing or deleting lithological descriptions was not allowed for non-admin users.
