@@ -85,6 +85,7 @@
   "enabling": "",
   "english": "",
   "errorAttention": "",
+  "errorDuplicatedUploadPerBorehole": "",
   "errorGap": "",
   "errorGapSolution_fillWithUndefined": "",
   "errorGapSolution_extendUpperLayer": "",

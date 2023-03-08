@@ -39,8 +39,8 @@
 - Enable translation of transparency label in map settings.
 - Remove unnecessary Italian text in publish confirmation modal.
 - Add status submit message in all languages.
-- Display error message if same file is already uploaded for particular borehole.
-- Enable upload of a file, which is already uploaded for a different borehole.
+- Allow uploading the same file for different boreholes.
+- Display an error message if a file is already uploaded for a particular borehole.
 
 ## v2.0.186 - 2023-02-13
 
