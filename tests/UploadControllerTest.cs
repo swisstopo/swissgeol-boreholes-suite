@@ -14,24 +14,32 @@ public class UploadControllerTest
 {
     private BdmsContext context;
     private UploadController controller;
+    private Mock<IHttpClientFactory> httpClientFactoryMock;
+    private Mock<ILogger<UploadController>> loggerMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.CreateContext();
-        controller = new UploadController(ContextFactory.CreateContext(), new Mock<ILogger<UploadController>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
+        loggerMock = new Mock<ILogger<UploadController>>();
+        controller = new UploadController(ContextFactory.CreateContext(), loggerMock.Object, new LocationService(loggerMock.Object, httpClientFactoryMock.Object)) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
     public async Task TestCleanup()
     {
         await context.DisposeAsync();
+        httpClientFactoryMock.Verify();
+        loggerMock.Verify();
     }
 
     [TestMethod]
     [DeploymentItem("testdata.csv")]
     public async Task UploadShouldSaveDataToDatabaseAsync()
     {
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
+
         var csvFile = "testdata.csv";
 
         byte[] fileBytes = File.ReadAllBytes(csvFile);
@@ -53,11 +61,13 @@ public class UploadControllerTest
         Assert.AreEqual(null, lastAddedBorehole.IsPublic);
         Assert.AreEqual(new DateOnly(2024, 06, 15), lastAddedBorehole.RestrictionUntil);
         Assert.AreEqual(2474.472693, lastAddedBorehole.TotalDepth);
-        Assert.AreEqual(2474.472693, lastAddedBorehole.TotalDepth);
         Assert.AreEqual("Projekt 6", lastAddedBorehole.ProjectName);
         Assert.AreEqual(3, lastAddedBorehole.BoreholeCodelists.Count);
         Assert.AreEqual("Id_16", lastAddedBorehole.BoreholeCodelists.First().Value);
         Assert.AreEqual(100000003, lastAddedBorehole.BoreholeCodelists.First().CodelistId);
+        Assert.AreEqual("Bern", lastAddedBorehole.Canton);
+        Assert.AreEqual("Schweiz", lastAddedBorehole.Country);
+        Assert.AreEqual("Thun", lastAddedBorehole.Municipality);
 
         // remove boreholes
         var addedBoreholes = context.Boreholes.OrderBy(b => b.Created).ToList().TakeLast(6);

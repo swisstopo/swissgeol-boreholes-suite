@@ -17,11 +17,15 @@ public class UploadController : ControllerBase
 {
     private readonly BdmsContext context;
     private readonly ILogger logger;
+    private readonly LocationService locationService;
+    private readonly int sridLv95 = 2056;
+    private readonly int sridLv03 = 21781;
 
-    public UploadController(BdmsContext context, ILogger<UploadController> logger)
+    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService)
     {
         this.context = context;
         this.logger = logger;
+        this.locationService = locationService;
     }
 
     /// <summary>
@@ -51,9 +55,6 @@ public class UploadController : ControllerBase
         await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
         var boreholeCountResult = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
 
-        var workflows = new List<Workflow>();
-        var boreholeCodelists = new List<BoreholeCodelist>();
-
         var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
 
         var user = await context.Users
@@ -61,24 +62,33 @@ public class UploadController : ControllerBase
             .SingleOrDefaultAsync(u => u.Name == userName)
             .ConfigureAwait(false);
 
-        boreholes.ForEach(b =>
+        var workflows = new List<Workflow>();
+        var boreholeCodelists = new List<BoreholeCodelist>();
+
+        var tasks = boreholes.Select(async b =>
         {
+            // Add Ids of added boreholes to BoreholeCodelist join entities.
             var boreholeCodlists = b.BoreholeCodelists;
             if (boreholeCodelists.Any())
             {
                 boreholeCodelists.ForEach(bc => bc.BoreholeId = b.Id);
             }
 
-            var workflow = new Workflow
+            // Compute borehole location.
+            b = await UpdateBoreholeLocation(b).ConfigureAwait(false);
+
+            // Add a workflow per borehole.
+            workflows.Add(new Workflow
             {
                 UserId = user.Id,
                 BoreholeId = b.Id,
                 Role = Role.Editor,
                 Started = DateTime.Now.ToUniversalTime(),
                 Finished = null,
-            };
-            workflows.Add(workflow);
+            });
         });
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
         await context.Workflows.AddRangeAsync(workflows).ConfigureAwait(false);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
@@ -103,6 +113,22 @@ public class UploadController : ControllerBase
 
         var boreholes = csv.GetRecords<Borehole>().ToList();
         return boreholes;
+    }
+
+    private async Task<Borehole> UpdateBoreholeLocation(Borehole borehole)
+    {
+        // Use origin spatial reference system
+        var locationX = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
+        var locationY = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationY : borehole.LocationYLV03;
+        var srid = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? sridLv95 : sridLv03;
+
+        if (locationX == null || locationY == null) return borehole;
+
+        var locationInfo = await locationService.IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
+        borehole.Country = locationInfo.Country;
+        borehole.Canton = locationInfo.Canton;
+        borehole.Municipality = locationInfo.Municipality;
+        return borehole;
     }
 
     private sealed class BoreholeMap : ClassMap<Borehole>
