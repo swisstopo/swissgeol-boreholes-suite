@@ -35,7 +35,7 @@ public class UploadControllerTest
         var csvFile = "testdata.csv";
 
         byte[] fileBytes = File.ReadAllBytes(csvFile);
-        var stream = new MemoryStream(fileBytes);
+        using var stream = new MemoryStream(fileBytes);
 
         var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
 
