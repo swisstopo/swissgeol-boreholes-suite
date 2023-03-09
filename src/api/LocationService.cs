@@ -18,7 +18,7 @@ public class LocationService
     /// </summary>
     /// <param name="logger">The <see cref="ILogger"/>.</param>
     /// <param name="httpClientFactory">A factory abstraction that can create <see cref="HttpClient"/> instance.</param>
-    public LocationService(ILogger logger, IHttpClientFactory httpClientFactory)
+    public LocationService(ILogger<LocationService> logger, IHttpClientFactory httpClientFactory)
     {
         this.httpClientFactory = httpClientFactory;
         this.logger = logger;
