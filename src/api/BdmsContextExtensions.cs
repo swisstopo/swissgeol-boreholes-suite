@@ -179,6 +179,8 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TotalDepthTvd, f => f.Random.Double(0, 4500).OrNull(f, .05f))
            .RuleFor(o => o.QtTotalDepthTvdId, f => f.PickRandom(qtDepthIds).OrNull(f, .05f))
            .RuleFor(o => o.QtTotalDepthTvd, _ => default!)
+           .RuleFor(o => o.BoreholeCodelists, _ => new Collection<BoreholeCodelist>())
+           .RuleFor(o => o.Codelists, _ => new Collection<Codelist>())
            .RuleFor(o => o.Geometry, f =>
            {
                var point = new Point(f.Random.Int(2477750, 2830750), f.Random.Int(1066750, 1310750));

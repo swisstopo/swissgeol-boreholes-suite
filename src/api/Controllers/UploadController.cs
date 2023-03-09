@@ -52,6 +52,8 @@ public class UploadController : ControllerBase
         var boreholeCountResult = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
 
         var workflows = new List<Workflow>();
+        var boreholeCodelists = new List<BoreholeCodelist>();
+
         var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
 
         var user = await context.Users
@@ -61,6 +63,12 @@ public class UploadController : ControllerBase
 
         boreholes.ForEach(b =>
         {
+            var boreholeCodlists = b.BoreholeCodelists;
+            if (boreholeCodelists.Any())
+            {
+                boreholeCodelists.ForEach(bc => bc.BoreholeId = b.Id);
+            }
+
             var workflow = new Workflow
             {
                 UserId = user.Id,
@@ -79,10 +87,11 @@ public class UploadController : ControllerBase
 
     private List<Borehole> ReadBoreholesFromCsv(IFormFile file)
     {
-        var csvConfig = new CsvConfiguration(CultureInfo.CurrentCulture)
+        var csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
         {
             MissingFieldFound = null,
             HeaderValidated = null,
+            Delimiter = ";",
             IgnoreReferences = true,
             PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
         };
@@ -90,19 +99,19 @@ public class UploadController : ControllerBase
         using var reader = new StreamReader(file.OpenReadStream());
         using var csv = new CsvReader(reader, csvConfig);
 
-        csv.Context.RegisterClassMap(new RecordMap());
+        csv.Context.RegisterClassMap(new BoreholeMap());
 
         var boreholes = csv.GetRecords<Borehole>().ToList();
         return boreholes;
     }
 
-    private sealed class RecordMap : ClassMap<Borehole>
+    private sealed class BoreholeMap : ClassMap<Borehole>
     {
-        public RecordMap()
-        {
-            CultureInfo culture = CultureInfo.CurrentCulture;
+        private readonly CultureInfo swissCulture = new("de-CH");
 
-            var config = new CsvConfiguration(culture)
+        public BoreholeMap()
+        {
+            var config = new CsvConfiguration(swissCulture)
             {
                 IgnoreReferences = true,
                 PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
@@ -111,10 +120,42 @@ public class UploadController : ControllerBase
             AutoMap(config);
             Map(b => b.LocationX).Name("location_x_lv_95");
             Map(b => b.LocationY).Name("location_y_lv_95");
+            Map(m => m.BoreholeCodelists).Convert(args =>
+            {
+                var identifiers = new List<(string Name, int CodeListId)>
+                {
+                    ("id_geodin_shortname", 100000000),
+                    ("id_info_geol", 100000003),
+                    ("id_original", 100000004),
+                    ("id_canton", 100000005),
+                    ("id_geo_quat", 100000006),
+                    ("id_geo_mol", 100000007),
+                    ("id_geo_therm", 100000008),
+                    ("id_top_fels", 100000009),
+                    ("id_geodin", 100000010),
+                };
+                var boreholeCodelists = new List<BoreholeCodelist>();
+
+                identifiers.ForEach(id =>
+                {
+                    var value = args.Row.GetField<string>(id.Name);
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        boreholeCodelists.Add(new BoreholeCodelist
+                        {
+                            CodelistId = id.CodeListId,
+                            SchemaName = "borehole_identifier",
+                            Value = value,
+                        });
+                    }
+                });
+
+                return boreholeCodelists;
+            });
             Map(b => b.Date).Name("date").Convert(args =>
             {
                 string? dateString = args.Row.GetField<string>("date");
-                if (DateTime.TryParse(dateString, culture, DateTimeStyles.None, out DateTime date))
+                if (DateTime.TryParse(dateString, swissCulture, DateTimeStyles.None, out DateTime date))
                 {
                     return date.ToUniversalTime();
                 }
