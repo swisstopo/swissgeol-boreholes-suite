@@ -33,36 +33,3 @@ export function patchEditorSettings(tree, value, key = null) {
 export function exportDownload(params) {
   return downloadFile("/setting/export/download", params);
 }
-
-export function importDatabaseWorkgroup(id, file) {
-  return uploadFile(
-    "/setting/import",
-    {
-      action: "IMPORT_INTO_WORKGROUP",
-      id: id,
-    },
-    file,
-  );
-}
-
-export function importDatabaseSupplier(id, file) {
-  return uploadFile(
-    "/setting/import",
-    {
-      action: "IMPORT_INTO_SUPPLIER",
-      id: id,
-    },
-    file,
-  );
-}
-
-export function importDatabaseNewSupplier(name, file) {
-  return uploadFile(
-    "/setting/import",
-    {
-      action: "IMPORT_INTO_NEW_SUPPLIER",
-      name: name,
-    },
-    file,
-  );
-}

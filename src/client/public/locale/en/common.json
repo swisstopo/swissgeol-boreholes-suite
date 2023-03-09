@@ -367,7 +367,6 @@
   "searchFilterInstrument": "Instrumentation filters",
   "searchFilterFilling": "Backfill filters",
   "mainCompletion": "This is the main completion",
-  "import_database": "Please import a zipped .gpkg file of a workgroup or borehole",
   "import": "Import",
   "to": "to",
   "searchFilterRegistration": "Registration filters",
