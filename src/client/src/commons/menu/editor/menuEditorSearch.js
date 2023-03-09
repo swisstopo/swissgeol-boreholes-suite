@@ -202,7 +202,7 @@ class MenuEditorSearch extends React.Component {
                 <TranslationText id="csvFormat" />
               </span>
               <div>
-                <TranslationText id="csvFormatExplanation" />
+                <TranslationText id="csvFormatExplanation" />.
               </div>
               <div
                 style={{
@@ -212,6 +212,10 @@ class MenuEditorSearch extends React.Component {
                   overflow: "auto",
                   whiteSpace: "nowrap",
                 }}>
+                "id_geodin_shortname"; "id_info_geol"; "id_original";
+                "id_canton"";"id_geo_quat";"id_geo_mol";"id_geo_therm";
+                "id_top_fels"; "id_geodin";
+                <br />
                 "original_name"; "project_name"; "alternate_name"; "date";
                 "restriction_id"; "restriction_until"; "municipality"; "canton";
                 "country";
