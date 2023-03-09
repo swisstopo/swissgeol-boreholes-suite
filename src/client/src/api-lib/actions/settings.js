@@ -1,4 +1,4 @@
-import { downloadFile, fetch, uploadFile } from "./index";
+import { downloadFile, fetch } from "./index";
 
 export function loadSettings() {
   return fetch("/setting", {
