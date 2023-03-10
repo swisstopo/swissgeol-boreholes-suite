@@ -35,54 +35,61 @@ public class UploadController : ControllerBase
     public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile file)
     {
         logger.LogInformation("Import borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
-
-        if (file == null || file.Length == 0)
+        try
         {
-            return BadRequest("No file uploaded.");
-        }
-
-        var boreholes = ReadBoreholesFromCsv(file)
-            .Select(b =>
+            if (file == null || file.Length == 0)
             {
-                b.WorkgroupId = workgroupId;
-                return b;
-            }).ToList();
-
-        await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
-        var boreholeCountResult = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
-
-        var workflows = new List<Workflow>();
-        var boreholeCodelists = new List<BoreholeCodelist>();
-
-        var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
-
-        var user = await context.Users
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.Name == userName)
-            .ConfigureAwait(false);
-
-        boreholes.ForEach(b =>
-        {
-            var boreholeCodlists = b.BoreholeCodelists;
-            if (boreholeCodelists.Any())
-            {
-                boreholeCodelists.ForEach(bc => bc.BoreholeId = b.Id);
+                return BadRequest("No file uploaded.");
             }
 
-            var workflow = new Workflow
-            {
-                UserId = user.Id,
-                BoreholeId = b.Id,
-                Role = Role.Editor,
-                Started = DateTime.Now.ToUniversalTime(),
-                Finished = null,
-            };
-            workflows.Add(workflow);
-        });
-        await context.Workflows.AddRangeAsync(workflows).ConfigureAwait(false);
-        await context.SaveChangesAsync().ConfigureAwait(false);
+            var boreholes = ReadBoreholesFromCsv(file)
+                .Select(b =>
+                {
+                    b.WorkgroupId = workgroupId;
+                    return b;
+                }).ToList();
 
-        return boreholeCountResult;
+            await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
+            var boreholeCountResult = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
+
+            var workflows = new List<Workflow>();
+            var boreholeCodelists = new List<BoreholeCodelist>();
+
+            var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+
+            var user = await context.Users
+                .AsNoTracking()
+                .SingleOrDefaultAsync(u => u.Name == userName)
+                .ConfigureAwait(false);
+
+            boreholes.ForEach(b =>
+            {
+                var boreholeCodlists = b.BoreholeCodelists;
+                if (boreholeCodelists.Any())
+                {
+                    boreholeCodelists.ForEach(bc => bc.BoreholeId = b.Id);
+                }
+
+                var workflow = new Workflow
+                {
+                    UserId = user.Id,
+                    BoreholeId = b.Id,
+                    Role = Role.Editor,
+                    Started = DateTime.Now.ToUniversalTime(),
+                    Finished = null,
+                };
+                workflows.Add(workflow);
+            });
+            await context.Workflows.AddRangeAsync(workflows).ConfigureAwait(false);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+
+            return boreholeCountResult;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Error while importing borehole(s) to workgroup with id <{WorkgroupId}>: <{ErrorMessage}>", workgroupId, ex.Message);
+            return Problem("Error while importing borehole(s).");
+        }
     }
 
     private List<Borehole> ReadBoreholesFromCsv(IFormFile file)
@@ -101,8 +108,7 @@ public class UploadController : ControllerBase
 
         csv.Context.RegisterClassMap(new BoreholeMap());
 
-        var boreholes = csv.GetRecords<Borehole>().ToList();
-        return boreholes;
+        return csv.GetRecords<Borehole>().ToList();
     }
 
     private sealed class BoreholeMap : ClassMap<Borehole>
@@ -122,7 +128,8 @@ public class UploadController : ControllerBase
             Map(b => b.LocationY).Name("location_y_lv_95");
             Map(m => m.BoreholeCodelists).Convert(args =>
             {
-                var identifiers = new List<(string Name, int CodeListId)>
+                var boreholeCodelists = new List<BoreholeCodelist>();
+                new List<(string Name, int CodeListId)>
                 {
                     ("id_geodin_shortname", 100000000),
                     ("id_info_geol", 100000003),
@@ -133,10 +140,7 @@ public class UploadController : ControllerBase
                     ("id_geo_therm", 100000008),
                     ("id_top_fels", 100000009),
                     ("id_geodin", 100000010),
-                };
-                var boreholeCodelists = new List<BoreholeCodelist>();
-
-                identifiers.ForEach(id =>
+                }.ForEach(id =>
                 {
                     var value = args.Row.GetField<string>(id.Name);
                     if (!string.IsNullOrEmpty(value))
