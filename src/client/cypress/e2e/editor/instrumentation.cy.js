@@ -1,4 +1,9 @@
-import { newUneditableBorehole, delayedType } from "../testHelpers";
+import {
+  newUneditableBorehole,
+  delayedType,
+  loginAsViewer,
+  createBorehole,
+} from "../testHelpers";
 
 const addInstrumentLayer = () => {
   cy.wait(1000);
@@ -7,6 +12,22 @@ const addInstrumentLayer = () => {
   cy.wait("@layer");
   cy.wait(5000);
 };
+
+describe("Instrumentation tests", () => {
+  it("Displays correct 'No Instumentation' message when logged in as viewer and no stratigraphies are defined", () => {
+    createBorehole({ "extended.original_name": "A1_Borehole" });
+    loginAsViewer("/editor");
+
+    // Select borehole A1_Borehole
+    cy.get("tbody").children().contains("td", "A1_Borehole").click();
+    cy.get('[data-cy="completion-menu-item"]').click();
+    cy.get('[data-cy="instrument-menu-item"]').click();
+    cy.get('[data-cy="instrument-message"]').should(
+      "contain",
+      "No instrumentation available",
+    );
+  });
+});
 
 describe("Instrumentation tests", () => {
   beforeEach(() => {

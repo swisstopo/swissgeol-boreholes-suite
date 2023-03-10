@@ -30,9 +30,35 @@ const ProfileInstrument = props => {
   const [reload, setReload] = useState(0);
   const [isLoadingData, setIsLoadingData] = useState(false);
 
+  // Before any layer or instrument is created for the selected stratigraphy,
+  // create a layer or instrument when useEffect() is called the first time after
+  // setInstrumentProfileId().
+  // If there is already a layer or instrument defined,
+  // creating a layer or instrument is only possible via addInstrument and not via
+  // useEffect() of instrumentProfileId.
+  const [
+    isFirstLayerOrFirstInstrumentForStratigraphy,
+    setIsFirstLayerOrFirstInstrumentForStratigraphy,
+  ] = useState(false);
+
+  const createLayerOrInstrument = useCallback(() => {
+    if (selectedStratigraphyID) {
+      createNewInstrument(instrumentProfileId, selectedStratigraphyID).then(
+        response => {
+          if (response) onUpdated("newLayer");
+        },
+      );
+    } else {
+      createNewLayer(instrumentProfileId).then(response => {
+        if (response) onUpdated("newLayer");
+      });
+    }
+  }, [instrumentProfileId, onUpdated, selectedStratigraphyID]);
+
   const createStratigraphy = useCallback(boreholeID => {
     createNewStratigraphy(boreholeID, profileKind.INSTRUMENT).then(id => {
       setInstrumentProfileId(id);
+      setIsFirstLayerOrFirstInstrumentForStratigraphy(true);
     });
   }, []);
 
@@ -41,12 +67,10 @@ const ProfileInstrument = props => {
     getProfile(borehole.data.id, profileKind.INSTRUMENT).then(response => {
       if (response.length > 0) {
         setInstrumentProfileId(response[0].id);
-      } else if (response.length === 0) {
-        createStratigraphy(borehole.data.id);
       }
       setIsLoadingData(false);
     });
-  }, [borehole, createStratigraphy]);
+  }, [borehole]);
 
   useEffect(() => {
     getInstrumentProfile();
@@ -68,23 +92,26 @@ const ProfileInstrument = props => {
 
   useEffect(() => {
     if (instrumentProfileId) {
+      if (isFirstLayerOrFirstInstrumentForStratigraphy) {
+        createLayerOrInstrument();
+        setIsFirstLayerOrFirstInstrumentForStratigraphy(false);
+      }
       setData(instrumentProfileId);
     }
-  }, [instrumentProfileId, reloadLayer, setData, reload]);
+  }, [
+    instrumentProfileId,
+    reloadLayer,
+    setData,
+    reload,
+    isFirstLayerOrFirstInstrumentForStratigraphy,
+    createLayerOrInstrument,
+  ]);
 
-  const createLayer = () => {
+  const addInstrument = () => {
     if (instrumentProfileId) {
-      if (selectedStratigraphyID) {
-        createNewInstrument(instrumentProfileId, selectedStratigraphyID).then(
-          response => {
-            if (response) onUpdated("newLayer");
-          },
-        );
-      } else {
-        createNewLayer(instrumentProfileId).then(response => {
-          if (response) onUpdated("newLayer");
-        });
-      }
+      createLayerOrInstrument();
+    } else {
+      createStratigraphy(borehole.data.id);
     }
   };
 
@@ -111,7 +138,7 @@ const ProfileInstrument = props => {
             data-cy="add-instrumentation-button"
             content={<TranslationText id="addInstrument" />}
             icon="add"
-            onClick={createLayer}
+            onClick={addInstrument}
             secondary
             size="tiny"
           />
