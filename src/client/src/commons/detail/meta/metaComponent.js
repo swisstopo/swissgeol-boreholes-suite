@@ -41,13 +41,13 @@ class MetaComponent extends React.Component {
       coordinates = (
         <>
           <NumericFormat
-            value={values[0]}
+            value={values[0] ?? "-"}
             thousandSeparator="'"
             displayType="text"
             suffix=", "
           />
           <NumericFormat
-            value={values[1]}
+            value={values[1] ?? "-"}
             thousandSeparator="'"
             displayType="text"
           />
@@ -316,6 +316,7 @@ class MetaComponent extends React.Component {
             padding: padding,
           }}>
           <div
+            data-cy="coordinates-div"
             style={{
               flex: "1 1 100%",
             }}>

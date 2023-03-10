@@ -96,6 +96,7 @@ public static class BdmsContextExtensions
         List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> geologicalStratigraphyIds = context.Stratigraphies.Where(c => c.KindId == 3000).Select(s => s.Id).ToList();
+        List<int> referenceElevationTypeIds = codelists.Where(c => c.Schema == "ibor117").Select(s => s.Id).ToList();
 
         // Seed Boreholes
         var borehole_ids = 1_000_000;
@@ -174,7 +175,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.QtReferenceElevation, _ => default!)
            .RuleFor(o => o.QtInclinationDirectionId, f => f.PickRandom(qtInclinationDirectionIds).OrNull(f, .05f))
            .RuleFor(o => o.QtInclinationDirection, _ => default!)
-           .RuleFor(o => o.ReferenceElevationTypeId, f => f.PickRandom(qtElevationIds).OrNull(f, .05f))
+           .RuleFor(o => o.ReferenceElevationTypeId, f => f.PickRandom(referenceElevationTypeIds).OrNull(f, .05f))
            .RuleFor(o => o.ReferenceElevationType, _ => default!)
            .RuleFor(o => o.TotalDepthTvd, f => f.Random.Double(0, 4500).OrNull(f, .05f))
            .RuleFor(o => o.QtTotalDepthTvdId, f => f.PickRandom(qtDepthIds).OrNull(f, .05f))
