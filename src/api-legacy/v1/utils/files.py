@@ -134,10 +134,9 @@ class SaveFile(FileBase):
                     user['id']
                 )
 
-                return {
-                    "id_fil": id_fil,
-                    "key": file_name_uuid,
-                }
+            return {
+                "id_fil": id_fil,
+            }
 
         except Exception as ex:
             print(traceback.print_exc())
