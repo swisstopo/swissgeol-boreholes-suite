@@ -1,4 +1,4 @@
-import { newEditableBorehole, login } from "../testHelpers";
+import { newEditableBorehole, login, createBorehole } from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
   it("Adds complete layer and displays it in viewer mode, checks if fields can be optionally hidden.", () => {
@@ -137,17 +137,23 @@ describe("Test for the borehole form.", () => {
   });
 
   it("Checks if null values are displayed as dash.", () => {
+    createBorehole({ "extended.original_name": "A1_Borehole" });
     login();
 
-    // Select borehole Abdiel Auer
-    cy.get("tbody").children().contains("td", "Abdiel Auer").click();
+    // Select borehole A1_Borehole
+    cy.get("tbody").children().contains("td", "A1_Borehole").click();
 
     // Check if null value is set to dash.
     cy.get('[data-cy="restriction-label"]').contains("div", "-");
     cy.get('[data-cy="restriction_until-label"]').contains("div", "-");
     cy.get('[data-cy="kind-label"]').contains("div", "-");
+    cy.get('[data-cy="qt_depth-label"]').contains("div", "-");
 
-    // Check if qt_depth is set to unknown.
-    cy.get('[data-cy="qt_depth-label"]').contains("div", "unknown");
+    // Check if all null values of data-cy="coordinates-div are displayed as dash.
+    cy.get('[data-cy="coordinates-div"]')
+      .children()
+      .each(el => {
+        cy.wrap(el).contains("div", "-");
+      });
   });
 });

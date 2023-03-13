@@ -1,5 +1,6 @@
 import adminUser from "../fixtures/adminUser.json";
 import editorUser from "../fixtures/editorUser.json";
+import viewerUser from "../fixtures/viewerUser.json";
 
 export const adminUserAuth = {
   user: "admin",
@@ -74,6 +75,15 @@ export const loginAsAdmin = (visitUrl = "/") => {
  */
 export const loginAsEditorInViewerMode = (visitUrl = "/") => {
   cy.intercept("/api/v1/user", editorUser);
+  login(visitUrl);
+};
+
+/**
+ * Login into the application as viewer.
+ * @param {string} visitUrl The url to visit after logging in. Default is the root path.
+ */
+export const loginAsViewer = (visitUrl = "/") => {
+  cy.intercept("/api/v1/user", viewerUser);
   login(visitUrl);
 };
 

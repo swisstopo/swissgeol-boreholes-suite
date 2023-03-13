@@ -40,7 +40,10 @@
 - Empty text or numeric fields are always displayed as `-` in the detail sections of the viewer mode.
 - Enable translation of transparency label in map settings.
 - Remove unnecessary Italian text in publish confirmation modal.
-- Add status submit message in all languages. 
+- Add status submit message in all languages.
+- Allow uploading the same file for different boreholes.
+- Display an error message if a file is already uploaded for a particular borehole.
+- Resolve error when selecting `Instrumentation` with no EDIT role and no stratigraphy defined for borehole.
 
 ## v2.0.186 - 2023-02-13
 

@@ -87,6 +87,7 @@
   "enabling": "Attivare {{what}}",
   "english": "Inglese",
   "errorAttention": "Attenzione",
+  "errorDuplicatedUploadPerBorehole": "Questo file è già stato caricato, per questa perforazione, e quindi non può essere caricato una seconda volta.",
   "errorEndPoint": "Per favore aggiungere il punto finale",
   "errorGap": "C'è una lacuna nella sequenza degli strati",
   "errorGapSolution_fillWithUndefined": "Riempire la lacuna con uno 'strato non definito'",
