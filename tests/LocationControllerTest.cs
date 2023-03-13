@@ -19,6 +19,7 @@ public class LocationControllerTest
     private Mock<IHttpClientFactory> httpClientFactoryMock;
     private Mock<HttpMessageHandler> httpMessageHandler;
     private Mock<ILogger<LocationController>> loggerMock;
+    private Mock<ILogger<LocationService>> loggerLocationServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
@@ -26,9 +27,10 @@ public class LocationControllerTest
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<LocationController>>();
+        loggerLocationServiceMock = new Mock<ILogger<LocationService>>();
         httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
 
-        controller = new LocationController(context, httpClientFactoryMock.Object, loggerMock.Object, new LocationService(loggerMock.Object, httpClientFactoryMock.Object));
+        controller = new LocationController(context, httpClientFactoryMock.Object, loggerMock.Object, new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object));
     }
 
     [TestCleanup]

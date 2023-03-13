@@ -69,17 +69,6 @@ const MenuSettings = props => {
         </>
       )}
 
-      {props.user.data !== null && props.user.data.admin === true && (
-        <>
-          <ListItem
-            path="/setting/database"
-            name="Database"
-            location={location}
-            history={history}
-            icon="database"
-          />
-        </>
-      )}
       <ListItem
         path="/setting/about"
         name="about"
