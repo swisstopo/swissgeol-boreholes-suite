@@ -49,12 +49,6 @@ public class UploadController : ControllerBase
                     return b;
                 }).ToList();
 
-            await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
-            var boreholeCountResult = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
-
-            var workflows = new List<Workflow>();
-            var boreholeCodelists = new List<BoreholeCodelist>();
-
             var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
 
             var user = await context.Users
@@ -64,26 +58,17 @@ public class UploadController : ControllerBase
 
             boreholes.ForEach(b =>
             {
-                var boreholeCodlists = b.BoreholeCodelists;
-                if (boreholeCodelists.Any())
-                {
-                    boreholeCodelists.ForEach(bc => bc.BoreholeId = b.Id);
-                }
-
-                var workflow = new Workflow
+                b.Workflows.Add(
+                new Workflow
                 {
                     UserId = user.Id,
-                    BoreholeId = b.Id,
                     Role = Role.Editor,
                     Started = DateTime.Now.ToUniversalTime(),
                     Finished = null,
-                };
-                workflows.Add(workflow);
+                });
             });
-            await context.Workflows.AddRangeAsync(workflows).ConfigureAwait(false);
-            await context.SaveChangesAsync().ConfigureAwait(false);
-
-            return boreholeCountResult;
+            await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
+            return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
