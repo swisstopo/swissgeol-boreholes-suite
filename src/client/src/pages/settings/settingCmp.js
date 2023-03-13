@@ -7,7 +7,6 @@ import MenuContainer from "../../commons/menu/menuContainer";
 import ExplorerSettings from "./explorerSettings";
 import EditorSettings from "./editorSettings";
 import AdminSettings from "./admin/adminSettings";
-import DatabaseSettings from "./databaseSettings";
 import AboutSettings from "./aboutSettings";
 import TermSettings from "./termSettings";
 import LoginScreen from "./loginScreen";
@@ -62,10 +61,6 @@ const SettingCmp = props => {
             <Route
               component={LoginScreen}
               path={process.env.PUBLIC_URL + "/setting/login"}
-            />
-            <Route
-              component={DatabaseSettings}
-              path={process.env.PUBLIC_URL + "/setting/database"}
             />
             <Route
               component={AboutSettings}
