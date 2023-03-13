@@ -87,7 +87,7 @@ public class UploadController : ControllerBase
         }
         catch (Exception ex)
         {
-            logger.LogError("Error while importing borehole(s) to workgroup with id <{WorkgroupId}>: <{ErrorMessage}>", workgroupId, ex.Message);
+            logger.LogError("Error while importing borehole(s) to workgroup with id <{WorkgroupId}>: <{Error}>", workgroupId, ex);
             return Problem("Error while importing borehole(s).");
         }
     }
