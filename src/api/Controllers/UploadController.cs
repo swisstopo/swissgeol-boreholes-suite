@@ -6,7 +6,6 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections;
 using System.Globalization;
 using System.Security.Claims;
 
@@ -48,12 +47,7 @@ public class UploadController : ControllerBase
                 {
                     b.WorkgroupId = workgroupId;
                     return b;
-                }).Where(b => HasData(b)).ToList();
-
-            if (boreholes.Count == 0)
-            {
-                return BadRequest("No matching data was detected in the uploaded file.");
-            }
+                }).ToList();
 
             var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
 
@@ -174,47 +168,5 @@ public class UploadController : ControllerBase
             logger?.LogError(ex, errorMessage);
             return Problem(errorMessage, statusCode: StatusCodes.Status500InternalServerError);
         }
-    }
-
-    private static bool HasData(Borehole borehole)
-    {
-        foreach (var prop in borehole.GetType().GetProperties())
-        {
-            if (prop.Name == "WorkgroupId")
-            {
-                continue;
-            }
-
-            var value = prop.GetValue(borehole);
-
-            if (value == null)
-            {
-                continue;
-            }
-
-            if (value is int intValue && intValue == 0)
-            {
-                continue;
-            }
-
-            if (value is decimal decimalValue && decimalValue == 0)
-            {
-                continue;
-            }
-
-            if (value is string stringValue && string.IsNullOrEmpty(stringValue))
-            {
-                continue;
-            }
-
-            if (value is ICollection collectionValue && collectionValue.Count == 0)
-            {
-                continue;
-            }
-
-            return true;
-        }
-
-        return false;
     }
 }

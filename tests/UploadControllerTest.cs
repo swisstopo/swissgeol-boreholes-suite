@@ -131,22 +131,4 @@ public class UploadControllerTest
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
         Assert.AreEqual("No file uploaded.", badRequestResult.Value);
     }
-
-    [TestMethod]
-    [DeploymentItem("random_testdata.csv")]
-    public async Task UploadRandomFileShouldReturnError()
-    {
-        var csvFile = "random_testdata.csv";
-
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
-
-        Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
-        BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("No matching data was detected in the uploaded file.", badRequestResult.Value);
-    }
 }
