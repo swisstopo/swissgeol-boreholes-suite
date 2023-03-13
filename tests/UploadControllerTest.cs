@@ -77,6 +77,7 @@ public class UploadControllerTest
         Assert.AreEqual("Bern", borehole.Canton);
         Assert.AreEqual("Schweiz", borehole.Country);
         Assert.AreEqual("Thun", borehole.Municipality);
+        Assert.AreEqual("POINT (2613116 1179127)", borehole.Geometry.ToString());
 
         // Assert workflow was created for borehole.
         var workflow = context.Workflows.SingleOrDefault(w => w.BoreholeId == borehole.Id);
@@ -116,6 +117,7 @@ public class UploadControllerTest
         Assert.AreEqual(null, borehole.Canton);
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);
+        Assert.AreEqual(null, borehole.Geometry.ToString());
 
         // Assert workflow was created for borehole.
         var workflow = context.Workflows.SingleOrDefault(w => w.BoreholeId == borehole.Id);

@@ -6,6 +6,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using System.Globalization;
 using System.Security.Claims;
 
@@ -114,6 +115,9 @@ public class UploadController : ControllerBase
         var srid = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? sridLv95 : sridLv03;
 
         if (locationX == null || locationY == null) return borehole;
+
+        var coordinate = new Coordinate((double)locationX, (double)locationY);
+        borehole.Geometry = new Point(coordinate) { SRID = srid };
 
         var locationInfo = await locationService.IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
         borehole.Country = locationInfo.Country;
