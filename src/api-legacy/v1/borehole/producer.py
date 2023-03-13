@@ -19,7 +19,6 @@ from bms.v1.borehole import (
     Lock,
     Unlock,
     CreateBorehole,
-    ImportCsv,
     DeleteBorehole,
     DeleteBoreholes,
     ListEditingBorehole,
@@ -47,39 +46,6 @@ class BoreholeProducerHandler(Producer):
                     raise AuthenticationException()
 
                 self.authorize()
-                action = self.get_argument('action', None)
-                
-                if action in [
-                    'IMPORTCSV'
-                ]:
-                    request = {"action": action}
-                    if action == 'IMPORTCSV':
-                        request['id'] = self.get_argument('id', None)
-                        if request['id'] is None:
-                            raise MissingParameter("id")
-
-                        request['id'] = int(request['id'])
-
-                # Putting the uploaded file in memory
-                fileinfo = self.request.files['file'][0]
-                
-                request['file'] = StringIO(
-                    fileinfo['body'].decode('utf-8')
-                )
-
-                response = await self.execute(request)
-
-                if response is None:
-                    response = {}
-
-                self.write(
-                    {
-                        **{
-                            "success": True
-                        },
-                        **response
-                    }
-                )
 
             except BmsException as bex:
                 print(traceback.print_exc())
@@ -120,7 +86,6 @@ class BoreholeProducerHandler(Producer):
             'CHECK',
             'LIST',
             'IDS',
-            'IMPORTCSV',
             'LISTFILES'
         ]:
 
@@ -154,12 +119,11 @@ class BoreholeProducerHandler(Producer):
                             request['id'], self.user, conn
                         )
                         if res['role'] != 'EDIT' and res['supplier'] is False:
-                            raise AuthorizationException() 
+                            raise AuthorizationException()
 
                 if (
                     action in [
-                        'CREATE',
-                        'IMPORTCSV'
+                        'CREATE'
                     ]
                 ):
                     # Check if Workgroup is not freezed
@@ -170,7 +134,7 @@ class BoreholeProducerHandler(Producer):
                                 raise WorkgroupFreezed()
 
                             elif 'EDIT' not in w['roles']:
-                                raise AuthorizationException() 
+                                raise AuthorizationException()
 
                 if (
                     action in [
@@ -185,7 +149,7 @@ class BoreholeProducerHandler(Producer):
                                 raise WorkgroupFreezed()
 
                             elif 'EDIT' not in w['roles']:
-                                raise AuthorizationException() 
+                                raise AuthorizationException()
 
                 if action == 'CREATE':
                     exe = CreateBorehole(conn)
@@ -193,10 +157,6 @@ class BoreholeProducerHandler(Producer):
 
                 elif action == 'COPY':
                     exe = CopyBorehole(conn)
-                    request['user'] = self.user
-
-                elif action == 'IMPORTCSV':
-                    exe = ImportCsv(conn)
                     request['user'] = self.user
 
                 elif action == 'LOCK':
@@ -234,7 +194,7 @@ class BoreholeProducerHandler(Producer):
                 elif action == 'LISTFILES':
                     exe = EditingListFilesBorehole(conn)
                     request['user'] = self.user
-                
+
                 elif action == 'LIST':
                     exe = ListEditingBorehole(conn)
                     request['user'] = self.user

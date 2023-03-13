@@ -54,6 +54,8 @@ public class BdmsContext : DbContext
             {
                 entity.Entity.Created = DateTime.Now.ToUniversalTime();
                 entity.Entity.CreatedById = user?.Id;
+                entity.Entity.Updated = DateTime.Now.ToUniversalTime();
+                entity.Entity.UpdatedById = user?.Id;
             }
             else if (entity.State == EntityState.Modified)
             {
@@ -84,6 +86,40 @@ public class BdmsContext : DbContext
                         .WithMany(b => b.BoreholeFiles)
                         .HasForeignKey(bf => bf.BoreholeId),
                     j => j.HasKey(bf => new { bf.BoreholeId, bf.FileId }));
+
+        modelBuilder.Entity<Borehole>()
+            .HasMany(b => b.Codelists)
+            .WithMany(f => f.Boreholes)
+            .UsingEntity<BoreholeCodelist>(
+                j => j
+                    .HasOne(bf => bf.Codelist)
+                    .WithMany(f => f.BoreholeCodelists)
+                    .HasForeignKey(bf => bf.CodelistId),
+                j => j
+                    .HasOne(bf => bf.Borehole)
+                    .WithMany(b => b.BoreholeCodelists)
+                    .HasForeignKey(bf => bf.BoreholeId),
+                j => j.HasKey(bf => new { bf.BoreholeId, bf.CodelistId }));
+
+        modelBuilder.Entity<Borehole>().HasOne(l => l.Chronostratigraphy).WithMany().HasForeignKey(l => l.ChronostratigraphyId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.Cuttings).WithMany().HasForeignKey(l => l.CuttingsId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.DrillingMethod).WithMany().HasForeignKey(l => l.DrillingMethodId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.Kind).WithMany().HasForeignKey(l => l.KindId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.Hrs).WithMany().HasForeignKey(l => l.HrsId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.LithologyTopBedrock).WithMany().HasForeignKey(l => l.LithologyTopBedrockId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.Lithostratigraphy).WithMany().HasForeignKey(l => l.LithostratigraphyId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.Purpose).WithMany().HasForeignKey(l => l.PurposeId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.QtDepth).WithMany().HasForeignKey(l => l.QtDepthId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.QtElevation).WithMany().HasForeignKey(l => l.QtElevationId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.QtInclinationDirection).WithMany().HasForeignKey(l => l.QtInclinationDirectionId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.QtLocation).WithMany().HasForeignKey(l => l.QtLocationId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.QtTotalDepthTvd).WithMany().HasForeignKey(l => l.QtTotalDepthTvdId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.QtTopBedrock).WithMany().HasForeignKey(l => l.QtTopBedrockId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.QtTopBedrockTvd).WithMany().HasForeignKey(l => l.QtTopBedrockTvdId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.QtReferenceElevation).WithMany().HasForeignKey(l => l.QtReferenceElevationId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.ReferenceElevationType).WithMany().HasForeignKey(l => l.ReferenceElevationTypeId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.Restriction).WithMany().HasForeignKey(l => l.RestrictionId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.Status).WithMany().HasForeignKey(l => l.StatusId);
 
         modelBuilder.Entity<Layer>()
                 .HasMany(l => l.Codelists)

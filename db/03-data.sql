@@ -33,22 +33,21 @@ VALUES
 INSERT INTO bdms.codelist (
     id_cli, geolcode,
     schema_cli, code_cli,
+    text_cli_en, description_cli_en,
     text_cli_de, description_cli_de,
     text_cli_fr, description_cli_fr,
     text_cli_it, description_cli_it,
-    text_cli_en, description_cli_en,
     order_cli, conf_cli,
     default_cli, path_cli
-) VALUES (
-    100000000, 100000000,
-    'borehole_identifier', '',
-    'Eindeutige ID', '',
-    'Identifiant unique', '',
-    'ID univoco', '',
-    'Unique id', '',
-    1, NULL,
-    FALSE, ''
-);
+) VALUES (100000004,100000004,'borehole_identifier','100000004','ID Original','','ID Original',NULL,'ID Originale',NULL,'ID Original',NULL,2,NULL,False,NULL),
+(100000000,100000000,'borehole_identifier','100000000','ID GeODin-Shortname','','ID GeODin-Shortname',NULL,'ID GeODin-Shortname',NULL,'IID GeODin-Shortname',NULL,3,NULL,False,NULL),
+(100000010,100000010,'borehole_identifier','100000010','ID GeODin','','ID GeODin',NULL,'ID GeODin',NULL,'ID GeODin',NULL,4,NULL,False,NULL),
+(100000003,100000003,'borehole_identifier','100000003','ID InfoGeol','','ID InfoGeol',NULL,'ID InfoGeol',NULL,'ID InfoGeol',NULL,5,NULL,False,NULL),
+(100000005,100000005,'borehole_identifier','100000005','ID Canton','','ID Kanton',NULL,'ID Cantone',NULL,'ID Canton',NULL,6,NULL,False,NULL),
+(100000006,100000006,'borehole_identifier','100000006','ID GeoQuat','','ID GeoQuat',NULL,'ID GeoQuat',NULL,'ID GeoQuat',NULL,7,NULL,False,NULL),
+(100000007,100000007,'borehole_identifier','100000007','ID GeoMol','','ID GeoMol',NULL,'ID GeoMol',NULL,'ID GeoMol',NULL,8,NULL,False,NULL),
+(100000009,100000009,'borehole_identifier','100000009','ID TopFels','','ID TopFels',NULL,'ID TopFels',NULL,'ID TopFels',NULL,9,NULL,False,NULL),
+(100000008,100000008,'borehole_identifier','100000008','ID GeoTherm','','ID GeoTherm',NULL,'ID GeoTherm',NULL,'ID GeoTherm',NULL,10,NULL,False,NULL);
 
 SELECT setval('bdms.codelist_id_cli_seq', 100000001, true);
 

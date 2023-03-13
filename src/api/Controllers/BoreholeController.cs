@@ -49,6 +49,7 @@ public class BoreholeController : ControllerBase
             .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
+            .Include(b => b.BoreholeCodelists)
             .Include(b => b.Workflows)
             .Include(b => b.BoreholeFiles)
             .AsNoTracking()

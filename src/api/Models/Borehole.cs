@@ -1,5 +1,6 @@
 ﻿using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -437,7 +438,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s workflows.
     /// </summary>
-    public ICollection<Workflow> Workflows { get; }
+    public ICollection<Workflow> Workflows { get; } = new List<Workflow>();
 
     /// <summary>
     /// Gets the <see cref="File"/>s attached to the <see cref="Borehole"/>.
@@ -448,4 +449,15 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets the <see cref="BoreholeFile"/> join table entities.
     /// </summary>
     public ICollection<BoreholeFile> BoreholeFiles { get; }
+
+    /// <summary>
+    /// Gets the <see cref="Codelist"/>s used by the <see cref="Borehole"/> to store multiple id types.
+    /// </summary>
+    public ICollection<Codelist>? Codelists { get; }
+
+    /// <summary>
+    /// Gets the<see cref="BoreholeCodelist"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public IList<BoreholeCodelist>? BoreholeCodelists { get; set; } = new List<BoreholeCodelist>();
 }

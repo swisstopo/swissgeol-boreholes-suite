@@ -40,7 +40,7 @@ describe("Tests for 'Location' edit page.", () => {
     cy.get('[data-cy="identifier-dropdown"]').click();
     cy.get('[data-cy="identifier-dropdown"]')
       .find("div[role='option']")
-      .contains("Unique id")
+      .contains("ID Canton")
       .click();
     cy.get('[data-cy="identifier-dropdown"]').should("not.have.class", "error");
     cy.get('[data-cy="identifier-value"]').should("have.class", "error");

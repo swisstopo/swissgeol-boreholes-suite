@@ -16,9 +16,10 @@ import {
   Modal,
 } from "semantic-ui-react";
 
-import { createBorehole, importBoreholeList } from "../../../api-lib/index";
+import { createBorehole } from "../../../api-lib/index";
 import { AlertContext } from "../../alert/alertContext";
 import SearchEditorComponent from "../../search/editor/searchEditorComponent";
+import { importBoreholes } from "../../../api/fetchApiV2";
 
 let isMounted = true;
 
@@ -69,7 +70,7 @@ class MenuEditorSearch extends React.Component {
   }
 
   render() {
-    const { history, boreholes } = this.props;
+    const { history, boreholes, t } = this.props;
     return [
       <div
         key="sb-em-1"
@@ -158,7 +159,7 @@ class MenuEditorSearch extends React.Component {
             padding: "1.5em",
           }}>
           <Icon name="upload" size="tiny" />
-          <TranslationText firstUpperCase id="upload" />
+          <TranslationText firstUpperCase id="import" />
         </Menu.Item>
         <Menu.Item
           disabled={this.props.user.data.roles.indexOf("EDIT") === -1}
@@ -198,8 +199,11 @@ class MenuEditorSearch extends React.Component {
                 style={{
                   fontWeight: "bold",
                 }}>
-                <TranslationText id="csvFormat" />:
+                <TranslationText id="csvFormat" />
               </span>
+              <div>
+                <TranslationText id="csvFormatExplanation" />.
+              </div>
               <div
                 style={{
                   border: "thin solid #787878",
@@ -208,10 +212,32 @@ class MenuEditorSearch extends React.Component {
                   overflow: "auto",
                   whiteSpace: "nowrap",
                 }}>
-                "location_east";"location_north";"original_name";"alternate_name";"project_name";"elevation_z";"drillend_date";"total_depth";"top_bedrock";"remarks"
+                "id_geodin_shortname"; "id_info_geol"; "id_original";
+                "id_canton"";"id_geo_quat";"id_geo_mol";"id_geo_therm";
+                "id_top_fels"; "id_geodin";
                 <br />
-                2719603;1081038.5;"test001";"foo";"bar";"foobar";273.7;"2020-06-16";28.2;18.7;"lorem
-                ipsum"
+                "original_name"; "project_name"; "alternate_name"; "date";
+                "restriction_id"; "restriction_until"; "municipality"; "canton";
+                "country";
+                <br />
+                "original_reference_system"; "location_x_lv_95";
+                "location_y_lv_95"; "location_x_lv_03"; "location_y_lv_03";
+                "qt_location_id";
+                <br />
+                "elevation_z"; "qt_elevation_id"; "reference_elevation";
+                "reference_elevation_type_id"; "qt_reference_elevation_id";
+                "hrs_id";
+                <br /> "kind_id"; "drilling_date"; "drilling_diameter";
+                "drilling_method_id"; "purpose_id"; "spud_date"; "cuttings_id";
+                "status_id"; "inclination"; "inclination_direction";
+                "qt_inclination_direction_id"; "remarks";
+                <br />
+                "total_depth"; "qt_depth_id"; "total_depth_tvd";
+                "qt_total_depth_tvd_id"; "top_bedrock"; "qt_top_bedrock_id";
+                "top_bedrock_tvd"; "qt_top_bedrock_tvd_id"; "has_groundwater";
+                <br />
+                "lithology_top_bedrock_id"; "chronostratigraphy_id";
+                "lithostratigraphy_id";
               </div>
               <span
                 style={{
@@ -224,9 +250,12 @@ class MenuEditorSearch extends React.Component {
                   padding: "1em",
                 }}>
                 <Input
+                  accept=".csv"
                   onChange={e => {
+                    const formdata = new FormData();
+                    formdata.append("file", e.target.files[0]);
                     this.setState({
-                      selectedFile: e.target.files[0],
+                      selectedFile: formdata,
                     });
                   }}
                   type="file"
@@ -289,7 +318,7 @@ class MenuEditorSearch extends React.Component {
                 },
                 () => {
                   if (this.state.upload === true) {
-                    importBoreholeList(
+                    importBoreholes(
                       this.state.workgroup,
                       this.state.selectedFile,
                     ).then(response => {
@@ -299,11 +328,16 @@ class MenuEditorSearch extends React.Component {
                           upload: false,
                           modal: false,
                         },
-                        () => {
-                          if (response.data.success) {
+                        async () => {
+                          if (response.ok) {
+                            this.context.success(
+                              `${await response.text()} ${t(
+                                "boreholesImported",
+                              )}.`,
+                            );
                             this.props.refresh();
                           } else {
-                            this.context.error(response.data.message);
+                            this.context.error(`${t("boreholesImportError")}`);
                           }
                         },
                       );
@@ -348,7 +382,7 @@ class MenuEditorSearch extends React.Component {
             secondary>
             <Icon name={this.state.upload === true ? "upload" : "plus"} />{" "}
             {this.state.upload === true ? (
-              <TranslationText id="upload" />
+              <TranslationText id="import" />
             ) : (
               <TranslationText id="create" />
             )}

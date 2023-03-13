@@ -10,15 +10,15 @@ describe("Search filter tests", () => {
     login();
     cy.contains("span", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
-    let restrictionDropdown = cy.contains("label", "ID type").next();
+    let indentifierDropdown = cy.contains("label", "ID type").next();
 
-    restrictionDropdown.click();
-    restrictionDropdown
+    indentifierDropdown.click();
+    indentifierDropdown
       .find("div[role='option']")
-      .should("have.length", 2)
+      .should("have.length", 10)
       .should(options => {
         expect(options[0]).to.have.text("Reset");
-        expect(options[1]).to.have.text("Unique id");
+        expect(options[1]).to.have.text("ID Original");
       });
 
     cy.contains("span", "Borehole").click();

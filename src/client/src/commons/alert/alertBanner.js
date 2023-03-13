@@ -10,12 +10,15 @@ export const AlertBanner = props => {
       <Snackbar
         open={alertContext.text !== null}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        autoHideDuration={6000}>
+        autoHideDuration={6000}
+        onClose={() => {
+          alertContext.clear();
+        }}>
         <Alert
+          severity={alertContext.severity}
           onClose={() => {
             alertContext.clear();
-          }}
-          severity={alertContext.severity}>
+          }}>
           {alertContext.text}
         </Alert>
       </Snackbar>

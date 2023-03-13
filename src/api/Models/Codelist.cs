@@ -129,4 +129,16 @@ public class Codelist : IIdentifyable
     /// </summary>
     [JsonIgnore]
     public ICollection<LayerCodelist>? LayerCodelists { get; }
+
+    /// <summary>
+    /// Gets the <see cref="Borehole"/>s that use this <see cref="Codelist"/>.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<Borehole>? Boreholes { get; }
+
+    /// <summary>
+    /// Gets the <see cref="BoreholeCodelist"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<BoreholeCodelist>? BoreholeCodelists { get; }
 }
