@@ -1,4 +1,5 @@
 ﻿using BDMS.Controllers;
+using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using static BDMS.Helpers;
+using File = System.IO.File;
 
 namespace BDMS;
 
@@ -27,7 +29,9 @@ public class UploadControllerTest
     {
         // Remove boreholes that were uploaded.
         var addedBoreholes = context.Boreholes.Where(b => b.OriginalName.Contains("Unit_Test_"));
+        var addedWorkflows = context.Workflows.Where(w => addedBoreholes.Select(b => b.Id).Contains(w.BoreholeId));
         context.Boreholes.RemoveRange(addedBoreholes);
+        context.Workflows.RemoveRange(addedWorkflows);
         context.SaveChanges();
         await context.DisposeAsync();
     }
@@ -62,5 +66,13 @@ public class UploadControllerTest
         Assert.AreEqual(3, borehole.BoreholeCodelists.Count);
         Assert.AreEqual("Id_16", borehole.BoreholeCodelists.First().Value);
         Assert.AreEqual(100000003, borehole.BoreholeCodelists.First().CodelistId);
+
+        // Assert workflow was created for borehole.
+        var workflow = context.Workflows.SingleOrDefault(w => w.BoreholeId == borehole.Id);
+        Assert.IsNotNull(workflow);
+        Assert.AreEqual(borehole.CreatedById, workflow.UserId);
+        Assert.AreEqual(Role.Editor, workflow.Role);
+        Assert.AreEqual(borehole.CreatedById, workflow.UserId);
+        Assert.AreEqual(null, workflow.Finished);
     }
 }
