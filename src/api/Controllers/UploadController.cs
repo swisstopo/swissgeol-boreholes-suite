@@ -65,13 +65,13 @@ public class UploadController : ControllerBase
             boreholes.ForEach(b =>
             {
                 b.Workflows.Add(
-                new Workflow
-                {
-                    UserId = user.Id,
-                    Role = Role.Editor,
-                    Started = DateTime.Now.ToUniversalTime(),
-                    Finished = null,
-                });
+                    new Workflow
+                    {
+                        UserId = user.Id,
+                        Role = Role.Editor,
+                        Started = DateTime.Now.ToUniversalTime(),
+                        Finished = null,
+                    });
             });
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
             return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
