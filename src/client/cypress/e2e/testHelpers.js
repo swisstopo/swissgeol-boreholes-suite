@@ -35,7 +35,7 @@ export const interceptApiCalls = () => {
   cy.intercept("api/v1/borehole/codes").as("codes");
 
   // Api V2
-  cy.intercept("/api/v2/layer/**").as("layer-v2");
+  //cy.intercept("/api/v2/layer/**").as("layer-v2");
   cy.intercept("/api/v2/layer?profileId=**").as("layer-by-profileId");
   cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
@@ -142,6 +142,10 @@ export const createBorehole = values => {
       }
       return cy.wrap(boreholeId);
     });
+};
+
+export const createBoreholeLoginAsAdminInBoreHoleEditForm = values => {
+  return createBorehole(values).then(value => loginAsAdmin(`/editor/${value}`));
 };
 
 export const deleteBorehole = id => {

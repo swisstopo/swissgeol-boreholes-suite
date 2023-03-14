@@ -1,17 +1,9 @@
 import {
-  newUneditableBorehole,
   delayedType,
   loginAsViewer,
   createBorehole,
+  createBoreholeLoginAsAdminInBoreHoleEditForm,
 } from "../testHelpers";
-
-const addInstrumentLayer = () => {
-  cy.wait(1000);
-  cy.get('[data-cy="add-instrumentation-button"]').click({ force: true });
-  cy.wait("@stratigraphy_layer_edit_create");
-  cy.wait("@layer");
-  cy.wait(5000);
-};
 
 describe("Instrumentation tests", () => {
   it("Displays correct 'No Instumentation' message when logged in as viewer and no stratigraphies are defined", () => {
@@ -19,7 +11,7 @@ describe("Instrumentation tests", () => {
     loginAsViewer("/editor");
 
     // Select borehole A1_Borehole
-    cy.get("tbody").children().contains("td", "A1_Borehole").click();
+    cy.get("tbody").children().first().click();
     cy.get('[data-cy="completion-menu-item"]').click();
     cy.get('[data-cy="instrument-menu-item"]').click();
     cy.get('[data-cy="instrument-message"]').should(
@@ -31,8 +23,10 @@ describe("Instrumentation tests", () => {
 
 describe("Instrumentation tests", () => {
   beforeEach(() => {
-    // Add new borehole
-    newUneditableBorehole().as("borehole_id");
+    createBoreholeLoginAsAdminInBoreHoleEditForm({
+      "extended.original_name": "A1_Borehole",
+    });
+
     cy.get('[data-cy="completion-menu-item"]').click();
     cy.get('[data-cy="instrument-menu-item"]').click();
   });
@@ -43,7 +37,6 @@ describe("Instrumentation tests", () => {
       "No instrumentation available",
     );
     cy.contains("a", "Start editing").click();
-    cy.wait("@edit_lock");
     cy.get('[data-cy="instrument-message"]').should(
       "contain",
       "For the recording of an instrument please click the plus symbol at the top left",
@@ -53,16 +46,22 @@ describe("Instrumentation tests", () => {
 
   it("Can add and delete instrument without completion", () => {
     cy.contains("a", "Start editing").click();
-    cy.wait("@edit_lock");
 
     // Header should not contain tabs
     cy.get('[data-cy="profile-header-list"]')
       .children()
       .should("have.length", 0);
 
-    addInstrumentLayer();
-    cy.wait(500);
+    // Define intercept to wait for GET of new created layer.
+    // Important to wait for it before selecting dropdown in next
+    // "cy.get('[data-cy="casingName"]')" step.
+    cy.intercept("/api/v2/layer/**").as("get-new-layer");
 
+    // Create new layer
+    cy.get('[data-cy="add-instrumentation-button"]').click();
+    cy.wait("@get-new-layer");
+
+    // Select dropdown to create new casing.
     cy.get('[data-cy="casingName"]')
       .children()
       .first()
@@ -77,9 +76,8 @@ describe("Instrumentation tests", () => {
       .children()
       .should("have.length", 1);
 
-    // Add another instrument without name of completion
-    addInstrumentLayer();
-    cy.wait(500);
+    // Add another instrument without name of completion.
+    cy.get('[data-cy="add-instrumentation-button"]').click();
 
     // Select tab "No completion"
     cy.get('[data-cy="profile-header-list"]')
@@ -101,8 +99,11 @@ describe("Instrumentation tests", () => {
     cy.get('[data-cy="delete-instrument-button"]').first().click();
 
     // Header should not contain tabs
+    // Call ensureHeaderHasNoTabs() until Header contains no tabs anymore.
+    // Delete was sucessful and Component did rerender.
+    // This has to be done like this, since waiting for delete request does not help.
     cy.get('[data-cy="profile-header-list"]')
-      .children()
+      .find('[data-cy="profile-header-tab-0"]')
       .should("have.length", 0);
 
     cy.contains("a", "Stop editing").click();
@@ -110,51 +111,43 @@ describe("Instrumentation tests", () => {
 
   it("Can add casing layer to instrument", () => {
     cy.contains("a", "Start editing").click();
-    cy.wait("@edit_lock");
 
     // Add two casings with two layers
     cy.get('[data-cy="casing-menu-item"]').click();
 
+    cy.intercept("/api/v1/borehole/profile/layer").as("create-casing-layer");
+
     // First casing
     cy.get('[data-cy="add-stratigraphy-button"]').click();
-    cy.wait("@stratigraphy_edit_create");
-    cy.wait("@layer");
+    cy.wait("@create-casing-layer");
     cy.contains("div", "This is the main completion");
 
     delayedType(cy.get('[data-cy="name"]'), "Moonshine Bike");
 
     cy.get('[data-cy="add-layer-icon"]').click();
-    cy.wait("@layer");
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
     delayedType(cy.get('[data-cy="casing_id"]'), "Moonshine Veal");
     cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
 
     cy.get('[data-cy="add-layer-icon"]').click();
-    cy.wait("@layer");
     cy.get('[data-cy="styled-layer-1"] [data-testid="ModeEditIcon"]').click();
     delayedType(cy.get('[data-cy="casing_id"]'), "Moonshine Honey");
     cy.get('[data-cy="styled-layer-1"] [data-testid="ClearIcon"]').click();
 
     // Second casing
     cy.get('[data-cy="add-stratigraphy-button"]').click();
-    cy.wait("@stratigraphy_edit_create");
-    cy.wait("@layer");
 
     // Navigate to correct tab
     cy.contains("div", "Unknown").click();
     delayedType(cy.get('[data-cy="name"]'), "Sunshine Bike");
 
     cy.get('[data-cy="add-layer-icon"]').click();
-    cy.wait("@layer");
-    cy.wait("@stratigraphy_layer_edit_create");
 
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
     delayedType(cy.get('[data-cy="casing_id"]'), "Sunshine Veal");
     cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
 
     cy.get('[data-cy="add-layer-icon"]').click();
-    cy.wait("@layer");
-    cy.wait("@stratigraphy_layer_edit_create");
 
     cy.get('[data-cy="styled-layer-1"] [data-testid="ModeEditIcon"]')
       .scrollIntoView()
@@ -162,11 +155,26 @@ describe("Instrumentation tests", () => {
     delayedType(cy.get('[data-cy="casing_id"]'), "Sunshine Honey");
     cy.get('[data-cy="styled-layer-1"] [data-testid="ClearIcon"]').click();
 
-    // Add instrument
+    // This below cy.wait(1000); is necessary because Instrumentation page
+    // renders multiple times after selecting "Instumentation" in menu.
+    // Visible when observing "Add Instument" button.
+    // ToDo: Fix multiple rendering of Instrumentation page.
     cy.get('[data-cy="instrument-menu-item"]').click();
-    cy.wait("@layer");
+    cy.wait(1000);
 
-    addInstrumentLayer();
+    // Define intercept to wait for GET of new created layer.
+    // Important to wait for it before selecting dropdown in next
+    // "cy.get('[data-cy="casingName"]')" step.
+    cy.intercept("/api/v2/layer/**").as("get-new-layer");
+
+    // Create new layer
+    cy.get('[data-cy="add-instrumentation-button"]').click();
+    cy.wait("@get-new-layer");
+
+    // Define intercept to wait for GET of layer by id.
+    // Important to wait for it before selecting dropdown in next
+    // "cy.get('[data-cy="casingName"]')" step.
+    cy.intercept("/api/v2/layer?profileId=**").as("layer-by-profileId");
 
     // Chose first casing
     let casingDropDown = cy
