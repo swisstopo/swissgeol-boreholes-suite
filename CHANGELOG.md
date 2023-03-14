@@ -46,6 +46,7 @@
 - Allow uploading the same file for different boreholes.
 - Display an error message if a file is already uploaded for a particular borehole.
 - Resolve error when selecting `Instrumentation` with no EDIT role and no stratigraphy defined for borehole.
+- Fix flaky Instrumentations test. Improve Instrumentations tests.
 
 ## v2.0.186 - 2023-02-13
 
