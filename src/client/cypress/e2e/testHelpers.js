@@ -198,3 +198,9 @@ export const delayedType = (element, string) => {
   cy.wait(500);
   element.type(string, { delay: 10 });
 };
+
+// cy.Type() can be slow. If every keystroke triggers a request it can be even slower.
+// Thus use setValueOfInputElement to set the value of the input element and only type one char after.
+export const setValueOfInputElement = function (inputElement, inputValue) {
+  inputElement[0].setAttribute("value", inputValue);
+};
