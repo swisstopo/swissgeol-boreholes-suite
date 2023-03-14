@@ -92,6 +92,8 @@ public class UploadControllerTest
     [DeploymentItem("minimal_testdata.csv")]
     public async Task UploadShouldSaveMinimalDatasetAsync()
     {
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
+
         var csvFile = "minimal_testdata.csv";
 
         byte[] fileBytes = File.ReadAllBytes(csvFile);
