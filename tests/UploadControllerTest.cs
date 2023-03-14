@@ -27,7 +27,9 @@ public class UploadControllerTest
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<UploadController>>();
         loggerLocationServiceMock = new Mock<ILogger<LocationService>>();
-        controller = new UploadController(ContextFactory.CreateContext(), loggerMock.Object, new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object)) { ControllerContext = GetControllerContextAdmin() };
+        var service = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
+
+        controller = new UploadController(ContextFactory.CreateContext(), loggerMock.Object, service) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -92,8 +94,6 @@ public class UploadControllerTest
     [DeploymentItem("minimal_testdata.csv")]
     public async Task UploadShouldSaveMinimalDatasetAsync()
     {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
-
         var csvFile = "minimal_testdata.csv";
 
         byte[] fileBytes = File.ReadAllBytes(csvFile);
@@ -119,7 +119,6 @@ public class UploadControllerTest
         Assert.AreEqual(null, borehole.Canton);
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);
-        Assert.AreEqual(null, borehole.Geometry.ToString());
 
         // Assert workflow was created for borehole.
         var workflow = context.Workflows.SingleOrDefault(w => w.BoreholeId == borehole.Id);

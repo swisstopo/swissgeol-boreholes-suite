@@ -86,7 +86,6 @@ builder.Services.AddApiVersioning(config =>
     config.ReportApiVersions = true;
 });
 
-builder.Services.AddLogging();
 builder.Services.AddScoped<LocationService>();
 
 var app = builder.Build();

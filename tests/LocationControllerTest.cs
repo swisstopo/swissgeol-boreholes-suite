@@ -29,8 +29,9 @@ public class LocationControllerTest
         loggerMock = new Mock<ILogger<LocationController>>();
         loggerLocationServiceMock = new Mock<ILogger<LocationService>>();
         httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+        var service = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
 
-        controller = new LocationController(context, httpClientFactoryMock.Object, loggerMock.Object, new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object));
+        controller = new LocationController(context, httpClientFactoryMock.Object, loggerMock.Object, service);
     }
 
     [TestCleanup]
