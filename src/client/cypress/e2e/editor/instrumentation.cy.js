@@ -155,7 +155,7 @@ describe("Instrumentation tests", () => {
     delayedType(cy.get('[data-cy="casing_id"]'), "Sunshine Honey");
     cy.get('[data-cy="styled-layer-1"] [data-testid="ClearIcon"]').click();
 
-    // This below cy.wait(1000); is necessary because Instrumentation page
+    // The cy.wait(1000); below is necessary because Instrumentation page
     // renders multiple times after selecting "Instumentation" in menu.
     // Visible when observing "Add Instument" button.
     // ToDo: Fix multiple rendering of Instrumentation page.
