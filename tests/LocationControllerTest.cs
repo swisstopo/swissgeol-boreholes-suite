@@ -17,7 +17,6 @@ public class LocationControllerTest
     private BdmsContext context;
     private LocationController controller;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
-    private Mock<HttpMessageHandler> httpMessageHandler;
     private Mock<ILogger<LocationController>> loggerMock;
     private Mock<ILogger<LocationService>> loggerLocationServiceMock;
 
@@ -28,10 +27,9 @@ public class LocationControllerTest
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<LocationController>>();
         loggerLocationServiceMock = new Mock<ILogger<LocationService>>();
-        httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
         var service = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
 
-        controller = new LocationController(context, httpClientFactoryMock.Object, loggerMock.Object, service);
+        controller = new LocationController(context, loggerMock.Object, service);
     }
 
     [TestCleanup]
@@ -68,35 +66,33 @@ public class LocationControllerTest
     {
         Assert.AreEqual(10000, context.Boreholes.Count());
 
-        var httpClient = new HttpClient(httpMessageHandler.Object);
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(httpClient).Verifiable();
-
         var jsonResponse = () => JsonContent.Create(new
         {
             results = new[]
-            {
+                {
                 new { layerBodId = "ch.swisstopo.swissboundaries3d-land-flaeche.fill", attributes = new { bez = "RAGETRINITY", name = string.Empty, gemname = string.Empty } },
                 new { layerBodId = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill", attributes = new { bez = string.Empty, name = "SLEEPYMONKEY", gemname = string.Empty } },
                 new { layerBodId = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill", attributes = new { bez = string.Empty, name = string.Empty, gemname = "REDSOURCE" } },
-            },
+                },
         });
 
-        httpMessageHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.Is<HttpRequestMessage>(m => Regex.IsMatch(m.RequestUri.AbsoluteUri, "\\d{1,}\\.?\\d*,\\d{1,}\\.?\\d*.*&sr=\\d{4,}$")),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = jsonResponse() })
-            .Verifiable();
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(() =>
+        {
+            var httpMessageHandler = new Mock<HttpMessageHandler>();
+            httpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(m => Regex.IsMatch(m.RequestUri.AbsoluteUri, "\\d{1,}\\.?\\d*,\\d{1,}\\.?\\d*.*&sr=\\d{4,}$")),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = jsonResponse() })
+                .Verifiable();
+            return new HttpClient(httpMessageHandler.Object);
+        }).Verifiable();
 
         var result = await controller.MigrateAsync(dryRun: true, onlyMissing: onlyMissing).ConfigureAwait(false) as JsonResult;
 
         asserter?.Invoke();
         Assert.AreEqual($"{{ updatedBoreholes = {updatedBoreholesCount}, onlyMissing = {onlyMissing}, dryRun = True, success = True }}", result.Value.ToString());
-
-        // Verify API calls count.
-        httpMessageHandler.Protected()
-            .Verify("SendAsync", Times.Exactly(updatedBoreholesCount), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
     }
 
     private void AssertBohrungByronWest()

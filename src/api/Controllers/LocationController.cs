@@ -11,7 +11,6 @@ namespace BDMS.Controllers;
 public class LocationController : Controller
 {
     private readonly BdmsContext context;
-    private readonly IHttpClientFactory httpClientFactory;
     private readonly ILogger<LocationController> logger;
     private readonly LocationService locationService;
 
@@ -23,13 +22,11 @@ public class LocationController : Controller
     /// Initializes a new instance of the <see cref="LocationController"/> class.
     /// </summary>
     /// <param name="context">The EF database context containing data for the BDMS application.</param>
-    /// <param name="httpClientFactory">A factory abstraction that can create <see cref="HttpClient"/> instance.</param>
     /// <param name="logger">The <see cref="ILogger"/>.</param>
     /// <param name="locationService">An incstance of <see cref="LocationService"/>.</param>
-    public LocationController(BdmsContext context, IHttpClientFactory httpClientFactory, ILogger<LocationController> logger, LocationService locationService)
+    public LocationController(BdmsContext context, ILogger<LocationController> logger, LocationService locationService)
     {
         this.context = context;
-        this.httpClientFactory = httpClientFactory;
         this.logger = logger;
         this.locationService = locationService;
     }

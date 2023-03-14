@@ -34,7 +34,7 @@ public class LocationService
     /// <returns>The <see cref="LocationInfo"/> corresponding to the supplied coordinates.</returns>
     public async Task<LocationInfo> IdentifyAsync(double east, double north, int srid = 2056)
     {
-        using var httpClient = httpClientFactory.CreateClient("locationService");
+        using var httpClient = httpClientFactory.CreateClient(nameof(LocationService));
 
         var point = string.Join(',', east, north);
         var layers = string.Join(',', countryLayer, cantonLayer, municipalityLayer);
