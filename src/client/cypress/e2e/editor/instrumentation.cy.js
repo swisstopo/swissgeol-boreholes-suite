@@ -2,7 +2,7 @@ import {
   delayedType,
   loginAsViewer,
   createBorehole,
-  createBoreholeLoginAsAdminInBoreHoleEditForm,
+  createAndEditBoreholeAsAdmin,
 } from "../testHelpers";
 
 describe("Instrumentation tests", () => {
@@ -23,7 +23,7 @@ describe("Instrumentation tests", () => {
 
 describe("Instrumentation tests", () => {
   beforeEach(() => {
-    createBoreholeLoginAsAdminInBoreHoleEditForm({
+    createAndEditBoreholeAsAdmin({
       "extended.original_name": "A1_Borehole",
     });
 
@@ -169,7 +169,7 @@ describe("Instrumentation tests", () => {
 
     // Define intercept to wait for GET of layer by id.
     // Important to wait for it before selecting dropdown in next
-    // "cy.get('[data-cy="casingName"]')" step.
+    // "cy.get('[data-cy="casingId"]')" step.
     cy.intercept("/api/v2/layer?profileId=**").as("layer-by-profileId");
 
     // Chose first casing
