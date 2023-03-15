@@ -35,7 +35,6 @@ export const interceptApiCalls = () => {
   cy.intercept("api/v1/borehole/codes").as("codes");
 
   // Api V2
-  cy.intercept("/api/v2/layer/**").as("layer-v2");
   cy.intercept("/api/v2/layer?profileId=**").as("layer-by-profileId");
   cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
@@ -144,6 +143,10 @@ export const createBorehole = values => {
     });
 };
 
+export const createAndEditBoreholeAsAdmin = values => {
+  return createBorehole(values).then(value => loginAsAdmin(`/editor/${value}`));
+};
+
 export const deleteBorehole = id => {
   cy.request({
     method: "POST",
@@ -193,4 +196,16 @@ export const loginAndResetState = () => {
 export const delayedType = (element, string) => {
   cy.wait(500);
   element.type(string, { delay: 10 });
+};
+
+/**
+ * Sets the value for a provided input element.
+ *
+ * cy.Type() can be slow. If every keystroke triggers a request it can be even slower.
+ * Thus use setValueOfInputElement to set the value of the input element and only type one char after.
+ * @param {object} inputElement The input element.
+ * @param {string} inputValue The input string to set as value.
+ */
+export const setValueOfInputElement = function (inputElement, inputValue) {
+  inputElement[0].setAttribute("value", inputValue);
 };

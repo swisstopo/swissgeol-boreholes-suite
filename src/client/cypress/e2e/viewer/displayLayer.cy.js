@@ -1,4 +1,9 @@
-import { newEditableBorehole, login, createBorehole } from "../testHelpers";
+import {
+  newEditableBorehole,
+  login,
+  createBorehole,
+  setValueOfInputElement,
+} from "../testHelpers";
 
 describe("Test for the borehole form.", () => {
   it("Adds complete layer and displays it in viewer mode, checks if fields can be optionally hidden.", () => {
@@ -61,16 +66,28 @@ describe("Test for the borehole form.", () => {
       .find("input")
       .click()
       .clear()
-      .type("Squirrel Milk Bar");
+      .then(inputElement => {
+        setValueOfInputElement(inputElement, "quirrel Milk Bar");
+      })
+      .type("S");
     cy.get('[data-cy="notes"]')
       .click()
       .clear()
-      .type("Shipping large amounts of almond sandwiches.");
+      .then(inputElement => {
+        setValueOfInputElement(
+          inputElement,
+          "hipping large amounts of almond sandwiches.",
+        );
+      })
+      .type("S");
     cy.get('[data-cy="original_lithology"]')
       .find("input")
       .click()
       .clear()
-      .type("Free peanuts.");
+      .then(inputElement => {
+        setValueOfInputElement(inputElement, "ree peanuts.");
+      })
+      .type("F");
 
     // fill radio
     cy.get(".ui.radio.checkbox").first().click();
