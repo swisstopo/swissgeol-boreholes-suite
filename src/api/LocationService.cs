@@ -48,12 +48,10 @@ public class LocationService
             using var contentStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
             using var document = await JsonDocument.ParseAsync(contentStream).ConfigureAwait(false);
 
-            var result = new LocationInfo(
+            return new(
                 Country: GetAttributeValueForLayer(document, countryLayer, "bez"),
                 Canton: GetAttributeValueForLayer(document, cantonLayer, "name"),
                 Municipality: GetAttributeValueForLayer(document, municipalityLayer, "gemname"));
-
-            return result;
         }
         catch (HttpRequestException ex)
         {
