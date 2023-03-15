@@ -99,9 +99,6 @@ describe("Instrumentation tests", () => {
     cy.get('[data-cy="delete-instrument-button"]').first().click();
 
     // Header should not contain tabs
-    // Call ensureHeaderHasNoTabs() until Header contains no tabs anymore.
-    // Delete was sucessful and Component did rerender.
-    // This has to be done like this, since waiting for delete request does not help.
     cy.get('[data-cy="profile-header-list"]')
       .find('[data-cy="profile-header-tab-0"]')
       .should("have.length", 0);
@@ -158,7 +155,6 @@ describe("Instrumentation tests", () => {
     // The cy.wait(1000); below is necessary because Instrumentation page
     // renders multiple times after selecting "Instumentation" in menu.
     // Visible when observing "Add Instument" button.
-    // ToDo: Fix multiple rendering of Instrumentation page.
     cy.get('[data-cy="instrument-menu-item"]').click();
     cy.wait(1000);
 

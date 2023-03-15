@@ -143,7 +143,7 @@ export const createBorehole = values => {
     });
 };
 
-export const createBoreholeLoginAsAdminInBoreHoleEditForm = values => {
+export const createAndEditBoreholeAsAdmin = values => {
   return createBorehole(values).then(value => loginAsAdmin(`/editor/${value}`));
 };
 
@@ -198,8 +198,14 @@ export const delayedType = (element, string) => {
   element.type(string, { delay: 10 });
 };
 
-// cy.Type() can be slow. If every keystroke triggers a request it can be even slower.
-// Thus use setValueOfInputElement to set the value of the input element and only type one char after.
+/**
+ * Sets the value for a provided input element.
+ *
+ * cy.Type() can be slow. If every keystroke triggers a request it can be even slower.
+ * Thus use setValueOfInputElement to set the value of the input element and only type one char after.
+ * @param {object} inputElement The input element.
+ * @param {string} inputValue The input string to set as value.
+ */
 export const setValueOfInputElement = function (inputElement, inputValue) {
   inputElement[0].setAttribute("value", inputValue);
 };
