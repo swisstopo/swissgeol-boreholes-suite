@@ -41,6 +41,7 @@ public class UploadControllerTest
         context.Boreholes.RemoveRange(addedBoreholes);
         context.Workflows.RemoveRange(addedWorkflows);
         context.SaveChanges();
+
         await context.DisposeAsync();
         httpClientFactoryMock.Verify();
         loggerMock.Verify();
@@ -50,7 +51,10 @@ public class UploadControllerTest
     [DeploymentItem("testdata.csv")]
     public async Task UploadShouldSaveDataToDatabaseAsync()
     {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
+        httpClientFactoryMock
+            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+            .Returns(() => new HttpClient())
+            .Verifiable();
 
         var csvFile = "testdata.csv";
 

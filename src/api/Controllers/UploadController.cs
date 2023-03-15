@@ -61,13 +61,19 @@ public class UploadController : ControllerBase
                 .SingleOrDefaultAsync(u => u.Name == userName)
                 .ConfigureAwait(false);
 
-            var tasks = boreholes.Select(async b =>
+            foreach (var borehole in boreholes)
             {
                 // Compute borehole location.
-                b = await UpdateBoreholeLocation(b).ConfigureAwait(false);
+                var locationInfo = await UpdateBoreholeLocation(borehole).ConfigureAwait(false);
+                if (locationInfo != null)
+                {
+                    borehole.Country = locationInfo.Country;
+                    borehole.Canton = locationInfo.Canton;
+                    borehole.Municipality = locationInfo.Municipality;
+                }
 
                 // Add a workflow per borehole.
-                b.Workflows.Add(
+                borehole.Workflows.Add(
                     new Workflow
                     {
                         UserId = user.Id,
@@ -75,9 +81,8 @@ public class UploadController : ControllerBase
                         Started = DateTime.Now.ToUniversalTime(),
                         Finished = null,
                     });
-            });
+            }
 
-            await Task.WhenAll(tasks).ConfigureAwait(false);
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
             return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
         }
@@ -107,23 +112,19 @@ public class UploadController : ControllerBase
         return csv.GetRecords<Borehole>().ToList();
     }
 
-    private async Task<Borehole> UpdateBoreholeLocation(Borehole borehole)
+    private async Task<LocationInfo?> UpdateBoreholeLocation(Borehole borehole)
     {
         // Use origin spatial reference system
         var locationX = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
         var locationY = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationY : borehole.LocationYLV03;
         var srid = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? sridLv95 : sridLv03;
 
-        if (locationX == null || locationY == null) return borehole;
+        if (locationX == null || locationY == null) return null;
 
         var coordinate = new Coordinate((double)locationX, (double)locationY);
         borehole.Geometry = new Point(coordinate) { SRID = srid };
 
-        var locationInfo = await locationService.IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
-        borehole.Country = locationInfo.Country;
-        borehole.Canton = locationInfo.Canton;
-        borehole.Municipality = locationInfo.Municipality;
-        return borehole;
+        return await locationService.IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
     }
 
     private sealed class BoreholeMap : ClassMap<Borehole>
