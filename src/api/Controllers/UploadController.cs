@@ -106,7 +106,7 @@ public class UploadController : ControllerBase
         return csv.GetRecords<Borehole>().ToList();
     }
 
-    private async Task<LocationInfo?> UpdateBoreholeLocation(Borehole borehole)
+    private async Task UpdateBoreholeLocation(Borehole borehole)
     {
         // Use origin spatial reference system
         var locationX = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
