@@ -17,8 +17,8 @@ public class LocationControllerTest
     private BdmsContext context;
     private LocationController controller;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
-    private Mock<HttpMessageHandler> httpMessageHandler;
     private Mock<ILogger<LocationController>> loggerMock;
+    private Mock<ILogger<LocationService>> loggerLocationServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
@@ -26,9 +26,10 @@ public class LocationControllerTest
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<LocationController>>();
-        httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+        loggerLocationServiceMock = new Mock<ILogger<LocationService>>();
+        var service = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
 
-        controller = new LocationController(context, httpClientFactoryMock.Object, loggerMock.Object);
+        controller = new LocationController(context, loggerMock.Object, service);
     }
 
     [TestCleanup]
@@ -61,75 +62,37 @@ public class LocationControllerTest
         });
     }
 
-    [TestMethod]
-    [DataRow(646355.97, 249020.14, "Schweiz", "Aargau", "Aarau")]
-    [DataRow(585183.81, 220181.50, "Schweiz", "Bern", "Biel/Bienne")]
-    [DataRow(758089.38, 223290.24, "Liechtenstein", null, "Vaduz")]
-    [DataRow(685479.15, 240780.15, "Schweiz", "Zürich", "Zürichsee (ZH)")]
-    [DataRow(655739.04, 297103.97, null, null, null)] // Schluchsee DE
-    [DataRow(0, 0, null, null, null)]
-    [DataRow(-1, -2, null, null, null)]
-    public async Task IdentifyLv03(double east, double north, string country, string canton, string municipal)
-    {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
-
-        var locationInfo = await controller.IdentifyAsync(east, north, 21781);
-        Assert.AreEqual(country, locationInfo.Country);
-        Assert.AreEqual(canton, locationInfo.Canton);
-        Assert.AreEqual(municipal, locationInfo.Municipality);
-    }
-
-    [TestMethod]
-    [DataRow(2646356.69, 1249020.29, "Schweiz", "Aargau", "Aarau")]
-    [DataRow(2585184.00, 1220182.00, "Schweiz", "Bern", "Biel/Bienne")]
-    [DataRow(2758089.99, 1223289.99, "Liechtenstein", null, "Vaduz")]
-    [DataRow(2685480.00, 1240779.99, "Schweiz", "Zürich", "Zürichsee (ZH)")]
-    [DataRow(2655740.00, 1297103.99, null, null, null)] // Schluchsee DE
-    [DataRow(0, 0, null, null, null)]
-    [DataRow(-1, -2, null, null, null)]
-    public async Task IdentifyLv95(double east, double north, string country, string canton, string municipal)
-    {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
-
-        var locationInfo = await controller.IdentifyAsync(east, north);
-        Assert.AreEqual(country, locationInfo.Country);
-        Assert.AreEqual(canton, locationInfo.Canton);
-        Assert.AreEqual(municipal, locationInfo.Municipality);
-    }
-
     private async Task AssertMigrateLocationAsync(bool onlyMissing, int updatedBoreholesCount, Action asserter = default)
     {
         Assert.AreEqual(10000, context.Boreholes.Count());
 
-        var httpClient = new HttpClient(httpMessageHandler.Object);
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(httpClient).Verifiable();
-
         var jsonResponse = () => JsonContent.Create(new
         {
             results = new[]
-            {
+                {
                 new { layerBodId = "ch.swisstopo.swissboundaries3d-land-flaeche.fill", attributes = new { bez = "RAGETRINITY", name = string.Empty, gemname = string.Empty } },
                 new { layerBodId = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill", attributes = new { bez = string.Empty, name = "SLEEPYMONKEY", gemname = string.Empty } },
                 new { layerBodId = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill", attributes = new { bez = string.Empty, name = string.Empty, gemname = "REDSOURCE" } },
-            },
+                },
         });
 
-        httpMessageHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.Is<HttpRequestMessage>(m => Regex.IsMatch(m.RequestUri.AbsoluteUri, "\\d{1,}\\.?\\d*,\\d{1,}\\.?\\d*.*&sr=\\d{4,}$")),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = jsonResponse() })
-            .Verifiable();
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(() =>
+        {
+            var httpMessageHandler = new Mock<HttpMessageHandler>();
+            httpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(m => Regex.IsMatch(m.RequestUri.AbsoluteUri, "\\d{1,}\\.?\\d*,\\d{1,}\\.?\\d*.*&sr=\\d{4,}$")),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = jsonResponse() })
+                .Verifiable();
+            return new HttpClient(httpMessageHandler.Object);
+        }).Verifiable();
 
         var result = await controller.MigrateAsync(dryRun: true, onlyMissing: onlyMissing).ConfigureAwait(false) as JsonResult;
 
         asserter?.Invoke();
         Assert.AreEqual($"{{ updatedBoreholes = {updatedBoreholesCount}, onlyMissing = {onlyMissing}, dryRun = True, success = True }}", result.Value.ToString());
-
-        // Verify API calls count.
-        httpMessageHandler.Protected()
-            .Verify("SendAsync", Times.Exactly(updatedBoreholesCount), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
     }
 
     private void AssertBohrungByronWest()

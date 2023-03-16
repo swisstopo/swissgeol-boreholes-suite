@@ -6,6 +6,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using System.Globalization;
 using System.Security.Claims;
 
@@ -17,11 +18,15 @@ public class UploadController : ControllerBase
 {
     private readonly BdmsContext context;
     private readonly ILogger logger;
+    private readonly LocationService locationService;
+    private readonly int sridLv95 = 2056;
+    private readonly int sridLv03 = 21781;
 
-    public UploadController(BdmsContext context, ILogger<UploadController> logger)
+    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService)
     {
         this.context = context;
         this.logger = logger;
+        this.locationService = locationService;
     }
 
     /// <summary>
@@ -56,9 +61,13 @@ public class UploadController : ControllerBase
                 .SingleOrDefaultAsync(u => u.Name == userName)
                 .ConfigureAwait(false);
 
-            boreholes.ForEach(b =>
+            foreach (var borehole in boreholes)
             {
-                b.Workflows.Add(
+                // Compute borehole location.
+                await UpdateBoreholeLocation(borehole).ConfigureAwait(false);
+
+                // Add a workflow per borehole.
+                borehole.Workflows.Add(
                     new Workflow
                     {
                         UserId = user.Id,
@@ -66,7 +75,8 @@ public class UploadController : ControllerBase
                         Started = DateTime.Now.ToUniversalTime(),
                         Finished = null,
                     });
-            });
+            }
+
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
             return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
         }
@@ -94,6 +104,27 @@ public class UploadController : ControllerBase
         csv.Context.RegisterClassMap(new BoreholeMap());
 
         return csv.GetRecords<Borehole>().ToList();
+    }
+
+    private async Task UpdateBoreholeLocation(Borehole borehole)
+    {
+        // Use origin spatial reference system
+        var locationX = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
+        var locationY = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationY : borehole.LocationYLV03;
+        var srid = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? sridLv95 : sridLv03;
+
+        if (locationX == null || locationY == null) return;
+
+        var coordinate = new Coordinate((double)locationX, (double)locationY);
+        borehole.Geometry = new Point(coordinate) { SRID = srid };
+
+        var locationInfo = await locationService.IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
+        if (locationInfo != null)
+        {
+            borehole.Country = locationInfo.Country;
+            borehole.Canton = locationInfo.Canton;
+            borehole.Municipality = locationInfo.Municipality;
+        }
     }
 
     private sealed class BoreholeMap : ClassMap<Borehole>

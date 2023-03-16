@@ -16,12 +16,20 @@ public class UploadControllerTest
 {
     private BdmsContext context;
     private UploadController controller;
+    private Mock<IHttpClientFactory> httpClientFactoryMock;
+    private Mock<ILogger<UploadController>> loggerMock;
+    private Mock<ILogger<LocationService>> loggerLocationServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.CreateContext();
-        controller = new UploadController(ContextFactory.CreateContext(), new Mock<ILogger<UploadController>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
+        loggerMock = new Mock<ILogger<UploadController>>();
+        loggerLocationServiceMock = new Mock<ILogger<LocationService>>();
+        var service = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
+
+        controller = new UploadController(ContextFactory.CreateContext(), loggerMock.Object, service) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -33,13 +41,21 @@ public class UploadControllerTest
         context.Boreholes.RemoveRange(addedBoreholes);
         context.Workflows.RemoveRange(addedWorkflows);
         context.SaveChanges();
+
         await context.DisposeAsync();
+        httpClientFactoryMock.Verify();
+        loggerMock.Verify();
     }
 
     [TestMethod]
     [DeploymentItem("testdata.csv")]
     public async Task UploadShouldSaveDataToDatabaseAsync()
     {
+        httpClientFactoryMock
+            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+            .Returns(() => new HttpClient())
+            .Verifiable();
+
         var csvFile = "testdata.csv";
 
         byte[] fileBytes = File.ReadAllBytes(csvFile);
@@ -64,6 +80,10 @@ public class UploadControllerTest
         Assert.AreEqual(3, borehole.BoreholeCodelists.Count);
         Assert.AreEqual("Id_16", borehole.BoreholeCodelists.First().Value);
         Assert.AreEqual(100000003, borehole.BoreholeCodelists.First().CodelistId);
+        Assert.AreEqual("Bern", borehole.Canton);
+        Assert.AreEqual("Schweiz", borehole.Country);
+        Assert.AreEqual("Thun", borehole.Municipality);
+        Assert.AreEqual("POINT (2613116 1179127)", borehole.Geometry.ToString());
 
         // Assert workflow was created for borehole.
         var workflow = context.Workflows.SingleOrDefault(w => w.BoreholeId == borehole.Id);
@@ -100,6 +120,10 @@ public class UploadControllerTest
         Assert.AreEqual(null, borehole.TotalDepth);
         Assert.AreEqual(null, borehole.ProjectName);
         Assert.AreEqual(0, borehole.BoreholeCodelists.Count);
+        Assert.AreEqual(null, borehole.Canton);
+        Assert.AreEqual(null, borehole.Country);
+        Assert.AreEqual(null, borehole.Municipality);
+        Assert.AreEqual(null, borehole.Geometry);
 
         // Assert workflow was created for borehole.
         var workflow = context.Workflows.SingleOrDefault(w => w.BoreholeId == borehole.Id);

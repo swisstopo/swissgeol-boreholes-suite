@@ -3,8 +3,6 @@ using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Text.Json;
 
 namespace BDMS.Controllers;
 
@@ -13,13 +11,8 @@ namespace BDMS.Controllers;
 public class LocationController : Controller
 {
     private readonly BdmsContext context;
-    private readonly IHttpClientFactory httpClientFactory;
     private readonly ILogger<LocationController> logger;
-
-    private readonly string apiUri = "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?geometryType=esriGeometryPoint&geometry={0}&tolerance=0&layers=all:{1}&returnGeometry=false&sr={2}";
-    private readonly string countryLayer = "ch.swisstopo.swissboundaries3d-land-flaeche.fill";
-    private readonly string cantonLayer = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill";
-    private readonly string municipalityLayer = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill";
+    private readonly LocationService locationService;
 
     // Spatial reference identifier (SRID)
     private readonly int sridLv95 = 2056;
@@ -29,17 +22,17 @@ public class LocationController : Controller
     /// Initializes a new instance of the <see cref="LocationController"/> class.
     /// </summary>
     /// <param name="context">The EF database context containing data for the BDMS application.</param>
-    /// <param name="httpClientFactory">A factory abstraction that can create <see cref="HttpClient"/> instance.</param>
-    /// <param name="logger">The <see cref="ILoggerFactory"/>.</param>
-    public LocationController(BdmsContext context, IHttpClientFactory httpClientFactory, ILogger<LocationController> logger)
+    /// <param name="logger">The <see cref="ILogger"/>.</param>
+    /// <param name="locationService">An incstance of <see cref="LocationService"/>.</param>
+    public LocationController(BdmsContext context, ILogger<LocationController> logger, LocationService locationService)
     {
         this.context = context;
-        this.httpClientFactory = httpClientFactory;
         this.logger = logger;
+        this.locationService = locationService;
     }
 
     /// <summary>
-    /// Asynchronously updates location information (country_bho, canton_bho and municipality_bho)
+    /// Asynchronously batch updates location information (country_bho, canton_bho and municipality_bho) for existing boreholes
     /// using the coordinates from the original reference system.
     /// </summary>
     /// <param name="onlyMissing">Default: true; Indicates whether or not only boreholes with missing location
@@ -101,56 +94,16 @@ public class LocationController : Controller
         return new JsonResult(new { updatedBoreholes, onlyMissing, dryRun, success = true });
     }
 
+    /// <summary>
+    /// Asynchronously retrieves location information (country_bho, canton_bho and municipality_bho) for a single location
+    /// using the coordinates and the original reference system.
+    /// </summary>
+    /// <param name="east">The east coordinate of the location.</param>
+    /// <param name="north">The north coordinate of the location.</param>
+    /// <param name="srid">The id of the reference system. </param>
+    /// <returns>The <see cref="LocationInfo"/> corresponding to the supplied coordinates.</returns>
     [HttpGet("identify")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<LocationInfo> IdentifyAsync([Required] double east, [Required] double north, int srid = 2056)
-    {
-        var httpClient = httpClientFactory.CreateClient(nameof(LocationController));
-
-        var point = string.Join(',', east, north);
-        var layers = string.Join(',', countryLayer, cantonLayer, municipalityLayer);
-        var requestUri = new Uri(string.Format(CultureInfo.InvariantCulture, apiUri, point, layers, srid));
-
-        try
-        {
-            using var httpResponse = await httpClient.GetAsync(requestUri).ConfigureAwait(false);
-            httpResponse.EnsureSuccessStatusCode();
-
-            using var contentStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            using var document = await JsonDocument.ParseAsync(contentStream).ConfigureAwait(false);
-
-            var result = new LocationInfo(
-                Country: GetAttributeValueForLayer(document, countryLayer, "bez"),
-                Canton: GetAttributeValueForLayer(document, cantonLayer, "name"),
-                Municipality: GetAttributeValueForLayer(document, municipalityLayer, "gemname"));
-
-            return result;
-        }
-        catch (HttpRequestException ex)
-        {
-            logger.LogError($"Failed to query swisstopo identify API ({requestUri})", ex);
-            throw;
-        }
-    }
-
-    private string? GetAttributeValueForLayer(JsonDocument document, string layerName, string attributeName)
-    {
-        try
-        {
-            var layer = document.RootElement
-                .GetProperty("results")
-                .EnumerateArray()
-                .FirstOrDefault(layer => layerName.Equals(layer.GetProperty("layerBodId").GetString(), StringComparison.Ordinal));
-
-            if (layer.Equals(default(JsonElement)))
-                return null;
-
-            return layer.GetProperty("attributes").GetProperty(attributeName).GetString();
-        }
-        catch (KeyNotFoundException ex)
-        {
-            logger.LogError($"Key <{attributeName}> in layer <{layerName}> not found in swisstopo JSON response.", ex);
-            return null;
-        }
-    }
+    public Task<LocationInfo> IdentifyAsync([Required] double east, [Required] double north, int srid = 2056)
+        => locationService.IdentifyAsync(east, north, srid);
 }

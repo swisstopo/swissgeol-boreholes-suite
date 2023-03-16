@@ -86,6 +86,8 @@ builder.Services.AddApiVersioning(config =>
     config.ReportApiVersions = true;
 });
 
+builder.Services.AddScoped<LocationService>();
+
 var app = builder.Build();
 
 // Migrate db changes on startup
