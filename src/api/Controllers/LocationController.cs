@@ -104,8 +104,6 @@ public class LocationController : Controller
     /// <returns>The <see cref="LocationInfo"/> corresponding to the supplied coordinates.</returns>
     [HttpGet("identify")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<LocationInfo> IdentifyAsync([Required] double east, [Required] double north, int srid = 2056)
-    {
-        return await locationService.IdentifyAsync(east, north, srid).ConfigureAwait(false);
-    }
+    public Task<LocationInfo> IdentifyAsync([Required] double east, [Required] double north, int srid = 2056)
+        => locationService.IdentifyAsync(east, north, srid);
 }

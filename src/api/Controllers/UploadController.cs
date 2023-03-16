@@ -64,13 +64,7 @@ public class UploadController : ControllerBase
             foreach (var borehole in boreholes)
             {
                 // Compute borehole location.
-                var locationInfo = await UpdateBoreholeLocation(borehole).ConfigureAwait(false);
-                if (locationInfo != null)
-                {
-                    borehole.Country = locationInfo.Country;
-                    borehole.Canton = locationInfo.Canton;
-                    borehole.Municipality = locationInfo.Municipality;
-                }
+                await UpdateBoreholeLocation(borehole).ConfigureAwait(false);
 
                 // Add a workflow per borehole.
                 borehole.Workflows.Add(
@@ -119,12 +113,18 @@ public class UploadController : ControllerBase
         var locationY = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationY : borehole.LocationYLV03;
         var srid = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? sridLv95 : sridLv03;
 
-        if (locationX == null || locationY == null) return null;
+        if (locationX == null || locationY == null) return;
 
         var coordinate = new Coordinate((double)locationX, (double)locationY);
         borehole.Geometry = new Point(coordinate) { SRID = srid };
 
-        return await locationService.IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
+        var locationInfo = await locationService.IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
+        if (locationInfo != null)
+        {
+            borehole.Country = locationInfo.Country;
+            borehole.Canton = locationInfo.Canton;
+            borehole.Municipality = locationInfo.Municipality;
+        }
     }
 
     private sealed class BoreholeMap : ClassMap<Borehole>

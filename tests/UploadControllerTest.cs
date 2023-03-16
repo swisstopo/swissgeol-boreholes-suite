@@ -69,7 +69,7 @@ public class UploadControllerTest
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(6, okResult.Value);
 
-        // assert imported values
+        // Assert imported values
         var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).ToList().Find(b => b.OriginalName == "Unit_Test_6");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Unit_Test_6_a", borehole.AlternateName);
@@ -123,6 +123,7 @@ public class UploadControllerTest
         Assert.AreEqual(null, borehole.Canton);
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);
+        Assert.AreEqual(null, borehole.Geometry);
 
         // Assert workflow was created for borehole.
         var workflow = context.Workflows.SingleOrDefault(w => w.BoreholeId == borehole.Id);
