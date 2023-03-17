@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import * as Styled from "./styles";
 import Instrument from "./components/instrument";
-import { Button, Loader } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
 import TranslationText from "../../../translationText";
 import { profileKind } from "../../constance";
 import {
@@ -13,6 +13,7 @@ import {
   getProfile,
 } from "./api";
 import useCasingList from "../../hooks/useCasingList";
+import _ from "lodash";
 
 const ProfileInstrument = props => {
   const {
@@ -25,10 +26,9 @@ const ProfileInstrument = props => {
   } = props;
 
   const { casing } = useCasingList(borehole.data.id);
-  const [instruments, setInstruments] = useState([]);
+  const [instruments, setInstruments] = useState(null);
   const [instrumentProfileId, setInstrumentProfileId] = useState(null);
   const [reload, setReload] = useState(0);
-  const [isLoadingData, setIsLoadingData] = useState(false);
 
   // Before any layer or instrument is created for the selected stratigraphy,
   // create a layer or instrument when useEffect() is called the first time after
@@ -36,13 +36,15 @@ const ProfileInstrument = props => {
   // If there is already a layer or instrument defined,
   // creating a layer or instrument is only possible via addInstrument and not via
   // useEffect() of instrumentProfileId.
+  // This state can be removed when fetching layer for a profile, that have no layers yet
+  // returns an empty response instead of an error.
   const [
     isFirstLayerOrFirstInstrumentForStratigraphy,
     setIsFirstLayerOrFirstInstrumentForStratigraphy,
   ] = useState(false);
 
   const createLayerOrInstrument = useCallback(() => {
-    if (selectedStratigraphyID) {
+    if (selectedStratigraphyID >= 0) {
       createNewInstrument(instrumentProfileId, selectedStratigraphyID).then(
         response => {
           if (response) onUpdated("newLayer");
@@ -63,31 +65,26 @@ const ProfileInstrument = props => {
   }, []);
 
   const getInstrumentProfile = useCallback(() => {
-    setIsLoadingData(true);
     getProfile(borehole.data.id, profileKind.INSTRUMENT).then(response => {
       if (response.length > 0) {
         setInstrumentProfileId(response[0].id);
+      } else {
+        // If no profile was found, set instruments to empty array.
+        setInstruments(response);
       }
-      setIsLoadingData(false);
     });
-  }, [borehole]);
+  }, [borehole.data.id]);
 
   useEffect(() => {
     getInstrumentProfile();
   }, [getInstrumentProfile]);
 
-  const setData = useCallback(instrumentID => {
-    setIsLoadingData(true);
-    getData(instrumentID).then(response => {
-      setInstruments(response);
-      setIsLoadingData(false);
-    });
-  }, []);
-
   useEffect(() => {
-    setHasInstrumentWithoutCasing(
-      instruments.some(i => i.instrument_casing_id === 0),
-    );
+    if (!_.isNil(instruments)) {
+      setHasInstrumentWithoutCasing(
+        instruments.some(i => i.instrument_casing_id === 0),
+      );
+    }
   }, [instruments, setHasInstrumentWithoutCasing]);
 
   useEffect(() => {
@@ -96,12 +93,13 @@ const ProfileInstrument = props => {
         createLayerOrInstrument();
         setIsFirstLayerOrFirstInstrumentForStratigraphy(false);
       }
-      setData(instrumentProfileId);
+      getData(instrumentProfileId).then(response => {
+        setInstruments(response);
+      });
     }
   }, [
     instrumentProfileId,
     reloadLayer,
-    setData,
     reload,
     isFirstLayerOrFirstInstrumentForStratigraphy,
     createLayerOrInstrument,
@@ -122,6 +120,7 @@ const ProfileInstrument = props => {
   };
 
   const filterInstrumentsByProfile = () => {
+    if (_.isNil(instruments)) return null;
     let instrumentsByProfile = instruments;
     if (selectedStratigraphyID >= 0) {
       instrumentsByProfile = instruments.filter(
@@ -132,7 +131,7 @@ const ProfileInstrument = props => {
   };
   return (
     <Styled.Container>
-      {isEditable && (
+      {isEditable && !_.isNil(filterInstrumentsByProfile()) && (
         <Styled.ButtonContainer>
           <Button
             data-cy="add-instrumentation-button"
@@ -145,17 +144,15 @@ const ProfileInstrument = props => {
         </Styled.ButtonContainer>
       )}
 
-      {isLoadingData ? (
-        <Loader active />
-      ) : filterInstrumentsByProfile().length === 0 ? (
+      {_.isNil(
+        filterInstrumentsByProfile(),
+      ) ? null : filterInstrumentsByProfile().length === 0 ? (
         <Styled.Empty data-cy="instrument-message">
           <TranslationText
             id={borehole.data.lock ? "msgAddInstrument" : "msgInstrumentsEmpty"}
           />
         </Styled.Empty>
-      ) : null}
-
-      {filterInstrumentsByProfile().length > 0 && (
+      ) : (
         <Styled.ListContainer data-cy="instrument-list">
           {filterInstrumentsByProfile().map((item, index) => (
             <Instrument
