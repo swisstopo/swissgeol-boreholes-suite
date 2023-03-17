@@ -132,12 +132,6 @@ public class Borehole : IChangeTracking, IIdentifyable
     public double? TotalDepth { get; set; }
 
     /// <summary>
-    /// Gets or sets the date of the <see cref="Borehole"/>.
-    /// </summary>
-    [Column("date_bho")]
-    public DateTime? Date { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s restriction id.
     /// </summary>
     [Column("restriction_id_cli")]
