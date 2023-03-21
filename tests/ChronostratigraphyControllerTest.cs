@@ -33,7 +33,8 @@ public class ChronostratigraphyControllerTest
         var response = await controller.GetAsync().ConfigureAwait(false);
         IEnumerable<ChronostratigraphyLayer>? chronostratigraphies = response;
         Assert.IsNotNull(chronostratigraphies);
-        Assert.AreEqual(100_000, chronostratigraphies.Count());
+        Assert.IsTrue(chronostratigraphies.Count() > 0);
+        Assert.AreEqual(context.ChronostratigraphyLayers.Count(), chronostratigraphies.Count());
     }
 
     [TestMethod]
