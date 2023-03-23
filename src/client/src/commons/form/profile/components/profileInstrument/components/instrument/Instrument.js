@@ -85,7 +85,9 @@ const Instrument = props => {
         const index = draft.findIndex(d => d.id === updatedInstrument.id);
         if (index >= 0) {
           draft[index].instrument_casing_id =
-            updatedInstrument.instrumentCasingId;
+            updatedInstrument.instrumentCasingId === undefined
+              ? null
+              : updatedInstrument.instrumentCasingId;
         }
       }),
     );
