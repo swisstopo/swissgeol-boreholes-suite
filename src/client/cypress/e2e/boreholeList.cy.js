@@ -44,13 +44,13 @@ describe("Borehole list tests", () => {
     cy.get("tbody").children().eq(2).contains("td", "Zita Emard");
 
     // sort by total depth
-    cy.contains("div", "Total depth MD [m]").click();
+    cy.contains("div", "Borehole length [m MD]").click();
     cy.wait("@borehole");
     cy.get("tbody").children().eq(0).contains("td", "0.501133501763052");
     cy.get("tbody").children().eq(1).contains("td", "1.0761823510174557");
     cy.get("tbody").children().eq(2).contains("td", "1.5021385631999646");
 
-    cy.contains("div", "Total depth MD [m]").click();
+    cy.contains("div", "Borehole length [m MD]").click();
     cy.wait("@borehole");
     cy.get("tbody").children().eq(0).contains("td", "1'999.7876528649533");
     cy.get("tbody").children().eq(1).contains("td", "1'999.3616966527707");
@@ -164,7 +164,7 @@ describe("Borehole list tests", () => {
     cy.get("tbody").children().eq(2).contains("td", "open, no completion");
 
     // sort by total depth
-    cy.contains("th", "Total depth").click();
+    cy.contains("th", "Borehole length").click();
     cy.wait("@editorBorehole");
     cy.get("tbody").children().eq(0).contains("td", "1'999.7876528649533");
     cy.get("tbody").children().eq(1).contains("td", "1'999.3616966527707");
