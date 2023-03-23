@@ -14,10 +14,10 @@ namespace BDMS;
 [TestClass]
 public class CoordinateControllerTest
 {
-    private const int BoreholeLV95BoreholeWithAllCoordinatesSetId = 2_000_000;
-    private const int BoreholeLV95BoreholeWithMissingDestCoordinatesId = 2_000_001;
-    private const int BoreholeLV03BoreholeWithAllCoordinatesSetId = 2_000_002;
-    private const int BoreholeLV03BoreholeWithMissingSourceCoordinatesId = 2_000_003;
+    private const int LV95BoreholeWithAllCoordinatesSetId = 2_000_000;
+    private const int LV95BoreholeWithMissingDestCoordinatesId = 2_000_001;
+    private const int LV03BoreholeWithAllCoordinatesSetId = 2_000_002;
+    private const int LV03BoreholeWithMissingSourceCoordinatesId = 2_000_003;
 
     private BdmsContext context;
     private CoordinateController controller;
@@ -26,7 +26,7 @@ public class CoordinateControllerTest
     private Mock<ILogger<CoordinateController>> loggerMock;
 
     private int boreholeCount;
-    private List<int> boreholeIds = new List<int> { BoreholeLV95BoreholeWithAllCoordinatesSetId, BoreholeLV95BoreholeWithMissingDestCoordinatesId, BoreholeLV03BoreholeWithAllCoordinatesSetId, BoreholeLV03BoreholeWithMissingSourceCoordinatesId };
+    private List<int> boreholeIds = new List<int> { LV95BoreholeWithAllCoordinatesSetId, LV95BoreholeWithMissingDestCoordinatesId, LV03BoreholeWithAllCoordinatesSetId, LV03BoreholeWithMissingSourceCoordinatesId };
 
     [TestInitialize]
     public void TestInitialize()
@@ -62,15 +62,15 @@ public class CoordinateControllerTest
     [TestMethod]
     public async Task MigrateCoordinates()
     {
-        Borehole? boreholeLV95BoreholeWithAllCoordinatesSet = null;
-        Borehole? boreholeLV95BoreholeWithMissingDestCoordinates = null;
-        Borehole? boreholeLV03BoreholeWithAllCoordinatesSet = null;
-        Borehole? boreholeLV03BoreholeWithMissingSourceCoordinates = null;
+        Borehole? lV95BoreholeWithAllCoordinatesSet = null;
+        Borehole? lV95BoreholeWithMissingDestCoordinates = null;
+        Borehole? lV03BoreholeWithAllCoordinatesSet = null;
+        Borehole? lV03BoreholeWithMissingSourceCoordinates = null;
 
-        boreholeLV95BoreholeWithAllCoordinatesSet = CreateLV95BoreholeWithAllCoordinatesSet();
-        boreholeLV95BoreholeWithMissingDestCoordinates = CreateLV95BoreholeWithMissingDestCoordinates();
-        boreholeLV03BoreholeWithAllCoordinatesSet = CreateLV03BoreholeWithAllCoordinatesSet();
-        boreholeLV03BoreholeWithMissingSourceCoordinates = CreateLV03BoreholeWithMissingSourceCoordinates();
+        lV95BoreholeWithAllCoordinatesSet = CreateLV95BoreholeWithAllCoordinatesSet();
+        lV95BoreholeWithMissingDestCoordinates = CreateLV95BoreholeWithMissingDestCoordinates();
+        lV03BoreholeWithAllCoordinatesSet = CreateLV03BoreholeWithAllCoordinatesSet();
+        lV03BoreholeWithMissingSourceCoordinates = CreateLV03BoreholeWithMissingSourceCoordinates();
 
         // Count all boreholes with set source location
         var boreholesWithSetSourceCoordinates = context.Boreholes.Where(b =>
@@ -79,25 +79,25 @@ public class CoordinateControllerTest
 
         await AssertMigrateCoordinatesAsync(onlyMissing: false, boreholesWithSetSourceCoordinates, 10004, () =>
         {
-            AssertLV95BoreholeWithAllCoordinatesSet(boreholeLV95BoreholeWithAllCoordinatesSet);
-            AssertLV95BoreholeWithMissingDestCoordinates(boreholeLV95BoreholeWithMissingDestCoordinates);
-            AssertLV03BoreholeWithAllCoordinatesSet(boreholeLV03BoreholeWithAllCoordinatesSet);
-            AssertUnchanged(boreholeLV03BoreholeWithMissingSourceCoordinates);
+            AssertLV95BoreholeWithAllCoordinatesSet(lV95BoreholeWithAllCoordinatesSet);
+            AssertLV95BoreholeWithMissingDestCoordinates(lV95BoreholeWithMissingDestCoordinates);
+            AssertLV03BoreholeWithAllCoordinatesSet(lV03BoreholeWithAllCoordinatesSet);
+            AssertUnchanged(lV03BoreholeWithMissingSourceCoordinates);
         });
     }
 
     [TestMethod]
     public async Task MigrateCoordinatesWithMissingDestinationLocationOnly()
     {
-        Borehole? boreholeLV95BoreholeWithAllCoordinatesSet = null;
-        Borehole? boreholeLV95BoreholeWithMissingDestCoordinates = null;
-        Borehole? boreholeLV03BoreholeWithAllCoordinatesSet = null;
-        Borehole? boreholeLV03BoreholeWithMissingSourceCoordinates = null;
+        Borehole? lV95BoreholeWithAllCoordinatesSet = null;
+        Borehole? lV95BoreholeWithMissingDestCoordinates = null;
+        Borehole? lV03BoreholeWithAllCoordinatesSet = null;
+        Borehole? lV03BoreholeWithMissingSourceCoordinates = null;
 
-        boreholeLV95BoreholeWithAllCoordinatesSet = CreateLV95BoreholeWithAllCoordinatesSet();
-        boreholeLV95BoreholeWithMissingDestCoordinates = CreateLV95BoreholeWithMissingDestCoordinates();
-        boreholeLV03BoreholeWithAllCoordinatesSet = CreateLV03BoreholeWithAllCoordinatesSet();
-        boreholeLV03BoreholeWithMissingSourceCoordinates = CreateLV03BoreholeWithMissingSourceCoordinates();
+        lV95BoreholeWithAllCoordinatesSet = CreateLV95BoreholeWithAllCoordinatesSet();
+        lV95BoreholeWithMissingDestCoordinates = CreateLV95BoreholeWithMissingDestCoordinates();
+        lV03BoreholeWithAllCoordinatesSet = CreateLV03BoreholeWithAllCoordinatesSet();
+        lV03BoreholeWithMissingSourceCoordinates = CreateLV03BoreholeWithMissingSourceCoordinates();
 
         // Count all boreholes with set source location and missing destination location
         var boreholesWithMissingSourceCoordinates = context.Boreholes.Where(b =>
@@ -112,10 +112,10 @@ public class CoordinateControllerTest
 
         await AssertMigrateCoordinatesAsync(onlyMissing: true, boreholesWithMissingSourceCoordinates, 10004, () =>
         {
-            AssertUnchanged(boreholeLV95BoreholeWithAllCoordinatesSet);
-            AssertLV95BoreholeWithMissingDestCoordinates(boreholeLV95BoreholeWithMissingDestCoordinates);
-            AssertUnchanged(boreholeLV03BoreholeWithAllCoordinatesSet);
-            AssertUnchanged(boreholeLV03BoreholeWithMissingSourceCoordinates);
+            AssertUnchanged(lV95BoreholeWithAllCoordinatesSet);
+            AssertLV95BoreholeWithMissingDestCoordinates(lV95BoreholeWithMissingDestCoordinates);
+            AssertUnchanged(lV03BoreholeWithAllCoordinatesSet);
+            AssertUnchanged(lV03BoreholeWithMissingSourceCoordinates);
         });
     }
 
@@ -158,7 +158,7 @@ public class CoordinateControllerTest
     {
         var borehole = new Borehole
         {
-            Id = BoreholeLV95BoreholeWithAllCoordinatesSetId,
+            Id = LV95BoreholeWithAllCoordinatesSetId,
             LocationX = 2626103.1988343936,
             LocationY = 1125366.3469565178,
             LocationXLV03 = 765875.1615463407,
@@ -176,7 +176,7 @@ public class CoordinateControllerTest
     {
         var borehole = new Borehole
         {
-            Id = BoreholeLV95BoreholeWithMissingDestCoordinatesId,
+            Id = LV95BoreholeWithMissingDestCoordinatesId,
             LocationX = 2662527,
             LocationY = 1253325,
             LocationXLV03 = 655269,
@@ -194,7 +194,7 @@ public class CoordinateControllerTest
     {
         var borehole = new Borehole
         {
-            Id = BoreholeLV03BoreholeWithAllCoordinatesSetId,
+            Id = LV03BoreholeWithAllCoordinatesSetId,
             LocationX = 2622479.1608037096,
             LocationY = 1099464.3374982823,
             LocationXLV03 = null,
@@ -212,7 +212,7 @@ public class CoordinateControllerTest
     {
         var borehole = new Borehole
         {
-            Id = BoreholeLV03BoreholeWithMissingSourceCoordinatesId,
+            Id = LV03BoreholeWithMissingSourceCoordinatesId,
             LocationX = 2582431.203588229,
             LocationY = 1189604.098138797,
             LocationXLV03 = 523204.9377711746,
