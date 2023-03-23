@@ -1,13 +1,13 @@
 ﻿using BDMS.Controllers;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
 using System.Net;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace BDMS;
@@ -15,6 +15,11 @@ namespace BDMS;
 [TestClass]
 public class CoordinateControllerTest
 {
+    private const int BoreholeId1 = 2_000_000;
+    private const int BoreholeId2 = 2_000_001;
+    private const int BoreholeId3 = 2_000_002;
+    private const int BoreholeId4 = 2_000_003;
+
     private BdmsContext context;
     private CoordinateController controller;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
@@ -22,6 +27,7 @@ public class CoordinateControllerTest
     private Mock<ILogger<CoordinateController>> loggerMock;
 
     private int boreholeCount;
+    private List<int> boreholeIds = new List<int>() { BoreholeId1, BoreholeId2, BoreholeId3, BoreholeId4 };
 
     [TestInitialize]
     public void TestInitialize()
@@ -39,6 +45,14 @@ public class CoordinateControllerTest
     [TestCleanup]
     public async Task TestCleanup()
     {
+        // Revert any changes in the ChangeTracker made by the coordinate migration
+        context.ResetChangesInContext();
+
+        // Remove created Boreholes
+        context.Boreholes.Where(b => boreholeIds.Contains(b.Id)).ToList().ForEach(borehole =>
+            context.Boreholes.Remove(borehole));
+        context.SaveChanges();
+
         Assert.AreEqual(boreholeCount, context.Boreholes.Count(), "Tests need to remove boreholes, they created.");
 
         await context.DisposeAsync();
@@ -56,10 +70,9 @@ public class CoordinateControllerTest
 
         try
         {
-            EnsureContextHasNoChanges();
             boreholeLV95BoreholeWithAllCoordinatesSet = CreateLV95BoreholeWithAllCoordinatesSet();
             boreholeLV95BoreholeWithMissingDestCoordinates = CreateLV95BoreholeWithMissingDestCoordinates();
-            boreholeLV03BoreholeWithAllCoordinatesSet = CreateLV03BoreholeWithAllCoordinatesSett();
+            boreholeLV03BoreholeWithAllCoordinatesSet = CreateLV03BoreholeWithAllCoordinatesSet();
             boreholeLV03BoreholeWithMissingSourceCoordinates = CreateLV03BoreholeWithMissingSourceCoordinates();
 
             // Count all boreholes with set source location
@@ -77,11 +90,6 @@ public class CoordinateControllerTest
         }
         finally
         {
-            EnsureContextHasNoChanges();
-            context.RemoveBoreholeFromContext(boreholeLV95BoreholeWithAllCoordinatesSet);
-            context.RemoveBoreholeFromContext(boreholeLV95BoreholeWithMissingDestCoordinates);
-            context.RemoveBoreholeFromContext(boreholeLV03BoreholeWithAllCoordinatesSet);
-            context.RemoveBoreholeFromContext(boreholeLV03BoreholeWithMissingSourceCoordinates);
         }
     }
 
@@ -95,10 +103,10 @@ public class CoordinateControllerTest
 
         try
         {
-            context.ResetChangesInContext();
+            var amoutn = context.Boreholes.Count();
             boreholeLV95BoreholeWithAllCoordinatesSet = CreateLV95BoreholeWithAllCoordinatesSet();
             boreholeLV95BoreholeWithMissingDestCoordinates = CreateLV95BoreholeWithMissingDestCoordinates();
-            boreholeLV03BoreholeWithAllCoordinatesSet = CreateLV03BoreholeWithAllCoordinatesSett();
+            boreholeLV03BoreholeWithAllCoordinatesSet = CreateLV03BoreholeWithAllCoordinatesSet();
             boreholeLV03BoreholeWithMissingSourceCoordinates = CreateLV03BoreholeWithMissingSourceCoordinates();
 
             // Count all boreholes with set source location and missing destination location
@@ -112,6 +120,8 @@ public class CoordinateControllerTest
                     (b.LocationX == null || b.LocationY == null)))
                 .Count();
 
+            var test = context.Boreholes.Where(b => b.Id > 2_000_000);
+
             await AssertMigrateCoordinatesAsync(onlyMissing: true, boreholesWithMissingSourceCoordinates, 10004, () =>
             {
                 AssertUnchanged(boreholeLV95BoreholeWithAllCoordinatesSet);
@@ -122,11 +132,6 @@ public class CoordinateControllerTest
         }
         finally
         {
-            context.ResetChangesInContext();
-            context.RemoveBoreholeFromContext(boreholeLV95BoreholeWithAllCoordinatesSet);
-            context.RemoveBoreholeFromContext(boreholeLV95BoreholeWithMissingDestCoordinates);
-            context.RemoveBoreholeFromContext(boreholeLV03BoreholeWithAllCoordinatesSet);
-            context.RemoveBoreholeFromContext(boreholeLV03BoreholeWithMissingSourceCoordinates);
         }
     }
 
@@ -137,29 +142,6 @@ public class CoordinateControllerTest
         Assert.AreEqual(6, CoordinateController.GetDecimalPlaces(100.123456));
         Assert.AreEqual(2, CoordinateController.GetDecimalPlaces(1.01));
         Assert.AreEqual(0, CoordinateController.GetDecimalPlaces(100));
-    }
-
-    private void EnsureContextHasNoChanges()
-    {
-        var changedEntries = context.ChangeTracker.Entries()
-                .Where(x => x.State != EntityState.Unchanged).ToList();
-
-        foreach (var entry in changedEntries)
-        {
-            switch (entry.State)
-            {
-                case EntityState.Modified:
-                    entry.CurrentValues.SetValues(entry.OriginalValues);
-                    entry.State = EntityState.Unchanged;
-                    break;
-                case EntityState.Added:
-                    entry.State = EntityState.Detached;
-                    break;
-                case EntityState.Deleted:
-                    entry.State = EntityState.Unchanged;
-                    break;
-            }
-        }
     }
 
     private async Task AssertMigrateCoordinatesAsync(bool onlyMissing, int transformedCoordinatesCount, int expectedTotalBoreholeCount, Action asserter = default)
@@ -190,58 +172,74 @@ public class CoordinateControllerTest
 
     private Borehole CreateLV95BoreholeWithAllCoordinatesSet()
     {
-        return context.AddNewBoreholeToContext(new Borehole()
+        var borehole = new Borehole
         {
-            Id = 2_000_000,
+            Id = BoreholeId1,
             LocationX = 2626103.1988343936,
             LocationY = 1125366.3469565178,
             LocationXLV03 = 765875.1615463407,
             LocationYLV03 = 78390.10392298926,
             OriginalReferenceSystem = ReferenceSystem.LV95,
             AlternateName = "Laurence.Padberg3",
-        });
+        };
+        context.Boreholes.Add(borehole);
+        context.SaveChanges();
+
+        return borehole;
     }
 
-    private Borehole CreateLV03BoreholeWithAllCoordinatesSett()
+    private Borehole CreateLV03BoreholeWithAllCoordinatesSet()
     {
-        return context.AddNewBoreholeToContext(new Borehole()
+        var borehole = new Borehole
         {
-            Id = 2_000_001,
+            Id = BoreholeId2,
             LocationX = 2662527,
             LocationY = 1253325,
             LocationXLV03 = 655269,
             LocationYLV03 = 297874,
             OriginalReferenceSystem = ReferenceSystem.LV03,
             AlternateName = "Floyd29",
-        });
+        };
+        context.Boreholes.Add(borehole);
+        context.SaveChanges();
+
+        return borehole;
     }
 
     private Borehole CreateLV03BoreholeWithMissingSourceCoordinates()
     {
-        return context.AddNewBoreholeToContext(new Borehole()
+        var borehole = new Borehole
         {
-            Id = 2_000_002,
+            Id = BoreholeId3,
             LocationX = 2622479.1608037096,
             LocationY = 1099464.3374982823,
             LocationXLV03 = null,
             LocationYLV03 = 224735.18581408318,
             OriginalReferenceSystem = ReferenceSystem.LV03,
             AlternateName = "Brendan.Trantow38",
-        });
+        };
+        context.Boreholes.Add(borehole);
+        context.SaveChanges();
+
+        return borehole;
     }
 
     private Borehole CreateLV95BoreholeWithMissingDestCoordinates()
     {
-        return context.AddNewBoreholeToContext(new Borehole()
+        var borehole = new Borehole
         {
-            Id = 2_000_003,
+            Id = BoreholeId4,
             LocationX = 2582431.203588229,
             LocationY = 1189604.098138797,
             LocationXLV03 = 523204.9377711746,
             LocationYLV03 = null,
             OriginalReferenceSystem = ReferenceSystem.LV95,
             AlternateName = "Sherri.Goodwin99",
-        });
+        };
+        context.Boreholes.Add(borehole);
+        context.SaveChanges();
+
+        return borehole;
     }
 
     private void AssertUnchanged(Borehole initialBohrung)

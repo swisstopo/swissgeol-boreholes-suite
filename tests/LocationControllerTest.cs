@@ -14,6 +14,10 @@ namespace BDMS;
 [TestClass]
 public class LocationControllerTest
 {
+    private const int BoreholeId1 = 2_000_000;
+    private const int BoreholeId2 = 2_000_001;
+    private const int BoreholeId3 = 2_000_002;
+
     private BdmsContext context;
     private LocationController controller;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
@@ -21,6 +25,7 @@ public class LocationControllerTest
     private Mock<ILogger<LocationService>> loggerLocationServiceMock;
 
     private int boreholeCount;
+    private List<int> boreholeIds = new List<int>() { BoreholeId1, BoreholeId2, BoreholeId3 };
 
     [TestInitialize]
     public void TestInitialize()
@@ -39,6 +44,14 @@ public class LocationControllerTest
     [TestCleanup]
     public async Task TestCleanup()
     {
+        // Revert any changes in the ChangeTracker made by the coordinate migration
+        context.ResetChangesInContext();
+
+        // Remove created Boreholes
+        context.Boreholes.Where(b => boreholeIds.Contains(b.Id)).ToList().ForEach(borehole =>
+            context.Boreholes.Remove(borehole));
+        context.SaveChanges();
+
         Assert.AreEqual(boreholeCount, context.Boreholes.Count(), "Tests need to remove boreholes, they created.");
 
         await context.DisposeAsync();
@@ -55,7 +68,6 @@ public class LocationControllerTest
 
         try
         {
-            context.ResetChangesInContext();
             boreholeWithAllLocationAttributes = CreateBoreholeWithAllLocationAttributes();
             boreholeWithMissingLocationAttributes = CreateBoreholeWithMissingLocationAttributes();
             boreholeWithMissingSourceCoordinates = CreateBoreholeWithMissingSourceCoordinates();
@@ -74,10 +86,6 @@ public class LocationControllerTest
         }
         finally
         {
-            context.ResetChangesInContext();
-            context.RemoveBoreholeFromContext(boreholeWithAllLocationAttributes);
-            context.RemoveBoreholeFromContext(boreholeWithMissingLocationAttributes);
-            context.RemoveBoreholeFromContext(boreholeWithMissingSourceCoordinates);
         }
     }
 
@@ -90,7 +98,6 @@ public class LocationControllerTest
 
         try
         {
-            context.ResetChangesInContext();
             boreholeWithAllLocationAttributes = CreateBoreholeWithAllLocationAttributes();
             boreholeWithMissingLocationAttributes = CreateBoreholeWithMissingLocationAttributes();
             boreholeWithMissingSourceCoordinates = CreateBoreholeWithMissingSourceCoordinates();
@@ -112,10 +119,6 @@ public class LocationControllerTest
         }
         finally
         {
-            context.ResetChangesInContext();
-            context.RemoveBoreholeFromContext(boreholeWithAllLocationAttributes);
-            context.RemoveBoreholeFromContext(boreholeWithMissingLocationAttributes);
-            context.RemoveBoreholeFromContext(boreholeWithMissingSourceCoordinates);
         }
     }
 
@@ -154,9 +157,9 @@ public class LocationControllerTest
 
     private Borehole CreateBoreholeWithAllLocationAttributes()
     {
-        return context.AddNewBoreholeToContext(new Borehole()
+        var borehole = new Borehole
         {
-            Id = 2_000_000,
+            Id = BoreholeId1,
             LocationX = 2626103.1988343936,
             LocationY = 1125366.3469565178,
             LocationXLV03 = null,
@@ -166,12 +169,16 @@ public class LocationControllerTest
             Country = "Northern Mariana Islands",
             Canton = "South Dakota",
             Municipality = "Lake Chayamouth",
-        });
+        };
+        context.Boreholes.Add(borehole);
+        context.SaveChanges();
+
+        return borehole;
     }
 
     private Borehole CreateBoreholeWithMissingLocationAttributes()
     {
-        return context.AddNewBoreholeToContext(new Borehole()
+        var borehole = new Borehole
         {
             Id = 2_000_001,
             LocationX = 2626103.1988343936,
@@ -183,12 +190,16 @@ public class LocationControllerTest
             Country = null,
             Canton = "South Dakota",
             Municipality = "Lake Chayamouth",
-        });
+        };
+        context.Boreholes.Add(borehole);
+        context.SaveChanges();
+
+        return borehole;
     }
 
     private Borehole CreateBoreholeWithMissingSourceCoordinates()
     {
-        return context.AddNewBoreholeToContext(new Borehole()
+        var borehole = new Borehole
         {
             Id = 2_000_002,
             LocationX = null,
@@ -200,7 +211,11 @@ public class LocationControllerTest
             Country = "British Indian Ocean Territory (Chagos Archipelago)",
             Canton = "South Dakota",
             Municipality = "Lake Chayamouth",
-        });
+        };
+        context.Boreholes.Add(borehole);
+        context.SaveChanges();
+
+        return borehole;
     }
 
     private void AssertUnchanged(Borehole initialBohrung)
