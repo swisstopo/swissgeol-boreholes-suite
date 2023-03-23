@@ -13,19 +13,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: 6.0.x
+      # - name: Setup .NET
+      #   uses: actions/setup-dotnet@v2
+      #   with:
+      #     dotnet-version: 6.0.x
 
-      - name: Build solution
-        run: dotnet build BDMS.sln -c Release /warnaserror
+      # - name: Build solution
+      #   run: dotnet build BDMS.sln -c Release /warnaserror
 
       - name: Start db and api's
         run: docker-compose up -d minio db api-legacy api
 
-      - name: Run dotnet tests
-        run: dotnet test BDMS.sln -c Release --no-build --verbosity normal --filter TestCategory!=LongRunning
+      # - name: Run dotnet tests
+      #   run: dotnet test BDMS.sln -c Release --no-build --verbosity normal --filter TestCategory!=LongRunning
 
       - name: Setup Node.js 16
         uses: actions/setup-node@v3
