@@ -46,6 +46,7 @@ jobs:
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
           working-directory: ./src/client
+          spec: cypress/e2e/editor/instrumentation.cy.js
           config: screenshotOnRunFailure=false
         env:
           REACT_APP_VERSION: 0.0.99+dev
