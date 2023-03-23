@@ -44,7 +44,7 @@ describe("Instrumentation tests", () => {
     cy.contains("a", "Stop editing").click();
   });
 
-  it.only("Can add and delete instrument without completion", () => {
+  it("Can add and delete instrument without completion", () => {
     cy.contains("a", "Start editing").click();
 
     // Header should not contain tabs
