@@ -31,7 +31,8 @@ internal static class Helpers
     internal static void ResetChangesInContext(this BdmsContext bdmsContext)
     {
         var changedEntries = bdmsContext.ChangeTracker.Entries()
-                .Where(x => x.State != EntityState.Unchanged).ToList();
+            .Where(x => x.State != EntityState.Unchanged)
+            .ToList();
 
         foreach (var entry in changedEntries)
         {
