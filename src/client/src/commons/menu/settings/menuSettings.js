@@ -26,18 +26,13 @@ const MenuSettings = props => {
         history={history}
         icon="binoculars"
       />
-
-      {props.user.data !== null && props.user.data.roles.indexOf("EDIT") >= 0 && (
-        <>
-          <ListItem
-            path="/setting/editor"
-            name="Editor"
-            location={location}
-            history={history}
-            icon="edit"
-          />
-        </>
-      )}
+      <ListItem
+        path="/setting/editor"
+        name="Editor"
+        location={location}
+        history={history}
+        icon="edit"
+      />
 
       {props.user.data.admin === true && (
         <>

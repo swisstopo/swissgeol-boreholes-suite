@@ -26,6 +26,7 @@
 - Migrate chronostratigraphy _Middle Jurassic undifferenciated_ to _Middle Jurassic_.
 - Remove height reference system column from editor view list.
 - Remove import settings from administrator settings.
+- Enable editor mode settings for all user types.
 
 ### Fixed
 
