@@ -1,4 +1,4 @@
-import { login } from "../e2e/testHelpers";
+import { login, loginAsViewer } from "../e2e/testHelpers";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
@@ -37,8 +37,18 @@ describe("Search filter tests", () => {
       });
   });
 
-  it("shows 'fiter by map' in editor on 'Large Map' appearance", () => {
-    login("/setting/explorer");
+  it.only("shows 'fiter by map' in editor on 'Large Map' appearance", () => {
+    loginAsViewer("/setting/editor");
+
+    // Check if Editor mode settings are apparant
+    cy.contains("Location filters");
+
+    // Switch to Viewer mode settings
+    cy.get("i[class='th big icon']").click();
+    cy.contains("h4", "Settings").click();
+    cy.contains("h3", "Viewer").click();
+
+    // Chanage Appearance settings
     cy.contains("Appearance").click();
     cy.contains("Large Map").children(".checkbox").click();
     cy.get('[data-cy="menu"]').click();
