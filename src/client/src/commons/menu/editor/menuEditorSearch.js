@@ -212,22 +212,22 @@ class MenuEditorSearch extends React.Component {
                   overflow: "auto",
                   whiteSpace: "nowrap",
                 }}>
-                id_geodin_shortname; id_info_geol; id_original;
-                id_canton;id_geo_quat;id_geo_mol;id_geo_therm; id_top_fels;
-                id_geodin; original_name; project_name; alternate_name;
-                restriction_id; restriction_until; municipality; canton;
-                country; original_reference_system; location_x_lv_95;
-                location_y_lv_95; location_x_lv_03; location_y_lv_03;
-                qt_location_id; elevation_z; qt_elevation_id;
-                reference_elevation; reference_elevation_type_id;
-                qt_reference_elevation_id; hrs_id; kind_id; drilling_date;
-                drilling_diameter; drilling_method_id; purpose_id; spud_date;
-                cuttings_id; status_id; inclination; inclination_direction;
-                qt_inclination_direction_id; remarks; total_depth; qt_depth_id;
-                total_depth_tvd; qt_total_depth_tvd_id; top_bedrock;
-                qt_top_bedrock_id; top_bedrock_tvd; qt_top_bedrock_tvd_id;
-                has_groundwater; lithology_top_bedrock_id;
-                chronostratigraphy_id; lithostratigraphy_id;
+                {"id_geodin_shortname;id_info_geol;id_original;" +
+                  "id_canton;id_geo_quat;id_geo_mol;id_geo_therm;id_top_fels;" +
+                  "id_geodin;original_name;project_name;alternate_name;" +
+                  "restriction_id;restriction_until;municipality;canton;" +
+                  "country;original_reference_system;location_x_lv_95;" +
+                  "location_y_lv_95;location_x_lv_03;location_y_lv_03;" +
+                  "qt_location_id;elevation_z;qt_elevation_id;" +
+                  "reference_elevation;reference_elevation_type_id;" +
+                  "qt_reference_elevation_id;hrs_id;kind_id;drilling_date;" +
+                  "drilling_diameter;drilling_method_id;purpose_id;spud_date;" +
+                  "cuttings_id;status_id;inclination;inclination_direction;" +
+                  "qt_inclination_direction_id;remarks;total_depth;qt_depth_id;" +
+                  "total_depth_tvd;qt_total_depth_tvd_id;top_bedrock;" +
+                  "qt_top_bedrock_id;top_bedrock_tvd;qt_top_bedrock_tvd_id;" +
+                  "has_groundwater;lithology_top_bedrock_id;" +
+                  "chronostratigraphy_id;lithostratigraphy_id;"}
               </div>
               <span
                 style={{
