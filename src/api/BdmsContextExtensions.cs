@@ -127,7 +127,6 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.HrsId, f => f.PickRandom(hrsIds).OrNull(f, .1f))
            .RuleFor(o => o.Hrs, _ => default!)
            .RuleFor(o => o.TotalDepth, f => f.Random.Double(0, 2000))
-           .RuleFor(o => o.Date, f => f.Date.Past().ToUniversalTime())
            .RuleFor(o => o.RestrictionId, f => f.PickRandom(restrictionIds).OrNull(f, .5f))
            .RuleFor(o => o.Restriction, _ => default!)
            .RuleFor(o => o.RestrictionUntil, f => DateOnly.FromDateTime(f.Date.Future()).OrNull(f, .9f))

@@ -14,11 +14,18 @@ namespace BDMS;
 [TestClass]
 public class LocationControllerTest
 {
+    private const int BoreholeWithAllLocationAttributesId = 2_000_000;
+    private const int BoreholeBoreholeWithMissingLocationAttributesId = 2_000_001;
+    private const int BoreholeBoreholeWithMissingSourceCoordinatesId = 2_000_002;
+
     private BdmsContext context;
     private LocationController controller;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
     private Mock<ILogger<LocationController>> loggerMock;
     private Mock<ILogger<LocationService>> loggerLocationServiceMock;
+
+    private int boreholeCount;
+    private List<int> boreholeIds = new List<int> { BoreholeWithAllLocationAttributesId, BoreholeBoreholeWithMissingLocationAttributesId, BoreholeBoreholeWithMissingSourceCoordinatesId };
 
     [TestInitialize]
     public void TestInitialize()
@@ -30,11 +37,23 @@ public class LocationControllerTest
         var service = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
 
         controller = new LocationController(context, loggerMock.Object, service);
+
+        boreholeCount = context.Boreholes.Count();
     }
 
     [TestCleanup]
     public async Task TestCleanup()
     {
+        // Revert any changes in the ChangeTracker made by the coordinate migration
+        context.ResetChangesInContext();
+
+        // Remove created Boreholes
+        context.Boreholes.Where(b => boreholeIds.Contains(b.Id)).ToList().ForEach(borehole =>
+            context.Boreholes.Remove(borehole));
+        context.SaveChanges();
+
+        Assert.AreEqual(boreholeCount, context.Boreholes.Count(), "Tests need to remove boreholes, they created.");
+
         await context.DisposeAsync();
         httpClientFactoryMock.Verify();
         loggerMock.Verify();
@@ -43,28 +62,57 @@ public class LocationControllerTest
     [TestMethod]
     public async Task MigrateLocations()
     {
-        await AssertMigrateLocationAsync(onlyMissing: false, 8098, () =>
+        Borehole? boreholeWithAllLocationAttributes = null;
+        Borehole? boreholeWithMissingLocationAttributes = null;
+        Borehole? boreholeWithMissingSourceCoordinates = null;
+
+        boreholeWithAllLocationAttributes = CreateBoreholeWithAllLocationAttributes();
+        boreholeWithMissingLocationAttributes = CreateBoreholeWithMissingLocationAttributes();
+        boreholeWithMissingSourceCoordinates = CreateBoreholeWithMissingSourceCoordinates();
+
+        // Count all boreholes with set source location
+        var boreholesWithSetSourceCoordinates = context.Boreholes.Where(b =>
+            (b.OriginalReferenceSystem == ReferenceSystem.LV95 && (b.LocationX != null && b.LocationY != null)) ||
+            (b.OriginalReferenceSystem == ReferenceSystem.LV03 && (b.LocationXLV03 != null && b.LocationYLV03 != null))).Count();
+
+        await AssertMigrateLocationAsync(onlyMissing: false, boreholesWithSetSourceCoordinates, 10003, () =>
         {
-            AssertBohrungAndyLang();
-            AssertBohrungByronWest();
-            AssertUnchangedBohrungTashaWalsh();
+            AssertBoreholeWithAllLocationAttributes(boreholeWithAllLocationAttributes);
+            AssertBoreholeWithMissingLocationAttributes(boreholeWithMissingLocationAttributes);
+            AssertUnchanged(boreholeWithMissingSourceCoordinates);
         });
     }
 
     [TestMethod]
     public async Task MigrateLocationsWithMissingLocationsOnly()
     {
-        await AssertMigrateLocationAsync(onlyMissing: true, 254, () =>
+        Borehole? boreholeWithAllLocationAttributes = null;
+        Borehole? boreholeWithMissingLocationAttributes = null;
+        Borehole? boreholeWithMissingSourceCoordinates = null;
+
+        boreholeWithAllLocationAttributes = CreateBoreholeWithAllLocationAttributes();
+        boreholeWithMissingLocationAttributes = CreateBoreholeWithMissingLocationAttributes();
+        boreholeWithMissingSourceCoordinates = CreateBoreholeWithMissingSourceCoordinates();
+
+        // Count all boreholes with set source coordinates and missing location attributes
+        var boreholesWithMissingLocationAttributes = context.Boreholes.Where(b =>
+            ((b.OriginalReferenceSystem == ReferenceSystem.LV95 && (b.LocationX != null && b.LocationY != null)) ||
+            (b.OriginalReferenceSystem == ReferenceSystem.LV03 && (b.LocationXLV03 != null && b.LocationYLV03 != null)))
+            &&
+            (string.IsNullOrWhiteSpace(b.Country) || string.IsNullOrWhiteSpace(b.Canton) || string.IsNullOrWhiteSpace(b.Municipality)))
+            .Count();
+
+        await AssertMigrateLocationAsync(onlyMissing: true, boreholesWithMissingLocationAttributes, 10003, () =>
         {
-            AssertBohrungAndyLang();
-            AssertUnchangedBohrungByronWest();
-            AssertUnchangedBohrungTashaWalsh();
+            AssertUnchanged(boreholeWithAllLocationAttributes);
+            AssertBoreholeWithMissingLocationAttributes(boreholeWithMissingLocationAttributes);
+            AssertUnchanged(boreholeWithMissingSourceCoordinates);
         });
     }
 
-    private async Task AssertMigrateLocationAsync(bool onlyMissing, int updatedBoreholesCount, Action asserter = default)
+    private async Task AssertMigrateLocationAsync(bool onlyMissing, int updatedBoreholesCount, int expectedTotalBoreholeCount, Action asserter = default)
     {
-        Assert.AreEqual(10000, context.Boreholes.Count());
+        Assert.AreEqual(expectedTotalBoreholeCount, context.Boreholes.Count());
 
         var jsonResponse = () => JsonContent.Create(new
         {
@@ -95,43 +143,99 @@ public class LocationControllerTest
         Assert.AreEqual($"{{ updatedBoreholes = {updatedBoreholesCount}, onlyMissing = {onlyMissing}, dryRun = True, success = True }}", result.Value.ToString());
     }
 
-    private void AssertBohrungByronWest()
+    private Borehole CreateBoreholeWithAllLocationAttributes()
     {
-        var bohrung = context.Boreholes.Single(b => b.Id == 1000039);
-        Assert.AreEqual("Byron_West", bohrung.AlternateName);
-        Assert.AreEqual(ReferenceSystem.LV95, bohrung.OriginalReferenceSystem);
-        Assert.AreEqual("RAGETRINITY", bohrung.Country);
-        Assert.AreEqual("SLEEPYMONKEY", bohrung.Canton);
-        Assert.AreEqual("REDSOURCE", bohrung.Municipality);
+        var borehole = new Borehole
+        {
+            Id = BoreholeWithAllLocationAttributesId,
+            LocationX = 2626103.1988343936,
+            LocationY = 1125366.3469565178,
+            LocationXLV03 = null,
+            LocationYLV03 = 78390.10392298926,
+            OriginalReferenceSystem = ReferenceSystem.LV95,
+            AlternateName = "Byron_West",
+            Country = "Northern Mariana Islands",
+            Canton = "South Dakota",
+            Municipality = "Lake Chayamouth",
+        };
+        context.Boreholes.Add(borehole);
+        context.SaveChanges();
+
+        return borehole;
     }
 
-    private void AssertUnchangedBohrungByronWest()
+    private Borehole CreateBoreholeWithMissingLocationAttributes()
     {
-        var bohrung = context.Boreholes.Single(b => b.Id == 1000039);
-        Assert.AreEqual("Byron_West", bohrung.AlternateName);
-        Assert.AreEqual(ReferenceSystem.LV95, bohrung.OriginalReferenceSystem);
-        Assert.AreEqual("Northern Mariana Islands", bohrung.Country);
-        Assert.AreEqual("South Dakota", bohrung.Canton);
-        Assert.AreEqual("Lake Chayamouth", bohrung.Municipality);
+        var borehole = new Borehole
+        {
+            Id = 2_000_001,
+            LocationX = 2626103.1988343936,
+            LocationY = 1125366.3469565178,
+            LocationXLV03 = 741929.5530394556,
+            LocationYLV03 = 78390.10392298926,
+            OriginalReferenceSystem = ReferenceSystem.LV95,
+            AlternateName = "Andy.Lang",
+            Country = null,
+            Canton = "South Dakota",
+            Municipality = "Lake Chayamouth",
+        };
+        context.Boreholes.Add(borehole);
+        context.SaveChanges();
+
+        return borehole;
     }
 
-    private void AssertUnchangedBohrungTashaWalsh()
+    private Borehole CreateBoreholeWithMissingSourceCoordinates()
     {
-        var bohrung = context.Boreholes.Single(b => b.Id == 1000029);
-        Assert.AreEqual("Tasha.Walsh", bohrung.AlternateName);
-        Assert.AreEqual(ReferenceSystem.LV95, bohrung.OriginalReferenceSystem);
-        Assert.AreEqual("British Indian Ocean Territory (Chagos Archipelago)", bohrung.Country);
-        Assert.AreEqual("North Carolina", bohrung.Canton);
-        Assert.AreEqual("New Nathen", bohrung.Municipality);
+        var borehole = new Borehole
+        {
+            Id = 2_000_002,
+            LocationX = null,
+            LocationY = 1125366.3469565178,
+            LocationXLV03 = 741929.5530394556,
+            LocationYLV03 = 78390.10392298926,
+            OriginalReferenceSystem = ReferenceSystem.LV95,
+            AlternateName = "Tasha.Walsh",
+            Country = "British Indian Ocean Territory (Chagos Archipelago)",
+            Canton = "South Dakota",
+            Municipality = "Lake Chayamouth",
+        };
+        context.Boreholes.Add(borehole);
+        context.SaveChanges();
+
+        return borehole;
     }
 
-    private void AssertBohrungAndyLang()
+    private void AssertUnchanged(Borehole initialBohrung)
     {
-        var bohrung = context.Boreholes.Single(b => b.Id == 1000115);
-        Assert.AreEqual("Andy.Lang", bohrung.AlternateName);
-        Assert.AreEqual(ReferenceSystem.LV95, bohrung.OriginalReferenceSystem);
-        Assert.AreEqual("RAGETRINITY", bohrung.Country);
-        Assert.AreEqual("SLEEPYMONKEY", bohrung.Canton);
-        Assert.AreEqual("REDSOURCE", bohrung.Municipality);
+        var editierteBohrung = context.Boreholes.Single(b => b.Id == initialBohrung.Id);
+        Assert.AreEqual(initialBohrung.AlternateName, editierteBohrung.AlternateName);
+        Assert.AreEqual(initialBohrung.OriginalReferenceSystem, editierteBohrung.OriginalReferenceSystem);
+        Assert.AreEqual(initialBohrung.LocationX, editierteBohrung.LocationX);
+        Assert.AreEqual(initialBohrung.LocationY, editierteBohrung.LocationY);
+        Assert.AreEqual(initialBohrung.LocationXLV03, editierteBohrung.LocationXLV03);
+        Assert.AreEqual(initialBohrung.Country, editierteBohrung.Country);
+        Assert.AreEqual(initialBohrung.Canton, editierteBohrung.Canton);
+        Assert.AreEqual(initialBohrung.Municipality, editierteBohrung.Municipality);
+    }
+
+    private void AssertBoreholeWithAllLocationAttributes(Borehole initialBohrung)
+    {
+        var editierteBohrung = context.Boreholes.Single(b => b.Id == initialBohrung.Id);
+        Assert.AreEqual("Byron_West", editierteBohrung.AlternateName);
+        Assert.AreEqual(ReferenceSystem.LV95, editierteBohrung.OriginalReferenceSystem);
+        Assert.AreEqual("RAGETRINITY", editierteBohrung.Country);
+        Assert.AreEqual("SLEEPYMONKEY", editierteBohrung.Canton);
+        Assert.AreEqual("REDSOURCE", editierteBohrung.Municipality);
+    }
+
+    private void AssertBoreholeWithMissingLocationAttributes(Borehole initialBohrung)
+    {
+        var editierteBohrung = context.Boreholes.Single(b => b.Id == initialBohrung.Id);
+        Assert.AreEqual("Andy.Lang", editierteBohrung.AlternateName);
+        Assert.AreEqual(ReferenceSystem.LV95, editierteBohrung.OriginalReferenceSystem);
+        Assert.AreEqual("RAGETRINITY", editierteBohrung.Country);
+        Assert.AreEqual("SLEEPYMONKEY", editierteBohrung.Canton);
+        Assert.AreEqual("REDSOURCE", editierteBohrung.Municipality);
     }
 }

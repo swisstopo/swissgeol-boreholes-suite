@@ -214,7 +214,7 @@ class MenuEditorSearch extends React.Component {
                 }}>
                 id_geodin_shortname; id_info_geol; id_original;
                 id_canton;id_geo_quat;id_geo_mol;id_geo_therm; id_top_fels;
-                id_geodin; original_name; project_name; alternate_name; date;
+                id_geodin; original_name; project_name; alternate_name;
                 restriction_id; restriction_until; municipality; canton;
                 country; original_reference_system; location_x_lv_95;
                 location_y_lv_95; location_x_lv_03; location_y_lv_03;

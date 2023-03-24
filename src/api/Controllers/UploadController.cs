@@ -172,16 +172,6 @@ public class UploadController : ControllerBase
 
                 return boreholeCodelists;
             });
-            Map(b => b.Date).Name("date").Convert(args =>
-            {
-                string? dateString = args.Row.GetField<string>("date");
-                if (DateTime.TryParse(dateString, swissCulture, DateTimeStyles.None, out DateTime date))
-                {
-                    return date.ToUniversalTime();
-                }
-
-                return null;
-            });
         }
     }
 
