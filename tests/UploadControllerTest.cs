@@ -135,6 +135,30 @@ public class UploadControllerTest
     }
 
     [TestMethod]
+    [DeploymentItem("special_chars_testdata.csv")]
+    public async Task UploadShouldSaveSpecialCharsDatasetAsync()
+    {
+        var csvFile = "special_chars_testdata.csv";
+
+        byte[] fileBytes = File.ReadAllBytes(csvFile);
+        using var stream = new MemoryStream(fileBytes);
+
+        var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
+
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(1, okResult.Value);
+
+        // Assert imported values
+        var borehole = context.Boreholes.OrderByDescending(b => b.Id).FirstOrDefault();
+        Assert.AreEqual(1, borehole.WorkgroupId);
+        Assert.AreEqual("Unit_Test_special_chars_1", borehole.OriginalName);
+        Assert.AreEqual("„ÖÄÜöäü-*#%&7{}[]()='~^><\\@¦+Š", borehole.ProjectName);
+    }
+
+    [TestMethod]
     public async Task UploadEmptyFileShouldReturnError()
     {
         var file = new FormFile(null, 0, 0, "nonexistant_file.csv", "text/csv");
