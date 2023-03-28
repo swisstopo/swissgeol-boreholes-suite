@@ -8,6 +8,7 @@
 - Added functionality to scroll to newly created lithology layer.
 - Add separate panel to edit chronostratigraphy layers.
 - Add minimal csv-import for boreholes.
+- Add test to ensure special chars are stored correctly
 
 ### Changed
 
