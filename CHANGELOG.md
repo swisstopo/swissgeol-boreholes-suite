@@ -27,6 +27,8 @@
 - Remove height reference system column from editor view list.
 - Remove import settings from administrator settings.
 - Enable editor mode settings for all user types.
+- Replace csv import coordinates related columns by _`location_x`_ and _`location_y`_.
+- Auto detect the provided coordinate reference system in the csv import and calculate the coordinates for the not provided reference system. 
 
 ### Fixed
 
