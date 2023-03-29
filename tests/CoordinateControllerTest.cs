@@ -36,7 +36,10 @@ public class CoordinateControllerTest
         loggerMock = new Mock<ILogger<CoordinateController>>();
         httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
 
-        controller = new CoordinateController(context, httpClientFactoryMock.Object, loggerMock.Object);
+        var loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>();
+        var coordinateService = new CoordinateService(loggerCoordinateServiceMock.Object, httpClientFactoryMock.Object);
+
+        controller = new CoordinateController(context, loggerMock.Object, coordinateService);
 
         boreholeCount = context.Boreholes.Count();
     }
@@ -119,21 +122,11 @@ public class CoordinateControllerTest
         });
     }
 
-    [TestMethod]
-    public void GetDecimalPlaces()
-    {
-        Assert.AreEqual(3, CoordinateController.GetDecimalPlaces(1.123));
-        Assert.AreEqual(6, CoordinateController.GetDecimalPlaces(100.123456));
-        Assert.AreEqual(2, CoordinateController.GetDecimalPlaces(1.01));
-        Assert.AreEqual(0, CoordinateController.GetDecimalPlaces(100));
-    }
-
     private async Task AssertMigrateCoordinatesAsync(bool onlyMissing, int transformedCoordinatesCount, int expectedTotalBoreholeCount, Action asserter = default)
     {
         Assert.AreEqual(expectedTotalBoreholeCount, context.Boreholes.Count());
 
-        var httpClient = new HttpClient(httpMessageHandler.Object);
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(httpClient).Verifiable();
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(() => new HttpClient(httpMessageHandler.Object)).Verifiable();
 
         var jsonContent = () => JsonContent.Create(new { easting = "9876.543543543543543", northing = "1234.56235623562356235623" });
         httpMessageHandler.Protected()

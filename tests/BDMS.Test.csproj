@@ -41,6 +41,9 @@
     <None Update="special_chars_testdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="various_coordinates_testdata.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="testdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
