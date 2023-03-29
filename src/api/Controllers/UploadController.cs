@@ -6,7 +6,6 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Geometries;
 using System.Globalization;
 using System.Security.Claims;
 
@@ -19,14 +18,16 @@ public class UploadController : ControllerBase
     private readonly BdmsContext context;
     private readonly ILogger logger;
     private readonly LocationService locationService;
+    private readonly CoordinateService coordinateService;
     private readonly int sridLv95 = 2056;
     private readonly int sridLv03 = 21781;
 
-    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService)
+    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService)
     {
         this.context = context;
         this.logger = logger;
         this.locationService = locationService;
+        this.coordinateService = coordinateService;
     }
 
     /// <summary>
@@ -75,6 +76,9 @@ public class UploadController : ControllerBase
                         Started = DateTime.Now.ToUniversalTime(),
                         Finished = null,
                     });
+
+                // Set coordinates for missing reference system.
+                await coordinateService.MigrateCoordinatesOfBorehole(borehole, false).ConfigureAwait(false);
             }
 
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
@@ -115,9 +119,6 @@ public class UploadController : ControllerBase
 
         if (locationX == null || locationY == null) return;
 
-        var coordinate = new Coordinate((double)locationX, (double)locationY);
-        borehole.Geometry = new Point(coordinate) { SRID = srid };
-
         var locationInfo = await locationService.IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
         if (locationInfo != null)
         {
@@ -142,6 +143,8 @@ public class UploadController : ControllerBase
             AutoMap(config);
             Map(b => b.LocationX).Name("location_x_lv_95");
             Map(b => b.LocationY).Name("location_y_lv_95");
+            Map(b => b.LocationXLV03).Name("location_x_lv_03");
+            Map(b => b.LocationYLV03).Name("location_y_lv_03");
             Map(m => m.BoreholeCodelists).Convert(args =>
             {
                 var boreholeCodelists = new List<BoreholeCodelist>();
