@@ -191,7 +191,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
-        Assert.AreEqual(5, okResult.Value);
+        Assert.AreEqual(6, okResult.Value);
 
         // Assert imported values
         var borehole = context.Boreholes.First(b => b.OriginalName != null && b.OriginalName.Contains("LV95 - All coordinates set"));
@@ -245,6 +245,17 @@ public class UploadControllerTest
         Assert.AreEqual(543280, borehole.LocationXLV03);
         Assert.AreEqual(null, borehole.LocationYLV03);
         Assert.IsNull(borehole.Geometry);
+        Assert.IsNull(borehole.Canton);
+        Assert.IsNull(borehole.Country);
+        Assert.IsNull(borehole.Municipality);
+
+        borehole = context.Boreholes.First(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - LV03 x out of range"));
+        Assert.AreEqual(ReferenceSystem.LV03, borehole.OriginalReferenceSystem);
+        Assert.AreEqual(2999999, borehole.LocationX);
+        Assert.AreEqual(1, borehole.LocationY);
+        Assert.AreEqual(999999, borehole.LocationXLV03);
+        Assert.AreEqual(-999999, borehole.LocationYLV03);
+        Assert.AreEqual("POINT (2999999 1)", borehole.Geometry.ToString());
         Assert.IsNull(borehole.Canton);
         Assert.IsNull(borehole.Country);
         Assert.IsNull(borehole.Municipality);
