@@ -14,6 +14,7 @@ namespace BDMS;
 [TestClass]
 public class UploadControllerTest
 {
+    private const int MaxBoreholeSeedId = 1009999;
     private BdmsContext context;
     private UploadController controller;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
@@ -36,7 +37,7 @@ public class UploadControllerTest
     public async Task TestCleanup()
     {
         // Remove boreholes that were uploaded.
-        var addedBoreholes = context.Boreholes.Where(b => b.OriginalName.Contains("Unit_Test_"));
+        var addedBoreholes = context.Boreholes.Where(b => b.Id > MaxBoreholeSeedId);
         var addedWorkflows = context.Workflows.Where(w => addedBoreholes.Select(b => b.Id).Contains(w.BoreholeId));
         context.Boreholes.RemoveRange(addedBoreholes);
         context.Workflows.RemoveRange(addedWorkflows);
@@ -154,5 +155,30 @@ public class UploadControllerTest
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
         Assert.AreEqual("No file uploaded.", badRequestResult.Value);
+    }
+
+    [TestMethod]
+    [DeploymentItem("borehole_and_location_data.csv")]
+    public async Task UploadShouldIgnoreLocationFields()
+    {
+        var csvFile = "borehole_and_location_data.csv";
+
+        byte[] fileBytes = File.ReadAllBytes(csvFile);
+        using var stream = new MemoryStream(fileBytes);
+
+        var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
+
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(1, okResult.Value);
+
+        // Assert imported values
+        var borehole = context.Boreholes.Single(b => b.OriginalName == "ACORNFLEA");
+        Assert.AreEqual(null, borehole.Canton);
+        Assert.AreEqual(null, borehole.Country);
+        Assert.AreEqual(null, borehole.Municipality);
+        Assert.AreEqual(null, borehole.Geometry);
     }
 }
