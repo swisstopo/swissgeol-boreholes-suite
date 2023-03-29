@@ -38,6 +38,9 @@
     <None Update="random_testdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="special_chars_testdata.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="testdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
