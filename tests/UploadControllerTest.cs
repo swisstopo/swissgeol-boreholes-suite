@@ -288,6 +288,11 @@ public class UploadControllerTest
     [DeploymentItem("borehole_and_location_data.csv")]
     public async Task UploadShouldIgnoreLocationFields()
     {
+        httpClientFactoryMock
+            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+            .Returns(() => new HttpClient())
+            .Verifiable();
+
         var csvFile = "borehole_and_location_data.csv";
 
         byte[] fileBytes = File.ReadAllBytes(csvFile);
