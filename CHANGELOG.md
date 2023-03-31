@@ -27,6 +27,7 @@
 - Remove height reference system column from editor view list.
 - Remove import settings from administrator settings.
 - Enable editor mode settings for all user types.
+- Changed all db attributes of type _date_ to _timestamp with timezone_.
 
 ### Fixed
 
