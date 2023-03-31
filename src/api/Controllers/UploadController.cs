@@ -176,6 +176,11 @@ public class UploadController : ControllerBase
 
                 return boreholeCodelists;
             });
+
+            // Ignore properties that get calculated based on x- and y-coordinates.
+            Map(b => b.Municipality).Ignore();
+            Map(b => b.Canton).Ignore();
+            Map(b => b.Country).Ignore();
         }
     }
 
