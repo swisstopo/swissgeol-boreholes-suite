@@ -350,13 +350,13 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Layer"/>'s casing spud date.
     /// </summary>
     [Column("casng_date_spud_lay")]
-    public DateOnly? CasingDateSpud { get; set; }
+    public DateTime? CasingDateSpud { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Layer"/>'s casing finish date.
     /// </summary>
     [Column("casng_date_finish_lay")]
-    public DateOnly? CasingDateFinish { get; set; }
+    public DateTime? CasingDateFinish { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s gradation.

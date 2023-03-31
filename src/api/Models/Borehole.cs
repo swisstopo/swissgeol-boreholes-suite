@@ -142,7 +142,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the timestamp until when a <see cref="Borehole"/> is restricted.
     /// </summary>
     [Column("restriction_until_bho")]
-    public DateOnly? RestrictionUntil { get; set; }
+    public DateTime? RestrictionUntil { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s original name.
@@ -213,7 +213,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the timestamp from the drilling date of the  <see cref="Borehole"/>.
     /// </summary>
     [Column("drilling_date_bho")]
-    public DateOnly? DrillingDate { get; set; }
+    public DateTime? DrillingDate { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s cuttings id.
@@ -360,7 +360,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the timestamp from the spud date of the  <see cref="Borehole"/>.
     /// </summary>
     [Column("spud_date_bho")]
-    public DateOnly? SpudDate { get; set; }
+    public DateTime? SpudDate { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s top bedrock tvd.
