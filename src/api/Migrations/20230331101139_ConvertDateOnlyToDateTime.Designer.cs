@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20230330085230_Change-date-to-datetime")]
-    partial class Changedatetodatetime
+    [Migration("20230331101139_ConvertDateOnlyToDateTime")]
+    partial class ConvertDateOnlyToDateTime
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -63,8 +63,8 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("cuttings_id_cli");
 
-                    b.Property<DateOnly?>("DrillingDate")
-                        .HasColumnType("date")
+                    b.Property<DateTime?>("DrillingDate")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("drilling_date_bho");
 
                     b.Property<double?>("DrillingDiameter")
@@ -207,12 +207,12 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("restriction_id_cli");
 
-                    b.Property<DateOnly?>("RestrictionUntil")
-                        .HasColumnType("date")
+                    b.Property<DateTime?>("RestrictionUntil")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("restriction_until_bho");
 
-                    b.Property<DateOnly?>("SpudDate")
-                        .HasColumnType("date")
+                    b.Property<DateTime?>("SpudDate")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("spud_date_bho");
 
                     b.Property<int?>("StatusId")
@@ -776,12 +776,12 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("casng_id");
 
-                    b.Property<DateOnly?>("CasingDateFinish")
-                        .HasColumnType("date")
+                    b.Property<DateTime?>("CasingDateFinish")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("casng_date_finish_lay");
 
-                    b.Property<DateOnly?>("CasingDateSpud")
-                        .HasColumnType("date")
+                    b.Property<DateTime?>("CasingDateSpud")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("casng_date_spud_lay");
 
                     b.Property<double?>("CasingInnerDiameter")
@@ -1112,8 +1112,8 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("casng_id");
 
-                    b.Property<DateOnly?>("CasingDate")
-                        .HasColumnType("date")
+                    b.Property<DateTime?>("CasingDate")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("casng_date_abd_sty");
 
                     b.Property<DateTime?>("Created")
@@ -1124,8 +1124,8 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("author_sty");
 
-                    b.Property<DateOnly?>("Date")
-                        .HasColumnType("date")
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("date_sty");
 
                     b.Property<int?>("FillCasingId")

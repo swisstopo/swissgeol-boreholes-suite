@@ -4,7 +4,7 @@
 
 namespace BDMS.Migrations;
 
-public partial class Changedatetodatetime : Migration
+public partial class ConvertDateOnlyToDateTime : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
     {
