@@ -45,9 +45,6 @@ public class CoordinateController : ControllerBase
         {
             foreach (var borehole in context.Boreholes)
             {
-                // Select the coordinates before migration for later comparisation.
-                var coordinatesBeforeMigration = $"{borehole.LocationX}{borehole.LocationY}{borehole.LocationXLV03}{borehole.LocationYLV03}";
-
                 // Migrate coordinates.
                 var coordinatesDidMigrate = await coordinateService.MigrateCoordinatesOfBorehole(borehole, onlyMissing).ConfigureAwait(false);
 

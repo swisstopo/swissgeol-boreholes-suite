@@ -29,8 +29,8 @@ public class UploadControllerTest
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<UploadController>>();
-        loggerLocationServiceMock = new Mock<ILogger<LocationService>>();
-        loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>();
+        loggerLocationServiceMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
+        loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
         var locationService = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
         var coordinateService = new CoordinateService(loggerCoordinateServiceMock.Object, httpClientFactoryMock.Object);
 
@@ -211,7 +211,7 @@ public class UploadControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.First(b => b.OriginalName != null && b.OriginalName.Contains("LV95 - All coordinates set"));
+        var borehole = context.Boreholes.Single(b => b.OriginalName != null && b.OriginalName.Contains("LV95 - All coordinates set"));
         Assert.AreEqual(ReferenceSystem.LV95, borehole.OriginalReferenceSystem);
         Assert.AreEqual(2631690, borehole.LocationX);
         Assert.AreEqual(1170516, borehole.LocationY);
@@ -245,7 +245,7 @@ public class UploadControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.First(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - All coordinates set"));
+        var borehole = context.Boreholes.Single(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - All coordinates set"));
         Assert.AreEqual(ReferenceSystem.LV03, borehole.OriginalReferenceSystem);
         Assert.AreEqual(2649258.1270818082, borehole.LocationX);
         Assert.AreEqual(1131551.4611465326, borehole.LocationY);
@@ -279,7 +279,7 @@ public class UploadControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.First(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - LV03 x out of range"));
+        var borehole = context.Boreholes.Single(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - LV03 x out of range"));
         Assert.AreEqual(ReferenceSystem.LV03, borehole.OriginalReferenceSystem);
         Assert.AreEqual(2999999, borehole.LocationX);
         Assert.AreEqual(1, borehole.LocationY);

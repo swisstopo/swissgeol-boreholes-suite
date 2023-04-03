@@ -36,7 +36,7 @@ public class CoordinateControllerTest
         loggerMock = new Mock<ILogger<CoordinateController>>();
         httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
 
-        var loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>();
+        var loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
         var coordinateService = new CoordinateService(loggerCoordinateServiceMock.Object, httpClientFactoryMock.Object);
 
         controller = new CoordinateController(context, loggerMock.Object, coordinateService);

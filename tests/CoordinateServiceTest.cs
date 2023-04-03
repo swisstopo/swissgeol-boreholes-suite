@@ -23,7 +23,7 @@ public class CoordinateServiceTest
     {
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
-        loggerMock = new Mock<ILogger<CoordinateService>>();
+        loggerMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
 
         service = new CoordinateService(loggerMock.Object, httpClientFactoryMock.Object);
     }
@@ -55,7 +55,18 @@ public class CoordinateServiceTest
     {
         httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
 
-        var borehole = CreateLV95BoreholeWithAllCoordinatesSet();
+        var borehole = new Borehole
+        {
+            Id = LV95BoreholeWithAllCoordinatesSetId,
+            LocationX = 2626103.1988343936,
+            LocationY = 1125366.3469565178,
+            LocationXLV03 = 765875.1615463407,
+            LocationYLV03 = 78390.10392298926,
+            OriginalReferenceSystem = ReferenceSystem.LV95,
+            AlternateName = "Laurence.Padberg3",
+        };
+        context.Boreholes.Add(borehole);
+        context.SaveChanges();
 
         await service.MigrateCoordinatesOfBorehole(borehole, false);
         context.SaveChanges();
@@ -69,11 +80,22 @@ public class CoordinateServiceTest
     }
 
     [TestMethod]
-    public async Task NotMigrateCoordinatesOfLV95BoreholeWithAllCoordinatesSet()
+    public async Task DoesNotMigrateCoordinatesOfLV95BoreholeWithAllCoordinatesSet()
     {
         httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
 
-        var borehole = CreateLV95BoreholeWithAllCoordinatesSet();
+        var borehole = new Borehole
+        {
+            Id = LV95BoreholeWithAllCoordinatesSetId,
+            LocationX = 2626103.1988343936,
+            LocationY = 1125366.3469565178,
+            LocationXLV03 = 765875.1615463407,
+            LocationYLV03 = 78390.10392298926,
+            OriginalReferenceSystem = ReferenceSystem.LV95,
+            AlternateName = "Laurence.Padberg3",
+        };
+        context.Boreholes.Add(borehole);
+        context.SaveChanges();
 
         // Only calculate missing values.
         await service.MigrateCoordinatesOfBorehole(borehole, true);
@@ -92,57 +114,6 @@ public class CoordinateServiceTest
     {
         httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
 
-        var borehole = CreateLV03BoreholeWithhMissingDestCoordinates();
-
-        await service.MigrateCoordinatesOfBorehole(borehole, false);
-        context.SaveChanges();
-
-        var result = context.Boreholes.FirstOrDefault(b => b.Id == LV03BoreholeWithMissingDestCoordinatesId);
-        Assert.AreEqual(ReferenceSystem.LV03, result.OriginalReferenceSystem);
-        Assert.AreEqual(2655270, result.LocationX);
-        Assert.AreEqual(1297874, result.LocationY);
-        Assert.AreEqual(655269, result.LocationXLV03);
-        Assert.AreEqual(297874, result.LocationYLV03);
-    }
-
-    [TestMethod]
-    public async Task NotMigrateCoordinatesOfLV03BoreholeWithMissingSourceCoordinates()
-    {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
-
-        var borehole = CreateLV03BoreholeWithMissingSourceCoordinates();
-
-        await service.MigrateCoordinatesOfBorehole(borehole, false);
-        context.SaveChanges();
-
-        var result = context.Boreholes.FirstOrDefault(b => b.Id == LV03BoreholeWithMissingSourceCoordinatesId);
-        Assert.AreEqual(ReferenceSystem.LV03, result.OriginalReferenceSystem);
-        Assert.AreEqual(2622479.1608037096, result.LocationX);
-        Assert.AreEqual(1099464.3374982823, result.LocationY);
-        Assert.AreEqual(null, result.LocationXLV03);
-        Assert.AreEqual(224735.18581408318, result.LocationYLV03);
-    }
-
-    private Borehole CreateLV95BoreholeWithAllCoordinatesSet()
-    {
-        var borehole = new Borehole
-        {
-            Id = LV95BoreholeWithAllCoordinatesSetId,
-            LocationX = 2626103.1988343936,
-            LocationY = 1125366.3469565178,
-            LocationXLV03 = 765875.1615463407,
-            LocationYLV03 = 78390.10392298926,
-            OriginalReferenceSystem = ReferenceSystem.LV95,
-            AlternateName = "Laurence.Padberg3",
-        };
-        context.Boreholes.Add(borehole);
-        context.SaveChanges();
-
-        return borehole;
-    }
-
-    private Borehole CreateLV03BoreholeWithhMissingDestCoordinates()
-    {
         var borehole = new Borehole
         {
             Id = LV03BoreholeWithMissingDestCoordinatesId,
@@ -156,11 +127,22 @@ public class CoordinateServiceTest
         context.Boreholes.Add(borehole);
         context.SaveChanges();
 
-        return borehole;
+        await service.MigrateCoordinatesOfBorehole(borehole, false);
+        context.SaveChanges();
+
+        var result = context.Boreholes.FirstOrDefault(b => b.Id == LV03BoreholeWithMissingDestCoordinatesId);
+        Assert.AreEqual(ReferenceSystem.LV03, result.OriginalReferenceSystem);
+        Assert.AreEqual(2655270, result.LocationX);
+        Assert.AreEqual(1297874, result.LocationY);
+        Assert.AreEqual(655269, result.LocationXLV03);
+        Assert.AreEqual(297874, result.LocationYLV03);
     }
 
-    private Borehole CreateLV03BoreholeWithMissingSourceCoordinates()
+    [TestMethod]
+    public async Task DoesNotMigrateCoordinatesOfLV03BoreholeWithMissingSourceCoordinates()
     {
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
+
         var borehole = new Borehole
         {
             Id = LV03BoreholeWithMissingSourceCoordinatesId,
@@ -174,24 +156,14 @@ public class CoordinateServiceTest
         context.Boreholes.Add(borehole);
         context.SaveChanges();
 
-        return borehole;
-    }
-
-    private Borehole CreateLV95BoreholeWithMissingDestCoordinates()
-    {
-        var borehole = new Borehole
-        {
-            Id = LV03BoreholeWithMissingSourceCoordinatesId,
-            LocationX = 2582431.203588229,
-            LocationY = 1189604.098138797,
-            LocationXLV03 = 523204.9377711746,
-            LocationYLV03 = null,
-            OriginalReferenceSystem = ReferenceSystem.LV95,
-            AlternateName = "Sherri.Goodwin99",
-        };
-        context.Boreholes.Add(borehole);
+        await service.MigrateCoordinatesOfBorehole(borehole, false);
         context.SaveChanges();
 
-        return borehole;
+        var result = context.Boreholes.FirstOrDefault(b => b.Id == LV03BoreholeWithMissingSourceCoordinatesId);
+        Assert.AreEqual(ReferenceSystem.LV03, result.OriginalReferenceSystem);
+        Assert.AreEqual(2622479.1608037096, result.LocationX);
+        Assert.AreEqual(1099464.3374982823, result.LocationY);
+        Assert.AreEqual(null, result.LocationXLV03);
+        Assert.AreEqual(224735.18581408318, result.LocationYLV03);
     }
 }
