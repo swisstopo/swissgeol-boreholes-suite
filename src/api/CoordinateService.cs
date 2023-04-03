@@ -38,11 +38,8 @@ public class CoordinateService
     ///
     /// Example:
     /// https://example.com/api/v2/coordinate/migrate?onlymissing=true&dryrun=true
-    ///
-    /// Important:
-    /// In order to use this endpoint, you have to authenticate with an admin user.
     /// ]]>
-    public async Task<Borehole> MigrateCoordinatesOfBorehole(Borehole borehole, bool onlyMissing = true)
+    public async Task<bool> MigrateCoordinatesOfBorehole(Borehole borehole, bool onlyMissing = true)
     {
         var httpClient = httpClientFactory.CreateClient(nameof(CoordinateService));
         httpClient.BaseAddress = new Uri("https://geodesy.geo.admin.ch/reframe/");
@@ -55,8 +52,8 @@ public class CoordinateService
         var setDestinationLocationX = (double x) => transformDirection == Lv95ToLv03 ? borehole.LocationXLV03 = x : borehole.LocationX = x;
         var setDestinationLocationY = (double y) => transformDirection == Lv95ToLv03 ? borehole.LocationYLV03 = y : borehole.LocationY = y;
 
-        if (onlyMissing && destinationLocationX != null && destinationLocationY != null) return borehole;
-        if (sourceLocationX == null || sourceLocationY == null) return borehole;
+        if (onlyMissing && destinationLocationX != null && destinationLocationY != null) return false;
+        if (sourceLocationX == null || sourceLocationY == null) return false;
 
         var reframeOptions = FormattableString.Invariant(
             $"{transformDirection}?easting={sourceLocationX}&northing={sourceLocationY}&format=json");
@@ -73,7 +70,7 @@ public class CoordinateService
         // Update geometry (using LV95 coordinates)
         borehole.Geometry = new Point(borehole.LocationX!.Value, borehole.LocationY!.Value) { SRID = 2056 };
 
-        return borehole;
+        return true;
     }
 
     /// <summary>

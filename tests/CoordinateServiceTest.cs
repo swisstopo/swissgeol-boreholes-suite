@@ -44,10 +44,10 @@ public class CoordinateServiceTest
     [TestMethod]
     public void GetDecimalPlaces()
     {
-        Assert.AreEqual(3, CoordinateService.GetDecimalPlaces(1.123));
-        Assert.AreEqual(6, CoordinateService.GetDecimalPlaces(100.123456));
-        Assert.AreEqual(2, CoordinateService.GetDecimalPlaces(1.01));
-        Assert.AreEqual(0, CoordinateService.GetDecimalPlaces(100));
+        Assert.AreEqual(3, CoordinateService.GetDecimalPlaces(1234567.123));
+        Assert.AreEqual(6, CoordinateService.GetDecimalPlaces(100000.123456));
+        Assert.AreEqual(2, CoordinateService.GetDecimalPlaces(10000000.01));
+        Assert.AreEqual(0, CoordinateService.GetDecimalPlaces(1000000));
     }
 
     [TestMethod]
@@ -57,7 +57,7 @@ public class CoordinateServiceTest
 
         var borehole = CreateLV95BoreholeWithAllCoordinatesSet();
 
-        borehole = await service.MigrateCoordinatesOfBorehole(borehole, false);
+        await service.MigrateCoordinatesOfBorehole(borehole, false);
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV95BoreholeWithAllCoordinatesSetId);
@@ -75,8 +75,8 @@ public class CoordinateServiceTest
 
         var borehole = CreateLV95BoreholeWithAllCoordinatesSet();
 
-        // Only calculate misssing values.
-        borehole = await service.MigrateCoordinatesOfBorehole(borehole, true);
+        // Only calculate missing values.
+        await service.MigrateCoordinatesOfBorehole(borehole, true);
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV95BoreholeWithAllCoordinatesSetId);
@@ -94,7 +94,7 @@ public class CoordinateServiceTest
 
         var borehole = CreateLV03BoreholeWithhMissingDestCoordinates();
 
-        borehole = await service.MigrateCoordinatesOfBorehole(borehole, false);
+        await service.MigrateCoordinatesOfBorehole(borehole, false);
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV03BoreholeWithMissingDestCoordinatesId);
@@ -112,7 +112,7 @@ public class CoordinateServiceTest
 
         var borehole = CreateLV03BoreholeWithMissingSourceCoordinates();
 
-        borehole = await service.MigrateCoordinatesOfBorehole(borehole, false);
+        await service.MigrateCoordinatesOfBorehole(borehole, false);
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV03BoreholeWithMissingSourceCoordinatesId);

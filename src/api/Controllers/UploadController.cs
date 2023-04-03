@@ -65,7 +65,7 @@ public class UploadController : ControllerBase
             foreach (var borehole in boreholes)
             {
                 // Compute borehole location.
-                await UpdateBoreholeLocation(borehole).ConfigureAwait(false);
+                await UpdateBoreholeLocationAndCoordinates(borehole).ConfigureAwait(false);
 
                 // Add a workflow per borehole.
                 borehole.Workflows.Add(
@@ -76,9 +76,6 @@ public class UploadController : ControllerBase
                         Started = DateTime.Now.ToUniversalTime(),
                         Finished = null,
                     });
-
-                // Set coordinates for missing reference system.
-                await coordinateService.MigrateCoordinatesOfBorehole(borehole, false).ConfigureAwait(false);
             }
 
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
@@ -110,7 +107,7 @@ public class UploadController : ControllerBase
         return csv.GetRecords<Borehole>().ToList();
     }
 
-    private async Task UpdateBoreholeLocation(Borehole borehole)
+    private async Task UpdateBoreholeLocationAndCoordinates(Borehole borehole)
     {
         // Use origin spatial reference system
         var locationX = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
@@ -118,6 +115,9 @@ public class UploadController : ControllerBase
         var srid = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? sridLv95 : sridLv03;
 
         if (locationX == null || locationY == null) return;
+
+        // Set coordinates for missing reference system.
+        await coordinateService.MigrateCoordinatesOfBorehole(borehole, onlyMissing: false).ConfigureAwait(false);
 
         var locationInfo = await locationService.IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
         if (locationInfo != null)

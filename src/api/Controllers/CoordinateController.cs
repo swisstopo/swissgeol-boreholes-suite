@@ -29,6 +29,10 @@ public class CoordinateController : ControllerBase
     /// </summary>
     /// <param name="onlyMissing">Default: true; Indicates whether or not only missing coordinates should be (re-)calculated.</param>
     /// <param name="dryRun">Default: true; Indicates wheter or not changes get written to the database.</param>
+    /// <![CDATA[
+    /// Important:
+    /// In order to use this endpoint, you have to authenticate with an admin user.
+    /// ]]>
     [HttpGet("migrate")]
     public async Task<IActionResult> MigrateAsync(bool onlyMissing = true, bool dryRun = true)
     {
@@ -44,11 +48,14 @@ public class CoordinateController : ControllerBase
                 // Select the coordinates before migration for later comparisation.
                 var coordinatesBeforeMigration = $"{borehole.LocationX}{borehole.LocationY}{borehole.LocationXLV03}{borehole.LocationYLV03}";
 
-                await coordinateService.MigrateCoordinatesOfBorehole(borehole, onlyMissing).ConfigureAwait(false);
+                // Migrate coordinates.
+                var coordinatesDidMigrate = await coordinateService.MigrateCoordinatesOfBorehole(borehole, onlyMissing).ConfigureAwait(false);
 
-                // Compare the coordinates before and after the migartion to count migrated boreholes.
-                if (coordinatesBeforeMigration != $"{borehole.LocationX}{borehole.LocationY}{borehole.LocationXLV03}{borehole.LocationYLV03}")
+                // Count borehole if coordinates did migrate.
+                if (coordinatesDidMigrate)
+                {
                     transformedCoordinates++;
+                }
             }
         }
         catch (Exception ex)
