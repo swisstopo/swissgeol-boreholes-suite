@@ -50,7 +50,7 @@ public class UploadController : ControllerBase
             var boreholes = ReadBoreholesFromCsv(file)
                 .Select(b =>
                 {
-                    // Set DateTiem kidn to UTC, since PSQL type 'timestamp with timezone' requires UTC as DateTime.Kind
+                    // Set DateTiem kind to UTC, since PSQL type 'timestamp with timezone' requires UTC as DateTime.Kind
                     b.SpudDate = b.SpudDate != null ? DateTime.SpecifyKind(b.SpudDate.Value, DateTimeKind.Utc) : null;
                     b.DrillingDate = b.DrillingDate != null ? DateTime.SpecifyKind(b.DrillingDate.Value, DateTimeKind.Utc) : null;
                     b.RestrictionUntil = b.RestrictionUntil != null ? DateTime.SpecifyKind(b.RestrictionUntil.Value, DateTimeKind.Utc) : null;
