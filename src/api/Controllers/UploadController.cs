@@ -147,10 +147,10 @@ public class UploadController : ControllerBase
                 var locationY = args.Row.GetField<double?>("location_y");
                 return locationX == null || locationY == null ? null : locationX >= 2_000_000 ? ReferenceSystem.LV95 : ReferenceSystem.LV03;
             });
-            Map(b => b.LocationX).Convert(args => { return args.Row.GetField<double?>("location_x") >= 2_000_000 ? args.Row.GetField<double?>("location_x") : null; });
-            Map(b => b.LocationY).Convert(args => { return args.Row.GetField<double?>("location_y") >= 1_000_000 ? args.Row.GetField<double?>("location_y") : null; });
-            Map(b => b.LocationXLV03).Convert(args => { return args.Row.GetField<double?>("location_x") < 2_000_000 ? args.Row.GetField<double?>("location_x") : null; });
-            Map(b => b.LocationYLV03).Convert(args => { return args.Row.GetField<double?>("location_y") < 1_000_000 ? args.Row.GetField<double?>("location_y") : null; });
+            Map(b => b.LocationX).Convert(args => args.Row.GetField<double?>("location_x") >= 2_000_000 ? args.Row.GetField<double?>("location_x") : null);
+            Map(b => b.LocationY).Convert(args => args.Row.GetField<double?>("location_y") >= 1_000_000 ? args.Row.GetField<double?>("location_y") : null);
+            Map(b => b.LocationXLV03).Convert(args => args.Row.GetField<double?>("location_x") < 2_000_000 ? args.Row.GetField<double?>("location_x") : null);
+            Map(b => b.LocationYLV03).Convert(args => args.Row.GetField<double?>("location_y") < 1_000_000 ? args.Row.GetField<double?>("location_y") : null);
             Map(m => m.BoreholeCodelists).Convert(args =>
             {
                 var boreholeCodelists = new List<BoreholeCodelist>();
