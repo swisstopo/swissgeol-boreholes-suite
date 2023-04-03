@@ -32,22 +32,34 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="minimal_testdata.csv">
+    <None Update="TestData\minimal_testdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="random_testdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="special_chars_testdata.csv">
+    <None Update="TestData\special_chars_testdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="various_coordinates_testdata.csv">
+    <None Update="TestData\lv03_out_of_range_coordinates_provided_testdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="testdata.csv">
+    <None Update="TestData\lv03_coordinates_provided_testdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="borehole_and_location_data.csv">
+    <None Update="TestData\lv95_only_one_coordinate_provided_testdata.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\lv95_coordinates_provided_testdata.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\no_coordinates_provided_testdata.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\testdata.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\borehole_and_location_data.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
