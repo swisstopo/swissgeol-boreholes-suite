@@ -6,7 +6,6 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Geometries;
 using System.Globalization;
 using System.Security.Claims;
 
@@ -19,14 +18,16 @@ public class UploadController : ControllerBase
     private readonly BdmsContext context;
     private readonly ILogger logger;
     private readonly LocationService locationService;
+    private readonly CoordinateService coordinateService;
     private readonly int sridLv95 = 2056;
     private readonly int sridLv03 = 21781;
 
-    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService)
+    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService)
     {
         this.context = context;
         this.logger = logger;
         this.locationService = locationService;
+        this.coordinateService = coordinateService;
     }
 
     /// <summary>
@@ -68,7 +69,7 @@ public class UploadController : ControllerBase
             foreach (var borehole in boreholes)
             {
                 // Compute borehole location.
-                await UpdateBoreholeLocation(borehole).ConfigureAwait(false);
+                await UpdateBoreholeLocationAndCoordinates(borehole).ConfigureAwait(false);
 
                 // Add a workflow per borehole.
                 borehole.Workflows.Add(
@@ -110,7 +111,7 @@ public class UploadController : ControllerBase
         return csv.GetRecords<Borehole>().ToList();
     }
 
-    private async Task UpdateBoreholeLocation(Borehole borehole)
+    private async Task UpdateBoreholeLocationAndCoordinates(Borehole borehole)
     {
         // Use origin spatial reference system
         var locationX = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
@@ -119,8 +120,8 @@ public class UploadController : ControllerBase
 
         if (locationX == null || locationY == null) return;
 
-        var coordinate = new Coordinate((double)locationX, (double)locationY);
-        borehole.Geometry = new Point(coordinate) { SRID = srid };
+        // Set coordinates for missing reference system.
+        await coordinateService.MigrateCoordinatesOfBorehole(borehole, onlyMissing: false).ConfigureAwait(false);
 
         var locationInfo = await locationService.IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
         if (locationInfo != null)
@@ -144,8 +145,16 @@ public class UploadController : ControllerBase
             };
 
             AutoMap(config);
-            Map(b => b.LocationX).Name("location_x_lv_95");
-            Map(b => b.LocationY).Name("location_y_lv_95");
+            Map(b => b.OriginalReferenceSystem).Convert(args =>
+            {
+                var locationX = args.Row.GetField<double?>("location_x");
+                var locationY = args.Row.GetField<double?>("location_y");
+                return locationX == null || locationY == null ? null : locationX >= 2_000_000 ? ReferenceSystem.LV95 : ReferenceSystem.LV03;
+            });
+            Map(b => b.LocationX).Convert(args => args.Row.GetField<double?>("location_x") >= 2_000_000 ? args.Row.GetField<double?>("location_x") : null);
+            Map(b => b.LocationY).Convert(args => args.Row.GetField<double?>("location_y") >= 1_000_000 ? args.Row.GetField<double?>("location_y") : null);
+            Map(b => b.LocationXLV03).Convert(args => args.Row.GetField<double?>("location_x") < 2_000_000 ? args.Row.GetField<double?>("location_x") : null);
+            Map(b => b.LocationYLV03).Convert(args => args.Row.GetField<double?>("location_y") < 1_000_000 ? args.Row.GetField<double?>("location_y") : null);
             Map(m => m.BoreholeCodelists).Convert(args =>
             {
                 var boreholeCodelists = new List<BoreholeCodelist>();

@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Changed all db attributes of type _date_ to _timestamp with timezone_.
+
+### Fixed
+
+- Fix scrolling behaviour for _lithological_descriptions_ and _facies_descriptions_.
+
+## v2.0.273 - 2023-04-04
+
 ### Added
 
 - Added functionality to edit facies description seperately from lithology.
@@ -27,7 +37,8 @@
 - Remove height reference system column from editor view list.
 - Remove import settings from administrator settings.
 - Enable editor mode settings for all user types.
-- Changed all db attributes of type _date_ to _timestamp with timezone_.
+- Replace csv import coordinates related columns by `location_x` and `location_y`.
+- Auto detect the provided coordinate reference system in the csv import and calculate the coordinates for the not provided reference system. 
 
 ### Fixed
 

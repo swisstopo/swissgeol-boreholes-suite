@@ -33,7 +33,7 @@ public class LocationControllerTest
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<LocationController>>();
-        loggerLocationServiceMock = new Mock<ILogger<LocationService>>();
+        loggerLocationServiceMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
         var service = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
 
         controller = new LocationController(context, loggerMock.Object, service);
