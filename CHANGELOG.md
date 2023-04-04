@@ -52,6 +52,7 @@
 - Fix and improve flaky Instrumentation tests.
 - Improve rendering of Instrumentations.
 - Remove unnecessary borehole property `date` from csv import as well as in the database.
+- Fix scrolling behaviour for _lithological_descriptions_ and _facies_descriptions_.
 
 ## v2.0.186 - 2023-02-13
 
