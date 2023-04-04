@@ -87,6 +87,7 @@ builder.Services.AddApiVersioning(config =>
 });
 
 builder.Services.AddScoped<LocationService>();
+builder.Services.AddScoped<CoordinateService>();
 
 var app = builder.Build();
 

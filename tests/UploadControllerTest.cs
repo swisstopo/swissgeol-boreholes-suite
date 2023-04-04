@@ -11,6 +11,7 @@ using File = System.IO.File;
 
 namespace BDMS;
 
+[DeploymentItem("TestData")]
 [TestClass]
 public class UploadControllerTest
 {
@@ -20,6 +21,7 @@ public class UploadControllerTest
     private Mock<IHttpClientFactory> httpClientFactoryMock;
     private Mock<ILogger<UploadController>> loggerMock;
     private Mock<ILogger<LocationService>> loggerLocationServiceMock;
+    private Mock<ILogger<CoordinateService>> loggerCoordinateServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
@@ -27,10 +29,12 @@ public class UploadControllerTest
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<UploadController>>();
-        loggerLocationServiceMock = new Mock<ILogger<LocationService>>();
-        var service = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
+        loggerLocationServiceMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
+        loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
+        var locationService = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
+        var coordinateService = new CoordinateService(loggerCoordinateServiceMock.Object, httpClientFactoryMock.Object);
 
-        controller = new UploadController(ContextFactory.CreateContext(), loggerMock.Object, service) { ControllerContext = GetControllerContextAdmin() };
+        controller = new UploadController(ContextFactory.CreateContext(), loggerMock.Object, locationService, coordinateService) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -49,7 +53,6 @@ public class UploadControllerTest
     }
 
     [TestMethod]
-    [DeploymentItem("testdata.csv")]
     public async Task UploadShouldSaveDataToDatabaseAsync()
     {
         httpClientFactoryMock
@@ -96,7 +99,6 @@ public class UploadControllerTest
     }
 
     [TestMethod]
-    [DeploymentItem("minimal_testdata.csv")]
     public async Task UploadShouldSaveMinimalDatasetAsync()
     {
         var csvFile = "minimal_testdata.csv";
@@ -136,7 +138,6 @@ public class UploadControllerTest
     }
 
     [TestMethod]
-    [DeploymentItem("special_chars_testdata.csv")]
     public async Task UploadShouldSaveSpecialCharsDatasetAsync()
     {
         var csvFile = "special_chars_testdata.csv";
@@ -157,6 +158,137 @@ public class UploadControllerTest
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Unit_Test_special_chars_1", borehole.OriginalName);
         Assert.AreEqual("„ÖÄÜöäü-*#%&7{}[]()='~^><\\@¦+Š", borehole.ProjectName);
+    }
+
+    [TestMethod]
+    public async Task UploadWithMissingCoordinatesAsync()
+    {
+        var csvFile = "no_coordinates_provided_testdata.csv";
+
+        byte[] fileBytes = File.ReadAllBytes(csvFile);
+        using var stream = new MemoryStream(fileBytes);
+
+        var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
+
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(1, okResult.Value);
+
+        // Assert imported values
+        var borehole = context.Boreholes.Single(b => b.OriginalName != null && b.OriginalName.Contains("No Provided Cooordiantes"));
+        Assert.IsNull(borehole.OriginalReferenceSystem);
+        Assert.IsNull(borehole.LocationX);
+        Assert.IsNull(borehole.LocationY);
+        Assert.IsNull(borehole.LocationXLV03);
+        Assert.IsNull(borehole.LocationYLV03);
+        Assert.IsNull(borehole.Geometry);
+        Assert.IsNull(borehole.Canton);
+        Assert.IsNull(borehole.Country);
+        Assert.IsNull(borehole.Municipality);
+    }
+
+    [TestMethod]
+    public async Task UploadBoreholeWithLV95CoordinatesAsync()
+    {
+        httpClientFactoryMock
+            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+            .Returns(() => new HttpClient())
+            .Verifiable();
+
+        var csvFile = "lv95_coordinates_provided_testdata.csv";
+
+        byte[] fileBytes = File.ReadAllBytes(csvFile);
+        using var stream = new MemoryStream(fileBytes);
+
+        var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
+
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(1, okResult.Value);
+
+        // Assert imported values
+        var borehole = context.Boreholes.Single(b => b.OriginalName != null && b.OriginalName.Contains("LV95 - All coordinates set"));
+        Assert.AreEqual(ReferenceSystem.LV95, borehole.OriginalReferenceSystem);
+        Assert.AreEqual(2631690, borehole.LocationX);
+        Assert.AreEqual(1170516, borehole.LocationY);
+        Assert.AreEqual(631690, borehole.LocationXLV03);
+        Assert.AreEqual(170516, borehole.LocationYLV03);
+        Assert.AreEqual("POINT (2631690 1170516)", borehole.Geometry.ToString());
+        Assert.AreEqual("Bern", borehole.Canton);
+        Assert.AreEqual("Schweiz", borehole.Country);
+        Assert.AreEqual("Interlaken", borehole.Municipality);
+    }
+
+    [TestMethod]
+    public async Task UploadBoreholeWithLV03CoordinatesAsync()
+    {
+        httpClientFactoryMock
+            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+            .Returns(() => new HttpClient())
+            .Verifiable();
+
+        var csvFile = "lv03_coordinates_provided_testdata.csv";
+
+        byte[] fileBytes = File.ReadAllBytes(csvFile);
+        using var stream = new MemoryStream(fileBytes);
+
+        var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
+
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(1, okResult.Value);
+
+        // Assert imported values
+        var borehole = context.Boreholes.Single(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - All coordinates set"));
+        Assert.AreEqual(ReferenceSystem.LV03, borehole.OriginalReferenceSystem);
+        Assert.AreEqual(2649258.1270818082, borehole.LocationX);
+        Assert.AreEqual(1131551.4611465326, borehole.LocationY);
+        Assert.AreEqual(649258.36125645251, borehole.LocationXLV03);
+        Assert.AreEqual(131551.85893587855, borehole.LocationYLV03);
+        Assert.AreEqual("POINT (2649258.1270818082 1131551.4611465326)", borehole.Geometry.ToString());
+        Assert.AreEqual("Valais", borehole.Canton);
+        Assert.AreEqual("Schweiz", borehole.Country);
+        Assert.AreEqual("Mörel-Filet", borehole.Municipality);
+    }
+
+    [TestMethod]
+    public async Task UploadBoreholeWithLV03OutOfRangeCoordinatesAsync()
+    {
+        httpClientFactoryMock
+            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+            .Returns(() => new HttpClient())
+            .Verifiable();
+
+        var csvFile = "lv03_out_of_range_coordinates_provided_testdata.csv";
+
+        byte[] fileBytes = File.ReadAllBytes(csvFile);
+        using var stream = new MemoryStream(fileBytes);
+
+        var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
+
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(1, okResult.Value);
+
+        // Assert imported values
+        var borehole = context.Boreholes.Single(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - LV03 x out of range"));
+        Assert.AreEqual(ReferenceSystem.LV03, borehole.OriginalReferenceSystem);
+        Assert.AreEqual(2999999, borehole.LocationX);
+        Assert.AreEqual(1, borehole.LocationY);
+        Assert.AreEqual(999999, borehole.LocationXLV03);
+        Assert.AreEqual(-999999, borehole.LocationYLV03);
+        Assert.AreEqual("POINT (2999999 1)", borehole.Geometry.ToString());
+        Assert.IsNull(borehole.Canton);
+        Assert.IsNull(borehole.Country);
+        Assert.IsNull(borehole.Municipality);
     }
 
     [TestMethod]
@@ -182,7 +314,6 @@ public class UploadControllerTest
     }
 
     [TestMethod]
-    [DeploymentItem("borehole_and_location_data.csv")]
     public async Task UploadShouldIgnoreLocationFields()
     {
         var csvFile = "borehole_and_location_data.csv";

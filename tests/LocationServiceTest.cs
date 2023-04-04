@@ -17,7 +17,7 @@ public class LocationServiceTests
     {
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
-        loggerMock = new Mock<ILogger<LocationService>>();
+        loggerMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
 
         service = new LocationService(loggerMock.Object, httpClientFactoryMock.Object);
     }
