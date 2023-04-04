@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createRef } from "react";
+import React, { useState, useEffect, useMemo, createRef } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import produce from "immer";
@@ -36,9 +36,13 @@ const DescriptionLayers = props => {
   const { t } = useTranslation();
   const theme = useTheme();
 
-  const descriptionRefs = Array(displayDescriptions?.length)
-    .fill(null)
-    .map(() => createRef(null));
+  const descriptionRefs = useMemo(
+    () =>
+      Array(displayDescriptions?.length)
+        .fill(null)
+        .map(() => createRef(null)),
+    [displayDescriptions],
+  );
 
   useEffect(() => {
     const lastDescriptionRef = descriptionRefs[displayDescriptions?.length - 1];
@@ -56,7 +60,12 @@ const DescriptionLayers = props => {
     }
     // update the previous length
     setPreviousLength(displayDescriptions?.length || 0);
-  }, [displayDescriptions, selectedDescription]);
+  }, [
+    displayDescriptions,
+    selectedDescription,
+    descriptionRefs,
+    previousLength,
+  ]);
 
   useEffect(() => {
     // include empty items in description column to signal missing descriptions
