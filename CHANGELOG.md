@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.0.273 - 2023-04-04
+
 ### Added
 
 - Added functionality to edit facies description seperately from lithology.
