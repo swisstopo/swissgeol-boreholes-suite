@@ -68,6 +68,9 @@ class HomeComponent extends React.Component {
           filterByExtent={extent => {
             this.props.filterByExtent(extent);
           }}
+          setmapfilter={checked => {
+            this.props.setmapfilter(checked);
+          }}
           selected={id => {
             if (id === null) {
               history.push(process.env.PUBLIC_URL);
@@ -579,6 +582,12 @@ const mapDispatchToProps = dispatch => {
         type: "SEARCH_EXTENT_CHANGED",
         extent: extent,
         resolution: resolution,
+      });
+    },
+    setmapfilter: active => {
+      dispatch({
+        type: "SEARCH_MAPFILTER_CHANGED",
+        active: active,
       });
     },
     resetCart: () => {
