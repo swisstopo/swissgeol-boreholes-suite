@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createRef, useRef } from "react";
+import React, { useState, useEffect, createRef } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import produce from "immer";
@@ -31,6 +31,7 @@ const DescriptionLayers = props => {
     useState(0);
   const [selectableDepths, setSelectableDepths] = useState([]);
   const [gaps, setGaps] = useState([]);
+  const [previousLength, setPreviousLength] = useState(0);
 
   const { t } = useTranslation();
   const theme = useTheme();
@@ -39,26 +40,23 @@ const DescriptionLayers = props => {
     .fill(null)
     .map(() => createRef(null));
 
-  // store previous length of list
-  const prevLengthRef = useRef(0);
-
-  const lastDescriptionRef = descriptionRefs[displayDescriptions?.length - 1];
-
   useEffect(() => {
+    const lastDescriptionRef = descriptionRefs[displayDescriptions?.length - 1];
     // scroll to the last item in the list
     if (
-      lastDescriptionRef?.current &&
-      displayDescriptions?.length > prevLengthRef.current &&
-      // prevents scrolling when existing layer depths is changed so that an undefined interval is produced while editing.
-      !selectedDescription
+      (lastDescriptionRef?.current && previousLength === 0) ||
+      (displayDescriptions?.length > previousLength &&
+        // prevents scrolling when existing layer depths is changed so that an undefined interval is produced while editing.
+        !selectedDescription)
     ) {
       lastDescriptionRef.current.scrollIntoView({
         behavior: "smooth",
+        block: "center",
       });
     }
     // update the previous length
-    prevLengthRef.current = displayDescriptions?.length;
-  }, [displayDescriptions, lastDescriptionRef, selectedDescription]);
+    setPreviousLength(displayDescriptions?.length || 0);
+  }, [displayDescriptions, selectedDescription]);
 
   useEffect(() => {
     // include empty items in description column to signal missing descriptions
@@ -253,8 +251,7 @@ const DescriptionLayers = props => {
                 ref={descriptionRefs[index]}
                 onClick={() => {
                   if (isEditable && !isItemSelected) selectItem(item);
-                }}
-                isFirst={index === 0 ? true : false}>
+                }}>
                 {!isItemToDelete && (
                   <>
                     {!isItemSelected && (
