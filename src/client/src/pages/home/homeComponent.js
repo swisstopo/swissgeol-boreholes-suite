@@ -65,6 +65,9 @@ class HomeComponent extends React.Component {
           moveend={(extent, resolution) => {
             this.props.filterByExtent(extent, resolution);
           }}
+          filterByExtent={extent => {
+            this.props.filterByExtent(extent);
+          }}
           selected={id => {
             if (id === null) {
               history.push(process.env.PUBLIC_URL);
