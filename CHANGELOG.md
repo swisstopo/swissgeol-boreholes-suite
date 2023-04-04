@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix scrolling behaviour for _lithological_descriptions_ and _facies_descriptions_.
+
 ## v2.0.273 - 2023-04-04
 
 ### Added
