@@ -13,6 +13,10 @@ public partial class MigrateChronostratigraphies : Migration
 UPDATE bdms.layer
 SET chronostratigraphy_id_cli = 15001070
 WHERE chronostratigraphy_id_cli = 15001168;
+
+UPDATE bdms.chronostratigraphy
+SET chronostratigraphy_id = 15001070
+WHERE chronostratigraphy_id  = 15001168;
 ");
     }
 
