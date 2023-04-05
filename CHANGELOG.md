@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Changed all db attributes of type _date_ to _timestamp with timezone_.
+
 ### Fixed
 
 - Fix scrolling behaviour for _lithological_descriptions_ and _facies_descriptions_.

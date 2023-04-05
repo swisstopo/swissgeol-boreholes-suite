@@ -33,7 +33,7 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Stratigraphy"/>'s date.
     /// </summary>
     [Column("date_sty")]
-    public DateOnly? Date { get; set; }
+    public DateTime? Date { get; set; }
 
     /// <inheritdoc />
     [Column("update_sty")]
@@ -84,7 +84,7 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Stratigraphy"/>'s casing date.
     /// </summary>
     [Column("casng_date_abd_sty")]
-    public DateOnly? CasingDate { get; set; }
+    public DateTime? CasingDate { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s notes.
