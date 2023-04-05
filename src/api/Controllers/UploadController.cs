@@ -169,6 +169,7 @@ public class UploadController : ControllerBase
                     ("id_geo_therm", 100000008),
                     ("id_top_fels", 100000009),
                     ("id_geodin", 100000010),
+                    ("id_kernlager", 100000011),
                 }.ForEach(id =>
                 {
                     var value = args.Row.GetField<string>(id.Name);

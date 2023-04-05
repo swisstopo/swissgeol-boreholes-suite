@@ -5,6 +5,7 @@
 ### Changed
 
 - Changed all db attributes of type _date_ to _timestamp with timezone_.
+- Support `ID Kernlager` (_drill core storage facility ID_) in csv import.
 
 ### Fixed
 

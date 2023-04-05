@@ -81,9 +81,9 @@ public class UploadControllerTest
         Assert.AreEqual(new DateTime(2024, 06, 15), borehole.RestrictionUntil);
         Assert.AreEqual(2474.472693, borehole.TotalDepth);
         Assert.AreEqual("Projekt 6", borehole.ProjectName);
-        Assert.AreEqual(3, borehole.BoreholeCodelists.Count);
-        Assert.AreEqual("Id_16", borehole.BoreholeCodelists.First().Value);
-        Assert.AreEqual(100000003, borehole.BoreholeCodelists.First().CodelistId);
+        Assert.AreEqual(4, borehole.BoreholeCodelists.Count);
+        Assert.AreEqual("Id_16", borehole.BoreholeCodelists.Single(x => x.CodelistId == 100000003).Value);
+        Assert.AreEqual("AUTOSTEED", borehole.BoreholeCodelists.Single(x => x.CodelistId == 100000011).Value);
         Assert.AreEqual("Bern", borehole.Canton);
         Assert.AreEqual("Schweiz", borehole.Country);
         Assert.AreEqual("Thun", borehole.Municipality);
