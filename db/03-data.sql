@@ -47,7 +47,8 @@ INSERT INTO bdms.codelist (
 (100000006,100000006,'borehole_identifier','100000006','ID GeoQuat','','ID GeoQuat',NULL,'ID GeoQuat',NULL,'ID GeoQuat',NULL,7,NULL,False,NULL),
 (100000007,100000007,'borehole_identifier','100000007','ID GeoMol','','ID GeoMol',NULL,'ID GeoMol',NULL,'ID GeoMol',NULL,8,NULL,False,NULL),
 (100000009,100000009,'borehole_identifier','100000009','ID TopFels','','ID TopFels',NULL,'ID TopFels',NULL,'ID TopFels',NULL,9,NULL,False,NULL),
-(100000008,100000008,'borehole_identifier','100000008','ID GeoTherm','','ID GeoTherm',NULL,'ID GeoTherm',NULL,'ID GeoTherm',NULL,10,NULL,False,NULL);
+(100000008,100000008,'borehole_identifier','100000008','ID GeoTherm','','ID GeoTherm',NULL,'ID GeoTherm',NULL,'ID GeoTherm',NULL,10,NULL,False,NULL),
+(100000011,100000011,'borehole_identifier','100000011','ID Kernlager','','ID Kernlager',NULL,'ID Kernlager',NULL,'ID Kernlager',NULL,11,NULL,False,NULL);
 
 SELECT setval('bdms.codelist_id_cli_seq', 100000001, true);
 
