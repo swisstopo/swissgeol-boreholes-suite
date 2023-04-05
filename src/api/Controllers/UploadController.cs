@@ -205,7 +205,7 @@ public class UploadController : ControllerBase
 
             AutoMap(config);
 
-            // Define all optional properties of Borehole (only simple types need to be defined as optional)
+            // Define all (only value type properties) optional properties of Borehole.
             Map(m => m.Id).Optional();
             Map(m => m.CreatedById).Optional();
             Map(m => m.Created).Optional();
