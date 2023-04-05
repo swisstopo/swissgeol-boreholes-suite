@@ -18,7 +18,7 @@ describe("Test for the borehole form.", () => {
       locationDropdownValues.push(value);
       if (locationDropdownValues.length === 6) {
         expect(locationDropdownValues).to.deep.eq([
-          "ID GeoTherm",
+          "ID Kernlager",
           "restricted until",
           "reconstructed",
           "reconstructed",
