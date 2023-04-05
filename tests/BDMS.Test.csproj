@@ -32,6 +32,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestData\missing_required_headers_testdata.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\multiple_rows_missing_required_attributes_testdata.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\minimal_testdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
