@@ -21,10 +21,7 @@ class TableComponent extends React.Component {
       all: false,
     };
   }
-  componentDidMount() {
-    const { filter } = this.props;
-    this.props.loadData(1, filter);
-  }
+
   componentDidUpdate(prevProps) {
     const { filter, activeItem, store, scrollPosition } = this.props;
     let state = null;

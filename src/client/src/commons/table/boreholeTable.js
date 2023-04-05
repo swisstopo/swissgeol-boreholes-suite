@@ -13,6 +13,11 @@ import { Button, Icon, Segment, Table } from "semantic-ui-react";
 import { loadBoreholes } from "../../api-lib/index";
 
 class BoreholeTable extends TableComponent {
+  componentDidMount() {
+    const { filter, store } = this.props;
+    this.props.loadData(store.page || 1, filter);
+  }
+
   reorder(orderby) {
     const { filter, loadData, store } = this.props;
     let dir = store.direction === "DESC" ? "ASC" : "DESC";
