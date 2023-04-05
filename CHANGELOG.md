@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- Define borehole csv import fields `original_name`, `location_x` and `location_y` as required.
+- Add validation for required borehole csv import fields. 
+
 ### Changed
 
 - Changed all db attributes of type _date_ to _timestamp with timezone_.
