@@ -10,6 +10,7 @@
 
 - Fix scrolling behaviour for _lithological_descriptions_ and _facies_descriptions_.
 - Fix missing datapoints on map zoom after filtering by map extent.
+- Fix table was reset to page 1 when returning to borehole list from detail with appearance _Map & List|Details_ and _List|Details & Map_.
 
 ## v2.0.273 - 2023-04-04
 
