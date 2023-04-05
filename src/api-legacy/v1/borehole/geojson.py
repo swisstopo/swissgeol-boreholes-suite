@@ -20,6 +20,8 @@ class ListGeojson(Action):
         instrument_where, instrument_params, instrument_joins = self.filterInstrument(
             filter)
 
+        #  filtering by map extent is not relevant for the geoJson Map data and can lead to missing data points.
+        filter['extent'] = None
         where, params = self.filterBorehole(filter)
 
         wr_strt = ''

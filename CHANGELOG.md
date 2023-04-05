@@ -5,6 +5,7 @@
 ### Fixed
 
 - Fix scrolling behaviour for _lithological_descriptions_ and _facies_descriptions_.
+- Fix missing datapoints on map zoom after filtering by map extent.
 
 ## v2.0.273 - 2023-04-04
 
