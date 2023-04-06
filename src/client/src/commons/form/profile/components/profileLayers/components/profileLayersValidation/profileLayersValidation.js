@@ -1,4 +1,4 @@
-import React, { useEffect, createRef, useRef } from "react";
+import React, { useEffect, useState, useMemo, createRef } from "react";
 import ProfileLayersError from "../profileLayersError";
 import ProfileLayersList from "../profileLayersList";
 import * as Styled from "./styles";
@@ -18,24 +18,38 @@ export const ProfileLayersValidation = props => {
     isStratigraphy,
   } = props.data;
   const { setDeleteParams } = props;
+  const [previousLength, setPreviousLength] = useState(0);
 
   // add refs to layers to allow scroll behaviour
-  const layerRefs = Array(layers?.data?.length)
-    .fill(null)
-    .map(() => createRef(null));
-
-  // store previous length of list
-  const prevLengthRef = useRef(0);
-  const lastLayerRef = layerRefs[layers?.data?.length - 1];
+  const layerRefs = useMemo(
+    () =>
+      Array(layersWithValidation?.data?.length)
+        .fill(null)
+        .map(() => createRef(null)),
+    [layersWithValidation?.data?.length],
+  );
 
   useEffect(() => {
+    const layerLength = layersWithValidation?.data?.length;
+    const lastLayerRef = layerRefs[layerLength - 1];
     // scroll to the last item in the list
-    if (lastLayerRef?.current && layers?.data?.length > prevLengthRef.current) {
-      lastLayerRef.current.scrollIntoView({ behavior: "smooth" });
+    if (
+      (lastLayerRef?.current && previousLength === 0) ||
+      (layerLength > previousLength && !selectedLayer)
+    ) {
+      lastLayerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }
     // update the previous length
-    prevLengthRef.current = layers?.data?.length;
-  }, [layers.data, lastLayerRef]);
+    setPreviousLength(layerLength || 0);
+  }, [
+    layerRefs,
+    layersWithValidation?.data?.length,
+    previousLength,
+    selectedLayer,
+  ]);
 
   return (
     <Box data-cy="styled-layer-container">
