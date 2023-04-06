@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Net;
 using System.Security.Claims;
-using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
 
 namespace BDMS.Controllers;
 
@@ -51,17 +50,42 @@ public class UploadController : ControllerBase
             }
 
             var boreholes = ReadBoreholesFromCsv(file)
-                .Select(b =>
+                .Select(importBorehole =>
                 {
+                    var borehole = (Borehole)importBorehole;
+
                     // Set DateTime kind to UTC, since PSQL type 'timestamp with timezone' requires UTC as DateTime.Kind
-                    b.SpudDate = b.SpudDate != null ? DateTime.SpecifyKind(b.SpudDate.Value, DateTimeKind.Utc) : null;
-                    b.DrillingDate = b.DrillingDate != null ? DateTime.SpecifyKind(b.DrillingDate.Value, DateTimeKind.Utc) : null;
-                    b.RestrictionUntil = b.RestrictionUntil != null ? DateTime.SpecifyKind(b.RestrictionUntil.Value, DateTimeKind.Utc) : null;
-                    b.WorkgroupId = workgroupId;
-                    return b;
-                }).ToList();
+                    borehole.SpudDate = borehole.SpudDate != null ? DateTime.SpecifyKind(borehole.SpudDate.Value, DateTimeKind.Utc) : null;
+                    borehole.DrillingDate = borehole.DrillingDate != null ? DateTime.SpecifyKind(borehole.DrillingDate.Value, DateTimeKind.Utc) : null;
+                    borehole.RestrictionUntil = borehole.RestrictionUntil != null ? DateTime.SpecifyKind(borehole.RestrictionUntil.Value, DateTimeKind.Utc) : null;
+                    borehole.WorkgroupId = workgroupId;
+
+                    // Detect coordiante reference system and set according cordinate properties of borehole.
+                    if (importBorehole.Location_x != null && importBorehole.Location_y != null)
+                    {
+                        if (importBorehole.Location_x >= 2_000_000)
+                        {
+                            borehole.OriginalReferenceSystem = ReferenceSystem.LV95;
+                            borehole.LocationX = importBorehole.Location_x;
+                            borehole.LocationY = importBorehole.Location_y;
+                        }
+                        else
+                        {
+                            borehole.OriginalReferenceSystem = ReferenceSystem.LV03;
+                            borehole.LocationXLV03 = importBorehole.Location_x;
+                            borehole.LocationYLV03 = importBorehole.Location_y;
+                        }
+                    }
+
+                    return borehole;
+                })
+                .ToList();
 
             ValidateBoreholes(boreholes);
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
+            }
 
             var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
 
@@ -89,26 +113,13 @@ public class UploadController : ControllerBase
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
             return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
         }
+        catch (Exception ex) when (ex is HeaderValidationException || ex is ReaderException)
+        {
+            return Problem(ex.Message, statusCode: (int)HttpStatusCode.BadRequest);
+        }
         catch (Exception ex)
         {
             logger.LogError("Error while importing borehole(s) to workgroup with id <{WorkgroupId}>: <{Error}>", workgroupId, ex);
-
-            if (ex is ValidationException validationEx)
-            {
-                if (!ModelState.IsValid)
-                {
-                    var problemDetails = new ValidationProblemDetails(ModelState);
-
-                    return new ObjectResult(problemDetails)
-                    {
-                        ContentTypes = { "application/problem+json" },
-                        StatusCode = 400,
-                    };
-                }
-
-                return Problem(validationEx.Message, statusCode: (int)HttpStatusCode.BadRequest);
-            }
-
             return Problem("Error while importing borehole(s).");
         }
     }
@@ -132,42 +143,24 @@ public class UploadController : ControllerBase
                 ModelState.AddModelError($"Row{borehole.index}", "Field 'location_y' is invalid.");
             }
         }
-
-        if (!ModelState.IsValid)
-        {
-            throw new ValidationException("");
-        }
     }
 
-    private List<Borehole> ReadBoreholesFromCsv(IFormFile file)
+    private List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file)
     {
-        var requiredHeaders = new List<string>() { "original_name", "location_x", "location_y" };
         var csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
         {
             Delimiter = ";",
             IgnoreReferences = true,
             PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
             MissingFieldFound = null,
-
-            // Check if all required Headers are present in the provided CSV file.
-            HeaderValidated = args =>
-            {
-                foreach (var header in requiredHeaders)
-                {
-                    if (args.Context.Reader.HeaderRecord != null && !args.Context.Reader.HeaderRecord.Contains(header))
-                    {
-                        throw new ValidationException($"Please ensure all reuqired Headers ({string.Join(", ", requiredHeaders)}) are defined.");
-                    }
-                }
-            },
         };
 
         using var reader = new StreamReader(file.OpenReadStream());
         using var csv = new CsvReader(reader, csvConfig);
 
-        csv.Context.RegisterClassMap(new BoreholeMap());
+        csv.Context.RegisterClassMap(new CsvImportBoreholeMap());
 
-        return csv.GetRecords<Borehole>().ToList();
+        return csv.GetRecords<BoreholeImport>().ToList();
     }
 
     private async Task UpdateBoreholeLocationAndCoordinates(Borehole borehole)
@@ -191,11 +184,11 @@ public class UploadController : ControllerBase
         }
     }
 
-    private sealed class BoreholeMap : ClassMap<Borehole>
+    private sealed class CsvImportBoreholeMap : ClassMap<BoreholeImport>
     {
         private readonly CultureInfo swissCulture = new("de-CH");
 
-        public BoreholeMap()
+        public CsvImportBoreholeMap()
         {
             var config = new CsvConfiguration(swissCulture)
             {
@@ -205,7 +198,7 @@ public class UploadController : ControllerBase
 
             AutoMap(config);
 
-            // Define all (only value type properties) optional properties of Borehole.
+            // Define all optional properties of Borehole (ef navigation properties do not need to be defined as optional).
             Map(m => m.Id).Optional();
             Map(m => m.CreatedById).Optional();
             Map(m => m.Created).Optional();
@@ -250,6 +243,11 @@ public class UploadController : ControllerBase
             Map(m => m.ReferenceElevationTypeId).Optional();
             Map(m => m.TotalDepthTvd).Optional();
             Map(m => m.QtTotalDepthTvdId).Optional();
+            Map(m => m.LocationX).Optional();
+            Map(m => m.LocationY).Optional();
+            Map(m => m.LocationXLV03).Optional();
+            Map(m => m.LocationYLV03).Optional();
+            Map(m => m.OriginalReferenceSystem).Optional();
 
             // Define properties to ignore
             Map(b => b.Municipality).Ignore();
@@ -257,16 +255,6 @@ public class UploadController : ControllerBase
             Map(b => b.Country).Ignore();
 
             // Define additional mapping logic
-            Map(b => b.OriginalReferenceSystem).Convert(args =>
-            {
-                var locationX = args.Row.GetField<double?>("location_x");
-                var locationY = args.Row.GetField<double?>("location_y");
-                return locationX == null || locationY == null ? null : locationX >= 2_000_000 ? ReferenceSystem.LV95 : ReferenceSystem.LV03;
-            });
-            Map(b => b.LocationX).Convert(args => args.Row.GetField<double?>("location_x") >= 2_000_000 ? args.Row.GetField<double?>("location_x") : null);
-            Map(b => b.LocationY).Convert(args => args.Row.GetField<double?>("location_y") >= 1_000_000 ? args.Row.GetField<double?>("location_y") : null);
-            Map(b => b.LocationXLV03).Convert(args => args.Row.GetField<double?>("location_x") < 2_000_000 ? args.Row.GetField<double?>("location_x") : null);
-            Map(b => b.LocationYLV03).Convert(args => args.Row.GetField<double?>("location_y") < 1_000_000 ? args.Row.GetField<double?>("location_y") : null);
             Map(m => m.BoreholeCodelists).Convert(args =>
             {
                 var boreholeCodelists = new List<BoreholeCodelist>();
