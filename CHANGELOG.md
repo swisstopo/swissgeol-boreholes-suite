@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added online help.
+
 ### Changed
 
 - Changed all db attributes of type _date_ to _timestamp with timezone_.
