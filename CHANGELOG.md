@@ -13,6 +13,7 @@
 - Fix missing datapoints on map zoom after filtering by map extent.
 - Fix table was reset to page 1 when returning to borehole list from detail with appearance _Map & List|Details_ and _List|Details & Map_.
 - Fix search filters were not applied to points on map.
+- Fix scrolling behaviour for _lithology_layers_.
 
 ## v2.0.273 - 2023-04-04
 
