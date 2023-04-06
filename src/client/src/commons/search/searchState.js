@@ -206,7 +206,12 @@ const search = (
       };
     }
     case "SEARCH_FILTER_CHANGED": {
-      const copy = { ...state };
+      const copy = {
+        ...state,
+        filter: {
+          ...state.filter,
+        },
+      };
 
       let keys = [];
 
@@ -234,61 +239,111 @@ const search = (
       return copy;
     }
     case "SEARCH_FILTER_RESET_IDENTIFIER": {
-      const copy = { ...state };
+      const copy = {
+        ...state,
+        filter: {
+          ...state.filter,
+        },
+      };
       copy.filter.borehole_identifier = null;
       copy.filter.identifier_value = "";
       return copy;
     }
     case "SEARCH_FILTER_RESET_RESTRICTION": {
-      const copy = { ...state };
+      const copy = {
+        ...state,
+        filter: {
+          ...state.filter,
+        },
+      };
       copy.filter.restriction_until_from = "";
       copy.filter.restriction_until_to = "";
       return copy;
     }
     case "SEARCH_FILTER_RESET_DRILLING": {
-      const copy = { ...state };
+      const copy = {
+        ...state,
+        filter: {
+          ...state.filter,
+        },
+      };
       copy.filter.drilling_date_from = "";
       copy.filter.drilling_date_to = "";
       return copy;
     }
     case "SEARCH_FILTER_RESET_DRILL_DIAMETER": {
-      const copy = { ...state };
+      const copy = {
+        ...state,
+        filter: {
+          ...state.filter,
+        },
+      };
       copy.filter.drill_diameter_from = "";
       copy.filter.drill_diameter_to = "";
       return copy;
     }
     case "SEARCH_FILTER_RESET_BORE_INC": {
-      const copy = { ...state };
+      const copy = {
+        ...state,
+        filter: {
+          ...state.filter,
+        },
+      };
       copy.filter.bore_inc_from = "";
       copy.filter.bore_inc_to = "";
       return copy;
     }
     case "SEARCH_FILTER_RESET_BORE_INC_DIR": {
-      const copy = { ...state };
+      const copy = {
+        ...state,
+        filter: {
+          ...state.filter,
+        },
+      };
       copy.filter.bore_inc_dir_from = "";
       copy.filter.bore_inc_dir_to = "";
       return copy;
     }
     case "SEARCH_FILTER_RESET_ELEVATION": {
-      const copy = { ...state };
+      const copy = {
+        ...state,
+        filter: {
+          ...state.filter,
+        },
+      };
       copy.filter.elevation_z_from = "";
       copy.filter.elevation_z_to = "";
       return copy;
     }
     case "SEARCH_FILTER_RESET_DEPTH": {
-      const copy = { ...state };
+      const copy = {
+        ...state,
+        filter: {
+          ...state.filter,
+        },
+      };
       copy.filter.length_from = "";
       copy.filter.length_to = "";
       return copy;
     }
     case "SEARCH_FILTER_RESET_TOP_BEDROCK": {
-      const copy = { ...state };
+      const copy = {
+        ...state,
+        filter: {
+          ...state.filter,
+        },
+      };
       copy.filter.top_bedrock_from = "";
       copy.filter.top_bedrock_to = "";
       return copy;
     }
     case "SEARCH_FILTER_REFRESH": {
-      const copy = { ...state };
+      const copy = {
+        ...state,
+        filter: {
+          ...state.filter,
+        },
+      };
       copy.filter.refresh = copy.filter.refresh + 1;
       return copy;
     }
