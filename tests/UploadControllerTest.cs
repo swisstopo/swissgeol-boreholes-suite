@@ -368,7 +368,9 @@ public class UploadControllerTest
         Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
 
         ProblemDetails problemDetails = (ProblemDetails)result.Value!;
-        Assert.AreEqual($"Please ensure all reuqired Headers (original_name, location_x, location_y) are defined.", problemDetails.Detail);
+        StringAssert.Contains(problemDetails.Detail, "Header with name 'Location_x'[0] was not found.");
+        StringAssert.Contains(problemDetails.Detail, "Header with name 'Location_y'[0] was not found.");
+        StringAssert.Contains(problemDetails.Detail, "Header with name 'OriginalName'[0] was not found.");
     }
 
     [TestMethod]
