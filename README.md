@@ -11,6 +11,7 @@ Folgende Komponenten müssen auf dem Entwicklungsrechner installiert sein:
 ✔️ Git  
 ✔️ Docker  
 ✔️ Visual Studio Code mit der Erweiterung "Remote – Containers"  
+✔️ Optional, um die Onlinehilfe zu erstellen: [MkDocs](https://www.mkdocs.org/)  
 
 Damit auf dem Entwicklungsrechner keine Frameworks (Python, .NET, Node) installiert werden müssen, kann die vorkonfigurierte containerbasierte Entwicklungsumgebung mit Visual Studio Code verwendet werden. Dazu einfach das Source-Code Repository klonen und im Visual Studio Code laden. Wenn die Erweiterung "Remote – Containers" installiert ist, wird unten rechts in einer Notification dazu aufgefordert das Projekt im Container neu zu laden (Reload in Container). Das erstmalige Starten dauert etwas länger, da die Container erstellt werden müssen und die Umgebung mit den erforderlichen Extensions konfiguriert wird. Anschliessend kann die Webanwendung mit _F5_ gestartet werden.
 
