@@ -307,6 +307,7 @@ class MultipleForm extends React.Component {
                   workgroups[0].workgroup
                 ) : (
                   <Form.Select
+                    data-cy="workgroup-select"
                     fluid
                     selection
                     onChange={(e, d) => {
