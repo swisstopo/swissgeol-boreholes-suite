@@ -322,6 +322,23 @@ public class UploadControllerTest
     }
 
     [TestMethod]
+    public async Task UploadNoDataButRequiredHeadersSetShouldUploadNoBorehole()
+    {
+        var csvFile = "no_data_but_required_headers.csv";
+
+        byte[] fileBytes = File.ReadAllBytes(csvFile);
+        using var stream = new MemoryStream(fileBytes);
+
+        var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
+
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(0, okResult.Value);
+    }
+
+    [TestMethod]
     public async Task UploadMulitpleRowsMissingRequiredFieldsShouldReturnError()
     {
         var csvFile = "multiple_rows_missing_required_attributes_testdata.csv";
