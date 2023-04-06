@@ -22,6 +22,7 @@
 - Added functionality to scroll to newly created lithology layer.
 - Add separate panel to edit chronostratigraphy layers.
 - Add minimal csv-import for boreholes.
+- Add option to edit workgroup in bulk edit dialog.
 
 ### Changed
 
