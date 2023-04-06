@@ -32,6 +32,8 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+src/client/site
+src/client/public/help
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

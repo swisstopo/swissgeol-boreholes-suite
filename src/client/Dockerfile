@@ -1,13 +1,21 @@
-FROM cypress/base:16 AS development
+FROM cypress/included:12.4.0 AS development
 ARG VERSION
 ARG REVISION
 ENV REACT_APP_VERSION ${VERSION}+${REVISION}
 RUN apt-get -y update
-RUN apt-get -y install git vim curl htop
+RUN apt-get -y install git vim curl htop python3 python3-pip
 RUN mkdir -p /app/src/client
 WORKDIR /app/src/client
+
 COPY ./package.json ./package-lock.json ./
 RUN npm install
+
+# Build docs
+RUN mkdir -p docs
+COPY ./docs ./mkdocs.yml ./
+RUN pip install mkdocs 
+RUN mkdocs build -d ./public/help
+
 ENTRYPOINT npm run start
 
 FROM node:16-buster-slim AS deploy

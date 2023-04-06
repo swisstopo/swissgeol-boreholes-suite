@@ -248,6 +248,18 @@ class MenuComponent extends React.Component {
                   </List.Description>
                 </List.Content>
               </List.Item>
+              <List.Item
+                onClick={() => window.open(`${process.env.PUBLIC_URL}/help`)}
+                style={{
+                  padding: "0.5em",
+                }}>
+                <List.Icon name="question circle" verticalAlign="middle" />
+                <List.Content>
+                  <List.Header as="h4">
+                    <TranslationText id="header_help" />
+                  </List.Header>
+                </List.Content>
+              </List.Item>
               {this.props.user.data.admin === true ? (
                 <List.Item
                   onClick={() => {
