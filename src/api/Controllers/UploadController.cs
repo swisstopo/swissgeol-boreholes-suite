@@ -60,7 +60,7 @@ public class UploadController : ControllerBase
                     borehole.RestrictionUntil = borehole.RestrictionUntil != null ? DateTime.SpecifyKind(borehole.RestrictionUntil.Value, DateTimeKind.Utc) : null;
                     borehole.WorkgroupId = workgroupId;
 
-                    // Detect coordiante reference system and set according cordinate properties of borehole.
+                    // Detect coordinate reference system and set according coordinate properties of borehole.
                     if (importBorehole.Location_x != null && importBorehole.Location_y != null)
                     {
                         if (importBorehole.Location_x >= 2_000_000)
