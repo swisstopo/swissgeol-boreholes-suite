@@ -40,6 +40,8 @@ class MenuEditorSearch extends React.Component {
       selectedFile: null,
       scroller: false,
       workgroup: wgs !== null && wgs.length > 0 ? wgs[0].id : null,
+      validationErrorModal: false,
+      errosResponse: null,
     };
   }
 
@@ -325,7 +327,17 @@ class MenuEditorSearch extends React.Component {
                             );
                             this.props.refresh();
                           } else {
-                            this.context.error(`${t("boreholesImportError")}`);
+                            // If response is a validation error, open validation error modal.
+                            let errorResponse = await response.json();
+                            if (errorResponse.status === 400) {
+                              this.setState({ validationErrorModal: true });
+                              this.setState({ errorResponse: errorResponse });
+                              this.props.refresh();
+                            } else {
+                              this.context.error(
+                                `${t("boreholesImportError")}`,
+                              );
+                            }
                           }
                         },
                       );
@@ -376,6 +388,48 @@ class MenuEditorSearch extends React.Component {
             )}
           </Button>
         </Modal.Actions>
+      </Modal>,
+      <Modal
+        closeIcon
+        key="sb-em-5-2"
+        onClose={() => {
+          this.setState({
+            validationErrorModal: false,
+          });
+        }}
+        open={this.state.validationErrorModal === true}
+        size="tiny">
+        <Header content={t("validationErrorHeader")} />
+        <Modal.Content>
+          {_.isNil(this.state.errorResponse) === false ? (
+            _.isNil(this.state.errorResponse.errors) ? (
+              <div>
+                {this.state.errorResponse.detail &&
+                  this.state.errorResponse.detail
+                    .split("\n")
+                    .filter(subString => subString.includes("was not found"))
+                    .map((item, i) => <li key={item + i}>{item}</li>)}
+              </div>
+            ) : (
+              <>
+                <div>
+                  {Object.keys(this.state.errorResponse.errors).map(
+                    (key, index) => (
+                      <div key={key + index}>
+                        <div>
+                          {t("row")} {index}
+                        </div>
+                        {this.state.errorResponse.errors[key].map((item, i) => (
+                          <li key={item + i}>{item}</li>
+                        ))}
+                      </div>
+                    ),
+                  )}
+                </div>
+              </>
+            )
+          ) : null}
+        </Modal.Content>
       </Modal>,
     ];
   }
