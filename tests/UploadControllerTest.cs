@@ -191,10 +191,7 @@ public class UploadControllerTest
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
 
-        string[] errorsRow1 = problemDetails.Errors["Row0"];
-        Assert.AreEqual(2, errorsRow1.Length);
-        Assert.AreEqual($"Field 'location_x' is invalid.", errorsRow1[0]);
-        Assert.AreEqual($"Field 'location_y' is invalid.", errorsRow1[1]);
+        CollectionAssert.AreEquivalent(new[] { "Field 'location_x' is invalid.", "Field 'location_y' is invalid." }, problemDetails.Errors["Row0"]);
     }
 
     [TestMethod]
@@ -357,15 +354,14 @@ public class UploadControllerTest
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(2, problemDetails.Errors.Count);
 
-        string[] errorsRow1 = problemDetails.Errors["Row1"];
-        Assert.AreEqual(1, errorsRow1.Length);
-        Assert.AreEqual($"Field 'location_y' is invalid.", errorsRow1[0]);
-
-        string[] errorsRow2 = problemDetails.Errors["Row2"];
-        Assert.AreEqual(3, errorsRow2.Length);
-        Assert.AreEqual($"Field 'original_name' is invalid.", errorsRow2[0]);
-        Assert.AreEqual($"Field 'location_x' is invalid.", errorsRow2[1]);
-        Assert.AreEqual($"Field 'location_y' is invalid.", errorsRow2[2]);
+        CollectionAssert.AreEquivalent(new[] { "Field 'location_y' is invalid." }, problemDetails.Errors["Row1"]);
+        CollectionAssert.AreEquivalent(new[]
+        {
+            "Field 'original_name' is invalid.",
+            "Field 'location_x' is invalid.",
+            "Field 'location_y' is invalid.",
+        },
+        problemDetails.Errors["Row2"]);
     }
 
     [TestMethod]
