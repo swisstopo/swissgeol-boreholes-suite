@@ -25,6 +25,9 @@ class PatchBorehole(Action):
 
         elif field == 'custom.project_name':
             column = 'project_name_bho'
+        
+        elif field == 'workgroup':
+            column = 'id_wgp_fk'
 
         elif field in ['location_x', 'location_y', 'location_x_lv03',  'location_y_lv03', 'location']:
 
@@ -203,7 +206,8 @@ class PatchBorehole(Action):
                 'extended.groundwater',
                 'custom.mistakes',
                 'custom.remarks',
-                'reference_elevation'
+                'reference_elevation',
+                'workgroup',
             ]:
 
                 if isinstance(column, list):

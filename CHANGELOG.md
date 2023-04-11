@@ -6,6 +6,7 @@
 
 - Define borehole csv import fields `original_name`, `location_x` and `location_y` as required.
 - Add validation for required borehole csv import fields. 
+- Added online help.
 
 ### Changed
 
@@ -18,6 +19,7 @@
 - Fix missing datapoints on map zoom after filtering by map extent.
 - Fix table was reset to page 1 when returning to borehole list from detail with appearance _Map & List|Details_ and _List|Details & Map_.
 - Fix search filters were not applied to points on map.
+- Fix scrolling behaviour for _lithology_layers_.
 
 ## v2.0.273 - 2023-04-04
 
@@ -27,6 +29,7 @@
 - Added functionality to scroll to newly created lithology layer.
 - Add separate panel to edit chronostratigraphy layers.
 - Add minimal csv-import for boreholes.
+- Add option to edit workgroup in bulk edit dialog.
 
 ### Changed
 

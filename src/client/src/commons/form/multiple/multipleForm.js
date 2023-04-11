@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
+import produce from "immer";
 
 import DomainDropdown from "../domain/dropdown/domainDropdown";
 import DomainTree from "../domain/tree/domainTree";
@@ -30,6 +31,7 @@ class MultipleForm extends React.Component {
         // value: the value of the field
         project_name: { api: "custom.project_name", value: null },
         restriction: { api: "restriction", value: null },
+        workgroup: { api: "workgroup", value: null },
         restriction_until: {
           toggle: "restriction",
           api: "restriction_until",
@@ -248,6 +250,9 @@ class MultipleForm extends React.Component {
 
   render() {
     const { t } = this.props;
+    const workgroups = this.props.user.data.workgroups.filter(
+      w => w.disabled === null && w.supplier === false,
+    );
     return (
       <div
         style={{
@@ -265,6 +270,10 @@ class MultipleForm extends React.Component {
             Object.entries(this.state.data).reduce((toggles, [key, field]) => {
               let group = field.toggle ?? key;
               (toggles[group] = toggles[group] || []).push(key);
+              // only allow workgroup editing if there is more than one workgroup to choose from
+              if (workgroups.length < 2) {
+                delete toggles["workgroup"];
+              }
               return toggles;
             }, {}),
           ).map(([, fields]) => this.getToggle(fields))}
@@ -289,6 +298,37 @@ class MultipleForm extends React.Component {
                 this.state.data.restriction.value === 20111003,
               ),
             ])}
+            {this.isActive("workgroup") ? (
+              <Form.Field key={"workgroup"}>
+                <label>{t("workgroup")}</label>
+                {workgroups.length === 0 ? (
+                  <TranslationText id="disabled" />
+                ) : workgroups.length === 1 ? (
+                  workgroups[0].workgroup
+                ) : (
+                  <Form.Select
+                    data-cy="workgroup-select"
+                    fluid
+                    selection
+                    onChange={(e, d) => {
+                      this.setState(
+                        produce(draft => {
+                          draft.data.workgroup.value = d.value;
+                        }),
+                      );
+                    }}
+                    options={workgroups
+                      .filter(({ roles }) => roles.includes("EDIT"))
+                      .map(({ id, workgroup }) => ({
+                        key: id,
+                        text: workgroup,
+                        value: id,
+                      }))}
+                    value={this.state.workgroup}
+                  />
+                )}
+              </Form.Field>
+            ) : null}
             {this.getGroup([
               this.getDomain("kind"),
               this.getDomain("drilling_method"),
@@ -331,49 +371,34 @@ class MultipleForm extends React.Component {
                   <Form.Radio
                     checked={this.state.data.groundwater.value === true}
                     label={t("common:yes")}
-                    onChange={(e, d) => {
-                      this.setState({
-                        ...this.state,
-                        data: {
-                          ...this.state.data,
-                          groundwater: {
-                            ...this.state.data.groundwater,
-                            value: true,
-                          },
-                        },
-                      });
+                    onChange={() => {
+                      this.setState(
+                        produce(draft => {
+                          draft.data.groundwater.value = true;
+                        }),
+                      );
                     }}
                   />
                   <Form.Radio
                     checked={this.state.data.groundwater.value === false}
                     label={t("common:no")}
-                    onChange={(e, d) => {
-                      this.setState({
-                        ...this.state,
-                        data: {
-                          ...this.state.data,
-                          groundwater: {
-                            ...this.state.data.groundwater,
-                            value: false,
-                          },
-                        },
-                      });
+                    onChange={() => {
+                      this.setState(
+                        produce(draft => {
+                          draft.data.groundwater.value = false;
+                        }),
+                      );
                     }}
                   />
                   <Form.Radio
                     checked={this.state.data.groundwater.value === null}
                     label={t("common:np")}
-                    onChange={(e, d) => {
-                      this.setState({
-                        ...this.state,
-                        data: {
-                          ...this.state.data,
-                          groundwater: {
-                            ...this.state.data.groundwater,
-                            value: null,
-                          },
-                        },
-                      });
+                    onChange={() => {
+                      this.setState(
+                        produce(draft => {
+                          draft.data.groundwater.value = null;
+                        }),
+                      );
                     }}
                   />
                 </Form.Group>
@@ -426,8 +451,10 @@ MultipleForm.defaultProps = {
   selected: [],
 };
 
-const mapStateToProps = (state, ownProps) => {
-  return {};
+const mapStateToProps = state => {
+  return {
+    user: state.core_user,
+  };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
@@ -439,9 +466,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         selection: null,
       });
     },
-    // patchBoreholes: (ids, fields) => {
-    //   dispatch(patchBoreholes(ids, fields));
-    // }
   };
 };
 
