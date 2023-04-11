@@ -1,4 +1,44 @@
-import { createBorehole, login } from "../testHelpers";
+import { createBorehole, login, adminUserAuth } from "../testHelpers";
+
+export const changeWorkgroupRoleForUser = (
+  workgroupId,
+  userId,
+  role,
+  action,
+) => {
+  return cy
+    .request({
+      method: "POST",
+      url: "/api/v1/user/workgroup/edit",
+      body: {
+        action: action,
+        id: workgroupId,
+      },
+      auth: adminUserAuth,
+    })
+    .then(res => {
+      expect(res.body).to.have.property("success", true);
+      cy.request({
+        method: "POST",
+        url: "/api/v1/user/workgroup/edit",
+        body: {
+          action: "SET",
+          user_id: userId,
+          workgroup_id: workgroupId,
+          role_name: role,
+          active: action === "ENABLE" ? true : false,
+        },
+        auth: adminUserAuth,
+      }).then(res => {
+        expect(res.body).to.have.property("success", true);
+        cy.request({
+          method: "GET",
+          url: "/api/v2/user",
+          auth: adminUserAuth,
+        });
+      });
+    });
+};
 
 describe("Test the borehole bulk edit feature.", () => {
   it("opens the bulk edit dialog with all boreholes selected", () => {
@@ -21,6 +61,29 @@ describe("Test the borehole bulk edit feature.", () => {
         cy.wrap(el).click({ force: true });
         cy.get(".modal form").children().should("not.exist");
       });
+  });
+
+  it("displays workgroup toggle only if user has permission for more than one workgroup", () => {
+    login("/editor");
+    cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
+    cy.contains("button", "Bulk editing").click({ force: true });
+
+    cy.get(".modal .toggle").should("have.length", 25);
+    changeWorkgroupRoleForUser(6, 1, "EDIT", "ENABLE");
+    login("/editor");
+    cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
+    cy.contains("button", "Bulk editing").click({ force: true });
+
+    cy.get(".modal .toggle").should("have.length", 26);
+    // select all bulk edit fields and insert values
+    cy.contains("button", "Workgroup").click({ force: true });
+    cy.get('[data-cy="workgroup-select"]')
+      .should("have.length", 1)
+      .each((el, index, list) => {
+        cy.wrap(el).scrollIntoView().click();
+        cy.get('.modal [role="option"]').eq(0).click({ force: true });
+      });
+    changeWorkgroupRoleForUser(6, 1, "EDIT", "DISABLE");
   });
 
   it("fills all bulkedit fields and saves.", () => {
@@ -63,7 +126,6 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get('[data-cy="domain-tree"] > input')
       .should("have.length", 3)
       .each((el, index, list) => {
-        console.log(el, index, list);
         cy.wrap(el).scrollIntoView().click();
         cy.get('.modal [role="listitem"]').eq(5).click();
       });
