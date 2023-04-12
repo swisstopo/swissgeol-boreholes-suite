@@ -142,7 +142,51 @@ public class UploadController : ControllerBase
             {
                 ModelState.AddModelError($"Row{borehole.index}", "Field 'location_y' is invalid.");
             }
+
+            // Check if borehole with same coordinates and same total depth is provided multiple times.
+            var duplicatedBoreholeInFile = boreholes
+                .Where((b, i) => i != borehole.index)
+                .FirstOrDefault(b =>
+                    CompareValuesWithTolerance(b.TotalDepth, borehole.value.TotalDepth, 0) &&
+                    CompareValuesWithTolerance(b.LocationX, borehole.value.LocationX, 2) &&
+                    CompareValuesWithTolerance(b.LocationY, borehole.value.LocationY, 2));
+
+            if (duplicatedBoreholeInFile != null)
+            {
+                ModelState.AddModelError($"Row{borehole.index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provied multiple times.");
+            }
+
+            // Check if borehole with same coordinates and same total depth already exists in database.
+            var duplicatedBoreholeInDb = context.Boreholes
+                .FirstOrDefault(x =>
+
+                    // Check if TotalDepth values are both null or equal with no tolerance
+                    ((x.TotalDepth == null && borehole.value.TotalDepth == null) ||
+                        (x.TotalDepth != null && borehole.value.TotalDepth != null && Math.Abs(x.TotalDepth.Value - borehole.value.TotalDepth.Value) <= 0))
+                    &&
+
+                    // Check if LocationX values are both null or equal with tolerance of 2m
+                    ((x.LocationX == null && borehole.value.LocationX == null) ||
+                        (x.LocationX != null && borehole.value.LocationX != null && Math.Abs(x.LocationX.Value - borehole.value.LocationX.Value) <= 2))
+                    &&
+
+                    // Check if LocationY values are both null or equal with tolerance of 2m
+                    ((x.LocationY == null && borehole.value.LocationY == null) ||
+                        (x.LocationY != null && borehole.value.LocationY != null && Math.Abs(x.LocationY.Value - borehole.value.LocationY.Value) <= 2)));
+
+            if (duplicatedBoreholeInDb != null)
+            {
+                ModelState.AddModelError($"Row{borehole.index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.");
+            }
         }
+    }
+
+    public static bool CompareValuesWithTolerance(double? value1, double? value2, double tolerance)
+    {
+        if (value1 == null && value2 == null) return true;
+        if (value1 == null || value2 == null) return false;
+
+        return Math.Abs(value1.Value - value2.Value) <= tolerance;
     }
 
     private List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file)
