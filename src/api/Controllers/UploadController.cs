@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Net;
 using System.Security.Claims;
 
 namespace BDMS.Controllers;
@@ -49,15 +50,42 @@ public class UploadController : ControllerBase
             }
 
             var boreholes = ReadBoreholesFromCsv(file)
-                .Select(b =>
+                .Select(importBorehole =>
                 {
+                    var borehole = (Borehole)importBorehole;
+
                     // Set DateTime kind to UTC, since PSQL type 'timestamp with timezone' requires UTC as DateTime.Kind
-                    b.SpudDate = b.SpudDate != null ? DateTime.SpecifyKind(b.SpudDate.Value, DateTimeKind.Utc) : null;
-                    b.DrillingDate = b.DrillingDate != null ? DateTime.SpecifyKind(b.DrillingDate.Value, DateTimeKind.Utc) : null;
-                    b.RestrictionUntil = b.RestrictionUntil != null ? DateTime.SpecifyKind(b.RestrictionUntil.Value, DateTimeKind.Utc) : null;
-                    b.WorkgroupId = workgroupId;
-                    return b;
-                }).ToList();
+                    borehole.SpudDate = borehole.SpudDate != null ? DateTime.SpecifyKind(borehole.SpudDate.Value, DateTimeKind.Utc) : null;
+                    borehole.DrillingDate = borehole.DrillingDate != null ? DateTime.SpecifyKind(borehole.DrillingDate.Value, DateTimeKind.Utc) : null;
+                    borehole.RestrictionUntil = borehole.RestrictionUntil != null ? DateTime.SpecifyKind(borehole.RestrictionUntil.Value, DateTimeKind.Utc) : null;
+                    borehole.WorkgroupId = workgroupId;
+
+                    // Detect coordinate reference system and set according coordinate properties of borehole.
+                    if (importBorehole.Location_x != null && importBorehole.Location_y != null)
+                    {
+                        if (importBorehole.Location_x >= 2_000_000)
+                        {
+                            borehole.OriginalReferenceSystem = ReferenceSystem.LV95;
+                            borehole.LocationX = importBorehole.Location_x;
+                            borehole.LocationY = importBorehole.Location_y;
+                        }
+                        else
+                        {
+                            borehole.OriginalReferenceSystem = ReferenceSystem.LV03;
+                            borehole.LocationXLV03 = importBorehole.Location_x;
+                            borehole.LocationYLV03 = importBorehole.Location_y;
+                        }
+                    }
+
+                    return borehole;
+                })
+                .ToList();
+
+            ValidateBoreholes(boreholes);
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
+            }
 
             var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
 
@@ -85,6 +113,10 @@ public class UploadController : ControllerBase
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
             return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
         }
+        catch (Exception ex) when (ex is HeaderValidationException || ex is ReaderException)
+        {
+            return Problem(ex.Message, statusCode: (int)HttpStatusCode.BadRequest);
+        }
         catch (Exception ex)
         {
             logger.LogError("Error while importing borehole(s) to workgroup with id <{WorkgroupId}>: <{Error}>", workgroupId, ex);
@@ -92,23 +124,43 @@ public class UploadController : ControllerBase
         }
     }
 
-    private List<Borehole> ReadBoreholesFromCsv(IFormFile file)
+    private void ValidateBoreholes(List<Borehole> boreholes)
+    {
+        foreach (var borehole in boreholes.Select((value, index) => (value, index)))
+        {
+            if (string.IsNullOrEmpty(borehole.value.OriginalName))
+            {
+                ModelState.AddModelError($"Row{borehole.index}", "Field 'original_name' is invalid.");
+            }
+
+            if (borehole.value.LocationX == null && borehole.value.LocationXLV03 == null)
+            {
+                ModelState.AddModelError($"Row{borehole.index}", "Field 'location_x' is invalid.");
+            }
+
+            if (borehole.value.LocationY == null && borehole.value.LocationYLV03 == null)
+            {
+                ModelState.AddModelError($"Row{borehole.index}", "Field 'location_y' is invalid.");
+            }
+        }
+    }
+
+    private List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file)
     {
         var csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
         {
-            MissingFieldFound = null,
-            HeaderValidated = null,
             Delimiter = ";",
             IgnoreReferences = true,
             PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
+            MissingFieldFound = null,
         };
 
         using var reader = new StreamReader(file.OpenReadStream());
         using var csv = new CsvReader(reader, csvConfig);
 
-        csv.Context.RegisterClassMap(new BoreholeMap());
+        csv.Context.RegisterClassMap(new CsvImportBoreholeMap());
 
-        return csv.GetRecords<Borehole>().ToList();
+        return csv.GetRecords<BoreholeImport>().ToList();
     }
 
     private async Task UpdateBoreholeLocationAndCoordinates(Borehole borehole)
@@ -132,11 +184,11 @@ public class UploadController : ControllerBase
         }
     }
 
-    private sealed class BoreholeMap : ClassMap<Borehole>
+    private sealed class CsvImportBoreholeMap : ClassMap<BoreholeImport>
     {
         private readonly CultureInfo swissCulture = new("de-CH");
 
-        public BoreholeMap()
+        public CsvImportBoreholeMap()
         {
             var config = new CsvConfiguration(swissCulture)
             {
@@ -145,16 +197,64 @@ public class UploadController : ControllerBase
             };
 
             AutoMap(config);
-            Map(b => b.OriginalReferenceSystem).Convert(args =>
-            {
-                var locationX = args.Row.GetField<double?>("location_x");
-                var locationY = args.Row.GetField<double?>("location_y");
-                return locationX == null || locationY == null ? null : locationX >= 2_000_000 ? ReferenceSystem.LV95 : ReferenceSystem.LV03;
-            });
-            Map(b => b.LocationX).Convert(args => args.Row.GetField<double?>("location_x") >= 2_000_000 ? args.Row.GetField<double?>("location_x") : null);
-            Map(b => b.LocationY).Convert(args => args.Row.GetField<double?>("location_y") >= 1_000_000 ? args.Row.GetField<double?>("location_y") : null);
-            Map(b => b.LocationXLV03).Convert(args => args.Row.GetField<double?>("location_x") < 2_000_000 ? args.Row.GetField<double?>("location_x") : null);
-            Map(b => b.LocationYLV03).Convert(args => args.Row.GetField<double?>("location_y") < 1_000_000 ? args.Row.GetField<double?>("location_y") : null);
+
+            // Define all optional properties of Borehole (ef navigation properties do not need to be defined as optional).
+            Map(m => m.Id).Optional();
+            Map(m => m.CreatedById).Optional();
+            Map(m => m.Created).Optional();
+            Map(m => m.Updated).Optional();
+            Map(m => m.UpdatedById).Optional();
+            Map(m => m.Locked).Optional();
+            Map(m => m.LockedById).Optional();
+            Map(m => m.WorkgroupId).Optional();
+            Map(m => m.IsPublic).Optional();
+            Map(m => m.KindId).Optional();
+            Map(m => m.ElevationZ).Optional();
+            Map(m => m.HrsId).Optional();
+            Map(m => m.TotalDepth).Optional();
+            Map(m => m.RestrictionId).Optional();
+            Map(m => m.RestrictionUntil).Optional();
+            Map(m => m.AlternateName).Optional();
+            Map(m => m.QtLocationId).Optional();
+            Map(m => m.QtElevationId).Optional();
+            Map(m => m.ProjectName).Optional();
+            Map(m => m.DrillingMethodId).Optional();
+            Map(m => m.DrillingDate).Optional();
+            Map(m => m.CuttingsId).Optional();
+            Map(m => m.PurposeId).Optional();
+            Map(m => m.DrillingDiameter).Optional();
+            Map(m => m.StatusId).Optional();
+            Map(m => m.Inclination).Optional();
+            Map(m => m.InclinationDirection).Optional();
+            Map(m => m.QtInclinationDirectionId).Optional();
+            Map(m => m.QtDepthId).Optional();
+            Map(m => m.TopBedrock).Optional();
+            Map(m => m.QtTopBedrockId).Optional();
+            Map(m => m.HasGroundwater).Optional();
+            Map(m => m.Remarks).Optional();
+            Map(m => m.LithologyTopBedrockId).Optional();
+            Map(m => m.LithostratigraphyId).Optional();
+            Map(m => m.ChronostratigraphyId).Optional();
+            Map(m => m.SpudDate).Optional();
+            Map(m => m.TopBedrockTvd).Optional();
+            Map(m => m.QtTopBedrockTvdId).Optional();
+            Map(m => m.ReferenceElevation).Optional();
+            Map(m => m.QtReferenceElevationId).Optional();
+            Map(m => m.ReferenceElevationTypeId).Optional();
+            Map(m => m.TotalDepthTvd).Optional();
+            Map(m => m.QtTotalDepthTvdId).Optional();
+            Map(m => m.LocationX).Optional();
+            Map(m => m.LocationY).Optional();
+            Map(m => m.LocationXLV03).Optional();
+            Map(m => m.LocationYLV03).Optional();
+            Map(m => m.OriginalReferenceSystem).Optional();
+
+            // Define properties to ignore
+            Map(b => b.Municipality).Ignore();
+            Map(b => b.Canton).Ignore();
+            Map(b => b.Country).Ignore();
+
+            // Define additional mapping logic
             Map(m => m.BoreholeCodelists).Convert(args =>
             {
                 var boreholeCodelists = new List<BoreholeCodelist>();
@@ -172,25 +272,23 @@ public class UploadController : ControllerBase
                     ("id_kernlager", 100000011),
                 }.ForEach(id =>
                 {
-                    var value = args.Row.GetField<string>(id.Name);
-                    if (!string.IsNullOrEmpty(value))
+                    if (args.Row.HeaderRecord != null && args.Row.HeaderRecord.Any(h => h == id.Name))
                     {
-                        boreholeCodelists.Add(new BoreholeCodelist
+                        var value = args.Row.GetField<string?>(id.Name);
+                        if (!string.IsNullOrEmpty(value))
                         {
-                            CodelistId = id.CodeListId,
-                            SchemaName = "borehole_identifier",
-                            Value = value,
-                        });
+                            boreholeCodelists.Add(new BoreholeCodelist
+                            {
+                                CodelistId = id.CodeListId,
+                                SchemaName = "borehole_identifier",
+                                Value = value,
+                            });
+                        }
                     }
                 });
 
                 return boreholeCodelists;
             });
-
-            // Ignore properties that get calculated based on x- and y-coordinates.
-            Map(b => b.Municipality).Ignore();
-            Map(b => b.Canton).Ignore();
-            Map(b => b.Country).Ignore();
         }
     }
 
