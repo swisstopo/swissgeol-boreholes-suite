@@ -201,6 +201,8 @@ const Profile = props => {
                   onUpdated,
                   attribute: attributesBasedKind?.profileInfo,
                   boreholeID: borehole.data.id,
+                  // If the stratigraphy is a chronostratigraphy, we don't want to allow the user to copy or delete it
+                  allowCopyAndDelete: !isChronostratigraphy,
                 }}
               />
 

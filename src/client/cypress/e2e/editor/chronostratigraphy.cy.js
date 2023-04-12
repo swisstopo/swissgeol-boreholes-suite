@@ -71,6 +71,7 @@ describe("Tests for the chronostratigraphy editor.", () => {
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");
     cy.wait("@chronostratigraphy_GET");
+    cy.get(".clone outline icon").should("not.exist");
     cy.wait(2000); // wait to increase the chance that the lithology displays correctly
   });
 
