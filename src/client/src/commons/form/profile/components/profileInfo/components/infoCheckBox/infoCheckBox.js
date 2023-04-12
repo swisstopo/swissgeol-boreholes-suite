@@ -41,7 +41,7 @@ const InfoCheckBox = props => {
         )}
       </Styled.FormContainer>
       {isEditable && allowCopyAndDelete && (
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex" }} data-cy="clone-and-delete-buttons">
           <Button
             // disabled={!_.isEmpty(consistency)}
             icon

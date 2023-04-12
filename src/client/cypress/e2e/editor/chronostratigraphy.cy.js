@@ -71,7 +71,6 @@ describe("Tests for the chronostratigraphy editor.", () => {
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");
     cy.wait("@chronostratigraphy_GET");
-    cy.get(".clone outline icon").should("not.exist");
     cy.wait(2000); // wait to increase the chance that the lithology displays correctly
   });
 
@@ -85,6 +84,9 @@ describe("Tests for the chronostratigraphy editor.", () => {
       '[data-cy="chrono-layers"]:nth-child(1) [data-testid="EditIcon"]',
     ).click();
     cy.get('[data-cy="chrono-layers"]:nth-child(1) :nth-child(4)').click();
+
+    // Ensure clone and delete buttons in header are disabled for chronostratigraphy.
+    cy.get('[data-cy="clone-and-delete-buttons"]').should("not.exist");
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
       .find('[role="option"]')
