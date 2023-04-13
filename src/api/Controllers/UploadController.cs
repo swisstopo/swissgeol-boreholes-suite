@@ -128,7 +128,7 @@ public class UploadController : ControllerBase
     {
         var boreholesFromDb = context.Boreholes
             .AsNoTracking()
-            .Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY})
+            .Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY })
             .ToList();
 
         foreach (var borehole in boreholes.Select((value, index) => (value, index)))
@@ -148,7 +148,7 @@ public class UploadController : ControllerBase
                 ModelState.AddModelError($"Row{borehole.index}", "Field 'location_y' is invalid.");
             }
 
-            // Union borehole from db with boreholes from file. 
+            // Union borehole from db with boreholes from file.
             var allBoreholesExceptCurrent = boreholesFromDb.Union(boreholes
                  .Where((b, i) => i != borehole.index)
                  .Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY }));
