@@ -85,6 +85,9 @@ describe("Tests for the chronostratigraphy editor.", () => {
     ).click();
     cy.get('[data-cy="chrono-layers"]:nth-child(1) :nth-child(4)').click();
 
+    // Ensure clone and delete buttons in header are disabled for chronostratigraphy.
+    cy.get('[data-cy="clone-and-delete-buttons"]').should("not.exist");
+
     cy.get('.MuiPaper-elevation [role="listbox"]')
       .find('[role="option"]')
       .eq(1)
