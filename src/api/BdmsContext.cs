@@ -28,6 +28,8 @@ public class BdmsContext : DbContext
     public DbSet<LithologicalDescription> LithologicalDescriptions { get; set; }
     public DbSet<FaciesDescription> FaciesDescriptions { get; set; }
     public DbSet<ChronostratigraphyLayer> ChronostratigraphyLayers { get; set; }
+    public DbSet<Observation> Observations { get; set; }
+    public DbSet<WaterIngress> WaterIngresses { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)
@@ -159,5 +161,8 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Layer>().HasOne(l => l.Uscs2).WithMany().HasForeignKey(l => l.Uscs2Id);
         modelBuilder.Entity<Layer>().HasOne(l => l.UscsDetermination).WithMany().HasForeignKey(l => l.UscsDeterminationId);
         modelBuilder.Entity<Layer>().HasOne(l => l.InstrumentCasing).WithMany().HasForeignKey(l => l.InstrumentCasingId);
+
+        modelBuilder.Entity<Observation>().ToTable("observation");
+        modelBuilder.Entity<WaterIngress>().ToTable("water_ingress").HasBaseType<Observation>();
     }
 }
