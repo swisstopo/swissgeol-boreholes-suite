@@ -124,49 +124,50 @@ public class UploadController : ControllerBase
         }
     }
 
-    private void ValidateBoreholes(List<Borehole> boreholes)
+    private void ValidateBoreholes(List<Borehole> boreholesFromFile)
     {
         var boreholesFromDb = context.Boreholes
             .AsNoTracking()
             .Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY })
             .ToList();
 
-        foreach (var borehole in boreholes.Select((value, index) => (value, index)))
+        var boreholesCombined = boreholesFromDb.Concat(boreholesFromFile
+             .Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY }));
+
+        foreach (var boreholeFromFile in boreholesFromFile.Select((value, index) => (value, index)))
         {
-            if (string.IsNullOrEmpty(borehole.value.OriginalName))
+            if (string.IsNullOrEmpty(boreholeFromFile.value.OriginalName))
             {
-                ModelState.AddModelError($"Row{borehole.index}", "Field 'original_name' is invalid.");
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", "Field 'original_name' is invalid.");
             }
 
-            if (borehole.value.LocationX == null && borehole.value.LocationXLV03 == null)
+            if (boreholeFromFile.value.LocationX == null && boreholeFromFile.value.LocationXLV03 == null)
             {
-                ModelState.AddModelError($"Row{borehole.index}", "Field 'location_x' is invalid.");
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", "Field 'location_x' is invalid.");
             }
 
-            if (borehole.value.LocationY == null && borehole.value.LocationYLV03 == null)
+            if (boreholeFromFile.value.LocationY == null && boreholeFromFile.value.LocationYLV03 == null)
             {
-                ModelState.AddModelError($"Row{borehole.index}", "Field 'location_y' is invalid.");
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", "Field 'location_y' is invalid.");
             }
 
-            // Union borehole from db with boreholes from file.
-            var allBoreholesExceptCurrent = boreholesFromDb.Union(boreholes
-                 .Where((b, i) => i != borehole.index)
-                 .Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY }));
-
+            // TODO: Refactor logic to determine wether the dupliacted borehole is in the db or the provided file (#584)
+            // Until refactoring check for duplicatedBoreholes.Count > 1.
             // Check if borehole with same coordinates (in tolerance) and same total depth occurs mutliple times in list.
-            var duplicatedBorehole = allBoreholesExceptCurrent
-                .FirstOrDefault(b =>
-                    CompareValuesWithTolerance(b.TotalDepth, borehole.value.TotalDepth, 0) &&
-                    CompareValuesWithTolerance(b.LocationX, borehole.value.LocationX, 2) &&
-                    CompareValuesWithTolerance(b.LocationY, borehole.value.LocationY, 2));
+            var duplicatedBoreholes = boreholesCombined
+                .Where(b =>
+                    CompareValuesWithTolerance(b.TotalDepth, boreholeFromFile.value.TotalDepth, 0) &&
+                    CompareValuesWithTolerance(b.LocationX, boreholeFromFile.value.LocationX, 2) &&
+                    CompareValuesWithTolerance(b.LocationY, boreholeFromFile.value.LocationY, 2))
+                .ToList();
 
-            if (duplicatedBorehole != null)
+            if (duplicatedBoreholes.Count > 1)
             {
                 // Adjust error msg depending on where the duplicated borehole is (db or file).
                 var errorMsg = $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)}";
-                errorMsg += duplicatedBorehole.Id == 0 ? " is provied multiple times." : " already exists in database.";
+                errorMsg += duplicatedBoreholes.Any(x => x.Id > 0) ? " already exists in database." : " is provied multiple times.";
 
-                ModelState.AddModelError($"Row{borehole.index}", errorMsg);
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", errorMsg);
             }
         }
     }
