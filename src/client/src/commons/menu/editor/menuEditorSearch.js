@@ -400,7 +400,7 @@ class MenuEditorSearch extends React.Component {
         open={this.state.validationErrorModal === true}
         size="tiny">
         <Header content={t("validationErrorHeader")} />
-        <Modal.Content>
+        <Modal.Content style={{ maxHeight: "70vh", overflow: "auto" }}>
           {this.state.errorResponse && (
             <div>
               {/* In case of API response type ProblemDetails */}
@@ -411,18 +411,19 @@ class MenuEditorSearch extends React.Component {
                   .map((item, i) => <li key={item + i}>{item}</li>)}
               {/* In case of API response type ValidationProblemDetails */}
               {this.state.errorResponse.errors &&
-                Object.entries(this.state.errorResponse.errors).map(
-                  ([key, value], index) => (
-                    <div key={key + index}>
+                Object.entries(this.state.errorResponse.errors)
+                  // only display error messages for keys that are not empty
+                  .filter(([key]) => key !== "")
+                  .map(([key, value], index) => (
+                    <div key={key + index + 1}>
                       <div>
-                        {t("row")} {index}
+                        {t("row")} {index + 1}
                       </div>
                       {value.map((item, i) => (
                         <li key={item + i}>{item}</li>
                       ))}
                     </div>
-                  ),
-                )}
+                  ))}
             </div>
           )}
         </Modal.Content>
