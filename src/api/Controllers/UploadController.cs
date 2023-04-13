@@ -126,6 +126,11 @@ public class UploadController : ControllerBase
 
     private void ValidateBoreholes(List<Borehole> boreholes)
     {
+        var boreholesFromDb = context.Boreholes
+            .AsNoTracking()
+            .Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY})
+            .ToList();
+
         foreach (var borehole in boreholes.Select((value, index) => (value, index)))
         {
             if (string.IsNullOrEmpty(borehole.value.OriginalName))
@@ -143,50 +148,35 @@ public class UploadController : ControllerBase
                 ModelState.AddModelError($"Row{borehole.index}", "Field 'location_y' is invalid.");
             }
 
-            // Check if borehole with same coordinates and same total depth is provided multiple times.
-            var duplicatedBoreholeInFile = boreholes
-                .Where((b, i) => i != borehole.index)
+            // Union borehole from db with boreholes from file. 
+            var allBoreholesExceptCurrent = boreholesFromDb.Union(boreholes
+                 .Where((b, i) => i != borehole.index)
+                 .Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY }));
+
+            // Check if borehole with same coordinates (in tolerance) and same total depth occurs mutliple times in list.
+            var duplicatedBorehole = allBoreholesExceptCurrent
                 .FirstOrDefault(b =>
                     CompareValuesWithTolerance(b.TotalDepth, borehole.value.TotalDepth, 0) &&
                     CompareValuesWithTolerance(b.LocationX, borehole.value.LocationX, 2) &&
                     CompareValuesWithTolerance(b.LocationY, borehole.value.LocationY, 2));
 
-            if (duplicatedBoreholeInFile != null)
+            if (duplicatedBorehole != null)
             {
-                ModelState.AddModelError($"Row{borehole.index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provied multiple times.");
-            }
+                // Adjust error msg depending on where the duplicated borehole is (db or file).
+                var errorMsg = $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)}";
+                errorMsg += duplicatedBorehole.Id == 0 ? " is provied multiple times." : " already exists in database.";
 
-            // Check if borehole with same coordinates and same total depth already exists in database.
-            var duplicatedBoreholeInDb = context.Boreholes
-                .FirstOrDefault(x =>
-
-                    // Check if TotalDepth values are both null or equal with no tolerance
-                    ((x.TotalDepth == null && borehole.value.TotalDepth == null) ||
-                        (x.TotalDepth != null && borehole.value.TotalDepth != null && Math.Abs(x.TotalDepth.Value - borehole.value.TotalDepth.Value) <= 0))
-                    &&
-
-                    // Check if LocationX values are both null or equal with tolerance of 2m
-                    ((x.LocationX == null && borehole.value.LocationX == null) ||
-                        (x.LocationX != null && borehole.value.LocationX != null && Math.Abs(x.LocationX.Value - borehole.value.LocationX.Value) <= 2))
-                    &&
-
-                    // Check if LocationY values are both null or equal with tolerance of 2m
-                    ((x.LocationY == null && borehole.value.LocationY == null) ||
-                        (x.LocationY != null && borehole.value.LocationY != null && Math.Abs(x.LocationY.Value - borehole.value.LocationY.Value) <= 2)));
-
-            if (duplicatedBoreholeInDb != null)
-            {
-                ModelState.AddModelError($"Row{borehole.index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.");
+                ModelState.AddModelError($"Row{borehole.index}", errorMsg);
             }
         }
     }
 
-    public static bool CompareValuesWithTolerance(double? value1, double? value2, double tolerance)
+    internal static bool CompareValuesWithTolerance(double? firstValue, double? secondValue, double tolerance)
     {
-        if (value1 == null && value2 == null) return true;
-        if (value1 == null || value2 == null) return false;
+        if (firstValue == null && secondValue == null) return true;
+        if (firstValue == null || secondValue == null) return false;
 
-        return Math.Abs(value1.Value - value2.Value) <= tolerance;
+        return Math.Abs(firstValue.Value - secondValue.Value) <= tolerance;
     }
 
     private List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file)
@@ -243,7 +233,6 @@ public class UploadController : ControllerBase
             AutoMap(config);
 
             // Define all optional properties of Borehole (ef navigation properties do not need to be defined as optional).
-            Map(m => m.Id).Optional();
             Map(m => m.CreatedById).Optional();
             Map(m => m.Created).Optional();
             Map(m => m.Updated).Optional();
@@ -297,6 +286,7 @@ public class UploadController : ControllerBase
             Map(b => b.Municipality).Ignore();
             Map(b => b.Canton).Ignore();
             Map(b => b.Country).Ignore();
+            Map(m => m.Id).Ignore();
 
             // Define additional mapping logic
             Map(m => m.BoreholeCodelists).Convert(args =>
