@@ -401,34 +401,30 @@ class MenuEditorSearch extends React.Component {
         size="tiny">
         <Header content={t("validationErrorHeader")} />
         <Modal.Content>
-          {_.isNil(this.state.errorResponse) === false ? (
-            _.isNil(this.state.errorResponse.errors) ? (
-              <div>
-                {this.state.errorResponse.detail &&
-                  this.state.errorResponse.detail
-                    .split("\n")
-                    .filter(subString => subString.includes("was not found"))
-                    .map((item, i) => <li key={item + i}>{item}</li>)}
-              </div>
-            ) : (
-              <>
-                <div>
-                  {Object.keys(this.state.errorResponse.errors).map(
-                    (key, index) => (
-                      <div key={key + index}>
-                        <div>
-                          {t("row")} {index}
-                        </div>
-                        {this.state.errorResponse.errors[key].map((item, i) => (
-                          <li key={item + i}>{item}</li>
-                        ))}
+          {this.state.errorResponse && (
+            <div>
+              {/* In case of API response type ProblemDetails */}
+              {this.state.errorResponse.detail &&
+                this.state.errorResponse.detail
+                  .split("\n")
+                  .filter(subString => subString.includes("was not found"))
+                  .map((item, i) => <li key={item + i}>{item}</li>)}
+              {/* In case of API response type ValidationProblemDetails */}
+              {this.state.errorResponse.errors &&
+                Object.entries(this.state.errorResponse.errors).map(
+                  ([key, value], index) => (
+                    <div key={key + index}>
+                      <div>
+                        {t("row")} {index}
                       </div>
-                    ),
-                  )}
-                </div>
-              </>
-            )
-          ) : null}
+                      {value.map((item, i) => (
+                        <li key={item + i}>{item}</li>
+                      ))}
+                    </div>
+                  ),
+                )}
+            </div>
+          )}
         </Modal.Content>
       </Modal>,
     ];
