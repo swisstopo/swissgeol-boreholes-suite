@@ -141,26 +141,62 @@ public class UploadController : ControllerBase
         }
     }
 
-    private void ValidateBoreholes(List<Borehole> boreholes)
+    private void ValidateBoreholes(List<Borehole> boreholesFromFile)
     {
+        var boreholesFromDb = context.Boreholes
+            .AsNoTracking()
+            .Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY })
+            .ToList();
+
+        var boreholesCombined = boreholesFromDb
+            .Concat(boreholesFromFile.Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY }))
+            .ToList();
+
         var nullOrEmptyMsg = "Field '{0}' is required.";
-        foreach (var borehole in boreholes.Select((value, index) => (value, index)))
+        foreach (var boreholeFromFile in boreholesFromFile.Select((value, index) => (value, index)))
         {
-            if (string.IsNullOrEmpty(borehole.value.OriginalName))
+            if (string.IsNullOrEmpty(boreholeFromFile.value.OriginalName))
             {
-                ModelState.AddModelError($"Row{borehole.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"));
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"));
             }
 
-            if (borehole.value.LocationX == null && borehole.value.LocationXLV03 == null)
+            if (boreholeFromFile.value.LocationX == null && boreholeFromFile.value.LocationXLV03 == null)
             {
-                ModelState.AddModelError($"Row{borehole.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"));
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"));
             }
 
-            if (borehole.value.LocationY == null && borehole.value.LocationYLV03 == null)
+            if (boreholeFromFile.value.LocationY == null && boreholeFromFile.value.LocationYLV03 == null)
             {
-                ModelState.AddModelError($"Row{borehole.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
+            }
+
+            // TODO: Refactor logic to determine wether the dupliacted borehole is in the db or the provided file (#584)
+            // Until refactoring check for duplicatedBoreholes.Count > 1.
+            // Check if borehole with same coordinates (in tolerance) and same total depth occurs mutliple times in list.
+            var duplicatedBoreholes = boreholesCombined
+                .Where(b =>
+                    CompareValuesWithTolerance(b.TotalDepth, boreholeFromFile.value.TotalDepth, 0) &&
+                    CompareValuesWithTolerance(b.LocationX, boreholeFromFile.value.LocationX, 2) &&
+                    CompareValuesWithTolerance(b.LocationY, boreholeFromFile.value.LocationY, 2))
+                .ToList();
+
+            if (duplicatedBoreholes.Count > 1)
+            {
+                // Adjust error msg depending on where the duplicated borehole is (db or file).
+                var errorMsg = $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)}";
+                errorMsg += duplicatedBoreholes.Any(x => x.Id > 0) ? " already exists in database." : " is provied multiple times.";
+
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", errorMsg);
             }
         }
+    }
+
+    internal static bool CompareValuesWithTolerance(double? firstValue, double? secondValue, double tolerance)
+    {
+        if (firstValue == null && secondValue == null) return true;
+        if (firstValue == null || secondValue == null) return false;
+
+        return Math.Abs(firstValue.Value - secondValue.Value) <= tolerance;
     }
 
     private List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file)
@@ -217,7 +253,6 @@ public class UploadController : ControllerBase
             AutoMap(config);
 
             // Define all optional properties of Borehole (ef navigation properties do not need to be defined as optional).
-            Map(m => m.Id).Optional();
             Map(m => m.CreatedById).Optional();
             Map(m => m.Created).Optional();
             Map(m => m.Updated).Optional();
@@ -271,6 +306,7 @@ public class UploadController : ControllerBase
             Map(b => b.Municipality).Ignore();
             Map(b => b.Canton).Ignore();
             Map(b => b.Country).Ignore();
+            Map(m => m.Id).Ignore();
 
             // Define additional mapping logic
             Map(m => m.BoreholeCodelists).Convert(args =>
