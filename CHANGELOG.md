@@ -14,6 +14,7 @@
 - Support `ID Kernlager` (_drill core storage facility ID_) in csv import.
 - Remove _clone_ and _delete_ icons in chronostratigraphy header.
 - Make csv import validation error modal content scrollable.
+- Replace csv import validation messages with more specific messages.
 - Update csv borehole upload endpoint to additionally handle list of PDF's.
 
 ### Fixed
