@@ -334,12 +334,18 @@ public class UploadControllerTest
         string fileContent = "original_name;location_x;location_y\r\nFrank Place;2000000;1000000";
         byte[] fileBytes = Encoding.UTF8.GetBytes(fileContent);
         var boreholeCsvFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "invalid_file_type.csv");
-        var firstPdfFile = new FormFile(new MemoryStream(fileBytes), 0, 0, null, "first_pdf.pdf");
-        var secondPdfFile = new FormFile(new MemoryStream(fileBytes), 0, 0, null, "second_pdf.pdf");
+
+        var firstPdfFile = "borehole_attachment_1.pdf";
+        fileBytes = File.ReadAllBytes(firstPdfFile);
+        var firstPdfFormFile = new FormFile(new MemoryStream(File.ReadAllBytes(firstPdfFile)), 0, fileBytes.Length, null, "first_pdf.pdf");
+
+        var secondPdfFile = "borehole_attachment_2.pdf";
+        fileBytes = File.ReadAllBytes(secondPdfFile);
+        var secondPdfFormFile = new FormFile(new MemoryStream(File.ReadAllBytes(secondPdfFile)), 0, fileBytes.Length, null, "second_pdf.pdf");
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
                                                                       boreholesFile: boreholeCsvFile,
-                                                                      pdfAttachments: new List<IFormFile>() { firstPdfFile, secondPdfFile });
+                                                                      pdfAttachments: new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -351,18 +357,57 @@ public class UploadControllerTest
     {
         string fileContent = "This is the content of the file."; // set file content
         byte[] fileBytes = Encoding.UTF8.GetBytes(fileContent);
-        var firstPdfFile = new FormFile(new MemoryStream(fileBytes), 0, 0, null, "first_pdf.pdf");
-        var secondPdfFile = new FormFile(new MemoryStream(fileBytes), 0, 0, null, "second_pdf.xls");
-
         var boreholeCsvFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "boreholes.csv");
+
+        var firstPdfFile = "borehole_attachment_1.pdf";
+        fileBytes = File.ReadAllBytes(firstPdfFile);
+        var firstPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "first_pdf.pdf");
+
+        var secondPdfFile = "borehole_attachment_with_wrong_extension.txt";
+        fileBytes = File.ReadAllBytes(secondPdfFile);
+        var secondPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "borehole_attachment_with_wrong_extension.txt");
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
                                                                       boreholesFile: boreholeCsvFile,
-                                                                      pdfAttachments: new List<IFormFile>() { firstPdfFile, secondPdfFile });
+                                                                      pdfAttachments: new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
         Assert.AreEqual("Invalid file type for pdf attachment.", badRequestResult.Value);
+    }
+
+    [TestMethod]
+    public void IsCorrectFileType()
+    {
+        string fileContent = "This is the content of the file."; // set file content
+        byte[] fileBytes = Encoding.UTF8.GetBytes(fileContent);
+        var validCsvFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "boreholes.csv");
+        Assert.AreEqual(true, FileTypeChecker.IsCorrectFileType(validCsvFile, ".csv"));
+
+        var emptyCsvFile = new FormFile(null, 0, fileBytes.Length, null, "boreholes.csv");
+        Assert.AreEqual(true, FileTypeChecker.IsCorrectFileType(emptyCsvFile, ".csv"));
+
+        var invalidCsvFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "boreholes.txt");
+        Assert.AreEqual(false, FileTypeChecker.IsCorrectFileType(invalidCsvFile, ".csv"));
+
+        fileBytes = File.ReadAllBytes("borehole_attachment_1.pdf");
+        var validPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "attachment.pdf");
+        Assert.AreEqual(true, FileTypeChecker.IsCorrectFileType(validPdfFormFile, ".pdf"));
+
+        var zeroBytesFormFile = new FormFile(null, 0, 0, null, "attachment.pdf");
+        Assert.AreEqual(false, FileTypeChecker.IsCorrectFileType(zeroBytesFormFile, ".pdf"));
+
+        fileBytes = File.ReadAllBytes("borehole_attachment_with_wrong_extension.txt");
+        var invalidExtensionPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "borehole_attachment_with_wrong_extension.txt");
+        Assert.AreEqual(false, FileTypeChecker.IsCorrectFileType(invalidExtensionPdfFormFile, ".pdf"));
+
+        fileBytes = Encoding.UTF8.GetBytes("This is not a PDF.");
+        var invalidHeaderBytesPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "attachment.pdf");
+        Assert.AreEqual(false, FileTypeChecker.IsCorrectFileType(invalidHeaderBytesPdfFormFile, ".pdf"));
+
+        fileBytes = File.ReadAllBytes("empty_attachment.pdf");
+        var emptyPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "attachment.pdf");
+        Assert.AreEqual(true, FileTypeChecker.IsCorrectFileType(emptyPdfFormFile, ".pdf"));
     }
 
     [TestMethod]
