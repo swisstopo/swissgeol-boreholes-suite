@@ -131,8 +131,9 @@ public class UploadController : ControllerBase
             .Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY })
             .ToList();
 
-        var boreholesCombined = boreholesFromDb.Concat(boreholesFromFile
-             .Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY }));
+        var boreholesCombined = boreholesFromDb
+            .Concat(boreholesFromFile.Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY }))
+            .ToList();
 
         foreach (var boreholeFromFile in boreholesFromFile.Select((value, index) => (value, index)))
         {
