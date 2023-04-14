@@ -140,17 +140,17 @@ public class UploadController : ControllerBase
         {
             if (string.IsNullOrEmpty(boreholeFromFile.value.OriginalName))
             {
-                ModelState.AddModelError($"Row{borehole.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"));
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"));
             }
 
             if (boreholeFromFile.value.LocationX == null && boreholeFromFile.value.LocationXLV03 == null)
             {
-                ModelState.AddModelError($"Row{borehole.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"));
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"));
             }
 
             if (boreholeFromFile.value.LocationY == null && boreholeFromFile.value.LocationYLV03 == null)
             {
-                ModelState.AddModelError($"Row{borehole.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
             }
 
             // TODO: Refactor logic to determine wether the dupliacted borehole is in the db or the provided file (#584)
