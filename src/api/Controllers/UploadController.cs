@@ -52,8 +52,7 @@ public class UploadController : ControllerBase
             }
 
             // Check if the boreholeCsv extension is ".csv"
-            var boreholeCsvExtension = Path.GetExtension(boreholesFile.FileName);
-            if (boreholeCsvExtension == null || !boreholeCsvExtension.Equals(".csv", StringComparison.OrdinalIgnoreCase))
+            if (!FileTypeChecker.IsCorrectFileType(boreholesFile, ".csv"))
             {
                 return BadRequest("Invalid file type for borehole csv.");
             }
@@ -61,13 +60,9 @@ public class UploadController : ControllerBase
             // Check if the pdfAttachments extensions are ".pdf"
             if (pdfAttachments != null && pdfAttachments.Count > 0)
             {
-                foreach (var pdfAttachment in pdfAttachments)
+                if (pdfAttachments.Any(pdfFile => !FileTypeChecker.IsCorrectFileType(pdfFile, ".pdf")))
                 {
-                    var pdfAttachmentExtension = Path.GetExtension(pdfAttachment.FileName);
-                    if (pdfAttachmentExtension == null || !pdfAttachmentExtension.Equals(".pdf", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return BadRequest("Invalid file type for pdf attachment.");
-                    }
+                    return BadRequest("Invalid file type for pdf attachment.");
                 }
             }
 
