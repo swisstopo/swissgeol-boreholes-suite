@@ -12,9 +12,9 @@ RUN npm install
 
 # Build docs
 RUN mkdir -p docs
-COPY ./docs ./mkdocs.yml ./
-RUN pip install mkdocs 
-RUN mkdocs build -d ./public/help
+COPY ./docs ./docs
+COPY ./mkdocs.yml ./
+RUN pip install mkdocs && mkdocs build -d ./public/help
 
 ENTRYPOINT npm run start
 
@@ -28,6 +28,7 @@ RUN npm install -g serve
 RUN mkdir /app
 WORKDIR /app
 COPY --from=development /app/src/client/node_modules /app/node_modules
+COPY --from=development /app/src/client/public/help /app/src/client/public/help
 COPY . .
 RUN npm run build
 
