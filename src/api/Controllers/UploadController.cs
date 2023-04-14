@@ -126,7 +126,7 @@ public class UploadController : ControllerBase
 
     private void ValidateBoreholes(List<Borehole> boreholes)
     {
-        var nullOrEmptyMsg = "Field '{0}' is not provided.";
+        var nullOrEmptyMsg = "Field '{0}' is required.";
         foreach (var borehole in boreholes.Select((value, index) => (value, index)))
         {
             if (string.IsNullOrEmpty(borehole.value.OriginalName))
