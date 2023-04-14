@@ -126,21 +126,22 @@ public class UploadController : ControllerBase
 
     private void ValidateBoreholes(List<Borehole> boreholes)
     {
+        var nullOrEmptyMsg = "Field '{0}' is not provided.";
         foreach (var borehole in boreholes.Select((value, index) => (value, index)))
         {
             if (string.IsNullOrEmpty(borehole.value.OriginalName))
             {
-                ModelState.AddModelError($"Row{borehole.index}", "Field 'original_name' is invalid.");
+                ModelState.AddModelError($"Row{borehole.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"));
             }
 
             if (borehole.value.LocationX == null && borehole.value.LocationXLV03 == null)
             {
-                ModelState.AddModelError($"Row{borehole.index}", "Field 'location_x' is invalid.");
+                ModelState.AddModelError($"Row{borehole.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"));
             }
 
             if (borehole.value.LocationY == null && borehole.value.LocationYLV03 == null)
             {
-                ModelState.AddModelError($"Row{borehole.index}", "Field 'location_y' is invalid.");
+                ModelState.AddModelError($"Row{borehole.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
             }
         }
     }

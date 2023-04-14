@@ -191,7 +191,7 @@ public class UploadControllerTest
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
 
-        CollectionAssert.AreEquivalent(new[] { "Field 'location_x' is invalid.", "Field 'location_y' is invalid." }, problemDetails.Errors["Row0"]);
+        CollectionAssert.AreEquivalent(new[] { "Field 'location_x' is not provided.", "Field 'location_y' is not provided." }, problemDetails.Errors["Row0"]);
     }
 
     [TestMethod]
@@ -354,12 +354,12 @@ public class UploadControllerTest
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(2, problemDetails.Errors.Count);
 
-        CollectionAssert.AreEquivalent(new[] { "Field 'location_y' is invalid." }, problemDetails.Errors["Row1"]);
+        CollectionAssert.AreEquivalent(new[] { "Field 'location_y' is not provided." }, problemDetails.Errors["Row1"]);
         CollectionAssert.AreEquivalent(new[]
         {
-            "Field 'original_name' is invalid.",
-            "Field 'location_x' is invalid.",
-            "Field 'location_y' is invalid.",
+            "Field 'original_name' is not provided.",
+            "Field 'location_x' is not provided.",
+            "Field 'location_y' is not provided.",
         },
         problemDetails.Errors["Row2"]);
     }
