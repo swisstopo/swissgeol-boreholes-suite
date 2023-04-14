@@ -135,21 +135,22 @@ public class UploadController : ControllerBase
             .Concat(boreholesFromFile.Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY }))
             .ToList();
 
+        var nullOrEmptyMsg = "Field '{0}' is required.";
         foreach (var boreholeFromFile in boreholesFromFile.Select((value, index) => (value, index)))
         {
             if (string.IsNullOrEmpty(boreholeFromFile.value.OriginalName))
             {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", "Field 'original_name' is invalid.");
+                ModelState.AddModelError($"Row{borehole.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"));
             }
 
             if (boreholeFromFile.value.LocationX == null && boreholeFromFile.value.LocationXLV03 == null)
             {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", "Field 'location_x' is invalid.");
+                ModelState.AddModelError($"Row{borehole.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"));
             }
 
             if (boreholeFromFile.value.LocationY == null && boreholeFromFile.value.LocationYLV03 == null)
             {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", "Field 'location_y' is invalid.");
+                ModelState.AddModelError($"Row{borehole.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
             }
 
             // TODO: Refactor logic to determine wether the dupliacted borehole is in the db or the provided file (#584)
