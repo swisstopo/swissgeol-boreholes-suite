@@ -132,7 +132,7 @@ public class UploadControllerTest
         Assert.AreEqual(null, borehole.Canton);
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);
-        Assert.AreEqual("POINT (2000000 1000000)", borehole.Geometry.ToString());
+        Assert.AreEqual("POINT (2000010 1000010)", borehole.Geometry.ToString());
 
         // Assert workflow was created for borehole.
         var workflow = context.Workflows.SingleOrDefault(w => w.BoreholeId == borehole.Id);
@@ -384,6 +384,97 @@ public class UploadControllerTest
         StringAssert.Contains(problemDetails.Detail, "Header with name 'Location_x'[0] was not found.");
         StringAssert.Contains(problemDetails.Detail, "Header with name 'Location_y'[0] was not found.");
         StringAssert.Contains(problemDetails.Detail, "Header with name 'OriginalName'[0] was not found.");
+    }
+
+    [TestMethod]
+    public async Task UploadDuplicateBoreholesInFileShouldReturnError()
+    {
+        var csvFile = "duplicateBoreholesInFile.csv";
+
+        byte[] fileBytes = File.ReadAllBytes(csvFile);
+        using var stream = new MemoryStream(fileBytes);
+
+        var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        Assert.AreEqual(2, problemDetails.Errors.Count);
+
+        CollectionAssert.AreEquivalent(new[]
+        {
+            $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provied multiple times.",
+        },
+        problemDetails.Errors["Row0"]);
+        CollectionAssert.AreEquivalent(new[]
+        {
+            $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provied multiple times.",
+        },
+        problemDetails.Errors["Row1"]);
+    }
+
+    [TestMethod]
+    public async Task UploadDuplicateBoreholesInDbShouldReturnError()
+    {
+        // Create Boreholes with same LocationX, LocationY and TotalDepth as in provided csv.
+        context.Boreholes.Add(new Borehole
+        {
+            Id = 2100000,
+            LocationX = 2100000,
+            LocationY = 1100000,
+            TotalDepth = 855,
+        });
+        context.Boreholes.Add(new Borehole
+        {
+            Id = 2100001,
+            LocationX = 2500000,
+            LocationY = 1500000,
+            TotalDepth = null,
+        });
+        context.SaveChanges();
+
+        var csvFile = "duplicateBoreholesInDb.csv";
+
+        byte[] fileBytes = File.ReadAllBytes(csvFile);
+        using var stream = new MemoryStream(fileBytes);
+
+        var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        Assert.AreEqual(2, problemDetails.Errors.Count);
+
+        CollectionAssert.AreEquivalent(new[]
+        {
+            $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.",
+        },
+        problemDetails.Errors["Row0"]);
+        CollectionAssert.AreEquivalent(new[]
+        {
+            $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.",
+        },
+        problemDetails.Errors["Row1"]);
+    }
+
+    [TestMethod]
+    public void CompareValueWithTolerance()
+    {
+        Assert.AreEqual(true, UploadController.CompareValuesWithTolerance(null, null, 0));
+        Assert.AreEqual(true, UploadController.CompareValuesWithTolerance(2100000, 2099998, 2));
+        Assert.AreEqual(false, UploadController.CompareValuesWithTolerance(2100000, 2000098, 1.99));
+        Assert.AreEqual(false, UploadController.CompareValuesWithTolerance(2100002, 2000000, 1.99));
+        Assert.AreEqual(false, UploadController.CompareValuesWithTolerance(21000020, 2000000, 20));
+        Assert.AreEqual(false, UploadController.CompareValuesWithTolerance(null, 2000000, 0));
+        Assert.AreEqual(false, UploadController.CompareValuesWithTolerance(2000000, null, 2));
     }
 
     [TestMethod]

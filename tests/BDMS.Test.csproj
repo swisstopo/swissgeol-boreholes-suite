@@ -32,6 +32,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestData\duplicateBoreholesInDb.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\duplicateBoreholesInFile.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\no_data_but_required_headers.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
