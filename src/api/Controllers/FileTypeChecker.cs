@@ -1,40 +1,63 @@
 ﻿namespace BDMS.Controllers;
 
+/// <summary>
+/// Represents a class for checking the type of a file.
+/// </summary>
 public static class FileTypeChecker
 {
+    // The magic number for a pdf file.
     private static readonly byte[] PDF = { 37, 80, 68, 70 };
 
     /// <summary>
-    /// Checks if the file is of the expected type. If applicable, the file is checked for the file's magic number.
+    /// Checks if the <paramref name="file"/> is a csv file.
     /// </summary>
-    /// <param name="file"></param>
+    /// <param name="file">The file to check the type for.</param>
+    /// <returns><c>true</c> if the <paramref name="file"/> is a csv file; <c>false</c> otherwise.</returns>
+    public static bool IsCsv(IFormFile file) => IsCorrectFileExtension(file, ".csv");
+
+    /// <summary>
+    /// Checks if the <paramref name="file"/> is a pdf file.
+    /// </summary>
+    /// <param name="file">The file to check the type for.</param>
+    /// <returns><c>true</c> if the <paramref name="file"/> is a pdf file; <c>false</c> otherwise.</returns>
+    public static bool IsPdf(IFormFile file)
+    {
+        if (IsCorrectFileExtension(file, ".pdf") == false) return false;
+
+        // Check if the file is empty. If it is, it is not a pdf.
+        if (file.Length == 0) return false;
+
+        // Check the magic number of the file.
+        return HasCorrectMagicNumber(file, PDF);
+    }
+
+    /// <summary>
+    /// Checks if the <paramref name="file"/> is of the expected type.
+    /// </summary>
+    /// <param name="file">The file to check the type for.</param>
     /// <param name="expectedFileExtension">Expected file extension e.g. '.csv'.</param>
-    /// <returns></returns>
-    public static bool IsCorrectFileType(IFormFile file, string expectedFileExtension)
+    /// <returns><c>true</c> if the <paramref name="file"/> is of the expected type; <c>false</c> otherwise.</returns>
+    public static bool IsCorrectFileExtension(IFormFile file, string expectedFileExtension)
     {
         var fileExtension = Path.GetExtension(file.FileName);
 
         if (fileExtension != expectedFileExtension) return false;
 
-        if (expectedFileExtension == ".pdf")
-        {
-            // Check if the file is empty. If it is, it is not a pdf.
-            if (file.Length == 0) return false;
-
-            using var fileStream = file.OpenReadStream();
-            byte[] bytes = new byte[4];
-            fileStream.Read(bytes, 0, 4);
-            return IsPdf(bytes);
-        }
-
         return true;
     }
 
     /// <summary>
-    /// Tests whether a byte array represents a PDF file.
-    /// The byte array is considered anything that starts with the <c>%PDF</c> <em>magic number</em>.
+    /// Tests whether the <paramref name="file"/> has the correct <em>magic number</em>.
     /// </summary>
-    /// <param name="buffer">The array of unsigned bytes to test.</param>
-    /// <returns><c>true</c> if <paramref name="buffer"/> represent a PDF; <c>false</c> otherwise.</returns>
-    public static bool IsPdf(byte[] buffer) => buffer.Take(PDF.Length).SequenceEqual(PDF);
+    /// <param name="file">The file to check the magic number for.</param>
+    /// <param name="magicNumber">The magic number to expected.</param>
+    /// <returns><c>true</c> if <paramref name="file"/> starts with the expected byte sequence; <c>false</c> otherwise.</returns>
+    public static bool HasCorrectMagicNumber(IFormFile file, byte[] magicNumber)
+    {
+        // Check magic number of pdf file.
+        using var fileStream = file.OpenReadStream();
+        byte[] bytes = new byte[magicNumber.Length];
+        fileStream.Read(bytes, 0, magicNumber.Length);
+        return bytes.Take(magicNumber.Length).SequenceEqual(magicNumber);
+    }
 }
