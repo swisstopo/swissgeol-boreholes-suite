@@ -13,7 +13,7 @@ public static class FileTypeChecker
     /// </summary>
     /// <param name="file">The file to check the type for.</param>
     /// <returns><c>true</c> if the <paramref name="file"/> is a csv file; <c>false</c> otherwise.</returns>
-    public static bool IsCsv(IFormFile file) => IsCorrectFileExtension(file, ".csv");
+    public static bool IsCsv(IFormFile file) => HasCorrectFileExtension(file, ".csv");
 
     /// <summary>
     /// Checks if the <paramref name="file"/> is a pdf file.
@@ -22,7 +22,7 @@ public static class FileTypeChecker
     /// <returns><c>true</c> if the <paramref name="file"/> is a pdf file; <c>false</c> otherwise.</returns>
     public static bool IsPdf(IFormFile file)
     {
-        if (IsCorrectFileExtension(file, ".pdf") == false) return false;
+        if (HasCorrectFileExtension(file, ".pdf") == false) return false;
 
         // Check if the file is empty. If it is, it is not a pdf.
         if (file.Length == 0) return false;
@@ -37,7 +37,7 @@ public static class FileTypeChecker
     /// <param name="file">The file to check the type for.</param>
     /// <param name="expectedFileExtension">Expected file extension e.g. '.csv'.</param>
     /// <returns><c>true</c> if the <paramref name="file"/> is of the expected type; <c>false</c> otherwise.</returns>
-    public static bool IsCorrectFileExtension(IFormFile file, string expectedFileExtension)
+    internal static bool HasCorrectFileExtension(IFormFile file, string expectedFileExtension)
     {
         var fileExtension = Path.GetExtension(file.FileName);
 
@@ -52,7 +52,7 @@ public static class FileTypeChecker
     /// <param name="file">The file to check the magic number for.</param>
     /// <param name="magicNumber">The magic number to expected.</param>
     /// <returns><c>true</c> if <paramref name="file"/> starts with the expected byte sequence; <c>false</c> otherwise.</returns>
-    public static bool HasCorrectMagicNumber(IFormFile file, byte[] magicNumber)
+    internal static bool HasCorrectMagicNumber(IFormFile file, byte[] magicNumber)
     {
         // Check magic number of pdf file.
         using var fileStream = file.OpenReadStream();
