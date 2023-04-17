@@ -496,7 +496,7 @@ public class UploadControllerTest
         byte[] fileBytes = File.ReadAllBytes(csvFile);
         using var stream = new MemoryStream(fileBytes);
 
-        var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
+        var file = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
 
@@ -544,7 +544,7 @@ public class UploadControllerTest
         byte[] fileBytes = File.ReadAllBytes(csvFile);
         using var stream = new MemoryStream(fileBytes);
 
-        var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
+        var file = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
 
