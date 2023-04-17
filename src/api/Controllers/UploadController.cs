@@ -51,19 +51,16 @@ public class UploadController : ControllerBase
                 return BadRequest("No borehole csv file uploaded.");
             }
 
-            // Check if the provided boreholes file is a CSV file.
+            // Checks if the provided boreholes file is a CSV file.
             if (!FileTypeChecker.IsCsv(boreholesFile))
             {
                 return BadRequest("Invalid file type for borehole csv.");
             }
 
-            // Check if the provided borehole attachments are PDF files.
-            if (pdfAttachments != null && pdfAttachments.Count > 0)
+            // Checks if any of the provided borehole attachments is not a PDF file.
+            if (pdfAttachments?.Any(pdfFile => !FileTypeChecker.IsPdf(pdfFile)) == true)
             {
-                if (pdfAttachments.Any(pdfFile => !FileTypeChecker.IsPdf(pdfFile)))
-                {
-                    return BadRequest("Invalid file type for pdf attachment.");
-                }
+                return BadRequest("Invalid file type for pdf attachment.");
             }
 
             var boreholes = ReadBoreholesFromCsv(boreholesFile)
