@@ -400,7 +400,9 @@ class MenuEditorSearch extends React.Component {
         open={this.state.validationErrorModal === true}
         size="tiny">
         <Header content={t("validationErrorHeader")} />
-        <Modal.Content style={{ maxHeight: "70vh", overflow: "auto" }}>
+        <Modal.Content
+          style={{ maxHeight: "70vh", overflow: "auto" }}
+          data-cy="borehole-import-error-modal-content">
           {this.state.errorResponse && (
             <div>
               {/* In case of API response type ProblemDetails */}
