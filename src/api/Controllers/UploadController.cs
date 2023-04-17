@@ -137,7 +137,7 @@ public class UploadController : ControllerBase
 
         var nullOrEmptyMsg = "Field '{0}' is required.";
 
-        // Iterate over provided boreholes, validate them, and create error messages where necessary. Use a non-zero based index for error messages.
+        // Iterate over provided boreholes, validate them, and create error messages when necessary. Use a non-zero based index for error message keys (e.g. 'Row1').
         foreach (var boreholeFromFile in boreholesFromFile.Select((value, index) => (value, index: index + 1)))
         {
             if (string.IsNullOrEmpty(boreholeFromFile.value.OriginalName))
