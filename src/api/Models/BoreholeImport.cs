@@ -16,4 +16,14 @@ public class BoreholeImport : Borehole
     /// </summary>
     public double? Location_y { get; set; }
 #pragma warning restore CA1707 // Identifiers should not contain underscores
+
+    /// <summary>
+    /// List of borehole pdf attachments.
+    /// </summary>
+    public List<string> AttachmentList { get; set; } = new List<string>();
+
+    /// <summary>
+    /// Comma separated list of borehole pdf attachments. e.g. "borehole_1.pdf,borehole_2.pdf".
+    /// </summary>
+    public string Attachments { get; set; }
 }

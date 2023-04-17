@@ -284,12 +284,14 @@ public class UploadController : ControllerBase
             Map(m => m.LocationXLV03).Optional();
             Map(m => m.LocationYLV03).Optional();
             Map(m => m.OriginalReferenceSystem).Optional();
+            Map(m => m.Attachments).Optional();
 
             // Define properties to ignore
             Map(b => b.Municipality).Ignore();
             Map(b => b.Canton).Ignore();
             Map(b => b.Country).Ignore();
             Map(m => m.Id).Ignore();
+            Map(m => m.AttachmentList).Ignore();
 
             // Define additional mapping logic
             Map(m => m.BoreholeCodelists).Convert(args =>
