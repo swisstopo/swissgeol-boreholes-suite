@@ -243,7 +243,7 @@ class MenuEditorSearch extends React.Component {
                   accept=".csv"
                   onChange={e => {
                     const formdata = new FormData();
-                    formdata.append("file", e.target.files[0]);
+                    formdata.append("boreholesFile", e.target.files[0]);
                     this.setState({
                       selectedFile: formdata,
                     });

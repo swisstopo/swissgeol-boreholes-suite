@@ -35,21 +35,38 @@ public class UploadController : ControllerBase
     /// Receives an uploaded csv file to import one or several <see cref="Borehole"/>(s).
     /// </summary>
     /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
-    /// <param name="file">The <see cref="IFormFile"/> containing the csv records that were uploaded.</param>
+    /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the csv records that were uploaded.</param>
+    /// <param name="pdfAttachments">The list of <see cref="IFormFile"/> containing the pdf attachments refered in the boreholesFile.</param>
     /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile file)
+    public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile, IList<IFormFile>? pdfAttachments = null)
     {
         logger.LogInformation("Import borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
         try
         {
-            if (file == null || file.Length == 0)
+            // Checks if boreholeCsv is empty or not provieded.
+            if (boreholesFile == null || boreholesFile.Length == 0)
             {
-                return BadRequest("No file uploaded.");
+                return BadRequest("No borehole csv file uploaded.");
             }
 
-            var boreholes = ReadBoreholesFromCsv(file)
+            // Check if the boreholeCsv extension is ".csv"
+            if (!FileTypeChecker.IsCorrectFileType(boreholesFile, ".csv"))
+            {
+                return BadRequest("Invalid file type for borehole csv.");
+            }
+
+            // Check if the pdfAttachments extensions are ".pdf"
+            if (pdfAttachments != null && pdfAttachments.Count > 0)
+            {
+                if (pdfAttachments.Any(pdfFile => !FileTypeChecker.IsCorrectFileType(pdfFile, ".pdf")))
+                {
+                    return BadRequest("Invalid file type for pdf attachment.");
+                }
+            }
+
+            var boreholes = ReadBoreholesFromCsv(boreholesFile)
                 .Select(importBorehole =>
                 {
                     var borehole = (Borehole)importBorehole;
