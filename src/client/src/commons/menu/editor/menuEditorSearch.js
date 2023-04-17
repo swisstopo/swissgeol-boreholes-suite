@@ -412,13 +412,11 @@ class MenuEditorSearch extends React.Component {
               {/* In case of API response type ValidationProblemDetails */}
               {this.state.errorResponse.errors &&
                 Object.entries(this.state.errorResponse.errors)
-                  // only display error messages for keys that are not empty
+                  // Only display error messages for keys that are not empty
                   .filter(([key]) => key !== "")
                   .map(([key, value], index) => (
                     <div key={key + index + 1}>
-                      <div>
-                        {t("row")} {index + 1}
-                      </div>
+                      <div>{key}</div>
                       {value.map((item, i) => (
                         <li key={item + i}>{item}</li>
                       ))}
