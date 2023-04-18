@@ -1,4 +1,4 @@
-import { newEditableBorehole } from "../testHelpers";
+import { newEditableBorehole, deleteDownloadedFile } from "../testHelpers";
 
 describe("Tests for 'Attachments' edit page.", () => {
   it("creates, downloads and deletes attachments.", () => {
@@ -47,8 +47,16 @@ describe("Tests for 'Attachments' edit page.", () => {
     cy.wait(["@files", "@edit_listfiles"]);
     cy.get("tbody").children().should("have.length", 2);
     cy.get("tbody").children().contains("td", "application/pdf");
+
+    // Ensure file does not exist in download folder before download. If so, delete it.
+    deleteDownloadedFile("IRATETRINITY.pdf");
+
+    // Download recently uploaded file
     cy.get("tbody").children().contains("span", "IRATETRINITY.pdf").click();
     cy.wait("@download-file");
+
+    // Check if file is present in downlaod folder.
+    cy.readFile("cypress/downloads/IRATETRINITY.pdf");
 
     // delete attachments
     cy.get("tbody")
