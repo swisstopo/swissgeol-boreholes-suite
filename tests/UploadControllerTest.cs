@@ -54,6 +54,21 @@ public class UploadControllerTest
         loggerMock.Verify();
     }
 
+    // Create a FormFile from an existing file
+    internal static FormFile GetFormFileByExistingFile(string fileName)
+    {
+        var fileBytes = File.ReadAllBytes(fileName);
+        var stream = new MemoryStream(fileBytes);
+        return new FormFile(stream, 0, fileBytes.Length, null, fileName);
+    }
+
+    // Create a FormFile from a provided content
+    internal static FormFile GetFormFileByContent(string fileContent, string fileName)
+    {
+        var fileBytes = Encoding.UTF8.GetBytes(fileContent);
+        return new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, fileName);
+    }
+
     [TestMethod]
     public async Task UploadShouldSaveDataToDatabaseAsync()
     {
@@ -62,14 +77,9 @@ public class UploadControllerTest
             .Returns(() => new HttpClient())
             .Verifiable();
 
-        var csvFile = "testdata.csv";
+        var boreholeCsvFile = GetFormFileByExistingFile("testdata.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var boreholeCsvFile = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -108,14 +118,9 @@ public class UploadControllerTest
            .Returns(() => new HttpClient())
            .Verifiable();
 
-        var csvFile = "minimal_testdata.csv";
+        var boreholeCsvFile = GetFormFileByExistingFile("minimal_testdata.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var boreholeCsvFile = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -152,24 +157,15 @@ public class UploadControllerTest
            .Returns(() => new HttpClient())
            .Verifiable();
 
-        var csvFile = "borehole_with_attachments.csv";
+        var boreholeCsvFormFile = GetFormFileByExistingFile("borehole_with_attachments.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
+        var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
 
-        var boreholeCsvFormFile = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        var firstPdfFile = "borehole_attachment_1.pdf";
-        fileBytes = File.ReadAllBytes(firstPdfFile);
-        var firstPdfFormFile = new FormFile(new MemoryStream(File.ReadAllBytes(firstPdfFile)), 0, fileBytes.Length, null, "borehole_attachment_1.pdf");
-
-        var secondPdfFile = "borehole_attachment_2.pdf";
-        fileBytes = File.ReadAllBytes(secondPdfFile);
-        var secondPdfFormFile = new FormFile(new MemoryStream(File.ReadAllBytes(secondPdfFile)), 0, fileBytes.Length, null, "borehole_attachment_2.pdf");
+        var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
                                                                      boreholesFile: boreholeCsvFormFile,
-                                                                     pdfAttachments: new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+                                                                     attachments: new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -184,14 +180,9 @@ public class UploadControllerTest
            .Returns(() => new HttpClient())
            .Verifiable();
 
-        var csvFile = "special_chars_testdata.csv";
+        var boreholeCsvFile = GetFormFileByExistingFile("special_chars_testdata.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var boreholeCsvFile = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -208,14 +199,9 @@ public class UploadControllerTest
     [TestMethod]
     public async Task UploadWithMissingCoordinatesAsync()
     {
-        var csvFile = "no_coordinates_provided_testdata.csv";
+        var boreholeCsvFile = GetFormFileByExistingFile("no_coordinates_provided_testdata.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var boreholeCsvFile = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -235,14 +221,9 @@ public class UploadControllerTest
             .Returns(() => new HttpClient())
             .Verifiable();
 
-        var csvFile = "lv95_coordinates_provided_testdata.csv";
+        var boreholeCsvFile = GetFormFileByExistingFile("lv95_coordinates_provided_testdata.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var boreholeCsvFile = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -269,14 +250,9 @@ public class UploadControllerTest
             .Returns(() => new HttpClient())
             .Verifiable();
 
-        var csvFile = "lv03_coordinates_provided_testdata.csv";
+        var boreholeCsvFile = GetFormFileByExistingFile("lv03_coordinates_provided_testdata.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var boreholeCsvFile = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -303,14 +279,9 @@ public class UploadControllerTest
             .Returns(() => new HttpClient())
             .Verifiable();
 
-        var csvFile = "lv03_out_of_range_coordinates_provided_testdata.csv";
+        var boreholeCsvFile = GetFormFileByExistingFile("lv03_out_of_range_coordinates_provided_testdata.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var boreholeCsvFile = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -334,7 +305,7 @@ public class UploadControllerTest
     {
         var boreholeCsvFile = new FormFile(null, 0, 0, null, "nonexistant_file.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -344,11 +315,9 @@ public class UploadControllerTest
     [TestMethod]
     public async Task UploadInvalidFileTypeBoreholeCsvShouldReturnError()
     {
-        string fileContent = "This is the content of the file.";
-        byte[] fileBytes = Encoding.UTF8.GetBytes(fileContent);
-        var invalidFielTypeBoreholeFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "invalid_file_type.txt");
+        var invalidFielTypeBoreholeFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "invalid_file_type.txt");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: invalidFielTypeBoreholeFile, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: invalidFielTypeBoreholeFile, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -363,21 +332,15 @@ public class UploadControllerTest
            .Returns(() => new HttpClient())
            .Verifiable();
 
-        string fileContent = "original_name;location_x;location_y\r\nFrank Place;2000000;1000000";
-        byte[] fileBytes = Encoding.UTF8.GetBytes(fileContent);
-        var boreholeCsvFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "invalid_file_type.csv");
+        var boreholeCsvFile = GetFormFileByContent(fileContent: "original_name;location_x;location_y\r\nFrank Place;2000000;1000000", fileName: "boreholes.csv");
 
-        var firstPdfFile = "borehole_attachment_1.pdf";
-        fileBytes = File.ReadAllBytes(firstPdfFile);
-        var firstPdfFormFile = new FormFile(new MemoryStream(File.ReadAllBytes(firstPdfFile)), 0, fileBytes.Length, null, "first_pdf.pdf");
+        var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
 
-        var secondPdfFile = "borehole_attachment_2.pdf";
-        fileBytes = File.ReadAllBytes(secondPdfFile);
-        var secondPdfFormFile = new FormFile(new MemoryStream(File.ReadAllBytes(secondPdfFile)), 0, fileBytes.Length, null, "second_pdf.pdf");
+        var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
                                                                       boreholesFile: boreholeCsvFile,
-                                                                      pdfAttachments: new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+                                                                      attachments: new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -387,21 +350,15 @@ public class UploadControllerTest
     [TestMethod]
     public async Task UploadInvalidFileTypePdfAttachmentShouldReturnError()
     {
-        string fileContent = "This is the content of the file."; // set file content
-        byte[] fileBytes = Encoding.UTF8.GetBytes(fileContent);
-        var boreholeCsvFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "boreholes.csv");
+        var boreholeCsvFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "boreholes.csv");
 
-        var firstPdfFile = "borehole_attachment_1.pdf";
-        fileBytes = File.ReadAllBytes(firstPdfFile);
-        var firstPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "first_pdf.pdf");
+        var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
 
-        var secondPdfFile = "borehole_attachment_with_wrong_extension.txt";
-        fileBytes = File.ReadAllBytes(secondPdfFile);
-        var secondPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "borehole_attachment_with_wrong_extension.txt");
+        var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_with_wrong_extension.txt");
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
                                                                       boreholesFile: boreholeCsvFile,
-                                                                      pdfAttachments: new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+                                                                      attachments: new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -411,41 +368,35 @@ public class UploadControllerTest
     [TestMethod]
     public void IsCorrectFileType()
     {
-        string fileContent = "This is the content of the file."; // set file content
-        byte[] fileBytes = Encoding.UTF8.GetBytes(fileContent);
-        var validCsvFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "boreholes.csv");
+        var validCsvFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "boreholes.csv");
         Assert.AreEqual(true, FileTypeChecker.IsCsv(validCsvFile));
 
-        var emptyCsvFile = new FormFile(null, 0, fileBytes.Length, null, "boreholes.csv");
+        var emptyCsvFile = new FormFile(null, 0, 12, null, "boreholes.csv");
         Assert.AreEqual(true, FileTypeChecker.IsCsv(emptyCsvFile));
 
-        var invalidCsvFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "boreholes.txt");
+        var invalidCsvFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "boreholes.txt");
         Assert.AreEqual(false, FileTypeChecker.IsCsv(invalidCsvFile));
 
-        fileBytes = File.ReadAllBytes("borehole_attachment_1.pdf");
-        var validPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "attachment.pdf");
+        var validPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
         Assert.AreEqual(true, FileTypeChecker.IsPdf(validPdfFormFile));
 
         var zeroBytesFormFile = new FormFile(null, 0, 0, null, "attachment.pdf");
         Assert.AreEqual(false, FileTypeChecker.IsPdf(zeroBytesFormFile));
 
-        fileBytes = File.ReadAllBytes("borehole_attachment_with_wrong_extension.txt");
-        var invalidExtensionPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "borehole_attachment_with_wrong_extension.txt");
+        var invalidExtensionPdfFormFile = GetFormFileByExistingFile("borehole_attachment_with_wrong_extension.txt");
         Assert.AreEqual(false, FileTypeChecker.IsPdf(invalidExtensionPdfFormFile));
 
-        fileBytes = Encoding.UTF8.GetBytes("This is not a PDF.");
-        var invalidHeaderBytesPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "attachment.pdf");
+        var invalidHeaderBytesPdfFormFile = GetFormFileByContent(fileContent: "This is not a PDF.", fileName: "attachment.pdf");
         Assert.AreEqual(false, FileTypeChecker.IsPdf(invalidHeaderBytesPdfFormFile));
 
-        fileBytes = File.ReadAllBytes("empty_attachment.pdf");
-        var emptyPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "attachment.pdf");
+        var emptyPdfFormFile = GetFormFileByExistingFile("empty_attachment.pdf");
         Assert.AreEqual(true, FileTypeChecker.IsPdf(emptyPdfFormFile));
     }
 
     [TestMethod]
     public async Task UploadNoFileShouldReturnError()
     {
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: null, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: null, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -455,14 +406,9 @@ public class UploadControllerTest
     [TestMethod]
     public async Task UploadNoDataButRequiredHeadersSetShouldUploadNoBorehole()
     {
-        var csvFile = "no_data_but_required_headers.csv";
+        var boreholeCsvFile = GetFormFileByExistingFile("no_data_but_required_headers.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var boreholeCsvFile = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -472,14 +418,9 @@ public class UploadControllerTest
     [TestMethod]
     public async Task UploadMulitpleRowsMissingRequiredFieldsShouldReturnError()
     {
-        var csvFile = "multiple_rows_missing_required_attributes_testdata.csv";
+        var boreholeCsvFile = GetFormFileByExistingFile("multiple_rows_missing_required_attributes_testdata.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var boreholeCsvFile = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -501,14 +442,9 @@ public class UploadControllerTest
     [TestMethod]
     public async Task UploadRequiredHeadersMissingShouldReturnError()
     {
-        var csvFile = "missing_required_headers_testdata.csv";
+        var boreholeCsvFile = GetFormFileByExistingFile("missing_required_headers_testdata.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var boreholeCsvFile = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -523,14 +459,9 @@ public class UploadControllerTest
     [TestMethod]
     public async Task UploadDuplicateBoreholesInFileShouldReturnError()
     {
-        var csvFile = "duplicateBoreholesInFile.csv";
+        var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInFile.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var file = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -571,14 +502,9 @@ public class UploadControllerTest
         });
         context.SaveChanges();
 
-        var csvFile = "duplicateBoreholesInDb.csv";
+        var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInDb.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var file = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -619,14 +545,9 @@ public class UploadControllerTest
            .Returns(() => new HttpClient())
            .Verifiable();
 
-        var csvFile = "borehole_and_location_data.csv";
+        var boreholeCsvFile = GetFormFileByExistingFile("borehole_and_location_data.csv");
 
-        byte[] fileBytes = File.ReadAllBytes(csvFile);
-        using var stream = new MemoryStream(fileBytes);
-
-        var boreholeCsvFile = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, pdfAttachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
