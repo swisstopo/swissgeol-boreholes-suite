@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Security.Claims;
 
-namespace BDMS.Tests;
+namespace BDMS;
 
 [TestClass]
 public class WaterIngressControllerTests
@@ -74,7 +74,7 @@ public class WaterIngressControllerTests
         Assert.AreEqual(waterIngress.CompletionFinished, true);
         Assert.AreEqual(waterIngress.Comment, "Sunt provident tempora rerum voluptatum tempora architecto est magni.");
         Assert.AreEqual(waterIngress.ReliabilityId, 15203158);
-        Assert.AreEqual(waterIngress.QuantityId, 15203161);
+        Assert.AreEqual(waterIngress.QuantityId, 15203163);
         Assert.AreEqual(waterIngress.ConditionsId, 15203167);
     }
 
