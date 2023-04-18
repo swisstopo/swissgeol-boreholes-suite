@@ -194,7 +194,8 @@ public class UploadController : ControllerBase
             var attachmentFileNamesToLink = boreholeFromFile.value.Attachments?.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture)).ToList() ?? new List<string>();
             foreach (var attachmentFileNameToLink in attachmentFileNamesToLink)
             {
-                if (pdfAttachments != null && pdfAttachments.Any(a => a.FileName == attachmentFileNameToLink)) continue;
+                if (attachments?.Any(a => a.FileName == attachmentFileNameToLink) == false)
+                {
                 ModelState.AddModelError($"Row{boreholeFromFile.index}", $"Attachment file '{attachmentFileNameToLink}' not found.");
             }
         }
