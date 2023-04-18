@@ -192,7 +192,7 @@ public class UploadControllerTest
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
 
-        CollectionAssert.AreEquivalent(new[] { "Field 'location_x' is required.", "Field 'location_y' is required." }, problemDetails.Errors["Row0"]);
+        CollectionAssert.AreEquivalent(new[] { "Field 'location_x' is required.", "Field 'location_y' is required." }, problemDetails.Errors["Row1"]);
     }
 
     [TestMethod]
@@ -456,14 +456,14 @@ public class UploadControllerTest
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(2, problemDetails.Errors.Count);
 
-        CollectionAssert.AreEquivalent(new[] { "Field 'location_y' is required." }, problemDetails.Errors["Row1"]);
+        CollectionAssert.AreEquivalent(new[] { "Field 'location_y' is required." }, problemDetails.Errors["Row2"]);
         CollectionAssert.AreEquivalent(new[]
         {
             "Field 'original_name' is required.",
             "Field 'location_x' is required.",
             "Field 'location_y' is required.",
         },
-        problemDetails.Errors["Row2"]);
+        problemDetails.Errors["Row3"]);
     }
 
     [TestMethod]
@@ -511,12 +511,12 @@ public class UploadControllerTest
         {
             $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provied multiple times.",
         },
-        problemDetails.Errors["Row0"]);
+        problemDetails.Errors["Row1"]);
         CollectionAssert.AreEquivalent(new[]
         {
             $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provied multiple times.",
         },
-        problemDetails.Errors["Row1"]);
+        problemDetails.Errors["Row2"]);
     }
 
     [TestMethod]
@@ -559,12 +559,12 @@ public class UploadControllerTest
         {
             $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.",
         },
-        problemDetails.Errors["Row0"]);
+        problemDetails.Errors["Row1"]);
         CollectionAssert.AreEquivalent(new[]
         {
             $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.",
         },
-        problemDetails.Errors["Row1"]);
+        problemDetails.Errors["Row2"]);
     }
 
     [TestMethod]
