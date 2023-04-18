@@ -574,6 +574,7 @@ public static class BdmsContextExtensions
         WaterIngress SeededWaterIngresses(Observation observation)
         {
             return fakeWaterIngresses
+                .UseSeed(observation.Id)
                 .RuleFor(o => o.Id, _ => observation.Id)
                 .Generate();
         }
