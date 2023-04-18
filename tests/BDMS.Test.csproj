@@ -32,6 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestData\borehole_with_not_present_attachments.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\borehole_with_attachments.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

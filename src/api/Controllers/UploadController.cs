@@ -63,6 +63,12 @@ public class UploadController : ControllerBase
                 return BadRequest("Invalid file type for pdf attachment.");
             }
 
+            // Checks if any of the provided attachments has a whitespace in its name.
+            if (attachments?.Any(pdfFile => pdfFile.FileName.Any(char.IsWhiteSpace)) == true)
+            {
+                return BadRequest("Invalid file type for pdf attachment.");
+            }
+
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile);
 
             ValidateBoreholeImports(boreholeImports, attachments);
