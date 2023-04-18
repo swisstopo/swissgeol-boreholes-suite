@@ -45,7 +45,7 @@ public class UploadController : ControllerBase
         logger.LogInformation("Import borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
         try
         {
-            // Checks if the provided boreholes file is empty or not provided.
+            // Checks if the boreholes file is provided and not empty.
             if (boreholesFile == null || boreholesFile.Length == 0)
             {
                 return BadRequest("No borehole csv file uploaded.");
@@ -58,15 +58,12 @@ public class UploadController : ControllerBase
             }
 
             // Checks if any of the provided attachments is not a PDF file.
-            if (attachments?.Any(pdfFile => !FileTypeChecker.IsPdf(pdfFile)) == true)
-            {
-                return BadRequest("Invalid file type for pdf attachment.");
-            }
-
-            // Checks if any of the provided attachments has a whitespace in its name.
+            if (attachments?.Any(pdfFile => !FileTypeChecker.IsPdf(pdfFile)) == true) return BadRequest("Invalid file type for pdf attachment.");
+           
+            // Checks if any of the provided attachments has a whitespace in its file name.
             if (attachments?.Any(pdfFile => pdfFile.FileName.Any(char.IsWhiteSpace)) == true)
             {
-                return BadRequest("Invalid file type for pdf attachment.");
+                return BadRequest("One or more file name(s) contain a whitespace.");
             }
 
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile);
@@ -178,9 +175,9 @@ public class UploadController : ControllerBase
                 ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
             }
 
-            // TODO: Refactor logic to determine wether the dupliacted borehole is in the db or the provided file (#584)
+            // TODO: Refactor logic to determine whether the duplicated borehole is in the db or the provided file (#584)
             // Until refactoring check for duplicatedBoreholes.Count > 1.
-            // Check if borehole with same coordinates (in tolerance) and same total depth occurs mutliple times in list.
+            // Check if borehole with same coordinates (in tolerance) and same total depth occurs multiple times in list.
             var duplicatedBoreholes = boreholesCombined
                 .Where(b =>
                     CompareValuesWithTolerance(b.TotalDepth, boreholeFromFile.value.TotalDepth, 0) &&
@@ -192,16 +189,16 @@ public class UploadController : ControllerBase
             {
                 // Adjust error msg depending on where the duplicated borehole is (db or file).
                 var errorMsg = $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)}";
-                errorMsg += duplicatedBoreholes.Any(x => x.Id > 0) ? " already exists in database." : " is provied multiple times.";
+                errorMsg += duplicatedBoreholes.Any(x => x.Id > 0) ? " already exists in database." : " is provided multiple times.";
 
                 ModelState.AddModelError($"Row{boreholeFromFile.index}", errorMsg);
             }
 
             // Checks if each file name in the comma separated string is present in the list of the attachments.
-            var attachmentFileNamesToLink = boreholeFromFile.value.Attachments?.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture)).ToList() ?? new List<string>();
+            var attachmentFileNamesToLink = boreholeFromFile.value.Attachments?.Split(",").Select(s => s.Replace(" ", "", StringComparison.OrdinalIgnoreCase)).ToList() ?? new List<string>();
             foreach (var attachmentFileNameToLink in attachmentFileNamesToLink)
             {
-                if (attachments?.Any(a => a.FileName == attachmentFileNameToLink) == false)
+                if (attachments?.Any(a => a.FileName.Equals(attachmentFileNameToLink, StringComparison.OrdinalIgnoreCase)) == false)
                 {
                     ModelState.AddModelError($"Row{boreholeFromFile.index}", $"Attachment file '{attachmentFileNameToLink}' not found.");
                 }

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Net;
-using System.Net.Mail;
 using System.Text;
 using static BDMS.Helpers;
 using File = System.IO.File;
@@ -161,6 +160,29 @@ public class UploadControllerTest
         var boreholeCsvFormFile = GetFormFileByExistingFile("borehole_with_attachments.csv");
 
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
+
+        var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
+                                                                      boreholeCsvFormFile,
+                                                                      new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(1, okResult.Value);
+    }
+
+    [TestMethod]
+    public async Task UploadShouldSaveBoreholeWithAttachmentFileNamesMixedCaseAsync()
+    {
+        httpClientFactoryMock
+           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+           .Returns(() => new HttpClient())
+           .Verifiable();
+
+        var boreholeCsvFormFile = GetFormFileByExistingFile("borehole_with_mixed_case_in_attachments_filenames.csv");
+
+        var firstPdfFormFile = GetFormFileByExistingFile("Borehole_Attachment_1.pdf");
 
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
@@ -369,11 +391,6 @@ public class UploadControllerTest
     [TestMethod]
     public async Task UploadBoreholeCsvFileWithNotPresentAttachmentsShouldReturnError()
     {
-        httpClientFactoryMock
-           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-           .Returns(() => new HttpClient())
-           .Verifiable();
-
         var boreholeCsvFile = GetFormFileByExistingFile("borehole_with_not_present_attachments.csv");
 
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
@@ -389,13 +406,31 @@ public class UploadControllerTest
         Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
-        Assert.AreEqual(2, problemDetails.Errors.Count);
+        Assert.AreEqual(1, problemDetails.Errors.Count);
 
         CollectionAssert.AreEquivalent(new[]
         {
             "Attachment file 'is_not_present_in_upload_files.pdf' not found.",
         },
         problemDetails.Errors["Row1"]);
+    }
+
+    [TestMethod]
+    public async Task UploadBoreholeCsvFileWithWhiteSpceInAttachmentFileNameShouldReturnError()
+    {
+        var boreholeCsvFile = GetFormFileByExistingFile("borehole_with_not_present_attachments.csv");
+
+        var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
+
+        var whiteSpacePdf = GetFormFileByExistingFile("white space.pdf");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
+                                                                      boreholeCsvFile,
+                                                                      new List<IFormFile>() { firstPdfFormFile, whiteSpacePdf });
+
+        Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
+        BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
+        Assert.AreEqual("One or more file name(s) contain a whitespace.", badRequestResult.Value);
     }
 
     [TestMethod]
@@ -505,12 +540,12 @@ public class UploadControllerTest
 
         CollectionAssert.AreEquivalent(new[]
         {
-            $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provied multiple times.",
+            $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.",
         },
         problemDetails.Errors["Row1"]);
         CollectionAssert.AreEquivalent(new[]
         {
-            $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provied multiple times.",
+            $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.",
         },
         problemDetails.Errors["Row2"]);
     }
