@@ -326,7 +326,7 @@ public class UploadControllerTest
     [TestMethod]
     public async Task UploadEmptyFileShouldReturnError()
     {
-        var boreholeCsvFile = new FormFile(null, 0, 0, null, "nonexistant_file.csv");
+        var boreholeCsvFile = new FormFile(null, 0, 0, null, "non_existent_file.csv");
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
@@ -338,9 +338,9 @@ public class UploadControllerTest
     [TestMethod]
     public async Task UploadInvalidFileTypeBoreholeCsvShouldReturnError()
     {
-        var invalidFielTypeBoreholeFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "invalid_file_type.txt");
+        var invalidFileTypeBoreholeFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "invalid_file_type.txt");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, invalidFielTypeBoreholeFile, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, invalidFileTypeBoreholeFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -416,7 +416,7 @@ public class UploadControllerTest
     }
 
     [TestMethod]
-    public async Task UploadBoreholeCsvFileWithWhiteSpceInAttachmentFileNameShouldReturnError()
+    public async Task UploadBoreholeCsvFileWithWhiteSpaceInAttachmentFileNameShouldReturnError()
     {
         var boreholeCsvFile = GetFormFileByExistingFile("borehole_with_not_present_attachments.csv");
 
@@ -484,7 +484,7 @@ public class UploadControllerTest
     }
 
     [TestMethod]
-    public async Task UploadMulitpleRowsMissingRequiredFieldsShouldReturnError()
+    public async Task UploadMultipleRowsMissingRequiredFieldsShouldReturnError()
     {
         var boreholeCsvFile = GetFormFileByExistingFile("multiple_rows_missing_required_attributes_testdata.csv");
 

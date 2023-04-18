@@ -46,25 +46,16 @@ public class UploadController : ControllerBase
         try
         {
             // Checks if the boreholes file is provided and not empty.
-            if (boreholesFile == null || boreholesFile.Length == 0)
-            {
-                return BadRequest("No borehole csv file uploaded.");
-            }
+            if (boreholesFile == null || boreholesFile.Length == 0) return BadRequest("No borehole csv file uploaded.");
 
             // Checks if the provided boreholes file is a CSV file.
-            if (!FileTypeChecker.IsCsv(boreholesFile))
-            {
-                return BadRequest("Invalid file type for borehole csv.");
-            }
+            if (!FileTypeChecker.IsCsv(boreholesFile)) return BadRequest("Invalid file type for borehole csv.");
 
             // Checks if any of the provided attachments is not a PDF file.
             if (attachments?.Any(pdfFile => !FileTypeChecker.IsPdf(pdfFile)) == true) return BadRequest("Invalid file type for pdf attachment.");
-           
+
             // Checks if any of the provided attachments has a whitespace in its file name.
-            if (attachments?.Any(pdfFile => pdfFile.FileName.Any(char.IsWhiteSpace)) == true)
-            {
-                return BadRequest("One or more file name(s) contain a whitespace.");
-            }
+            if (attachments?.Any(pdfFile => pdfFile.FileName.Any(char.IsWhiteSpace)) == true) return BadRequest("One or more file name(s) contain a whitespace.");
 
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile);
 
@@ -327,7 +318,7 @@ public class UploadController : ControllerBase
             // Define additional mapping logic
             Map(m => m.BoreholeCodelists).Convert(args =>
             {
-                var boreholeCodelists = new List<BoreholeCodelist>();
+                var boreholeCodeLists = new List<BoreholeCodelist>();
                 new List<(string Name, int CodeListId)>
                 {
                     ("id_geodin_shortname", 100000000),
@@ -347,7 +338,7 @@ public class UploadController : ControllerBase
                         var value = args.Row.GetField<string?>(id.Name);
                         if (!string.IsNullOrEmpty(value))
                         {
-                            boreholeCodelists.Add(new BoreholeCodelist
+                            boreholeCodeLists.Add(new BoreholeCodelist
                             {
                                 CodelistId = id.CodeListId,
                                 SchemaName = "borehole_identifier",
@@ -357,7 +348,7 @@ public class UploadController : ControllerBase
                     }
                 });
 
-                return boreholeCodelists;
+                return boreholeCodeLists;
             });
         }
     }
