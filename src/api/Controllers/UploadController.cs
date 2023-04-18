@@ -66,7 +66,24 @@ public class UploadController : ControllerBase
                 }
             }
 
-            var boreholes = ReadBoreholesFromCsv(boreholesFile)
+            var boreholeAttachmentsPerImportId = new Dictionary<int, string>();
+            var boreholeImports = ReadBoreholesFromCsv(boreholesFile);
+
+            ValidateBoreholeImports(boreholeImports, pdfAttachments);
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
+            }
+
+            var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+
+            var user = await context.Users
+                .AsNoTracking()
+                .SingleOrDefaultAsync(u => u.Name == userName)
+                .ConfigureAwait(false);
+
+            // Map from BoreholeImport to Borehole
+            var boreholes = boreholeImports
                 .Select(importBorehole =>
                 {
                     var borehole = (Borehole)importBorehole;
@@ -98,19 +115,6 @@ public class UploadController : ControllerBase
                 })
                 .ToList();
 
-            ValidateBoreholes(boreholes);
-            if (!ModelState.IsValid)
-            {
-                return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
-            }
-
-            var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
-
-            var user = await context.Users
-                .AsNoTracking()
-                .SingleOrDefaultAsync(u => u.Name == userName)
-                .ConfigureAwait(false);
-
             foreach (var borehole in boreholes)
             {
                 // Compute borehole location.
@@ -141,7 +145,7 @@ public class UploadController : ControllerBase
         }
     }
 
-    private void ValidateBoreholes(List<Borehole> boreholesFromFile)
+    private void ValidateBoreholeImports(List<BoreholeImport> boreholesFromFile, IList<IFormFile>? pdfAttachments = null)
     {
         var boreholesFromDb = context.Boreholes
             .AsNoTracking()
@@ -187,6 +191,14 @@ public class UploadController : ControllerBase
                 errorMsg += duplicatedBoreholes.Any(x => x.Id > 0) ? " already exists in database." : " is provied multiple times.";
 
                 ModelState.AddModelError($"Row{boreholeFromFile.index}", errorMsg);
+            }
+
+            // Checks if each attachment file name in the coma separated string in the borehole csv is present in the list of the uploaded PDF attachments.
+            var attachmentFileNamesToLink = boreholeFromFile.value.Attachments?.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture)).ToList() ?? new List<string>();
+            foreach (var attachmentFileNameToLink in attachmentFileNamesToLink)
+            {
+                if (pdfAttachments != null && pdfAttachments.Any(a => a.FileName == attachmentFileNameToLink)) continue;
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", $"Attachment file '{attachmentFileNameToLink}' not found.");
             }
         }
     }
@@ -308,7 +320,6 @@ public class UploadController : ControllerBase
             Map(b => b.Canton).Ignore();
             Map(b => b.Country).Ignore();
             Map(m => m.Id).Ignore();
-            Map(m => m.AttachmentList).Ignore();
 
             // Define additional mapping logic
             Map(m => m.BoreholeCodelists).Convert(args =>
