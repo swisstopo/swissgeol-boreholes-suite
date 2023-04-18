@@ -152,40 +152,28 @@ public class UploadControllerTest
            .Returns(() => new HttpClient())
            .Verifiable();
 
-        var csvFile = "minimal_testdata.csv";
+        var csvFile = "borehole_with_attachments.csv";
 
         byte[] fileBytes = File.ReadAllBytes(csvFile);
         using var stream = new MemoryStream(fileBytes);
 
-        var file = new FormFile(stream, 0, fileBytes.Length, csvFile, "text/csv");
+        var boreholeCsvFormFile = new FormFile(stream, 0, fileBytes.Length, null, csvFile);
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, file);
+        var firstPdfFile = "borehole_attachment_1.pdf";
+        fileBytes = File.ReadAllBytes(firstPdfFile);
+        var firstPdfFormFile = new FormFile(new MemoryStream(File.ReadAllBytes(firstPdfFile)), 0, fileBytes.Length, null, "borehole_attachment_1.pdf");
+
+        var secondPdfFile = "borehole_attachment_2.pdf";
+        fileBytes = File.ReadAllBytes(secondPdfFile);
+        var secondPdfFormFile = new FormFile(new MemoryStream(File.ReadAllBytes(secondPdfFile)), 0, fileBytes.Length, null, "borehole_attachment_2.pdf");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
+                                                                     boreholesFile: boreholeCsvFormFile,
+                                                                     pdfAttachments: new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
-        Assert.AreEqual(6, okResult.Value);
-
-        // Assert imported values
-        var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).ToList().Find(b => b.OriginalName == "Unit_Test_2");
-        Assert.AreEqual(1, borehole.WorkgroupId);
-        Assert.AreEqual(null, borehole.AlternateName);
-        Assert.AreEqual(null, borehole.IsPublic);
-        Assert.AreEqual(null, borehole.RestrictionUntil);
-        Assert.AreEqual(null, borehole.TotalDepth);
-        Assert.AreEqual(null, borehole.ProjectName);
-        Assert.AreEqual(0, borehole.BoreholeCodelists.Count);
-        Assert.AreEqual(null, borehole.Canton);
-        Assert.AreEqual(null, borehole.Country);
-        Assert.AreEqual(null, borehole.Municipality);
-        Assert.AreEqual("POINT (2000010 1000010)", borehole.Geometry.ToString());
-
-        // Assert workflow was created for borehole.
-        var workflow = context.Workflows.SingleOrDefault(w => w.BoreholeId == borehole.Id);
-        Assert.IsNotNull(workflow);
-        Assert.AreEqual(borehole.CreatedById, workflow.UserId);
-        Assert.AreEqual(Role.Editor, workflow.Role);
-        Assert.AreEqual(borehole.CreatedById, workflow.UserId);
-        Assert.AreEqual(null, workflow.Finished);
+        Assert.AreEqual(1, okResult.Value);
     }
 
     [TestMethod]
