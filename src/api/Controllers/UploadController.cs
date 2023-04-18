@@ -186,7 +186,11 @@ public class UploadController : ControllerBase
             }
 
             // Checks if each file name in the comma separated string is present in the list of the attachments.
-            var attachmentFileNamesToLink = boreholeFromFile.value.Attachments?.Split(",").Select(s => s.Replace(" ", "", StringComparison.OrdinalIgnoreCase)).ToList() ?? new List<string>();
+            var attachmentFileNamesToLink = boreholeFromFile.value.Attachments?
+                .Split(",")
+                .Select(s => s.Replace(" ", "", StringComparison.OrdinalIgnoreCase)).ToList()
+                ?? new List<string>();
+
             foreach (var attachmentFileNameToLink in attachmentFileNamesToLink)
             {
                 if (attachments?.Any(a => a.FileName.Equals(attachmentFileNameToLink, StringComparison.OrdinalIgnoreCase)) == false)
