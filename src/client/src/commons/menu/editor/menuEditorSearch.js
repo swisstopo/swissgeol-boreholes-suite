@@ -243,7 +243,7 @@ class MenuEditorSearch extends React.Component {
                   accept=".csv"
                   onChange={e => {
                     const formdata = new FormData();
-                    formdata.append("file", e.target.files[0]);
+                    formdata.append("boreholesFile", e.target.files[0]);
                     this.setState({
                       selectedFile: formdata,
                     });
@@ -400,7 +400,9 @@ class MenuEditorSearch extends React.Component {
         open={this.state.validationErrorModal === true}
         size="tiny">
         <Header content={t("validationErrorHeader")} />
-        <Modal.Content style={{ maxHeight: "70vh", overflow: "auto" }}>
+        <Modal.Content
+          style={{ maxHeight: "70vh", overflow: "auto" }}
+          data-cy="borehole-import-error-modal-content">
           {this.state.errorResponse && (
             <div>
               {/* In case of API response type ProblemDetails */}
@@ -412,13 +414,11 @@ class MenuEditorSearch extends React.Component {
               {/* In case of API response type ValidationProblemDetails */}
               {this.state.errorResponse.errors &&
                 Object.entries(this.state.errorResponse.errors)
-                  // only display error messages for keys that are not empty
+                  // Only display error messages for keys that are not empty
                   .filter(([key]) => key !== "")
                   .map(([key, value], index) => (
                     <div key={key + index + 1}>
-                      <div>
-                        {t("row")} {index + 1}
-                      </div>
+                      <div>{key}</div>
                       {value.map((item, i) => (
                         <li key={item + i}>{item}</li>
                       ))}
