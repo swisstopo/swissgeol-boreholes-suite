@@ -46,7 +46,9 @@ jobs:
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
           working-directory: ./src/client
-          config: screenshotOnRunFailure=false
+          record: true
+          parallel: true
         env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           REACT_APP_VERSION: 0.0.99+dev
           TZ: Europe/Zurich
