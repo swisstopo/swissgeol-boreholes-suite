@@ -209,3 +209,17 @@ export const delayedType = (element, string) => {
 export const setValueOfInputElement = function (inputElement, inputValue) {
   inputElement[0].setAttribute("value", inputValue);
 };
+
+// Deletes a downloaded file in Cypress' downloads folder
+export const deleteDownloadedFile = fileName => {
+  // Get the path to the downloaded file you want to delete
+  const filePath = "cypress/downloads/" + fileName;
+
+  cy.exec(`rm -f ${filePath}`).then(result => {
+    // Check if the command executed successfully
+    expect(result.code).to.equal(0);
+
+    // Check that the file has been deleted
+    cy.readFile(filePath, { log: false }).should("not.exist");
+  });
+};
