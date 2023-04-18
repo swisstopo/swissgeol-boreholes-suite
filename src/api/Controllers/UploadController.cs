@@ -105,6 +105,8 @@ public class UploadController : ControllerBase
                 })
                 .ToList();
 
+            var allAttachmentFileNames = boreholeImports.SelectMany(x => x.Attachments.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture))).ToList() ?? new List<string>();
+
             foreach (var borehole in boreholes)
             {
                 // Compute borehole location.
