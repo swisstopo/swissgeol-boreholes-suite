@@ -190,7 +190,7 @@ public class UploadController : ControllerBase
                 ModelState.AddModelError($"Row{boreholeFromFile.index}", errorMsg);
             }
 
-            // Checks if each attachment file name in the coma separated string in the borehole csv is present in the list of the uploaded PDF attachments.
+            // Checks if each file name in the coma separated string is present in the list of the PDF attachments.
             var attachmentFileNamesToLink = boreholeFromFile.value.Attachments?.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture)).ToList() ?? new List<string>();
             foreach (var attachmentFileNameToLink in attachmentFileNamesToLink)
             {
