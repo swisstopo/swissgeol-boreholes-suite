@@ -33,3 +33,7 @@ Damit auf dem Entwicklungsrechner keine Frameworks (Python, .NET, Node) installi
 🚀Hot Reload bei Änderungen im C# Code der .NET REST API (`v2`)
 
 ❌Der Debug Output der Tornado REST API ist aktuell in VSCode nicht sichtbar. Bitte vorerst den Container Log benutzen `docker-compose logs api --follow`
+
+## Cypress Tests
+
+Die Cypress Tests können mit `npm run cy` oder `npm run test` gestartet werden. Sie werden zudem automatisch in der CI/CD Pipeline ausgeführt. Das Projekt ist mit [Cypress Cloud](https://cloud.cypress.io/) konfiguriert, wodurch unter anderem die parallele Ausführung der End-to-End (E2E) Tests ermöglicht wird. Testergebnisse und Aufzeichnungen sind ebenfalls direkt in der [Cypress Cloud](https://cloud.cypress.io/) einsehbar, was die Identifikation und Behebung möglicher Fehler und Probleme erleichtert. Um die detaillierten Testergebnisse einzusehen und die E2E-Tests des Projekts zu debuggen, kann die [Cypress Cloud Dashboard-Seite](https://cloud.cypress.io/projects/tzrzii/runs) besucht werden.
