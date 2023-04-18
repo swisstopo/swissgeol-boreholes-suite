@@ -414,32 +414,32 @@ public class UploadControllerTest
         string fileContent = "This is the content of the file."; // set file content
         byte[] fileBytes = Encoding.UTF8.GetBytes(fileContent);
         var validCsvFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "boreholes.csv");
-        Assert.AreEqual(true, FileTypeChecker.IsCorrectFileType(validCsvFile, ".csv"));
+        Assert.AreEqual(true, FileTypeChecker.IsCsv(validCsvFile));
 
         var emptyCsvFile = new FormFile(null, 0, fileBytes.Length, null, "boreholes.csv");
-        Assert.AreEqual(true, FileTypeChecker.IsCorrectFileType(emptyCsvFile, ".csv"));
+        Assert.AreEqual(true, FileTypeChecker.IsCsv(emptyCsvFile));
 
         var invalidCsvFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "boreholes.txt");
-        Assert.AreEqual(false, FileTypeChecker.IsCorrectFileType(invalidCsvFile, ".csv"));
+        Assert.AreEqual(false, FileTypeChecker.IsCsv(invalidCsvFile));
 
         fileBytes = File.ReadAllBytes("borehole_attachment_1.pdf");
         var validPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "attachment.pdf");
-        Assert.AreEqual(true, FileTypeChecker.IsCorrectFileType(validPdfFormFile, ".pdf"));
+        Assert.AreEqual(true, FileTypeChecker.IsPdf(validPdfFormFile));
 
         var zeroBytesFormFile = new FormFile(null, 0, 0, null, "attachment.pdf");
-        Assert.AreEqual(false, FileTypeChecker.IsCorrectFileType(zeroBytesFormFile, ".pdf"));
+        Assert.AreEqual(false, FileTypeChecker.IsPdf(zeroBytesFormFile));
 
         fileBytes = File.ReadAllBytes("borehole_attachment_with_wrong_extension.txt");
         var invalidExtensionPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "borehole_attachment_with_wrong_extension.txt");
-        Assert.AreEqual(false, FileTypeChecker.IsCorrectFileType(invalidExtensionPdfFormFile, ".pdf"));
+        Assert.AreEqual(false, FileTypeChecker.IsPdf(invalidExtensionPdfFormFile));
 
         fileBytes = Encoding.UTF8.GetBytes("This is not a PDF.");
         var invalidHeaderBytesPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "attachment.pdf");
-        Assert.AreEqual(false, FileTypeChecker.IsCorrectFileType(invalidHeaderBytesPdfFormFile, ".pdf"));
+        Assert.AreEqual(false, FileTypeChecker.IsPdf(invalidHeaderBytesPdfFormFile));
 
         fileBytes = File.ReadAllBytes("empty_attachment.pdf");
         var emptyPdfFormFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, "attachment.pdf");
-        Assert.AreEqual(true, FileTypeChecker.IsCorrectFileType(emptyPdfFormFile, ".pdf"));
+        Assert.AreEqual(true, FileTypeChecker.IsPdf(emptyPdfFormFile));
     }
 
     [TestMethod]

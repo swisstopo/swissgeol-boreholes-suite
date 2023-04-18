@@ -36,7 +36,7 @@ public class UploadController : ControllerBase
     /// </summary>
     /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
     /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the csv records that were uploaded.</param>
-    /// <param name="pdfAttachments">The list of <see cref="IFormFile"/> containing the pdf attachments refered in the boreholesFile.</param>
+    /// <param name="pdfAttachments">The list of <see cref="IFormFile"/> containing the pdf attachments referred in <paramref name="boreholesFile"/>.</param>
     /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
@@ -45,25 +45,22 @@ public class UploadController : ControllerBase
         logger.LogInformation("Import borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
         try
         {
-            // Checks if boreholeCsv is empty or not provieded.
+            // Checks if the provided boreholes file is empty or not provided.
             if (boreholesFile == null || boreholesFile.Length == 0)
             {
                 return BadRequest("No borehole csv file uploaded.");
             }
 
-            // Check if the boreholeCsv extension is ".csv"
-            if (!FileTypeChecker.IsCorrectFileType(boreholesFile, ".csv"))
+            // Checks if the provided boreholes file is a CSV file.
+            if (!FileTypeChecker.IsCsv(boreholesFile))
             {
                 return BadRequest("Invalid file type for borehole csv.");
             }
 
-            // Check if the pdfAttachments extensions are ".pdf"
-            if (pdfAttachments != null && pdfAttachments.Count > 0)
+            // Checks if any of the provided borehole attachments is not a PDF file.
+            if (pdfAttachments?.Any(pdfFile => !FileTypeChecker.IsPdf(pdfFile)) == true)
             {
-                if (pdfAttachments.Any(pdfFile => !FileTypeChecker.IsCorrectFileType(pdfFile, ".pdf")))
-                {
-                    return BadRequest("Invalid file type for pdf attachment.");
-                }
+                return BadRequest("Invalid file type for pdf attachment.");
             }
 
             var boreholeAttachmentsPerImportId = new Dictionary<int, string>();

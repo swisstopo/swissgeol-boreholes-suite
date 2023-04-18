@@ -38,15 +38,40 @@ jobs:
       - working-directory: ./src/client
         run: npm run lint
 
+  cypress-tests:
+    runs-on: ubuntu-latest
+    name: Run cypress tests
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: [1, 2, 3, 4, 5]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build solution
+        run: dotnet build BDMS.sln -c Release /warnaserror
+
+      - name: Start db and api's
+        run: docker-compose up -d minio db api-legacy api
+
+      - working-directory: ./src/client
+        run: npm ci
+
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
-          build: npm run build --if-present
+          build: npm run build
           start: npm start
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
           working-directory: ./src/client
-          config: screenshotOnRunFailure=false
+          record: true
+          parallel: true
         env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           REACT_APP_VERSION: 0.0.99+dev
           TZ: Europe/Zurich
+          # Pass the GitHub token lets this action correctly
+          # determine the unique run id necessary to re-run the checks
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
