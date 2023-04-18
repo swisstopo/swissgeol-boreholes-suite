@@ -36,11 +36,11 @@ public class UploadController : ControllerBase
     /// </summary>
     /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
     /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the csv records that were uploaded.</param>
-    /// <param name="pdfAttachments">The list of <see cref="IFormFile"/> containing the pdf attachments referred in <paramref name="boreholesFile"/>.</param>
+    /// <param name="attachments">The list of <see cref="IFormFile"/> containing the attachments referred in <paramref name="boreholesFile"/>.</param>
     /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile, IList<IFormFile>? pdfAttachments = null)
+    public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile, IList<IFormFile>? attachments = null)
     {
         logger.LogInformation("Import borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
         try
@@ -57,16 +57,15 @@ public class UploadController : ControllerBase
                 return BadRequest("Invalid file type for borehole csv.");
             }
 
-            // Checks if any of the provided borehole attachments is not a PDF file.
-            if (pdfAttachments?.Any(pdfFile => !FileTypeChecker.IsPdf(pdfFile)) == true)
+            // Checks if any of the provided attachments is not a PDF file.
+            if (attachments?.Any(pdfFile => !FileTypeChecker.IsPdf(pdfFile)) == true)
             {
                 return BadRequest("Invalid file type for pdf attachment.");
             }
 
-            var boreholeAttachmentsPerImportId = new Dictionary<int, string>();
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile);
 
-            ValidateBoreholeImports(boreholeImports, pdfAttachments);
+            ValidateBoreholeImports(boreholeImports, attachments);
             if (!ModelState.IsValid)
             {
                 return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
@@ -142,7 +141,7 @@ public class UploadController : ControllerBase
         }
     }
 
-    private void ValidateBoreholeImports(List<BoreholeImport> boreholesFromFile, IList<IFormFile>? pdfAttachments = null)
+    private void ValidateBoreholeImports(List<BoreholeImport> boreholesFromFile, IList<IFormFile>? attachments = null)
     {
         var boreholesFromDb = context.Boreholes
             .AsNoTracking()
@@ -196,7 +195,8 @@ public class UploadController : ControllerBase
             {
                 if (attachments?.Any(a => a.FileName == attachmentFileNameToLink) == false)
                 {
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", $"Attachment file '{attachmentFileNameToLink}' not found.");
+                    ModelState.AddModelError($"Row{boreholeFromFile.index}", $"Attachment file '{attachmentFileNameToLink}' not found.");
+                }
             }
         }
     }
