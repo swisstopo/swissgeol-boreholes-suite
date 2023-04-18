@@ -79,7 +79,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -120,7 +120,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("minimal_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -164,8 +164,8 @@ public class UploadControllerTest
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
-                                                                     boreholesFile: boreholeCsvFormFile,
-                                                                     attachments: new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+                                                                      boreholeCsvFormFile,
+                                                                      new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -182,7 +182,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("special_chars_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -201,7 +201,7 @@ public class UploadControllerTest
     {
         var boreholeCsvFile = GetFormFileByExistingFile("no_coordinates_provided_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -223,7 +223,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv95_coordinates_provided_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -252,7 +252,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv03_coordinates_provided_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -281,7 +281,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv03_out_of_range_coordinates_provided_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -305,7 +305,7 @@ public class UploadControllerTest
     {
         var boreholeCsvFile = new FormFile(null, 0, 0, null, "nonexistant_file.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -317,7 +317,7 @@ public class UploadControllerTest
     {
         var invalidFielTypeBoreholeFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "invalid_file_type.txt");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: invalidFielTypeBoreholeFile, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, invalidFielTypeBoreholeFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -339,8 +339,8 @@ public class UploadControllerTest
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
-                                                                      boreholesFile: boreholeCsvFile,
-                                                                      attachments: new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+                                                                      boreholeCsvFile,
+                                                                      new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -357,8 +357,8 @@ public class UploadControllerTest
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_with_wrong_extension.txt");
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
-                                                                      boreholesFile: boreholeCsvFile,
-                                                                      attachments: new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+                                                                      boreholeCsvFile,
+                                                                      new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -396,7 +396,7 @@ public class UploadControllerTest
     [TestMethod]
     public async Task UploadNoFileShouldReturnError()
     {
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: null, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, null, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -408,7 +408,7 @@ public class UploadControllerTest
     {
         var boreholeCsvFile = GetFormFileByExistingFile("no_data_but_required_headers.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -420,7 +420,7 @@ public class UploadControllerTest
     {
         var boreholeCsvFile = GetFormFileByExistingFile("multiple_rows_missing_required_attributes_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -444,7 +444,7 @@ public class UploadControllerTest
     {
         var boreholeCsvFile = GetFormFileByExistingFile("missing_required_headers_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -547,7 +547,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("borehole_and_location_data.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholesFile: boreholeCsvFile, attachments: null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
