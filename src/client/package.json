@@ -25,7 +25,6 @@
     "@mui/icons-material": "^5.10.6",
     "@mui/material": "^5.10.6",
     "axios": "^0.26.0",
-    "cypress-cloud": "^1.7.3",
     "date-fns": "^2.9.0",
     "http-proxy-middleware": "^2.0.6",
     "i18next": "^19.1.0",
@@ -58,6 +57,7 @@
   },
   "devDependencies": {
     "cypress": "^12.4.0",
+    "cypress-cloud": "^1.7.3",
     "eslint": "^8.23.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-import": "^2.26.0",
