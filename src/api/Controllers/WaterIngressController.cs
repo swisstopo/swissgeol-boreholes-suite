@@ -20,12 +20,16 @@ public class WaterIngressController : BdmsControllerBase<WaterIngress>
     /// <summary>
     /// Asynchronously gets all water ingress records optionally filtered by <paramref name="boreholeId"/>.
     /// </summary>
-    /// <param name="boreholeId"></param>
+    /// <param name="boreholeId">The id of the borehole referenced in the observations to get.</param>
+    /// <returns>An IEnumerable of type <see cref="WaterIngress"/>.</returns>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<WaterIngress>> GetAsync([FromQuery] int? boreholeId = null)
     {
         var waterIngresses = context.WaterIngresses
+            .Include(w => w.Quantity)
+            .Include(w => w.Reliability)
+            .Include(w => w.Conditions)
             .AsNoTracking();
 
         if (boreholeId != null)
