@@ -162,7 +162,6 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Layer>().HasOne(l => l.UscsDetermination).WithMany().HasForeignKey(l => l.UscsDeterminationId);
         modelBuilder.Entity<Layer>().HasOne(l => l.InstrumentCasing).WithMany().HasForeignKey(l => l.InstrumentCasingId);
 
-        modelBuilder.Entity<Observation>().ToTable("observation");
         modelBuilder.Entity<WaterIngress>().ToTable("water_ingress").HasBaseType<Observation>();
     }
 }

@@ -7,6 +7,7 @@ namespace BDMS;
 /// <summary>
 /// Represents an observation in the boring process.
 /// </summary>
+[Table("observation")]
 public class Observation : IChangeTracking, IIdentifyable
 {
     /// <summary>
