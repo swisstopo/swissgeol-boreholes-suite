@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20230417152352_AddWaterIngressModel")]
-    partial class AddWaterIngressModel
+    [Migration("20230419130108_AddObservationAndWateringressModel")]
+    partial class AddObservationAndWateringressModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

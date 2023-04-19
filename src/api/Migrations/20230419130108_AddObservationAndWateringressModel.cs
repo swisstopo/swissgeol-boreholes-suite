@@ -5,7 +5,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace BDMS.Migrations;
 
-public partial class AddWaterIngressModel : Migration
+public partial class AddObservationAndWateringressModel : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
     {
@@ -49,8 +49,7 @@ public partial class AddWaterIngressModel : Migration
                     column: x => x.reliability,
                     principalSchema: "bdms",
                     principalTable: "codelist",
-                    principalColumn: "id_cli",
-                    onDelete: ReferentialAction.Cascade);
+                    principalColumn: "id_cli");
                 table.ForeignKey(
                     name: "FK_observation_stratigraphy_casing",
                     column: x => x.casing,
@@ -94,8 +93,7 @@ public partial class AddWaterIngressModel : Migration
                     column: x => x.quantity,
                     principalSchema: "bdms",
                     principalTable: "codelist",
-                    principalColumn: "id_cli",
-                    onDelete: ReferentialAction.Cascade);
+                    principalColumn: "id_cli");
                 table.ForeignKey(
                     name: "FK_water_ingress_observation_id",
                     column: x => x.id,
