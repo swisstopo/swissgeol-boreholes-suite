@@ -17,7 +17,7 @@ public class WaterIngress : Observation
     /// <summary>
     /// Gets or sets the <see cref="WaterIngress"/>'s quantity.
     /// </summary>
-    public Codelist Quantity { get; set; }
+    public Codelist? Quantity { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="WaterIngress"/>'s conditions id.

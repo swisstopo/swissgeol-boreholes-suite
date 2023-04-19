@@ -96,7 +96,7 @@ public class Observation : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s reliability.
     /// </summary>
-    public Codelist Reliability { get; set; }
+    public Codelist? Reliability { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s borehole id.
