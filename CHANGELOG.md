@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.0.298 - 2023-04-18
+
 ### Added
 
 - Define borehole csv import fields `original_name`, `location_x` and `location_y` as required.
@@ -25,6 +27,7 @@
 - Fix table was reset to page 1 when returning to borehole list from detail with appearance _Map & List|Details_ and _List|Details & Map_.
 - Fix search filters were not applied to points on map.
 - Fix scrolling behaviour for _lithology_layers_.
+- Fix error when repeatedly sorting by "original name" that caused the application to crash under special circumstances.
 
 ## v2.0.273 - 2023-04-04
 
