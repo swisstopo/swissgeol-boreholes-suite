@@ -41,7 +41,7 @@
     <None Update="TestData\borehole_with_attachments.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Borehole_Attachment_1.pdf">
+    <None Update="TestData\borehole_attachment_1.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\borehole_attachment_2.pdf">

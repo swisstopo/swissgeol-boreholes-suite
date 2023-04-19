@@ -158,14 +158,10 @@ public class UploadControllerTest
            .Verifiable();
 
         var boreholeCsvFormFile = GetFormFileByExistingFile("borehole_with_attachments.csv");
-
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
-
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
-                                                                      boreholeCsvFormFile,
-                                                                      new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -181,14 +177,10 @@ public class UploadControllerTest
            .Verifiable();
 
         var boreholeCsvFormFile = GetFormFileByExistingFile("borehole_with_mixed_case_in_attachments_filenames.csv");
-
         var firstPdfFormFile = GetFormFileByExistingFile("Borehole_Attachment_1.pdf");
-
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
-                                                                      boreholeCsvFormFile,
-                                                                      new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -356,14 +348,10 @@ public class UploadControllerTest
            .Verifiable();
 
         var boreholeCsvFile = GetFormFileByContent(fileContent: "original_name;location_x;location_y\r\nFrank Place;2000000;1000000", fileName: "boreholes.csv");
-
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
-
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
-                                                                      boreholeCsvFile,
-                                                                      new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -374,14 +362,10 @@ public class UploadControllerTest
     public async Task UploadInvalidFileTypePdfAttachmentShouldReturnError()
     {
         var boreholeCsvFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "boreholes.csv");
-
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
-
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_with_wrong_extension.txt");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
-                                                                      boreholeCsvFile,
-                                                                      new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -392,14 +376,10 @@ public class UploadControllerTest
     public async Task UploadBoreholeCsvFileWithNotPresentAttachmentsShouldReturnError()
     {
         var boreholeCsvFile = GetFormFileByExistingFile("borehole_with_not_present_attachments.csv");
-
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
-
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
-                                                                      boreholeCsvFile,
-                                                                      new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -419,14 +399,10 @@ public class UploadControllerTest
     public async Task UploadBoreholeCsvFileWithWhiteSpaceInAttachmentFileNameShouldReturnError()
     {
         var boreholeCsvFile = GetFormFileByExistingFile("borehole_with_not_present_attachments.csv");
-
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
-
         var whiteSpacePdf = GetFormFileByExistingFile("white space.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1,
-                                                                      boreholeCsvFile,
-                                                                      new List<IFormFile>() { firstPdfFormFile, whiteSpacePdf });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, whiteSpacePdf });
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -538,16 +514,8 @@ public class UploadControllerTest
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(2, problemDetails.Errors.Count);
 
-        CollectionAssert.AreEquivalent(new[]
-        {
-            $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.",
-        },
-        problemDetails.Errors["Row1"]);
-        CollectionAssert.AreEquivalent(new[]
-        {
-            $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.",
-        },
-        problemDetails.Errors["Row2"]);
+        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Row1"]);
+        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Row2"]);
     }
 
     [TestMethod]
@@ -581,16 +549,8 @@ public class UploadControllerTest
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(2, problemDetails.Errors.Count);
 
-        CollectionAssert.AreEquivalent(new[]
-        {
-            $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.",
-        },
-        problemDetails.Errors["Row1"]);
-        CollectionAssert.AreEquivalent(new[]
-        {
-            $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.",
-        },
-        problemDetails.Errors["Row2"]);
+        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row1"]);
+        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row2"]);
     }
 
     [TestMethod]
