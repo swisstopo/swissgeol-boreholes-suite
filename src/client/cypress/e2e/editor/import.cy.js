@@ -45,7 +45,7 @@ describe("Test for importing boreholes.", () => {
       .should("contain", "Row5")
       .should(
         "contain",
-        "Borehole with same Coordinates (+/- 2m) and same TotalDepth is provied multiple times.",
+        "Borehole with same Coordinates (+/- 2m) and same TotalDepth is provided multiple times.",
       );
   });
 });
