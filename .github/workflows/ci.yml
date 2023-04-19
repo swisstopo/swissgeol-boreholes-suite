@@ -61,15 +61,13 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
+          command: npx cypress-cloud run --record --parallel --key ${{ secrets.CURRENTS_RECORD_KEY }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}}
           build: npm run build
           start: npm start
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
           working-directory: ./src/client
-          record: true
-          parallel: true
         env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           REACT_APP_VERSION: 0.0.99+dev
           TZ: Europe/Zurich
           # Pass the GitHub token lets this action correctly
