@@ -3,19 +3,19 @@
 /// <summary>
 /// Represents an observation type.
 /// </summary>
-#pragma warning disable CA1008 // Enums should have zero value
 public enum ObservationType
-#pragma warning restore CA1008 // Enums should have zero value
 {
+    None = 0,
+
     /// <summary>
     /// The observation type water ingress.
     /// </summary>
     WaterIngress = 1,
 
     /// <summary>
-    /// The observation type groundwater level.
+    /// The observation type groundwater level measurement.
     /// </summary>
-    GroundwaterLevel = 2,
+    GroundwaterLevelMeasurement = 2,
 
     /// <summary>
     /// The observation type hydrotest.
