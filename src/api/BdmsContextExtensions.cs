@@ -97,6 +97,9 @@ public static class BdmsContextExtensions
         List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> geologicalStratigraphyIds = context.Stratigraphies.Where(c => c.KindId == 3000).Select(s => s.Id).ToList();
         List<int> referenceElevationTypeIds = codelists.Where(c => c.Schema == "ibor117").Select(s => s.Id).ToList();
+        List<int> waterIngressReliabilityIds = codelists.Where(c => c.Schema == "observ101").Select(s => s.Id).ToList();
+        List<int> waterIngressQuantityIds = codelists.Where(c => c.Schema == "waing101").Select(s => s.Id).ToList();
+        List<int> waterIngressConditionsIds = codelists.Where(c => c.Schema == "waing102").Select(s => s.Id).ToList();
 
         // Seed Boreholes
         var borehole_ids = 1_000_000;
@@ -530,6 +533,59 @@ public static class BdmsContextExtensions
         LayerCodelist SeededLayerCodelist(int seed) => fakeLayerCodelists.UseSeed(seed).Generate();
         context.BulkInsert(layerCodelistRange.Select(SeededLayerCodelist).ToList(), bulkConfig);
 
+        // Seed observations and waterIngresses
+        var observation_ids = 12_000_000;
+        var observationRange = Enumerable.Range(observation_ids, 100);
+        var fakeObservations = new Faker<Observation>()
+            .StrictMode(true)
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
+            .RuleFor(o => o.Borehole, _ => default!)
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!)
+            .RuleFor(o => o.StartTime, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.EndTime, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.Duration, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.FromDepthM, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.ToDepthM, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.FromDepthMasl, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.ToDepthMasl, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.CompletionFinished, f => f.Random.Bool())
+            .RuleFor(o => o.Comment, f => f.Lorem.Sentence())
+            .RuleFor(o => o.ReliabilityId, f => f.PickRandom(waterIngressReliabilityIds))
+            .RuleFor(o => o.Reliability, _ => default!)
+            .RuleFor(o => o.Type, _ => ObservationType.WaterIngress)
+            .RuleFor(o => o.CasingId, _ => null)
+            .RuleFor(o => o.Casing, _ => default!)
+            .RuleFor(o => o.Id, f => observation_ids++);
+
+        Observation SeededObservations(int seed) => fakeObservations.UseSeed(seed).Generate();
+        var observations = observationRange.Select(SeededObservations).ToList();
+
+        var fakeWaterIngresses = new Faker<WaterIngress>()
+            .RuleFor(o => o.QuantityId, f => f.PickRandom(waterIngressQuantityIds))
+            .RuleFor(o => o.Quantity, _ => default!)
+            .RuleFor(o => o.ConditionsId, f => f.PickRandom(waterIngressConditionsIds))
+            .RuleFor(o => o.Conditions, _ => default!);
+
+        WaterIngress SeededWaterIngresses(Observation observation)
+        {
+            return fakeWaterIngresses
+                .UseSeed(observation.Id)
+                .RuleFor(o => o.Id, _ => observation.Id)
+                .Generate();
+        }
+
+        var waterIngresses = observations.Select(observation => SeededWaterIngresses(observation)).ToList();
+
+        context.BulkInsert(observations, bulkConfig);
+        context.BulkInsert(waterIngresses, bulkConfig);
+
+        context.SaveChanges();
+
         // Sync all database sequences
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.workgroups', 'id_wgp'), {workgroup_ids - 1})");
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.borehole', 'id_bho'), {borehole_ids - 1})");
@@ -539,6 +595,7 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.stratigraphy', 'id_sty'), {stratigraphy_ids - 1})");
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.layer', 'id_lay'), {layer_ids - 1})");
         context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.workflow', 'id_wkf'), {workflow_ids - 1})");
+        context.Database.ExecuteSqlRaw($"SELECT setval(pg_get_serial_sequence('bdms.observation', 'id'), {observation_ids - 1})");
     }
 }
 #pragma warning restore CA1505
