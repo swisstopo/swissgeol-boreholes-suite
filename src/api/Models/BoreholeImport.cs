@@ -16,4 +16,11 @@ public class BoreholeImport : Borehole
     /// </summary>
     public double? Location_y { get; set; }
 #pragma warning restore CA1707 // Identifiers should not contain underscores
+
+    /// <summary>
+    /// Gets or sets the <see cref="BoreholeImport"/>'s attachments.
+    /// Represents a list of files to attach to the <see cref="Borehole"/> in form of a comma separated string.
+    /// e.g. "borehole_1.pdf,borehole_2.pdf".
+    /// </summary>
+    public string Attachments { get; set; }
 }
