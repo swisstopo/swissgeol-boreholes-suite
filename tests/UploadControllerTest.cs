@@ -7,9 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Net;
-using System.Text;
 using static BDMS.Helpers;
-using File = System.IO.File;
 
 namespace BDMS;
 
@@ -52,21 +50,6 @@ public class UploadControllerTest
         await context.DisposeAsync();
         httpClientFactoryMock.Verify();
         loggerMock.Verify();
-    }
-
-    // Create a FormFile from an existing file
-    internal static FormFile GetFormFileByExistingFile(string fileName)
-    {
-        var fileBytes = File.ReadAllBytes(fileName);
-        var stream = new MemoryStream(fileBytes);
-        return new FormFile(stream, 0, fileBytes.Length, null, fileName);
-    }
-
-    // Create a FormFile from a provided content
-    internal static FormFile GetFormFileByContent(string fileContent, string fileName)
-    {
-        var fileBytes = Encoding.UTF8.GetBytes(fileContent);
-        return new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, fileName);
     }
 
     [TestMethod]
