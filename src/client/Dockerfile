@@ -28,10 +28,9 @@ RUN npm install -g serve
 RUN mkdir /app
 WORKDIR /app
 COPY --from=development /app/src/client/node_modules /app/node_modules
+COPY --from=development /app/src/client/public/help /app/public/help
 COPY . .
 RUN npm run build
-
-COPY --from=development /app/src/client/public/help /app/public/help
 
 # Generate license and copyright notice for Node.js packages
 RUN npx license-checker --json --production \
