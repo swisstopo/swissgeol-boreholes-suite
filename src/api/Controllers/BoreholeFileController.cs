@@ -1,7 +1,6 @@
 ﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 
 namespace BDMS.Controllers;
 
@@ -11,10 +10,12 @@ public class BoreholeFileController : ControllerBase
 {
     private readonly BdmsContext context;
     private readonly CloudStorageService storageService;
+    private readonly ILogger logger;
 
-    public BoreholeFileController(BdmsContext context, CloudStorageService storageService)
+    public BoreholeFileController(BdmsContext context, ILogger<BoreholeFileController> logger, CloudStorageService storageService)
         : base()
     {
+        this.logger = logger;
         this.storageService = storageService;
         this.context = context;
     }
@@ -27,66 +28,16 @@ public class BoreholeFileController : ControllerBase
     [HttpPost("upload")]
     public async Task<ActionResult> Upload(IFormFile file, int boreholeId)
     {
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest("File is not selected");
-        }
+        if (file == null || file.Length == 0) return BadRequest("No File provided.");
 
-        // Generate a hash based on the file content.
-        var base64Hash = GetSha256HashOfString(file);
-
-        // Check any file with the same hash already exists in the database.
-        var bdmsFileId = context.Files.FirstOrDefault(f => f.Hash == base64Hash)?.Id;
-
-        // Create a transaction to ensure the file is only linked to the borehole if it is successfully uploaded.
-        using var transaction = context.Database.BeginTransaction();
         try
         {
-            // If the file already exists, link it to the borehole.
-            if (bdmsFileId == null)
-            {
-                var fileExtension = Path.GetExtension(file.FileName);
-                var fileNameGuid = $"{Guid.NewGuid()}{fileExtension}";
-
-                var bdmsFile = new BDMS.Models.File
-                {
-                    Name = file.FileName,
-                    NameUuid = fileNameGuid,
-                    Hash = base64Hash,
-                    Type = file.ContentType,
-                };
-
-                await context.Files.AddAsync(bdmsFile).ConfigureAwait(false);
-
-                await context.SaveChangesAsync().ConfigureAwait(false);
-
-                bdmsFileId = bdmsFile.Id;
-
-                // Upload the file to the cloud storage.
-                await storageService.UploadObject(file, fileNameGuid).ConfigureAwait(false);
-            }
-
-            if (!context.BoreholeFiles.Any(bf => bf.BoreholeId == boreholeId && bf.FileId == bdmsFileId))
-            {
-                // Create new BoreholeFile
-                var boreHoleFile = new BoreholeFile
-                {
-                    FileId = (int)bdmsFileId,
-                    BoreholeId = boreholeId,
-                };
-                await context.BoreholeFiles.AddAsync(boreHoleFile).ConfigureAwait(false);
-
-                var bho1 = context.BoreholeFiles.Where(bf => bf.BoreholeId == boreholeId).ToList();
-                var fileInDb = context.Files.Where(f => f.Name == "file_1.pdf").ToList();
-
-                await context.SaveChangesAsync().ConfigureAwait(false);
-            }
-
-            await transaction.CommitAsync().ConfigureAwait(false);
+            await storageService.UploadFileToStorageAndLinkToBorehole(file, boreholeId).ConfigureAwait(false);
             return Ok();
         }
-        catch
+        catch (Exception ex)
         {
+            logger.LogError(ex, "An error occurred while uploading the file.");
             return Problem("An error occurred while uploading the file.");
         }
     }
@@ -101,25 +52,24 @@ public class BoreholeFileController : ControllerBase
     {
         try
         {
-            var file = await context.Files
-                .Include(f => f.BoreholeFiles)
-                .Where(f => f.BoreholeFiles.Any(bf => bf.FileId == boreholeFileId))
-                .FirstOrDefaultAsync()
+            var boreholeFile = await context.BoreholeFiles
+                .Include(f => f.File)
+                .FirstOrDefaultAsync(f => f.FileId == boreholeFileId)
                 .ConfigureAwait(false);
 
-            if (file?.NameUuid == null)
+            if (boreholeFile.File?.NameUuid == null)
             {
                 return NotFound($"File with ID {boreholeFileId} not found in borehole.");
             }
 
-            var fileBytes = await storageService.GetObject(file.NameUuid).ConfigureAwait(false);
+            var fileBytes = await storageService.GetObject(boreholeFile.File.NameUuid).ConfigureAwait(false);
 
-            return File(fileBytes, "application/octet-stream", file.Name);
+            return File(fileBytes, "application/octet-stream", boreholeFile.File.Name);
         }
         catch (Exception ex)
         {
-            // Handle exceptions here
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            logger.Log(LogLevel.Error, ex, "An error occurred while downloading the file.");
+            return Problem("An error occurred while downloading the file.");
         }
     }
 
@@ -133,6 +83,7 @@ public class BoreholeFileController : ControllerBase
     {
         return await context.BoreholeFiles
             .Where(bf => bf.BoreholeId == boreholeId)
+            .AsNoTracking()
             .ToListAsync()
             .ConfigureAwait(false);
     }
@@ -149,13 +100,15 @@ public class BoreholeFileController : ControllerBase
         try
         {
             // Get the file and its BoreholeFiles from the database.
-            var file = await context.Files
-                .Include(b => b.BoreholeFiles)
-                .FirstOrDefaultAsync(b => b.BoreholeFiles.Any(bf => bf.FileId == boreholeFileId && bf.BoreholeId == boreholeId))
+            var boreholeFile = await context.BoreholeFiles
+                .Include(f => f.File)
+                .FirstOrDefaultAsync(f => f.FileId == boreholeFileId)
                 .ConfigureAwait(false);
 
+            var file = boreholeFile.File;
+
             // If the file exists, remove the requested BoreholeFile from the database.
-            if (file != null)
+            if (boreholeFile?.File != null)
             {
                 file.BoreholeFiles.Remove(file.BoreholeFiles.First(bf => bf.FileId == boreholeFileId && bf.BoreholeId == boreholeId));
                 await context.SaveChangesAsync().ConfigureAwait(false);
@@ -173,28 +126,8 @@ public class BoreholeFileController : ControllerBase
         }
         catch (Exception ex)
         {
-            // Handle exceptions here
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            logger.Log(LogLevel.Error, ex, "An error occurred while detaching the file.");
+            return Problem("An error occurred while detaching the file.");
         }
-    }
-
-    /// <summary>
-    /// Generates a SHA256 hash of the file content.
-    /// </summary>
-    /// <param name="file">The file to generate the hash for.</param>
-    /// <returns>The hash as a base64 string.</returns>
-    internal static string GetSha256HashOfString(IFormFile file)
-    {
-        var base64Hash = "";
-        using (SHA256 sha256Hash = SHA256.Create())
-        {
-            using (Stream stream = file.OpenReadStream())
-            {
-                byte[] hashBytes = sha256Hash.ComputeHash(stream);
-                base64Hash = Convert.ToBase64String(hashBytes);
-            }
-        }
-
-        return base64Hash;
     }
 }

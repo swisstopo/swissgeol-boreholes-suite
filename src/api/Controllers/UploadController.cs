@@ -20,15 +20,17 @@ public class UploadController : ControllerBase
     private readonly ILogger logger;
     private readonly LocationService locationService;
     private readonly CoordinateService coordinateService;
+    private readonly CloudStorageService cloudStorageService;
     private readonly int sridLv95 = 2056;
     private readonly int sridLv03 = 21781;
 
-    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService)
+    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService, CloudStorageService cloudStorageService)
     {
         this.context = context;
         this.logger = logger;
         this.locationService = locationService;
         this.coordinateService = coordinateService;
+        this.cloudStorageService = cloudStorageService;
     }
 
     /// <summary>
@@ -72,40 +74,41 @@ public class UploadController : ControllerBase
                 .SingleOrDefaultAsync(u => u.Name == userName)
                 .ConfigureAwait(false);
 
-            // Map from BoreholeImport to Borehole
-            var boreholes = boreholeImports
-                .Select(importBorehole =>
+            // Upload attachments to cloud storage an map to Borehole type
+            List<Borehole> boreholes = new();
+            foreach (var boreholeImport in boreholeImports)
+            {
+                var borehole = (Borehole)boreholeImport;
+
+                // Assign borehole id to the borehole import object to be able to map attachments to the borehole.
+                boreholeImport.Id = borehole.Id;
+
+                // Set DateTime kind to UTC, since PSQL type 'timestamp with timezone' requires UTC as DateTime.Kind
+                borehole.SpudDate = borehole.SpudDate != null ? DateTime.SpecifyKind(borehole.SpudDate.Value, DateTimeKind.Utc) : null;
+                borehole.DrillingDate = borehole.DrillingDate != null ? DateTime.SpecifyKind(borehole.DrillingDate.Value, DateTimeKind.Utc) : null;
+                borehole.RestrictionUntil = borehole.RestrictionUntil != null ? DateTime.SpecifyKind(borehole.RestrictionUntil.Value, DateTimeKind.Utc) : null;
+                borehole.WorkgroupId = workgroupId;
+
+                // Detect coordinate reference system and set according coordinate properties of borehole.
+                if (boreholeImport.Location_x != null && boreholeImport.Location_y != null)
                 {
-                    var borehole = (Borehole)importBorehole;
-
-                    // Set DateTime kind to UTC, since PSQL type 'timestamp with timezone' requires UTC as DateTime.Kind
-                    borehole.SpudDate = borehole.SpudDate != null ? DateTime.SpecifyKind(borehole.SpudDate.Value, DateTimeKind.Utc) : null;
-                    borehole.DrillingDate = borehole.DrillingDate != null ? DateTime.SpecifyKind(borehole.DrillingDate.Value, DateTimeKind.Utc) : null;
-                    borehole.RestrictionUntil = borehole.RestrictionUntil != null ? DateTime.SpecifyKind(borehole.RestrictionUntil.Value, DateTimeKind.Utc) : null;
-                    borehole.WorkgroupId = workgroupId;
-
-                    // Detect coordinate reference system and set according coordinate properties of borehole.
-                    if (importBorehole.Location_x != null && importBorehole.Location_y != null)
+                    if (boreholeImport.Location_x >= 2_000_000)
                     {
-                        if (importBorehole.Location_x >= 2_000_000)
-                        {
-                            borehole.OriginalReferenceSystem = ReferenceSystem.LV95;
-                            borehole.LocationX = importBorehole.Location_x;
-                            borehole.LocationY = importBorehole.Location_y;
-                        }
-                        else
-                        {
-                            borehole.OriginalReferenceSystem = ReferenceSystem.LV03;
-                            borehole.LocationXLV03 = importBorehole.Location_x;
-                            borehole.LocationYLV03 = importBorehole.Location_y;
-                        }
+                        borehole.OriginalReferenceSystem = ReferenceSystem.LV95;
+                        borehole.LocationX = boreholeImport.Location_x;
+                        borehole.LocationY = boreholeImport.Location_y;
                     }
+                    else
+                    {
+                        borehole.OriginalReferenceSystem = ReferenceSystem.LV03;
+                        borehole.LocationXLV03 = boreholeImport.Location_x;
+                        borehole.LocationYLV03 = boreholeImport.Location_y;
+                    }
+                }
 
-                    return borehole;
-                })
-                .ToList();
-
-            var allAttachmentFileNames = boreholeImports.SelectMany(x => x.Attachments.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture))).ToList() ?? new List<string>();
+                // Add borehole to list of boreholes.
+                boreholes.Add(borehole);
+            }
 
             foreach (var borehole in boreholes)
             {
@@ -123,8 +126,30 @@ public class UploadController : ControllerBase
                     });
             }
 
-            await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
-            return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
+            // Save the changes to the db, upload attachments to cloud storage and commit changes to db on success.
+            using (var transaction = await context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            {
+                // Add boreholes to database.
+                await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
+                var result = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
+
+                // Add attachments to borehole.
+                if (attachments != null)
+                {
+                    foreach (var boreholeImport in boreholeImports)
+                    {
+                        var attachmentFileNames = boreholeImport.Attachments.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture)).ToList();
+                        var attachmentFiles = attachments.Where(x => attachmentFileNames.Contains(x.FileName.Replace(" ", "", StringComparison.InvariantCulture))).ToList();
+                        foreach (var attachmentFile in attachmentFiles)
+                        {
+                            await cloudStorageService.UploadFileToStorageAndLinkToBorehole(attachmentFile, boreholeImport.Id).ConfigureAwait(false);
+                        }
+                    }
+                }
+
+                await transaction.CommitAsync().ConfigureAwait(false);
+                return result;
+            }
         }
         catch (Exception ex) when (ex is HeaderValidationException || ex is ReaderException)
         {
