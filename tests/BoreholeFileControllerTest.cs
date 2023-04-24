@@ -1,11 +1,11 @@
 ﻿using BDMS.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Minio;
 using Minio.Exceptions;
+using Moq;
 using System.Net;
 using System.Reactive.Linq;
 using System.Text;
@@ -16,7 +16,6 @@ namespace BDMS;
 [TestClass]
 public class BoreholeFileControllerTest
 {
-    private MinioClient minioClient;
     private BdmsContext context;
     private BoreholeFileController controller;
     private CloudStorageService cloudStorageService;
@@ -31,17 +30,14 @@ public class BoreholeFileControllerTest
         var configuration = builder.Build();
 
         context = ContextFactory.CreateContext();
-        this.cloudStorageService = new CloudStorageService(configuration);
-        controller = new BoreholeFileController(context, cloudStorageService);
+        var cloudStorageServiceLoggerMock = new Mock<ILogger<CloudStorageService>>(MockBehavior.Strict);
+        this.cloudStorageService = new CloudStorageService(context, configuration, cloudStorageServiceLoggerMock.Object);
+
+        var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
+        controller = new BoreholeFileController(context, boreholeFileControllerLoggerMock.Object, cloudStorageService);
         controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
         boreholeCount = context.Boreholes.Count();
-
-        minioClient = new MinioClient()
-            .WithEndpoint(configuration.GetConnectionString("S3_ENDPOINT"))
-            .WithCredentials(configuration.GetConnectionString("S3_ACCESS_KEY"), configuration.GetConnectionString("S3_SECRET_KEY"))
-            .WithSSL(false)
-            .Build();
     }
 
     [TestCleanup]
@@ -175,7 +171,6 @@ public class BoreholeFileControllerTest
 
         // Upload file for boreholes
         await controller.Upload(pdfFormFile, firstBoreholeId);
-        //await controller.Upload(pdfFormFile, secondBoreholeId);
 
         // Get latest file in db
         var latestFileInDb = context.Files.OrderBy(f => f.Id).Last();

@@ -1,8 +1,10 @@
 ﻿using BDMS.Controllers;
 using BDMS.Models;
+using Bogus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -26,15 +28,21 @@ public class UploadControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
+        var builder = new ConfigurationBuilder();
+        builder.AddJsonFile("appsettings.development.json", optional: true, reloadOnChange: true);
+        var configuration = builder.Build();
+
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<UploadController>>();
         loggerLocationServiceMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
         loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
+        var loggerCloudStorageServiceMock = new Mock<ILogger<CloudStorageService>>(MockBehavior.Strict);
         var locationService = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
         var coordinateService = new CoordinateService(loggerCoordinateServiceMock.Object, httpClientFactoryMock.Object);
+        var cloudStorageService = new CloudStorageService(context, configuration, loggerCloudStorageServiceMock.Object);
 
-        controller = new UploadController(ContextFactory.CreateContext(), loggerMock.Object, locationService, coordinateService) { ControllerContext = GetControllerContextAdmin() };
+        controller = new UploadController(ContextFactory.CreateContext(), loggerMock.Object, locationService, coordinateService, cloudStorageService) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -323,7 +331,7 @@ public class UploadControllerTest
     }
 
     [TestMethod]
-    public async Task UploadBoreholeCsvFileWithNotLinkedPdfsShouldCreateBorehole()
+    public async Task UploadBoreholeCsvFileWithoutAttachmentsButWithProvidedFilesShouldCreateBorehole()
     {
         httpClientFactoryMock
            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
@@ -339,6 +347,42 @@ public class UploadControllerTest
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
+    }
+
+    [TestMethod]
+    public async Task UploadBoreholeCsvFileWithAttachmentsLinkedPdfsShouldCreateBorehole()
+    {
+        httpClientFactoryMock
+           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+           .Returns(() => new HttpClient())
+           .Verifiable();
+
+        var firstAttachmentFileName = "borehole_attachment_1.pdf";
+        var secondAttachmentFileName = "borehole_attachment_2.pdf";
+
+        var pdfContent = @"original_name;location_x;location_y;attachments
+Frank Place;2000000;1000000;borehole_attachment_1.pdf,borehole_attachment_2.pdf";
+        var boreholeCsvFile = GetFormFileByContent(fileContent: pdfContent, fileName: "boreholes.csv");
+        var firstPdfFormFile = GetFormFileByExistingFile(firstAttachmentFileName);
+        var secondPdfFormFile = GetFormFileByExistingFile(secondAttachmentFileName);
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(1, okResult.Value);
+
+        // Get latest borehole Ids
+        var latestBoreholeId = context.Boreholes.OrderByDescending(b => b.Id).First().Id;
+
+        var borehole = context.Boreholes
+            .Include(b => b.BoreholeFiles)
+            .ThenInclude(bf => bf.File)
+            .Single(b => b.Id == latestBoreholeId);
+
+        Assert.AreEqual(borehole.BoreholeFiles.First().File.Name, firstAttachmentFileName);
+        Assert.AreEqual(borehole.BoreholeFiles.Last().File.Name, secondAttachmentFileName);
+        Assert.AreEqual(borehole.BoreholeFiles.Count, 2);
     }
 
     [TestMethod]

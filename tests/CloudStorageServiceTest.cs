@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Minio;
 using Minio.DataModel;
 using Minio.Exceptions;
+using Moq;
 using System.Reactive.Linq;
 using System.Text;
 using static BDMS.Helpers;
@@ -25,7 +27,9 @@ public class CloudStorageServiceTest
         var configuration = builder.Build();
 
         context = ContextFactory.CreateContext();
-        cloudStorageService = new CloudStorageService(configuration);
+
+        var loggerMock = new Mock<ILogger<CloudStorageService>>(MockBehavior.Strict);
+        cloudStorageService = new CloudStorageService(context, configuration, loggerMock.Object);
 
         this.configuration = configuration;
 
