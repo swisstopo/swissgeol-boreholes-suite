@@ -21,7 +21,7 @@ public class BoreholeFileUploadService
     {
         this.logger = logger;
         this.context = context;
-        bucketName = bucketName ?? configuration.GetConnectionString("S3_BUCKET_NAME");
+        bucketName = configuration.GetConnectionString("S3_BUCKET_NAME");
         endPoint = configuration.GetConnectionString("S3_ENDPOINT");
         accessKey = configuration.GetConnectionString("S3_ACCESS_KEY");
         secretKey = configuration.GetConnectionString("S3_SECRET_KEY");
@@ -56,22 +56,16 @@ public class BoreholeFileUploadService
                 var fileExtension = Path.GetExtension(file.FileName);
                 var fileNameGuid = $"{Guid.NewGuid()}{fileExtension}";
 
-                var bdmsFile = new Models.File
-                {
-                    Name = file.FileName,
-                    NameUuid = fileNameGuid,
-                    Hash = base64Hash,
-                    Type = file.ContentType,
-                };
+                var bdmsFile = new Models.File { Name = file.FileName, NameUuid = fileNameGuid, Hash = base64Hash, Type = file.ContentType, };
 
                 await context.Files.AddAsync(bdmsFile).ConfigureAwait(false);
                 await context.SaveChangesAsync().ConfigureAwait(false);
 
                 fileId = bdmsFile.Id;
 
-                // Upload the file to the cloud storage.
                 try
                 {
+                    // Upload the file to the cloud storage.
                     await UploadObject(file, fileNameGuid).ConfigureAwait(false);
                 }
                 catch (Exception ex)
@@ -84,11 +78,8 @@ public class BoreholeFileUploadService
             if (!context.BoreholeFiles.Any(bf => bf.BoreholeId == boreholeId && bf.FileId == fileId))
             {
                 // Create new BoreholeFile
-                var boreHoleFile = new BoreholeFile
-                {
-                    FileId = (int)fileId,
-                    BoreholeId = boreholeId,
-                };
+                var boreHoleFile = new BoreholeFile { FileId = (int)fileId, BoreholeId = boreholeId, };
+
                 await context.BoreholeFiles.AddAsync(boreHoleFile).ConfigureAwait(false);
                 await context.SaveChangesAsync().ConfigureAwait(false);
             }
@@ -110,11 +101,7 @@ public class BoreholeFileUploadService
     public async Task UploadObject(IFormFile file, string objectName)
     {
         using var initClient = new MinioClient();
-        using MinioClient minioClient = initClient
-             .WithEndpoint(endPoint)
-             .WithCredentials(accessKey, secretKey)
-             .WithSSL(false)
-             .Build();
+        using MinioClient minioClient = initClient.WithEndpoint(endPoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
         try
         {
             // Get the content type and create a stream from the uploaded file.
@@ -146,19 +133,12 @@ public class BoreholeFileUploadService
     public async Task<byte[]> GetObject(string objectName)
     {
         using var initClient = new MinioClient();
-        using MinioClient minioClient = initClient
-             .WithEndpoint(endPoint)
-             .WithCredentials(accessKey, secretKey)
-             .WithSSL(false)
-             .Build();
+        using MinioClient minioClient = initClient.WithEndpoint(endPoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
         try
         {
             var downloadStream = new MemoryStream();
 
-            var getObjectArgs = new GetObjectArgs()
-            .WithBucket(bucketName)
-            .WithObject(objectName)
-            .WithCallbackStream(stream => stream.CopyTo(downloadStream));
+            var getObjectArgs = new GetObjectArgs().WithBucket(bucketName).WithObject(objectName).WithCallbackStream(stream => stream.CopyTo(downloadStream));
 
             await minioClient.GetObjectAsync(getObjectArgs).ConfigureAwait(false);
 
@@ -183,16 +163,10 @@ public class BoreholeFileUploadService
     public async Task DeleteObject(string objectName)
     {
         using var initClient = new MinioClient();
-        using MinioClient minioClient = initClient
-             .WithEndpoint(endPoint)
-             .WithCredentials(accessKey, secretKey)
-             .WithSSL(false)
-             .Build();
+        using MinioClient minioClient = initClient.WithEndpoint(endPoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
         try
         {
-            var removeObjectArgs = new RemoveObjectArgs()
-                .WithBucket(bucketName)
-                .WithObject(objectName);
+            var removeObjectArgs = new RemoveObjectArgs().WithBucket(bucketName).WithObject(objectName);
 
             await minioClient.RemoveObjectAsync(removeObjectArgs).ConfigureAwait(false);
         }

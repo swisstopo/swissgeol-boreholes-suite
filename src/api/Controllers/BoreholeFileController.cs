@@ -73,7 +73,7 @@ public class BoreholeFileController : ControllerBase
     /// <summary>
     /// Get all <see cref="BoreholeFile"/> that are linked to the <see cref="Borehole"/> with <see cref="Borehole.Id"/> provided in <paramref name="boreholeId"/>.
     /// </summary>
-    /// <param name="boreholeId"></param>
+    /// <param name="boreholeId">The dd of the <see cref="Borehole"/>.</param>
     /// <returns>A list of <see cref="BoreholeFile"/>.</returns>
     [HttpGet("getAllForBorehole")]
     public async Task<IEnumerable<BoreholeFile>> GetAllOfBorehole(int boreholeId)

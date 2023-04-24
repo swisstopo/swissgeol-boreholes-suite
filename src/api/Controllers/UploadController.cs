@@ -20,17 +20,17 @@ public class UploadController : ControllerBase
     private readonly ILogger logger;
     private readonly LocationService locationService;
     private readonly CoordinateService coordinateService;
-    private readonly BoreholeFileUploadService cloudStorageService;
+    private readonly BoreholeFileUploadService boreholeFileUploadService;
     private readonly int sridLv95 = 2056;
     private readonly int sridLv03 = 21781;
 
-    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileUploadService cloudStorageService)
+    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileUploadService boreholeFileUploadService)
     {
         this.context = context;
         this.logger = logger;
         this.locationService = locationService;
         this.coordinateService = coordinateService;
-        this.cloudStorageService = cloudStorageService;
+        this.boreholeFileUploadService = boreholeFileUploadService;
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public class UploadController : ControllerBase
                 .SingleOrDefaultAsync(u => u.Name == userName)
                 .ConfigureAwait(false);
 
-            // Upload attachments to cloud storage an map to Borehole type
+            // Map to Borehole type
             List<Borehole> boreholes = new();
             foreach (var boreholeImport in boreholeImports)
             {
@@ -106,7 +106,6 @@ public class UploadController : ControllerBase
                     }
                 }
 
-                // Add borehole to list of boreholes.
                 boreholes.Add(borehole);
             }
 
@@ -142,7 +141,7 @@ public class UploadController : ControllerBase
                         var attachmentFiles = attachments.Where(x => attachmentFileNames.Contains(x.FileName.Replace(" ", "", StringComparison.InvariantCulture))).ToList();
                         foreach (var attachmentFile in attachmentFiles)
                         {
-                            await cloudStorageService.UploadFileToStorageAndLinkToBorehole(attachmentFile, boreholeImport.Id).ConfigureAwait(false);
+                            await boreholeFileUploadService.UploadFileToStorageAndLinkToBorehole(attachmentFile, boreholeImport.Id).ConfigureAwait(false);
                         }
                     }
                 }

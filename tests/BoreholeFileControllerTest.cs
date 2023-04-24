@@ -18,7 +18,7 @@ public class BoreholeFileControllerTest
 {
     private BdmsContext context;
     private BoreholeFileController controller;
-    private BoreholeFileUploadService cloudStorageService;
+    private BoreholeFileUploadService boreholeFileUploadService;
 
     private int boreholeCount;
 
@@ -30,13 +30,13 @@ public class BoreholeFileControllerTest
         var configuration = builder.Build();
 
         context = ContextFactory.CreateContext();
-        var cloudStorageServiceLoggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
-        cloudStorageServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
-        this.cloudStorageService = new BoreholeFileUploadService(context, configuration, cloudStorageServiceLoggerMock.Object);
+        var boreholeFileUploadServiceLoggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
+        boreholeFileUploadServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
+        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, boreholeFileUploadServiceLoggerMock.Object);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
-        controller = new BoreholeFileController(context, boreholeFileControllerLoggerMock.Object, cloudStorageService);
+        controller = new BoreholeFileController(context, boreholeFileControllerLoggerMock.Object, boreholeFileUploadService);
         controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
         boreholeCount = context.Boreholes.Count();
@@ -151,7 +151,7 @@ public class BoreholeFileControllerTest
         Assert.AreEqual(secondBoreholeBoreholeFilesBeforeUpload + 1, context.BoreholeFiles.Where(bf => bf.BoreholeId == secondBoreholeId).Count());
 
         // Ensure file exists
-        await cloudStorageService.GetObject(latestFileInDb.NameUuid!);
+        await boreholeFileUploadService.GetObject(latestFileInDb.NameUuid!);
     }
 
     [TestMethod]
@@ -178,7 +178,7 @@ public class BoreholeFileControllerTest
         var latestFileInDb = context.Files.OrderBy(f => f.Id).Last();
 
         // Ensure file exists
-        await cloudStorageService.GetObject(latestFileInDb.NameUuid!);
+        await boreholeFileUploadService.GetObject(latestFileInDb.NameUuid!);
 
         // Check counts after upload
         Assert.AreEqual(filesCountBeforeUpload + 1, context.Files.Count());
@@ -194,6 +194,6 @@ public class BoreholeFileControllerTest
         Assert.AreEqual(boreholeFilesBeforeUpload, context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
 
         // Ensure file does not exist
-        await Assert.ThrowsExceptionAsync<ObjectNotFoundException>(() => cloudStorageService.GetObject(latestFileInDb.NameUuid!));
+        await Assert.ThrowsExceptionAsync<ObjectNotFoundException>(() => boreholeFileUploadService.GetObject(latestFileInDb.NameUuid!));
     }
 }
