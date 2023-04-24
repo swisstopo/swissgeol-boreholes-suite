@@ -75,12 +75,14 @@ public class BoreholeFileController : ControllerBase
                     BoreholeId = boreholeId,
                 };
                 await context.BoreholeFiles.AddAsync(boreHoleFile).ConfigureAwait(false);
-                context.BoreholeFiles.Add(boreHoleFile);
+
+                var bho1 = context.BoreholeFiles.Where(bf => bf.BoreholeId == boreholeId).ToList();
+                var fileInDb = context.Files.Where(f => f.Name == "file_1.pdf").ToList();
 
                 await context.SaveChangesAsync().ConfigureAwait(false);
             }
 
-            transaction.Commit();
+            await transaction.CommitAsync().ConfigureAwait(false);
             return Ok();
         }
         catch
@@ -146,32 +148,28 @@ public class BoreholeFileController : ControllerBase
     {
         try
         {
+            // Get the file and its BoreholeFiles from the database.
             var file = await context.Files
                 .Include(b => b.BoreholeFiles)
-                .FirstOrDefaultAsync(b => b.BoreholeFiles.Any(bf => bf.FileId == boreholeId))
+                .FirstOrDefaultAsync(b => b.BoreholeFiles.Any(bf => bf.FileId == boreholeFileId && bf.BoreholeId == boreholeId))
                 .ConfigureAwait(false);
 
-            var borehole = await context.Boreholes
-                .Include(b => b.BoreholeFiles)
-                .FirstOrDefaultAsync(b => b.Id == boreholeId)
-                .ConfigureAwait(false);
-
-            if (borehole == null)
+            // If the file exists, remove the requested BoreholeFile from the database.
+            if (file != null)
             {
-                return NotFound($"Borehole with ID {boreholeId} not found.");
+                file.BoreholeFiles.Remove(file.BoreholeFiles.First(bf => bf.FileId == boreholeFileId && bf.BoreholeId == boreholeId));
+                await context.SaveChangesAsync().ConfigureAwait(false);
             }
 
-            var boreholeFile = borehole.BoreholeFiles.FirstOrDefault(bf => bf.FileId == boreholeFileId);
-
-            if (boreholeFile == null)
+            // If the file is not linked to any boreholes, delete it from the cloud storage and the database.
+            if (file.BoreholeFiles.Count == 0 && file.NameUuid != null)
             {
-                return NotFound($"File with ID {boreholeFileId} not found in borehole.");
+                await storageService.DeleteObject(file.NameUuid).ConfigureAwait(false);
+                context.Files.Remove(file);
+                await context.SaveChangesAsync().ConfigureAwait(false);
             }
 
-            borehole.BoreholeFiles.Remove(boreholeFile);
-            await context.SaveChangesAsync().ConfigureAwait(false);
-
-            return Ok($"File with ID {boreholeFileId} has been detached from borehole with ID {boreholeId}.");
+            return Ok();
         }
         catch (Exception ex)
         {

@@ -112,28 +112,22 @@ public class CloudStorageServiceTest
     }
 
     [TestMethod]
-    public async Task RemoveFile()
+    public async Task DeleteObjectShouldDeleteObjectFromStorage()
     {
-        var client = new MinioClient()
-            .WithEndpoint("localhost:9000")
-            .WithCredentials("REDSQUIRREL", "YELLOWMONKEY")
-            .WithSSL(false)
-            .Build();
+        // Create file to upload
+        var content = Guid.NewGuid().ToString();
+        var pdfFormFile = GetFormFileByContent(content, "file_1.pdf");
 
-        StatObjectArgs statObjectArgs = new StatObjectArgs()
-            .WithBucket("swissforages")
-            .WithObject("empty_attachment.pdf");
+        // Upload file
+        await cloudStorageService.UploadObject(pdfFormFile, pdfFormFile.FileName);
 
-        // If the file exists, delete it
-        try
-        {
-            await client.StatObjectAsync(statObjectArgs).ConfigureAwait(false);
-            await client.RemoveObjectAsync("swissforages", "empty_attachment.pdf");
-            Console.WriteLine("File deleted successfully!");
-        }
-        catch (Minio.Exceptions.MinioException ex)
-        {
-            Console.WriteLine("Error: " + ex.Message);
-        }
+        // Ensure file exists
+        await cloudStorageService.GetObject(pdfFormFile.FileName);
+
+        // Delete file
+        await cloudStorageService.DeleteObject(pdfFormFile.FileName);
+
+        // Ensure file does not exist
+        await Assert.ThrowsExceptionAsync<ObjectNotFoundException>(() => cloudStorageService.GetObject(pdfFormFile.FileName));
     }
 }

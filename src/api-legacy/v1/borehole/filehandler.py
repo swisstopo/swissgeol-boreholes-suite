@@ -49,6 +49,9 @@ class FileHandler(Producer):
                     # Loop throught upload files
                     for files in self.request.files.items():
                         for info in files[1]:
+                            
+                            # print("info....")
+                            # print(BytesIO(info["body"]))
 
                             # Save file using the SaveFile action
                             file = await save_file.execute(

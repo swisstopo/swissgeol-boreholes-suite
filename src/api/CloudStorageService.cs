@@ -110,4 +110,37 @@ public class CloudStorageService
             throw new MinioException("Error during download of object from storage.");
         }
     }
+
+    /// <summary>
+    /// Deletes a file from an S3 storage.
+    /// </summary>
+    /// <param name="objectName">The name of the file in the bucket to delete.</param>
+    /// <returns><c>true</c> if the deletion was successful.</returns>
+    public async Task<bool> DeleteObject(string objectName)
+    {
+        using MinioClient minioClient = new MinioClient()
+            .WithEndpoint(endPoint)
+            .WithCredentials(accessKey, secretKey)
+            .WithSSL(false)
+            .Build();
+
+        try
+        {
+            var removeObjectArgs = new RemoveObjectArgs()
+                .WithBucket(bucketName)
+                .WithObject(objectName);
+
+            await minioClient.RemoveObjectAsync(removeObjectArgs).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            if (ex.Message.Contains("Not found", StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new ObjectNotFoundException(objectName, "Object not found on storage.");
+            }
+
+            throw new MinioException("Error during deletion of object from storage.");
+        }
+        return true;
+    }
 }
