@@ -105,7 +105,7 @@ public class BoreholeFileUploadService
         try
         {
             // Get the content type and create a stream from the uploaded file.
-            string contentType = file.ContentType;
+            var contentType = file.ContentType;
 
             using var stream = file.OpenReadStream();
 

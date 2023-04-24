@@ -1,4 +1,5 @@
 ﻿using BDMS.Controllers;
+using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -36,6 +37,7 @@ public class BoreholeFileControllerTest
         boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, boreholeFileUploadServiceLoggerMock.Object);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
+        boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
         controller = new BoreholeFileController(context, boreholeFileControllerLoggerMock.Object, boreholeFileUploadService);
         controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
@@ -65,7 +67,7 @@ public class BoreholeFileControllerTest
         var boreholeFilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
 
         // Download uploaded file
-        response = await controller.Download(boreholeFilesOfBorehole.Last().FileId);
+        response = await controller.Download(boreholeFilesOfBorehole.Value.Last().FileId);
 
         var fileContentResult = (FileContentResult)response;
         string contentResult = Encoding.ASCII.GetString(fileContentResult.FileContents);
@@ -86,7 +88,7 @@ public class BoreholeFileControllerTest
         var boreholeFilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
 
         // Download uploaded file
-        var response = await controller.Download(boreholeFilesOfBorehole.Last().FileId);
+        var response = await controller.Download(boreholeFilesOfBorehole.Value.Last().FileId);
         var fileContentResult = (FileContentResult)response;
         string contentResult = Encoding.ASCII.GetString(fileContentResult.FileContents);
         Assert.AreEqual(content, contentResult);
@@ -109,7 +111,7 @@ public class BoreholeFileControllerTest
         // Get all boreholeFiles of borehole
         var boreholeFilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
 
-        Assert.AreEqual(boreholeFilesBeforeUpload + 2, boreholeFilesOfBorehole.Count());
+        Assert.AreEqual(boreholeFilesBeforeUpload + 2, boreholeFilesOfBorehole.Value.Count());
     }
 
     [TestMethod]
@@ -195,5 +197,51 @@ public class BoreholeFileControllerTest
 
         // Ensure file does not exist
         await Assert.ThrowsExceptionAsync<ObjectNotFoundException>(() => boreholeFileUploadService.GetObject(latestFileInDb.NameUuid!));
+    }
+
+    [TestMethod]
+    public async Task UploadWithMissingBoreholeFileId()
+    {
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+        var content = Guid.NewGuid().ToString();
+        var firstPdfFormFile = GetFormFileByContent(content, "file_1.pdf");
+
+        var result = await controller.Upload(firstPdfFormFile, 0);
+        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+    }
+
+    [TestMethod]
+    public async Task UploadWithMissingFile()
+    {
+        var result = await controller.Upload(null, 1);
+        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+    }
+
+    [TestMethod]
+    public async Task DownloadWithMissingBoreholeFileId()
+    {
+        var result = await controller.Download(0);
+        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+    }
+
+    [TestMethod]
+    public async Task GetAllOfBoreholeWithMissingBoreholeId()
+    {
+        var result = await controller.GetAllOfBorehole(0);
+        Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+    }
+
+    [TestMethod]
+    public async Task DetachFromBoreholeWithMissingBoreholeId()
+    {
+        var result = await controller.DetachFromBorehole(0, 5000);
+        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+    }
+
+    [TestMethod]
+    public async Task DetachFromBoreholeWithMissingBoreholeFileId()
+    {
+        var result = await controller.DetachFromBorehole(123, 0);
+        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
     }
 }
