@@ -12,11 +12,11 @@ using static BDMS.Helpers;
 namespace BDMS;
 
 [TestClass]
-public class CloudStorageServiceTest
+public class BoreholeFileUploadServiceTest
 {
     private MinioClient minioClient;
     private BdmsContext context;
-    private CloudStorageService cloudStorageService;
+    private BoreholeFileUploadService boreholeFileUploadService;
     private IConfiguration configuration;
 
     [TestInitialize]
@@ -28,8 +28,8 @@ public class CloudStorageServiceTest
 
         context = ContextFactory.CreateContext();
 
-        var loggerMock = new Mock<ILogger<CloudStorageService>>(MockBehavior.Strict);
-        cloudStorageService = new CloudStorageService(context, configuration, loggerMock.Object);
+        var loggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
+        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object);
 
         this.configuration = configuration;
 
@@ -53,8 +53,7 @@ public class CloudStorageServiceTest
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
 
         // Upload file
-        var result = await cloudStorageService.UploadObject(pdfFormFile, pdfFormFile.FileName);
-        Assert.AreEqual(true, result);
+        await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
     }
 
     [TestMethod]
@@ -68,12 +67,12 @@ public class CloudStorageServiceTest
                     .WithBucket(configuration.GetConnectionString("S3_BUCKET_NAME"));
 
         // First Upload file
-        await cloudStorageService.UploadObject(pdfFormFile, pdfFormFile.FileName);
+        await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
 
         // List all objects in the bucket
         IObservable<Item> observable = minioClient.ListObjectsAsync(listObjectsArgs);
 
-        // Get all files on storage with same key as uploaded file
+        // Get all files on the storage with same key as uploaded file
         var files = await observable.Where(file => file.Key == pdfFormFile.FileName).ToList();
         Assert.AreEqual(1, files.Count);
 
@@ -81,12 +80,12 @@ public class CloudStorageServiceTest
         var uploadDate = files.First().LastModifiedDateTime;
 
         // Second Upload file
-        await cloudStorageService.UploadObject(pdfFormFile, pdfFormFile.FileName);
+        await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
 
         // List all objects in the bucket
         observable = minioClient.ListObjectsAsync(listObjectsArgs);
 
-        // Get all files on storage with same key as uploaded file
+        // Get all files on the storage with same key as uploaded file
         files = await observable.Where(file => file.Key == pdfFormFile.FileName).ToList();
         Assert.AreEqual(1, files.Count);
 
@@ -97,7 +96,7 @@ public class CloudStorageServiceTest
     [TestMethod]
     public async Task GetObjectWithNotExistingObjectNameShouldThrowException()
     {
-        await Assert.ThrowsExceptionAsync<ObjectNotFoundException>(() => cloudStorageService.GetObject("doesNotExist"));
+        await Assert.ThrowsExceptionAsync<ObjectNotFoundException>(() => boreholeFileUploadService.GetObject("doesNotExist"));
     }
 
     [TestMethod]
@@ -108,10 +107,10 @@ public class CloudStorageServiceTest
         var pdfFormFile = GetFormFileByContent(content, "file_1.pdf");
 
         // Upload file
-        await cloudStorageService.UploadObject(pdfFormFile, pdfFormFile.FileName);
+        await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
 
         // Download file
-        var result = await cloudStorageService.GetObject(pdfFormFile.FileName);
+        var result = await boreholeFileUploadService.GetObject(pdfFormFile.FileName);
         Assert.AreEqual(content, Encoding.UTF8.GetString(result));
     }
 
@@ -123,15 +122,15 @@ public class CloudStorageServiceTest
         var pdfFormFile = GetFormFileByContent(content, "file_1.pdf");
 
         // Upload file
-        await cloudStorageService.UploadObject(pdfFormFile, pdfFormFile.FileName);
+        await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
 
         // Ensure file exists
-        await cloudStorageService.GetObject(pdfFormFile.FileName);
+        await boreholeFileUploadService.GetObject(pdfFormFile.FileName);
 
         // Delete file
-        await cloudStorageService.DeleteObject(pdfFormFile.FileName);
+        await boreholeFileUploadService.DeleteObject(pdfFormFile.FileName);
 
         // Ensure file does not exist
-        await Assert.ThrowsExceptionAsync<ObjectNotFoundException>(() => cloudStorageService.GetObject(pdfFormFile.FileName));
+        await Assert.ThrowsExceptionAsync<ObjectNotFoundException>(() => boreholeFileUploadService.GetObject(pdfFormFile.FileName));
     }
 }

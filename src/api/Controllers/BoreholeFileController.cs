@@ -9,14 +9,14 @@ namespace BDMS.Controllers;
 public class BoreholeFileController : ControllerBase
 {
     private readonly BdmsContext context;
-    private readonly CloudStorageService storageService;
+    private readonly BoreholeFileUploadService boreholeFileUploadService;
     private readonly ILogger logger;
 
-    public BoreholeFileController(BdmsContext context, ILogger<BoreholeFileController> logger, CloudStorageService storageService)
+    public BoreholeFileController(BdmsContext context, ILogger<BoreholeFileController> logger, BoreholeFileUploadService storageService)
         : base()
     {
         this.logger = logger;
-        this.storageService = storageService;
+        boreholeFileUploadService = storageService;
         this.context = context;
     }
 
@@ -32,7 +32,7 @@ public class BoreholeFileController : ControllerBase
 
         try
         {
-            await storageService.UploadFileToStorageAndLinkToBorehole(file, boreholeId).ConfigureAwait(false);
+            await boreholeFileUploadService.UploadFileToStorageAndLinkToBorehole(file, boreholeId).ConfigureAwait(false);
             return Ok();
         }
         catch (Exception ex)
@@ -57,12 +57,9 @@ public class BoreholeFileController : ControllerBase
                 .FirstOrDefaultAsync(f => f.FileId == boreholeFileId)
                 .ConfigureAwait(false);
 
-            if (boreholeFile.File?.NameUuid == null)
-            {
-                return NotFound($"File with ID {boreholeFileId} not found in borehole.");
-            }
+            if (boreholeFile.File?.NameUuid == null) return NotFound($"File with ID {boreholeFileId} not found in borehole.");
 
-            var fileBytes = await storageService.GetObject(boreholeFile.File.NameUuid).ConfigureAwait(false);
+            var fileBytes = await boreholeFileUploadService.GetObject(boreholeFile.File.NameUuid).ConfigureAwait(false);
 
             return File(fileBytes, "application/octet-stream", boreholeFile.File.Name);
         }
@@ -93,7 +90,6 @@ public class BoreholeFileController : ControllerBase
     /// </summary>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> of the borehole to detach the file from.</param>
     /// <param name="boreholeFileId">The <see cref="BoreholeFile.FileId"/> of the file to detach from the borehole.</param>
-    /// <returns>An IActionResult indicating the status of the operation.</returns>
     [HttpPost("detachFile")]
     public async Task<IActionResult> DetachFromBorehole(int boreholeId, int boreholeFileId)
     {
@@ -117,7 +113,7 @@ public class BoreholeFileController : ControllerBase
             // If the file is not linked to any boreholes, delete it from the cloud storage and the database.
             if (file.BoreholeFiles.Count == 0 && file.NameUuid != null)
             {
-                await storageService.DeleteObject(file.NameUuid).ConfigureAwait(false);
+                await boreholeFileUploadService.DeleteObject(file.NameUuid).ConfigureAwait(false);
                 context.Files.Remove(file);
                 await context.SaveChangesAsync().ConfigureAwait(false);
             }

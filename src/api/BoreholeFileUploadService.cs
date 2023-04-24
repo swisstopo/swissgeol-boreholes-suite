@@ -6,9 +6,9 @@ using System.Security.Cryptography;
 namespace BDMS;
 
 /// <summary>
-/// Represent a cloud storage service for interacting with AWS S3.
+/// Represents a service to upload borehole files to the cloud storage.
 /// </summary>
-public class CloudStorageService
+public class BoreholeFileUploadService
 {
     private readonly BdmsContext context;
     private readonly ILogger logger;
@@ -17,11 +17,11 @@ public class CloudStorageService
     private readonly string accessKey;
     private readonly string secretKey;
 
-    public CloudStorageService(BdmsContext context, IConfiguration configuration, ILogger<CloudStorageService> logger)
+    public BoreholeFileUploadService(BdmsContext context, IConfiguration configuration, ILogger<BoreholeFileUploadService> logger)
     {
         this.logger = logger;
         this.context = context;
-        this.bucketName = bucketName ?? configuration.GetConnectionString("S3_BUCKET_NAME");
+        bucketName = bucketName ?? configuration.GetConnectionString("S3_BUCKET_NAME");
         endPoint = configuration.GetConnectionString("S3_ENDPOINT");
         accessKey = configuration.GetConnectionString("S3_ACCESS_KEY");
         secretKey = configuration.GetConnectionString("S3_SECRET_KEY");
@@ -103,7 +103,7 @@ public class CloudStorageService
     }
 
     /// <summary>
-    /// Uploads a file to a S3 storage.
+    /// Uploads a file to the cloud storage.
     /// </summary>
     /// <param name="file">The file to upload.</param>
     /// <param name="objectName">The name of the file in the storage.</param>
@@ -140,10 +140,9 @@ public class CloudStorageService
     }
 
     /// <summary>
-    /// Gets a file from an S3 storage.
+    /// Gets a file from the cloud storage.
     /// </summary>
     /// <param name="objectName">The name of the file in the bucket.</param>
-    /// <returns>The file as a byte array.</returns>
     public async Task<byte[]> GetObject(string objectName)
     {
         using var initClient = new MinioClient();
@@ -178,10 +177,9 @@ public class CloudStorageService
     }
 
     /// <summary>
-    /// Deletes a file from an S3 storage.
+    /// Deletes a file from the cloud storage.
     /// </summary>
     /// <param name="objectName">The name of the file in the bucket to delete.</param>
-    /// <returns><c>true</c> if the deletion was successful.</returns>
     public async Task DeleteObject(string objectName)
     {
         using var initClient = new MinioClient();

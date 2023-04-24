@@ -18,7 +18,7 @@ public class BoreholeFileControllerTest
 {
     private BdmsContext context;
     private BoreholeFileController controller;
-    private CloudStorageService cloudStorageService;
+    private BoreholeFileUploadService cloudStorageService;
 
     private int boreholeCount;
 
@@ -30,8 +30,8 @@ public class BoreholeFileControllerTest
         var configuration = builder.Build();
 
         context = ContextFactory.CreateContext();
-        var cloudStorageServiceLoggerMock = new Mock<ILogger<CloudStorageService>>(MockBehavior.Strict);
-        this.cloudStorageService = new CloudStorageService(context, configuration, cloudStorageServiceLoggerMock.Object);
+        var cloudStorageServiceLoggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
+        this.cloudStorageService = new BoreholeFileUploadService(context, configuration, cloudStorageServiceLoggerMock.Object);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         controller = new BoreholeFileController(context, boreholeFileControllerLoggerMock.Object, cloudStorageService);

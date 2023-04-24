@@ -20,11 +20,11 @@ public class UploadController : ControllerBase
     private readonly ILogger logger;
     private readonly LocationService locationService;
     private readonly CoordinateService coordinateService;
-    private readonly CloudStorageService cloudStorageService;
+    private readonly BoreholeFileUploadService cloudStorageService;
     private readonly int sridLv95 = 2056;
     private readonly int sridLv03 = 21781;
 
-    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService, CloudStorageService cloudStorageService)
+    public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileUploadService cloudStorageService)
     {
         this.context = context;
         this.logger = logger;

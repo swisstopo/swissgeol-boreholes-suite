@@ -37,10 +37,10 @@ public class UploadControllerTest
         loggerMock = new Mock<ILogger<UploadController>>();
         loggerLocationServiceMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
         loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
-        var loggerCloudStorageServiceMock = new Mock<ILogger<CloudStorageService>>(MockBehavior.Strict);
+        var loggerCloudStorageServiceMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
         var locationService = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
         var coordinateService = new CoordinateService(loggerCoordinateServiceMock.Object, httpClientFactoryMock.Object);
-        var cloudStorageService = new CloudStorageService(context, configuration, loggerCloudStorageServiceMock.Object);
+        var cloudStorageService = new BoreholeFileUploadService(context, configuration, loggerCloudStorageServiceMock.Object);
 
         controller = new UploadController(ContextFactory.CreateContext(), loggerMock.Object, locationService, coordinateService, cloudStorageService) { ControllerContext = GetControllerContextAdmin() };
     }
