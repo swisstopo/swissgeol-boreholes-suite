@@ -31,6 +31,8 @@ public class BoreholeFileControllerTest
 
         context = ContextFactory.CreateContext();
         var cloudStorageServiceLoggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
+        cloudStorageServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
+
         this.cloudStorageService = new BoreholeFileUploadService(context, configuration, cloudStorageServiceLoggerMock.Object);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);

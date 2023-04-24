@@ -29,6 +29,7 @@ public class BoreholeFileUploadServiceTest
         context = ContextFactory.CreateContext();
 
         var loggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
+        loggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
         boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object);
 
         this.configuration = configuration;
