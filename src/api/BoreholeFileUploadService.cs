@@ -21,10 +21,10 @@ public class BoreholeFileUploadService
     {
         this.logger = logger;
         this.context = context;
-        bucketName = configuration.GetConnectionString("S3_BUCKET_NAME");
-        endPoint = configuration.GetConnectionString("S3_ENDPOINT");
-        accessKey = configuration.GetConnectionString("S3_ACCESS_KEY");
-        secretKey = configuration.GetConnectionString("S3_SECRET_KEY");
+        bucketName = configuration["S3:BUCKET_NAME"];
+        endPoint = configuration["S3:ENDPOINT"];
+        accessKey = configuration["S3:ACCESS_KEY"];
+        secretKey = configuration["S3:SECRET_KEY"];
     }
 
     /// <summary>

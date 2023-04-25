@@ -18,13 +18,12 @@ public class BoreholeFileUploadServiceTest
     private BdmsContext context;
     private BoreholeFileUploadService boreholeFileUploadService;
     private IConfiguration configuration;
+    private string bucketName;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        var builder = new ConfigurationBuilder();
-        builder.AddJsonFile("appsettings.development.json", optional: true, reloadOnChange: true);
-        var configuration = builder.Build();
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
         context = ContextFactory.CreateContext();
 
@@ -35,10 +34,12 @@ public class BoreholeFileUploadServiceTest
         this.configuration = configuration;
 
         minioClient = new MinioClient()
-            .WithEndpoint(configuration.GetConnectionString("S3_ENDPOINT"))
-            .WithCredentials(configuration.GetConnectionString("S3_ACCESS_KEY"), configuration.GetConnectionString("S3_SECRET_KEY"))
+            .WithEndpoint(configuration["S3:ENDPOINT"])
+            .WithCredentials(configuration["S3:ACCESS_KEY"], configuration["S3:SECRET_KEY"])
             .WithSSL(false)
             .Build();
+
+        bucketName = configuration["S3:BUCKET_NAME"];
     }
 
     [TestCleanup]
@@ -64,8 +65,7 @@ public class BoreholeFileUploadServiceTest
         var content = Guid.NewGuid().ToString();
         var pdfFormFile = GetFormFileByContent(content, "file_1.pdf");
 
-        ListObjectsArgs listObjectsArgs = new ListObjectsArgs()
-                    .WithBucket(configuration.GetConnectionString("S3_BUCKET_NAME"));
+        var listObjectsArgs = new ListObjectsArgs().WithBucket(bucketName);
 
         // First Upload file
         await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
@@ -139,28 +139,24 @@ public class BoreholeFileUploadServiceTest
     public async Task UploadObjectWithNotExistingBucketShouldCreateBucketAndUplaodObject()
     {
         // List all objects in the bucket
-        ListObjectsArgs listObjectsArgs = new ListObjectsArgs()
-                    .WithBucket(configuration.GetConnectionString("S3_BUCKET_NAME"));
+        var listObjectsArgs = new ListObjectsArgs().WithBucket(bucketName);
 
         var objects = minioClient.ListObjectsAsync(listObjectsArgs);
 
         // Loop through all objects in the bucket and delete them
         foreach (var obj in objects)
         {
-            RemoveObjectArgs removeObjectArgs = new RemoveObjectArgs()
-                .WithBucket(configuration.GetConnectionString("S3_BUCKET_NAME"))
-                .WithObject(obj.Key);
+            var removeObjectArgs = new RemoveObjectArgs().WithBucket(bucketName).WithObject(obj.Key);
 
             await minioClient.RemoveObjectAsync(removeObjectArgs);
         }
 
         // Delete bucket
-        var removeBucketArgs = new RemoveBucketArgs()
-            .WithBucket(configuration.GetConnectionString("S3_BUCKET_NAME"));
+        var removeBucketArgs = new RemoveBucketArgs().WithBucket(bucketName);
         await minioClient.RemoveBucketAsync(removeBucketArgs);
 
         // Check that bucket does not exist
-        var bucketExistsArgs = new BucketExistsArgs().WithBucket(configuration.GetConnectionString("S3_BUCKET_NAME"));
+        var bucketExistsArgs = new BucketExistsArgs().WithBucket(bucketName);
         Assert.IsFalse(await minioClient.BucketExistsAsync(bucketExistsArgs).ConfigureAwait(false));
 
         // Create file to upload
