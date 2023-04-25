@@ -104,6 +104,14 @@ public class BoreholeFileUploadService
         using MinioClient minioClient = initClient.WithEndpoint(endPoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
         try
         {
+            // Create bucket if it doesn't exist.
+            var bucketExistsArgs = new BucketExistsArgs().WithBucket(bucketName);
+            if (await minioClient.BucketExistsAsync(bucketExistsArgs).ConfigureAwait(false) == false)
+            {
+                var bucketMakeArgs = new MakeBucketArgs().WithBucket(bucketName);
+                await minioClient.MakeBucketAsync(bucketMakeArgs).ConfigureAwait(false);
+            }
+
             // Get the content type and create a stream from the uploaded file.
             var contentType = file.ContentType;
 

@@ -134,4 +134,39 @@ public class BoreholeFileUploadServiceTest
         // Ensure file does not exist
         await Assert.ThrowsExceptionAsync<ObjectNotFoundException>(() => boreholeFileUploadService.GetObject(pdfFormFile.FileName));
     }
+
+    [TestMethod]
+    public async Task UploadObjectWithNotExistingBucketShouldCreateBucketAndUplaodObject()
+    {
+        // List all objects in the bucket
+        ListObjectsArgs listObjectsArgs = new ListObjectsArgs()
+                    .WithBucket(configuration.GetConnectionString("S3_BUCKET_NAME"));
+
+        var objects = minioClient.ListObjectsAsync(listObjectsArgs);
+
+        // Loop through all objects in the bucket and delete them
+        foreach (var obj in objects)
+        {
+            RemoveObjectArgs removeObjectArgs = new RemoveObjectArgs()
+                .WithBucket(configuration.GetConnectionString("S3_BUCKET_NAME"))
+                .WithObject(obj.Key);
+
+            await minioClient.RemoveObjectAsync(removeObjectArgs);
+        }
+
+        // Delete bucket
+        var removeBucketArgs = new RemoveBucketArgs()
+            .WithBucket(configuration.GetConnectionString("S3_BUCKET_NAME"));
+        await minioClient.RemoveBucketAsync(removeBucketArgs);
+
+        // Check that bucket does not exist
+        var bucketExistsArgs = new BucketExistsArgs().WithBucket(configuration.GetConnectionString("S3_BUCKET_NAME"));
+        Assert.IsFalse(await minioClient.BucketExistsAsync(bucketExistsArgs).ConfigureAwait(false));
+
+        // Create file to upload
+        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
+
+        // Upload file
+        await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
+    }
 }
