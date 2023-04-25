@@ -136,7 +136,7 @@ public class BoreholeFileUploadService
         using MinioClient minioClient = initClient.WithEndpoint(endPoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
         try
         {
-            var downloadStream = new MemoryStream();
+            using var downloadStream = new MemoryStream();
 
             var getObjectArgs = new GetObjectArgs().WithBucket(bucketName).WithObject(objectName).WithCallbackStream(stream => stream.CopyTo(downloadStream));
 
