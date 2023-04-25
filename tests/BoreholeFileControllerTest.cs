@@ -1,5 +1,4 @@
 ﻿using BDMS.Controllers;
-using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -65,6 +64,7 @@ public class BoreholeFileControllerTest
 
         // Get all boreholeFiles of borehole
         var boreholeFilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
+        Assert.IsNotNull(boreholeFilesOfBorehole.Value);
 
         // Download uploaded file
         response = await controller.Download(boreholeFilesOfBorehole.Value.Last().FileId);
@@ -86,9 +86,10 @@ public class BoreholeFileControllerTest
 
         // Get all boreholeFiles of borehole
         var boreholeFilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
+        Assert.IsNotNull(boreholeFilesOfBorehole.Value);
 
         // Download uploaded file
-        var response = await controller.Download(boreholeFilesOfBorehole.Value.Last().FileId);
+        var response = await controller.Download(boreholeFilesOfBorehole.Value.Last.FileId);
         var fileContentResult = (FileContentResult)response;
         string contentResult = Encoding.ASCII.GetString(fileContentResult.FileContents);
         Assert.AreEqual(content, contentResult);
@@ -111,6 +112,7 @@ public class BoreholeFileControllerTest
         // Get all boreholeFiles of borehole
         var boreholeFilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
 
+        Assert.IsNotNull(boreholeFilesOfBorehole.Value);
         Assert.AreEqual(boreholeFilesBeforeUpload + 2, boreholeFilesOfBorehole.Value.Count());
     }
 
