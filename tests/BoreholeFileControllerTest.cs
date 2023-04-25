@@ -206,23 +206,14 @@ public class BoreholeFileControllerTest
         var content = Guid.NewGuid().ToString();
         var firstPdfFormFile = GetFormFileByContent(content, "file_1.pdf");
 
-        var result = await controller.Upload(firstPdfFormFile, 0);
-        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        await AssertIsBadRequestResponse(() => controller.Upload(firstPdfFormFile, 0));
     }
 
     [TestMethod]
-    public async Task UploadWithMissingFile()
-    {
-        var result = await controller.Upload(null, 1);
-        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-    }
+    public async Task UploadWithMissingFile() => await AssertIsBadRequestResponse(() => controller.Upload(null, 1));
 
     [TestMethod]
-    public async Task DownloadWithMissingBoreholeFileId()
-    {
-        var result = await controller.Download(0);
-        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-    }
+    public async Task DownloadWithMissingBoreholeFileId() => await AssertIsBadRequestResponse(() => controller.Download(0));
 
     [TestMethod]
     public async Task GetAllOfBoreholeWithMissingBoreholeId()
@@ -232,16 +223,14 @@ public class BoreholeFileControllerTest
     }
 
     [TestMethod]
-    public async Task DetachFromBoreholeWithMissingBoreholeId()
-    {
-        var result = await controller.DetachFromBorehole(0, 5000);
-        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
-    }
+    public async Task DetachFromBoreholeWithMissingBoreholeId() => await AssertIsBadRequestResponse(() => controller.DetachFromBorehole(0, 5000));
 
     [TestMethod]
-    public async Task DetachFromBoreholeWithMissingBoreholeFileId()
+    public async Task DetachFromBoreholeWithMissingBoreholeFileId() => await AssertIsBadRequestResponse(() => controller.DetachFromBorehole(123, 0));
+
+    private async Task AssertIsBadRequestResponse(Func<Task<IActionResult>> action)
     {
-        var result = await controller.DetachFromBorehole(123, 0);
+        var result = await action();
         Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
     }
 }
