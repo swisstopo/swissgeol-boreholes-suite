@@ -53,7 +53,9 @@ internal static class Helpers
         }
     }
 
-    // Create a FormFile from an existing file
+    /// <summary>
+    /// Creates a FormFile from an existing file.
+    /// </summary>
     internal static FormFile GetFormFileByExistingFile(string fileName)
     {
         var fileBytes = File.ReadAllBytes(fileName);
@@ -61,14 +63,18 @@ internal static class Helpers
         return new FormFile(stream, 0, fileBytes.Length, null, fileName) { Headers = new HeaderDictionary(), ContentType = GetContentType(fileName) };
     }
 
-    // Create a FormFile from a provided content
+    /// <summary>
+    /// Creates a FormFile from a string.
+    /// </summary>
     internal static FormFile GetFormFileByContent(string fileContent, string fileName)
     {
         var fileBytes = Encoding.UTF8.GetBytes(fileContent);
         return new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, fileName) { Headers = new HeaderDictionary(), ContentType = GetContentType(fileName) };
     }
 
-    // Get the content type of a file
+    /// <summary>
+    /// Get the content type of a file based on its extension.
+    /// </summary>
     private static string GetContentType(string fileName)
     {
         switch (Path.GetExtension(fileName).ToLowerInvariant())
