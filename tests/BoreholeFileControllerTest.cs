@@ -89,7 +89,7 @@ public class BoreholeFileControllerTest
         Assert.IsNotNull(boreholeFilesOfBorehole.Value);
 
         // Download uploaded file
-        var response = await controller.Download(boreholeFilesOfBorehole.Value.Last.FileId);
+        var response = await controller.Download(boreholeFilesOfBorehole.Value.Last().FileId);
         var fileContentResult = (FileContentResult)response;
         string contentResult = Encoding.ASCII.GetString(fileContentResult.FileContents);
         Assert.AreEqual(content, contentResult);
