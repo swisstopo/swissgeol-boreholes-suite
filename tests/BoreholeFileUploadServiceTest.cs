@@ -51,11 +51,29 @@ public class BoreholeFileUploadServiceTest
     [TestMethod]
     public async Task UploadObjectShouldStoreFileInCloudStorage()
     {
+        var fileName = $"{Guid.NewGuid()}.pdf";
+
+        var listObjectsArgs = new ListObjectsArgs().WithBucket(bucketName);
+
+        // List all objects in the bucket
+        var observable = minioClient.ListObjectsAsync(listObjectsArgs);
+
+        // Get all files with same key before upload
+        var filesBeforeUpload = await observable.Where(file => file.Key == fileName).ToList();
+
         // Create file to upload
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
 
         // Upload file
         await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
+
+        // List all objects in the bucket
+        observable = minioClient.ListObjectsAsync(listObjectsArgs);
+
+        // Get all files with same key after upload
+        var filesAfterUpload = await observable.Where(file => file.Key == fileName).ToList();
+
+        Assert.AreEqual(filesBeforeUpload.Count + 1, filesAfterUpload.Count);
     }
 
     [TestMethod]
