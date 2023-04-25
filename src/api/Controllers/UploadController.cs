@@ -130,15 +130,15 @@ public class UploadController : ControllerBase
             {
                 // Add boreholes to database.
                 await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
-                var result = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
+                await context.SaveChangesAsync().ConfigureAwait(false);
 
                 // Add attachments to borehole.
                 if (attachments != null)
                 {
                     foreach (var boreholeImport in boreholeImports)
                     {
-                        var attachmentFileNames = boreholeImport.Attachments.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture)).ToList();
-                        var attachmentFiles = attachments.Where(x => attachmentFileNames.Contains(x.FileName.Replace(" ", "", StringComparison.InvariantCulture))).ToList();
+                        var attachmentFileNames = boreholeImport.Attachments?.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture)).ToList();
+                        var attachmentFiles = attachments.Where(x => attachmentFileNames != null && attachmentFileNames.Contains(x.FileName.Replace(" ", "", StringComparison.InvariantCulture))).ToList();
                         foreach (var attachmentFile in attachmentFiles)
                         {
                             await boreholeFileUploadService.UploadFileToStorageAndLinkToBorehole(attachmentFile, boreholeImport.Id).ConfigureAwait(false);
@@ -147,7 +147,7 @@ public class UploadController : ControllerBase
                 }
 
                 await transaction.CommitAsync().ConfigureAwait(false);
-                return result;
+                return Ok(boreholes.Count);
             }
         }
         catch (Exception ex) when (ex is HeaderValidationException || ex is ReaderException)
