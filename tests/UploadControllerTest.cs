@@ -1,6 +1,5 @@
 ﻿using BDMS.Controllers;
 using BDMS.Models;
-using Bogus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,9 +27,7 @@ public class UploadControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        var builder = new ConfigurationBuilder();
-        builder.AddJsonFile("appsettings.development.json", optional: true, reloadOnChange: true);
-        var configuration = builder.Build();
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
