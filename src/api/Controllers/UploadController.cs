@@ -130,7 +130,7 @@ public class UploadController : ControllerBase
             {
                 // Add boreholes to database.
                 await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
-                await context.SaveChangesAsync().ConfigureAwait(false);
+                var result = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
 
                 // Add attachments to borehole.
                 if (attachments != null)
@@ -147,7 +147,7 @@ public class UploadController : ControllerBase
                 }
 
                 await transaction.CommitAsync().ConfigureAwait(false);
-                return Ok(boreholes.Count);
+                return result;
             }
         }
         catch (Exception ex) when (ex is HeaderValidationException || ex is ReaderException)
