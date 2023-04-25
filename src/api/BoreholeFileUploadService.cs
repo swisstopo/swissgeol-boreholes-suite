@@ -147,7 +147,7 @@ public class BoreholeFileUploadService
         catch (Exception ex)
         {
             logger.Log(LogLevel.Error, ex, "Error during download of object from storage.");
-            if (ex.Message.Contains("Not found", StringComparison.InvariantCultureIgnoreCase))
+            if (ex.Message.Contains("Not found", StringComparison.OrdinalIgnoreCase))
             {
                 throw new ObjectNotFoundException(objectName, "Object not found on storage.");
             }
@@ -173,7 +173,7 @@ public class BoreholeFileUploadService
         catch (Exception ex)
         {
             logger.Log(LogLevel.Error, ex, "Error during deletion of object from storage.");
-            if (ex.Message.Contains("Not found", StringComparison.InvariantCultureIgnoreCase))
+            if (ex.Message.Contains("Not found", StringComparison.OrdinalIgnoreCase))
             {
                 throw new ObjectNotFoundException(objectName, "Object not found on storage.");
             }
