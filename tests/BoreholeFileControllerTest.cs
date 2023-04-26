@@ -73,7 +73,7 @@ public class BoreholeFileControllerTest
     }
 
     [TestMethod]
-    public async Task DownloadFileShouldReturnDownLoadedFile()
+    public async Task DownloadFileShouldReturnDownloadedFile()
     {
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
         var content = Guid.NewGuid().ToString();
