@@ -110,7 +110,7 @@ public class BoreholeFileControllerTest
         var boreholeFileIds = boreholeFilesOfBorehole.Value?.Select(bf => bf.FileId).ToList();
 
         // BoreholeFiles from db
-        var boreholeFilesInDb = context.BoreholeFiles.Include(bf => bf.File).Where(bf => boreholeFileIds.Contains(bf.BoreholeId)).ToList();
+        var boreholeFilesInDb = await context.BoreholeFiles.Include(bf => bf.File).Where(bf => boreholeFileIds.Contains(bf.FileId)).ToListAsync();
 
         // Get files from database
         var firstBoreholeFile = boreholeFilesInDb.FirstOrDefault(bf => bf.File.Name == firstFileName);
