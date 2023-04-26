@@ -1,6 +1,7 @@
 ﻿using BDMS.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -101,17 +102,28 @@ public class BoreholeFileControllerTest
         // Get counts before upload
         var boreholeFilesBeforeUpload = context.BoreholeFiles.Where(bf => bf.BoreholeId == minBoreholeId).Count();
 
-        var firstPdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
-        var secondPdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_2.pdf");
+        var firstFileName = $"{Guid.NewGuid}.pdf";
+        var secondFileName = $"{Guid.NewGuid}.pdf";
+        var firstPdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), firstFileName);
+        var secondPdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), secondFileName);
 
         await controller.Upload(firstPdfFormFile, minBoreholeId);
         await controller.Upload(secondPdfFormFile, minBoreholeId);
 
-        // Get all boreholeFiles of borehole
+        // Get boreholeFiles of borehole from controller
         var boreholeFilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
+        var boreholeFileIds = boreholeFilesOfBorehole.Value?.Select(bf => bf.FileId).ToList();
 
-        Assert.IsNotNull(boreholeFilesOfBorehole.Value);
-        Assert.AreEqual(boreholeFilesBeforeUpload + 2, boreholeFilesOfBorehole.Value.Count());
+        // BoreholeFiles from db
+        var boreholeFilesInDb = context.BoreholeFiles.Include(bf => bf.File).Where(bf => boreholeFileIds.Contains(bf.BoreholeId)).ToList();
+
+        // Get files from database
+        var firstBoreholeFile = boreholeFilesInDb.FirstOrDefault(bf => bf.File.Name == firstFileName);
+        var secondBoreholeFile = boreholeFilesInDb.FirstOrDefault(bf => bf.File.Name == secondFileName);
+
+        Assert.AreEqual(firstBoreholeFile.File.Name, firstFileName);
+        Assert.AreEqual(secondBoreholeFile.File.Name, secondFileName);
+        Assert.AreEqual(boreholeFilesBeforeUpload + 2, boreholeFilesOfBorehole.Value?.Count());
     }
 
     [TestMethod]
