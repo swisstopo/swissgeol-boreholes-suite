@@ -29,8 +29,8 @@ public class BoreholeFileController : ControllerBase
     [HttpPost("upload")]
     public async Task<ActionResult> Upload(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
     {
-        if (file == null || file.Length == 0) return BadRequest("No File provided.");
-        if (boreholeId == 0) return BadRequest("No BoreholeId provided.");
+        if (file == null || file.Length == 0) return BadRequest("No file provided.");
+        if (boreholeId == 0) return BadRequest("No boreholeId provided.");
 
         try
         {
@@ -52,7 +52,7 @@ public class BoreholeFileController : ControllerBase
     [HttpGet("download")]
     public async Task<IActionResult> Download([Range(1, int.MaxValue)] int boreholeFileId)
     {
-        if (boreholeFileId == 0) return BadRequest("No BoreholeFileId provided.");
+        if (boreholeFileId == 0) return BadRequest("No boreholeFileId provided.");
 
         try
         {
@@ -69,7 +69,7 @@ public class BoreholeFileController : ControllerBase
         }
         catch (Exception ex)
         {
-            logger.Log(LogLevel.Error, ex, "An error occurred while downloading the file.");
+            logger.LogError(ex, "An error occurred while downloading the file.");
             return Problem("An error occurred while downloading the file.");
         }
     }
@@ -82,7 +82,7 @@ public class BoreholeFileController : ControllerBase
     [HttpGet("getAllForBorehole")]
     public async Task<ActionResult<IEnumerable<BoreholeFile>>> GetAllOfBorehole([Required, Range(1, int.MaxValue)] int boreholeId)
     {
-        if (boreholeId == 0) return BadRequest("No BoreholeFileId provided.");
+        if (boreholeId == 0) return BadRequest("No boreholeId provided.");
 
         return await context.BoreholeFiles
             .Where(bf => bf.BoreholeId == boreholeId)
@@ -99,8 +99,8 @@ public class BoreholeFileController : ControllerBase
     [HttpPost("detachFile")]
     public async Task<IActionResult> DetachFromBorehole([Required, Range(1, int.MaxValue)] int boreholeId, [Range(1, int.MaxValue)] int boreholeFileId)
     {
-        if (boreholeId == 0) return BadRequest("No BoreholeId provided.");
-        if (boreholeFileId == 0) return BadRequest("No BoreholeFileId provided.");
+        if (boreholeId == 0) return BadRequest("No boreholeId provided.");
+        if (boreholeFileId == 0) return BadRequest("No boreholeFileId provided.");
 
         try
         {
@@ -128,7 +128,7 @@ public class BoreholeFileController : ControllerBase
         }
         catch (Exception ex)
         {
-            logger.Log(LogLevel.Error, ex, "An error occurred while detaching the file.");
+            logger.LogError(ex, "An error occurred while detaching the file.");
             return Problem("An error occurred while detaching the file.");
         }
     }
