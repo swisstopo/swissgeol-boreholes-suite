@@ -60,6 +60,7 @@ const WaterIngress = props => {
         {isEditable && (
           <Tooltip title={t("add")}>
             <AddCircleIcon
+              data-cy="add-wateringress-button"
               color={selectedWaterIngress === null ? "black" : "disabled"}
               onClick={e => {
                 e.stopPropagation();

@@ -313,7 +313,10 @@ const WaterIngressInput = props => {
           </Stack>
           <Box sx={{ marginLeft: "auto" }}>
             <Tooltip title={t("close")}>
-              <ClearIcon onClick={() => closeFormIfCompleted()} />
+              <ClearIcon
+                data-cy="close-icon"
+                onClick={() => closeFormIfCompleted()}
+              />
             </Tooltip>
           </Box>
         </Stack>

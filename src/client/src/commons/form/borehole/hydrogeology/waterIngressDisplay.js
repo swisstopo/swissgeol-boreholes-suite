@@ -171,11 +171,13 @@ const WaterIngressDisplay = props => {
           <Stack direction="row" sx={{ marginLeft: "auto" }}>
             <Tooltip title={t("edit")}>
               <ModeEditIcon
+                data-cy="edit-icon"
                 onClick={() => setSelectedWaterIngress(waterIngress)}
               />
             </Tooltip>
             <Tooltip title={t("delete")}>
               <DeleteIcon
+                data-cy="delete-icon"
                 sx={{ color: "red", opacity: 0.7 }}
                 onClick={e => {
                   e.stopPropagation();
