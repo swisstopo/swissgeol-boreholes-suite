@@ -256,58 +256,68 @@ const WaterIngressInput = props => {
                 InputLabelProps={{ shrink: true }}
               />
             </Stack>
-            <FormControlLabel
-              control={
+            <Stack direction="row">
+              <FormControl
+                sx={{ flex: "1", marginRight: "10px" }}
+                variant="standard">
+                <InputLabel htmlFor="reliability">
+                  {t("reliability")}
+                </InputLabel>
                 <Controller
-                  name="completionFinished"
+                  name="reliabilityId"
                   control={control}
-                  defaultValue={waterIngress.completionFinished || false}
+                  defaultValue={waterIngress.reliabilityId}
+                  rules={{ required: true }}
                   render={({ field }) => (
-                    <Checkbox
-                      checked={field.value}
-                      onChange={e => field.onChange(e.target.checked)}
-                    />
+                    <Select
+                      value={field.value || ""}
+                      data-cy="reliability-select"
+                      error={Boolean(errors.reliabilityId)}
+                      input={<Input id="reliability" />}
+                      onChange={e => {
+                        e.stopPropagation();
+                        field.onChange(e.target.value);
+                        trigger();
+                      }}>
+                      {domains?.data
+                        ?.filter(d => d.schema === "observ101")
+                        .map(d => (
+                          <MenuItem key={d.id} value={d.id}>
+                            {d[i18n.language]}
+                          </MenuItem>
+                        ))}
+                    </Select>
                   )}
                 />
-              }
-              label="Ausbau fertiggestellt"
-            />
-            <FormControl variant="standard">
-              <InputLabel htmlFor="reliability">{t("reliability")}</InputLabel>
-              <Controller
-                name="reliabilityId"
-                control={control}
-                defaultValue={waterIngress.reliabilityId}
-                rules={{ required: true }}
-                render={({ field }) => (
-                  <Select
-                    value={field.value || ""}
-                    data-cy="reliability-select"
-                    error={Boolean(errors.reliabilityId)}
-                    input={<Input id="reliability" />}
-                    onChange={e => {
-                      e.stopPropagation();
-                      field.onChange(e.target.value);
-                      trigger();
-                    }}>
-                    {domains?.data
-                      ?.filter(d => d.schema === "observ101")
-                      .map(d => (
-                        <MenuItem key={d.id} value={d.id}>
-                          {d[i18n.language]}
-                        </MenuItem>
-                      ))}
-                  </Select>
-                )}
+              </FormControl>
+              <FormControlLabel
+                sx={{
+                  flex: "1",
+                  paddingLeft: "10px",
+                }}
+                control={
+                  <Controller
+                    name="completionFinished"
+                    control={control}
+                    defaultValue={waterIngress.completionFinished || false}
+                    render={({ field }) => (
+                      <Checkbox
+                        checked={field.value}
+                        onChange={e => field.onChange(e.target.checked)}
+                      />
+                    )}
+                  />
+                }
+                label="Ausbau fertiggestellt"
               />
-            </FormControl>
+            </Stack>
             <TextfieldNoMargin
               {...register("comment")}
               type="text"
               data-cy="comment-textfield"
               label={t("comment")}
               multiline
-              rows={4}
+              rows={3}
               defaultValue={waterIngress.comment}
               variant="standard"
             />

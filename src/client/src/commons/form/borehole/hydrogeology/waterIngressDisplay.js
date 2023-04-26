@@ -85,7 +85,6 @@ const WaterIngressDisplay = props => {
               </TypographyWithBottomMargin>
             </StackHalfWidth>
           </StackFullWidth>
-
           <StackFullWidth direction="row" spacing={1}>
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("fromDepthM")}</Typography>
@@ -100,7 +99,6 @@ const WaterIngressDisplay = props => {
               </TypographyWithBottomMargin>
             </StackHalfWidth>
           </StackFullWidth>
-
           <StackFullWidth direction="row" spacing={1}>
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2"> {t("fromDepthMasl")}</Typography>
@@ -134,7 +132,6 @@ const WaterIngressDisplay = props => {
             </StackHalfWidth>
           </StackFullWidth>
           <Typography variant="subtitle2"> {t("duration")}</Typography>
-
           <TypographyWithBottomMargin variant="subtitle1">
             {waterIngress.startTime && waterIngress.endTime
               ? timesToReadableDuration(
@@ -143,18 +140,26 @@ const WaterIngressDisplay = props => {
                 )
               : "-"}
           </TypographyWithBottomMargin>
-          <Typography variant="subtitle2">{t("completionFinished")}</Typography>
-          <TypographyWithBottomMargin variant="subtitle1">
-            {waterIngress.completionFinished === null
-              ? "-"
-              : waterIngress.completionFinished === true
-              ? t("yes")
-              : t("no")}
-          </TypographyWithBottomMargin>
-          <Typography variant="subtitle2">{t("reliability")}</Typography>
-          <TypographyWithBottomMargin variant="subtitle1">
-            {waterIngress.reliability?.[i18n.language] || "-"}
-          </TypographyWithBottomMargin>
+          <StackFullWidth direction="row" spacing={1}>
+            <StackHalfWidth direction="column">
+              <Typography variant="subtitle2">{t("reliability")}</Typography>
+              <TypographyWithBottomMargin variant="subtitle1">
+                {waterIngress.reliability?.[i18n.language] || "-"}
+              </TypographyWithBottomMargin>
+            </StackHalfWidth>
+            <StackHalfWidth direction="column">
+              <Typography variant="subtitle2">
+                {t("completionFinished")}
+              </Typography>
+              <TypographyWithBottomMargin variant="subtitle1">
+                {waterIngress.completionFinished === null
+                  ? "-"
+                  : waterIngress.completionFinished === true
+                  ? t("yes")
+                  : t("no")}
+              </TypographyWithBottomMargin>
+            </StackHalfWidth>
+          </StackFullWidth>
           <Typography variant="subtitle2">{t("comment")}</Typography>
           <TypographyWithBottomMargin
             variant="subtitle1"
@@ -162,7 +167,7 @@ const WaterIngressDisplay = props => {
               display: "-webkit-box",
               overflow: "auto",
               WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 4,
+              WebkitLineClamp: 3,
             }}>
             {waterIngress.comment || "-"}
           </TypographyWithBottomMargin>
