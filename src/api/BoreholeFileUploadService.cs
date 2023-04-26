@@ -13,7 +13,7 @@ public class BoreholeFileUploadService
     private readonly BdmsContext context;
     private readonly ILogger logger;
     private readonly string bucketName;
-    private readonly string endPoint;
+    private readonly string endpoint;
     private readonly string accessKey;
     private readonly string secretKey;
 
@@ -22,7 +22,7 @@ public class BoreholeFileUploadService
         this.logger = logger;
         this.context = context;
         bucketName = configuration["S3:BUCKET_NAME"];
-        endPoint = configuration["S3:ENDPOINT"];
+        endpoint = configuration["S3:ENDPOINT"];
         accessKey = configuration["S3:ACCESS_KEY"];
         secretKey = configuration["S3:SECRET_KEY"];
     }
@@ -50,7 +50,7 @@ public class BoreholeFileUploadService
         using var transaction = context.Database.BeginTransaction();
         try
         {
-            // If the file already exists, link it to the borehole.
+            // If file does not exist on storage, upload it and create file in database.
             if (fileId == null)
             {
                 var fileExtension = Path.GetExtension(file.FileName);
@@ -70,7 +70,7 @@ public class BoreholeFileUploadService
                 }
                 catch (Exception ex)
                 {
-                    logger.Log(LogLevel.Error, ex, "Error during upload of object to storage.");
+                    logger.LogError(ex, $"Error uploading file <{file.FileName}> (with GUID {fileNameGuid}) to cloud storage.");
                     throw;
                 }
             }
@@ -88,7 +88,7 @@ public class BoreholeFileUploadService
         }
         catch (Exception ex)
         {
-            logger.Log(LogLevel.Error, ex, "Error during saving the database.");
+            logger.LogError(ex, $"Error attaching file <{file.FileName}> to borehole with Id <{boreholeId}>.");
             throw;
         }
     }
@@ -101,7 +101,7 @@ public class BoreholeFileUploadService
     public async Task UploadObject(IFormFile file, string objectName)
     {
         using var initClient = new MinioClient();
-        using MinioClient minioClient = initClient.WithEndpoint(endPoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
+        using MinioClient minioClient = initClient.WithEndpoint(endpoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
         try
         {
             // Create bucket if it doesn't exist.
@@ -129,7 +129,7 @@ public class BoreholeFileUploadService
         }
         catch (Exception ex)
         {
-            logger.Log(LogLevel.Error, ex, "Error during upload of object to storage.");
+            logger.LogError(ex, $"Error uploading file <{file.FileName}> to cloud storage.");
             throw;
         }
     }
@@ -141,7 +141,7 @@ public class BoreholeFileUploadService
     public async Task<byte[]> GetObject(string objectName)
     {
         using var initClient = new MinioClient();
-        using MinioClient minioClient = initClient.WithEndpoint(endPoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
+        using MinioClient minioClient = initClient.WithEndpoint(endpoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
         try
         {
             using var downloadStream = new MemoryStream();
@@ -154,10 +154,10 @@ public class BoreholeFileUploadService
         }
         catch (Exception ex)
         {
-            logger.Log(LogLevel.Error, ex, "Error during download of object from storage.");
+            logger.LogError(ex, $"Error downloading file <{objectName}> from cloud storage.");
             if (ex.Message.Contains("Not found", StringComparison.OrdinalIgnoreCase))
             {
-                throw new ObjectNotFoundException(objectName, "Object not found on storage.");
+                throw new ObjectNotFoundException(objectName, $"Object <{objectName}> not found on storage.");
             }
 
             throw;
@@ -171,7 +171,7 @@ public class BoreholeFileUploadService
     public async Task DeleteObject(string objectName)
     {
         using var initClient = new MinioClient();
-        using MinioClient minioClient = initClient.WithEndpoint(endPoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
+        using MinioClient minioClient = initClient.WithEndpoint(endpoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
         try
         {
             var removeObjectArgs = new RemoveObjectArgs().WithBucket(bucketName).WithObject(objectName);
@@ -180,10 +180,10 @@ public class BoreholeFileUploadService
         }
         catch (Exception ex)
         {
-            logger.Log(LogLevel.Error, ex, "Error during deletion of object from storage.");
+            logger.LogError(ex, $"Error deleting file <{objectName}> from cloud storage.");
             if (ex.Message.Contains("Not found", StringComparison.OrdinalIgnoreCase))
             {
-                throw new ObjectNotFoundException(objectName, "Object not found on storage.");
+                throw new ObjectNotFoundException(objectName, $"Object <{objectName}> not found on storage.");
             }
 
             throw;
