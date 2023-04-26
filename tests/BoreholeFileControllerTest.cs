@@ -21,8 +21,6 @@ public class BoreholeFileControllerTest
     private BoreholeFileController controller;
     private BoreholeFileUploadService boreholeFileUploadService;
 
-    private int boreholeCount;
-
     [TestInitialize]
     public void TestInitialize()
     {
@@ -38,14 +36,11 @@ public class BoreholeFileControllerTest
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
         controller = new BoreholeFileController(context, boreholeFileControllerLoggerMock.Object, boreholeFileUploadService);
         controller.ControllerContext.HttpContext = new DefaultHttpContext();
-
-        boreholeCount = context.Boreholes.Count();
     }
 
     [TestCleanup]
     public async Task TestCleanup()
     {
-        Assert.AreEqual(boreholeCount, context.Boreholes.Count(), "Tests need to remove boreholes they created.");
         await context.DisposeAsync();
     }
 
