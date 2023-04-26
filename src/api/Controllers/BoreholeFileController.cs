@@ -61,7 +61,7 @@ public class BoreholeFileController : ControllerBase
                 .FirstOrDefaultAsync(f => f.FileId == boreholeFileId)
                 .ConfigureAwait(false);
 
-            if (boreholeFile?.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found in borehole.");
+            if (boreholeFile?.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found.");
 
             var fileBytes = await boreholeFileUploadService.GetObject(boreholeFile.File.NameUuid).ConfigureAwait(false);
 
@@ -106,11 +106,10 @@ public class BoreholeFileController : ControllerBase
         {
             // Get the file and its BoreholeFiles from the database.
             var boreholeFile = await context.BoreholeFiles.Include(f => f.File).FirstOrDefaultAsync(f => f.FileId == boreholeFileId).ConfigureAwait(false);
-
-            var file = boreholeFile.File;
+            var file = boreholeFile?.File;
 
             // If the file exists, remove the requested BoreholeFile from the database.
-            if (boreholeFile?.File != null)
+            if (file != null)
             {
                 file.BoreholeFiles.Remove(file.BoreholeFiles.First(bf => bf.FileId == boreholeFileId && bf.BoreholeId == boreholeId));
                 await context.SaveChangesAsync().ConfigureAwait(false);
