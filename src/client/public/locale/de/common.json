@@ -250,7 +250,7 @@
   "msgIdentifierDeletionAlreadyUsed": "Dieser ID Typ wird verwendet und kann daher nicht gelöscht werden",
   "msgInstrumentsEmpty": "Kein Instrument verfügbar",
   "msgReenablingTip": "Sie können ihn später wieder aktivieren",
-  "msgStartigraphyEmpty": "Keine Stratigraphie verfügbar",
+  "msgStratigraphyEmpty": "Keine Stratigraphie verfügbar",
   "msgWelcomeMessage_publish_title": "Willkommensmeldung veröffentlichen",
   "msgWelcomeMessage_publish_message": "Möchten Sie die Willkommensmeldung veröffentlichen?",
   "municipality": "Gemeinde",

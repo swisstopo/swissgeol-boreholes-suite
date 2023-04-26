@@ -250,7 +250,7 @@
   "msgIdentifierDeletionAlreadyUsed": "Ce type d'ID ne peut pas être supprimé lorsqu'il est utilisé",
   "msgInstrumentsEmpty": "Aucune instrumentation disponible",
   "msgReenablingTip": "Vous pourrez le réactiver plus tard",
-  "msgStartigraphyEmpty": "Aucune stratigraphie disponible",
+  "msgStratigraphyEmpty": "Aucune stratigraphie disponible",
   "msgWelcomeMessage_publish_title": "Publier le message de bienvenue",
   "msgWelcomeMessage_publish_message": "Voulez-vous publier le message de bienvenue?",
   "municipality": "Commune",

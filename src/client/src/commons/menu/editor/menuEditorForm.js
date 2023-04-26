@@ -37,7 +37,7 @@ class MenuEditorForm extends React.Component {
       delete: false,
       deleting: false,
       timeout: 0,
-      hydrogeologyIsVisible: false,
+      completionIsVisible: false,
       detailsIsVisible: false,
     };
     this.handleOpen = this.handleOpen.bind(this);
@@ -255,7 +255,6 @@ class MenuEditorForm extends React.Component {
               </List.Item>
             </>
           )}
-
           <List.Item
             onClick={() => {
               this.setState({
@@ -279,7 +278,7 @@ class MenuEditorForm extends React.Component {
               style={{
                 height: "21px",
                 paddingRight: "1em",
-                opacity: this.state.hydrogeologyIsVisible ? 1 : 0.5,
+                opacity: this.state.completionIsVisible ? 1 : 0.5,
               }}
             />
             <List.Content>
@@ -288,19 +287,19 @@ class MenuEditorForm extends React.Component {
               </List.Header>
             </List.Content>
             <div style={{ marginLeft: "2em" }}>
-              {!this.state.hydrogeologyIsVisible && (
+              {!this.state.completionIsVisible && (
                 <List.Icon
                   name="angle down"
                   size="big"
                   verticalAlign="middle"
                 />
               )}
-              {this.state.hydrogeologyIsVisible && (
+              {this.state.completionIsVisible && (
                 <List.Icon name="angle up" size="big" verticalAlign="middle" />
               )}
             </div>
           </List.Item>
-          {this.state.hydrogeologyIsVisible && (
+          {this.state.completionIsVisible && (
             <>
               <List.Item
                 active={
@@ -421,7 +420,6 @@ class MenuEditorForm extends React.Component {
               </List.Item>
             </>
           )}
-
           <List.Item
             active={
               location.pathname ===
