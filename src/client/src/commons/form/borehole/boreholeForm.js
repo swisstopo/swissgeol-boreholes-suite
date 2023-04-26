@@ -22,6 +22,7 @@ import RestrictionSegment from "./segments/restrictionSegment";
 import BoreholeGeneralSegment from "./segments/boreholeGeneralSegment";
 import BoreholeDetailSegment from "./segments/boreholeDetailSegment";
 import LocationSegment from "./segments/locationSegment";
+import WaterIngress from "./hydrogeology/waterIngress";
 import { AlertContext } from "../../alert/alertContext";
 
 class BoreholeForm extends React.Component {
@@ -333,20 +334,21 @@ class BoreholeForm extends React.Component {
   }
 
   render() {
-    const { t, borehole } = this.props;
+    const { t, borehole, user } = this.props;
     const size = null; // 'small'
-
-    if (this.props.borehole.error !== null) {
-      return (
-        <div>{t(this.props.borehole.error, this.props.borehole.data)}</div>
-      );
+    const isEditable =
+      borehole?.data.role === "EDIT" &&
+      borehole?.data.lock !== null &&
+      borehole?.data.lock?.username === user?.data.username;
+    if (borehole.error !== null) {
+      return <div>{t(borehole.error, borehole.data)}</div>;
     }
 
     return (
       <Dimmer.Dimmable
         as={"div"}
         dimmed={
-          this.props.borehole.isFetching === true ||
+          borehole.isFetching === true ||
           this.state.loadingFetch === true ||
           this.state.creationFetch === true
         }
@@ -358,17 +360,14 @@ class BoreholeForm extends React.Component {
         }}>
         <Dimmer
           active={
-            this.props.borehole.isFetching === true ||
+            borehole.isFetching === true ||
             this.state.loadingFetch === true ||
             this.state.creationFetch === true
           }
           inverted>
           <Loader>
             {(() => {
-              if (
-                this.props.borehole.isFetching ||
-                this.state.loadingFetch === true
-              ) {
+              if (borehole.isFetching || this.state.loadingFetch === true) {
                 return <TranslationText id="layer_loading_fetch" />;
               } else if (this.state.creationFetch === true) {
                 return <TranslationText id="layer_creation_fetch" />;
@@ -390,7 +389,7 @@ class BoreholeForm extends React.Component {
                   flexDirection: "column",
                 }}>
                 <IdentifierSegment
-                  borehole={this.props.borehole}
+                  borehole={borehole}
                   identifier={this.state.identifier}
                   identifierValue={this.state.identifierValue}
                   setState={this.setState.bind(this)}
@@ -399,7 +398,7 @@ class BoreholeForm extends React.Component {
                   }></IdentifierSegment>
                 <NameSegment
                   size={size}
-                  borehole={this.props.borehole}
+                  borehole={borehole}
                   originalNameCheck={this.state["extended.original_name_check"]}
                   originalNameFetch={this.state["extended.original_name_fetch"]}
                   alternateNameCheck={this.state["custom.alternate_name_check"]}
@@ -408,12 +407,12 @@ class BoreholeForm extends React.Component {
                   check={this.check}></NameSegment>
                 <RestrictionSegment
                   size={size}
-                  borehole={this.props.borehole}
+                  borehole={borehole}
                   updateChange={this.updateChange}></RestrictionSegment>
                 <LocationSegment
                   size={size}
                   borehole={borehole}
-                  user={this.props.user}
+                  user={user}
                   updateChange={this.updateChange}
                   updateNumber={this.updateNumber}
                   checkLock={this.checkLock}
@@ -433,12 +432,12 @@ class BoreholeForm extends React.Component {
                 }}>
                 <BoreholeGeneralSegment
                   size={size}
-                  borehole={this.props.borehole}
+                  borehole={borehole}
                   updateChange={this.updateChange}
                   updateNumber={this.updateNumber}></BoreholeGeneralSegment>
                 <BoreholeDetailSegment
                   size={size}
-                  borehole={this.props.borehole}
+                  borehole={borehole}
                   updateChange={this.updateChange}
                   updateNumber={this.updateNumber}
                   t={t}
@@ -453,14 +452,7 @@ class BoreholeForm extends React.Component {
               <Profile
                 id={parseInt(this.props.match.params.id, 10)}
                 kind="stratigraphy"
-                unlocked={
-                  !(
-                    this.props.borehole.data.role !== "EDIT" ||
-                    this.props.borehole.data.lock === null ||
-                    this.props.borehole.data.lock.username !==
-                      this.props.user.data.username
-                  )
-                }
+                unlocked={isEditable}
               />
             )}
           />
@@ -475,14 +467,7 @@ class BoreholeForm extends React.Component {
                 id={parseInt(this.props.match.params.id, 10)}
                 kind="stratigraphy"
                 isChronostratigraphy={true}
-                unlocked={
-                  !(
-                    this.props.borehole.data.role !== "EDIT" ||
-                    this.props.borehole.data.lock === null ||
-                    this.props.borehole.data.lock.username !==
-                      this.props.user.data.username
-                  )
-                }
+                unlocked={isEditable}
               />
             )}
           />
@@ -493,32 +478,21 @@ class BoreholeForm extends React.Component {
             render={() => (
               <EditorBoreholeFilesTable
                 id={parseInt(this.props.match.params.id, 10)}
-                unlocked={
-                  !(
-                    this.props.borehole.data.role !== "EDIT" ||
-                    this.props.borehole.data.lock === null ||
-                    this.props.borehole.data.lock.username !==
-                      this.props.user.data.username
-                  )
-                }
+                unlocked={isEditable}
               />
             )}
           />
           <Route
             exact
-            path={process.env.PUBLIC_URL + "/editor/:id/hydrogeology"}
+            path={
+              process.env.PUBLIC_URL + "/editor/:id/hydrogeology/wateringress"
+            }
             render={() => (
-              <Profile
-                id={parseInt(this.props.match.params.id, 10)}
-                kind="hydrogeology"
-                unlocked={
-                  !(
-                    this.props.borehole.data.role !== "EDIT" ||
-                    this.props.borehole.data.lock === null ||
-                    this.props.borehole.data.lock.username !==
-                      this.props.user.data.username
-                  )
-                }
+              <WaterIngress
+                isEditable={isEditable}
+                item={null}
+                selectItem={null}
+                boreholeId={borehole.data.id}
               />
             )}
           />
@@ -529,14 +503,7 @@ class BoreholeForm extends React.Component {
               <Profile
                 id={parseInt(this.props.match.params.id, 10)}
                 kind="casing"
-                unlocked={
-                  !(
-                    this.props.borehole.data.role !== "EDIT" ||
-                    this.props.borehole.data.lock === null ||
-                    this.props.borehole.data.lock.username !==
-                      this.props.user.data.username
-                  )
-                }
+                unlocked={isEditable}
               />
             )}
           />
@@ -547,14 +514,7 @@ class BoreholeForm extends React.Component {
               <Profile
                 id={parseInt(this.props.match.params.id, 10)}
                 kind="instruments"
-                unlocked={
-                  !(
-                    this.props.borehole.data.role !== "EDIT" ||
-                    this.props.borehole.data.lock === null ||
-                    this.props.borehole.data.lock.username !==
-                      this.props.user.data.username
-                  )
-                }
+                unlocked={isEditable}
               />
             )}
           />
@@ -565,14 +525,7 @@ class BoreholeForm extends React.Component {
               <Profile
                 id={parseInt(this.props.match.params.id, 10)}
                 kind="filling"
-                unlocked={
-                  !(
-                    this.props.borehole.data.role !== "EDIT" ||
-                    this.props.borehole.data.lock === null ||
-                    this.props.borehole.data.lock.username !==
-                      this.props.user.data.username
-                  )
-                }
+                unlocked={isEditable}
               />
             )}
           />

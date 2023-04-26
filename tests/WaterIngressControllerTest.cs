@@ -169,7 +169,6 @@ public class WaterIngressControllerTests
     {
         var newWaterIngress = new WaterIngress
         {
-            Id = 3,
             Type = ObservationType.WaterIngress,
             StartTime = new DateTime(2021, 1, 31, 1, 10, 00).ToUniversalTime(),
             EndTime = new DateTime(2020, 6, 4, 3, 4, 00).ToUniversalTime(),
@@ -193,7 +192,6 @@ public class WaterIngressControllerTests
 
             newWaterIngress = await context.WaterIngresses.FindAsync(newWaterIngress.Id);
             Assert.IsNotNull(newWaterIngress);
-            Assert.AreEqual(newWaterIngress.Id, 3);
             Assert.AreEqual(newWaterIngress.Type, ObservationType.WaterIngress);
             Assert.AreEqual(newWaterIngress.StartTime, new DateTime(2021, 1, 31, 1, 10, 00).ToUniversalTime());
             Assert.AreEqual(newWaterIngress.EndTime, new DateTime(2020, 6, 4, 3, 4, 00).ToUniversalTime());

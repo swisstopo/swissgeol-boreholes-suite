@@ -41,6 +41,10 @@ const theme = createTheme({
       color: "#787878",
       lineHeight: "1.4em",
     },
+    fullPageMessage: {
+      fontSize: "23px",
+      color: "black",
+    },
   },
   components: {
     MuiButton: {

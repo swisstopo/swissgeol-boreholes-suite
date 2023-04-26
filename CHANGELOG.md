@@ -10,6 +10,7 @@
 - Add validation for required borehole csv import fields. 
 - Added online help.
 - Add validation for duplicated boreholes during the cvs import.
+- Added functionality to add, edit and delete wateringresses, which belong to the hydrogeology observations of a borehole.
 - Use .NET API for managing borehole files.
 
 ### Changed

@@ -37,7 +37,7 @@ class MenuEditorForm extends React.Component {
       delete: false,
       deleting: false,
       timeout: 0,
-      hydrogeologyIsVisible: false,
+      completionIsVisible: false,
       detailsIsVisible: false,
     };
     this.handleOpen = this.handleOpen.bind(this);
@@ -255,11 +255,87 @@ class MenuEditorForm extends React.Component {
               </List.Item>
             </>
           )}
-
           <List.Item
             onClick={() => {
               this.setState({
                 hydrogeologyIsVisible: !this.state.hydrogeologyIsVisible,
+              });
+            }}
+            style={{
+              padding: "1em",
+              display: "flex",
+              borderLeft: [
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/hydrogeology/watgeringress`,
+              ].includes(location.pathname)
+                ? "0.25em solid rgb(237, 29, 36)"
+                : null,
+            }}>
+            <img
+              alt="Completion"
+              src={process.env.PUBLIC_URL + "/img/Hydrogeology.png"}
+              style={{
+                height: "21px",
+                paddingRight: "1em",
+                opacity: this.state.completionIsVisible ? 1 : 0.5,
+              }}
+            />
+            <List.Content>
+              <List.Header as="h3" data-cy="hydrogeology-menu-item">
+                <TranslationText firstUpperCase id="hydrogeology" />
+              </List.Header>
+            </List.Content>
+            <div style={{ marginLeft: "2em" }}>
+              {!this.state.hydrogeologyIsVisible && (
+                <List.Icon
+                  name="angle down"
+                  size="big"
+                  verticalAlign="middle"
+                />
+              )}
+              {this.state.hydrogeologyIsVisible && (
+                <List.Icon name="angle up" size="big" verticalAlign="middle" />
+              )}
+            </div>
+          </List.Item>
+          {this.state.hydrogeologyIsVisible && (
+            <>
+              <List.Item
+                active={
+                  location.pathname ===
+                  `${process.env.PUBLIC_URL}/editor/${match.params.id}/hydrogeology/wateringress`
+                }
+                onClick={() => {
+                  history.push(
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/hydrogeology/wateringress`,
+                  );
+                }}
+                style={{
+                  padding: "1em",
+                  paddingLeft: 40,
+                  display: "flex",
+                  borderLeft:
+                    location.pathname ===
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/hydrogeology/wateringress`
+                      ? "0.25em solid rgb(237, 29, 36)"
+                      : null,
+                }}>
+                <List.Icon
+                  name="align justify"
+                  size="large"
+                  verticalAlign="middle"
+                />
+                <List.Content>
+                  <List.Header as="h3" data-cy="hydrogeology-menu-item">
+                    <TranslationText firstUpperCase id="wateringress" />
+                  </List.Header>
+                </List.Content>
+              </List.Item>
+            </>
+          )}
+          <List.Item
+            onClick={() => {
+              this.setState({
+                completionIsVisible: !this.state.completionIsVisible,
               });
             }}
             style={{
@@ -279,7 +355,7 @@ class MenuEditorForm extends React.Component {
               style={{
                 height: "21px",
                 paddingRight: "1em",
-                opacity: this.state.hydrogeologyIsVisible ? 1 : 0.5,
+                opacity: this.state.completionIsVisible ? 1 : 0.5,
               }}
             />
             <List.Content>
@@ -288,19 +364,19 @@ class MenuEditorForm extends React.Component {
               </List.Header>
             </List.Content>
             <div style={{ marginLeft: "2em" }}>
-              {!this.state.hydrogeologyIsVisible && (
+              {!this.state.completionIsVisible && (
                 <List.Icon
                   name="angle down"
                   size="big"
                   verticalAlign="middle"
                 />
               )}
-              {this.state.hydrogeologyIsVisible && (
+              {this.state.completionIsVisible && (
                 <List.Icon name="angle up" size="big" verticalAlign="middle" />
               )}
             </div>
           </List.Item>
-          {this.state.hydrogeologyIsVisible && (
+          {this.state.completionIsVisible && (
             <>
               <List.Item
                 active={
@@ -421,7 +497,6 @@ class MenuEditorForm extends React.Component {
               </List.Item>
             </>
           )}
-
           <List.Item
             active={
               location.pathname ===

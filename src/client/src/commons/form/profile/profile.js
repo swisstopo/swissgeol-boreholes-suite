@@ -160,7 +160,7 @@ const Profile = props => {
               id={
                 borehole.data.lock
                   ? "msgAddStratigraphy"
-                  : "msgStartigraphyEmpty"
+                  : "msgStratigraphyEmpty"
               }
             />
           </Styled.Empty>

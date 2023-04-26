@@ -238,3 +238,59 @@ export const useChronostratigraphyMutations = () => {
     delete: useDeleteChronostratigraphy,
   };
 };
+
+export const waterIngressQueryKey = "wateringresses";
+
+export const useWaterIngresses = boreholeId =>
+  useQuery({
+    queryKey: [waterIngressQueryKey, boreholeId],
+    queryFn: async () => {
+      return await fetchApiV2(`wateringress?boreholeId=${boreholeId}`, "GET");
+    },
+  });
+
+export const useWaterIngressMutations = () => {
+  const queryClient = useQueryClient();
+  const useAddWaterIngress = useMutation(
+    async waterIngress => {
+      return await fetchApiV2("wateringress", "POST", waterIngress);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [waterIngressQueryKey],
+        });
+      },
+    },
+  );
+  const useUpdateWaterIngress = useMutation(
+    async waterIngress => {
+      return await fetchApiV2("wateringress", "PUT", waterIngress);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [waterIngressQueryKey],
+        });
+      },
+    },
+  );
+  const useDeleteWaterIngress = useMutation(
+    async waterIngressId => {
+      return await fetchApiV2(`wateringress?id=${waterIngressId}`, "DELETE");
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [waterIngressQueryKey],
+        });
+      },
+    },
+  );
+
+  return {
+    add: useAddWaterIngress,
+    update: useUpdateWaterIngress,
+    delete: useDeleteWaterIngress,
+  };
+};
