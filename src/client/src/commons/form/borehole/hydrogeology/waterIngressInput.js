@@ -45,6 +45,7 @@ const WaterIngressInput = props => {
     return () => {
       handleSubmit(handleFormSubmit)();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleSubmit]);
 
   // trigger form validation on mount

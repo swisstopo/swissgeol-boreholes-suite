@@ -51,7 +51,7 @@ const WaterIngress = props => {
           block: "center",
         });
     }
-  }, [displayedWaterIngresses]);
+  }, [displayedWaterIngresses, waterIngressRefs]);
 
   return (
     <Stack sx={{ flexGrow: 1 }}>
