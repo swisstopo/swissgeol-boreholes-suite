@@ -135,7 +135,8 @@ public class UploadController : ControllerBase
                 // Add attachments to borehole.
                 if (attachments != null)
                 {
-                    foreach (var boreholeImport in boreholeImports)
+                    var boreholeImportsWithAttachments = boreholeImports.Where(x => x.Attachments.Any()).ToList();
+                    foreach (var boreholeImport in boreholeImportsWithAttachments)
                     {
                         var attachmentFileNames = boreholeImport.Attachments?.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture)).ToList();
                         var attachmentFiles = attachments.Where(x => attachmentFileNames != null && attachmentFileNames.Contains(x.FileName.Replace(" ", "", StringComparison.InvariantCulture))).ToList();
