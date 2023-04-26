@@ -10,7 +10,7 @@
 - Add validation for required borehole csv import fields. 
 - Added online help.
 - Add validation for duplicated boreholes during the cvs import.
-- Add endpoints to dotnet API for managing borehole files.
+- Use .NET API for managing borehole files.
 
 ### Changed
 
