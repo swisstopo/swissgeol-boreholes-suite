@@ -100,10 +100,10 @@ public class BoreholeFileUploadService
     /// <param name="objectName">The name of the file in the storage.</param>
     internal async Task UploadObject(IFormFile file, string objectName)
     {
-        using var initClient = new MinioClient();
-        using MinioClient minioClient = initClient.WithEndpoint(endpoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
         try
         {
+            using var minioClient = CreateMinioClient();
+
             // Create bucket if it doesn't exist.
             var bucketExistsArgs = new BucketExistsArgs().WithBucket(bucketName);
             if (await minioClient.BucketExistsAsync(bucketExistsArgs).ConfigureAwait(false) == false)
@@ -140,10 +140,9 @@ public class BoreholeFileUploadService
     /// <param name="objectName">The name of the file in the bucket.</param>
     public async Task<byte[]> GetObject(string objectName)
     {
-        using var initClient = new MinioClient();
-        using MinioClient minioClient = initClient.WithEndpoint(endpoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
         try
         {
+            using var minioClient = CreateMinioClient();
             using var downloadStream = new MemoryStream();
 
             var getObjectArgs = new GetObjectArgs().WithBucket(bucketName).WithObject(objectName).WithCallbackStream(stream => stream.CopyTo(downloadStream));
@@ -170,10 +169,9 @@ public class BoreholeFileUploadService
     /// <param name="objectName">The name of the file in the bucket to delete.</param>
     public async Task DeleteObject(string objectName)
     {
-        using var initClient = new MinioClient();
-        using MinioClient minioClient = initClient.WithEndpoint(endpoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
         try
         {
+            using var minioClient = CreateMinioClient();
             var removeObjectArgs = new RemoveObjectArgs().WithBucket(bucketName).WithObject(objectName);
 
             await minioClient.RemoveObjectAsync(removeObjectArgs).ConfigureAwait(false);
@@ -189,4 +187,7 @@ public class BoreholeFileUploadService
             throw;
         }
     }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Corresponding to MinIO documentation.")]
+    private MinioClient CreateMinioClient() => new MinioClient().WithEndpoint(endpoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
 }
