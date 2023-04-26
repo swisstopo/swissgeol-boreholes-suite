@@ -275,7 +275,7 @@ const ProfileLayers = props => {
                   <Stack direction="row">
                     <Typography>{t("lithological_description")}</Typography>
                     {isEditable && selectedStratigraphyID !== null && (
-                      <Tooltip title={t("add")} sx={{}}>
+                      <Tooltip title={t("add")}>
                         <AddCircleIcon
                           sx={{ marginLeft: 1.5 }}
                           data-cy="add-litho-desc-icon"
