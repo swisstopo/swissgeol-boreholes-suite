@@ -22,6 +22,7 @@ import RestrictionSegment from "./segments/restrictionSegment";
 import BoreholeGeneralSegment from "./segments/boreholeGeneralSegment";
 import BoreholeDetailSegment from "./segments/boreholeDetailSegment";
 import LocationSegment from "./segments/locationSegment";
+import WaterIngress from "./hydrogeology/waterIngress";
 import { AlertContext } from "../../alert/alertContext";
 
 class BoreholeForm extends React.Component {
@@ -483,19 +484,15 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={process.env.PUBLIC_URL + "/editor/:id/hydrogeology"}
+            path={
+              process.env.PUBLIC_URL + "/editor/:id/hydrogeology/wateringress"
+            }
             render={() => (
-              <Profile
-                id={parseInt(this.props.match.params.id, 10)}
-                kind="hydrogeology"
-                unlocked={
-                  !(
-                    this.props.borehole.data.role !== "EDIT" ||
-                    this.props.borehole.data.lock === null ||
-                    this.props.borehole.data.lock.username !==
-                      this.props.user.data.username
-                  )
-                }
+              <WaterIngress
+                isEditable={isEditable}
+                item={null}
+                selectItem={null}
+                boreholeId={borehole.data.id}
               />
             )}
           />
