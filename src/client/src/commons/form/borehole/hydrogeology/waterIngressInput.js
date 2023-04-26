@@ -14,7 +14,7 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import { useDomains } from "../../../../api/fetchApiV2";
+import { useDomains, useCasings } from "../../../../api/fetchApiV2";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useTranslation } from "react-i18next";
 import { AlertContext } from "../../../alert/alertContext";
@@ -29,6 +29,7 @@ const WaterIngressInput = props => {
     updateWaterIngress,
   } = props;
   const domains = useDomains();
+  const casings = useCasings(boreholeId);
   const { t, i18n } = useTranslation();
   const {
     register,
@@ -66,6 +67,9 @@ const WaterIngressInput = props => {
           boreholeId: boreholeId,
         });
       } else {
+        delete waterIngress.casing;
+        delete waterIngress.quantity;
+        delete waterIngress.reliability;
         updateWaterIngress({ ...waterIngress, ...data });
       }
     } else {
@@ -298,7 +302,6 @@ const WaterIngressInput = props => {
               <FormControlLabel
                 sx={{
                   flex: "1",
-                  paddingLeft: "10px",
                 }}
                 control={
                   <Controller
@@ -315,6 +318,40 @@ const WaterIngressInput = props => {
                 }
                 label="Ausbau fertiggestellt"
               />
+            </Stack>
+            <Stack direction="row">
+              <FormControl
+                variant="standard"
+                sx={{ flex: "1", marginRight: "10px" }}>
+                <InputLabel htmlFor="casing">{t("casing")}</InputLabel>
+                <Controller
+                  name="casingId"
+                  control={control}
+                  defaultValue={waterIngress.casingId}
+                  render={({ field }) => (
+                    <Select
+                      disabled={!casings?.data?.length}
+                      value={field.value || ""}
+                      data-cy="casing-select"
+                      input={<Input id="casing" />}
+                      onChange={e => {
+                        e.stopPropagation();
+                        field.onChange(e.target.value);
+                        trigger();
+                      }}>
+                      <MenuItem key="0" value={null}>
+                        <em>{t("reset")}</em>
+                      </MenuItem>
+                      {casings?.data?.map(d => (
+                        <MenuItem key={d.id} value={d.id}>
+                          {d.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+              </FormControl>
+              <div style={{ flex: "1" }} />
             </Stack>
             <TextfieldNoMargin
               {...register("comment")}

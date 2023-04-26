@@ -85,6 +85,15 @@ export const fetchLithologicalDescriptionsByProfileId = async profileId => {
   );
 };
 
+//casings
+export const fetchCasingsByBoreholeId = async boreholeId => {
+  const kindId = 3002; // casing kind
+  return await fetchApiV2(
+    `stratigraphy?kindId=${kindId}&boreholeId=${boreholeId}`,
+    "GET",
+  );
+};
+
 export const addLithologicalDescription = async lithologicalDescription => {
   return await fetchApiV2(
     "lithologicaldescription",
@@ -175,6 +184,13 @@ export const useFaciesDescription = selectedStratigraphyID =>
   useQuery({
     queryKey: [faciesDescriptionQueryKey, selectedStratigraphyID],
     queryFn: () => fetchFaciesDescriptionsByProfileId(selectedStratigraphyID),
+  });
+
+export const casingKey = "casings";
+
+export const useCasings = boreholeId =>
+  useQuery([casingKey, boreholeId], () => {
+    return fetchCasingsByBoreholeId(boreholeId);
   });
 
 export const chronostratigraphiesQueryKey = "chronostratigraphies";

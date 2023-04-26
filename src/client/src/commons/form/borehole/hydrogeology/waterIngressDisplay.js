@@ -47,7 +47,7 @@ const WaterIngressDisplay = props => {
 
   // styled components
   const TypographyWithBottomMargin = styled(Typography)(() => ({
-    marginBottom: 3,
+    marginBottom: 3.5,
   }));
   const StackFullWidth = styled(Stack)(() => ({
     width: "100%",
@@ -157,6 +157,10 @@ const WaterIngressDisplay = props => {
               </TypographyWithBottomMargin>
             </StackHalfWidth>
           </StackFullWidth>
+          <Typography variant="subtitle2"> {t("casing")}</Typography>
+          <TypographyWithBottomMargin variant="subtitle1">
+            {waterIngress.casing?.name || "-"}
+          </TypographyWithBottomMargin>
           <Typography variant="subtitle2">{t("comment")}</Typography>
           <TypographyWithBottomMargin
             variant="subtitle1"
