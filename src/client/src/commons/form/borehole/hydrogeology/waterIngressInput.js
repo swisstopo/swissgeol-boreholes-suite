@@ -39,6 +39,7 @@ const WaterIngressInput = props => {
     trigger,
   } = useForm();
   const alertContext = useContext(AlertContext);
+  const observationType = 1;
 
   // submit values on unmount with useEffect clean up function.
   useEffect(() => {
@@ -59,7 +60,11 @@ const WaterIngressInput = props => {
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
     if (data.startTime && data.quantityId && data.reliabilityId) {
       if (waterIngress.id === 0) {
-        addWaterIngress({ ...data, type: 1, boreholeId: boreholeId });
+        addWaterIngress({
+          ...data,
+          type: observationType,
+          boreholeId: boreholeId,
+        });
       } else {
         updateWaterIngress({ ...waterIngress, ...data });
       }

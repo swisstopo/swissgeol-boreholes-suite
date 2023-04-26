@@ -15,21 +15,18 @@ const WaterIngressDisplay = props => {
   const { t, i18n } = useTranslation();
 
   function timesToReadableDuration(startTime, endTime) {
-    const timeStampStart = new Date(startTime).getTime();
+    const timestampStart = new Date(startTime).getTime();
     const timestampEnd = new Date(endTime).getTime();
-    const durationInMinutes = (timestampEnd - timeStampStart) / 60000;
+    const durationInMinutes = (timestampEnd - timestampStart) / 60000;
     if (durationInMinutes < 0) return "-";
     const hours = Math.floor(durationInMinutes / 60);
     const minutes = Math.floor(durationInMinutes % 60);
     let result = "";
     if (hours > 0) {
-      result +=
-        hours + (hours === 1 ? " " + t("hour") : " " + t("hours") + " ");
+      result += hours + " " + (hours === 1 ? t("hour") : t("hours")) + " ";
     }
     if (minutes > 0) {
-      result +=
-        minutes +
-        (minutes === 1 ? " " + t("minute") : " " + t("minutes") + " ");
+      result += minutes + " " + (minutes === 1 ? t("minute") : t("minutes"));
     }
     return result.trim();
   }
