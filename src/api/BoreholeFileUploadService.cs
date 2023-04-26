@@ -75,12 +75,12 @@ public class BoreholeFileUploadService
                 }
             }
 
+            // Link file to the borehole.
             if (!context.BoreholeFiles.Any(bf => bf.BoreholeId == boreholeId && bf.FileId == fileId))
             {
-                // Create new BoreholeFile
-                var boreHoleFile = new BoreholeFile { FileId = (int)fileId, BoreholeId = boreholeId, };
+                var boreHolefile = new BoreholeFile { FileId = (int)fileId, BoreholeId = boreholeId, };
 
-                await context.BoreholeFiles.AddAsync(boreHoleFile).ConfigureAwait(false);
+                await context.BoreholeFiles.AddAsync(boreHolefile).ConfigureAwait(false);
                 await context.SaveChangesAsync().ConfigureAwait(false);
             }
 
@@ -98,7 +98,7 @@ public class BoreholeFileUploadService
     /// </summary>
     /// <param name="file">The file to upload.</param>
     /// <param name="objectName">The name of the file in the storage.</param>
-    public async Task UploadObject(IFormFile file, string objectName)
+    internal async Task UploadObject(IFormFile file, string objectName)
     {
         using var initClient = new MinioClient();
         using MinioClient minioClient = initClient.WithEndpoint(endpoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
