@@ -17,7 +17,6 @@ public class BoreholeFileUploadServiceTest
     private MinioClient minioClient;
     private BdmsContext context;
     private BoreholeFileUploadService boreholeFileUploadService;
-    private IConfiguration configuration;
     private string bucketName;
 
     [TestInitialize]
@@ -30,8 +29,6 @@ public class BoreholeFileUploadServiceTest
         var loggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
         loggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
         boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object);
-
-        this.configuration = configuration;
 
         minioClient = new MinioClient()
             .WithEndpoint(configuration["S3:ENDPOINT"])
@@ -63,7 +60,7 @@ public class BoreholeFileUploadServiceTest
         var filesBeforeUpload = await observable.Where(file => file.Key == fileName).ToList();
 
         // Create file to upload
-        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
+        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
 
         // Upload file
         await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
