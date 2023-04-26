@@ -46,6 +46,7 @@ public class BoreholeFileUploadServiceTest
     public async Task TestCleanup()
     {
         await context.DisposeAsync();
+        minioClient.Dispose();
     }
 
     [TestMethod]
