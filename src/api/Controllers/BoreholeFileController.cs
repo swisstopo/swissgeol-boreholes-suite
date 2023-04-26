@@ -13,11 +13,11 @@ public class BoreholeFileController : ControllerBase
     private readonly BoreholeFileUploadService boreholeFileUploadService;
     private readonly ILogger logger;
 
-    public BoreholeFileController(BdmsContext context, ILogger<BoreholeFileController> logger, BoreholeFileUploadService storageService)
+    public BoreholeFileController(BdmsContext context, ILogger<BoreholeFileController> logger, BoreholeFileUploadService boreholeFileUploadService)
         : base()
     {
         this.logger = logger;
-        boreholeFileUploadService = storageService;
+        this.boreholeFileUploadService = boreholeFileUploadService;
         this.context = context;
     }
 
@@ -27,14 +27,14 @@ public class BoreholeFileController : ControllerBase
     /// <param name="file">The file to upload and link to the <see cref="Borehole"/>.</param>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded <paramref name="file"/> to.</param>
     [HttpPost("upload")]
-    public async Task<ActionResult> Upload(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
+    public async Task<IActionResult> Upload(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
     {
         if (file == null || file.Length == 0) return BadRequest("No file provided.");
         if (boreholeId == 0) return BadRequest("No boreholeId provided.");
 
         try
         {
-            await boreholeFileUploadService.UploadFileToStorageAndLinkToBorehole(file, boreholeId).ConfigureAwait(false);
+            await boreholeFileUploadService.UploadFileAndLinkToBorehole(file, boreholeId).ConfigureAwait(false);
             return Ok();
         }
         catch (Exception ex)

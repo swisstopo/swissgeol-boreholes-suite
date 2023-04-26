@@ -141,7 +141,7 @@ public class UploadController : ControllerBase
                         var attachmentFiles = attachments.Where(x => attachmentFileNames != null && attachmentFileNames.Contains(x.FileName.Replace(" ", "", StringComparison.InvariantCulture))).ToList();
                         foreach (var attachmentFile in attachmentFiles)
                         {
-                            await boreholeFileUploadService.UploadFileToStorageAndLinkToBorehole(attachmentFile, boreholeImport.Id).ConfigureAwait(false);
+                            await boreholeFileUploadService.UploadFileAndLinkToBorehole(attachmentFile, boreholeImport.Id).ConfigureAwait(false);
                         }
                     }
                 }
