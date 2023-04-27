@@ -105,6 +105,7 @@ const WaterIngress = props => {
                   selectedWaterIngress?.id !== waterIngress.id ? (
                     <WaterIngressDisplay
                       waterIngress={waterIngress}
+                      selectedWaterIngress={selectedWaterIngress}
                       setSelectedWaterIngress={setSelectedWaterIngress}
                       isEditable={isEditable}
                       deleteWaterIngress={deleteWaterIngress}

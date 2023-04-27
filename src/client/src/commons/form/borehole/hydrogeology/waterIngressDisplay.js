@@ -8,6 +8,7 @@ import { styled } from "@mui/system";
 const WaterIngressDisplay = props => {
   const {
     waterIngress,
+    selectedWaterIngress,
     setSelectedWaterIngress,
     isEditable,
     deleteWaterIngress,
@@ -177,17 +178,25 @@ const WaterIngressDisplay = props => {
           <Stack direction="row" sx={{ marginLeft: "auto" }}>
             <Tooltip title={t("edit")}>
               <ModeEditIcon
+                color={selectedWaterIngress ? "disabled" : "black"}
                 data-cy="edit-icon"
-                onClick={() => setSelectedWaterIngress(waterIngress)}
+                onClick={e => {
+                  e.stopPropagation();
+                  !selectedWaterIngress &&
+                    setSelectedWaterIngress(waterIngress);
+                }}
               />
             </Tooltip>
             <Tooltip title={t("delete")}>
               <DeleteIcon
                 data-cy="delete-icon"
-                sx={{ color: "red", opacity: 0.7 }}
+                sx={{
+                  color: selectedWaterIngress ? "rgba(0, 0, 0, 0.26)" : "red",
+                  opacity: 0.7,
+                }}
                 onClick={e => {
                   e.stopPropagation();
-                  deleteWaterIngress(waterIngress.id);
+                  !selectedWaterIngress && deleteWaterIngress(waterIngress.id);
                 }}
               />
             </Tooltip>
