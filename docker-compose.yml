@@ -9,6 +9,8 @@ services:
     volumes:
       - ./data/minio:/data
     command: server /data -console-address ":9002"
+    ports:
+      - 9000:9000
   db:
     image: postgis/postgis:14-3.3-alpine
     volumes:

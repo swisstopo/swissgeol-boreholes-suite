@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Text;
 
 namespace BDMS;
 
@@ -49,6 +50,57 @@ internal static class Helpers
                     entry.State = EntityState.Unchanged;
                     break;
             }
+        }
+    }
+
+    /// <summary>
+    /// Creates a FormFile from an existing file.
+    /// </summary>
+    internal static FormFile GetFormFileByExistingFile(string fileName)
+    {
+        var fileBytes = File.ReadAllBytes(fileName);
+        var stream = new MemoryStream(fileBytes);
+        return new FormFile(stream, 0, fileBytes.Length, null, fileName) { Headers = new HeaderDictionary(), ContentType = GetContentType(fileName) };
+    }
+
+    /// <summary>
+    /// Creates a FormFile from a string.
+    /// </summary>
+    internal static FormFile GetFormFileByContent(string fileContent, string fileName)
+    {
+        var fileBytes = Encoding.UTF8.GetBytes(fileContent);
+        return new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, fileName) { Headers = new HeaderDictionary(), ContentType = GetContentType(fileName) };
+    }
+
+    /// <summary>
+    /// Get the content type of a file based on its extension.
+    /// </summary>
+    private static string GetContentType(string fileName)
+    {
+        switch (Path.GetExtension(fileName).ToLowerInvariant())
+        {
+            case ".txt":
+                return "text/plain";
+            case ".pdf":
+                return "application/pdf";
+            case ".doc":
+            case ".docx":
+                return "application/msword";
+            case ".xls":
+            case ".xlsx":
+                return "application/vnd.ms-excel";
+            case ".ppt":
+            case ".pptx":
+                return "application/vnd.ms-powerpoint";
+            case ".jpeg":
+            case ".jpg":
+                return "image/jpeg";
+            case ".png":
+                return "image/png";
+            case ".gif":
+                return "image/gif";
+            default:
+                return "application/octet-stream";
         }
     }
 }

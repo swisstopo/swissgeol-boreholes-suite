@@ -88,6 +88,7 @@ builder.Services.AddApiVersioning(config =>
 
 builder.Services.AddScoped<LocationService>();
 builder.Services.AddScoped<CoordinateService>();
+builder.Services.AddScoped<BoreholeFileUploadService>();
 
 var app = builder.Build();
 
