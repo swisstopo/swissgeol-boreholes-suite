@@ -403,5 +403,7 @@
   "hours": "hours",
   "minute": "minute",
   "minutes": "minutes",
-  "waterIngressRequiredFieldsAlert": "'Quantity', 'Start time' and 'Reliability of data' are mandatory fields, the entry cannot be saved if they are not filled out."
+  "waterIngressRequiredFieldsAlert": "'Quantity', 'Start time' and 'Reliability of data' are mandatory fields, the entry cannot be saved if they are not filled out.",
+  "hydrogeology": "hydrogeology",
+  "wateringress": "water ingress"
 }

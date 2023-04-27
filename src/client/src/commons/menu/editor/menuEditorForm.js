@@ -271,7 +271,7 @@ class MenuEditorForm extends React.Component {
                 : null,
             }}>
             <img
-              alt="Completion"
+              alt="Hydrogeology"
               src={process.env.PUBLIC_URL + "/img/Hydrogeology.png"}
               style={{
                 height: "21px",
