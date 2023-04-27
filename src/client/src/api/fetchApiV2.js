@@ -77,19 +77,19 @@ export const fetchAllCodeLists = async () =>
 export const updateCodeLists = async codelist =>
   await fetchApiV2("codelist", "PUT", codelist);
 
-// lithological descriptions
-export const fetchLithologicalDescriptionsByProfileId = async profileId => {
-  return await fetchApiV2(
-    `lithologicaldescription?stratigraphyId=${profileId}`,
-    "GET",
-  );
-};
-
-//casings
+// casings
 export const fetchCasingsByBoreholeId = async boreholeId => {
   const kindId = 3002; // casing kind
   return await fetchApiV2(
     `stratigraphy?kindId=${kindId}&boreholeId=${boreholeId}`,
+    "GET",
+  );
+};
+
+// lithological descriptions
+export const fetchLithologicalDescriptionsByProfileId = async profileId => {
+  return await fetchApiV2(
+    `lithologicaldescription?stratigraphyId=${profileId}`,
     "GET",
   );
 };
