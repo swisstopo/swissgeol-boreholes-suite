@@ -93,20 +93,32 @@ const WaterIngressInput = props => {
   };
 
   // styled components
-  const TextfieldNoMargin = styled(TextField)(() => ({
-    flex: "1",
-    marginTop: "10px",
-  }));
-
-  const TextfieldWithMarginRight = forwardRef((props, ref) => {
-    // the ref needs to be manually forwarded with custom components, the native TextField component would handle the forwarding internally.
+  const TextfieldNoMargin = forwardRef((props, ref) => {
+    // the ref and children needs to be manually forwarded with custom components, the native TextField component would handle the forwarding internally.
     const StyledTextField = styled(TextField)(() => ({
       flex: "1",
-      marginRight: "10px",
       marginTop: "10px",
     }));
 
-    return <StyledTextField ref={ref} {...props} />;
+    return (
+      <StyledTextField ref={ref} {...props}>
+        {props.children}
+      </StyledTextField>
+    );
+  });
+
+  const TextfieldWithMarginRight = forwardRef((props, ref) => {
+    const StyledTextField = styled(TextField)(() => ({
+      flex: "1",
+      marginTop: "10px",
+      marginRight: "10px",
+    }));
+
+    return (
+      <StyledTextField ref={ref} {...props}>
+        {props.children}
+      </StyledTextField>
+    );
   });
 
   return (
@@ -131,7 +143,7 @@ const WaterIngressInput = props => {
                   defaultValue={waterIngress.quantityId}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <TextfieldNoMargin
+                    <TextField
                       {...field}
                       select
                       size="small"
@@ -152,7 +164,7 @@ const WaterIngressInput = props => {
                             {d[i18n.language]}
                           </MenuItem>
                         ))}
-                    </TextfieldNoMargin>
+                    </TextField>
                   )}
                 />
               </FormControl>
@@ -164,7 +176,7 @@ const WaterIngressInput = props => {
                   control={control}
                   defaultValue={waterIngress.conditionsId}
                   render={({ field }) => (
-                    <TextfieldNoMargin
+                    <TextField
                       {...field}
                       select
                       label={t("conditions")}
@@ -186,7 +198,7 @@ const WaterIngressInput = props => {
                             {d[i18n.language]}
                           </MenuItem>
                         ))}
-                    </TextfieldNoMargin>
+                    </TextField>
                   )}
                 />
               </FormControl>
@@ -270,7 +282,7 @@ const WaterIngressInput = props => {
             </Stack>
             <Stack direction="row">
               <FormControl
-                sx={{ flex: "1", marginRight: "10px" }}
+                sx={{ flex: "1", marginRight: "10px", marginTop: "10px" }}
                 variant="outlined">
                 <Controller
                   name="reliabilityId"
@@ -278,7 +290,7 @@ const WaterIngressInput = props => {
                   defaultValue={waterIngress.reliabilityId}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <TextfieldNoMargin
+                    <TextField
                       {...field}
                       select
                       size="small"
@@ -299,7 +311,7 @@ const WaterIngressInput = props => {
                             {d[i18n.language]}
                           </MenuItem>
                         ))}
-                    </TextfieldNoMargin>
+                    </TextField>
                   )}
                 />
               </FormControl>
@@ -326,13 +338,18 @@ const WaterIngressInput = props => {
             <Stack direction="row">
               <FormControl
                 variant="outlined"
-                sx={{ flex: "1", marginRight: "10px", marginBottom: "10px" }}>
+                sx={{
+                  flex: "1",
+                  marginRight: "15px",
+                  marginTop: "10px",
+                  marginBottom: "10px",
+                }}>
                 <Controller
                   name="casingId"
                   control={control}
                   defaultValue={waterIngress.casingId}
                   render={({ field }) => (
-                    <TextfieldNoMargin
+                    <TextField
                       {...field}
                       select
                       size="small"
@@ -354,7 +371,7 @@ const WaterIngressInput = props => {
                           {d.name}
                         </MenuItem>
                       ))}
-                    </TextfieldNoMargin>
+                    </TextField>
                   )}
                 />
               </FormControl>
