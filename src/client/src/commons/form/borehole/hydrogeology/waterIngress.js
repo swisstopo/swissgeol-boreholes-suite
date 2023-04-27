@@ -56,25 +56,27 @@ const WaterIngress = props => {
   return (
     <Stack sx={{ flexGrow: 1 }}>
       <Stack direction="row" sx={{ mb: 2 }}>
-        <Typography sx={{ mr: 1 }}>{t("water_ingress")}</Typography>
         {isEditable && (
-          <Tooltip title={t("add")}>
-            <AddCircleIcon
-              data-cy="add-wateringress-button"
-              color={selectedWaterIngress === null ? "black" : "disabled"}
-              onClick={e => {
-                e.stopPropagation();
-                if (selectedWaterIngress === null) {
-                  const tempWaterIngress = { id: 0 };
-                  setDisplayedWaterIngresses([
-                    ...waterIngresses,
-                    tempWaterIngress,
-                  ]);
-                  setSelectedWaterIngress(tempWaterIngress);
-                }
-              }}
-            />
-          </Tooltip>
+          <>
+            <Typography sx={{ mr: 1 }}>{t("water_ingress")}</Typography>
+            <Tooltip title={t("add")}>
+              <AddCircleIcon
+                data-cy="add-wateringress-button"
+                color={selectedWaterIngress === null ? "black" : "disabled"}
+                onClick={e => {
+                  e.stopPropagation();
+                  if (selectedWaterIngress === null) {
+                    const tempWaterIngress = { id: 0 };
+                    setDisplayedWaterIngresses([
+                      ...waterIngresses,
+                      tempWaterIngress,
+                    ]);
+                    setSelectedWaterIngress(tempWaterIngress);
+                  }
+                }}
+              />
+            </Tooltip>
+          </>
         )}
       </Stack>
       {displayedWaterIngresses?.length === 0 && (

@@ -93,18 +93,32 @@ const WaterIngressInput = props => {
   };
 
   // styled components
-  const TextfieldNoMargin = styled(TextField)(() => ({
-    flex: "1",
-  }));
-
-  const TextfieldWithMarginRight = forwardRef((props, ref) => {
-    // the ref needs to be manually forwarded with custom components, the native TextField component would handle the forwarding internally.
+  const TextfieldNoMargin = forwardRef((props, ref) => {
+    // the ref and children needs to be manually forwarded with custom components, the native TextField component would handle the forwarding internally.
     const StyledTextField = styled(TextField)(() => ({
       flex: "1",
+      marginTop: "10px",
+    }));
+
+    return (
+      <StyledTextField ref={ref} {...props}>
+        {props.children}
+      </StyledTextField>
+    );
+  });
+
+  const TextfieldWithMarginRight = forwardRef((props, ref) => {
+    const StyledTextField = styled(TextField)(() => ({
+      flex: "1",
+      marginTop: "10px",
       marginRight: "10px",
     }));
 
-    return <StyledTextField ref={ref} {...props} />;
+    return (
+      <StyledTextField ref={ref} {...props}>
+        {props.children}
+      </StyledTextField>
+    );
   });
 
   return (
@@ -154,7 +168,9 @@ const WaterIngressInput = props => {
                   )}
                 />
               </FormControl>
-              <FormControl variant="outlined" sx={{ flex: "1" }}>
+              <FormControl
+                variant="outlined"
+                sx={{ flex: "1", marginRight: "10px" }}>
                 <Controller
                   name="conditionsId"
                   control={control}
@@ -199,7 +215,7 @@ const WaterIngressInput = props => {
                 defaultValue={waterIngress.fromDepthM}
                 variant="outlined"
               />
-              <TextfieldNoMargin
+              <TextfieldWithMarginRight
                 {...register("toDepthM", {
                   valueAsNumber: true,
                 })}
@@ -224,7 +240,7 @@ const WaterIngressInput = props => {
                 defaultValue={waterIngress.fromDepthMasl}
                 variant="outlined"
               />
-              <TextfieldNoMargin
+              <TextfieldWithMarginRight
                 {...register("toDepthMasl", {
                   valueAsNumber: true,
                 })}
@@ -237,32 +253,23 @@ const WaterIngressInput = props => {
               />
             </Stack>
             <Stack direction="row">
-              <Controller
-                name="startTime"
-                control={control}
+              <TextfieldWithMarginRight
+                {...register("startTime", { required: true })}
+                type="datetime-local"
+                data-cy="start-time-textfield"
+                label={t("startTime")}
+                variant="outlined"
+                size="small"
+                error={Boolean(errors.startTime)}
                 defaultValue={formatDateForDatetimeLocal(
                   waterIngress.startTime,
                 )}
-                rules={{ required: true }}
-                render={({ field }) => (
-                  <TextfieldWithMarginRight
-                    {...field}
-                    type="datetime-local"
-                    data-cy="start-time-textfield"
-                    label={t("startTime")}
-                    variant="outlined"
-                    size="small"
-                    error={Boolean(errors.startTime)}
-                    InputLabelProps={{ shrink: true }}
-                    onChange={e => {
-                      e.stopPropagation();
-                      field.onChange(e.target.value);
-                      trigger();
-                    }}
-                  />
-                )}
+                InputLabelProps={{ shrink: true }}
+                onBlur={() => {
+                  trigger("startTime");
+                }}
               />
-              <TextfieldNoMargin
+              <TextfieldWithMarginRight
                 {...register("endTime")}
                 type="datetime-local"
                 size="small"
@@ -275,7 +282,7 @@ const WaterIngressInput = props => {
             </Stack>
             <Stack direction="row">
               <FormControl
-                sx={{ flex: "1", marginRight: "10px" }}
+                sx={{ flex: "1", marginRight: "10px", marginTop: "10px" }}
                 variant="outlined">
                 <Controller
                   name="reliabilityId"
@@ -331,7 +338,12 @@ const WaterIngressInput = props => {
             <Stack direction="row">
               <FormControl
                 variant="outlined"
-                sx={{ flex: "1", marginRight: "10px" }}>
+                sx={{
+                  flex: "1",
+                  marginRight: "15px",
+                  marginTop: "10px",
+                  marginBottom: "10px",
+                }}>
                 <Controller
                   name="casingId"
                   control={control}
@@ -375,6 +387,7 @@ const WaterIngressInput = props => {
               rows={3}
               defaultValue={waterIngress.comment}
               variant="outlined"
+              sx={{ paddingRight: "10px" }}
             />
           </Stack>
           <Box sx={{ marginLeft: "auto" }}>
