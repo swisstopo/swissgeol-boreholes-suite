@@ -91,9 +91,9 @@ public class BoreholeFileUploadService
             // Link file to the borehole.
             if (!context.BoreholeFiles.Any(bf => bf.BoreholeId == boreholeId && bf.FileId == fileId))
             {
-                var boreHoleFile = new BoreholeFile { FileId = (int)fileId, BoreholeId = boreholeId, UserId = user.Id, Attached = DateTime.Now.ToUniversalTime() };
+                var boreholeFile = new BoreholeFile { FileId = (int)fileId, BoreholeId = boreholeId, UserId = user.Id, Attached = DateTime.UtcNow };
 
-                await context.BoreholeFiles.AddAsync(boreHoleFile).ConfigureAwait(false);
+                await context.BoreholeFiles.AddAsync(boreholeFile).ConfigureAwait(false);
                 await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext).ConfigureAwait(false);
             }
 
