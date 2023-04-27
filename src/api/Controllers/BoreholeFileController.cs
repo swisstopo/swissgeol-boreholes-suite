@@ -85,6 +85,7 @@ public class BoreholeFileController : ControllerBase
         if (boreholeId == 0) return BadRequest("No boreholeId provided.");
 
         return await context.BoreholeFiles
+            .Include(bf => bf.File)
             .Where(bf => bf.BoreholeId == boreholeId)
             .AsNoTracking()
             .ToListAsync()

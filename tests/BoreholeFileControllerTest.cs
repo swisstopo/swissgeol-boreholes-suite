@@ -130,14 +130,9 @@ public class BoreholeFileControllerTest
 
         // Get boreholeFiles of borehole from controller
         var boreholeFilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
-        var boreholeFileIds = boreholeFilesOfBorehole.Value?.Select(bf => bf.FileId).ToList();
 
-        // BoreholeFiles from db
-        var boreholeFilesInDb = await context.BoreholeFiles.Include(bf => bf.File).Where(bf => boreholeFileIds.Contains(bf.FileId)).ToListAsync();
-
-        // Get files from database
-        var firstBoreholeFile = boreholeFilesInDb.FirstOrDefault(bf => bf.File.Name == firstFileName);
-        var secondBoreholeFile = boreholeFilesInDb.FirstOrDefault(bf => bf.File.Name == secondFileName);
+        var firstBoreholeFile = boreholeFilesOfBorehole.Value?.FirstOrDefault(bf => bf.File.Name == firstFileName);
+        var secondBoreholeFile = boreholeFilesOfBorehole.Value?.FirstOrDefault(bf => bf.File.Name == secondFileName);
 
         Assert.AreEqual(firstBoreholeFile.File.Name, firstFileName);
         Assert.AreEqual(secondBoreholeFile.File.Name, secondFileName);
