@@ -9,6 +9,7 @@ using Minio.Exceptions;
 using Moq;
 using System.Net;
 using System.Reactive.Linq;
+using System.Security.Claims;
 using System.Text;
 using static BDMS.Helpers;
 
@@ -28,9 +29,12 @@ public class BoreholeFileControllerTest
 
         context = ContextFactory.CreateContext();
 
+        var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
+        contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
+        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, context.Users.FirstOrDefault().Name) }));
         var boreholeFileUploadServiceLoggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
         boreholeFileUploadServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, boreholeFileUploadServiceLoggerMock.Object);
+        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, boreholeFileUploadServiceLoggerMock.Object, contextAccessorMock.Object);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
@@ -47,9 +51,12 @@ public class BoreholeFileControllerTest
     [TestMethod]
     public async Task UploadAndDownload()
     {
+        var user = context.Users.FirstOrDefault();
+
+        var fileName = $"{Guid.NewGuid()}.pdf";
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
         var content = Guid.NewGuid().ToString();
-        var firstPdfFormFile = GetFormFileByContent(content, "file_1.pdf");
+        var firstPdfFormFile = GetFormFileByContent(content, fileName);
 
         // Upload
         IActionResult response = await controller.Upload(firstPdfFormFile, minBoreholeId);
@@ -66,6 +73,22 @@ public class BoreholeFileControllerTest
         var fileContentResult = (FileContentResult)response;
         string contentResult = Encoding.ASCII.GetString(fileContentResult.FileContents);
         Assert.AreEqual(content, contentResult);
+
+        // Get file
+        var file = context.Files.Single(f => f.Name == fileName);
+        Assert.AreNotEqual(null, file.Hash);
+        Assert.AreNotEqual(null, file.Created);
+        Assert.AreNotEqual(null, file.CreatedBy);
+        Assert.AreEqual(user.Id, file.CreatedById);
+
+        var boreholefile = context.BoreholeFiles.Single(bf => bf.FileId == boreholeFilesOfBorehole.Value.Last().FileId);
+        Assert.AreNotEqual(null, boreholefile.Created);
+        Assert.AreNotEqual(null, boreholefile.CreatedBy);
+        Assert.AreEqual(user.Id, boreholefile.CreatedById);
+        Assert.AreNotEqual(null, boreholefile.Updated);
+        Assert.AreNotEqual(null, boreholefile.UpdatedBy);
+        Assert.AreEqual(user.Id, boreholefile.UpdatedById);
+        Assert.AreNotEqual(null, boreholefile.Attached);
     }
 
     [TestMethod]

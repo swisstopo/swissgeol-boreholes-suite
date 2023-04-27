@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Minio;
@@ -26,9 +27,10 @@ public class BoreholeFileUploadServiceTest
 
         context = ContextFactory.CreateContext();
 
+        var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         var loggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
         loggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object);
+        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object, contextAccessorMock.Object);
 
         minioClient = new MinioClient()
             .WithEndpoint(configuration["S3:ENDPOINT"])

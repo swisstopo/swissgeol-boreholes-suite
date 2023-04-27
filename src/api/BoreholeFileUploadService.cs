@@ -1,6 +1,8 @@
 ﻿using BDMS.Models;
+using Microsoft.EntityFrameworkCore;
 using Minio;
 using Minio.Exceptions;
+using System.Security.Claims;
 using System.Security.Cryptography;
 
 namespace BDMS;
@@ -12,14 +14,16 @@ public class BoreholeFileUploadService
 {
     private readonly BdmsContext context;
     private readonly ILogger logger;
+    private readonly IHttpContextAccessor httpContextAccessor;
     private readonly string bucketName;
     private readonly string endpoint;
     private readonly string accessKey;
     private readonly string secretKey;
 
-    public BoreholeFileUploadService(BdmsContext context, IConfiguration configuration, ILogger<BoreholeFileUploadService> logger)
+    public BoreholeFileUploadService(BdmsContext context, IConfiguration configuration, ILogger<BoreholeFileUploadService> logger, IHttpContextAccessor httpContextAccessor)
     {
         this.logger = logger;
+        this.httpContextAccessor = httpContextAccessor;
         this.context = context;
         bucketName = configuration["S3:BUCKET_NAME"];
         endpoint = configuration["S3:ENDPOINT"];
@@ -50,6 +54,15 @@ public class BoreholeFileUploadService
         using var transaction = context.Database.BeginTransaction();
         try
         {
+            var userName = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+
+            var user = await context.Users
+                .AsNoTracking()
+                .SingleOrDefaultAsync(u => u.Name == userName)
+                .ConfigureAwait(false);
+
+            if (user == null || userName == null) throw new InvalidOperationException($"No user with username <{userName}> found.");
+
             // If file does not exist on storage, upload it and create file in database.
             if (fileId == null)
             {
@@ -59,7 +72,7 @@ public class BoreholeFileUploadService
                 var bdmsFile = new Models.File { Name = file.FileName, NameUuid = fileNameGuid, Hash = base64Hash, Type = file.ContentType, };
 
                 await context.Files.AddAsync(bdmsFile).ConfigureAwait(false);
-                await context.SaveChangesAsync().ConfigureAwait(false);
+                await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext).ConfigureAwait(false);
 
                 fileId = bdmsFile.Id;
 
@@ -78,10 +91,10 @@ public class BoreholeFileUploadService
             // Link file to the borehole.
             if (!context.BoreholeFiles.Any(bf => bf.BoreholeId == boreholeId && bf.FileId == fileId))
             {
-                var boreHolefile = new BoreholeFile { FileId = (int)fileId, BoreholeId = boreholeId, };
+                var boreHoleFile = new BoreholeFile { FileId = (int)fileId, BoreholeId = boreholeId, UserId = user.Id, Attached = DateTime.Now.ToUniversalTime() };
 
-                await context.BoreholeFiles.AddAsync(boreHolefile).ConfigureAwait(false);
-                await context.SaveChangesAsync().ConfigureAwait(false);
+                await context.BoreholeFiles.AddAsync(boreHoleFile).ConfigureAwait(false);
+                await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext).ConfigureAwait(false);
             }
 
             await transaction.CommitAsync().ConfigureAwait(false);
