@@ -92,7 +92,7 @@ const DescriptionInput = props => {
           <MenuItem value={d}>{d}</MenuItem>
         ))}
       </TextfieldWithMargin>
-      <TextfieldWithMargin
+      <TextField
         data-cy="description-textfield"
         label={t("description")}
         multiline
@@ -104,6 +104,7 @@ const DescriptionInput = props => {
         }}
         variant="outlined"
         type="text"
+        sx={{ flex: "1", margin: "10px" }}
       />
       <TextfieldWithMargin
         select
