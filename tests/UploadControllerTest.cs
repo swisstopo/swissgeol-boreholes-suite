@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Net;
+using System.Security.Claims;
 using static BDMS.Helpers;
 
 namespace BDMS;
@@ -32,12 +33,18 @@ public class UploadControllerTest
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<UploadController>>();
+
         loggerLocationServiceMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
-        loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
-        var loggerCloudStorageServiceMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
         var locationService = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
+
+        loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
         var coordinateService = new CoordinateService(loggerCoordinateServiceMock.Object, httpClientFactoryMock.Object);
-        var boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerCloudStorageServiceMock.Object);
+
+        var loggerBoreholeFileUploadService = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
+        var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
+        contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
+        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, context.Users.FirstOrDefault().Name) }));
+        var boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerBoreholeFileUploadService.Object, contextAccessorMock.Object);
 
         controller = new UploadController(ContextFactory.CreateContext(), loggerMock.Object, locationService, coordinateService, boreholeFileUploadService) { ControllerContext = GetControllerContextAdmin() };
     }
