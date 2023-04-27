@@ -47,7 +47,7 @@ const WaterIngressDisplay = props => {
 
   // styled components
   const TypographyWithBottomMargin = styled(Typography)(() => ({
-    marginBottom: 3.5,
+    marginBottom: 6,
   }));
   const StackFullWidth = styled(Stack)(() => ({
     width: "100%",
