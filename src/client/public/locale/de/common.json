@@ -404,5 +404,7 @@
   "hours": "Stunden",
   "minute": "Minute",
   "minutes": "Minuten",
-  "waterIngressRequiredFieldsAlert": "'Menge', 'Startzeitpunk' und 'Verlässlichkeit der Angaben' sind obligatorische Felder, der Eintrag kann nicht gespeichert werden, wenn sie nicht ausgefüllt sind."
+  "waterIngressRequiredFieldsAlert": "'Menge', 'Startzeitpunk' und 'Verlässlichkeit der Angaben' sind obligatorische Felder, der Eintrag kann nicht gespeichert werden, wenn sie nicht ausgefüllt sind.",
+  "hydrogeology": "Hydrogeologie",
+  "wateringress": "Wassereintritt"
 }

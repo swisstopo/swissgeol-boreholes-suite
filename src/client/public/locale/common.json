@@ -375,5 +375,7 @@
   "hours": "",
   "minute": "",
   "minutes": "",
-  "waterIngressRequiredFieldsAlert": ""
+  "waterIngressRequiredFieldsAlert": "",
+  "hydrogeology": "",
+  "wateringress": ""
 }

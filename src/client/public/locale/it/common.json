@@ -403,5 +403,7 @@
   "hours": "ore",
   "minute": "minuto",
   "minutes": "minuti",
-  "waterIngressRequiredFieldsAlert": "'Quantità', 'Ora di inizio' e 'Affidabilità delle informazioni' sono campi obbligatori, la voce non può essere salvata se non sono compilati."
+  "waterIngressRequiredFieldsAlert": "'Quantità', 'Ora di inizio' e 'Affidabilità delle informazioni' sono campi obbligatori, la voce non può essere salvata se non sono compilati.",
+  "hydrogeology": "idrogeologia",
+  "wateringress": "ingresso d'acqua"
 }
