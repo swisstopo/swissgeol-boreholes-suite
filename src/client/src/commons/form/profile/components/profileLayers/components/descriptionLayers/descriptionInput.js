@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { MenuItem, Stack, TextField } from "@mui/material";
-import { styled } from "@mui/system";
 import { useDomains } from "../../../../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 
@@ -68,15 +67,11 @@ const DescriptionInput = props => {
   }, [getFromDepthOptions, getToDepthOptions]);
 
   // styled
-  const TextfieldWithMargin = styled(TextField)(() => ({
-    flex: "1",
-    margin: "10px",
-  }));
-
   return (
     <Stack direction="column" sx={{ width: "100%" }}>
-      <TextfieldWithMargin
+      <TextField
         select
+        sx={{ flex: "1", margin: "10px" }}
         variant="outlined"
         size="small"
         label={t("layer_depth_from")}
@@ -91,7 +86,7 @@ const DescriptionInput = props => {
         {fromDepthOptions?.map(d => (
           <MenuItem value={d}>{d}</MenuItem>
         ))}
-      </TextfieldWithMargin>
+      </TextField>
       <TextField
         data-cy="description-textfield"
         label={t("description")}
@@ -106,19 +101,20 @@ const DescriptionInput = props => {
         type="text"
         sx={{ flex: "1", margin: "10px" }}
       />
-      <TextfieldWithMargin
+      <TextField
         select
+        sx={{ flex: "1", margin: "10px" }}
         variant="outlined"
         size="small"
         label={t("qt_description")}
-        defaultValue={item.qtDescriptionId}
+        defaultValue={item.qtDescriptionId || ""}
         data-cy="qt-decription-select"
         InputLabelProps={{ shrink: true }}
         onChange={e => {
           e.stopPropagation();
           setQtDescriptionId(e.target.value);
         }}>
-        <MenuItem value={0}>
+        <MenuItem value="">
           <em>{t("reset")}</em>
         </MenuItem>
         {domains?.data
@@ -126,24 +122,27 @@ const DescriptionInput = props => {
           .map(d => (
             <MenuItem value={d.id}>{d[i18n.language]}</MenuItem>
           ))}
-      </TextfieldWithMargin>
-      <TextfieldWithMargin
-        select
-        variant="outlined"
-        size="small"
-        label={t("layer_depth_from")}
-        defaultValue={item.toDepth}
-        disabled={toDepthOptions?.length === 1}
-        data-cy="to-depth-select"
-        InputLabelProps={{ shrink: true }}
-        onChange={e => {
-          e.stopPropagation();
-          setToDepth(e.target.value);
-        }}>
-        {toDepthOptions?.map(d => (
-          <MenuItem value={d}>{d}</MenuItem>
-        ))}
-      </TextfieldWithMargin>
+      </TextField>
+      {toDepthOptions?.length > 0 && (
+        <TextField
+          select
+          sx={{ flex: "1", margin: "10px" }}
+          variant="outlined"
+          size="small"
+          label={t("layer_depth_from")}
+          defaultValue={item.toDepth}
+          disabled={toDepthOptions?.length === 1}
+          data-cy="to-depth-select"
+          InputLabelProps={{ shrink: true }}
+          onChange={e => {
+            e.stopPropagation();
+            setToDepth(e.target.value);
+          }}>
+          {toDepthOptions?.map(d => (
+            <MenuItem value={d}>{d}</MenuItem>
+          ))}
+        </TextField>
+      )}
     </Stack>
   );
 };

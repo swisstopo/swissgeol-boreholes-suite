@@ -57,9 +57,14 @@ describe("Tests for the lithological description column.", () => {
       .type("A new description.");
 
     // fill quality dropdown
-    cy.get('[data-cy="qt-decription-select"]').click({ force: true });
+    cy.get('[data-cy="qt-decription-select"]')
+      .find('[role="button"]')
+      .click({ force: true });
 
-    cy.get('[role="listbox"]').find('[role="option"]').last().click();
+    cy.get('.MuiPaper-elevation [role="listbox"]')
+      .find('[role="option"]')
+      .last()
+      .click();
 
     // stop editing
     cy.get('[data-cy="description-0"] [data-testid="ClearIcon"]').click();
