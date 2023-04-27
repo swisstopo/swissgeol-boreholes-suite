@@ -403,5 +403,7 @@
   "hours": "heures",
   "minute": "minute",
   "minutes": "minutes",
-  "waterIngressRequiredFieldsAlert": "'Quantité', 'Heure de début' et 'Fiabilité des informations' sont des champs obligatoires, l'entrée ne peut pas être enregistrée si elles ne sont pas remplies."
+  "waterIngressRequiredFieldsAlert": "'Quantité', 'Heure de début' et 'Fiabilité des informations' sont des champs obligatoires, l'entrée ne peut pas être enregistrée si elles ne sont pas remplies.",
+  "hydrogeology": "hydrogéologie",
+  "wateringress": "entrée d'eau "
 }
