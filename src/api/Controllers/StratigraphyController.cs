@@ -22,6 +22,34 @@ public class StratigraphyController : ControllerBase
     }
 
     /// <summary>
+    /// Asynchronously gets the <see cref="Stratigraphy"/>s, optionally filtered by <paramref name="boreholeId"/> and <paramref name="kindId"/>.
+    /// </summary>
+    /// <param name="boreholeId">The id of the borehole containing the stratigraphies to get.</param>
+    /// <param name="kindId">The kind of the stratigraphies to get.</param>
+    [HttpGet]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult<IEnumerable<Stratigraphy>>> GetAsync([FromQuery] int? boreholeId = null, int? kindId = null)
+    {
+        var stratigraphies = context.Stratigraphies.AsNoTracking();
+        if (boreholeId != null)
+        {
+            stratigraphies = stratigraphies.Where(l => l.BoreholeId == boreholeId);
+        }
+
+        if (kindId != null)
+        {
+            stratigraphies = stratigraphies.Where(l => l.KindId == kindId);
+        }
+
+        if (!stratigraphies.Any())
+        {
+            return NotFound();
+        }
+
+        return await stratigraphies.ToListAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Asynchronously copies a <see cref="Stratigraphy"/>.
     /// </summary>
     /// <param name="id">The <see cref="Stratigraphy.Id"/> of the stratigraphy to copy.</param>
