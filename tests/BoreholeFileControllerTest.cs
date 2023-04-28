@@ -94,9 +94,10 @@ public class BoreholeFileControllerTest
     [TestMethod]
     public async Task DownloadFileShouldReturnDownloadedFile()
     {
+        var fileName = $"{Guid.NewGuid()}.pdf";
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
         var content = Guid.NewGuid().ToString();
-        var firstPdfFormFile = GetFormFileByContent(content, "file_1.pdf");
+        var firstPdfFormFile = GetFormFileByContent(content, fileName);
 
         // Upload
         await controller.Upload(firstPdfFormFile, minBoreholeId);
@@ -105,8 +106,12 @@ public class BoreholeFileControllerTest
         var boreholeFilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
         Assert.IsNotNull(boreholeFilesOfBorehole.Value);
 
+        // Get the uploaded borehole file in the response list
+        var uploadedBoreholeFile = boreholeFilesOfBorehole.Value.FirstOrDefault(bf => bf.File.Name == fileName);
+        Assert.IsNotNull(uploadedBoreholeFile);
+
         // Download uploaded file
-        var response = await controller.Download(boreholeFilesOfBorehole.Value.Last().FileId);
+        var response = await controller.Download(uploadedBoreholeFile.FileId);
         var fileContentResult = (FileContentResult)response;
         string contentResult = Encoding.ASCII.GetString(fileContentResult.FileContents);
         Assert.AreEqual(content, contentResult);

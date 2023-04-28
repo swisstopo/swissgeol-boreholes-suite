@@ -95,7 +95,7 @@ public class BoreholeFileController : ControllerBase
 
         var fileIds = boreholeFiles.Select(bf => bf.FileId).ToList();
 
-        // Get all files refred as borehole files.
+        // Get all files referenced by the borehole files.
         // Do not use .Include(f => f.BoreholeFiles) here, as it will cause a object cycling.
         var files = await context.Files
             .Where(f => fileIds.Any(id => id == f.Id))
