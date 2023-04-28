@@ -245,7 +245,7 @@ const DescriptionLayers = props => {
                   boxShadow:
                     "inset -1px 0 0 lightgrey, inset 0 -1px 0 lightgrey",
                   flex: "1 1 100%",
-                  height: isItemSelected ? "16em" : calculatedHeight + "em",
+                  height: isItemSelected ? "auto" : calculatedHeight + "em",
                   overflowY: "auto",
                   padding: "5px",
                   backgroundColor:
@@ -280,7 +280,7 @@ const DescriptionLayers = props => {
                         setToDepth={setToDepth}
                         setQtDescriptionId={setQtDescriptionId}
                         selectableDepths={selectableDepths}
-                        lithologicalDescriptions={descriptions}
+                        descriptions={descriptions}
                         item={item}
                         updateMutation={updateMutation}
                         selectItem={selectItem}

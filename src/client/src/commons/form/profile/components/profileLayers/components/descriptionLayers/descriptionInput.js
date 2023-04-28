@@ -1,17 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
-import {
-  MenuItem,
-  FormControl,
-  Select,
-  InputLabel,
-  Input,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { MenuItem, Stack, TextField } from "@mui/material";
 import { useDomains } from "../../../../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 
-const LithologicalDescriptionInput = props => {
+const DescriptionInput = props => {
   const {
     item,
     setFromDepth,
@@ -19,7 +11,7 @@ const LithologicalDescriptionInput = props => {
     setToDepth,
     setQtDescriptionId,
     selectableDepths,
-    lithologicalDescriptions,
+    descriptions,
   } = props;
   const [fromDepthOptions, setFromDepthOptions] = useState();
   const [toDepthOptions, setToDepthOptions] = useState();
@@ -28,13 +20,10 @@ const LithologicalDescriptionInput = props => {
   const domains = useDomains();
 
   const getFromDepthOptions = useCallback(() => {
-    const closestTopLayer =
-      lithologicalDescriptions[lithologicalDescriptions.indexOf(item) - 1];
+    const closestTopLayer = descriptions[descriptions.indexOf(item) - 1];
     // get all depths that are not yet in use and that are smaller than toDepth
     let options = selectableDepths.filter(
-      d =>
-        !lithologicalDescriptions.map(l => l.fromDepth).includes(d) &&
-        d < item.toDepth,
+      d => !descriptions.map(l => l.fromDepth).includes(d) && d < item.toDepth,
     );
     // only allow selecting depths in the gap above the layer
     if (closestTopLayer !== undefined) {
@@ -49,16 +38,13 @@ const LithologicalDescriptionInput = props => {
     // keep currently selected option
     options.push(item.fromDepth);
     return options.sort((a, b) => a - b);
-  }, [item, selectableDepths, lithologicalDescriptions]);
+  }, [item, selectableDepths, descriptions]);
 
   const getToDepthOptions = useCallback(() => {
-    const closestBottomLayer =
-      lithologicalDescriptions[lithologicalDescriptions.indexOf(item) + 1];
+    const closestBottomLayer = descriptions[descriptions.indexOf(item) + 1];
     // get all depths that are not yet in use and that are greater than fromDepth
     let options = selectableDepths.filter(
-      d =>
-        !lithologicalDescriptions.map(l => l.toDepth).includes(d) &&
-        d > item.fromDepth,
+      d => !descriptions.map(l => l.toDepth).includes(d) && d > item.fromDepth,
     );
     // only allow selecting depths in the gap below the layer
     if (closestBottomLayer !== undefined) {
@@ -73,74 +59,81 @@ const LithologicalDescriptionInput = props => {
     // keep currently selected option
     options.push(item.toDepth);
     return options.sort((a, b) => a - b);
-  }, [item, selectableDepths, lithologicalDescriptions]);
+  }, [item, selectableDepths, descriptions]);
 
   useEffect(() => {
     setFromDepthOptions(getFromDepthOptions());
     setToDepthOptions(getToDepthOptions());
   }, [getFromDepthOptions, getToDepthOptions]);
 
+  // styled
   return (
     <Stack direction="column" sx={{ width: "100%" }}>
-      <FormControl variant="standard" sx={{ minWidth: 120 }} size="small">
-        <InputLabel htmlFor="from-depth">{t("layer_depth_from")}</InputLabel>
-        <Select
-          disabled={fromDepthOptions?.length === 1}
-          data-cy="from-depth-select"
-          defaultValue={item.fromDepth}
-          input={<Input id="from-depth" />}
-          onChange={e => {
-            e.stopPropagation();
-            setFromDepth(e.target.value);
-          }}>
-          {fromDepthOptions?.map(d => (
-            <MenuItem value={d}>{d}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <TextField
+        select
+        sx={{ flex: "1", margin: "10px" }}
+        variant="outlined"
+        size="small"
+        label={t("layer_depth_from")}
+        defaultValue={item.fromDepth}
+        disabled={fromDepthOptions?.length === 1}
+        data-cy="from-depth-select"
+        InputLabelProps={{ shrink: true }}
+        onChange={e => {
+          e.stopPropagation();
+          setFromDepth(e.target.value);
+        }}>
+        {fromDepthOptions?.map(d => (
+          <MenuItem value={d}>{d}</MenuItem>
+        ))}
+      </TextField>
       <TextField
         data-cy="description-textfield"
         label={t("description")}
         multiline
         rows={3}
-        placeholder={t("description")}
-        hiddenLabel
+        size="small"
         defaultValue={item.description ?? ""}
         onChange={e => {
           setDescription(e.target.value);
         }}
-        variant="standard"
+        variant="outlined"
         type="text"
-        size="small"
-        sx={{ overflow: "auto" }}
+        sx={{ flex: "1", margin: "10px" }}
       />
-      <FormControl variant="standard" sx={{ minWidth: 120 }} size="small">
-        <InputLabel htmlFor="qt-description">{t("qt_description")}</InputLabel>
-        <Select
-          data-cy="qt-decription-select"
-          defaultValue={item.qtDescriptionId}
-          input={<Input id="qt-description" />}
-          onChange={e => {
-            e.stopPropagation();
-            setQtDescriptionId(e.target.value);
-          }}>
-          <MenuItem value="">
-            <em>{t("reset")}</em>
-          </MenuItem>
-          {domains?.data
-            ?.filter(d => d.schema === "qt_description")
-            .map(d => (
-              <MenuItem value={d.id}>{d[i18n.language]}</MenuItem>
-            ))}
-        </Select>
-      </FormControl>
-      <FormControl variant="standard" sx={{ minWidth: 120 }} size="small">
-        <InputLabel htmlFor="to-depth">{t("layer_depth_to")}</InputLabel>
-        <Select
+      <TextField
+        select
+        sx={{ flex: "1", margin: "10px" }}
+        variant="outlined"
+        size="small"
+        label={t("qt_description")}
+        defaultValue={item.qtDescriptionId || ""}
+        data-cy="qt-decription-select"
+        InputLabelProps={{ shrink: true }}
+        onChange={e => {
+          e.stopPropagation();
+          setQtDescriptionId(e.target.value);
+        }}>
+        <MenuItem value="">
+          <em>{t("reset")}</em>
+        </MenuItem>
+        {domains?.data
+          ?.filter(d => d.schema === "qt_description")
+          .map(d => (
+            <MenuItem value={d.id}>{d[i18n.language]}</MenuItem>
+          ))}
+      </TextField>
+      {toDepthOptions?.length > 0 && (
+        <TextField
+          select
+          sx={{ flex: "1", margin: "10px" }}
+          variant="outlined"
+          size="small"
+          label={t("layer_depth_from")}
+          defaultValue={item.toDepth}
           disabled={toDepthOptions?.length === 1}
           data-cy="to-depth-select"
-          defaultValue={item.toDepth}
-          input={<Input id="to-depth" />}
+          InputLabelProps={{ shrink: true }}
           onChange={e => {
             e.stopPropagation();
             setToDepth(e.target.value);
@@ -148,9 +141,9 @@ const LithologicalDescriptionInput = props => {
           {toDepthOptions?.map(d => (
             <MenuItem value={d}>{d}</MenuItem>
           ))}
-        </Select>
-      </FormControl>
+        </TextField>
+      )}
     </Stack>
   );
 };
-export default LithologicalDescriptionInput;
+export default DescriptionInput;
