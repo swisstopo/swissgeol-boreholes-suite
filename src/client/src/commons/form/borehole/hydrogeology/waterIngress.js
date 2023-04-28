@@ -56,28 +56,28 @@ const WaterIngress = props => {
   return (
     <Stack sx={{ flexGrow: 1 }}>
       <Stack direction="row" sx={{ mb: 2 }}>
-        {isEditable && (
-          <>
-            <Typography sx={{ mr: 1 }}>{t("water_ingress")}</Typography>
-            <Tooltip title={t("add")}>
-              <AddCircleIcon
-                data-cy="add-wateringress-button"
-                color={selectedWaterIngress === null ? "black" : "disabled"}
-                onClick={e => {
-                  e.stopPropagation();
-                  if (selectedWaterIngress === null) {
-                    const tempWaterIngress = { id: 0 };
-                    setDisplayedWaterIngresses([
-                      ...waterIngresses,
-                      tempWaterIngress,
-                    ]);
-                    setSelectedWaterIngress(tempWaterIngress);
-                  }
-                }}
-              />
-            </Tooltip>
-          </>
-        )}
+        <Stack
+          direction="row"
+          sx={{ visibility: isEditable ? "visible" : "hidden" }}>
+          <Typography sx={{ mr: 1 }}>{t("water_ingress")}</Typography>
+          <Tooltip title={t("add")}>
+            <AddCircleIcon
+              data-cy="add-wateringress-button"
+              color={selectedWaterIngress === null ? "black" : "disabled"}
+              onClick={e => {
+                e.stopPropagation();
+                if (selectedWaterIngress === null) {
+                  const tempWaterIngress = { id: 0 };
+                  setDisplayedWaterIngresses([
+                    ...waterIngresses,
+                    tempWaterIngress,
+                  ]);
+                  setSelectedWaterIngress(tempWaterIngress);
+                }
+              }}
+            />
+          </Tooltip>
+        </Stack>
       </Stack>
       {displayedWaterIngresses?.length === 0 && (
         <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
@@ -95,37 +95,43 @@ const WaterIngress = props => {
         {displayedWaterIngresses?.length > 0 &&
           displayedWaterIngresses
             ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
-            .map((waterIngress, index) => (
-              <Grid
-                item
-                md={12}
-                lg={12}
-                xl={6}
-                key={index}
-                ref={waterIngressRefs[index]}>
-                {isSuccess ? (
-                  selectedWaterIngress?.id !== waterIngress.id ? (
-                    <WaterIngressDisplay
-                      waterIngress={waterIngress}
-                      selectedWaterIngress={selectedWaterIngress}
-                      setSelectedWaterIngress={setSelectedWaterIngress}
-                      isEditable={isEditable}
-                      deleteWaterIngress={deleteWaterIngress}
-                    />
+            .map((waterIngress, index) => {
+              const isSelected = selectedWaterIngress?.id === waterIngress.id;
+              const isTempWateringress = waterIngress.id === 0;
+              return (
+                <Grid
+                  item
+                  md={12}
+                  lg={12}
+                  xl={6}
+                  key={index}
+                  ref={waterIngressRefs[index]}>
+                  {isSuccess ? (
+                    isEditable && isSelected ? (
+                      <WaterIngressInput
+                        waterIngress={waterIngress}
+                        setSelectedWaterIngress={setSelectedWaterIngress}
+                        updateWaterIngress={updateWaterIngress}
+                        addWaterIngress={addWaterIngress}
+                        boreholeId={boreholeId}
+                      />
+                    ) : (
+                      !isTempWateringress && (
+                        <WaterIngressDisplay
+                          waterIngress={waterIngress}
+                          selectedWaterIngress={selectedWaterIngress}
+                          setSelectedWaterIngress={setSelectedWaterIngress}
+                          isEditable={isEditable}
+                          deleteWaterIngress={deleteWaterIngress}
+                        />
+                      )
+                    )
                   ) : (
-                    <WaterIngressInput
-                      waterIngress={waterIngress}
-                      setSelectedWaterIngress={setSelectedWaterIngress}
-                      updateWaterIngress={updateWaterIngress}
-                      addWaterIngress={addWaterIngress}
-                      boreholeId={boreholeId}
-                    />
-                  )
-                ) : (
-                  <CircularProgress />
-                )}
-              </Grid>
-            ))}
+                    <CircularProgress />
+                  )}
+                </Grid>
+              );
+            })}
       </Grid>
     </Stack>
   );
