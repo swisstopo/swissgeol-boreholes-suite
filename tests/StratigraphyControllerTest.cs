@@ -38,6 +38,42 @@ public class StratigraphyControllerTest
     }
 
     [TestMethod]
+    public async Task GetAsyncReturnsAllEntities()
+    {
+        var response = await controller.GetAsync();
+        Assert.IsNotNull(response);
+        var result = response.Value!;
+        Assert.AreEqual(10000, result.Count());
+    }
+
+    [TestMethod]
+    public async Task GetEntriesByBoreholeIdForInexistentId()
+    {
+        var response = await controller.GetAsync(81294572).ConfigureAwait(false);
+        var notFoundResult = response.Result as NotFoundResult;
+        Assert.AreEqual(404, notFoundResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task GetCasingsByBoreholeId()
+    {
+        var response = await controller.GetAsync(1000017, 3002).ConfigureAwait(false);
+        IEnumerable<Stratigraphy>? stratigraphies = response.Value;
+        Assert.IsNotNull(stratigraphies);
+        Assert.AreEqual(1, stratigraphies.Count());
+        var stratigraphy = stratigraphies.Single();
+
+        Assert.AreEqual(stratigraphy.BoreholeId, 1000017);
+        Assert.AreEqual(stratigraphy.CreatedById, 2);
+        Assert.AreEqual(stratigraphy.FillCasingId, 6000009);
+        Assert.AreEqual(stratigraphy.IsPrimary, true);
+        Assert.AreEqual(stratigraphy.KindId, 3002);
+        Assert.AreEqual(stratigraphy.Name, "Alessandro Bergstrom");
+        Assert.AreEqual(stratigraphy.Notes, "I saw one of these in Tanzania and I bought one.");
+        Assert.AreEqual(stratigraphy.UpdatedById, 2);
+    }
+
+    [TestMethod]
     public async Task Copy()
     {
         Stratigraphy? copiedStratigraphy = null;

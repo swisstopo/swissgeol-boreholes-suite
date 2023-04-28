@@ -6,15 +6,12 @@ import {
   Checkbox,
   FormControlLabel,
   FormControl,
-  InputLabel,
-  Input,
   MenuItem,
-  Select,
   Stack,
   TextField,
   Tooltip,
 } from "@mui/material";
-import { useDomains } from "../../../../api/fetchApiV2";
+import { useDomains, useCasings } from "../../../../api/fetchApiV2";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useTranslation } from "react-i18next";
 import { AlertContext } from "../../../alert/alertContext";
@@ -29,6 +26,7 @@ const WaterIngressInput = props => {
     updateWaterIngress,
   } = props;
   const domains = useDomains();
+  const casings = useCasings(boreholeId);
   const { t, i18n } = useTranslation();
   const {
     register,
@@ -66,6 +64,9 @@ const WaterIngressInput = props => {
           boreholeId: boreholeId,
         });
       } else {
+        delete waterIngress.casing;
+        delete waterIngress.quantity;
+        delete waterIngress.reliability;
         updateWaterIngress({ ...waterIngress, ...data });
       }
     } else {
@@ -92,20 +93,32 @@ const WaterIngressInput = props => {
   };
 
   // styled components
-  const TextfieldNoMargin = styled(TextField)(() => ({
-    flex: "1",
-    overflow: "auto",
-  }));
-
-  const TextfieldWithMarginRight = forwardRef((props, ref) => {
-    // the ref needs to be manually forwarded with custom components, the native TextField component would handle the forwarding internally.
+  const TextfieldNoMargin = forwardRef((props, ref) => {
+    // the ref and children needs to be manually forwarded with custom components, the native TextField component would handle the forwarding internally.
     const StyledTextField = styled(TextField)(() => ({
       flex: "1",
-      marginRight: "10px",
-      overflow: "auto",
+      marginTop: "10px",
     }));
 
-    return <StyledTextField ref={ref} {...props} />;
+    return (
+      <StyledTextField ref={ref} {...props}>
+        {props.children}
+      </StyledTextField>
+    );
+  });
+
+  const TextfieldWithMarginRight = forwardRef((props, ref) => {
+    const StyledTextField = styled(TextField)(() => ({
+      flex: "1",
+      marginTop: "10px",
+      marginRight: "10px",
+    }));
+
+    return (
+      <StyledTextField ref={ref} {...props}>
+        {props.children}
+      </StyledTextField>
+    );
   });
 
   return (
@@ -122,20 +135,23 @@ const WaterIngressInput = props => {
           <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
             <Stack direction="row">
               <FormControl
-                variant="standard"
+                variant="outlined"
                 sx={{ flex: "1", marginRight: "10px" }}>
-                <InputLabel htmlFor="quantity">{t("quantity")}</InputLabel>
                 <Controller
                   name="quantityId"
                   control={control}
                   defaultValue={waterIngress.quantityId}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <Select
+                    <TextField
+                      {...field}
+                      select
+                      size="small"
+                      label={t("quantity")}
+                      variant="outlined"
                       value={field.value || ""}
                       data-cy="quantity-select"
                       error={Boolean(errors.quantityId)}
-                      input={<Input id="quantity" />}
                       onChange={e => {
                         e.stopPropagation();
                         field.onChange(e.target.value);
@@ -148,21 +164,26 @@ const WaterIngressInput = props => {
                             {d[i18n.language]}
                           </MenuItem>
                         ))}
-                    </Select>
+                    </TextField>
                   )}
                 />
               </FormControl>
-              <FormControl variant="standard" sx={{ flex: "1" }}>
-                <InputLabel htmlFor="conditions">{t("conditions")}</InputLabel>
+              <FormControl
+                variant="outlined"
+                sx={{ flex: "1", marginRight: "10px" }}>
                 <Controller
                   name="conditionsId"
                   control={control}
                   defaultValue={waterIngress.conditionsId}
                   render={({ field }) => (
-                    <Select
+                    <TextField
+                      {...field}
+                      select
+                      label={t("conditions")}
+                      variant="outlined"
+                      size="small"
                       value={field.value || ""}
                       data-cy="conditions-select"
-                      input={<Input id="conditions" />}
                       onChange={e => {
                         e.stopPropagation();
                         field.onChange(e.target.value);
@@ -177,7 +198,7 @@ const WaterIngressInput = props => {
                             {d[i18n.language]}
                           </MenuItem>
                         ))}
-                    </Select>
+                    </TextField>
                   )}
                 />
               </FormControl>
@@ -188,20 +209,23 @@ const WaterIngressInput = props => {
                   valueAsNumber: true,
                 })}
                 type="number"
+                size="small"
                 data-cy="depth-from-m-textfield"
                 label={t("fromDepthM")}
                 defaultValue={waterIngress.fromDepthM}
-                variant="standard"
+                variant="outlined"
               />
-              <TextfieldNoMargin
+              <TextfieldWithMarginRight
                 {...register("toDepthM", {
                   valueAsNumber: true,
                 })}
                 type="number"
+                size="small"
                 data-cy="depth-to-m-textfield"
                 label={t("toDepthM")}
                 defaultValue={waterIngress.toDepthM}
-                variant="standard"
+                variant="outlined"
+                InputLabelProps={{ shrink: true }}
               />
             </Stack>
             <Stack direction="row">
@@ -210,75 +234,71 @@ const WaterIngressInput = props => {
                   valueAsNumber: true,
                 })}
                 type="number"
+                size="small"
                 data-cy="depth-from-m-textfield"
                 label={t("fromDepthMasl")}
                 defaultValue={waterIngress.fromDepthMasl}
-                variant="standard"
+                variant="outlined"
               />
-              <TextfieldNoMargin
+              <TextfieldWithMarginRight
                 {...register("toDepthMasl", {
                   valueAsNumber: true,
                 })}
                 type="number"
+                size="small"
                 data-cy="depth-to-masl-textfield"
                 label={t("toDepthMasl")}
                 defaultValue={waterIngress.toDepthMasl}
-                variant="standard"
+                variant="outlined"
               />
             </Stack>
             <Stack direction="row">
-              <Controller
-                name="startTime"
-                control={control}
+              <TextfieldWithMarginRight
+                {...register("startTime", { required: true })}
+                type="datetime-local"
+                data-cy="start-time-textfield"
+                label={t("startTime")}
+                variant="outlined"
+                size="small"
+                error={Boolean(errors.startTime)}
                 defaultValue={formatDateForDatetimeLocal(
                   waterIngress.startTime,
                 )}
-                rules={{ required: true }}
-                render={({ field }) => (
-                  <TextfieldWithMarginRight
-                    {...field}
-                    type="datetime-local"
-                    data-cy="start-time-textfield"
-                    label={t("startTime")}
-                    variant="standard"
-                    error={Boolean(errors.startTime)}
-                    InputLabelProps={{ shrink: true }}
-                    onChange={e => {
-                      e.stopPropagation();
-                      field.onChange(e.target.value);
-                      trigger();
-                    }}
-                  />
-                )}
+                InputLabelProps={{ shrink: true }}
+                onBlur={() => {
+                  trigger("startTime");
+                }}
               />
-              <TextfieldNoMargin
+              <TextfieldWithMarginRight
                 {...register("endTime")}
                 type="datetime-local"
+                size="small"
                 data-cy="end-time-textfield"
                 label={t("endTime")}
                 defaultValue={formatDateForDatetimeLocal(waterIngress.endTime)}
-                variant="standard"
+                variant="outlined"
                 InputLabelProps={{ shrink: true }}
               />
             </Stack>
             <Stack direction="row">
               <FormControl
-                sx={{ flex: "1", marginRight: "10px" }}
-                variant="standard">
-                <InputLabel htmlFor="reliability">
-                  {t("reliability")}
-                </InputLabel>
+                sx={{ flex: "1", marginRight: "10px", marginTop: "10px" }}
+                variant="outlined">
                 <Controller
                   name="reliabilityId"
                   control={control}
                   defaultValue={waterIngress.reliabilityId}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <Select
+                    <TextField
+                      {...field}
+                      select
+                      size="small"
+                      label={t("reliability")}
+                      variant="outlined"
                       value={field.value || ""}
                       data-cy="reliability-select"
                       error={Boolean(errors.reliabilityId)}
-                      input={<Input id="reliability" />}
                       onChange={e => {
                         e.stopPropagation();
                         field.onChange(e.target.value);
@@ -291,14 +311,13 @@ const WaterIngressInput = props => {
                             {d[i18n.language]}
                           </MenuItem>
                         ))}
-                    </Select>
+                    </TextField>
                   )}
                 />
               </FormControl>
               <FormControlLabel
                 sx={{
                   flex: "1",
-                  paddingLeft: "10px",
                 }}
                 control={
                   <Controller
@@ -316,15 +335,59 @@ const WaterIngressInput = props => {
                 label="Ausbau fertiggestellt"
               />
             </Stack>
+            <Stack direction="row">
+              <FormControl
+                variant="outlined"
+                sx={{
+                  flex: "1",
+                  marginRight: "15px",
+                  marginTop: "10px",
+                  marginBottom: "10px",
+                }}>
+                <Controller
+                  name="casingId"
+                  control={control}
+                  defaultValue={waterIngress.casingId}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      select
+                      size="small"
+                      label={t("casing")}
+                      variant="outlined"
+                      value={field.value || ""}
+                      data-cy="casing-select"
+                      disabled={!casings?.data?.length}
+                      onChange={e => {
+                        e.stopPropagation();
+                        field.onChange(e.target.value);
+                        trigger();
+                      }}>
+                      <MenuItem key="0" value={null}>
+                        <em>{t("reset")}</em>
+                      </MenuItem>
+                      {casings?.data?.map(d => (
+                        <MenuItem key={d.id} value={d.id}>
+                          {d.name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  )}
+                />
+              </FormControl>
+              <div style={{ flex: "1" }} />
+            </Stack>
             <TextfieldNoMargin
               {...register("comment")}
               type="text"
+              size="small"
               data-cy="comment-textfield"
               label={t("comment")}
               multiline
               rows={3}
               defaultValue={waterIngress.comment}
-              variant="standard"
+              variant="outlined"
+              sx={{ paddingRight: "10px" }}
             />
           </Stack>
           <Box sx={{ marginLeft: "auto" }}>

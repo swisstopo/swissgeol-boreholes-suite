@@ -7,7 +7,7 @@ RUN apt-get -y install git vim curl htop python3 python3-pip
 RUN mkdir -p /app/src/client
 WORKDIR /app/src/client
 
-COPY ./package.json ./package-lock.json ./
+COPY ./package.json ./package-lock.json ./server.js ./
 RUN npm install
 
 # Build docs
@@ -24,12 +24,16 @@ ARG REVISION
 ENV REACT_APP_VERSION ${VERSION}+${REVISION}
 RUN apt-get -y update
 RUN apt-get -y install git
-RUN npm install -g serve
+
 RUN mkdir /app
 WORKDIR /app
+
 COPY --from=development /app/src/client/node_modules /app/node_modules
 COPY --from=development /app/src/client/public/help /app/public/help
+COPY --from=development /app/src/client/server.js /app/server.js
+
 COPY . .
+
 RUN npm run build
 
 # Generate license and copyright notice for Node.js packages
@@ -37,4 +41,4 @@ RUN npx license-checker --json --production \
   --customPath licenseCustomFormat.json \
   --out /app/build/license.json
 
-ENTRYPOINT serve -s build --listen 3000
+ENTRYPOINT ["node", "server.js"]

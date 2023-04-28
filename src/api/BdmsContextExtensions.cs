@@ -95,7 +95,6 @@ public static class BdmsContextExtensions
         List<int> kirostIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
         List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
-        List<int> geologicalStratigraphyIds = context.Stratigraphies.Where(c => c.KindId == 3000).Select(s => s.Id).ToList();
         List<int> referenceElevationTypeIds = codelists.Where(c => c.Schema == "ibor117").Select(s => s.Id).ToList();
         List<int> waterIngressReliabilityIds = codelists.Where(c => c.Schema == "observ101").Select(s => s.Id).ToList();
         List<int> waterIngressQuantityIds = codelists.Where(c => c.Schema == "waing101").Select(s => s.Id).ToList();
@@ -558,7 +557,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.ReliabilityId, f => f.PickRandom(waterIngressReliabilityIds))
             .RuleFor(o => o.Reliability, _ => default!)
             .RuleFor(o => o.Type, _ => ObservationType.WaterIngress)
-            .RuleFor(o => o.CasingId, _ => null)
+            .RuleFor(o => o.CasingId, _ => GetStratigraphyOrCasingId(observation_ids, 12_000_000))
             .RuleFor(o => o.Casing, _ => default!)
             .RuleFor(o => o.Id, f => observation_ids++);
 

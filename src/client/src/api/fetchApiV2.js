@@ -77,6 +77,15 @@ export const fetchAllCodeLists = async () =>
 export const updateCodeLists = async codelist =>
   await fetchApiV2("codelist", "PUT", codelist);
 
+// casings
+export const fetchCasingsByBoreholeId = async boreholeId => {
+  const kindId = 3002; // casing kind
+  return await fetchApiV2(
+    `stratigraphy?kindId=${kindId}&boreholeId=${boreholeId}`,
+    "GET",
+  );
+};
+
 // lithological descriptions
 export const fetchLithologicalDescriptionsByProfileId = async profileId => {
   return await fetchApiV2(
@@ -175,6 +184,13 @@ export const useFaciesDescription = selectedStratigraphyID =>
   useQuery({
     queryKey: [faciesDescriptionQueryKey, selectedStratigraphyID],
     queryFn: () => fetchFaciesDescriptionsByProfileId(selectedStratigraphyID),
+  });
+
+export const casingKey = "casings";
+
+export const useCasings = boreholeId =>
+  useQuery([casingKey, boreholeId], () => {
+    return fetchCasingsByBoreholeId(boreholeId);
   });
 
 export const chronostratigraphiesQueryKey = "chronostratigraphies";
