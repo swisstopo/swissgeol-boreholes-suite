@@ -175,7 +175,12 @@ const WaterIngressDisplay = props => {
           </TypographyWithBottomMargin>
         </StackFullWidth>
         {isEditable && (
-          <Stack direction="row" sx={{ marginLeft: "auto" }}>
+          <Stack
+            direction="row"
+            sx={{
+              marginLeft: "auto",
+              visibility: isEditable ? "visible" : "hidden",
+            }}>
             <Tooltip title={t("edit")}>
               <ModeEditIcon
                 color={selectedWaterIngress ? "disabled" : "black"}
