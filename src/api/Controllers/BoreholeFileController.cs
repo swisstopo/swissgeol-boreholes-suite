@@ -84,12 +84,32 @@ public class BoreholeFileController : ControllerBase
     {
         if (boreholeId == 0) return BadRequest("No boreholeId provided.");
 
-        return await context.BoreholeFiles
-            .Include(bf => bf.File)
+        // Get all BoreholeFiles that are linked to the borehole.
+        // Do not use .Include(bf => bf.File) here, as it will cause a object cycling.
+        var boreholeFiles = await context.BoreholeFiles
+            .Include(bf => bf.User)
             .Where(bf => bf.BoreholeId == boreholeId)
             .AsNoTracking()
             .ToListAsync()
             .ConfigureAwait(false);
+
+        var fileIds = boreholeFiles.Select(bf => bf.FileId).ToList();
+
+        // Get all files refred as borehole files.
+        // Do not use .Include(f => f.BoreholeFiles) here, as it will cause a object cycling.
+        var files = await context.Files
+            .Where(f => fileIds.Any(id => id == f.Id))
+            .AsNoTracking()
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        // Set the File property of the BoreholeFile.
+        foreach (var boreholeFile in boreholeFiles)
+        {
+            boreholeFile.File = files.FirstOrDefault(f => f.Id == boreholeFile.FileId) ?? new Models.File();
+        }
+
+        return boreholeFiles;
     }
 
     /// <summary>

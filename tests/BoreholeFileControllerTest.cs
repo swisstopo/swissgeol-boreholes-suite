@@ -134,8 +134,12 @@ public class BoreholeFileControllerTest
         var firstBoreholeFile = boreholeFilesOfBorehole.Value?.FirstOrDefault(bf => bf.File.Name == firstFileName);
         var secondBoreholeFile = boreholeFilesOfBorehole.Value?.FirstOrDefault(bf => bf.File.Name == secondFileName);
 
-        Assert.AreEqual(firstBoreholeFile.File.Name, firstFileName);
-        Assert.AreEqual(secondBoreholeFile.File.Name, secondFileName);
+        Assert.AreEqual(firstFileName, firstBoreholeFile.File.Name);
+        Assert.AreEqual(null, firstBoreholeFile.File.BoreholeFiles);
+        Assert.AreEqual(defaultUser.Name, firstBoreholeFile.User.Name);
+        Assert.AreEqual(secondFileName, secondBoreholeFile.File.Name);
+        Assert.AreEqual(null, secondBoreholeFile.File.BoreholeFiles);
+        Assert.AreEqual(defaultUser.Name, secondBoreholeFile.User.Name);
         Assert.AreEqual(boreholeFilesBeforeUpload + 2, boreholeFilesOfBorehole.Value?.Count());
     }
 
