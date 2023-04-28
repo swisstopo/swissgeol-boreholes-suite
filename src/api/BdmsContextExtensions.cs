@@ -614,7 +614,13 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.MinValue, f => f.Random.Double(1, 5000))
             .RuleFor(o => o.MaxValue, f => f.Random.Double(1, 5000))
             .RuleFor(o => o.HydrotestId, f => f.PickRandom(hydrotests.Select(h => h.Id)))
-            .RuleFor(o => o.Hydrotest, _ => default!);
+            .RuleFor(o => o.Hydrotest, _ => default!)
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!);
 
         HydrotestResult SeededHydrotestResults(int seed) => fakeHydrotestResults.UseSeed(seed).Generate();
         context.BulkInsert(hydrotestResultRange.Select(SeededHydrotestResults).ToList(), bulkConfig);
