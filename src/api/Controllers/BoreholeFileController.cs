@@ -84,7 +84,7 @@ public class BoreholeFileController : ControllerBase
     {
         if (boreholeId == 0) return BadRequest("No boreholeId provided.");
 
-        // Get all BoreholeFiles that are linked to the borehole.
+        // Get all borehole files that are linked to the borehole.
         // Do not use .Include(bf => bf.File) here, as it will cause a object cycling.
         var boreholeFiles = await context.BoreholeFiles
             .Include(bf => bf.User)
@@ -103,7 +103,7 @@ public class BoreholeFileController : ControllerBase
             .ToListAsync()
             .ConfigureAwait(false);
 
-        // Set the File property of the BoreholeFile.
+        // Set the File property of the borehole file.
         foreach (var boreholeFile in boreholeFiles)
         {
             boreholeFile.File = files.FirstOrDefault(f => f.Id == boreholeFile.FileId) ?? new Models.File();
@@ -125,18 +125,18 @@ public class BoreholeFileController : ControllerBase
 
         try
         {
-            // Get the file and its BoreholeFiles from the database.
+            // Get the file and its borehole files from the database.
             var boreholeFile = await context.BoreholeFiles.Include(f => f.File).FirstOrDefaultAsync(f => f.FileId == boreholeFileId).ConfigureAwait(false);
 
             if (boreholeFile == null) return NotFound();
 
             var fileId = boreholeFile.File.Id;
 
-            // Remove the requested boreholeFile from the database.
+            // Remove the requested borehole file from the database.
             context.BoreholeFiles.Remove(boreholeFile);
             await context.SaveChangesAsync().ConfigureAwait(false);
 
-            // Get the file and its BoreholeFiles from the database.
+            // Get the file and its borehole files from the database.
             var file = await context.Files.Include(f => f.BoreholeFiles).FirstOrDefaultAsync(f => f.Id == fileId).ConfigureAwait(false);
 
             // If the file is not linked to any boreholes, delete it from the cloud storage and the database.
@@ -168,19 +168,15 @@ public class BoreholeFileController : ControllerBase
     [HttpPut("update")]
     public async Task<IActionResult> Update([FromBody] BoreholeFileUpdate boreholeFileUpdate, [Required, Range(1, int.MaxValue)] int boreholeId, [Range(1, int.MaxValue)] int boreholeFileId)
     {
-        if (boreholeFileUpdate == null || boreholeId == 0 || boreholeFileId == 0)
-        {
-            return BadRequest("Invalid borehole file object provided.");
-        }
+        if (boreholeFileUpdate == null) return BadRequest("No boreholeFileUpdate provided.");
+        if (boreholeId == 0) return BadRequest("No boreholeId provided.");
+        if (boreholeFileId == 0) return BadRequest("No boreholeFileId provided.");
 
         var existingBoreholeFile = await context.BoreholeFiles
             .FirstOrDefaultAsync(bf => bf.FileId == boreholeFileId && bf.BoreholeId == boreholeId)
             .ConfigureAwait(false);
 
-        if (existingBoreholeFile == null)
-        {
-            return NotFound("Borehole file not found.");
-        }
+        if (existingBoreholeFile == null) return NotFound("Borehole file not found.");
 
         existingBoreholeFile.Public = boreholeFileUpdate.Public;
         existingBoreholeFile.Description = boreholeFileUpdate.Description;

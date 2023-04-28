@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Represents a the borehole file's updateable properties.
-/// <summary/>
+/// </summary>
 /// <![CDATA[
 /// Extend this class with any additional updatable properties of the borehole file.
 /// ]]>
