@@ -174,39 +174,36 @@ const WaterIngressDisplay = props => {
             {waterIngress.comment || "-"}
           </TypographyWithBottomMargin>
         </StackFullWidth>
-        {isEditable && (
-          <Stack
-            direction="row"
-            sx={{
-              marginLeft: "auto",
-              visibility: isEditable ? "visible" : "hidden",
-            }}>
-            <Tooltip title={t("edit")}>
-              <ModeEditIcon
-                color={selectedWaterIngress ? "disabled" : "black"}
-                data-cy="edit-icon"
-                onClick={e => {
-                  e.stopPropagation();
-                  !selectedWaterIngress &&
-                    setSelectedWaterIngress(waterIngress);
-                }}
-              />
-            </Tooltip>
-            <Tooltip title={t("delete")}>
-              <DeleteIcon
-                data-cy="delete-icon"
-                sx={{
-                  color: selectedWaterIngress ? "rgba(0, 0, 0, 0.26)" : "red",
-                  opacity: 0.7,
-                }}
-                onClick={e => {
-                  e.stopPropagation();
-                  !selectedWaterIngress && deleteWaterIngress(waterIngress.id);
-                }}
-              />
-            </Tooltip>
-          </Stack>
-        )}
+        <Stack
+          direction="row"
+          sx={{
+            marginLeft: "auto",
+            visibility: isEditable ? "visible" : "hidden",
+          }}>
+          <Tooltip title={t("edit")}>
+            <ModeEditIcon
+              color={selectedWaterIngress ? "disabled" : "black"}
+              data-cy="edit-icon"
+              onClick={e => {
+                e.stopPropagation();
+                !selectedWaterIngress && setSelectedWaterIngress(waterIngress);
+              }}
+            />
+          </Tooltip>
+          <Tooltip title={t("delete")}>
+            <DeleteIcon
+              data-cy="delete-icon"
+              sx={{
+                color: selectedWaterIngress ? "rgba(0, 0, 0, 0.26)" : "red",
+                opacity: 0.7,
+              }}
+              onClick={e => {
+                e.stopPropagation();
+                !selectedWaterIngress && deleteWaterIngress(waterIngress.id);
+              }}
+            />
+          </Tooltip>
+        </Stack>
       </StackFullWidth>
       <Stack direction="column"></Stack>
     </Card>
