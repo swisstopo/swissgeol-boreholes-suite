@@ -1,62 +1,83 @@
-import { newEditableBorehole, deleteDownloadedFile } from "../testHelpers";
+import {
+  createAndEditBoreholeAsAdmin,
+  deleteDownloadedFile,
+  readDownloadedFile,
+} from "../testHelpers";
 
 describe("Tests for 'Attachments' edit page.", () => {
   it("creates, downloads and deletes attachments.", () => {
-    newEditableBorehole();
+    createAndEditBoreholeAsAdmin({
+      "extended.original_name": "JUNIORSOUFFLE",
+    });
 
-    // add some basic information
-    cy.contains("label", "Original name")
-      .next()
-      .children("input")
-      .type("JUNIORSOUFFLE");
-    cy.wait("@edit_patch");
+    cy.contains("a", "Start editing").click();
+    cy.wait("@edit_lock");
 
     // navigate to attachments tab
     cy.get('[data-cy="attachments-menu-item"]').click();
 
-    // upload and verify file LOUDSPATULA.docx
+    // create file "LOUDSPATULA.pdf" for input
     cy.get("input[type=file]").selectFile({
       contents: Cypress.Buffer.from(Math.random().toString()),
-      fileName: "LOUDSPATULA.docx",
-      mimeType:
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      fileName: "LOUDSPATULA.pdf",
+      mimeType: "application/pdf",
     });
+
+    // intercept get all Attachments for borehole request
+    cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as(
+      "getAllAttachments",
+    );
+    // intercept upload file request
+    cy.intercept("/api/v2/boreholefile/upload?boreholeId=**").as(
+      "upload-files",
+    );
+
+    // upload file
     cy.get('[data-cy="attachments-upload-button"]')
       .should("be.visible")
       .click();
-    cy.wait(["@files", "@edit_listfiles"]);
-    cy.get("tbody").children().should("have.length", 1);
-    cy.get("tbody")
-      .children()
-      .contains(
-        "td",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      );
-    cy.get("tbody").children().contains("span", "LOUDSPATULA.docx").click();
-    cy.wait("@download-file");
+    cy.wait(["@upload-files"]);
+    cy.wait(["@getAllAttachments"]);
 
-    // upload and verify file IRATETRINITY.pdf
+    // check list of attachments
+    cy.get("tbody").children().should("have.length", 1);
+    cy.get("tbody").children().contains("td", "application/pdf");
+
+    // create file "IRATETRINITY.pdf" for input
     cy.get("input[type=file]").selectFile({
       contents: Cypress.Buffer.from(Math.random().toString()),
       fileName: "IRATETRINITY.pdf",
       mimeType: "application/pdf",
     });
+
+    // upload and verify file IRATETRINITY.pdf
     cy.get('[data-cy="attachments-upload-button"]')
       .should("be.visible")
       .click();
-    cy.wait(["@files", "@edit_listfiles"]);
+    cy.wait(["@upload-files"]);
+    cy.wait(["@getAllAttachments"]);
     cy.get("tbody").children().should("have.length", 2);
     cy.get("tbody").children().contains("td", "application/pdf");
 
     // Ensure file does not exist in download folder before download. If so, delete it.
     deleteDownloadedFile("IRATETRINITY.pdf");
 
+    // intercept download file request
+    cy.intercept("/api/v2/boreholefile/download?boreholeFileId=**").as(
+      "download-file",
+    );
+
     // Download recently uploaded file
     cy.get("tbody").children().contains("span", "IRATETRINITY.pdf").click();
     cy.wait("@download-file");
 
-    // Check if file is present in downlaod folder.
-    cy.readFile("cypress/downloads/IRATETRINITY.pdf");
+    // Check if file is present in download folder.
+    readDownloadedFile("IRATETRINITY.pdf");
+
+    // intercept delete file request
+    cy.intercept(
+      "/api/v2/boreholefile/detachFile?boreholeId=**&boreholeFileId=**",
+    ).as("delete-file");
 
     // delete attachments
     cy.get("tbody")
@@ -66,7 +87,8 @@ describe("Tests for 'Attachments' edit page.", () => {
       .children()
       .first()
       .click();
-    cy.wait(["@files", "@edit_listfiles"]);
+    cy.wait(["@delete-file"]);
+    cy.wait(["@getAllAttachments"]);
     cy.get("tbody")
       .children()
       .first()
@@ -74,7 +96,8 @@ describe("Tests for 'Attachments' edit page.", () => {
       .children()
       .first()
       .click();
-    cy.wait(["@files", "@edit_listfiles"]);
+    cy.wait(["@delete-file"]);
+    cy.wait(["@getAllAttachments"]);
     cy.get("tbody").children().should("have.length", 0);
 
     // stop editing

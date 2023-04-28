@@ -11,8 +11,6 @@ export const interceptApiCalls = () => {
   // Api V1
   cy.intercept("/api/v1/borehole").as("borehole");
   cy.intercept("/api/v1/borehole/profile/layer").as("layer");
-  cy.intercept("/api/v1/borehole/edit/files?id=**").as("download-file");
-  cy.intercept("/api/v1/borehole/edit/files").as("files");
   cy.intercept("/api/v1/borehole/edit", req => {
     return (req.alias = `edit_${req.body.action.toLowerCase()}`);
   });
@@ -217,13 +215,35 @@ export const setValueOfInputElement = function (inputElement, inputValue) {
 // Deletes a downloaded file in Cypress' downloads folder
 export const deleteDownloadedFile = fileName => {
   // Get the path to the downloaded file you want to delete
-  const filePath = "cypress/downloads/" + fileName;
+  let filePath = "cypress/downloads/" + fileName;
 
-  cy.exec(`rm -f ${filePath}`).then(result => {
+  // Set the command in case of linux os
+  let command = "rm -f";
+
+  // Override the command and path in case of windows os
+  if (Cypress.platform === "win32") {
+    command = "del";
+    filePath = "cypress\\downloads\\" + fileName;
+  }
+
+  cy.exec(`${command} ${filePath}`).then(result => {
     // Check if the command executed successfully
     expect(result.code).to.equal(0);
 
     // Check that the file has been deleted
     cy.readFile(filePath, { log: false }).should("not.exist");
   });
+};
+
+// Read the downloaded file in Cypress' downloads folder
+export const readDownloadedFile = fileName => {
+  // Get the path to the downloaded file you want to read
+  let filePath = "cypress/downloads/" + fileName;
+
+  // Override the path in case of windows os
+  if (Cypress.platform === "win32") {
+    filePath = "cypress\\downloads\\" + fileName;
+  }
+
+  cy.readFile(filePath);
 };
