@@ -172,6 +172,9 @@ public class BoreholeFileControllerTest
         // Get latest file in db
         var latestFileInDb = context.Files.OrderBy(f => f.Id).Last();
 
+        // Clear context to ensure file has no info about its boreholeFiles
+        context.ChangeTracker.Clear();
+
         // Detach borehole file from first borehole
         await controller.DetachFromBorehole(firstBoreholeId, latestFileInDb.BoreholeFiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
 
