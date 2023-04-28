@@ -294,3 +294,47 @@ export const useWaterIngressMutations = () => {
     delete: useDeleteWaterIngress,
   };
 };
+
+// Upload borehole attachment
+export const uploadBoreholeAttachment = async (boreholeId, attachment) => {
+  return await fetchApiV2(
+    `boreholefile/upload?boreholeId=${boreholeId}`,
+    "POST",
+    attachment,
+    true,
+  );
+};
+
+// Detach borehole attachment
+export const detachBoreholeAttachment = async (boreholeId, boreholeFileId) => {
+  return await fetchApiV2(
+    `boreholefile/detachFile?boreholeId=${boreholeId}&boreholeFileId=${boreholeFileId}`,
+    "POST",
+  );
+};
+
+// Get borehole attachment list
+export const getBoreholeAttachments = async boreholeId => {
+  return await fetchApiV2(
+    `boreholefile/getAllForBorehole?boreholeId=${boreholeId}`,
+    "GET",
+  );
+};
+
+// Update borehole attachment
+export const updateBoreholeAttachment = async (
+  boreholeId,
+  fileId,
+  description,
+  isPublic,
+) => {
+  return await fetchApiV2(
+    `boreholefile/update?boreholeId=${boreholeId}&boreholeFileId=${fileId}`,
+    "PUT",
+    {
+      description: description,
+      public: isPublic,
+    },
+    false,
+  );
+};

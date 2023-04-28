@@ -37,18 +37,25 @@ const FilesTableComponent = props => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {props.files.map(file => (
-            <Table.Row key={"ftc-" + file.id}>
+          {props.files.map(boreholeFile => (
+            <Table.Row key={"ftc-" + boreholeFile.fileId}>
               {props.editor === true && (
                 <Table.Cell>
                   {props.unlocked === true ? (
                     <Checkbox
-                      checked={file.public}
+                      checked={boreholeFile.public}
                       onChange={(e, d) => {
-                        props.patchFile(props.id, file.id, "public", d.checked);
+                        props.patchFile(
+                          props.id,
+                          boreholeFile.fileId,
+                          boreholeFile.description,
+                          boreholeFile.public,
+                          "public",
+                          d.checked,
+                        );
                       }}
                     />
-                  ) : file.public === true ? (
+                  ) : boreholeFile.public === true ? (
                     <Icon color="green" name="lock open" />
                   ) : (
                     <Icon color="red" name="lock" />
@@ -56,7 +63,10 @@ const FilesTableComponent = props => {
                 </Table.Cell>
               )}
               <Table.Cell>
-                <DownloadLink caption={file.name} id={file.id} />
+                <DownloadLink
+                  caption={boreholeFile.file.name}
+                  id={boreholeFile.fileId}
+                />
               </Table.Cell>
               <Table.Cell>
                 {props.unlocked === true ? (
@@ -64,27 +74,29 @@ const FilesTableComponent = props => {
                     onChange={(e, data) => {
                       props.patchFile(
                         props.id,
-                        file.id,
+                        boreholeFile.fileId,
+                        boreholeFile.description,
+                        boreholeFile.public,
                         "description",
                         e.target.value,
                       );
                     }}
                     rows={1}
-                    value={file.description}
+                    value={boreholeFile.description}
                   />
                 ) : (
-                  file.description
+                  boreholeFile.description
                 )}
               </Table.Cell>
-              <Table.Cell>{file.type}</Table.Cell>
+              <Table.Cell>{boreholeFile.file.type}</Table.Cell>
               <Table.Cell>
-                <DateText date={file.uploaded} hours />
+                <DateText date={boreholeFile.attached} hours />
                 <br />
                 <span
                   style={{
                     color: "#787878",
                   }}>
-                  {file.username}
+                  {boreholeFile.user.name}
                 </span>
               </Table.Cell>
               {props.unlocked === true ? (
@@ -95,7 +107,7 @@ const FilesTableComponent = props => {
                     icon
                     onClick={e => {
                       e.stopPropagation();
-                      props.detachFile(props.id, file.id);
+                      props.detachFile(props.id, boreholeFile.fileId);
                     }}
                     size="mini">
                     <Icon name="trash alternate outline" />
