@@ -251,7 +251,7 @@
   "msgInstrumentsEmpty": "Kein Instrument verfügbar",
   "msgReenablingTip": "Sie können ihn später wieder aktivieren",
   "msgStratigraphyEmpty": "Keine Stratigraphie verfügbar",
-  "msgWateringressesEmpty": "Keine Wassereintritte vorhanden",
+  "msgWateringressesEmpty": "Keine Wasserzutritte vorhanden",
   "msgWelcomeMessage_publish_title": "Willkommensmeldung veröffentlichen",
   "msgWelcomeMessage_publish_message": "Möchten Sie die Willkommensmeldung veröffentlichen?",
   "municipality": "Gemeinde",
@@ -359,7 +359,7 @@
   "viewas": "Ansicht als",
   "visibility": "Sichtbar",
   "visible": "Sichtbar",
-  "water_ingress": "Wassereintritt",
+  "water_ingress": "Wasserzutritt",
   "quantity": "Menge",
   "conditions": "Grundwasserverhältnisse",
   "reliability": "Verlässlichkeit der Angaben",
@@ -405,6 +405,5 @@
   "minute": "Minute",
   "minutes": "Minuten",
   "waterIngressRequiredFieldsAlert": "'Menge', 'Startzeitpunk' und 'Verlässlichkeit der Angaben' sind obligatorische Felder, der Eintrag kann nicht gespeichert werden, wenn sie nicht ausgefüllt sind.",
-  "hydrogeology": "Hydrogeologie",
-  "wateringress": "Wassereintritt"
+  "hydrogeology": "Hydrogeologie"
 }
