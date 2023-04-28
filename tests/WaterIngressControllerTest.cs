@@ -43,7 +43,7 @@ public class WaterIngressControllerTests
     {
         var result = await controller.GetAsync();
         Assert.IsNotNull(result);
-        Assert.AreEqual(100, result.Count());
+        Assert.AreEqual(95, result.Count());
     }
 
     [TestMethod]
@@ -58,24 +58,24 @@ public class WaterIngressControllerTests
     [TestMethod]
     public async Task GetEntriesByBoreholeId()
     {
-        var response = await controller.GetAsync(1006310).ConfigureAwait(false);
+        var response = await controller.GetAsync(1007656).ConfigureAwait(false);
         IEnumerable<WaterIngress>? waterIngresses = response;
         Assert.IsNotNull(waterIngresses);
         Assert.AreEqual(1, waterIngresses.Count());
         var waterIngress = waterIngresses.Single();
 
-        Assert.AreEqual(waterIngress.Id, 12000006);
+        Assert.AreEqual(waterIngress.Id, 12000012);
         Assert.AreEqual(waterIngress.Type, ObservationType.WaterIngress);
-        Assert.AreEqual(waterIngress.Duration, 1431.030546674519);
-        Assert.AreEqual(waterIngress.FromDepthM, 624.9687835159566);
-        Assert.AreEqual(waterIngress.ToDepthM, 3289.9314021146538);
-        Assert.AreEqual(waterIngress.FromDepthMasl, 238.88833875948953);
-        Assert.AreEqual(waterIngress.ToDepthMasl, 2469.2927605385394);
-        Assert.AreEqual(waterIngress.CompletionFinished, true);
-        Assert.AreEqual(waterIngress.Comment, "Sunt provident tempora rerum voluptatum tempora architecto est magni.");
-        Assert.AreEqual(waterIngress.ReliabilityId, 15203158);
+        Assert.AreEqual(waterIngress.Duration, 1481.5525247052092);
+        Assert.AreEqual(waterIngress.FromDepthM, 4335.7274957353839);
+        Assert.AreEqual(waterIngress.ToDepthM, 4352.2518247958515);
+        Assert.AreEqual(waterIngress.FromDepthMasl, 2340.3837938361726);
+        Assert.AreEqual(waterIngress.ToDepthMasl, 891.04182925729162);
+        Assert.AreEqual(waterIngress.CompletionFinished, false);
+        Assert.AreEqual(waterIngress.Comment, "Assumenda minima placeat ea quidem unde accusamus neque qui omnis.");
+        Assert.AreEqual(waterIngress.ReliabilityId, 15203157);
         Assert.AreEqual(waterIngress.QuantityId, 15203163);
-        Assert.AreEqual(waterIngress.ConditionsId, 15203169);
+        Assert.AreEqual(waterIngress.ConditionsId, 15203168);
     }
 
     [TestMethod]

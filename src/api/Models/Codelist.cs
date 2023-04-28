@@ -141,4 +141,16 @@ public class Codelist : IIdentifyable
     /// </summary>
     [JsonIgnore]
     public ICollection<BoreholeCodelist>? BoreholeCodelists { get; }
+
+    /// <summary>
+    /// Gets the <see cref="Hydrotest"/>s that use this <see cref="Codelist"/>.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<Hydrotest>? Hydrotests { get; }
+
+    /// <summary>
+    /// Gets the <see cref="HydrotestCodelist"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<HydrotestCodelist>? HydrotestCodelists { get; }
 }
