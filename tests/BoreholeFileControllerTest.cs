@@ -1,4 +1,5 @@
 ﻿using BDMS.Controllers;
+using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -224,6 +225,37 @@ public class BoreholeFileControllerTest
     }
 
     [TestMethod]
+    public async Task UpdateWithValidBoreholeFile()
+    {
+        var borehole = new Borehole();
+        context.Boreholes.Add(borehole);
+
+        var file = new Models.File() { Name = $"{Guid.NewGuid}.pdf", NameUuid = $"{Guid.NewGuid}.pdf", Hash = Guid.NewGuid().ToString(), Type = "pdf" };
+        context.Files.Add(file);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var boreholeFile = new BoreholeFile() { BoreholeId = borehole.Id, FileId = file.Id, Description = null, Public = null };
+        context.BoreholeFiles.Add(boreholeFile);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Create update borehole file object
+        var updateBoreholeFile = new BoreholeFileUpdate() { Description = "Changed Description", Public = true };
+
+        // Update borehole file
+        IActionResult response = await controller.Update(updateBoreholeFile, borehole.Id, file.Id).ConfigureAwait(false);
+        OkResult okResult = (OkResult)response;
+        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+
+        Assert.AreEqual(true, boreholeFile.Public);
+        Assert.AreEqual("Changed Description", boreholeFile.Description);
+
+        context.Boreholes.Remove(borehole);
+        context.Files.Remove(file);
+        context.BoreholeFiles.Remove(boreholeFile);
+        context.SaveChanges();
+    }
+
+    [TestMethod]
     public async Task UploadWithMissingBoreholeFileId()
     {
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
@@ -251,6 +283,19 @@ public class BoreholeFileControllerTest
 
     [TestMethod]
     public async Task DetachFromBoreholeWithMissingBoreholeFileId() => await AssertIsBadRequestResponse(() => controller.DetachFromBorehole(123, 0));
+
+    [TestMethod]
+    public async Task UpdateWithMissingBoreholeId() => await AssertIsBadRequestResponse(() => controller.Update(new BoreholeFileUpdate(), 0, 1));
+
+    [TestMethod]
+    public async Task UpdateWithMissingBoreholeFileId() => await AssertIsBadRequestResponse(() => controller.Update(new BoreholeFileUpdate(), 1, 0));
+
+    [TestMethod]
+    public async Task UpdateWithBoreholeFileNotFound()
+    {
+        var result = await controller.Update(new BoreholeFileUpdate(), 1, 1);
+        Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+    }
 
     private async Task AssertIsBadRequestResponse(Func<Task<IActionResult>> action)
     {

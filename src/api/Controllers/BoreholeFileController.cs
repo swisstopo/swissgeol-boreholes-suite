@@ -134,4 +134,39 @@ public class BoreholeFileController : ControllerBase
             return Problem("An error occurred while detaching the file.");
         }
     }
+
+    /// <summary>
+    /// Update the <see cref="BoreholeFile"/> with the provided <paramref name="boreholeId"/> and <paramref name="boreholeFileId"/>.
+    /// </summary>
+    /// <param name="boreholeFileUpdate">The updated <see cref="BoreholeFileUpdate"/> object containing the new <see cref="BoreholeFile"/> properties.</param>
+    /// <param name="boreholeId">The id of the <see cref="Borehole"/> to which the <see cref="BoreholeFile"/> is linked to.</param>
+    /// <param name="boreholeFileId">The id of the <see cref="BoreholeFile"/> to update.</param>
+    /// <remarks>
+    /// Only the <see cref="BoreholeFile.Public"/> and <see cref="BoreholeFile.Description"/> properties can be updated.
+    /// </remarks>
+    [HttpPut("update")]
+    public async Task<IActionResult> Update([FromBody] BoreholeFileUpdate boreholeFileUpdate, [Required, Range(1, int.MaxValue)] int boreholeId, [Range(1, int.MaxValue)] int boreholeFileId)
+    {
+        if (boreholeFileUpdate == null || boreholeId == 0 || boreholeFileId == 0)
+        {
+            return BadRequest("Invalid borehole file object provided.");
+        }
+
+        var existingBoreholeFile = await context.BoreholeFiles
+            .FirstOrDefaultAsync(bf => bf.FileId == boreholeFileId && bf.BoreholeId == boreholeId)
+            .ConfigureAwait(false);
+
+        if (existingBoreholeFile == null)
+        {
+            return NotFound("Borehole file not found.");
+        }
+
+        existingBoreholeFile.Public = boreholeFileUpdate.Public;
+        existingBoreholeFile.Description = boreholeFileUpdate.Description;
+
+        context.Entry(existingBoreholeFile).State = EntityState.Modified;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        return Ok();
+    }
 }
