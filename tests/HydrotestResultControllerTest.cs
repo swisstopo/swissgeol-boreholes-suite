@@ -109,7 +109,6 @@ public class HydrotestResultControllerTests
             Assert.AreEqual(editedHydrotestResult.MaxValue, updatedHydrotestResult.MaxValue);
             Assert.AreEqual(editedHydrotestResult.MinValue, updatedHydrotestResult.MinValue);
             Assert.AreEqual(editedHydrotestResult.HydrotestId, updatedHydrotestResult.HydrotestId);
-
         }
         finally
         {
