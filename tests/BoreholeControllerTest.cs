@@ -142,7 +142,7 @@ public class BoreholeControllerTest
     // Get the id of a borehole with certain conditions.
     private int GetBoreholeIdToCopy()
     {
-        var boreHole = context.Boreholes
+        var borehole = context.Boreholes
             .Include(b => b.BoreholeFiles)
             .Include(b => b.Files)
             .Include(b => b.Workflows)
@@ -168,9 +168,9 @@ public class BoreholeControllerTest
                 b.Stratigraphies.First().ChronostratigraphyLayers.First().ChronostratigraphyId != null)
             .FirstOrDefault();
 
-        Assert.IsNotNull(boreHole != null, "Precondition: No borehole for conditions found.");
+        Assert.IsNotNull(borehole != null, "Precondition: No borehole for conditions found.");
 
-        return boreHole.Id;
+        return borehole.Id;
     }
 
     [TestMethod]
