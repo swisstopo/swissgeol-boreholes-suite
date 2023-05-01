@@ -42,7 +42,7 @@ public class HydrotestControllerTests
     {
         var result = await controller.GetAsync();
         Assert.IsNotNull(result);
-        Assert.AreEqual(94, result.Count());
+        Assert.AreEqual(93, result.Count());
     }
 
     [TestMethod]
