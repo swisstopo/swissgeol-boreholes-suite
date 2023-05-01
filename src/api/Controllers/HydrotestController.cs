@@ -30,6 +30,7 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
         var hydrotestes = context.Hydrotests
             .Include(w => w.TestKind)
             .Include(w => w.Codelists)
+            .Include(w => w.Reliability)
             .Include(w => w.HydrotestResults)
             .AsNoTracking();
 
