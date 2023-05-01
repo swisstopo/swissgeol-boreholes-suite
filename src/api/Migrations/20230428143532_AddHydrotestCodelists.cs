@@ -32,7 +32,7 @@ public partial class AddHydrotestCodelists : Migration
                                 (15203181, 012, 'htest101', '', 'Laborversuch (Durchströmungsversuch)', '', '', '', '', '', '', '', 12, NULL, False, ''),
                                 (15203182, 013, 'htest101', '', 'gutachterlicher Wert', '', '', '', '', '', '', '', 13, NULL, False, ''),
                                 (15203183, 014, 'htest101', '', 'unbekannt', '', '', '', '', '', '', '', 14, NULL, False, ''),
-                                (15203184, 015, 'htest101', '', 'andere', '', '', '', '', '', '', '', 15, NULL, False, '');
+                                (15203184, 015, 'htest101', '', 'andere', '', '', '', '', '', '', '', 15, NULL, False, ''),
                                 (15203185, 016, 'htest101', '', 'keine Angaben', '', '', '', '', '', '', '', 16, NULL, False, ''),
                                 (15203186, 001, 'htest102', '', 'Injektion', '', '', '', '', '', '', '', 1, NULL, False, ''),
                                 (15203187, 002, 'htest102', '', 'Entnahme', '', '', '', '', '', '', '', 2, NULL, False, ''),
