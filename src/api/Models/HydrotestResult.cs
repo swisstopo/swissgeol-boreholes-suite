@@ -52,7 +52,7 @@ public class HydrotestResult : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="HydrotestResult"/>'s hydrotest.
     /// </summary>
-    public Hydrotest Hydrotest { get; set; }
+    public Hydrotest? Hydrotest { get; set; }
 
     /// <inheritdoc />
     [Column("creator")]
