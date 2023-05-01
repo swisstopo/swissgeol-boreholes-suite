@@ -48,8 +48,7 @@ public class HydrotestControllerTests
     [TestMethod]
     public async Task GetEntriesByBoreholeIdForInexistentId()
     {
-        var response = await controller.GetAsync(94578122).ConfigureAwait(false);
-        IEnumerable<Hydrotest>? hydrotests = response;
+        IEnumerable<Hydrotest>? hydrotests = await controller.GetAsync(94578122).ConfigureAwait(false);
         Assert.IsNotNull(hydrotests);
         Assert.AreEqual(0, hydrotests.Count());
     }
@@ -57,8 +56,7 @@ public class HydrotestControllerTests
     [TestMethod]
     public async Task GetEntriesByBoreholeId()
     {
-        var response = await controller.GetAsync(1005438).ConfigureAwait(false);
-        IEnumerable<Hydrotest>? hydrotests = response;
+        IEnumerable<Hydrotest>? hydrotests = await controller.GetAsync(1005438).ConfigureAwait(false);
         Assert.IsNotNull(hydrotests);
         Assert.AreEqual(1, hydrotests.Count());
         var hydrotest = hydrotests.Single();
@@ -90,6 +88,7 @@ public class HydrotestControllerTests
     {
         var originalHydrotest = new Hydrotest
         {
+            // Id can be provided manually to the postgres db, as long as it does not generate conflicts with the auto-generated primary keys used in the primary key sequence.
             Id = 1,
             Type = ObservationType.Hydrotest,
             StartTime = new DateTime(2006, 8, 21, 11, 00, 00).ToUniversalTime(),

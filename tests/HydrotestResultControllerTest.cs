@@ -48,8 +48,7 @@ public class HydrotestResultControllerTests
     [TestMethod]
     public async Task GetEntriesByHydrotestIdForInexistentId()
     {
-        var response = await controller.GetAsync(78194522).ConfigureAwait(false);
-        IEnumerable<HydrotestResult>? hydrotestresults = response;
+        IEnumerable<HydrotestResult>? hydrotestresults = await controller.GetAsync(78194522).ConfigureAwait(false);
         Assert.IsNotNull(hydrotestresults);
         Assert.AreEqual(0, hydrotestresults.Count());
     }
@@ -57,8 +56,7 @@ public class HydrotestResultControllerTests
     [TestMethod]
     public async Task GetEntriesByHydrotestId()
     {
-        var response = await controller.GetAsync(12000224).ConfigureAwait(false);
-        IEnumerable<HydrotestResult>? hydrotestresults = response;
+        IEnumerable<HydrotestResult>? hydrotestresults = await controller.GetAsync(12000224).ConfigureAwait(false);
         Assert.IsNotNull(hydrotestresults);
         Assert.AreEqual(10, hydrotestresults.Count());
         var hydrotestresult = hydrotestresults.Single(r => r.Id == 13000750);
@@ -75,6 +73,7 @@ public class HydrotestResultControllerTests
     {
         var originalHydrotestResult = new HydrotestResult
         {
+            // Id can be provided manually to the postgres db, as long as it does not generate conflicts with the auto-generated primary keys used in the primary key sequence.
             Id = 1,
             ParameterId = 15203199,
             Value = 131.308,

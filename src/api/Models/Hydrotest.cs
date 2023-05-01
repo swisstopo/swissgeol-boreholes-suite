@@ -33,5 +33,5 @@ public class Hydrotest : Observation
     /// <summary>
     /// Gets the <see cref="HydrotestResult"/>s associated with the <see cref="Hydrotest"/>.
     /// </summary>
-    public ICollection<HydrotestResult> HydrotestResults { get; }
+    public ICollection<HydrotestResult>? HydrotestResults { get; }
 }
