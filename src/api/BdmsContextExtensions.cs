@@ -568,6 +568,7 @@ public static class BdmsContextExtensions
 
         // Seed water ingresses
         var fakeWaterIngresses = new Faker<WaterIngress>()
+            .StrictMode(true)
             .RuleFor(o => o.QuantityId, f => f.PickRandom(waterIngressQuantityIds))
             .RuleFor(o => o.Quantity, _ => default!)
             .RuleFor(o => o.ConditionsId, f => f.PickRandom(waterIngressConditionsIds))
@@ -585,6 +586,7 @@ public static class BdmsContextExtensions
 
         // Seed hydrotests
         var fakeHydrotests = new Faker<Hydrotest>()
+            .StrictMode(true)
             .RuleFor(o => o.TestKindId, f => f.PickRandom(hydrotestKindIds))
             .RuleFor(o => o.TestKind, _ => default!);
 
