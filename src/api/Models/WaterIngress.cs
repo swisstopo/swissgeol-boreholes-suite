@@ -1,7 +1,6 @@
-﻿using BDMS.Models;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BDMS;
+namespace BDMS.Models;
 
 /// <summary>
 /// Represents an water ingress observation in the boring process.

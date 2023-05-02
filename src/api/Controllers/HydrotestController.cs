@@ -8,43 +8,43 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class WaterIngressController : BdmsControllerBase<WaterIngress>
+public class HydrotestController : BdmsControllerBase<Hydrotest>
 {
     private readonly BdmsContext context;
 
-    public WaterIngressController(BdmsContext context, ILogger<WaterIngress> logger)
+    public HydrotestController(BdmsContext context, ILogger<Hydrotest> logger)
         : base(context, logger)
     {
         this.context = context;
     }
 
     /// <summary>
-    /// Asynchronously gets all water ingress records optionally filtered by <paramref name="boreholeId"/>.
+    /// Asynchronously gets all hydrotest records optionally filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole referenced in the observations to get.</param>
-    /// <returns>An IEnumerable of type <see cref="WaterIngress"/>.</returns>
+    /// <returns>An IEnumerable of type <see cref="Hydrotest"/>.</returns>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<WaterIngress>> GetAsync([FromQuery] int? boreholeId = null)
+    public async Task<IEnumerable<Hydrotest>> GetAsync([FromQuery] int? boreholeId = null)
     {
-        var waterIngresses = context.WaterIngresses
-            .Include(w => w.Quantity)
+        var hydrotestes = context.Hydrotests
+            .Include(w => w.TestKind)
+            .Include(w => w.Codelists)
             .Include(w => w.Reliability)
-            .Include(w => w.Conditions)
-            .Include(w => w.Casing)
+            .Include(w => w.HydrotestResults).ThenInclude(h => h.Parameter)
             .AsNoTracking();
 
         if (boreholeId != null)
         {
-            waterIngresses = waterIngresses.Where(w => w.BoreholeId == boreholeId);
+            hydrotestes = hydrotestes.Where(w => w.BoreholeId == boreholeId);
         }
 
-        return await waterIngresses.ToListAsync().ConfigureAwait(false);
+        return await hydrotestes.ToListAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> EditAsync(WaterIngress entity)
+    public override Task<IActionResult> EditAsync(Hydrotest entity)
         => base.EditAsync(entity);
 
     /// <inheritdoc />
@@ -54,6 +54,6 @@ public class WaterIngressController : BdmsControllerBase<WaterIngress>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> CreateAsync(WaterIngress entity)
+    public override Task<IActionResult> CreateAsync(Hydrotest entity)
         => base.CreateAsync(entity);
 }
