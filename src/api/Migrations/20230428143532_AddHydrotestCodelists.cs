@@ -9,14 +9,8 @@ public partial class AddHydrotestCodelists : Migration
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.Sql(@"INSERT INTO bdms.codelist(
-                                id_cli, geolcode,
-                                schema_cli, code_cli,
-                                text_cli_de, description_cli_de,
-                                text_cli_fr, description_cli_fr,
-                                text_cli_it, description_cli_it,
-                                text_cli_en, description_cli_en,
-                                order_cli, conf_cli,
-                                default_cli, path_cli
+                                id_cli, geolcode, schema_cli, code_cli, text_cli_de, description_cli_de, text_cli_fr, description_cli_fr, text_cli_it,
+                                description_cli_it, text_cli_en, description_cli_en, order_cli, conf_cli, default_cli, path_cli
                                 ) VALUES
                                 (15203170, 001, 'htest101', '', 'Pump-/Injektionsversuch, konstante Rate', '', '', '', '', '', '', '', 1, NULL, False, ''),
                                 (15203171, 002, 'htest101', '', 'Pump-/Injektionsversuch, stufenweise konstante Rate', '', '', '', '', '', '', '', 2, NULL, False, ''),
@@ -45,7 +39,7 @@ public partial class AddHydrotestCodelists : Migration
                                 (15203194, 001, 'htestres101', '', 'kf-Wert (gesättigt)', '', '', '', '', '', '', '', 1, NULL, False, ''),
                                 (15203195, 002, 'htestres101', '', 'kf,u-Wert (ungesättigt)', '', '', '', '', '', '', '', 2, NULL, False, ''),
                                 (15203196, 003, 'htestres101', '', 'Transmissivität', '', '', '', '', '', '', '', 3, NULL, False, ''),
-                                (15203197, 004, 'htestres101', '', 'Strömungsdimension', '', '', '', '', '', '', '', 4, NULL, False, '');
+                                (15203197, 004, 'htestres101', '', 'Strömungsdimension', '', '', '', '', '', '', '', 4, NULL, False, ''),
                                 (15203198, 005, 'htestres101', '', 'statischer Formationsdruck', '', '', '', '', '', '', '', 5, NULL, False, ''),
                                 (15203199, 006, 'htestres101', '', 'spezifischer Speicherkoeffizient', '', '', '', '', '', '', '', 6, NULL, False, ''),
                                 (15203200, 007, 'htestres101', '', 'Lugeon-Wert', '', '', '', '', '', '', '', 7, NULL, False, ''),
