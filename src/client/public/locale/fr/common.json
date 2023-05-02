@@ -158,6 +158,7 @@
   "hrs": "Système altitudinal de référence",
   "iagree": "J'accepte",
   "identifierManager": "Gérer les types d'ID",
+  "importBoreholeAttachment": "Sélectionnez un ou plusieurs fichiers CSV-UTF8 à télécharger",
   "importBoreholeFile": "Sélectionnez le fichier CSV-UTF8 à télécharger",
   "importDate": "Date d'importation",
   "importedBy": "Importé par",
