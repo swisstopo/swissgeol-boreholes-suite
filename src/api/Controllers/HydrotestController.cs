@@ -31,7 +31,7 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
             .Include(w => w.TestKind)
             .Include(w => w.Codelists)
             .Include(w => w.Reliability)
-            .Include(w => w.HydrotestResults)
+            .Include(w => w.HydrotestResults).ThenInclude(h => h.Parameter)
             .AsNoTracking();
 
         if (boreholeId != null)

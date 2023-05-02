@@ -27,7 +27,7 @@ public class HydrotestResultController : BdmsControllerBase<HydrotestResult>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<HydrotestResult>> GetAsync([FromQuery] int? hydrotestId = null)
     {
-        var hydrotestes = context.HydrotestResults.AsNoTracking();
+        var hydrotestes = context.HydrotestResults.Include(w => w.Parameter).AsNoTracking();
 
         if (hydrotestId != null)
         {
