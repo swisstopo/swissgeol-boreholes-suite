@@ -1,8 +1,7 @@
-﻿using BDMS.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BDMS;
+namespace BDMS.Models;
 
 /// <summary>
 /// Represents an observation in the boring process.

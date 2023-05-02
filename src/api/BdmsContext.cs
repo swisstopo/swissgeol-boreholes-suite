@@ -30,6 +30,8 @@ public class BdmsContext : DbContext
     public DbSet<ChronostratigraphyLayer> ChronostratigraphyLayers { get; set; }
     public DbSet<Observation> Observations { get; set; }
     public DbSet<WaterIngress> WaterIngresses { get; set; }
+    public DbSet<Hydrotest> Hydrotests { get; set; }
+    public DbSet<HydrotestResult> HydrotestResults { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)
@@ -163,5 +165,22 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Layer>().HasOne(l => l.InstrumentCasing).WithMany().HasForeignKey(l => l.InstrumentCasingId);
 
         modelBuilder.Entity<WaterIngress>().ToTable("water_ingress").HasBaseType<Observation>();
+
+        modelBuilder.Entity<Hydrotest>().ToTable("hydrotest").HasBaseType<Observation>();
+        modelBuilder.Entity<Hydrotest>()
+                .HasMany(l => l.Codelists)
+                .WithMany(c => c.Hydrotests)
+                .UsingEntity<HydrotestCodelist>(
+                    j => j
+                        .HasOne(lc => lc.Codelist)
+                        .WithMany(c => c.HydrotestCodelists)
+                        .HasForeignKey(lc => lc.CodelistId),
+                    j => j
+                        .HasOne(lc => lc.Hydrotest)
+                        .WithMany(b => b.HydrotestCodelists)
+                        .HasForeignKey(l => l.HydrotestId),
+                    j => j.HasKey(lc => new { lc.HydrotestId, lc.CodelistId }));
+
+        modelBuilder.Entity<Hydrotest>().HasOne(l => l.TestKind).WithMany().HasForeignKey(l => l.TestKindId);
     }
 }
