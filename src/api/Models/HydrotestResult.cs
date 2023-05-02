@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -52,6 +53,7 @@ public class HydrotestResult : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="HydrotestResult"/>'s hydrotest.
     /// </summary>
+    [JsonIgnore]
     public Hydrotest? Hydrotest { get; set; }
 
     /// <inheritdoc />
