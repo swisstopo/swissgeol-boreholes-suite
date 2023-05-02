@@ -69,7 +69,7 @@ public class BoreholeFileUploadService
                 var fileExtension = Path.GetExtension(file.FileName);
                 var fileNameGuid = $"{Guid.NewGuid()}{fileExtension}";
 
-                var bdmsFile = new Models.File { Name = file.FileName, NameUuid = fileNameGuid, Hash = base64Hash, Type = file.ContentType, };
+                var bdmsFile = new Models.File { Name = file.FileName, NameUuid = fileNameGuid, Hash = base64Hash, Type = file.ContentType };
 
                 await context.Files.AddAsync(bdmsFile).ConfigureAwait(false);
                 await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext).ConfigureAwait(false);

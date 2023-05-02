@@ -2,11 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 import {
-  detachFile,
-  patchFile,
-  getEditorBoreholeFiles,
   uploadBoreholeAttachment,
-} from "../../../api-lib/index";
+  detachBoreholeAttachment,
+  getBoreholeAttachments,
+  updateBoreholeAttachment,
+} from "../../../api/fetchApiV2";
 
 import FilesTableComponent from "./filesTableComponent";
 import TranslationText from "../../form/translationText";
@@ -43,11 +43,11 @@ class EditorBoreholeFilesTable extends Component {
     this.loadFiles();
   }
 
-  patch(id, fid, field, value) {
+  patch(id, fid, currentDescription, currentIsPublic, field, value) {
     this.setState(
       {
         files: this.state.files.map(el => {
-          if (el.id === fid) {
+          if (el.fileId === fid) {
             var val = {};
             val[field] = value;
             return Object.assign({}, el, val);
@@ -58,12 +58,14 @@ class EditorBoreholeFilesTable extends Component {
       },
       () => {
         if (field === "public") {
-          // patch immediatly
-          patchFile(id, fid, field, value).then(() => {
-            this.setState({
-              patching: null,
-            });
-          });
+          // Patch immediately
+          updateBoreholeAttachment(id, fid, currentDescription, value).then(
+            () => {
+              this.setState({
+                patching: null,
+              });
+            },
+          );
         } else {
           // Apply delay
           if (this.patchQueued) {
@@ -71,11 +73,13 @@ class EditorBoreholeFilesTable extends Component {
             this.patchQueued = false;
           }
           this.patchQueued = setTimeout(() => {
-            patchFile(id, fid, field, value).then(() => {
-              this.setState({
-                patching: null,
-              });
-            });
+            updateBoreholeAttachment(id, fid, value, currentIsPublic).then(
+              () => {
+                this.setState({
+                  patching: null,
+                });
+              },
+            );
           }, 250);
         }
       },
@@ -90,12 +94,12 @@ class EditorBoreholeFilesTable extends Component {
           files: [],
         },
         () => {
-          getEditorBoreholeFiles(this.props.id)
+          getBoreholeAttachments(this.props.id)
             .then(response => {
-              if (response.data.success) {
+              if (response) {
                 this.setState({
                   fetching: false,
-                  files: response.data.data,
+                  files: response,
                 });
               }
             })
@@ -119,9 +123,12 @@ class EditorBoreholeFilesTable extends Component {
           <div className="bdms-padding-1">
             <TranslationText id="uploadNewFile" />: &nbsp;
             <input
+              accept=".pdf"
               onChange={e => {
+                const formData = new FormData();
+                formData.append("file", e.target.files[0]);
                 this.setState({
-                  file: e.target.files[0],
+                  file: formData,
                 });
               }}
               ref={e => (this.input = e)}
@@ -146,7 +153,7 @@ class EditorBoreholeFilesTable extends Component {
                       this.props.id,
                       this.state.file,
                     ).then(r => {
-                      if (r.data.success === false) {
+                      if (r.ok === false) {
                         this.context.error(
                           t("errorDuplicatedUploadPerBorehole"),
                         );
@@ -175,7 +182,7 @@ class EditorBoreholeFilesTable extends Component {
         ) : null}
         <FilesTableComponent
           detachFile={(id, fid) => {
-            detachFile(id, fid).then(() => {
+            detachBoreholeAttachment(id, fid).then(() => {
               this.loadFiles();
             });
           }}

@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
  * @param {*} url The resource url.
  * @param {*} method The HTTP request method to apply (e.g. GET, PUT, POST...).
  * @param {*} payload The payload of the HTTP request (optional).
- * @param {*} isFileUpload Boolean indicating wheather the request is used to upload a file, defaults to false.
+ * @param {*} isFileUpload Boolean indicating whether the request is used to upload a file, defaults to false.
  * @returns The HTTP response as JSON.
  */
 
@@ -15,6 +15,7 @@ export async function fetchApiV2(
   method,
   payload = null,
   isFileUpload = false,
+  isFileDownload = false,
 ) {
   const baseUrl = "/api/v2/";
   const credentials = store.getState().core_user.authentication;
@@ -24,7 +25,7 @@ export async function fetchApiV2(
       `${credentials.username}:${credentials.password}`,
     )}`,
   };
-  if (!isFileUpload)
+  if (!isFileUpload && !isFileDownload)
     headers = { ...headers, "Content-Type": "application/json" };
   const response = await fetch(baseUrl + url, {
     method: method,
@@ -34,6 +35,27 @@ export async function fetchApiV2(
     body: payload && body,
   });
   if (isFileUpload) {
+    return response;
+  }
+  if (isFileDownload) {
+    if (!response.ok) {
+      const error = new Error(response.statusText);
+      error.response = response;
+      throw error;
+    }
+
+    const fileName =
+      response.headers
+        .get("content-disposition")
+        ?.split("; ")[1]
+        ?.replace("filename=", "") ?? "export.pdf";
+    const blob = await response.blob();
+    const downLoadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downLoadUrl;
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
     return response;
   }
   if (response.ok) {
@@ -309,4 +331,59 @@ export const useWaterIngressMutations = () => {
     update: useUpdateWaterIngress,
     delete: useDeleteWaterIngress,
   };
+};
+
+// Upload borehole attachment
+export const uploadBoreholeAttachment = async (boreholeId, attachment) => {
+  return await fetchApiV2(
+    `boreholefile/upload?boreholeId=${boreholeId}`,
+    "POST",
+    attachment,
+    true,
+  );
+};
+
+// Detach borehole attachment
+export const detachBoreholeAttachment = async (boreholeId, boreholeFileId) => {
+  return await fetchApiV2(
+    `boreholefile/detachFile?boreholeId=${boreholeId}&boreholeFileId=${boreholeFileId}`,
+    "POST",
+  );
+};
+
+// Get borehole attachment list
+export const getBoreholeAttachments = async boreholeId => {
+  return await fetchApiV2(
+    `boreholefile/getAllForBorehole?boreholeId=${boreholeId}`,
+    "GET",
+  );
+};
+
+// Download borehole attachment
+export const downloadBoreholeAttachment = async boreholeFileId => {
+  return await fetchApiV2(
+    `boreholefile/download?boreholeFileId=${boreholeFileId}`,
+    "GET",
+    null,
+    false,
+    true,
+  );
+};
+
+// Update borehole attachment
+export const updateBoreholeAttachment = async (
+  boreholeId,
+  fileId,
+  description,
+  isPublic,
+) => {
+  return await fetchApiV2(
+    `boreholefile/update?boreholeId=${boreholeId}&boreholeFileId=${fileId}`,
+    "PUT",
+    {
+      description: description,
+      public: isPublic,
+    },
+    false,
+  );
 };

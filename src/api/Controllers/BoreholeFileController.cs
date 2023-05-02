@@ -84,7 +84,9 @@ public class BoreholeFileController : ControllerBase
     {
         if (boreholeId == 0) return BadRequest("No boreholeId provided.");
 
+        // Get all borehole files that are linked to the borehole.
         return await context.BoreholeFiles
+            .Include(bf => bf.User)
             .Include(bf => bf.File)
             .Where(bf => bf.BoreholeId == boreholeId)
             .AsNoTracking()
@@ -105,18 +107,19 @@ public class BoreholeFileController : ControllerBase
 
         try
         {
-            // Get the file and its BoreholeFiles from the database.
+            // Get the file and its borehole files from the database.
             var boreholeFile = await context.BoreholeFiles.Include(f => f.File).FirstOrDefaultAsync(f => f.FileId == boreholeFileId).ConfigureAwait(false);
 
             if (boreholeFile == null) return NotFound();
 
             var fileId = boreholeFile.File.Id;
 
-            // Remove the requested boreholeFile from the database.
+            // Remove the requested borehole file from the database.
             context.BoreholeFiles.Remove(boreholeFile);
             await context.SaveChangesAsync().ConfigureAwait(false);
 
-            var file = await context.Files.FirstOrDefaultAsync(f => f.Id == fileId).ConfigureAwait(false);
+            // Get the file and its borehole files from the database.
+            var file = await context.Files.Include(f => f.BoreholeFiles).FirstOrDefaultAsync(f => f.Id == fileId).ConfigureAwait(false);
 
             // If the file is not linked to any boreholes, delete it from the cloud storage and the database.
             if (file?.NameUuid != null && file.BoreholeFiles.Count == 0)
@@ -133,5 +136,36 @@ public class BoreholeFileController : ControllerBase
             logger.LogError(ex, "An error occurred while detaching the file.");
             return Problem("An error occurred while detaching the file.");
         }
+    }
+
+    /// <summary>
+    /// Update the <see cref="BoreholeFile"/> with the provided <paramref name="boreholeId"/> and <paramref name="boreholeFileId"/>.
+    /// </summary>
+    /// <param name="boreholeFileUpdate">The updated <see cref="BoreholeFileUpdate"/> object containing the new <see cref="BoreholeFile"/> properties.</param>
+    /// <param name="boreholeId">The id of the <see cref="Borehole"/> to which the <see cref="BoreholeFile"/> is linked to.</param>
+    /// <param name="boreholeFileId">The id of the <see cref="BoreholeFile"/> to update.</param>
+    /// <remarks>
+    /// Only the <see cref="BoreholeFile.Public"/> and <see cref="BoreholeFile.Description"/> properties can be updated.
+    /// </remarks>
+    [HttpPut("update")]
+    public async Task<IActionResult> Update([FromBody] BoreholeFileUpdate boreholeFileUpdate, [Required, Range(1, int.MaxValue)] int boreholeId, [Range(1, int.MaxValue)] int boreholeFileId)
+    {
+        if (boreholeFileUpdate == null) return BadRequest("No boreholeFileUpdate provided.");
+        if (boreholeId == 0) return BadRequest("No boreholeId provided.");
+        if (boreholeFileId == 0) return BadRequest("No boreholeFileId provided.");
+
+        var existingBoreholeFile = await context.BoreholeFiles
+            .FirstOrDefaultAsync(bf => bf.FileId == boreholeFileId && bf.BoreholeId == boreholeId)
+            .ConfigureAwait(false);
+
+        if (existingBoreholeFile == null) return NotFound("Borehole file not found.");
+
+        existingBoreholeFile.Public = boreholeFileUpdate.Public;
+        existingBoreholeFile.Description = boreholeFileUpdate.Description;
+
+        context.Entry(existingBoreholeFile).State = EntityState.Modified;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        return Ok();
     }
 }

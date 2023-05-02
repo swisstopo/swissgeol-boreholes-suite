@@ -27,7 +27,6 @@ public class Hydrotest : Observation
     /// <summary>
     /// Gets the<see cref= "HydrotestCodelist"/> join table entities.
     /// </summary>
-    [JsonIgnore]
     public IList<HydrotestCodelist>? HydrotestCodelists { get; }
 
     /// <summary>
