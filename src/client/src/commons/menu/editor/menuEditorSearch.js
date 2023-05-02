@@ -247,7 +247,7 @@ class MenuEditorSearch extends React.Component {
                 style={{
                   fontWeight: "bold",
                 }}>
-                <TranslationText id="uploadFile" />:
+                <TranslationText id="importBoreholeFile" />:
               </span>
               <div
                 style={{
