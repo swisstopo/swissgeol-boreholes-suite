@@ -5,6 +5,7 @@ import { withTranslation } from "react-i18next";
 import { withRouter } from "react-router-dom";
 import { NumericFormat } from "react-number-format";
 import TranslationText from "../../form/translationText";
+import { FileDropzone } from "../../files/fileDropzone";
 
 import {
   Button,
@@ -39,6 +40,7 @@ class MenuEditorSearch extends React.Component {
       modal: false,
       upload: false,
       selectedFile: null,
+      selectedBoreholeAttachments: null,
       scroller: false,
       workgroup: wgs !== null && wgs.length > 0 ? wgs[0].id : null,
       validationErrorModal: false,
@@ -264,6 +266,21 @@ class MenuEditorSearch extends React.Component {
                   }}
                   type="file"
                 />
+              </div>
+              <span
+                style={{
+                  fontWeight: "bold",
+                }}>
+                <TranslationText id="importBoreholeAttachment" />:
+              </span>
+              <div
+                style={{
+                  padding: "1em",
+                }}>
+                <FileDropzone
+                  acceptedFileExtension=".pdf"
+                  maxFilesToSelectAtOnce="2"
+                  maxFilesToUpload="2"></FileDropzone>
               </div>
             </div>
           ) : null}
