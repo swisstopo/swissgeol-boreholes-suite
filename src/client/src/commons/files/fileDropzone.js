@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
 import { useTranslation } from "react-i18next";
@@ -31,6 +31,8 @@ export const FileDropzone = props => {
   const [dropZoneTextColor, setDropZoneTextColor] = useState(
     defaultDropzoneTextColor,
   );
+
+  const { onHandleBoreholeAttachmentChange } = props;
 
   // Set the color of the dropzone text to red and display an error message
   const showErrorMsg = useCallback(
@@ -68,6 +70,11 @@ export const FileDropzone = props => {
     },
     [files.length, props.maxFilesToSelectAtOnce, props.maxFilesToUpload, t],
   );
+
+  // Is called when the files array changes. This is used to update the file list in the parent component.
+  useEffect(() => {
+    onHandleBoreholeAttachmentChange(files);
+  }, [files, onHandleBoreholeAttachmentChange]);
 
   // Is called when the selected/dropped files are accepted
   const onDropAccepted = useCallback(

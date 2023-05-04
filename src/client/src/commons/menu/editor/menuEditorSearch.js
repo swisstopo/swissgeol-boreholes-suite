@@ -48,6 +48,10 @@ class MenuEditorSearch extends React.Component {
     };
   }
 
+  handleBoreholeAttachmentChange = attachmentsFromDropzone => {
+    this.setState({ selectedBoreholeAttachments: attachmentsFromDropzone });
+  };
+
   componentDidMount() {
     if (isMounted) {
       this.updateDimensions();
@@ -243,7 +247,7 @@ class MenuEditorSearch extends React.Component {
                   "total_depth_tvd;qt_total_depth_tvd_id;top_bedrock;" +
                   "qt_top_bedrock_id;top_bedrock_tvd;qt_top_bedrock_tvd_id;" +
                   "has_groundwater;lithology_top_bedrock_id;" +
-                  "chronostratigraphy_id;lithostratigraphy_id;"}
+                  "chronostratigraphy_id;lithostratigraphy_id;attachments;"}
               </div>
               <span
                 style={{
@@ -278,6 +282,9 @@ class MenuEditorSearch extends React.Component {
                   padding: "1em",
                 }}>
                 <FileDropzone
+                  onHandleBoreholeAttachmentChange={
+                    this.handleBoreholeAttachmentChange
+                  }
                   acceptedFileExtension=".pdf"
                   maxFilesToSelectAtOnce="2"
                   maxFilesToUpload="2"></FileDropzone>
@@ -339,9 +346,18 @@ class MenuEditorSearch extends React.Component {
                 },
                 () => {
                   if (this.state.upload === true) {
+                    let combinedFormData = new FormData();
+                    if (this.state.selectedFile !== null) {
+                      combinedFormData = this.state.selectedFile;
+                      this.state.selectedBoreholeAttachments.forEach(
+                        attachment => {
+                          combinedFormData.append("attachments", attachment);
+                        },
+                      );
+                    }
                     importBoreholes(
                       this.state.workgroup,
-                      this.state.selectedFile,
+                      combinedFormData,
                     ).then(response => {
                       this.setState(
                         {
