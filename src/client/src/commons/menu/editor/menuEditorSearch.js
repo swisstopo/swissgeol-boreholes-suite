@@ -289,8 +289,9 @@ class MenuEditorSearch extends React.Component {
                     this.handleBoreholeAttachmentChange
                   }
                   acceptedFileExtension=".pdf"
-                  maxFilesToSelectAtOnce="2"
-                  maxFilesToUpload="2"></FileDropzone>
+                  maxFilesToSelectAtOnce="10"
+                  maxFilesToUpload="100"
+                />
               </div>
             </div>
           ) : null}
