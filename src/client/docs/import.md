@@ -28,9 +28,8 @@ Die CSV-Datei muss den folgenden Anforderungen und dem Format entsprechen, damit
 * Die Datei muss im CSV-Format vorliegen und als Trennzeichen wird der Strichpunkt (;) verwendet.
 * Die Datei muss im UTF-8-Format gespeichert sein.
 * Die erste Zeile der CSV-Datei muss die Spaltenüberschriften enthalten.
-* Die Spaltenüberschriften müssen den vorgegebenen Feldnamen aus der Webapplikation entsprechen.
+* Die Spaltenüberschriften müssen den vorgegebenen Feldnamen aus dem Import-Dialog entsprechen.
 * Die Werte in den Spalten müssen den erwarteten Datentypen entsprechen (z.B. numerisch für Tiefe, Text für Namen, etc.).
-* Die Datei sollte keine Leerzeilen oder ungültige Zeichen enthalten.
 
 ### Format
 
