@@ -17,7 +17,7 @@ Zunächst sollte die CSV-Datei den Anforderungen und dem Format entsprechen, wie
 ### Schritt 3: CSV-Datei selektieren
 
 1. Schaltfläche _Datei auswählen_ anklicken und die vorbereitete CSV-Datei auswählen.
-2. Unter _Arbeitsgruppe_ die Arbeitsgruppe auswählen, in welche die Bohrdaten importiert werden sollen.
+2. Unter _Arbeitsgruppe_ die Arbeitsgruppe auswählen, in welche die Bohrdaten importiert werden sollen (neue Arbeitsgruppen können nur als "Admin-User" erstellt werden).
 
 ### Schritt 4: Bohrlochanhänge selektieren
 
@@ -58,7 +58,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | project_name                | Text           | Nein        | Projektname                                                                                       |
 | alternate_name              | Text           | Nein        | Alternativer Name                                                                                 |
 | restriction_id              | ID (Codeliste) | Nein        | Beschränkung                                                                                      |
-| restriction_until           | Datum          | Nein        | Alternativer Name                                                                                 |
+| restriction_until           | Datum          | Nein        | Ablaufdatum der Beschränkung                                                                      |
 | location_x                  | Dezimalzahl    | Ja          | Koordinate Ost LV95                                                                               |
 | location_y                  | Dezimalzahl    | Ja          | Koordinate Nord LV95                                                                              |
 | qt_location_id              | ID (Codeliste) | Nein        | +/- Koordinaten [m]                                                                               |
