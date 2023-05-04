@@ -14,6 +14,7 @@ import {
   Input,
   Menu,
   Modal,
+  Segment,
 } from "semantic-ui-react";
 
 import { createBorehole } from "../../../api-lib/index";
@@ -190,10 +191,23 @@ class MenuEditorSearch extends React.Component {
         }}
         open={this.state.modal === true}
         size="tiny">
-        <Header
-          content={<TranslationText id="newBorehole" />}
-          icon={this.state.upload === true ? "upload" : "plus"}
-        />
+        <Segment clearing>
+          <Header
+            floated="left"
+            content={<TranslationText id="newBorehole" />}
+            icon={this.state.upload === true ? "upload" : "plus"}
+          />
+          <Header as="h4" floated="right">
+            <span>
+              <a
+                href={`${process.env.PUBLIC_URL}/help/import`}
+                rel="noopener noreferrer"
+                target="_BLANK">
+                <TranslationText id="header_help" />
+              </a>
+            </span>
+          </Header>
+        </Segment>
         <Modal.Content>
           {this.state.upload === true ? (
             <div>

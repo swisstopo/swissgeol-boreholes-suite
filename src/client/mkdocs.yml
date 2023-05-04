@@ -1,2 +1,4 @@
 site_name: BDMS Online-Hilfe
 theme: readthedocs
+repo_url: https://github.com/geoadmin/suite-bdms
+edit_uri: tree/main/src/client/docs
