@@ -77,7 +77,7 @@
   "dropZoneInvalidFileType": "Eine oder mehrere Dateien haben einen nicht unterstützten Dateityp",
   "dropZoneMaximumFilesToSelectAtOnce": "Zu viele Dateien gleichzeitig ausgewählt",
   "dropZoneDefaultErrorMsg": "Beim Auswählen ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
-  "dropZoneFileToLarge": "Eine oder mehrere Dateien sind zu groß. Max. 200 MB.",
+  "dropZoneFileToLarge": "Eine oder mehrere Dateien sind zu gross. Max. 200 MB.",
   "drill_diameter": "Bohrdurchmesser [mm]",
   "drilling_end_date": "Datum Bohrende",
   "drilling_method": "Bohrmethode",
