@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -7,6 +8,7 @@ using Minio.DataModel;
 using Minio.Exceptions;
 using Moq;
 using System.Reactive.Linq;
+using System.Security.Claims;
 using System.Text;
 using static BDMS.Helpers;
 
@@ -19,6 +21,7 @@ public class BoreholeFileUploadServiceTest
     private BdmsContext context;
     private BoreholeFileUploadService boreholeFileUploadService;
     private string bucketName;
+    private Models.User defaultUser;
 
     [TestInitialize]
     public void TestInitialize()
@@ -26,8 +29,11 @@ public class BoreholeFileUploadServiceTest
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
         context = ContextFactory.CreateContext();
+        defaultUser = context.Users.FirstOrDefault() ?? throw new InvalidOperationException("No User found in database.");
 
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
+        contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
+        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, defaultUser.Name) }));
         var loggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
         loggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
         boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object, contextAccessorMock.Object);
@@ -46,6 +52,33 @@ public class BoreholeFileUploadServiceTest
     {
         await context.DisposeAsync();
         minioClient.Dispose();
+    }
+
+    [TestMethod]
+    public async Task UploadFileAndLinkToBoreholeShouldStoreFileInCloudStorageAndLinkFile()
+    {
+        var fileName = $"{Guid.NewGuid()}.pdf";
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+        var content = Guid.NewGuid().ToString();
+        var firstPdfFormFile = GetFormFileByContent(content, fileName);
+
+        // Upload file
+        await boreholeFileUploadService.UploadFileAndLinkToBorehole(firstPdfFormFile, minBoreholeId);
+
+        // Get borehole with file linked from db
+        var borehole = context.Boreholes
+           .Include(b => b.BoreholeFiles)
+           .ThenInclude(bf => bf.File)
+           .Single(b => b.Id == minBoreholeId);
+
+        // Check if file is linked to borehole
+        Assert.AreEqual(borehole.BoreholeFiles.First().File.Name, fileName);
+
+        // Ensure file exists in cloud storage
+        StatObjectArgs statObjectArgs = new StatObjectArgs()
+                                            .WithBucket(bucketName)
+                                            .WithObject(borehole.BoreholeFiles.First().File.NameUuid);
+        await minioClient.StatObjectAsync(statObjectArgs);
     }
 
     [TestMethod]
