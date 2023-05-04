@@ -1,6 +1,6 @@
 # Bohrdaten importieren
 
-Mit der Import-Funktion können geologische Bohrdaten mit einer zuvor erstellten CSV-Datei in einem Rutsch importiert werden. 
+Mit der Import-Funktion können geologische Bohrdaten aus einer CSV-Datei importiert werden. 
 
 ## Anleitung
 
