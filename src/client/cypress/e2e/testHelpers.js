@@ -247,3 +247,16 @@ export const readDownloadedFile = fileName => {
 
   cy.readFile(filePath);
 };
+
+// Get the file to import from the fixtures folder
+export const getImportFileFromFixtures = (fileName, encopding) => {
+  // Define the path to the file
+  let filePath = "/import/" + fileName;
+
+  // Override the path in case of windows os
+  if (Cypress.platform === "win32") {
+    filePath = "\\import\\" + fileName;
+  }
+
+  return cy.fixture(filePath, { encoding: encopding });
+};

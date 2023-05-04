@@ -135,7 +135,7 @@ export const FileDropzone = props => {
         <p style={{ marginBottom: "0", color: dropZoneTextColor }}>
           {dropZoneText}
         </p>
-        <input {...getInputProps()} />
+        <input {...getInputProps()} aria-label="import-boreholeFile-input" />
       </Container>
       {files.length > 0 ? (
         <div

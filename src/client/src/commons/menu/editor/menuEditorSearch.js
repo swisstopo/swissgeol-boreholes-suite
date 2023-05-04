@@ -256,6 +256,7 @@ class MenuEditorSearch extends React.Component {
                 <TranslationText id="importBoreholeFile" />:
               </span>
               <div
+                data-cy="import-boreholeFile-input"
                 style={{
                   padding: "1em",
                 }}>
@@ -269,6 +270,7 @@ class MenuEditorSearch extends React.Component {
                     });
                   }}
                   type="file"
+                  aria-label="import-boreholeFile-input"
                 />
               </div>
               <span
@@ -278,6 +280,7 @@ class MenuEditorSearch extends React.Component {
                 <TranslationText id="importBoreholeAttachment" />:
               </span>
               <div
+                data-cy="import-boreholeFile-attachments-input"
                 style={{
                   padding: "1em",
                 }}>
