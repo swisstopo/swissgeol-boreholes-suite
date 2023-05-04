@@ -14,12 +14,19 @@ Zunächst sollte die CSV-Datei den Anforderungen und dem Format entsprechen, wie
 2. In die Editor-Ansicht wechseln.
 3. Unten links auf die Schaltfläche _Importieren_ klicken.
 
-### Schritt 3: CSV-Datei hochladen
+### Schritt 3: CSV-Datei selektieren
 
 1. Schaltfläche _Datei auswählen_ anklicken und die vorbereitete CSV-Datei auswählen.
 2. Unter _Arbeitsgruppe_ die Arbeitsgruppe auswählen, in welche die Bohrdaten importiert werden sollen.
-3. Import-Prozess mit einem Klick auf _Importieren_ starten.
-4. Warten, bis der Upload abgeschlossen ist und die Daten in der Anwendung verfügbar sind.
+
+### Schritt 4: Bohrlochanhänge selektieren
+
+1. Schaltfläche _Dateien hier ablegen oder klicken, um sie hochzuladen_ anklicken und die vorbereitete PDF-Datei(en) auswählen.
+
+### Schritt 5: Dateien hochladen
+
+1. Import-Prozess mit einem Klick auf _Importieren_ starten.
+2. Warten, bis der Upload abgeschlossen ist und die Daten in der Anwendung verfügbar sind.
 
 ## Format und Anforderungen an die CSV-Datei
 
@@ -31,68 +38,81 @@ Die CSV-Datei muss den folgenden Anforderungen und dem Format entsprechen, damit
 * Die Spaltenüberschriften müssen den vorgegebenen Feldnamen aus dem Import-Dialog entsprechen.
 * Die Werte in den Spalten müssen den erwarteten Datentypen entsprechen (z.B. numerisch für Tiefe, Text für Namen, etc.).
 
-### Format
+## Format
 
 Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format vorliegen. Die erste Zeile wird als Spaltentitel/Spaltenname interpretiert, die restlichen Zeilen als Daten. 
 
-| Feldname                    | Datentyp       | Pflichtfeld | Beschreibung                              |
-|-----------------------------|----------------|-------------|-------------------------------------------|
-| id_geodin_shortname         | Zahl           | Nein        | ID GeODin-Shortname                       |
-| id_info_geol                | Zahl           | Nein        | ID InfoGeol                               |
-| id_original                 | Zahl           | Nein        | ID Original                               |
-| id_canton                   | Zahl           | Nein        | ID Kanton                                 |
-| id_geo_quat                 | Zahl           | Nein        | ID GeoQuat                                |
-| id_geo_mol                  | Zahl           | Nein        | ID GeoMol                                 |
-| id_geo_therm                | Zahl           | Nein        | ID GeoTherm                               |
-| id_top_fels                 | Zahl           | Nein        | ID TopFels                                |
-| id_geodin                   | Zahl           | Nein        | ID GeODin                                 |
-| id_kernlager                | Zahl           | Nein        | ID Kernlager                              |
-| original_name               | Text           | Ja          | Originalname                              |
-| project_name                | Text           | Nein        | Projektname                               |
-| alternate_name              | Text           | Nein        | Alternativer Name                         |
-| restriction_id              | ID (Codeliste) | Nein        | Beschränkung                              |
-| restriction_until           | Datum          | Nein        | Alternativer Name                         |
-| location_x                  | Dezimalzahl    | Ja          | Koordinate Ost LV95                       |
-| location_y                  | Dezimalzahl    | Ja          | Koordinate Nord LV95                      |
-| qt_location_id              | ID (Codeliste) | Nein        | +/- Koordinaten [m]                       |
-| elevation_z                 | Dezimalzahl    | Nein        | Terrainhöhe [m ü.M.]                      |
-| qt_elevation_id             | ID (Codeliste) | Nein        | +/- Terrainhöhe [m]                       |
-| reference_elevation         | Dezimalzahl    | Nein        | Referenz Ansatzhöhe [m ü.M.]              |
-| reference_elevation_type_id | ID (Codeliste) | Nein        | Typ der Referenz Ansatzhöhe               |
-| qt_reference_elevation_id   | ID (Codeliste) | Nein        | +/- Referenz Ansatzhöhe [m]               |
-| hrs_id                      | ID (Codeliste) | Nein        | Höhenreferenzsystem                       |
-| kind_id                     | ID (Codeliste) | Nein        | Bohrtyp                                   |
-| drilling_date               | Datum          | Nein        | Datum Bohrende                            |
-| drilling_diameter           | Dezimalzahl    | Nein        | Bohrdurchmesser [mm]                      |
-| drilling_method_id          | ID (Codeliste) | Nein        | Bohrmethode                               |
-| purpose_id                  | ID (Codeliste) | Nein        | Bohrzweck                                 |
-| spud_date                   | Datum          | Nein        | Datum Bohrbeginn                          |
-| cuttings_id                 | ID (Codeliste) | Nein        | Bohrgut                                   |
-| status_id                   | ID (Codeliste) | Nein        | Bohrungsstatus                            |
-| inclination                 | Dezimalzahl    | Nein        | Inklination beim Bohransatzpunkt [°]      |
-| inclination_direction       | Dezimalzahl    | Nein        | Einfallsrichtung beim Bohransatzpunkt [°] |
-| qt_inclination_direction_id | ID (Codeliste) | Nein        | Inc. / Richtung Genauigkeit               |
-| remarks                     | Text           | Nein        | Bemerkungen                               |
-| total_depth                 | Dezimalzahl    | Nein        | Bohrlochlänge [m MD]                      |
-| qt_depth_id                 | ID (Codeliste) | Nein        | +/- Bohrlochlänge [m MD]                  |
-| total_depth_tvd             | Dezimalzahl    | Nein        | Vertikale Bohrendteufe [m TVD]            |
-| qt_total_depth_tvd_id       | ID (Codeliste) | Nein        | +/- Vertikale Bohrendteufe [m TVD]        |
-| top_bedrock                 | Dezimalzahl    | Nein        | Top Fels [m MD]                           |
-| qt_top_bedrock_id           | ID (Codeliste) | Nein        | +/- Top Fels [m MD]                       |
-| top_bedrock_tvd             | Dezimalzahl    | Nein        | Top Fels [m TVD]                          |
-| qt_top_bedrock_tvd_id       | ID (Codeliste) | Nein        | +/- Top Fels [m TVD]                      |
-| has_groundwater             | True/False     | Nein        | Grundwasser                               |
-| lithology_top_bedrock_id    | ID (Codeliste) | Nein        | Lithologie Top Fels                       |
-| chronostratigraphy_id       | ID (Codeliste) | Nein        | Chronostratigraphie Top Fels              |
-| lithostratigraphy_id        | ID (Codeliste) | Nein        | Lithostratigraphie Top Fels               |
+| Feldname                    | Datentyp       | Pflichtfeld | Beschreibung                                                                                      |
+|-----------------------------|----------------|-------------|---------------------------------------------------------------------------------------------------|
+| id_geodin_shortname         | Zahl           | Nein        | ID GeODin-Shortname                                                                               |
+| id_info_geol                | Zahl           | Nein        | ID InfoGeol                                                                                       |
+| id_original                 | Zahl           | Nein        | ID Original                                                                                       |
+| id_canton                   | Zahl           | Nein        | ID Kanton                                                                                         |
+| id_geo_quat                 | Zahl           | Nein        | ID GeoQuat                                                                                        |
+| id_geo_mol                  | Zahl           | Nein        | ID GeoMol                                                                                         |
+| id_geo_therm                | Zahl           | Nein        | ID GeoTherm                                                                                       |
+| id_top_fels                 | Zahl           | Nein        | ID TopFels                                                                                        |
+| id_geodin                   | Zahl           | Nein        | ID GeODin                                                                                         |
+| id_kernlager                | Zahl           | Nein        | ID Kernlager                                                                                      |
+| original_name               | Text           | Ja          | Originalname                                                                                      |
+| project_name                | Text           | Nein        | Projektname                                                                                       |
+| alternate_name              | Text           | Nein        | Alternativer Name                                                                                 |
+| restriction_id              | ID (Codeliste) | Nein        | Beschränkung                                                                                      |
+| restriction_until           | Datum          | Nein        | Alternativer Name                                                                                 |
+| location_x                  | Dezimalzahl    | Ja          | Koordinate Ost LV95                                                                               |
+| location_y                  | Dezimalzahl    | Ja          | Koordinate Nord LV95                                                                              |
+| qt_location_id              | ID (Codeliste) | Nein        | +/- Koordinaten [m]                                                                               |
+| elevation_z                 | Dezimalzahl    | Nein        | Terrainhöhe [m ü.M.]                                                                              |
+| qt_elevation_id             | ID (Codeliste) | Nein        | +/- Terrainhöhe [m]                                                                               |
+| reference_elevation         | Dezimalzahl    | Nein        | Referenz Ansatzhöhe [m ü.M.]                                                                      |
+| reference_elevation_type_id | ID (Codeliste) | Nein        | Typ der Referenz Ansatzhöhe                                                                       |
+| qt_reference_elevation_id   | ID (Codeliste) | Nein        | +/- Referenz Ansatzhöhe [m]                                                                       |
+| hrs_id                      | ID (Codeliste) | Nein        | Höhenreferenzsystem                                                                               |
+| kind_id                     | ID (Codeliste) | Nein        | Bohrtyp                                                                                           |
+| drilling_date               | Datum          | Nein        | Datum Bohrende                                                                                    |
+| drilling_diameter           | Dezimalzahl    | Nein        | Bohrdurchmesser [mm]                                                                              |
+| drilling_method_id          | ID (Codeliste) | Nein        | Bohrmethode                                                                                       |
+| purpose_id                  | ID (Codeliste) | Nein        | Bohrzweck                                                                                         |
+| spud_date                   | Datum          | Nein        | Datum Bohrbeginn                                                                                  |
+| cuttings_id                 | ID (Codeliste) | Nein        | Bohrgut                                                                                           |
+| status_id                   | ID (Codeliste) | Nein        | Bohrungsstatus                                                                                    |
+| inclination                 | Dezimalzahl    | Nein        | Inklination beim Bohransatzpunkt [°]                                                              |
+| inclination_direction       | Dezimalzahl    | Nein        | Einfallsrichtung beim Bohransatzpunkt [°]                                                         |
+| qt_inclination_direction_id | ID (Codeliste) | Nein        | Inc. / Richtung Genauigkeit                                                                       |
+| remarks                     | Text           | Nein        | Bemerkungen                                                                                       |
+| total_depth                 | Dezimalzahl    | Nein        | Bohrlochlänge [m MD]                                                                              |
+| qt_depth_id                 | ID (Codeliste) | Nein        | +/- Bohrlochlänge [m MD]                                                                          |
+| total_depth_tvd             | Dezimalzahl    | Nein        | Vertikale Bohrendteufe [m TVD]                                                                    |
+| qt_total_depth_tvd_id       | ID (Codeliste) | Nein        | +/- Vertikale Bohrendteufe [m TVD]                                                                |
+| top_bedrock                 | Dezimalzahl    | Nein        | Top Fels [m MD]                                                                                   |
+| qt_top_bedrock_id           | ID (Codeliste) | Nein        | +/- Top Fels [m MD]                                                                               |
+| top_bedrock_tvd             | Dezimalzahl    | Nein        | Top Fels [m TVD]                                                                                  |
+| qt_top_bedrock_tvd_id       | ID (Codeliste) | Nein        | +/- Top Fels [m TVD]                                                                              |
+| has_groundwater             | True/False     | Nein        | Grundwasser                                                                                       |
+| lithology_top_bedrock_id    | ID (Codeliste) | Nein        | Lithologie Top Fels                                                                               |
+| chronostratigraphy_id       | ID (Codeliste) | Nein        | Chronostratigraphie Top Fels                                                                      |
+| lithostratigraphy_id        | ID (Codeliste) | Nein        | Lithostratigraphie Top Fels                                                                       |
+| attachments                 | Text           | Nein        | Kommaseparierte Dateinamen der Anhänge mit Dateiendung z.B. anhang_1.pdf,anhang_2.pdf             |
+
+### Format und Anforderungen an die Dateien der Anhänge
+
+Die Anhangsdatei muss den folgenden Anforderungen und dem Format entsprechen, damit sie erfolgreich in die Webapplikation importiert werden kann:
+
+* Die Datei muss im PDF-Format vorliegen und _.pdf_ als Dateiendung haben.
+* Die Datei darf maximal 200 MB gross sein.
+* Der Dateiname darf keine Leerzeichen enthalten.
 
 ## Validierung
 
-Beim Import der CSV-Datei wird der Importprozess die Bohrdaten validieren und mögliche Duplikate identifizieren. Die Duplikaterkennung erfolgt anhand der Koordinaten (mit einer Toleranz von +/- 2 Metern) und der Gesamttiefe des Bohrlochs. Wenn ein Duplikat entdeckt wird, wird der Import abgebrochen und es wird eine entsprechende Fehlermeldung angezeigt.
+### Fehlende Werte
+Für jeden bereitgestellten Header CSV-Datei muss für jede Zeile ein entsprechender Wert angegeben werden, oder leer gelassen werden.
 
-Während der Validierung werden auch die zugehörigen Anhänge überprüft. Wenn ein Anhang in der CSV-Datei referenziert wird, aber nicht in den bereitgestellten Anhangsdateien gefunden wird, wird ebenfalls eine Fehlermeldung angezeigt und der Import abgebrochen.
+### Duplikate
+Beim Importprozess der Bohrdaten wird eine Duplikatsvalidierung durchgeführt, um sicherzustellen, dass kein Bohrloch mehrmals in der Datei vorhanden ist oder bereits in der Datenbank existiert. 
+Die Duplikaterkennung erfolgt anhand der Koordinaten mit einer Toleranz von +/- 2 Metern und der Gesamttiefe des Bohrlochs.
 
-Es ist wichtig, die Daten in der CSV-Datei sorgfältig zu überprüfen und sicherzustellen, dass keine Duplikate vorhanden sind, bevor der Importvorgang gestartet wird.
+### Anhänge
+Überprüft wird, ob jeder Dateiname in der kommaseparierten Liste in dem _attachments_-Feld in der Liste der Anhänge vorhanden ist.
 
 ## Generelles
 
