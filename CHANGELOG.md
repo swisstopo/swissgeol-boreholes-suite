@@ -5,6 +5,7 @@
 ### Added
 
 - Added link to online help in import dialog.
+- Upload borehole attachments using borehole import feature.
 
 ### Changed
 
@@ -20,7 +21,6 @@
 - Add validation for duplicated boreholes during the cvs import.
 - Added functionality to add, edit and delete wateringresses, which belong to the hydrogeology observations of a borehole.
 - Use .NET API for managing borehole files.
-- Upload borehole attachments using borehole import feature.
 
 ### Changed
 
