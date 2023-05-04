@@ -121,6 +121,7 @@ public class HydrotestControllerTests
             BoreholeId = 1008105,
             ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 2).Id,
             TestKindId = context.Codelists.Where(c => c.Schema == "htest101").Single(c => c.Geolcode == 3).Id,
+            CodelistIds = new List<int> { 15203187, 15203189 },
         };
 
         try
@@ -128,7 +129,7 @@ public class HydrotestControllerTests
             context.Hydrotests.Add(originalHydrotest);
             await context.SaveChangesAsync();
 
-            var result = await controller.EditAsync(updatedHydrotest) as OkObjectResult;
+            var result = await controller.EditHydrotestAsync(updatedHydrotest) as OkObjectResult;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
@@ -147,6 +148,8 @@ public class HydrotestControllerTests
             Assert.AreEqual(updatedHydrotest.BoreholeId, editedHydrotest.BoreholeId);
             Assert.AreEqual(updatedHydrotest.ReliabilityId, editedHydrotest.ReliabilityId);
             Assert.AreEqual(updatedHydrotest.TestKindId, editedHydrotest.TestKindId);
+            Assert.AreEqual("Entnahme", editedHydrotest.Codelists!.Single(c => c.Schema == "htest102").De);
+            Assert.AreEqual("stationär", editedHydrotest.Codelists!.Single(c => c.Schema == "htest103").De);
         }
         finally
         {
@@ -161,7 +164,7 @@ public class HydrotestControllerTests
     {
         var nonExistentHydrotest = new Hydrotest { Id = 999 };
 
-        var result = await controller.EditAsync(nonExistentHydrotest) as NotFoundResult;
+        var result = await controller.EditHydrotestAsync(nonExistentHydrotest) as NotFoundResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(StatusCodes.Status404NotFound, result.StatusCode);
