@@ -1,0 +1,100 @@
+# Bohrdaten importieren
+
+Mit der Import-Funktion können geologische Bohrdaten mit einer zuvor erstellten CSV-Datei in einem Rutsch importiert werden. 
+
+## Anleitung
+
+### Schritt 1: CSV-Datei vorbereiten
+
+Zunächst sollte die CSV-Datei den Anforderungen und dem Format entsprechen, wie im Abschnitt [Format und Anforderungen an die CSV-Datei](#format-und-anforderungen-an-die-csv-datei) beschrieben.
+
+### Schritt 2: Navigieren zum Import-Bereich
+
+1. In der Webapplikation anmelden.
+2. In die Editor-Ansicht wechseln.
+3. Unten links auf die Schaltfläche _Importieren_ klicken.
+
+### Schritt 3: CSV-Datei hochladen
+
+1. Schaltfläche _Datei auswählen_ anklicken und die vorbereitete CSV-Datei auswählen.
+2. Unter _Arbeitsgruppe_ die Arbeitsgruppe auswählen, in welche die Bohrdaten importiert werden sollen.
+3. Import-Prozess mit einem Klick auf _Importieren_ starten.
+4. Warten, bis der Upload abgeschlossen ist und die Daten in der Anwendung verfügbar sind.
+
+## Format und Anforderungen an die CSV-Datei
+
+Die CSV-Datei muss den folgenden Anforderungen und dem Format entsprechen, damit sie erfolgreich in die Webapplikation importiert werden kann:
+
+* Die Datei muss im CSV-Format vorliegen und als Trennzeichen wird der Strichpunkt (;) verwendet.
+* Die Datei muss im UTF-8-Format gespeichert sein.
+* Die erste Zeile der CSV-Datei muss die Spaltenüberschriften enthalten.
+* Die Spaltenüberschriften müssen den vorgegebenen Feldnamen aus der Webapplikation entsprechen.
+* Die Werte in den Spalten müssen den erwarteten Datentypen entsprechen (z.B. numerisch für Tiefe, Text für Namen, etc.).
+* Die Datei sollte keine Leerzeilen oder ungültige Zeichen enthalten.
+
+### Format
+
+Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format vorliegen. Die erste Zeile wird als Spaltentitel/Spaltenname interpretiert, die restlichen Zeilen als Daten. 
+
+| Feldname                    | Datentyp       | Pflichtfeld | Beschreibung                              |
+|-----------------------------|----------------|-------------|-------------------------------------------|
+| id_geodin_shortname         | Zahl           | Nein        | ID GeODin-Shortname                       |
+| id_info_geol                | Zahl           | Nein        | ID InfoGeol                               |
+| id_original                 | Zahl           | Nein        | ID Original                               |
+| id_canton                   | Zahl           | Nein        | ID Kanton                                 |
+| id_geo_quat                 | Zahl           | Nein        | ID GeoQuat                                |
+| id_geo_mol                  | Zahl           | Nein        | ID GeoMol                                 |
+| id_geo_therm                | Zahl           | Nein        | ID GeoTherm                               |
+| id_top_fels                 | Zahl           | Nein        | ID TopFels                                |
+| id_geodin                   | Zahl           | Nein        | ID GeODin                                 |
+| id_kernlager                | Zahl           | Nein        | ID Kernlager                              |
+| original_name               | Text           | Ja          | Originalname                              |
+| project_name                | Text           | Nein        | Projektname                               |
+| alternate_name              | Text           | Nein        | Alternativer Name                         |
+| restriction_id              | ID (Codeliste) | Nein        | Beschränkung                              |
+| restriction_until           | Datum          | Nein        | Alternativer Name                         |
+| location_x                  | Dezimalzahl    | Ja          | Koordinate Ost LV95                       |
+| location_y                  | Dezimalzahl    | Ja          | Koordinate Nord LV95                      |
+| qt_location_id              | ID (Codeliste) | Nein        | +/- Koordinaten [m]                       |
+| elevation_z                 | Dezimalzahl    | Nein        | Terrainhöhe [m ü.M.]                      |
+| qt_elevation_id             | ID (Codeliste) | Nein        | +/- Terrainhöhe [m]                       |
+| reference_elevation         | Dezimalzahl    | Nein        | Referenz Ansatzhöhe [m ü.M.]              |
+| reference_elevation_type_id | ID (Codeliste) | Nein        | Typ der Referenz Ansatzhöhe               |
+| qt_reference_elevation_id   | ID (Codeliste) | Nein        | +/- Referenz Ansatzhöhe [m]               |
+| hrs_id                      | ID (Codeliste) | Nein        | Höhenreferenzsystem                       |
+| kind_id                     | ID (Codeliste) | Nein        | Bohrtyp                                   |
+| drilling_date               | Datum          | Nein        | Datum Bohrende                            |
+| drilling_diameter           | Dezimalzahl    | Nein        | Bohrdurchmesser [mm]                      |
+| drilling_method_id          | ID (Codeliste) | Nein        | Bohrmethode                               |
+| purpose_id                  | ID (Codeliste) | Nein        | Bohrzweck                                 |
+| spud_date                   | Datum          | Nein        | Datum Bohrbeginn                          |
+| cuttings_id                 | ID (Codeliste) | Nein        | Bohrgut                                   |
+| status_id                   | ID (Codeliste) | Nein        | Bohrungsstatus                            |
+| inclination                 | Dezimalzahl    | Nein        | Inklination beim Bohransatzpunkt [°]      |
+| inclination_direction       | Dezimalzahl    | Nein        | Einfallsrichtung beim Bohransatzpunkt [°] |
+| qt_inclination_direction_id | ID (Codeliste) | Nein        | Inc. / Richtung Genauigkeit               |
+| remarks                     | Text           | Nein        | Bemerkungen                               |
+| total_depth                 | Dezimalzahl    | Nein        | Bohrlochlänge [m MD]                      |
+| qt_depth_id                 | ID (Codeliste) | Nein        | +/- Bohrlochlänge [m MD]                  |
+| total_depth_tvd             | Dezimalzahl    | Nein        | Vertikale Bohrendteufe [m TVD]            |
+| qt_total_depth_tvd_id       | ID (Codeliste) | Nein        | +/- Vertikale Bohrendteufe [m TVD]        |
+| top_bedrock                 | Dezimalzahl    | Nein        | Top Fels [m MD]                           |
+| qt_top_bedrock_id           | ID (Codeliste) | Nein        | +/- Top Fels [m MD]                       |
+| top_bedrock_tvd             | Dezimalzahl    | Nein        | Top Fels [m TVD]                          |
+| qt_top_bedrock_tvd_id       | ID (Codeliste) | Nein        | +/- Top Fels [m TVD]                      |
+| has_groundwater             | True/False     | Nein        | Grundwasser                               |
+| lithology_top_bedrock_id    | ID (Codeliste) | Nein        | Lithologie Top Fels                       |
+| chronostratigraphy_id       | ID (Codeliste) | Nein        | Chronostratigraphie Top Fels              |
+| lithostratigraphy_id        | ID (Codeliste) | Nein        | Lithostratigraphie Top Fels               |
+
+## Validierung
+
+Beim Import der CSV-Datei wird der Importprozess die Bohrdaten validieren und mögliche Duplikate identifizieren. Die Duplikaterkennung erfolgt anhand der Koordinaten (mit einer Toleranz von +/- 2 Metern) und der Gesamttiefe des Bohrlochs. Wenn ein Duplikat entdeckt wird, wird der Import abgebrochen und es wird eine entsprechende Fehlermeldung angezeigt.
+
+Während der Validierung werden auch die zugehörigen Anhänge überprüft. Wenn ein Anhang in der CSV-Datei referenziert wird, aber nicht in den bereitgestellten Anhangsdateien gefunden wird, wird ebenfalls eine Fehlermeldung angezeigt und der Import abgebrochen.
+
+Es ist wichtig, die Daten in der CSV-Datei sorgfältig zu überprüfen und sicherzustellen, dass keine Duplikate vorhanden sind, bevor der Importvorgang gestartet wird.
+
+## Generelles
+
+Es ist wichtig zu beachten, dass der Import beim ersten Fehler abgebrochen wird und keine teilweisen Importe stattfinden. Entweder werden alle Daten importiert, oder es findet kein Import statt. Der Import unterstützt keine Updates von bestehenden Daten.

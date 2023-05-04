@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added link to online help in import dialog.
+
 ### Changed
 
 - Changed style of the inputs when editing _lithological_descriptions_ and _facies_descriptions_ to _outlined_.
