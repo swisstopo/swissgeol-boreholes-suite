@@ -53,6 +53,9 @@
     <None Update="TestData\borehole_attachment_with_wrong_extension.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\duplicateBoreholesInDbButDifferentWorkgroup.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\empty_attachment.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

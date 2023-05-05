@@ -63,25 +63,23 @@ public class BoreholeFileControllerTest
         OkResult okResult = (OkResult)response;
         Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
 
-        // Get all boreholeFiles of borehole
-        var boreholeFilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
-        Assert.IsNotNull(boreholeFilesOfBorehole.Value);
+        // Get uploaded file from db
+        var file = context.Files.Single(f => f.Name == fileName);
 
         // Download uploaded file
-        response = await controller.Download(boreholeFilesOfBorehole.Value.Last().FileId);
+        response = await controller.Download(file.Id);
 
         var fileContentResult = (FileContentResult)response;
         string contentResult = Encoding.ASCII.GetString(fileContentResult.FileContents);
         Assert.AreEqual(content, contentResult);
 
         // Get file
-        var file = context.Files.Single(f => f.Name == fileName);
         Assert.AreNotEqual(null, file.Hash);
         Assert.AreEqual(DateTime.UtcNow.Date, file.Created?.Date);
         Assert.AreEqual(defaultUser.Name, file.CreatedBy.Name);
         Assert.AreEqual(defaultUser.Id, file.CreatedById);
 
-        var boreholefile = context.BoreholeFiles.Single(bf => bf.FileId == boreholeFilesOfBorehole.Value.Last().FileId);
+        var boreholefile = context.BoreholeFiles.Single(bf => bf.FileId == file.Id);
         Assert.AreEqual(DateTime.UtcNow.Date, boreholefile.Created?.Date);
         Assert.AreEqual(defaultUser.Name, boreholefile.CreatedBy.Name);
         Assert.AreEqual(defaultUser.Id, boreholefile.CreatedById);

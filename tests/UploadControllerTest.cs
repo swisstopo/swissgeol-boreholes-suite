@@ -571,13 +571,14 @@ Frank Place;2000000;1000000;borehole_attachment_1.pdf,borehole_attachment_2.pdf"
     [TestMethod]
     public async Task UploadDuplicateBoreholesInDbShouldReturnError()
     {
-        // Create Boreholes with same LocationX, LocationY and TotalDepth as in provided csv.
+        // Create Boreholes with same LocationX, LocationY and TotalDepth as in provided csv and with the same WorkgroupId as provided
         context.Boreholes.Add(new Borehole
         {
             Id = 2100000,
             LocationX = 2100000,
             LocationY = 1100000,
             TotalDepth = 855,
+            WorkgroupId = 1,
         });
         context.Boreholes.Add(new Borehole
         {
@@ -585,6 +586,7 @@ Frank Place;2000000;1000000;borehole_attachment_1.pdf,borehole_attachment_2.pdf"
             LocationX = 2500000,
             LocationY = 1500000,
             TotalDepth = null,
+            WorkgroupId = 1,
         });
         context.SaveChanges();
 
@@ -601,6 +603,44 @@ Frank Place;2000000;1000000;borehole_attachment_1.pdf,borehole_attachment_2.pdf"
 
         CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row1"]);
         CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row2"]);
+    }
+
+    [TestMethod]
+    public async Task UploadDuplicateBoreholesInDbButDifferentWorkgroupShouldUploadBoreholes()
+    {
+        httpClientFactoryMock
+           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+           .Returns(() => new HttpClient())
+           .Verifiable();
+
+        var maxWorkgroudId = context.Workgroups.Max(w => w.Id);
+        var minWorkgroudId = context.Workgroups.Min(w => w.Id);
+
+        // Create Boreholes with same LocationX, LocationY and TotalDepth as in provided csv, but different WorkgroupId as provided
+        context.Boreholes.Add(new Borehole
+        {
+            Id = 2100000,
+            LocationX = 2100000,
+            LocationY = 1100000,
+            TotalDepth = 855,
+            WorkgroupId = maxWorkgroudId,
+        });
+        context.Boreholes.Add(new Borehole
+        {
+            Id = 2100001,
+            LocationX = 2500000,
+            LocationY = 1500000,
+            TotalDepth = null,
+        });
+        context.SaveChanges();
+
+        var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInDbButDifferentWorkgroup.csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: minWorkgroudId, boreholeCsvFile);
+
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(2, okResult.Value);
     }
 
     [TestMethod]
