@@ -210,7 +210,7 @@ public class BoreholeFileUploadService
     private MinioClient CreateMinioClient()
     {
         // Create basic client
-        var client = new MinioClient().WithEndpoint(endpoint).WithSSL(false);
+        var client = new MinioClient().WithEndpoint(endpoint).WithSSL(secure);
 
         // Add region if specified
         if (!string.IsNullOrEmpty(region)) client = client.WithRegion(region);
