@@ -5,6 +5,7 @@
 ### Added
 
 - Added link to online help in import dialog.
+- Upload borehole attachments using borehole import feature.
 
 ### Changed
 

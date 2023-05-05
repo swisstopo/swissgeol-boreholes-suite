@@ -50,8 +50,8 @@ public class BoreholeFileUploadService
         // Check any file with the same hash already exists in the database.
         var fileId = context.Files.FirstOrDefault(f => f.Hash == base64Hash)?.Id;
 
-        // Create a transaction to ensure the file is only linked to the borehole if it is successfully uploaded.
-        using var transaction = context.Database.BeginTransaction();
+        // Use transaction to ensure data is only stored to db if the file upload was sucessful. Only create a transaction if there is not already one from the calling method.
+        using var transaction = context.Database.CurrentTransaction == null ? await context.Database.BeginTransactionAsync().ConfigureAwait(false) : null;
         try
         {
             var userName = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Name).Value;
@@ -97,7 +97,7 @@ public class BoreholeFileUploadService
                 await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext).ConfigureAwait(false);
             }
 
-            await transaction.CommitAsync().ConfigureAwait(false);
+            if (transaction != null) await transaction.CommitAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {

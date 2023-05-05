@@ -126,30 +126,29 @@ public class UploadController : ControllerBase
             }
 
             // Save the changes to the db, upload attachments to cloud storage and commit changes to db on success.
-            using (var transaction = await context.Database.BeginTransactionAsync().ConfigureAwait(false))
-            {
-                // Add boreholes to database.
-                await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
-                var result = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
+            using var transaction = await context.Database.BeginTransactionAsync().ConfigureAwait(false);
 
-                // Add attachments to borehole.
-                if (attachments != null)
+            // Add boreholes to database.
+            await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
+            var result = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
+
+            // Add attachments to borehole.
+            if (attachments != null)
+            {
+                var boreholeImportsWithAttachments = boreholeImports.Where(x => x.Attachments?.Any() == true).ToList();
+                foreach (var boreholeImport in boreholeImportsWithAttachments)
                 {
-                    var boreholeImportsWithAttachments = boreholeImports.Where(x => x.Attachments?.Any() == true).ToList();
-                    foreach (var boreholeImport in boreholeImportsWithAttachments)
+                    var attachmentFileNames = boreholeImport.Attachments?.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture)).ToList();
+                    var attachmentFiles = attachments.Where(x => attachmentFileNames != null && attachmentFileNames.Contains(x.FileName.Replace(" ", "", StringComparison.InvariantCulture))).ToList();
+                    foreach (var attachmentFile in attachmentFiles)
                     {
-                        var attachmentFileNames = boreholeImport.Attachments?.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture)).ToList();
-                        var attachmentFiles = attachments.Where(x => attachmentFileNames != null && attachmentFileNames.Contains(x.FileName.Replace(" ", "", StringComparison.InvariantCulture))).ToList();
-                        foreach (var attachmentFile in attachmentFiles)
-                        {
-                            await boreholeFileUploadService.UploadFileAndLinkToBorehole(attachmentFile, boreholeImport.Id).ConfigureAwait(false);
-                        }
+                        await boreholeFileUploadService.UploadFileAndLinkToBorehole(attachmentFile, boreholeImport.Id).ConfigureAwait(false);
                     }
                 }
-
-                await transaction.CommitAsync().ConfigureAwait(false);
-                return result;
             }
+
+            await transaction.CommitAsync().ConfigureAwait(false);
+            return result;
         }
         catch (Exception ex) when (ex is HeaderValidationException || ex is ReaderException)
         {
@@ -215,7 +214,9 @@ public class UploadController : ControllerBase
             // Checks if each file name in the comma separated string is present in the list of the attachments.
             var attachmentFileNamesToLink = boreholeFromFile.value.Attachments?
                 .Split(",")
-                .Select(s => s.Replace(" ", "", StringComparison.OrdinalIgnoreCase)).ToList()
+                .Select(s => s.Replace(" ", "", StringComparison.OrdinalIgnoreCase))
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToList()
                 ?? new List<string>();
 
             foreach (var attachmentFileNameToLink in attachmentFileNamesToLink)

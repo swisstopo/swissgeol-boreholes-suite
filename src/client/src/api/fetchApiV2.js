@@ -69,11 +69,11 @@ export async function fetchApiV2(
 }
 
 // boreholes
-export const importBoreholes = async (workgroupId, csvFile) => {
+export const importBoreholes = async (workgroupId, combinedFormData) => {
   return await fetchApiV2(
     `upload?workgroupId=${workgroupId}`,
     "POST",
-    csvFile,
+    combinedFormData,
     true,
   );
 };

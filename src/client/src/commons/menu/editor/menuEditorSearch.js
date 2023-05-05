@@ -5,6 +5,7 @@ import { withTranslation } from "react-i18next";
 import { withRouter } from "react-router-dom";
 import { NumericFormat } from "react-number-format";
 import TranslationText from "../../form/translationText";
+import { FileDropzone } from "../../files/fileDropzone";
 
 import {
   Button,
@@ -39,12 +40,17 @@ class MenuEditorSearch extends React.Component {
       modal: false,
       upload: false,
       selectedFile: null,
+      selectedBoreholeAttachments: null,
       scroller: false,
       workgroup: wgs !== null && wgs.length > 0 ? wgs[0].id : null,
       validationErrorModal: false,
       errosResponse: null,
     };
   }
+
+  handleBoreholeAttachmentChange = attachmentsFromDropzone => {
+    this.setState({ selectedBoreholeAttachments: attachmentsFromDropzone });
+  };
 
   componentDidMount() {
     if (isMounted) {
@@ -241,15 +247,16 @@ class MenuEditorSearch extends React.Component {
                   "total_depth_tvd;qt_total_depth_tvd_id;top_bedrock;" +
                   "qt_top_bedrock_id;top_bedrock_tvd;qt_top_bedrock_tvd_id;" +
                   "has_groundwater;lithology_top_bedrock_id;" +
-                  "chronostratigraphy_id;lithostratigraphy_id;"}
+                  "chronostratigraphy_id;lithostratigraphy_id;attachments;"}
               </div>
               <span
                 style={{
                   fontWeight: "bold",
                 }}>
-                <TranslationText id="uploadFile" />:
+                <TranslationText id="importBoreholeFile" />:
               </span>
               <div
+                data-cy="import-boreholeFile-input"
                 style={{
                   padding: "1em",
                 }}>
@@ -263,6 +270,27 @@ class MenuEditorSearch extends React.Component {
                     });
                   }}
                   type="file"
+                  aria-label="import-boreholeFile-input"
+                />
+              </div>
+              <span
+                style={{
+                  fontWeight: "bold",
+                }}>
+                <TranslationText id="importBoreholeAttachment" />:
+              </span>
+              <div
+                data-cy="import-boreholeFile-attachments-input"
+                style={{
+                  padding: "1em",
+                }}>
+                <FileDropzone
+                  onHandleBoreholeAttachmentChange={
+                    this.handleBoreholeAttachmentChange
+                  }
+                  acceptedFileExtension=".pdf"
+                  maxFilesToSelectAtOnce="10"
+                  maxFilesToUpload="100"
                 />
               </div>
             </div>
@@ -322,9 +350,18 @@ class MenuEditorSearch extends React.Component {
                 },
                 () => {
                   if (this.state.upload === true) {
+                    let combinedFormData = new FormData();
+                    if (this.state.selectedFile !== null) {
+                      combinedFormData = this.state.selectedFile;
+                      this.state.selectedBoreholeAttachments.forEach(
+                        attachment => {
+                          combinedFormData.append("attachments", attachment);
+                        },
+                      );
+                    }
                     importBoreholes(
                       this.state.workgroup,
-                      this.state.selectedFile,
+                      combinedFormData,
                     ).then(response => {
                       this.setState(
                         {

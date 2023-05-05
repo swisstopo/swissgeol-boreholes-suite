@@ -164,6 +164,25 @@ public class UploadControllerTest
     }
 
     [TestMethod]
+    public async Task UploadShouldSaveBoreholesWithNotAllHaveAttachmentsAsync()
+    {
+        httpClientFactoryMock
+           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+           .Returns(() => new HttpClient())
+           .Verifiable();
+
+        var boreholeCsvFormFile = GetFormFileByExistingFile("boreholes_not_all_have_attachments.csv");
+        var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
+        var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(3, okResult.Value);
+    }
+
+    [TestMethod]
     public async Task UploadShouldSaveBoreholeWithAttachmentFileNamesMixedCaseAsync()
     {
         httpClientFactoryMock
