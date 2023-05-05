@@ -1,6 +1,7 @@
 ﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Minio;
+using Minio.Credentials;
 using Minio.Exceptions;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -19,6 +20,8 @@ public class BoreholeFileUploadService
     private readonly string endpoint;
     private readonly string accessKey;
     private readonly string secretKey;
+    private readonly string region;
+    private readonly bool secure;
 
     public BoreholeFileUploadService(BdmsContext context, IConfiguration configuration, ILogger<BoreholeFileUploadService> logger, IHttpContextAccessor httpContextAccessor)
     {
@@ -29,6 +32,8 @@ public class BoreholeFileUploadService
         endpoint = configuration["S3:ENDPOINT"];
         accessKey = configuration["S3:ACCESS_KEY"];
         secretKey = configuration["S3:SECRET_KEY"];
+        region = configuration["S3:REGION"];
+        secure = configuration["S3:SECURE"] == "1" ? true : false;
     }
 
     /// <summary>
@@ -202,5 +207,21 @@ public class BoreholeFileUploadService
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Corresponding to MinIO documentation.")]
-    private MinioClient CreateMinioClient() => new MinioClient().WithEndpoint(endpoint).WithCredentials(accessKey, secretKey).WithSSL(false).Build();
+    private MinioClient CreateMinioClient()
+    {
+        // Create basic client
+        var client = new MinioClient().WithEndpoint(endpoint).WithSSL(false);
+
+        // Add region if specified
+        if (!string.IsNullOrEmpty(region)) client = client.WithRegion(region);
+
+        // if access key and secret key are specified, use them
+        if (!string.IsNullOrEmpty(accessKey) && !string.IsNullOrEmpty(secretKey))
+        {
+            return client.WithCredentials(accessKey, secretKey).Build();
+        }
+
+        // Otherwise, use IAM role
+        return client.WithCredentialsProvider(new IAMAWSProvider()).Build();
+    }
 }
