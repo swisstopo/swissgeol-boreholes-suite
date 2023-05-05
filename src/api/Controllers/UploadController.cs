@@ -61,7 +61,7 @@ public class UploadController : ControllerBase
 
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile);
 
-            ValidateBoreholeImports(boreholeImports, attachments);
+            ValidateBoreholeImports(workgroupId, boreholeImports, attachments);
             if (!ModelState.IsValid)
             {
                 return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
@@ -161,15 +161,18 @@ public class UploadController : ControllerBase
         }
     }
 
-    private void ValidateBoreholeImports(List<BoreholeImport> boreholesFromFile, IList<IFormFile>? attachments = null)
+    private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, IList<IFormFile>? attachments = null)
     {
+        // Get boreholes from db with same workgroupId as provided.
         var boreholesFromDb = context.Boreholes
+            .Where(b => b.WorkgroupId == workgroupId)
             .AsNoTracking()
-            .Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY })
+            .Select(b => new { b.Id, b.TotalDepth, b.LocationX, b.LocationY })
             .ToList();
 
+        // Combine boreholes from db with boreholes from the provided list
         var boreholesCombined = boreholesFromDb
-            .Concat(boreholesFromFile.Select(x => new { x.Id, x.TotalDepth, x.LocationX, x.LocationY }))
+            .Concat(boreholesFromFile.Select(b => new { b.Id, b.TotalDepth, b.LocationX, b.LocationY }))
             .ToList();
 
         var nullOrEmptyMsg = "Field '{0}' is required.";
