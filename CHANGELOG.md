@@ -13,6 +13,9 @@
 - Changed style of the inputs when editing _lithological_descriptions_ and _facies_descriptions_ to _outlined_.
 - Borehole duplicates are only identified within the same workgroup when importing boreholes
 
+### Fixed
+- Fix and extend chronostratigraphy geolcodes.
+
 ## v2.0.298 - 2023-04-18
 
 ### Added
