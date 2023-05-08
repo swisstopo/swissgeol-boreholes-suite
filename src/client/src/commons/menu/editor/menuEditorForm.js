@@ -319,10 +319,14 @@ class MenuEditorForm extends React.Component {
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
-                <List.Icon
-                  name="align justify"
-                  size="large"
-                  verticalAlign="middle"
+                <img
+                  alt="Water ingress"
+                  src={process.env.PUBLIC_URL + "/img/Hydrogeology.png"}
+                  style={{
+                    height: "21px",
+                    paddingRight: "1em",
+                    opacity: this.state.completionIsVisible ? 1 : 0.5,
+                  }}
                 />
                 <List.Content>
                   <List.Header as="h3" data-cy="hydrogeology-menu-item">
