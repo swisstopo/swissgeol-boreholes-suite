@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Data.SqlTypes;
 using System.Net;
 using System.Security.Claims;
 using System.Text.RegularExpressions;

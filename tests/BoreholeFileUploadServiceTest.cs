@@ -21,7 +21,7 @@ public class BoreholeFileUploadServiceTest
     private BdmsContext context;
     private BoreholeFileUploadService boreholeFileUploadService;
     private string bucketName;
-    private Models.User defaultUser;
+    private Models.User adminUser;
 
     [TestInitialize]
     public void TestInitialize()
@@ -29,11 +29,11 @@ public class BoreholeFileUploadServiceTest
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
         context = ContextFactory.CreateContext();
-        defaultUser = context.Users.FirstOrDefault() ?? throw new InvalidOperationException("No User found in database.");
+        adminUser = context.Users.FirstOrDefault(u => u.Name == "admin") ?? throw new InvalidOperationException("No User found in database.");
 
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
-        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, defaultUser.Name) }));
+        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, adminUser.Name) }));
         var loggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
         loggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
         boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object, contextAccessorMock.Object);
