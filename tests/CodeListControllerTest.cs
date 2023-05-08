@@ -31,7 +31,7 @@ public class CodeListControllerTest
     public async Task GetAllEntriesAsync()
     {
         var codeLists = await controller.GetAsync();
-        Assert.AreEqual(2445, codeLists.Count());
+        Assert.AreEqual(2447, codeLists.Count());
     }
 
     [TestMethod]
@@ -45,7 +45,7 @@ public class CodeListControllerTest
     public async Task GetEntriesBySchema()
     {
         var codeLists = await controller.GetAsync("custom.chronostratigraphy_top_bedrock");
-        Assert.AreEqual(135, codeLists.Count());
+        Assert.AreEqual(137, codeLists.Count());
         var codeListToTest = codeLists.Single(c => c.Id == 15001070);
         Assert.AreEqual(15001070, codeListToTest.Id);
         Assert.AreEqual(15001070, codeListToTest.Geolcode);
@@ -56,7 +56,7 @@ public class CodeListControllerTest
         Assert.AreEqual("Middle Jurassic", codeListToTest.En);
         Assert.AreEqual("Jurassique moyen", codeListToTest.Fr);
         Assert.AreEqual("Giurassico Medio", codeListToTest.It);
-        Assert.AreEqual(70, codeListToTest.Order);
+        Assert.AreEqual(700, codeListToTest.Order);
         Assert.AreEqual("jm", codeListToTest.Code);
         Assert.AreEqual(new LTree("15001001.15001049.15001065.15001070"), codeListToTest.Path);
     }
