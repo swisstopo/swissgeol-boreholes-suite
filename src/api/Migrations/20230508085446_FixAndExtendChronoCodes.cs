@@ -27,7 +27,7 @@ WHERE geolcode = 15001016;
 
 UPDATE bdms.codelist
 SET order_cli = order_cli * 10
-WHERE schema_cli = 'custom.chronostratigraphy_top_bedrock'
+WHERE schema_cli = 'custom.chronostratigraphy_top_bedrock';
 
 INSERT INTO bdms.codelist (id_cli, geolcode, code_cli, schema_cli, text_cli_de, description_cli_de, text_cli_fr, description_cli_fr, text_cli_it, description_cli_it, text_cli_en, description_cli_en, conf_cli, order_cli, path_cli)
 VALUES
