@@ -53,6 +53,27 @@
     <None Update="TestData\borehole_attachment_with_wrong_extension.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\data_sets\import_litho_diff_in_strati_attributes_for_same_starti_id\borehole.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\data_sets\import_litho_diff_in_strati_attributes_for_same_starti_id\litho.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\data_sets\import_litho_missing_required_headers\borehole.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\data_sets\import_litho_missing_required_headers\litho.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\data_sets\import_litho_missing_required_fields\borehole.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\data_sets\import_litho_missing_required_fields\litho.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\data_sets\import_litho\litho.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\duplicateBoreholesInDbButDifferentWorkgroup.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -63,6 +84,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\duplicateBoreholesInFile.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\data_sets\import_litho\borehole.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\no_data_but_required_headers.csv">
