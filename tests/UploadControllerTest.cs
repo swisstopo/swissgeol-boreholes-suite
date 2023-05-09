@@ -162,8 +162,8 @@ public class UploadControllerTest
            .Verifiable();
 
         var boreholeCsvFormFile = GetFormFileByExistingFile("borehole_with_attachments.csv");
-        var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
-        var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
+        var firstPdfFormFile = GetRandomPDFFile("attachment_1.pdf");
+        var secondPdfFormFile = GetRandomPDFFile("attachment_2.pdf");
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
