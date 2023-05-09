@@ -162,7 +162,7 @@ public class HydrotestControllerTests
     [TestMethod]
     public async Task EditAsyncInvalidEntityReturnsNotFound()
     {
-        var nonExistentHydrotest = new Hydrotest { Id = 999 };
+        var nonExistentHydrotest = new Hydrotest { Id = 678135, TestKindId = 344179 };
 
         var result = await controller.EditHydrotestAsync(nonExistentHydrotest) as NotFoundResult;
 

@@ -44,6 +44,16 @@ public class HydrotestController : ControllerBase
     }
 
     /// <summary>
+    /// Asynchronously creates the <paramref name="hydrotest"/> specified.
+    /// </summary>
+    /// <param name="hydrotest">The hydrotest to create.</param>
+    [HttpPost]
+    public virtual async Task<IActionResult> CreateAsync(Hydrotest hydrotest)
+    {
+        return await ProcessHydrotestAsync(hydrotest).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Asynchronously updates the <paramref name="hydrotest"/> specified.
     /// </summary>
     /// <param name="hydrotest">The hydrotest to update.</param>
@@ -51,49 +61,7 @@ public class HydrotestController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> EditHydrotestAsync(Hydrotest hydrotest)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        if (!AreHydrotestCodelistsCompatible(hydrotest))
-        {
-            return BadRequest("You submitted codelists for evaluationMethod, flowDirection or hydrotestResults that are not compatible with the provided testKind.");
-        }
-
-        var hydrotestToEdit = await context.Hydrotests
-            .Include(h => h.Codelists)
-            .Include(h => h.HydrotestResults)
-            .SingleOrDefaultAsync(w => w.Id == hydrotest.Id).ConfigureAwait(false);
-
-        if (hydrotestToEdit == null)
-        {
-            return NotFound();
-        }
-
-        context.Entry(hydrotestToEdit).CurrentValues.SetValues(hydrotest);
-
-        if (hydrotest.CodelistIds != null)
-        {
-            hydrotestToEdit = await GetCodelistsFromIds(hydrotest.CodelistIds, hydrotestToEdit).ConfigureAwait(false);
-        }
-
-        hydrotestToEdit.HydrotestResults = hydrotest.HydrotestResults;
-
-        return await SaveChangesAsync(() => Ok(hydrotest)).ConfigureAwait(false);
-    }
-
-    private async Task<Hydrotest> GetCodelistsFromIds(ICollection<int> codelistIds, Hydrotest hydrotest)
-    {
-        // Fetch related codelists from the database
-        var relatedCodelists = await context.Codelists
-            .Where(c => codelistIds.Contains(c.Id))
-            .ToListAsync().ConfigureAwait(false);
-
-        // Initialize and replace the existing codelists with the fetched ones
-        hydrotest.Codelists = relatedCodelists;
-
-        return hydrotest;
+        return await ProcessHydrotestAsync(hydrotest, true).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -113,21 +81,19 @@ public class HydrotestController : ControllerBase
         return await SaveChangesAsync(Ok).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Asynchronously creates the <paramref name="hydrotest"/> specified.
-    /// </summary>
-    /// <param name="hydrotest">The hydrotest to create.</param>
-    [HttpPost]
-    public virtual async Task<IActionResult> CreateAsync(Hydrotest hydrotest)
+    private async Task<IActionResult> ProcessHydrotestAsync(Hydrotest hydrotest, bool isEdit = false)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        if (!AreHydrotestCodelistsCompatible(hydrotest))
+        if (hydrotest.TestKindId >= 15203170 && hydrotest.TestKindId < 15203186)
         {
-            return BadRequest("You submitted codelists for evaluationMethod, flowDirection or hydrotestResults that are not compatible with the provided testKind.");
+            if (!AreHydrotestCodelistsCompatible(hydrotest))
+            {
+                return BadRequest("You submitted codelists for evaluationMethod, flowDirection, or hydrotestResults that are not compatible with the provided testKind.");
+            }
         }
 
         if (hydrotest.CodelistIds != null)
@@ -135,8 +101,41 @@ public class HydrotestController : ControllerBase
             hydrotest = await GetCodelistsFromIds(hydrotest.CodelistIds, hydrotest).ConfigureAwait(false);
         }
 
-        await context.AddAsync(hydrotest).ConfigureAwait(false);
+        if (isEdit)
+        {
+            var hydrotestToEdit = await context.Hydrotests
+                .Include(h => h.Codelists)
+                .Include(h => h.HydrotestResults)
+                .SingleOrDefaultAsync(w => w.Id == hydrotest.Id).ConfigureAwait(false);
+
+            if (hydrotestToEdit == null)
+            {
+                return NotFound();
+            }
+
+            context.Entry(hydrotestToEdit).CurrentValues.SetValues(hydrotest);
+            hydrotestToEdit.Codelists = hydrotest.Codelists;
+            hydrotestToEdit.HydrotestResults = hydrotest.HydrotestResults;
+        }
+        else
+        {
+            await context.AddAsync(hydrotest).ConfigureAwait(false);
+        }
+
         return await SaveChangesAsync(() => Ok(hydrotest)).ConfigureAwait(false);
+    }
+
+    private async Task<Hydrotest> GetCodelistsFromIds(ICollection<int> codelistIds, Hydrotest hydrotest)
+    {
+        // Fetch related codelists from the database
+        var relatedCodelists = await context.Codelists
+            .Where(c => codelistIds.Contains(c.Id))
+            .ToListAsync().ConfigureAwait(false);
+
+        // Initialize and replace the existing codelists with the fetched ones
+        hydrotest.Codelists = relatedCodelists;
+
+        return hydrotest;
     }
 
     private bool AreHydrotestCodelistsCompatible(Hydrotest hydrotest)
