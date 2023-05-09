@@ -274,7 +274,7 @@ class MenuEditorForm extends React.Component {
               alt="Hydrogeology"
               src={process.env.PUBLIC_URL + "/img/Hydrogeology.png"}
               style={{
-                height: "21px",
+                height: "1.5em",
                 paddingRight: "1em",
                 opacity: this.state.completionIsVisible ? 1 : 0.5,
               }}
@@ -319,10 +319,14 @@ class MenuEditorForm extends React.Component {
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
-                <List.Icon
-                  name="align justify"
-                  size="large"
-                  verticalAlign="middle"
+                <img
+                  alt="Water ingress"
+                  src={process.env.PUBLIC_URL + "/img/Hydrogeology.png"}
+                  style={{
+                    height: "1.5em",
+                    paddingRight: "1em",
+                    opacity: this.state.completionIsVisible ? 1 : 0.5,
+                  }}
                 />
                 <List.Content>
                   <List.Header as="h3" data-cy="hydrogeology-menu-item">
@@ -353,7 +357,7 @@ class MenuEditorForm extends React.Component {
               alt="Completion"
               src={process.env.PUBLIC_URL + "/img/Completion.png"}
               style={{
-                height: "21px",
+                height: "1.5em",
                 paddingRight: "1em",
                 opacity: this.state.completionIsVisible ? 1 : 0.5,
               }}
@@ -402,7 +406,7 @@ class MenuEditorForm extends React.Component {
                   alt="casing"
                   src={process.env.PUBLIC_URL + "/img/Casing.png"}
                   style={{
-                    height: "19px",
+                    height: "1.5em",
                     paddingRight: "1em",
                     opacity:
                       location.pathname ===
@@ -441,7 +445,7 @@ class MenuEditorForm extends React.Component {
                   alt="Instruments"
                   src={process.env.PUBLIC_URL + "/img/Instruments.png"}
                   style={{
-                    height: "19px",
+                    height: "1.5em",
                     paddingRight: "1em",
                     opacity:
                       location.pathname ===
@@ -480,7 +484,7 @@ class MenuEditorForm extends React.Component {
                   alt="Filling"
                   src={process.env.PUBLIC_URL + "/img/Filling.png"}
                   style={{
-                    height: "19px",
+                    height: "1.5em",
                     paddingRight: "1em",
                     opacity:
                       location.pathname ===

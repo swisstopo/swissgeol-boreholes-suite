@@ -490,8 +490,6 @@ class BoreholeForm extends React.Component {
             render={() => (
               <WaterIngress
                 isEditable={isEditable}
-                item={null}
-                selectItem={null}
                 boreholeId={borehole.data.id}
               />
             )}
