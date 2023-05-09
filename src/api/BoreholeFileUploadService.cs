@@ -224,9 +224,9 @@ public class BoreholeFileUploadService
                 secretKey = credentials.GetCredentials().SecretKey;
                 accessKey = credentials.GetCredentials().AccessKey;
             }
-            catch
+            catch (Exception ex)
             {
-                logger.LogError("Error during get credentials from InstanceProfileAWSCredentials");
+                logger.LogError("Error during get credentials from InstanceProfileAWSCredentials", ex);
             }
         }
 
