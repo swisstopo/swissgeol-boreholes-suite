@@ -29,7 +29,15 @@ public class UploadControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "S3:ACCESS_KEY", "REDSQUIRREL" },
+            { "S3:BUCKET_NAME", "swissforages" },
+            { "S3:ENDPOINT", "localhost:9000" },
+            { "S3:SECRET_KEY", "YELLOWMONKEY" },
+            { "S3:SECURE", "0" },
+            { "S3:REGION", "" },
+        }).Build();
 
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
