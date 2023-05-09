@@ -80,8 +80,8 @@ public class UploadControllerTest
            .Returns(() => new HttpClient())
            .Verifiable();
 
-        var boreholeCsvFile = GetFormFileByExistingFile("import_litho/borehole.csv");
-        var lithoCsvFile = GetFormFileByExistingFile("import_litho/litho.csv");
+        var boreholeCsvFile = GetFormFileByExistingFile("data_sets/import_litho/borehole.csv");
+        var lithoCsvFile = GetFormFileByExistingFile("data_sets/import_litho/litho.csv");
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: lithoCsvFile, attachments: null);
 
@@ -100,11 +100,9 @@ public class UploadControllerTest
         // First stratigraphy
         var stratigraphy = borehole.Stratigraphies.First();
         Assert.AreEqual(2, stratigraphy.Layers.Count);
-        var lithology = stratigraphy.Layers.First();
-        Assert.AreEqual(0.125, lithology.FromDepth);
+        var lithology = stratigraphy.Layers.First(l => l.FromDepth == 0.125);
         Assert.AreEqual(100, lithology.ToDepth);
-        lithology = stratigraphy.Layers.Skip(1).First();
-        Assert.AreEqual(11, lithology.FromDepth);
+        lithology = stratigraphy.Layers.First(l => l.FromDepth == 11);
         Assert.AreEqual(12, lithology.ToDepth);
 
         // Second stratigraphy
