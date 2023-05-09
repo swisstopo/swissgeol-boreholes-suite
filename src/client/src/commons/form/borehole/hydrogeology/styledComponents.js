@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 
 export const TypographyWithBottomMargin = styled(Typography)(() => ({
-  marginBottom: 6,
+  marginBottom: "1em",
 }));
 
 export const StackFullWidth = styled(Stack)(() => ({
