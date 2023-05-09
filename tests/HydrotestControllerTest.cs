@@ -188,6 +188,7 @@ public class HydrotestControllerTests
             BoreholeId = 1006493,
             ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 3).Id,
             TestKindId = context.Codelists.Where(c => c.Schema == "htest101").Single(c => c.Geolcode == 2).Id,
+            HydrotestResults = new List<HydrotestResult>() { new HydrotestResult { ParameterId = 15203194 } },
         };
 
         try

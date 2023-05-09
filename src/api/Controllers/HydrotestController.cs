@@ -148,7 +148,7 @@ public class HydrotestController : ControllerBase
         List<int> hydrotestResultIds = HydroCodeLookup.HydrotestResultOptions[hydrotest.TestKindId];
 
         var areCodelistsCompatible = hydrotest.CodelistIds != null ? hydrotest.CodelistIds.All(c => compatibleCodelistIds.Contains(c)) : true;
-        var areHydrotestResultsCompatible = hydrotest.HydrotestResults != null && hydrotest.HydrotestResults.Count >= 0 ? hydrotest.HydrotestResults.Select(r => r.Id).All(c => compatibleCodelistIds.Contains(c)) : true;
+        var areHydrotestResultsCompatible = hydrotest.HydrotestResults != null && hydrotest.HydrotestResults.Count >= 0 ? hydrotest.HydrotestResults.Select(r => r.ParameterId).All(c => hydrotestResultIds.Contains(c)) : true;
         return areCodelistsCompatible && areHydrotestResultsCompatible;
     }
 
