@@ -56,6 +56,11 @@ public class HydrotestController : ControllerBase
             return BadRequest(ModelState);
         }
 
+        if (!AreHydrotestCodelistsCompatible(hydrotest))
+        {
+            return BadRequest("You submitted codelists for evaluationMethod, flowDirection or hydrotestResults that are not compatible with the provided testKind.");
+        }
+
         var hydrotestToEdit = await context.Hydrotests
             .Include(h => h.Codelists)
             .Include(h => h.HydrotestResults)
@@ -115,6 +120,16 @@ public class HydrotestController : ControllerBase
     [HttpPost]
     public virtual async Task<IActionResult> CreateAsync(Hydrotest hydrotest)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        if (!AreHydrotestCodelistsCompatible(hydrotest))
+        {
+            return BadRequest("You submitted codelists for evaluationMethod, flowDirection or hydrotestResults that are not compatible with the provided testKind.");
+        }
+
         if (hydrotest.CodelistIds != null)
         {
             hydrotest = await GetCodelistsFromIds(hydrotest.CodelistIds, hydrotest).ConfigureAwait(false);
@@ -122,6 +137,20 @@ public class HydrotestController : ControllerBase
 
         await context.AddAsync(hydrotest).ConfigureAwait(false);
         return await SaveChangesAsync(() => Ok(hydrotest)).ConfigureAwait(false);
+    }
+
+    private bool AreHydrotestCodelistsCompatible(Hydrotest hydrotest)
+    {
+        List<int> flowDirectionIds = HydroCodeLookup.HydrotestFlowDirectionOptions[hydrotest.TestKindId];
+        List<int> evaluationMethodIds = HydroCodeLookup.HydrotestEvaluationMethodOptions[hydrotest.TestKindId];
+
+        var compatibleCodelistIds = flowDirectionIds.Concat(evaluationMethodIds);
+
+        List<int> hydrotestResultIds = HydroCodeLookup.HydrotestResultOptions[hydrotest.TestKindId];
+
+        var areCodelistsCompatible = hydrotest.CodelistIds != null ? hydrotest.CodelistIds.All(c => compatibleCodelistIds.Contains(c)) : true;
+        var areHydrotestResultsCompatible = hydrotest.HydrotestResults != null && hydrotest.HydrotestResults.Count >= 0 ? hydrotest.HydrotestResults.Select(r => r.Id).All(c => compatibleCodelistIds.Contains(c)) : true;
+        return areCodelistsCompatible && areHydrotestResultsCompatible;
     }
 
     private async Task<IActionResult> SaveChangesAsync(Func<IActionResult> successResult)

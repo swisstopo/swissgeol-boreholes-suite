@@ -227,4 +227,32 @@ public class HydrotestControllerTests
             }
         }
     }
+
+    [TestMethod]
+    public async Task CreateHydrotestWithIncompatibleCodelists()
+    {
+        var newHydrotest = new Hydrotest
+        {
+            Type = ObservationType.Hydrotest,
+            TestKindId = context.Codelists.Where(c => c.Schema == "htest101").Single(c => c.Geolcode == 2).Id,
+            CodelistIds = new List<int>() { 23, 45 },
+        };
+
+        var createResponse = await controller.CreateAsync(newHydrotest);
+        Assert.IsInstanceOfType(createResponse, typeof(BadRequestObjectResult));
+    }
+
+    [TestMethod]
+    public async Task CreateHydrotestWithIncompatibleHydrotestResults()
+    {
+        var newHydrotest = new Hydrotest
+        {
+            Type = ObservationType.Hydrotest,
+            TestKindId = context.Codelists.Where(c => c.Schema == "htest101").Single(c => c.Geolcode == 2).Id,
+            HydrotestResults = new List<HydrotestResult>() { new HydrotestResult { ParameterId = 73825 } },
+        };
+
+        var createResponse = await controller.CreateAsync(newHydrotest);
+        Assert.IsInstanceOfType(createResponse, typeof(BadRequestObjectResult));
+    }
 }

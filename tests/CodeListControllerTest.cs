@@ -62,6 +62,22 @@ public class CodeListControllerTest
     }
 
     [TestMethod]
+    public async Task GetHydrotestCodesByTestKind()
+    {
+        var codeListsInfiltrationEssay = await controller.GetAsync("", 15203179);
+        Assert.AreEqual(7, codeListsInfiltrationEssay.Count());
+        Assert.IsTrue(codeListsInfiltrationEssay.All(c => c.Schema == "htest102" || c.Schema == "htest103" || c.Schema == "htestres101"));
+
+        var codeListsPumpEssay = await controller.GetAsync("", 15203170);
+        Assert.AreEqual(14, codeListsPumpEssay.Count());
+        Assert.IsTrue(codeListsPumpEssay.All(c => c.Schema == "htest102" || c.Schema == "htest103" || c.Schema == "htestres101"));
+
+        var codeListsExpertValue = await controller.GetAsync("", 15203182);
+        Assert.AreEqual(7, codeListsExpertValue.Count());
+        Assert.IsTrue(codeListsExpertValue.All(c => c.Schema == "htestres101"));
+    }
+
+    [TestMethod]
     public async Task EditCodelistWithMinimalCodelist()
     {
         var id = 1010;
