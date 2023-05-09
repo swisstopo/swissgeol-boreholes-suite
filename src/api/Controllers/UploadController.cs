@@ -153,24 +153,24 @@ public class UploadController : ControllerBase
                 }
             }
 
-            // Add lithologyImports if provided
+            // Add lithology imports if provided
             if (lithologyImports != null)
             {
                 // Get the kind id of a lithostratigraphy.
                 var lithoStratiKindId = context.Codelists.FirstOrDefault(cl => cl.Schema == "layer_kind" && cl.IsDefault == true).Id;
 
-                // Group lithology records by import id to get lithologyImports by boreholes.
+                // Group lithology records by import id to get lithologies by boreholes.
                 var boreholeGroups = lithologyImports.GroupBy(l => l.ImportId);
 
                 var stratiesToAdd = new List<Stratigraphy>();
                 var lithologiesToAdd = new List<Layer>();
                 foreach (var boreholeLithologies in boreholeGroups)
                 {
-                    // Group lithology records per borehole by strati import id.
+                    // Group lithology of one borehole by strati import id to get lithologies per stratigraphy.
                     var stratiGroups = boreholeLithologies.GroupBy(bhoGroup => bhoGroup.StratiImportId);
                     foreach (var stratiGroup in stratiGroups)
                     {
-                        // Create a stratigraphy for provided stratigraphy id and assign it to the linked borehole.
+                        // Create a stratigraphy and assign it to the borehole with the provided import id.
                         var strati = new Stratigraphy()
                         {
                             BoreholeId = boreholeImports.FirstOrDefault(bhi => bhi.ImportId == boreholeLithologies.Key).Id,
@@ -179,7 +179,7 @@ public class UploadController : ControllerBase
                             KindId = lithoStratiKindId,
                         };
 
-                        // Create a lithology for each layer (lithology) record in the group and assign it to the new stratigraphy.
+                        // Create a lithology for each record in the group (same strati id) and assign it to the new stratigraphy.
                         var lithologies = stratiGroup.Select(sg =>
                         {
                             var lithology = (Layer)sg;
@@ -292,7 +292,7 @@ public class UploadController : ControllerBase
 
         var nullOrEmptyMsg = "Field '{0}' is required.";
 
-        // Iterate over provided lithologyImports, validate them, and create error messages when necessary. Use a non-zero based index for error message keys (e.g. 'Row1').
+        // Iterate over provided lithology imports, validate them, and create error messages when necessary. Use a non-zero based index for error message keys (e.g. 'Row1').
         foreach (var lithology in lithologyImports.Select((value, index) => (value, index: index + 1)))
         {
             if (lithology.value.ImportId == 0)
@@ -322,22 +322,22 @@ public class UploadController : ControllerBase
             }
         }
 
-        // Group lithology records by import id to get lithologyImports by boreholes.
+        // Group lithology records by import id to get lithologies per borehole.
         var boreholeGroups = lithologyImports.GroupBy(l => l.ImportId);
 
         foreach (var boreholeLithologies in boreholeGroups)
         {
-            // Group lithology records per borehole by strati import id.
+            // Group lithology records per borehole by strati import id to get lithologies per stratigraphy.
             var stratiGroups = boreholeLithologies.GroupBy(bhoGroup => bhoGroup.StratiImportId);
             foreach (var stratiGroup in stratiGroups)
             {
-                // Check if all lithologies with the same strati import id have the same strati name.
+                // Check if all records with the same strati import id have the same strati name.
                 if (stratiGroup.Select(s => s.StratiName).Distinct().Count() > 1)
                 {
                     ModelState.AddModelError($"Row{stratiGroup.First().ImportId}", $"Lithology with {nameof(LithologyImport.StratiImportId)} '{stratiGroup.Key}' has various {nameof(LithologyImport.StratiName)}.");
                 }
 
-                // Check if all lithologies with the same strati import id have the same strati date.
+                // Check if all records with the same strati import id have the same strati date.
                 if (stratiGroup.Select(s => s.StratiDate).Distinct().Count() > 1)
                 {
                     ModelState.AddModelError($"Row{stratiGroup.First().ImportId}", $"Lithology with {nameof(LithologyImport.StratiImportId)} '{stratiGroup.Key}' has various {nameof(LithologyImport.StratiDate)}.");
