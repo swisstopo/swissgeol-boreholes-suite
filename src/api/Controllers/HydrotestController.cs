@@ -50,7 +50,7 @@ public class HydrotestController : ControllerBase
     [HttpPost]
     public virtual async Task<IActionResult> CreateAsync(Hydrotest hydrotest)
     {
-        return await ProcessHydrotestAsync(hydrotest).ConfigureAwait(false);
+        return await ProcessHydrotestAsync(hydrotest, false).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -65,9 +65,9 @@ public class HydrotestController : ControllerBase
     }
 
     /// <summary>
-    /// Asynchronously deletes the entity with the specified <paramref name="id"/>.
+    /// Asynchronously deletes the hydrotest with the specified <paramref name="id"/>.
     /// </summary>
-    /// <param name="id">The id of the entity to delete.</param>
+    /// <param name="id">The id of the hydrotest to delete.</param>
     [HttpDelete]
     public virtual async Task<IActionResult> DeleteAsync(int id)
     {
@@ -81,7 +81,7 @@ public class HydrotestController : ControllerBase
         return await SaveChangesAsync(Ok).ConfigureAwait(false);
     }
 
-    private async Task<IActionResult> ProcessHydrotestAsync(Hydrotest hydrotest, bool isEdit = false)
+    private async Task<IActionResult> ProcessHydrotestAsync(Hydrotest hydrotest, bool isEdit)
     {
         if (!ModelState.IsValid)
         {
@@ -92,7 +92,7 @@ public class HydrotestController : ControllerBase
         {
             if (!AreHydrotestCodelistsCompatible(hydrotest))
             {
-                return BadRequest("You submitted codelists for evaluationMethod, flowDirection, or hydrotestResults that are not compatible with the provided testKind.");
+                return BadRequest("You submitted codelists for evaluation method, flow direction, or hydrotest results that are not compatible with the provided hydrotest kind.");
             }
         }
 
@@ -127,12 +127,10 @@ public class HydrotestController : ControllerBase
 
     private async Task<Hydrotest> GetCodelistsFromIds(ICollection<int> codelistIds, Hydrotest hydrotest)
     {
-        // Fetch related codelists from the database
         var relatedCodelists = await context.Codelists
             .Where(c => codelistIds.Contains(c.Id))
             .ToListAsync().ConfigureAwait(false);
 
-        // Initialize and replace the existing codelists with the fetched ones
         hydrotest.Codelists = relatedCodelists;
 
         return hydrotest;
@@ -147,8 +145,8 @@ public class HydrotestController : ControllerBase
 
         List<int> hydrotestResultIds = HydroCodeLookup.HydrotestResultOptions[hydrotest.TestKindId];
 
-        var areCodelistsCompatible = hydrotest.CodelistIds != null ? hydrotest.CodelistIds.All(c => compatibleCodelistIds.Contains(c)) : true;
-        var areHydrotestResultsCompatible = hydrotest.HydrotestResults != null && hydrotest.HydrotestResults.Count >= 0 ? hydrotest.HydrotestResults.Select(r => r.ParameterId).All(c => hydrotestResultIds.Contains(c)) : true;
+        var areCodelistsCompatible = hydrotest.CodelistIds == null || hydrotest.CodelistIds.Count == 0 || hydrotest.CodelistIds.All(c => compatibleCodelistIds.Contains(c));
+        var areHydrotestResultsCompatible = hydrotest.HydrotestResults == null || hydrotest.HydrotestResults.Count == 0 || hydrotest.HydrotestResults.Select(r => r.ParameterId).All(c => hydrotestResultIds.Contains(c));
         return areCodelistsCompatible && areHydrotestResultsCompatible;
     }
 
