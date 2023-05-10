@@ -73,6 +73,17 @@ internal static class Helpers
     }
 
     /// <summary>
+    /// Creates a FormFile from a string starting with the magic number of a pdf file.
+    /// </summary>
+    internal static FormFile GetRandomPDFFile(string fileName)
+    {
+        byte[] pdfMagicNumber = { 37, 80, 68, 70 };
+        byte[] fileBytes = pdfMagicNumber.Concat(Guid.NewGuid().ToByteArray()).ToArray();
+
+        return new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, fileName) { Headers = new HeaderDictionary(), ContentType = GetContentType(fileName) };
+    }
+
+    /// <summary>
     /// Get the content type of a file based on its extension.
     /// </summary>
     private static string GetContentType(string fileName)
