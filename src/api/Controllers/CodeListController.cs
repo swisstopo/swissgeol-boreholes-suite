@@ -41,11 +41,10 @@ public class CodeListController : ControllerBase
             List<int> flowDirectionIds = HydroCodeLookup.HydrotestFlowDirectionOptions[testKindId.Value];
             List<int> evaluationMethodIds = HydroCodeLookup.HydrotestEvaluationMethodOptions[testKindId.Value];
 
-            var hydrotestResultOptions = codeLists.Where(h => hydrotestResultIds.Contains(h.Id));
-            var flowDirectionOptions = codeLists.Where(h => flowDirectionIds.Contains(h.Id));
-            var evaluationMethodOptions = codeLists.Where(h => evaluationMethodIds.Contains(h.Id));
-
-            codeLists = hydrotestResultOptions.Concat(flowDirectionOptions).Concat(evaluationMethodOptions);
+            codeLists = codeLists.Where(c =>
+                hydrotestResultIds.Contains(c.Id) ||
+                flowDirectionIds.Contains(c.Id) ||
+                evaluationMethodIds.Contains(c.Id));
         }
 
         return await codeLists.AsNoTracking().ToListAsync().ConfigureAwait(false);

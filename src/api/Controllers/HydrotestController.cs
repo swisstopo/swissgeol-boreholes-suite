@@ -48,10 +48,7 @@ public class HydrotestController : ControllerBase
     /// </summary>
     /// <param name="hydrotest">The hydrotest to create.</param>
     [HttpPost]
-    public virtual async Task<IActionResult> CreateAsync(Hydrotest hydrotest)
-    {
-        return await ProcessHydrotestAsync(hydrotest, false).ConfigureAwait(false);
-    }
+    public virtual async Task<IActionResult> CreateAsync(Hydrotest hydrotest) => await ProcessHydrotestAsync(hydrotest).ConfigureAwait(false);
 
     /// <summary>
     /// Asynchronously updates the <paramref name="hydrotest"/> specified.
@@ -59,10 +56,7 @@ public class HydrotestController : ControllerBase
     /// <param name="hydrotest">The hydrotest to update.</param>
     [HttpPut]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> EditHydrotestAsync(Hydrotest hydrotest)
-    {
-        return await ProcessHydrotestAsync(hydrotest, true).ConfigureAwait(false);
-    }
+    public async Task<IActionResult> EditHydrotestAsync(Hydrotest hydrotest) => await ProcessHydrotestAsync(hydrotest).ConfigureAwait(false);
 
     /// <summary>
     /// Asynchronously deletes the hydrotest with the specified <paramref name="id"/>.
@@ -81,27 +75,26 @@ public class HydrotestController : ControllerBase
         return await SaveChangesAsync(Ok).ConfigureAwait(false);
     }
 
-    private async Task<IActionResult> ProcessHydrotestAsync(Hydrotest hydrotest, bool isEdit)
+    private async Task<IActionResult> ProcessHydrotestAsync(Hydrotest hydrotest)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        if (hydrotest.TestKindId >= 15203170 && hydrotest.TestKindId < 15203186)
+        if (!AreHydrotestCodelistsCompatible(hydrotest))
         {
-            if (!AreHydrotestCodelistsCompatible(hydrotest))
-            {
-                return BadRequest("You submitted codelists for evaluation method, flow direction, or hydrotest results that are not compatible with the provided hydrotest kind.");
-            }
+            return BadRequest("You submitted codelists for evaluation method, flow direction, or hydrotest results that are not compatible with the provided hydrotest kind.");
         }
 
         if (hydrotest.CodelistIds != null)
         {
-            hydrotest = await GetCodelistsFromIds(hydrotest.CodelistIds, hydrotest).ConfigureAwait(false);
+            hydrotest.Codelists = await context.Codelists
+                .Where(c => hydrotest.CodelistIds.Contains(c.Id))
+                .ToListAsync().ConfigureAwait(false);
         }
 
-        if (isEdit)
+        if (hydrotest.Id != 0)
         {
             var hydrotestToEdit = await context.Hydrotests
                 .Include(h => h.Codelists)
@@ -125,25 +118,14 @@ public class HydrotestController : ControllerBase
         return await SaveChangesAsync(() => Ok(hydrotest)).ConfigureAwait(false);
     }
 
-    private async Task<Hydrotest> GetCodelistsFromIds(ICollection<int> codelistIds, Hydrotest hydrotest)
-    {
-        var relatedCodelists = await context.Codelists
-            .Where(c => codelistIds.Contains(c.Id))
-            .ToListAsync().ConfigureAwait(false);
-
-        hydrotest.Codelists = relatedCodelists;
-
-        return hydrotest;
-    }
-
     private bool AreHydrotestCodelistsCompatible(Hydrotest hydrotest)
     {
-        List<int> flowDirectionIds = HydroCodeLookup.HydrotestFlowDirectionOptions[hydrotest.TestKindId];
-        List<int> evaluationMethodIds = HydroCodeLookup.HydrotestEvaluationMethodOptions[hydrotest.TestKindId];
+        List<int> flowDirectionIds = HydroCodeLookup.HydrotestFlowDirectionOptions.TryGetValue(hydrotest.TestKindId, out List<int>? tempFlowDirectionIds) ? tempFlowDirectionIds : new List<int>();
+        List<int> evaluationMethodIds = HydroCodeLookup.HydrotestEvaluationMethodOptions.TryGetValue(hydrotest.TestKindId, out List<int>? tempEvaluationMethodIds) ? tempEvaluationMethodIds : new List<int>();
 
-        var compatibleCodelistIds = flowDirectionIds.Concat(evaluationMethodIds);
+        IEnumerable<int> compatibleCodelistIds = flowDirectionIds.Concat(evaluationMethodIds);
 
-        List<int> hydrotestResultIds = HydroCodeLookup.HydrotestResultOptions[hydrotest.TestKindId];
+        List<int> hydrotestResultIds = HydroCodeLookup.HydrotestResultOptions.TryGetValue(hydrotest.TestKindId, out List<int>? tempResultIds) ? tempResultIds : new List<int>();
 
         var areCodelistsCompatible = hydrotest.CodelistIds == null || hydrotest.CodelistIds.Count == 0 || hydrotest.CodelistIds.All(c => compatibleCodelistIds.Contains(c));
         var areHydrotestResultsCompatible = hydrotest.HydrotestResults == null || hydrotest.HydrotestResults.Count == 0 || hydrotest.HydrotestResults.Select(r => r.ParameterId).All(c => hydrotestResultIds.Contains(c));
