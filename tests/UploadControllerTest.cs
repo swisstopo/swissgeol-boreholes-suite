@@ -32,7 +32,7 @@ public class UploadControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
 
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
@@ -202,8 +202,8 @@ public class UploadControllerTest
            .Verifiable();
 
         var boreholeCsvFormFile = GetFormFileByExistingFile("borehole_with_attachments.csv");
-        var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
-        var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
+        var firstPdfFormFile = GetRandomPDFFile("attachment_1.pdf");
+        var secondPdfFormFile = GetRandomPDFFile("attachment_2.pdf");
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
