@@ -412,5 +412,18 @@
   "minute": "minute",
   "minutes": "minutes",
   "waterIngressRequiredFieldsAlert": "'Quantity', 'Start time' and 'Reliability of data' are mandatory fields, the entry cannot be saved if they are not filled out.",
-  "hydrogeology": "hydrogeology"
+  "hydrogeology": "hydrogeology",
+  "hydrotest": "Hydrotest",
+  "hydrotestKind": "Hydrotest kind",
+  "flowDirection": "Flow direction",
+  "evaluationMethod": "Evaluation method",
+  "hydrotestResult": "Hydrotest result",
+  "msgHydrotestEmpty": "No hydrotests available",
+  "parameter": "Parameter",
+  "value": "Value",
+  "minValue": "Minimum value",
+  "maxValue": "Maximum value",
+  "hydrotestRequiredFieldsAlert": "'Start time','Reliability of data' and 'Test kind' are mandatory fields, the entry cannot be saved if they are not filled out.",
+  "hydrotestResultRequiredFieldsAlert": "'Parameter', is a mandatory field, the entry cannot be saved if it is not filled in.",
+  "hydrotestResultsWillBeDeleted": "Attention! If you change the hydrotest kind, all associated hydrotest results will be deleted."
 }
