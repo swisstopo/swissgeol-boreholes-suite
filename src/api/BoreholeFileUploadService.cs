@@ -1,4 +1,7 @@
-﻿using Amazon.Runtime;
+﻿using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
+using Amazon.S3.Model;
 using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Minio;
@@ -120,30 +123,32 @@ public class BoreholeFileUploadService
     {
         try
         {
-            using var minioClient = CreateMinioClient();
-
-            // Create bucket if it doesn't exist.
-            var bucketExistsArgs = new BucketExistsArgs().WithBucket(bucketName);
-            if (await minioClient.BucketExistsAsync(bucketExistsArgs).ConfigureAwait(false) == false)
+            // Create a aws client with the specified endpoint, region, access key and secret key.
+            var config = new AmazonS3Config
             {
-                var bucketMakeArgs = new MakeBucketArgs().WithBucket(bucketName);
-                await minioClient.MakeBucketAsync(bucketMakeArgs).ConfigureAwait(false);
-            }
+                ServiceURL = endpoint,
+                RegionEndpoint = RegionEndpoint.GetBySystemName(region),
+                ForcePathStyle = true,
+                SignatureVersion = "4",
+                UseHttp = !secure,
+            };
 
-            // Get the content type and create a stream from the uploaded file.
-            var contentType = file.ContentType;
+            // Get instance proofile iam role credentials if access key and secret key are not specified.
+            using var credentials = new InstanceProfileAWSCredentials();
 
-            using var stream = file.OpenReadStream();
+            // create a client with the specified config and credentials.
+            using var client = new AmazonS3Client(credentials, config);
 
-            var putObjectArgs = new PutObjectArgs()
-                .WithBucket(bucketName)
-                .WithObject(objectName)
-                .WithStreamData(stream)
-                .WithObjectSize(file.Length)
-                .WithContentType(contentType);
+            // make file upload request.
+            var request = new PutObjectRequest
+            {
+                BucketName = bucketName,
+                Key = objectName,
+                InputStream = file.OpenReadStream(),
+                ContentType = file.ContentType,
+            };
 
-            // Upload the stream to the bucket.
-            await minioClient.PutObjectAsync(putObjectArgs).ConfigureAwait(false);
+            await client.PutObjectAsync(request).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -220,9 +225,6 @@ public class BoreholeFileUploadService
         {
             try
             {
-                var credentials = new InstanceProfileAWSCredentials();
-                secretKey = credentials.GetCredentials().SecretKey;
-                accessKey = credentials.GetCredentials().AccessKey;
             }
             catch (Exception ex)
             {
