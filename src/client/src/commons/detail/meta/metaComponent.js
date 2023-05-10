@@ -206,36 +206,54 @@ class MetaComponent extends React.Component {
         style={{
           minWidth: "250px",
         }}>
-        {data.custom.identifiers && data.custom.identifiers.length > 0 ? (
+        <div
+          style={{
+            borderBottom: "thin solid rgba(0, 0, 0, 0.15)",
+            display: "flex",
+            flexDirection: "column",
+            margin: margin,
+            padding: padding,
+          }}>
           <div
+            key={`bdms-metadata-cmp-identifiers-application`}
             style={{
-              borderBottom: "thin solid rgba(0, 0, 0, 0.15)",
-              display: "flex",
-              flexDirection: "column",
-              margin: margin,
-              padding: padding,
+              flex: "1 1 100%",
+              marginBottom: "0.4em",
             }}>
-            {data.custom.identifiers.map((identifier, index) => (
-              <div
-                key={`bdms-metadata-cmp-identifiers-${index}`}
-                style={{
-                  flex: "1 1 100%",
-                  marginBottom: "0.4em",
-                }}>
-                <div
-                  style={{
-                    fontSize: "0.8em",
-                    color: "#787878",
-                    lineHeight: "1em",
-                  }}>
-                  <DomainText id={identifier.id} schema="borehole_identifier" />
-                </div>
-                {identifier.value}
-              </div>
-            ))}
+            <div
+              style={{
+                fontSize: "0.8em",
+                color: "#787878",
+                lineHeight: "1em",
+              }}>
+              ID boreholes.swissgeol.ch
+            </div>
+            {data.id}
           </div>
-        ) : null}
-
+          {data.custom.identifiers
+            ? data.custom.identifiers.map((identifier, index) => (
+                <div
+                  key={`bdms-metadata-cmp-identifiers-${index}`}
+                  style={{
+                    flex: "1 1 100%",
+                    marginBottom: "0.4em",
+                  }}>
+                  <div
+                    style={{
+                      fontSize: "0.8em",
+                      color: "#787878",
+                      lineHeight: "1em",
+                    }}>
+                    <DomainText
+                      id={identifier.id}
+                      schema="borehole_identifier"
+                    />
+                  </div>
+                  {identifier.value}
+                </div>
+              ))
+            : null}
+        </div>
         <div
           style={{
             borderBottom: "thin solid rgba(0, 0, 0, 0.15)",
