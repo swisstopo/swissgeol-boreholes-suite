@@ -664,6 +664,28 @@ public class UploadControllerTest
     }
 
     [TestMethod]
+    public async Task UploadLithologyWithImportIdNotPresentInBoreholeFileShouldReturnError()
+    {
+        var boreholeCsvFile = GetFormFileByExistingFile("data_sets/import_litho_import_id_not_present_in_borehole_file/borehole.csv");
+        var lithoCsvFile = GetFormFileByExistingFile("data_sets/import_litho_import_id_not_present_in_borehole_file/litho.csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithoCsvFile);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        Assert.AreEqual(1, problemDetails.Errors.Count);
+
+        CollectionAssert.AreEquivalent(new[]
+        {
+            $"Borehole with ImportId '2' not found.",
+        },
+        problemDetails.Errors["Row2"]);
+    }
+
+    [TestMethod]
     public async Task UploadDuplicateBoreholesInFileShouldReturnError()
     {
         var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInFile.csv");

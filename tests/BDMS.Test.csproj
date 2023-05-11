@@ -59,6 +59,12 @@
     <None Update="TestData\data_sets\import_litho_diff_in_strati_attributes_for_same_starti_id\litho.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\data_sets\import_litho_import_id_not_present_in_borehole_file\borehole.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\data_sets\import_litho_import_id_not_present_in_borehole_file\litho.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\data_sets\import_litho_missing_required_headers\borehole.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
