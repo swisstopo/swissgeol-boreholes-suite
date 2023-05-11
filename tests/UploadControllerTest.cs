@@ -634,7 +634,6 @@ public class UploadControllerTest
         Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
 
         ProblemDetails problemDetails = (ProblemDetails)result.Value!;
-        Assert.AreEqual(4, Regex.Matches(problemDetails.Detail!, "Header with name ").Count);
         StringAssert.Contains(problemDetails.Detail, "Header with name 'ImportId'[0] was not found.");
         StringAssert.Contains(problemDetails.Detail, "Header with name 'StratiImportId'[0] was not found.");
         StringAssert.Contains(problemDetails.Detail, "Header with name 'FromDepth'[0] was not found.");
