@@ -35,16 +35,22 @@ public class CodeListController : ControllerBase
             codeLists = codeLists.Where(c => c.Schema == schema);
         }
 
-        if (testKindId != null && testKindId >= 15203170 && testKindId < 15203186)
+        if (testKindId.HasValue)
         {
-            List<int> hydrotestResultIds = HydroCodeLookup.HydrotestResultOptions[testKindId.Value];
-            List<int> flowDirectionIds = HydroCodeLookup.HydrotestFlowDirectionOptions[testKindId.Value];
-            List<int> evaluationMethodIds = HydroCodeLookup.HydrotestEvaluationMethodOptions[testKindId.Value];
+            // Get the Geolcode associated with the TestKindId.
+            int testKindGeolCode = context.Codelists.SingleOrDefault(c => c.Id == testKindId)?.Geolcode ?? 0;
 
+            // Get the lists of Geolcodes from the HydroCodeLookup based on the testKindGeolCode.
+            List<int> hydrotestResultGeolcodes = HydroCodeLookup.HydrotestResultOptions.TryGetValue(testKindGeolCode, out List<int>? tempHRIds) ? tempHRIds : new List<int>() { };
+            List<int> flowDirectionGeolCodess = HydroCodeLookup.HydrotestFlowDirectionOptions.TryGetValue(testKindGeolCode, out List<int>? tempFDIds) ? tempFDIds : new List<int>() { };
+            List<int> evaluationMethodIds = HydroCodeLookup.HydrotestEvaluationMethodOptions.TryGetValue(testKindGeolCode, out List<int>? tempEMIds) ? tempEMIds : new List<int>() { };
+
+            // Return the Codelists where the Codelist's Geolcode matches any of the compatible geolcodes form  the HydroCodeLookup.
             codeLists = codeLists.Where(c =>
-                hydrotestResultIds.Contains(c.Id) ||
-                flowDirectionIds.Contains(c.Id) ||
-                evaluationMethodIds.Contains(c.Id));
+                c.Geolcode != null &&
+                ((c.Schema == "htestres101" && hydrotestResultGeolcodes.Contains(c.Geolcode.Value)) ||
+                (c.Schema == "htest102" && flowDirectionGeolCodess.Contains(c.Geolcode.Value)) ||
+                (c.Schema == "htest103" && evaluationMethodIds.Contains(c.Geolcode.Value))));
         }
 
         return await codeLists.AsNoTracking().ToListAsync().ConfigureAwait(false);
