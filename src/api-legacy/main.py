@@ -12,7 +12,6 @@ from tornado.options import define, options
 from tornado.platform.asyncio import AsyncIOMainLoop
 import asyncio
 import asyncpg
-from minio.error import S3Error
 from tornado.httpserver import HTTPServer
 import sys
 from pathlib import Path
@@ -21,7 +20,6 @@ import traceback
 sys.path.append('.')
 
 from bms.v1.listeners import EventListener
-from bms.v1.utils.files import FileBase
 
 define("port", default=8888, help="Tornado Web port", type=int)
 
@@ -30,14 +28,6 @@ define("pg_password", default=None, help="PostgreSQL user password")
 define("pg_host", default=None, help="PostgreSQL database host")
 define("pg_port", default="5432", help="PostgreSQL database port")
 define("pg_database", default=None, help="PostgreSQL database name")
-
-# Generic S3 storage for files configuration
-define("s3_endpoint", default=None, help="Select S3 Bucket name", type=str)
-define("s3_bucket-name", default=None, help="Select S3 Bucket name", type=str)
-define("s3_region", default=None, help="(Optional, default null) Region name of buckets in S3 service.", type=str)
-define("s3_access_key", default=None, help="S3 access key", type=str)
-define("s3_secret_key", default=None, help="S3 secret key", type=str)
-define("s3_secure", default=True, help="(Default True) Flag to indicate to use secure (TLS) connection to S3 service or not.", type=bool)
 
 # SMTP send mail configuration
 define("smtp_recipients", default=None, help="SMTP comma separated recipients email addresses", type=str)
@@ -145,7 +135,6 @@ if __name__ == "__main__":
         BoreholeViewerHandler,
         BoreholeProducerHandler,
         ExportHandler,
-        FileHandler,
 
         # Identifier handlers
         IdentifierAdminHandler,
@@ -212,7 +201,6 @@ if __name__ == "__main__":
         (r'/api/v1/borehole/edit', BoreholeProducerHandler),
         (r'/api/v1/borehole/download', ExportHandler),
         (r'/api/v1/borehole/edit/import', BoreholeProducerHandler),
-        (r'/api/v1/borehole/edit/files', FileHandler),
 
         # Stratigraphy handlers
         (r'/api/v1/borehole/identifier', IdentifierViewerHandler),
@@ -256,14 +244,6 @@ if __name__ == "__main__":
         (r"/api/v1/geoapi/wms/swisstopo", Wms),
 
     ], **settings)
-
-    # Check S3 configuration
-    try:
-        fileBase = FileBase()
-        green("Connection to S3 (compatible) object storage: Ok")
-    except S3Error as e:
-        red("S3 Configuration error:\n{}".format(e))
-        sys.exit(1)
 
     # Check for missing SMTP environment configuration options
     if (
