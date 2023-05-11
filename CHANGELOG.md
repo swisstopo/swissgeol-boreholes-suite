@@ -7,6 +7,7 @@
 - Added link to online help in import dialog.
 - Upload borehole attachments using borehole import feature.
 - Add `import_id` as required field for borehole import.
+- Added functionality to add, edit and delete groundwater level measurement, which belong to the hydrogeology observations of a borehole.
 
 ### Changed
 
@@ -14,6 +15,7 @@
 - Borehole duplicates are only identified within the same workgroup when importing boreholes
 
 ### Fixed
+
 - Fix and extend chronostratigraphy geolcodes.
 
 ## v2.0.298 - 2023-04-18
@@ -21,7 +23,7 @@
 ### Added
 
 - Define borehole csv import fields `original_name`, `location_x` and `location_y` as required.
-- Add validation for required borehole csv import fields. 
+- Add validation for required borehole csv import fields.
 - Added online help.
 - Add validation for duplicated boreholes during the cvs import.
 - Added functionality to add, edit and delete wateringresses, which belong to the hydrogeology observations of a borehole.
@@ -74,7 +76,7 @@
 - Remove import settings from administrator settings.
 - Enable editor mode settings for all user types.
 - Replace csv import coordinates related columns by `location_x` and `location_y`.
-- Auto detect the provided coordinate reference system in the csv import and calculate the coordinates for the not provided reference system. 
+- Auto detect the provided coordinate reference system in the csv import and calculate the coordinates for the not provided reference system.
 
 ### Fixed
 
@@ -179,7 +181,7 @@
 - Removed `mentions` functionality in workflow comments.
 - Removed unused columns from database: `borehole.import_id`, `borehole.tecto_id_cli`, `stratigraphy.import_id`, `layer.import_id`, `layer.tectonic_unit_id_cli`, `layer.symbol_id_cli`, `layer.soil_state_id_cli`, `layer.kirost_id_cli`.
 - Removed unused table `bdms.statigraphy_codelist` from database.
-- Removed  `layer.unconrocks_id_cli` and `layer.lithok_id_cli` from database.
+- Removed `layer.unconrocks_id_cli` and `layer.lithok_id_cli` from database.
 - Changed cardinality of `uscs3` field on `bdms.layer` to m:n.
 
 ### Fixed

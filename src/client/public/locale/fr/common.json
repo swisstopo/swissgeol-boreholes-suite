@@ -412,5 +412,12 @@
   "minute": "minute",
   "minutes": "minutes",
   "waterIngressRequiredFieldsAlert": "'Quantité', 'Heure de début' et 'Fiabilité des informations' sont des champs obligatoires, l'entrée ne peut pas être enregistrée si elles ne sont pas remplies.",
-  "hydrogeology": "hydrogéologie"
+  "hydrogeology": "hydrogéologie",
+  "groundwater_level_measurement": "Mesure du niveau des eaux souterraines",
+  "groundwater_level_measurement_word_break": "Mesure du niveau des eaux souterraines",
+  "gwlm_kind": "Type de mesure du niveau des eaux souterraines",
+  "gwlm_levelm": "Niveau (m)",
+  "gwlm_levelmasl": "Niveau (m a.s.l.)",
+  "gwlmRequiredFieldsAlert": "'Type de mesure du niveau des eaux souterraines', 'Heure de début' et 'Fiabilité des informations' sont des champs obligatoires, l'entrée ne peut pas être enregistrée si elles ne sont pas remplies.",
+  "msgGroundwaterLevelMeasurementsEmpty": "Aucune mesure du niveau des eaux souterraines disponible."
 }

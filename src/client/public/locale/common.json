@@ -384,5 +384,11 @@
   "minute": "",
   "minutes": "",
   "waterIngressRequiredFieldsAlert": "",
-  "hydrogeology": ""
+  "hydrogeology": "",
+  "groundwater_level_measurement": "",
+  "groundwater_level_measurement_word_break": "",
+  "gwlm_kind": "",
+  "gwlm_levelm": "",
+  "gwlm_levelmasl": "",
+  "gwlmRequiredFieldsAlert": ""
 }

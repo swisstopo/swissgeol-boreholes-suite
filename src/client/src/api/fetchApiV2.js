@@ -333,6 +333,77 @@ export const useWaterIngressMutations = () => {
   };
 };
 
+export const groundwaterLevelMeasurementsQueryKey =
+  "groundwaterLevelMeasurements";
+
+export const useGroundwaterLevelMeasurements = boreholeId =>
+  useQuery({
+    queryKey: [groundwaterLevelMeasurementsQueryKey, boreholeId],
+    queryFn: async () => {
+      return await fetchApiV2(
+        `groundwaterlevelmeasurement?boreholeId=${boreholeId}`,
+        "GET",
+      );
+    },
+  });
+
+export const useGroundwaterLevelMeasurementMutations = () => {
+  const queryClient = useQueryClient();
+  const useAddGroundwaterLevelMeasurement = useMutation(
+    async groundwaterLevelMeasurement => {
+      return await fetchApiV2(
+        "groundwaterlevelmeasurement",
+        "POST",
+        groundwaterLevelMeasurement,
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [groundwaterLevelMeasurementsQueryKey],
+        });
+      },
+    },
+  );
+  const useUpdateGroundwaterLevelMeasurement = useMutation(
+    async groundwaterLevelMeasurement => {
+      return await fetchApiV2(
+        "groundwaterlevelmeasurement",
+        "PUT",
+        groundwaterLevelMeasurement,
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [groundwaterLevelMeasurementsQueryKey],
+        });
+      },
+    },
+  );
+  const useDeleteGroundwaterLevelMeasurement = useMutation(
+    async groundwaterLevelMeasurementId => {
+      return await fetchApiV2(
+        `groundwaterlevelmeasurement?id=${groundwaterLevelMeasurementId}`,
+        "DELETE",
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [groundwaterLevelMeasurementsQueryKey],
+        });
+      },
+    },
+  );
+
+  return {
+    add: useAddGroundwaterLevelMeasurement,
+    update: useUpdateGroundwaterLevelMeasurement,
+    delete: useDeleteGroundwaterLevelMeasurement,
+  };
+};
+
 // Upload borehole attachment
 export const uploadBoreholeAttachment = async (boreholeId, attachment) => {
   return await fetchApiV2(
