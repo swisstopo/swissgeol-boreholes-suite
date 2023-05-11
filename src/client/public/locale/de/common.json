@@ -424,7 +424,7 @@
   "value": "Wert",
   "minValue": "Minimalwert",
   "maxValue": "Maximalwert",
-  "hydrotestRequiredFieldsAlert": "'Startzeitpunk', 'Verlässlichkeit der Angaben' und 'Art des Tests'  sind obligatorische Felder, der Eintrag kann nicht gespeichert werden, wenn sie nicht ausgefüllt sind.",
-  "hydrotestResultRequiredFieldsAlert": "'Parameter', ist ein obligatorisches Feld, der Eintrag kann nicht gespeichert werden, wenn es nicht ausgefüllt ist.",
+  "hydrotestRequiredFieldsAlert": "'Startzeitpunk', 'Verlässlichkeit der Angaben' und 'Art des Tests' sind obligatorische Felder, der Eintrag kann nicht gespeichert werden, wenn sie nicht ausgefüllt sind.",
+  "hydrotestResultRequiredFieldsAlert": "'Parameter' ist ein obligatorisches Feld, der Eintrag kann nicht gespeichert werden, wenn es nicht ausgefüllt ist.",
   "hydrotestResultsWillBeDeleted": "Achtung! Wenn Sie die Art des Hydrotests ändern, werden alle zugehörigen Resultate des Hydrotests gelöscht."
 }

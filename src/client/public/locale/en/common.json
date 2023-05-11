@@ -423,7 +423,7 @@
   "value": "Value",
   "minValue": "Minimum value",
   "maxValue": "Maximum value",
-  "hydrotestRequiredFieldsAlert": "'Start time','Reliability of data' and 'Test kind' are mandatory fields, the entry cannot be saved if they are not filled out.",
-  "hydrotestResultRequiredFieldsAlert": "'Parameter', is a mandatory field, the entry cannot be saved if it is not filled in.",
+  "hydrotestRequiredFieldsAlert": "'Start time', 'Reliability of data' and 'Test kind' are mandatory fields, the entry cannot be saved if they are not filled out.",
+  "hydrotestResultRequiredFieldsAlert": "'Parameter' is a mandatory field, the entry cannot be saved if it is not filled in.",
   "hydrotestResultsWillBeDeleted": "Attention! If you change the hydrotest kind, all associated hydrotest results will be deleted."
 }
