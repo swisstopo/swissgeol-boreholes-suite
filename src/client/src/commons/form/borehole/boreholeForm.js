@@ -23,6 +23,7 @@ import BoreholeGeneralSegment from "./segments/boreholeGeneralSegment";
 import BoreholeDetailSegment from "./segments/boreholeDetailSegment";
 import LocationSegment from "./segments/locationSegment";
 import WaterIngress from "./hydrogeology/waterIngress";
+import GroundwaterLevelMeasurement from "./hydrogeology/groundwaterLevelMeasurement";
 import Hydrotest from "./hydrogeology/hydrotest";
 import { AlertContext } from "../../alert/alertContext";
 
@@ -498,12 +499,25 @@ class BoreholeForm extends React.Component {
             exact
             path={process.env.PUBLIC_URL + "/editor/:id/hydrogeology/hydrotest"}
             render={() => (
-              <Hydrotest
-                isEditable={isEditable}
-                boreholeId={borehole.data.id}
-              />
-            )}
-          />
+                <Hydrotest
+                    isEditable={isEditable}
+                    boreholeId={borehole.data.id}
+                />
+              )}
+           />
+                <Route
+                    exact
+                    path={
+                        process.env.PUBLIC_URL +
+                        "/editor/:id/hydrogeology/groundwaterlevelmeasurement"
+                    }
+                    render={() => (
+                        <GroundwaterLevelMeasurement
+                            isEditable={isEditable}
+                            boreholeId={borehole.data.id}
+                        />
+                    )}
+                />
           <Route
             exact
             path={process.env.PUBLIC_URL + "/editor/:id/completion/casing"}
