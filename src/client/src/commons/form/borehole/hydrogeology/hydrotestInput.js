@@ -56,10 +56,8 @@ const HydrotestInput = ({
     }
   };
 
-  const convertDateToIsoString = dateTime => {
-    dateTime ? (dateTime += ":00.000Z") : (dateTime = null);
-    return dateTime;
-  };
+  const convertDateToIsoString = dateTime =>
+    dateTime ? dateTime + ":00.000Z" : null;
 
   // trigger form validation on mount
   useEffect(() => {
