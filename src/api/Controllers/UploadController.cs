@@ -171,7 +171,7 @@ public class UploadController : ControllerBase
             if (lithologyImports != null)
             {
                 // Get the kind id of a lithostratigraphy.
-                var lithoStratiKindId = context.Codelists.Single(cl => cl.Schema == "layer_kind" && cl.IsDefault.GetValueOrDefault()).Id;
+                var lithoStratiKindId = context.Codelists.Single(cl => cl.Schema == "layer_kind" && cl.IsDefault == true).Id;
 
                 // Group lithology records by import id to get lithologies by boreholes.
                 var boreholeGroups = lithologyImports.GroupBy(l => l.ImportId);
