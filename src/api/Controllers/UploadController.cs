@@ -64,10 +64,16 @@ public class UploadController : ControllerBase
             if (lithologyFile != null && !FileTypeChecker.IsCsv(lithologyFile)) return BadRequest("Invalid file type for lithology csv.");
 
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile);
-            var lithologyImports = ReadLithologiesFromCsv(lithologyFile);
-
             ValidateBoreholeImports(workgroupId, boreholeImports, attachments);
-            ValidateLithologyImports(boreholeImports.Select(bhi => bhi.ImportId).ToList(), lithologyImports);
+
+            var lithologyImports = new List<LithologyImport>();
+            if (lithologyFile != null)
+            {
+                lithologyImports = ReadLithologiesFromCsv(lithologyFile);
+                ValidateLithologyImports(boreholeImports.Select(bhi => bhi.ImportId).ToList(), lithologyImports);
+            }
+
+            // If any validation error occured, return a bad request.
             if (!ModelState.IsValid)
             {
                 return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
@@ -286,10 +292,8 @@ public class UploadController : ControllerBase
         }
     }
 
-    private void ValidateLithologyImports(List<int> importIds, List<LithologyImport>? lithologyImports = null)
+    private void ValidateLithologyImports(List<int> importIds, List<LithologyImport> lithologyImports)
     {
-        if (lithologyImports == null || lithologyImports.Count == 0) return;
-
         var nullOrEmptyMsg = "Field '{0}' is required.";
 
         // Iterate over provided lithology imports, validate them, and create error messages when necessary. Use a non-zero based index for error message keys (e.g. 'Row1').
@@ -374,8 +378,6 @@ public class UploadController : ControllerBase
 
     private List<LithologyImport> ReadLithologiesFromCsv(IFormFile? file)
     {
-        if (file == null) return new List<LithologyImport>();
-
         var csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
         {
             Delimiter = ";",
