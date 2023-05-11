@@ -66,7 +66,7 @@ const HydrotestInput = ({
     trigger();
   }, [trigger]);
 
-  const prepareFormdataForSubmit = data => {
+  const prepareFormDataForSubmit = data => {
     data.startTime = convertDateToIsoString(data?.startTime);
     data.endTime = convertDateToIsoString(data?.endTime);
 
@@ -79,8 +79,7 @@ const HydrotestInput = ({
   };
 
   const submitForm = data => {
-    // convert dates to IsoStrings
-    data = prepareFormdataForSubmit(data);
+    data = prepareFormDataForSubmit(data);
     const hydrotestResults =
       hydrotest.hydrotestResults?.map(h => {
         delete h.hydrotestId;
@@ -122,10 +121,10 @@ const HydrotestInput = ({
     }
   };
 
-  const cannotAddHydrotestResults =
-    !formState.isValid ||
-    isAddingHydrotestResult ||
-    filteredTestKindDomains?.data?.length === 0;
+  const canAddHydrotestResults =
+    formState.isValid &&
+    !isAddingHydrotestResult &&
+    filteredTestKindDomains?.data?.length !== 0;
 
   return (
     <Card
@@ -292,10 +291,10 @@ const HydrotestInput = ({
                 {t("hydrotestResult")}
               </Typography>
               <Tooltip title={t("add")}>
-                <IconButton disabled={cannotAddHydrotestResults} sx={{ p: 0 }}>
+                <IconButton disabled={!canAddHydrotestResults} sx={{ p: 0 }}>
                   <AddCircleIcon
                     sx={{
-                      color: cannotAddHydrotestResults ? "disabled" : "black",
+                      color: canAddHydrotestResults ? "black" : "disabled",
                     }}
                     data-cy="add-hydrotestresult-button"
                     onClick={e => {

@@ -171,6 +171,12 @@ const HydrotestResultTable = ({
     maxWidth: "20%",
   };
 
+  const getParameterUnit = parameterId => {
+    return ParameterUnits[
+      domains?.data?.find(d => d.id === parameterId).geolcode
+    ];
+  };
+
   return (
     <TableContainer>
       <Table>
@@ -193,7 +199,7 @@ const HydrotestResultTable = ({
               const isEditing =
                 result.id === editingId || result.tempId === editingId;
               const isAdding = result.tempId === 0;
-              const id = result.id || result.tempId || 0; // blablabla
+              const id = result.id || result.tempId || 0;
               return (
                 <TableRow
                   key={index}
@@ -256,7 +262,8 @@ const HydrotestResultTable = ({
                         InputProps={{
                           endAdornment: (
                             <InputAdornment position="end">
-                              {ParameterUnits[formValues.parameterId]}
+                              {formValues.parameterId &&
+                                getParameterUnit(formValues.parameterId)}
                             </InputAdornment>
                           ),
                         }}
@@ -264,7 +271,7 @@ const HydrotestResultTable = ({
                       />
                     ) : (
                       result?.value &&
-                      result?.value + " " + ParameterUnits[result.parameterId]
+                      result?.value + " " + getParameterUnit(result.parameterId)
                     )}
                   </TableCell>
                   <TableCell sx={tableCellStyles}>
@@ -280,7 +287,8 @@ const HydrotestResultTable = ({
                         InputProps={{
                           endAdornment: (
                             <InputAdornment position="end">
-                              {ParameterUnits[formValues.parameterId]}
+                              {formValues.parameterId &&
+                                getParameterUnit(formValues.parameterId)}{" "}
                             </InputAdornment>
                           ),
                         }}
@@ -290,7 +298,7 @@ const HydrotestResultTable = ({
                       result?.minValue &&
                       result?.minValue +
                         " " +
-                        ParameterUnits[result.parameterId]
+                        getParameterUnit(result.parameterId)
                     )}
                   </TableCell>
                   <TableCell sx={tableCellStyles}>
@@ -306,7 +314,8 @@ const HydrotestResultTable = ({
                         InputProps={{
                           endAdornment: (
                             <InputAdornment position="end">
-                              {ParameterUnits[formValues.parameterId]}
+                              {formValues.parameterId &&
+                                getParameterUnit(formValues.parameterId)}
                             </InputAdornment>
                           ),
                         }}
@@ -316,7 +325,7 @@ const HydrotestResultTable = ({
                       result?.maxValue &&
                       result?.maxValue +
                         " " +
-                        ParameterUnits[result.parameterId]
+                        getParameterUnit(result.parameterId)
                     )}
                   </TableCell>
                   {isEditable && (
