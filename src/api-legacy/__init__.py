@@ -24,7 +24,6 @@ from bms.v1.locales.handler import LocalesHandler
 # Borehole's ACTION Handlers
 from bms.v1.borehole.producer import BoreholeProducerHandler
 from bms.v1.borehole.viewer import BoreholeViewerHandler
-from bms.v1.borehole.filehandler import FileHandler
 
 # Identifiers's ACTION Handlers
 from bms.v1.borehole.identifier import CreateIdentifier
