@@ -23,6 +23,14 @@ public class UploadController : ControllerBase
     private readonly BoreholeFileUploadService boreholeFileUploadService;
     private readonly int sridLv95 = 2056;
     private readonly int sridLv03 = 21781;
+    private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
+    private readonly CsvConfiguration csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
+    {
+        Delimiter = ";",
+        IgnoreReferences = true,
+        PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
+        MissingFieldFound = null,
+    };
 
     public UploadController(BdmsContext context, ILogger<UploadController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileUploadService boreholeFileUploadService)
     {
@@ -235,8 +243,6 @@ public class UploadController : ControllerBase
             .Concat(boreholesFromFile.Select(b => new { b.Id, b.TotalDepth, b.LocationX, b.LocationY }))
             .ToList();
 
-        var nullOrEmptyMsg = "Field '{0}' is required.";
-
         // Iterate over provided boreholes, validate them, and create error messages when necessary. Use a non-zero based index for error message keys (e.g. 'Row1').
         foreach (var boreholeFromFile in boreholesFromFile.Select((value, index) => (value, index: index + 1)))
         {
@@ -294,8 +300,6 @@ public class UploadController : ControllerBase
 
     private void ValidateLithologyImports(List<int> importIds, List<LithologyImport> lithologyImports)
     {
-        var nullOrEmptyMsg = "Field '{0}' is required.";
-
         // Iterate over provided lithology imports, validate them, and create error messages when necessary. Use a non-zero based index for error message keys (e.g. 'Row1').
         foreach (var lithology in lithologyImports.Select((value, index) => (value, index: index + 1)))
         {
@@ -360,14 +364,6 @@ public class UploadController : ControllerBase
 
     private List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file)
     {
-        var csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
-        {
-            Delimiter = ";",
-            IgnoreReferences = true,
-            PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
-            MissingFieldFound = null,
-        };
-
         using var reader = new StreamReader(file.OpenReadStream());
         using var csv = new CsvReader(reader, csvConfig);
 
@@ -378,14 +374,6 @@ public class UploadController : ControllerBase
 
     private List<LithologyImport> ReadLithologiesFromCsv(IFormFile? file)
     {
-        var csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
-        {
-            Delimiter = ";",
-            IgnoreReferences = true,
-            PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
-            MissingFieldFound = null,
-        };
-
         using var reader = new StreamReader(file.OpenReadStream());
         using var csv = new CsvReader(reader, csvConfig);
 
