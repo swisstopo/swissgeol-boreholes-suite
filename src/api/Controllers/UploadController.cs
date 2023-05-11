@@ -171,7 +171,7 @@ public class UploadController : ControllerBase
             if (lithologyImports != null)
             {
                 // Get the kind id of a lithostratigraphy.
-                var lithoStratiKindId = context.Codelists.FirstOrDefault(cl => cl.Schema == "layer_kind" && cl.IsDefault == true).Id;
+                var lithoStratiKindId = context.Codelists.Single(cl => cl.Schema == "layer_kind" && cl.IsDefault.GetValueOrDefault()).Id;
 
                 // Group lithology records by import id to get lithologies by boreholes.
                 var boreholeGroups = lithologyImports.GroupBy(l => l.ImportId);
@@ -185,11 +185,11 @@ public class UploadController : ControllerBase
                     foreach (var stratiGroup in stratiGroups)
                     {
                         // Create a stratigraphy and assign it to the borehole with the provided import id.
-                        var strati = new Stratigraphy()
+                        var strati = new Stratigraphy
                         {
-                            BoreholeId = boreholeImports.FirstOrDefault(bhi => bhi.ImportId == boreholeLithologies.Key).Id,
-                            Date = stratiGroup.FirstOrDefault().StratiDate,
-                            Name = stratiGroup.FirstOrDefault().StratiName,
+                            BoreholeId = boreholeImports.Single(bhi => bhi.ImportId == boreholeLithologies.Key).Id,
+                            Date = stratiGroup.First().StratiDate,
+                            Name = stratiGroup.First().StratiName,
                             KindId = lithoStratiKindId,
                         };
 
