@@ -34,13 +34,17 @@ public class BoreholeFileControllerTest
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, adminUser.Name) }));
 
-        var s3ClientMock = new AmazonS3Client(configuration["S3:ACCESS_KEY"], configuration["S3:SECRET_KEY"], new AmazonS3Config()
-        {
-            AuthenticationRegion = configuration["S3:REGION"],
-            ServiceURL = configuration["S3:ENDPOINT"],
-            ForcePathStyle = true,
-            UseHttp = configuration["S3:SECURE"] == "0",
-        });
+        var s3ClientMock = new AmazonS3Client(
+            configuration["S3:ACCESS_KEY"],
+            configuration["S3:SECRET_KEY"],
+            new AmazonS3Config
+            {
+                AuthenticationRegion = configuration["S3:REGION"],
+                ServiceURL = configuration["S3:ENDPOINT"],
+                ForcePathStyle = true,
+                UseHttp = configuration["S3:SECURE"] == "0",
+            });
+
         var boreholeFileUploadServiceLoggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
         boreholeFileUploadServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
         boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, boreholeFileUploadServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock);

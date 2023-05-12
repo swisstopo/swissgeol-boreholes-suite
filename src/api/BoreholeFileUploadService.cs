@@ -115,12 +115,12 @@ public class BoreholeFileUploadService
             // Create bucket if it doesn't exist.
             if (!await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName).ConfigureAwait(false))
             {
-                var putBucketRequest = new PutBucketRequest { BucketName = bucketName, UseClientRegion = true, };
+                var putBucketRequest = new PutBucketRequest { BucketName = bucketName, UseClientRegion = true };
                 PutBucketResponse putBucketResponse = await s3Client.PutBucketAsync(putBucketRequest).ConfigureAwait(false);
             }
 
             // Upload file
-            var putObjectRequest = new PutObjectRequest { BucketName = bucketName, Key = objectName, InputStream = file.OpenReadStream(), ContentType = file.ContentType, };
+            var putObjectRequest = new PutObjectRequest { BucketName = bucketName, Key = objectName, InputStream = file.OpenReadStream(), ContentType = file.ContentType };
             await s3Client.PutObjectAsync(putObjectRequest).ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -139,7 +139,7 @@ public class BoreholeFileUploadService
         try
         {
             // Get object from storage
-            var getObjectRequest = new GetObjectRequest { BucketName = bucketName, Key = objectName, };
+            var getObjectRequest = new GetObjectRequest { BucketName = bucketName, Key = objectName };
             using GetObjectResponse getObjectResponse = await s3Client.GetObjectAsync(getObjectRequest).ConfigureAwait(false);
 
             // Read response to byte array
@@ -162,8 +162,7 @@ public class BoreholeFileUploadService
     {
         try
         {
-            var request = new DeleteObjectRequest { BucketName = bucketName, Key = objectName, };
-
+            var request = new DeleteObjectRequest { BucketName = bucketName, Key = objectName };
             var response = await s3Client.DeleteObjectAsync(request).ConfigureAwait(false);
         }
         catch (Exception ex)

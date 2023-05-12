@@ -37,13 +37,17 @@ public class BoreholeFileUploadServiceTest
         var loggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
         loggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
-        var s3ClientMock = new AmazonS3Client(configuration["S3:ACCESS_KEY"], configuration["S3:SECRET_KEY"], new AmazonS3Config()
-        {
-            AuthenticationRegion = configuration["S3:REGION"],
-            ServiceURL = configuration["S3:ENDPOINT"],
-            ForcePathStyle = true,
-            UseHttp = configuration["S3:SECURE"] == "0",
-        });
+        var s3ClientMock = new AmazonS3Client(
+            configuration["S3:ACCESS_KEY"],
+            configuration["S3:SECRET_KEY"],
+            new AmazonS3Config
+            {
+                AuthenticationRegion = configuration["S3:REGION"],
+                ServiceURL = configuration["S3:ENDPOINT"],
+                ForcePathStyle = true,
+                UseHttp = configuration["S3:SECURE"] == "0",
+            });
+
         boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object, contextAccessorMock.Object, s3ClientMock);
 
         bucketName = configuration["S3:BUCKET_NAME"];
@@ -77,7 +81,7 @@ public class BoreholeFileUploadServiceTest
         Assert.AreEqual(borehole.BoreholeFiles.First().File.Name, fileName);
 
         // Ensure file exists in cloud storage
-        var request = new GetObjectMetadataRequest { BucketName = bucketName, Key = borehole.BoreholeFiles.First().File.NameUuid, };
+        var request = new GetObjectMetadataRequest { BucketName = bucketName, Key = borehole.BoreholeFiles.First().File.NameUuid };
         await s3Client.GetObjectMetadataAsync(request);
     }
 
@@ -93,7 +97,7 @@ public class BoreholeFileUploadServiceTest
         await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
 
         // Get all objects in the bucket with provided name
-        var listObjectsRequest = new ListObjectsV2Request { BucketName = bucketName, MaxKeys = 1000, Prefix = fileName, };
+        var listObjectsRequest = new ListObjectsV2Request { BucketName = bucketName, MaxKeys = 1000, Prefix = fileName };
         var listObjectResponse = await s3Client.ListObjectsV2Async(listObjectsRequest).ConfigureAwait(false);
 
         // Get all files with same key after upload
@@ -113,7 +117,7 @@ public class BoreholeFileUploadServiceTest
         await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
 
         // Get all files with same key after upload
-        var listObjectsRequest = new ListObjectsV2Request { BucketName = bucketName, MaxKeys = 1000, Prefix = pdfFormFile.FileName, };
+        var listObjectsRequest = new ListObjectsV2Request { BucketName = bucketName, MaxKeys = 1000, Prefix = pdfFormFile.FileName };
         var listObjectResponse = await s3Client.ListObjectsV2Async(listObjectsRequest).ConfigureAwait(false);
 
         // Get all files with same key after upload
@@ -185,12 +189,12 @@ public class BoreholeFileUploadServiceTest
         if (await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName).ConfigureAwait(false))
         {
             // Delete all files in bucket
-            var listObjectRequest = new ListObjectsV2Request { BucketName = bucketName, MaxKeys = 1000, };
+            var listObjectRequest = new ListObjectsV2Request { BucketName = bucketName, MaxKeys = 1000 };
             var listObjectResponse = await s3Client.ListObjectsV2Async(listObjectRequest).ConfigureAwait(false);
 
             foreach (var item in listObjectResponse.S3Objects)
             {
-                var deleteRequest = new DeleteObjectRequest { BucketName = bucketName, Key = item.Key, };
+                var deleteRequest = new DeleteObjectRequest { BucketName = bucketName, Key = item.Key };
                 await s3Client.DeleteObjectAsync(deleteRequest);
             }
 

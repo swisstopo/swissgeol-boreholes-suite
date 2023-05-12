@@ -96,16 +96,17 @@ builder.Services.AddScoped<CoordinateService>();
 builder.Services.AddScoped<BoreholeFileUploadService>();
 builder.Services.AddSingleton<IAmazonS3>(sp =>
 {
+    var s3ConfigSection = builder.Configuration.GetSection("S3");
     var clientConfig = new AmazonS3Config
     {
-        AuthenticationRegion = builder.Configuration.GetSection("S3").GetValue<string>("REGION"),
-        ServiceURL = builder.Configuration.GetSection("S3").GetValue<string>("ENDPOINT"),
+        AuthenticationRegion = s3ConfigSection.GetValue<string>("REGION"),
+        ServiceURL = s3ConfigSection.GetValue<string>("ENDPOINT"),
         ForcePathStyle = true,
-        UseHttp = builder.Configuration.GetSection("S3").GetValue<string>("SECURE") == "0",
+        UseHttp = s3ConfigSection.GetValue<string>("SECURE") == "0",
     };
 
-    var accessKey = builder.Configuration.GetSection("S3").GetValue<string>("ACCESS_KEY");
-    var secretKey = builder.Configuration.GetSection("S3").GetValue<string>("SECRET_KEY");
+    var accessKey = s3ConfigSection.GetValue<string>("ACCESS_KEY");
+    var secretKey = s3ConfigSection.GetValue<string>("SECRET_KEY");
 
     // If access key or secret key is not specified, try get them via IAM
     if (string.IsNullOrEmpty(accessKey) || string.IsNullOrEmpty(secretKey))
