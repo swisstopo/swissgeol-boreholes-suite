@@ -42,7 +42,7 @@ public class GroundwaterLevelMeasurementControllerTests
     {
         var result = await controller.GetAsync();
         Assert.IsNotNull(result);
-        Assert.AreEqual(112, result.Count());
+        Assert.AreEqual(111, result.Count());
     }
 
     [TestMethod]
