@@ -185,6 +185,5 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Hydrotest>().HasOne(l => l.TestKind).WithMany().HasForeignKey(l => l.TestKindId);
 
         modelBuilder.Entity<GroundwaterLevelMeasurement>().ToTable("groundwater_level_measurement").HasBaseType<Observation>();
-
     }
 }
