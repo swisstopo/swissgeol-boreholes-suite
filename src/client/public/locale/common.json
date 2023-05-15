@@ -384,5 +384,17 @@
   "minute": "",
   "minutes": "",
   "waterIngressRequiredFieldsAlert": "",
-  "hydrogeology": ""
+  "hydrogeology": "",
+  "hydrotest": "",
+  "hydrotestKind": "",
+  "flowDirection": "",
+  "evaluationMethod": "",
+  "hydrotestResult": "",
+  "msgHydrotestEmpty": "",
+  "parameter": "",
+  "value": "",
+  "minValue": "",
+  "maxValue": "",
+  "hydrotestResultRequiredFieldsAlert": "",
+  "hydrotestResultsWillBeDeleted": ""
 }
