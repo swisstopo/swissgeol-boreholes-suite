@@ -420,4 +420,17 @@
   "gwlm_levelmasl": "Niveau (m a.s.l.)",
   "gwlmRequiredFieldsAlert": "'Type de mesure du niveau des eaux souterraines', 'Heure de début' et 'Fiabilité des informations' sont des champs obligatoires, l'entrée ne peut pas être enregistrée si elles ne sont pas remplies.",
   "msgGroundwaterLevelMeasurementsEmpty": "Aucune mesure du niveau des eaux souterraines disponible."
+  "hydrotest": "Hydrotest",
+  "hydrotestKind": "Type d'essai",
+  "flowDirection": "Sens de l'écoulement",
+  "evaluationMethod": "Méthode d'évaluation",
+  "hydrotestResult": "Résultat de l'hydrotest",
+  "msgHydrotestEmpty": "Pas d'hydrotests disponibles",
+  "parameter": "Paramètre",
+  "value": "Valeur",
+  "minValue": "Valeur minimale",
+  "maxValue": "Valeur maximale",
+  "hydrotestRequiredFieldsAlert": "'Heure de début', 'Fiabilité des informations' et 'Type d'essai' sont des champs obligatoires, l'entrée ne peut pas être enregistrée si elles ne sont pas remplies.",
+  "hydrotestResultRequiredFieldsAlert": "'Paramètre' est un champ obligatoire, l'entrée ne peut pas être sauvegardée si elle n'est pas remplie.",
+  "hydrotestResultsWillBeDeleted": "Attention! Si vous modifiez le type d'essai, tous les résultats de l'hydrotest associés seront supprimés."
 }

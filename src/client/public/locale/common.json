@@ -391,4 +391,16 @@
   "gwlm_levelm": "",
   "gwlm_levelmasl": "",
   "gwlmRequiredFieldsAlert": ""
+  "hydrotest": "",
+  "hydrotestKind": "",
+  "flowDirection": "",
+  "evaluationMethod": "",
+  "hydrotestResult": "",
+  "msgHydrotestEmpty": "",
+  "parameter": "",
+  "value": "",
+  "minValue": "",
+  "maxValue": "",
+  "hydrotestResultRequiredFieldsAlert": "",
+  "hydrotestResultsWillBeDeleted": ""
 }

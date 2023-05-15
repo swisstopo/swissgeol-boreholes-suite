@@ -184,6 +184,18 @@ export const useDomainSchema = schema =>
     },
   );
 
+export const useHydrotestDomains = testKindId =>
+  useQuery(
+    ["domains", testKindId],
+    async () => {
+      return await fetchApiV2(`codelist?testKindId=${testKindId}`, "GET");
+    },
+    {
+      staleTime: 10 * (60 * 1000), // 10 mins
+      cacheTime: 15 * (60 * 1000), // 15 mins
+    },
+  );
+
 export const layerQueryKey = "layers";
 
 export const useLayers = profileId =>
@@ -325,7 +337,6 @@ export const useWaterIngressMutations = () => {
       },
     },
   );
-
   return {
     add: useAddWaterIngress,
     update: useUpdateWaterIngress,
@@ -457,4 +468,60 @@ export const updateBoreholeAttachment = async (
     },
     false,
   );
+};
+
+export const hydrotestQueryKey = "hydrotests";
+
+export const useHydrotests = boreholeId =>
+  useQuery({
+    queryKey: [hydrotestQueryKey, boreholeId],
+    queryFn: async () => {
+      return await fetchApiV2(`hydrotest?boreholeId=${boreholeId}`, "GET");
+    },
+  });
+
+export const useHydrotestMutations = () => {
+  const queryClient = useQueryClient();
+  const useAddHydrotests = useMutation(
+    async hydrotest => {
+      return await fetchApiV2("hydrotest", "POST", hydrotest);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [hydrotestQueryKey],
+        });
+      },
+    },
+  );
+  const useUpdateHydrotests = useMutation(
+    async hydrotest => {
+      return await fetchApiV2("hydrotest", "PUT", hydrotest);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [hydrotestQueryKey],
+        });
+      },
+    },
+  );
+  const useDeleteHydrotests = useMutation(
+    async hydrotestId => {
+      return await fetchApiV2(`hydrotest?id=${hydrotestId}`, "DELETE");
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [hydrotestQueryKey],
+        });
+      },
+    },
+  );
+
+  return {
+    add: useAddHydrotests,
+    update: useUpdateHydrotests,
+    delete: useDeleteHydrotests,
+  };
 };
