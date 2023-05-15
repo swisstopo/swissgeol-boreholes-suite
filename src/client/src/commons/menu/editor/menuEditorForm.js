@@ -371,6 +371,48 @@ class MenuEditorForm extends React.Component {
               </List.Item>
             </>
           )}
+          {this.state.hydrogeologyIsVisible && (
+            <>
+              <List.Item
+                active={
+                  location.pathname ===
+                  `${process.env.PUBLIC_URL}/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`
+                }
+                onClick={() => {
+                  history.push(
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`,
+                  );
+                }}
+                style={{
+                  padding: "1em",
+                  paddingLeft: 40,
+                  display: "flex",
+                  borderLeft:
+                    location.pathname ===
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`
+                      ? "0.25em solid rgb(237, 29, 36)"
+                      : null,
+                }}>
+                <img
+                  alt="Water ingress"
+                  src={process.env.PUBLIC_URL + "/img/Hydrogeology.png"}
+                  style={{
+                    height: "1.5em",
+                    paddingRight: "1em",
+                    opacity: this.state.completionIsVisible ? 1 : 0.5,
+                  }}
+                />
+                <List.Content>
+                  <List.Header as="h3" data-cy="hydrogeology-menu-item">
+                    <TranslationText
+                      firstUpperCase
+                      id="groundwater_level_measurement_word_break"
+                    />
+                  </List.Header>
+                </List.Content>
+              </List.Item>
+            </>
+          )}
           <List.Item
             onClick={() => {
               this.setState({

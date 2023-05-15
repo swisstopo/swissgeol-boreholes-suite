@@ -16,13 +16,13 @@ import { AlertContext } from "../../../alert/alertContext";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
 
-const WaterIngressInput = props => {
+const GroundwaterLevelMeasurementInput = props => {
   const {
-    waterIngress,
-    setSelectedWaterIngress,
+    groundwaterLevelMeasurement,
+    setSelectedGroundwaterLevelMeasurement,
     boreholeId,
-    addWaterIngress,
-    updateWaterIngress,
+    addGroundwaterLevelMeasurement,
+    updateGroundwaterLevelMeasurement,
   } = props;
   const domains = useDomains();
   const { t, i18n } = useTranslation();
@@ -47,21 +47,24 @@ const WaterIngressInput = props => {
     //convert dates to IsoStrings
     data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
-    if (data.startTime && data.quantityId && data.reliabilityId) {
-      if (waterIngress.id === 0) {
-        addWaterIngress({
+    if (data.startTime && data.kindId && data.reliabilityId) {
+      if (groundwaterLevelMeasurement.id === 0) {
+        addGroundwaterLevelMeasurement({
           ...data,
-          type: ObservationType.waterIngress,
+          type: ObservationType.groundwaterLevelMeasurement,
           boreholeId: boreholeId,
         });
       } else {
-        delete waterIngress.casing;
-        delete waterIngress.quantity;
-        delete waterIngress.reliability;
-        updateWaterIngress({ ...waterIngress, ...data });
+        delete groundwaterLevelMeasurement.casing;
+        delete groundwaterLevelMeasurement.kind;
+        delete groundwaterLevelMeasurement.reliability;
+        updateGroundwaterLevelMeasurement({
+          ...groundwaterLevelMeasurement,
+          ...data,
+        });
       }
     } else {
-      setSelectedWaterIngress(null);
+      setSelectedGroundwaterLevelMeasurement(null);
     }
   };
 
@@ -69,12 +72,12 @@ const WaterIngressInput = props => {
     const formValues = getValues();
     if (
       !formValues.reliabilityId ||
-      !formValues.quantityId ||
+      !formValues.kindId ||
       !formValues.startTime
     ) {
-      alertContext.error(t("waterIngressRequiredFieldsAlert"));
+      alertContext.error(t("gwlmRequiredFieldsAlert"));
     } else {
-      setSelectedWaterIngress(null);
+      setSelectedGroundwaterLevelMeasurement(null);
     }
   };
 
@@ -91,7 +94,7 @@ const WaterIngressInput = props => {
         <Stack direction="row" sx={{ width: "100%" }}>
           <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
             <ObservationInput
-              observation={waterIngress}
+              observation={groundwaterLevelMeasurement}
               boreholeId={boreholeId}
               register={register}
               control={control}
@@ -103,23 +106,23 @@ const WaterIngressInput = props => {
                 variant="outlined"
                 sx={{ flex: "1", marginRight: "10px" }}>
                 <Controller
-                  name="quantityId"
+                  name="kindId"
                   control={control}
-                  defaultValue={waterIngress.quantityId}
+                  defaultValue={groundwaterLevelMeasurement.kindId}
                   rules={{ required: true }}
                   render={({ field }) => (
                     <TextField
                       {...field}
                       select
                       size="small"
-                      label={t("quantity")}
+                      label={t("gwlm_kind")}
                       variant="outlined"
                       value={field.value || ""}
-                      data-cy="quantity-select"
-                      error={Boolean(formState.errors.quantityId)}
+                      data-cy="kind-select"
+                      error={Boolean(formState.errors.kindId)}
                       InputLabelProps={{ shrink: true }}
                       sx={{
-                        backgroundColor: Boolean(formState.errors.quantityId)
+                        backgroundColor: Boolean(formState.errors.kindId)
                           ? "#fff6f6"
                           : "transparent",
                         borderRadius: "4px",
@@ -130,7 +133,7 @@ const WaterIngressInput = props => {
                         trigger();
                       }}>
                       {domains?.data
-                        ?.filter(d => d.schema === "waing101")
+                        ?.filter(d => d.schema === "gwlme101")
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>
                             {d[i18n.language]}
@@ -140,41 +143,34 @@ const WaterIngressInput = props => {
                   )}
                 />
               </FormControl>
-              <FormControl
+            </Stack>
+            <Stack direction="row">
+              <TextField
+                sx={{ flex: "1", marginTop: "10px", marginRight: "10px" }}
+                {...register("levelM", {
+                  valueAsNumber: true,
+                })}
+                type="number"
+                size="small"
+                data-cy="level-m-textfield"
+                label={t("gwlm_levelm")}
+                defaultValue={groundwaterLevelMeasurement.levelM}
                 variant="outlined"
-                sx={{ flex: "1", marginRight: "10px" }}>
-                <Controller
-                  name="conditionsId"
-                  control={control}
-                  defaultValue={waterIngress.conditionsId}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      label={t("conditions")}
-                      variant="outlined"
-                      size="small"
-                      value={field.value || ""}
-                      data-cy="conditions-select"
-                      InputLabelProps={{ shrink: true }}
-                      onChange={e => {
-                        e.stopPropagation();
-                        field.onChange(e.target.value);
-                      }}>
-                      <MenuItem key="0" value="">
-                        <em>{t("reset")}</em>
-                      </MenuItem>
-                      {domains?.data
-                        ?.filter(d => d.schema === "waing102")
-                        .map(d => (
-                          <MenuItem key={d.id} value={d.id}>
-                            {d[i18n.language]}
-                          </MenuItem>
-                        ))}
-                    </TextField>
-                  )}
-                />
-              </FormControl>
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                sx={{ flex: "1", marginTop: "10px", marginRight: "10px" }}
+                {...register("levelMasl", {
+                  valueAsNumber: true,
+                })}
+                type="number"
+                size="small"
+                data-cy="level-masl-textfield"
+                label={t("gwlm_levelmasl")}
+                defaultValue={groundwaterLevelMeasurement.levelMasl}
+                variant="outlined"
+                InputLabelProps={{ shrink: true }}
+              />
             </Stack>
           </Stack>
           <Box sx={{ marginLeft: "auto" }}>
@@ -192,4 +188,4 @@ const WaterIngressInput = props => {
   );
 };
 
-export default WaterIngressInput;
+export default GroundwaterLevelMeasurementInput;

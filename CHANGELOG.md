@@ -15,6 +15,7 @@
 - Borehole duplicates are only identified within the same workgroup when importing boreholes.
 
 ### Fixed
+
 - Fixed and extended chronostratigraphy geolcodes.
 
 ## v2.0.298 - 2023-04-18
@@ -180,7 +181,7 @@
 - Removed `mentions` functionality in workflow comments.
 - Removed unused columns from database: `borehole.import_id`, `borehole.tecto_id_cli`, `stratigraphy.import_id`, `layer.import_id`, `layer.tectonic_unit_id_cli`, `layer.symbol_id_cli`, `layer.soil_state_id_cli`, `layer.kirost_id_cli`.
 - Removed unused table `bdms.statigraphy_codelist` from database.
-- Removed  `layer.unconrocks_id_cli` and `layer.lithok_id_cli` from database.
+- Removed `layer.unconrocks_id_cli` and `layer.lithok_id_cli` from database.
 - Changed cardinality of `uscs3` field on `bdms.layer` to m:n.
 
 ### Fixed
