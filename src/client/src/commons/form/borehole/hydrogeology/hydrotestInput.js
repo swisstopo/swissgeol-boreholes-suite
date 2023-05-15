@@ -185,6 +185,7 @@ const HydrotestInput = ({
                       onMouseDown={handleMouseDown}>
                       {domains?.data
                         ?.filter(d => d.schema === "htest101")
+                        .sort((a, b) => a.order - b.order)
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>
                             {d[i18n.language]}
