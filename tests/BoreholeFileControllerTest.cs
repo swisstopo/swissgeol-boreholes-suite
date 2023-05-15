@@ -1,14 +1,13 @@
-﻿using BDMS.Controllers;
+﻿using Amazon.S3;
+using BDMS.Controllers;
 using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Minio.Exceptions;
 using Moq;
 using System.Net;
-using System.Reactive.Linq;
 using System.Security.Claims;
 using System.Text;
 using static BDMS.Helpers;
@@ -34,9 +33,21 @@ public class BoreholeFileControllerTest
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, adminUser.Name) }));
+
+        var s3ClientMock = new AmazonS3Client(
+            configuration["S3:ACCESS_KEY"],
+            configuration["S3:SECRET_KEY"],
+            new AmazonS3Config
+            {
+                AuthenticationRegion = configuration["S3:REGION"],
+                ServiceURL = configuration["S3:ENDPOINT"],
+                ForcePathStyle = true,
+                UseHttp = configuration["S3:SECURE"] == "0",
+            });
+
         var boreholeFileUploadServiceLoggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
         boreholeFileUploadServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, boreholeFileUploadServiceLoggerMock.Object, contextAccessorMock.Object);
+        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, boreholeFileUploadServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
@@ -229,7 +240,7 @@ public class BoreholeFileControllerTest
         Assert.AreEqual(boreholeFilesBeforeUpload, context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
 
         // Ensure file does not exist
-        await Assert.ThrowsExceptionAsync<ObjectNotFoundException>(() => boreholeFileUploadService.GetObject(latestFileInDb.NameUuid!));
+        await Assert.ThrowsExceptionAsync<AmazonS3Exception>(() => boreholeFileUploadService.GetObject(latestFileInDb.NameUuid!));
     }
 
     [TestMethod]
