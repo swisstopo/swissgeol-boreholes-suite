@@ -126,7 +126,7 @@ public class HydrotestController : ControllerBase
         // If there are HydrotestResults, check if the ParameterIds in the results are compatible.
         if (hydrotest.HydrotestResults?.Any() == true)
         {
-            var compatibleParameterIds = GetCompatibleCodelistIds(testKindGeolCode, HydrogeologySchemas.HydrotestResultParameterSchema, HydroCodeLookup.HydrotestResultOptions);
+            var compatibleParameterIds = GetCompatibleCodelistIds(testKindGeolCode, HydrogeologySchemas.HydrotestResultParameterSchema, HydroCodeLookup.HydrotestResultParameterOptions);
             if (!hydrotest.HydrotestResults.All(r => compatibleParameterIds.Contains(r.ParameterId)))
             {
                 return false;

@@ -41,7 +41,7 @@ public class CodeListController : ControllerBase
             int testKindGeolCode = context.Codelists.SingleOrDefault(c => c.Id == testKindId)?.Geolcode ?? 0;
 
             // Get the lists of Geolcodes from the HydroCodeLookup based on the testKindGeolCode.
-            List<int> hydrotestResultGeolcodes = HydroCodeLookup.HydrotestResultOptions.TryGetValue(testKindGeolCode, out List<int>? tempHRIds) ? tempHRIds : new List<int>();
+            List<int> hydrotestResultGeolcodes = HydroCodeLookup.HydrotestResultParameterOptions.TryGetValue(testKindGeolCode, out List<int>? tempHRIds) ? tempHRIds : new List<int>();
             List<int> flowDirectionGeolCodes = HydroCodeLookup.HydrotestFlowDirectionOptions.TryGetValue(testKindGeolCode, out List<int>? tempFDIds) ? tempFDIds : new List<int>();
             List<int> evaluationMethodIds = HydroCodeLookup.HydrotestEvaluationMethodOptions.TryGetValue(testKindGeolCode, out List<int>? tempEMIds) ? tempEMIds : new List<int>();
 
