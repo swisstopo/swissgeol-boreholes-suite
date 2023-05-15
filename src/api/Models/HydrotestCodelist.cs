@@ -15,7 +15,4 @@ public class HydrotestCodelist
     [Column("id_cli_fk")]
     public int CodelistId { get; set; }
     public Codelist Codelist { get; set; }
-
-    [Column("code_cli")]
-    public string SchemaName { get; set; }
 }

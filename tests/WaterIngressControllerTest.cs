@@ -95,9 +95,9 @@ public class WaterIngressControllerTests
             CompletionFinished = true,
             Comment = "Test comment",
             BoreholeId = 1008104,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 4).Id,
-            QuantityId = context.Codelists.Where(c => c.Schema == "waing101").Single(c => c.Geolcode == 1).Id,
-            ConditionsId = context.Codelists.Where(c => c.Schema == "waing102").Single(c => c.Geolcode == 1).Id,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
+            QuantityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Single(c => c.Geolcode == 1).Id,
+            ConditionsId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Single(c => c.Geolcode == 1).Id,
         };
 
         var updatedWaterIngress = new WaterIngress
@@ -114,9 +114,9 @@ public class WaterIngressControllerTests
             CompletionFinished = true,
             Comment = "Updated test comment",
             BoreholeId = 1008105,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 2).Id,
-            QuantityId = context.Codelists.Where(c => c.Schema == "waing101").Single(c => c.Geolcode == 3).Id,
-            ConditionsId = context.Codelists.Where(c => c.Schema == "waing102").Single(c => c.Geolcode == 2).Id,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
+            QuantityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Single(c => c.Geolcode == 3).Id,
+            ConditionsId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Single(c => c.Geolcode == 2).Id,
         };
 
         try
@@ -180,9 +180,9 @@ public class WaterIngressControllerTests
             CompletionFinished = false,
             Comment = "New test comment",
             BoreholeId = 1006493,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 3).Id,
-            QuantityId = context.Codelists.Where(c => c.Schema == "waing101").Single(c => c.Geolcode == 2).Id,
-            ConditionsId = context.Codelists.Where(c => c.Schema == "waing102").Single(c => c.Geolcode == 3).Id,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
+            QuantityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Single(c => c.Geolcode == 2).Id,
+            ConditionsId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Single(c => c.Geolcode == 3).Id,
         };
 
         try
