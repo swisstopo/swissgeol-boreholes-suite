@@ -1,4 +1,6 @@
-﻿using BDMS;
+﻿using Amazon.Runtime;
+using Amazon.S3;
+using BDMS;
 using BDMS.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -92,6 +94,29 @@ builder.Services.AddApiVersioning(config =>
 builder.Services.AddScoped<LocationService>();
 builder.Services.AddScoped<CoordinateService>();
 builder.Services.AddScoped<BoreholeFileUploadService>();
+builder.Services.AddSingleton<IAmazonS3>(sp =>
+{
+    var s3ConfigSection = builder.Configuration.GetSection("S3");
+    var clientConfig = new AmazonS3Config
+    {
+        AuthenticationRegion = s3ConfigSection.GetValue<string>("REGION"),
+        ServiceURL = s3ConfigSection.GetValue<string>("ENDPOINT"),
+        ForcePathStyle = true,
+        UseHttp = s3ConfigSection.GetValue<string>("SECURE") == "0",
+    };
+
+    var accessKey = s3ConfigSection.GetValue<string>("ACCESS_KEY");
+    var secretKey = s3ConfigSection.GetValue<string>("SECRET_KEY");
+
+    // If access key or secret key is not specified, try get them via IAM
+    if (string.IsNullOrEmpty(accessKey) || string.IsNullOrEmpty(secretKey))
+    {
+        using var credentials = new InstanceProfileAWSCredentials();
+        return new AmazonS3Client(credentials, clientConfig);
+    }
+
+    return new AmazonS3Client(accessKey, secretKey, clientConfig);
+});
 
 var app = builder.Build();
 
