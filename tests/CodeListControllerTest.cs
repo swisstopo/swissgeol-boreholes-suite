@@ -82,7 +82,7 @@ public class CodeListControllerTest
     }
 
     [TestMethod]
-    public async Task GetHydrotestCodesByIexistantTestKind()
+    public async Task GetHydrotestCodesByInexistantTestKind()
     {
         var codeListsInfiltrationEssay = await controller.GetAsync("", 6715779);
         Assert.AreEqual(0, codeListsInfiltrationEssay.Count());
