@@ -44,8 +44,7 @@ const IdentifierSegment = props => {
           {borehole.data.lock !== null ? (
             <div
               style={{
-                textDecoration: "line-through",
-                cursor: "not-allowed",
+                visibility: "hidden",
               }}>
               <TranslationText id="delete" />
             </div>
