@@ -13,7 +13,7 @@ namespace BDMS;
 public static class HydroCodeLookup
 {
     /// <summary>
-    /// Gets a dictionary that maps a <see cref="Hydrotest.TestKindId"/>   identifier to a list of compatible geolcodes for the <see cref="HydrotestResult.Parameter"/> of a <see cref="HydrotestResult"/>.
+    /// Gets a dictionary that maps a <see cref="Hydrotest.TestKindId"/> identifier to a list of compatible geolcodes for the <see cref="HydrotestResult.Parameter"/> of a <see cref="HydrotestResult"/>.
     /// </summary>
     public static Dictionary<int, List<int>> HydrotestResultParameterOptions { get; } = new()
     {
