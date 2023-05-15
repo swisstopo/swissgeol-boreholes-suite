@@ -7,6 +7,7 @@
 - Added link to online help in import dialog.
 - Upload borehole attachments using borehole import feature.
 - Add `import_id` as required field for borehole import.
+- Add boreholes.swissgeol.ch id to details view.
 
 ### Changed
 
