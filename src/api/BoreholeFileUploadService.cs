@@ -1,8 +1,8 @@
-﻿using Amazon.Runtime;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+using Amazon.S3.Util;
 using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
-using Minio;
-using Minio.Exceptions;
 using System.Security.Claims;
 using System.Security.Cryptography;
 
@@ -16,24 +16,16 @@ public class BoreholeFileUploadService
     private readonly BdmsContext context;
     private readonly ILogger logger;
     private readonly IHttpContextAccessor httpContextAccessor;
+    private readonly IAmazonS3 s3Client;
     private readonly string bucketName;
-    private readonly string endpoint;
-    private readonly string region;
-    private readonly bool secure;
-    private string accessKey;
-    private string secretKey;
 
-    public BoreholeFileUploadService(BdmsContext context, IConfiguration configuration, ILogger<BoreholeFileUploadService> logger, IHttpContextAccessor httpContextAccessor)
+    public BoreholeFileUploadService(BdmsContext context, IConfiguration configuration, ILogger<BoreholeFileUploadService> logger, IHttpContextAccessor httpContextAccessor, IAmazonS3 s3Client)
     {
         this.logger = logger;
         this.httpContextAccessor = httpContextAccessor;
         this.context = context;
+        this.s3Client = s3Client;
         bucketName = configuration["S3:BUCKET_NAME"];
-        endpoint = configuration["S3:ENDPOINT"];
-        accessKey = configuration["S3:ACCESS_KEY"];
-        secretKey = configuration["S3:SECRET_KEY"];
-        region = configuration["S3:REGION"];
-        secure = configuration["S3:SECURE"] != "0";
     }
 
     /// <summary>
@@ -120,30 +112,16 @@ public class BoreholeFileUploadService
     {
         try
         {
-            using var minioClient = CreateMinioClient();
-
             // Create bucket if it doesn't exist.
-            var bucketExistsArgs = new BucketExistsArgs().WithBucket(bucketName);
-            if (await minioClient.BucketExistsAsync(bucketExistsArgs).ConfigureAwait(false) == false)
+            if (!await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName).ConfigureAwait(false))
             {
-                var bucketMakeArgs = new MakeBucketArgs().WithBucket(bucketName);
-                await minioClient.MakeBucketAsync(bucketMakeArgs).ConfigureAwait(false);
+                var putBucketRequest = new PutBucketRequest { BucketName = bucketName, UseClientRegion = true };
+                PutBucketResponse putBucketResponse = await s3Client.PutBucketAsync(putBucketRequest).ConfigureAwait(false);
             }
 
-            // Get the content type and create a stream from the uploaded file.
-            var contentType = file.ContentType;
-
-            using var stream = file.OpenReadStream();
-
-            var putObjectArgs = new PutObjectArgs()
-                .WithBucket(bucketName)
-                .WithObject(objectName)
-                .WithStreamData(stream)
-                .WithObjectSize(file.Length)
-                .WithContentType(contentType);
-
-            // Upload the stream to the bucket.
-            await minioClient.PutObjectAsync(putObjectArgs).ConfigureAwait(false);
+            // Upload file
+            var putObjectRequest = new PutObjectRequest { BucketName = bucketName, Key = objectName, InputStream = file.OpenReadStream(), ContentType = file.ContentType };
+            await s3Client.PutObjectAsync(putObjectRequest).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -160,23 +138,18 @@ public class BoreholeFileUploadService
     {
         try
         {
-            using var minioClient = CreateMinioClient();
-            using var downloadStream = new MemoryStream();
+            // Get object from storage
+            var getObjectRequest = new GetObjectRequest { BucketName = bucketName, Key = objectName };
+            using GetObjectResponse getObjectResponse = await s3Client.GetObjectAsync(getObjectRequest).ConfigureAwait(false);
 
-            var getObjectArgs = new GetObjectArgs().WithBucket(bucketName).WithObject(objectName).WithCallbackStream(stream => stream.CopyTo(downloadStream));
-
-            await minioClient.GetObjectAsync(getObjectArgs).ConfigureAwait(false);
-
-            return downloadStream.ToArray();
+            // Read response to byte array
+            using var memoryStream = new MemoryStream();
+            await getObjectResponse.ResponseStream.CopyToAsync(memoryStream).ConfigureAwait(false);
+            return memoryStream.ToArray();
         }
         catch (Exception ex)
         {
             logger.LogError(ex, $"Error downloading file <{objectName}> from cloud storage.");
-            if (ex.Message.Contains("Not found", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new ObjectNotFoundException(objectName, $"Object <{objectName}> not found on storage.");
-            }
-
             throw;
         }
     }
@@ -189,47 +162,13 @@ public class BoreholeFileUploadService
     {
         try
         {
-            using var minioClient = CreateMinioClient();
-            var removeObjectArgs = new RemoveObjectArgs().WithBucket(bucketName).WithObject(objectName);
-
-            await minioClient.RemoveObjectAsync(removeObjectArgs).ConfigureAwait(false);
+            var request = new DeleteObjectRequest { BucketName = bucketName, Key = objectName };
+            var response = await s3Client.DeleteObjectAsync(request).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, $"Error deleting file <{objectName}> from cloud storage.");
-            if (ex.Message.Contains("Not found", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new ObjectNotFoundException(objectName, $"Object <{objectName}> not found on storage.");
-            }
-
             throw;
         }
-    }
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Corresponding to MinIO documentation.")]
-    private MinioClient CreateMinioClient()
-    {
-        // Create basic client
-        var client = new MinioClient().WithEndpoint(endpoint).WithSSL(secure);
-
-        // Add region if specified
-        if (!string.IsNullOrEmpty(region)) client = client.WithRegion(region);
-
-        // If access key or secret key is not specified, try get them via IAM
-        if (string.IsNullOrEmpty(accessKey) || string.IsNullOrEmpty(secretKey))
-        {
-            try
-            {
-                var credentials = new InstanceProfileAWSCredentials();
-                secretKey = credentials.GetCredentials().SecretKey;
-                accessKey = credentials.GetCredentials().AccessKey;
-            }
-            catch (Exception ex)
-            {
-                logger.LogError("Error during get credentials from InstanceProfileAWSCredentials", ex);
-            }
-        }
-
-        return client.WithCredentials(accessKey, secretKey).Build();
     }
 }
