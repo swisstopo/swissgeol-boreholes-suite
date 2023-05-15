@@ -420,7 +420,7 @@
   "gwlm_levelm": "Abstich (m)",
   "gwlm_levelmasl": "Pegel (m ü. M.)",
   "gwlmRequiredFieldsAlert": "'Art der Grundwassermessung', 'Startzeitpunk' und 'Verlässlichkeit der Angaben' sind obligatorische Felder, der Eintrag kann nicht gespeichert werden, wenn sie nicht ausgefüllt sind.",
-  "msgGroundwaterLevelMeasurementsEmpty": "Keine Grundwassermessungen vorhanden"
+  "msgGroundwaterLevelMeasurementsEmpty": "Keine Grundwassermessungen vorhanden",
   "hydrotest": "Hydrotest",
   "hydrotestKind": "Art des Hydrotests",
   "flowDirection": "Fliessrichtung",

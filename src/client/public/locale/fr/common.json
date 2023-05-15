@@ -419,7 +419,7 @@
   "gwlm_levelm": "Niveau (m)",
   "gwlm_levelmasl": "Niveau (m a.s.l.)",
   "gwlmRequiredFieldsAlert": "'Type de mesure du niveau des eaux souterraines', 'Heure de début' et 'Fiabilité des informations' sont des champs obligatoires, l'entrée ne peut pas être enregistrée si elles ne sont pas remplies.",
-  "msgGroundwaterLevelMeasurementsEmpty": "Aucune mesure du niveau des eaux souterraines disponible."
+  "msgGroundwaterLevelMeasurementsEmpty": "Aucune mesure du niveau des eaux souterraines disponible.",
   "hydrotest": "Hydrotest",
   "hydrotestKind": "Type d'essai",
   "flowDirection": "Sens de l'écoulement",

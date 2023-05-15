@@ -419,7 +419,7 @@
   "gwlm_levelm": "Level (m)",
   "gwlm_levelmasl": "Level (m a.s.l.)",
   "gwlmRequiredFieldsAlert": "'Type of groundwater measurement', 'Start time' and 'Reliability of data' are mandatory fields, the entry cannot be saved if they are not filled out.",
-  "msgGroundwaterLevelMeasurementsEmpty": "No groundwater level measurements available."
+  "msgGroundwaterLevelMeasurementsEmpty": "No groundwater level measurements available.",
   "hydrotest": "Hydrotest",
   "hydrotestKind": "Hydrotest kind",
   "flowDirection": "Flow direction",
