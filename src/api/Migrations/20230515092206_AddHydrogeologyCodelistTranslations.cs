@@ -144,9 +144,10 @@ public partial class AddHydrogeologyCodelistTranslations : Migration
                 text_cli_en = 'packer test (Drillstem, Lugeon)'
             WHERE id_cli = 15203177;
 
-            SET text_cli_fr = 'essai de débitmètre / de diagraphie des fluides',
-                text_cli_it = 'flussimetro / prova log velocità di flusso',
-                text_cli_en = 'flowmeter / fluid logging test'
+            UPDATE bdms.codelist
+            SET text_cli_fr = 'essai de débitmètre/de diagraphie des fluides',
+                text_cli_it = 'flussimetro/prova log velocità di flusso',
+                text_cli_en = 'flowmeter/fluid logging test'
             WHERE id_cli = 15203178;
 
             UPDATE bdms.codelist
