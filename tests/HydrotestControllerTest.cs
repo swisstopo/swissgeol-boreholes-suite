@@ -101,8 +101,8 @@ public class HydrotestControllerTests
             CompletionFinished = true,
             Comment = "Test comment",
             BoreholeId = 1008104,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 4).Id,
-            TestKindId = context.Codelists.Where(c => c.Schema == "htest101").Single(c => c.Geolcode == 1).Id,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
+            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 1).Id,
         };
 
         var updatedHydrotest = new Hydrotest
@@ -119,8 +119,8 @@ public class HydrotestControllerTests
             CompletionFinished = true,
             Comment = "Updated test comment",
             BoreholeId = 1008105,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 2).Id,
-            TestKindId = context.Codelists.Where(c => c.Schema == "htest101").Single(c => c.Geolcode == 3).Id,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
+            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 3).Id,
             CodelistIds = new List<int> { 15203187, 15203189 },
         };
 
@@ -148,8 +148,8 @@ public class HydrotestControllerTests
             Assert.AreEqual(updatedHydrotest.BoreholeId, editedHydrotest.BoreholeId);
             Assert.AreEqual(updatedHydrotest.ReliabilityId, editedHydrotest.ReliabilityId);
             Assert.AreEqual(updatedHydrotest.TestKindId, editedHydrotest.TestKindId);
-            Assert.AreEqual("Entnahme", editedHydrotest.Codelists!.Single(c => c.Schema == "htest102").De);
-            Assert.AreEqual("stationär", editedHydrotest.Codelists!.Single(c => c.Schema == "htest103").De);
+            Assert.AreEqual("Entnahme", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).De);
+            Assert.AreEqual("stationär", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).De);
         }
         finally
         {
@@ -186,8 +186,8 @@ public class HydrotestControllerTests
             CompletionFinished = false,
             Comment = "New test comment",
             BoreholeId = 1006493,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 3).Id,
-            TestKindId = context.Codelists.Where(c => c.Schema == "htest101").Single(c => c.Geolcode == 2).Id,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
+            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id,
             HydrotestResults = new List<HydrotestResult>() { new HydrotestResult { ParameterId = 15203194 } },
         };
 
@@ -235,7 +235,7 @@ public class HydrotestControllerTests
         var newHydrotest = new Hydrotest
         {
             Type = ObservationType.Hydrotest,
-            TestKindId = context.Codelists.Where(c => c.Schema == "htest101").Single(c => c.Geolcode == 2).Id,
+            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id,
             CodelistIds = new List<int>() { 23, 45 },
         };
 
@@ -249,7 +249,7 @@ public class HydrotestControllerTests
         var newHydrotest = new Hydrotest
         {
             Type = ObservationType.Hydrotest,
-            TestKindId = context.Codelists.Where(c => c.Schema == "htest101").Single(c => c.Geolcode == 2).Id,
+            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id,
             HydrotestResults = new List<HydrotestResult>() { new HydrotestResult { ParameterId = 73825 } },
         };
 

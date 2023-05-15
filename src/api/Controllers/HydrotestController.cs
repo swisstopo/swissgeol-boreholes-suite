@@ -126,7 +126,7 @@ public class HydrotestController : ControllerBase
         // If there are HydrotestResults, check if the ParameterIds in the results are compatible.
         if (hydrotest.HydrotestResults?.Any() == true)
         {
-            var compatibleParameterIds = GetCompatibleCodelistIds(testKindGeolCode, "htestres101", HydroCodeLookup.HydrotestResultOptions);
+            var compatibleParameterIds = GetCompatibleCodelistIds(testKindGeolCode, HydrogeologySchemas.HydrotestResultParameterSchema, HydroCodeLookup.HydrotestResultOptions);
             if (!hydrotest.HydrotestResults.All(r => compatibleParameterIds.Contains(r.ParameterId)))
             {
                 return false;
@@ -138,8 +138,8 @@ public class HydrotestController : ControllerBase
         // If there are CodelistIds, find the compatible CodelistIds for the flow direction and evaluation method options.
         if (hydrotest.CodelistIds?.Any() == true)
         {
-            compatibleCodelistIds.AddRange(GetCompatibleCodelistIds(testKindGeolCode, "htest102", HydroCodeLookup.HydrotestFlowDirectionOptions));
-            compatibleCodelistIds.AddRange(GetCompatibleCodelistIds(testKindGeolCode, "htest103", HydroCodeLookup.HydrotestEvaluationMethodOptions));
+            compatibleCodelistIds.AddRange(GetCompatibleCodelistIds(testKindGeolCode, HydrogeologySchemas.FlowdirectionSchema, HydroCodeLookup.HydrotestFlowDirectionOptions));
+            compatibleCodelistIds.AddRange(GetCompatibleCodelistIds(testKindGeolCode, HydrogeologySchemas.EvaluationMethodSchema, HydroCodeLookup.HydrotestEvaluationMethodOptions));
         }
 
         // Return true if all CodelistIds are compatible, or there are no CodelistIds.

@@ -66,15 +66,19 @@ public class CodeListControllerTest
     {
         var codeListsInfiltrationEssay = await controller.GetAsync("", 15203179);
         Assert.AreEqual(6, codeListsInfiltrationEssay.Count());
-        Assert.IsTrue(codeListsInfiltrationEssay.All(c => c.Schema == "htest102" || c.Schema == "htest103" || c.Schema == "htestres101"));
+        Assert.IsTrue(codeListsInfiltrationEssay.All(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema
+                                                       || c.Schema == HydrogeologySchemas.EvaluationMethodSchema
+                                                       || c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema));
 
         var codeListsPumpEssay = await controller.GetAsync("", 15203170);
         Assert.AreEqual(13, codeListsPumpEssay.Count());
-        Assert.IsTrue(codeListsPumpEssay.All(c => c.Schema == "htest102" || c.Schema == "htest103" || c.Schema == "htestres101"));
+        Assert.IsTrue(codeListsPumpEssay.All(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema
+                                                || c.Schema == HydrogeologySchemas.EvaluationMethodSchema
+                                                || c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema));
 
         var codeListsExpertValue = await controller.GetAsync("", 15203182);
         Assert.AreEqual(6, codeListsExpertValue.Count());
-        Assert.IsTrue(codeListsExpertValue.All(c => c.Schema == "htestres101"));
+        Assert.IsTrue(codeListsExpertValue.All(c => c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema));
     }
 
     [TestMethod]
