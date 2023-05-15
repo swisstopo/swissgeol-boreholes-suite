@@ -53,7 +53,7 @@ public static class HydroCodeLookup
     };
 
     /// <summary>
-    /// Gets a dictionary that maps a <see cref="Hydrotest.TestKindId"/>  identifier to a list of compatible geolcodes for <see cref="Hydrotest"/> evaluation methods.
+    /// Gets a dictionary that maps a <see cref="Hydrotest.TestKindId"/> identifier to a list of compatible geolcodes for <see cref="Hydrotest"/> evaluation methods.
     /// </summary>
     public static Dictionary<int, List<int>> HydrotestEvaluationMethodOptions { get; } = new()
     {
