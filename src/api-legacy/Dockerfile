@@ -18,13 +18,6 @@ CMD python -u bms/main.py \
     --pg-user=${DB_USERNAME} \
     --pg-password=${DB_PASSWORD} \
     \
-    --s3-endpoint=${S3_ENDPOINT} \
-    --s3-bucket-name=${S3_BUCKET_NAME} \
-    --s3-region=${S3_REGION} \
-    --s3-access-key=${S3_ACCESS_KEY} \
-    --s3-secret-key=${S3_SECRET_KEY} \
-    --s3-secure=${S3_SECURE} \
-    \
     --smtp-recipients=${SMTP_RECIPIENTS} \
     --smtp-sender=${SMTP_SENDER} \
     --smtp-password=${SMTP_PASSWORD} \

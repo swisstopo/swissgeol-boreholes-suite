@@ -84,11 +84,6 @@ services:
       db:
         condition: service_healthy
     environment:
-      S3_ENDPOINT: minio:9000
-      S3_BUCKET_NAME: swissforages
-      S3_ACCESS_KEY: REDSQUIRREL
-      S3_SECRET_KEY: YELLOWMONKEY
-      S3_SECURE: 0
       DB_USERNAME: SPAWNPLOW
       DB_PASSWORD: YELLOWSPATULA
       DB_DATABASE: bdms
@@ -116,4 +111,5 @@ services:
       ASPNETCORE_URLS: http://+:5000
       DOTNET_USE_POLLING_FILE_WATCHER: 1
       CONNECTIONSTRINGS__BdmsContext: Host=db;Username=SPAWNPLOW;Password=YELLOWSPATULA;Database=bdms;CommandTimeout=300
-      S3__ENDPOINT: minio:9000
+      S3__ENDPOINT: https://minio:9000
+      S3__SECURE: 1

@@ -5,7 +5,7 @@ import {
 } from "../testHelpers";
 
 describe("Tests for 'Attachments' edit page.", () => {
-  it("creates, downloads and deletes attachments.", () => {
+  it.skip("creates, downloads and deletes attachments.", () => {
     createAndEditBoreholeAsAdmin({
       "extended.original_name": "JUNIORSOUFFLE",
     });

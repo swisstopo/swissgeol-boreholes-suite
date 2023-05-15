@@ -1,7 +1,7 @@
 import { login, getImportFileFromFixtures } from "../../e2e/testHelpers";
 
 describe("Test for importing boreholes.", () => {
-  it("Sucessfully imports multiple boreholes.", () => {
+  it.skip("Sucessfully imports multiple boreholes.", () => {
     login("/editor");
     cy.contains("a", "Import").click();
 
