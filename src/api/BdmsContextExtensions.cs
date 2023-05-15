@@ -1,9 +1,4 @@
-﻿using BDMS.Models;
-using Bogus;
-using EFCore.BulkExtensions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Geometries;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 
@@ -96,12 +91,12 @@ public static class BdmsContextExtensions
         List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> referenceElevationTypeIds = codelists.Where(c => c.Schema == "ibor117").Select(s => s.Id).ToList();
-        List<int> waterIngressReliabilityIds = codelists.Where(c => c.Schema == "observ101").Select(s => s.Id).ToList();
-        List<int> waterIngressQuantityIds = codelists.Where(c => c.Schema == "waing101").Select(s => s.Id).ToList();
-        List<int> waterIngressConditionsIds = codelists.Where(c => c.Schema == "waing102").Select(s => s.Id).ToList();
-        List<int> hydrotestKindIds = codelists.Where(c => c.Schema == "htest101").Select(s => s.Id).ToList();
-        List<int> hydrotestResultParameterIds = codelists.Where(c => c.Schema == "htestres101").Select(s => s.Id).ToList();
-        List<int> groundwaterLevelMeasurementKindIds = codelists.Where(c => c.Schema == "gwlme101").Select(s => s.Id).ToList();
+        List<int> waterIngressReliabilityIds = codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Select(s => s.Id).ToList();
+        List<int> waterIngressQuantityIds = codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Select(s => s.Id).ToList();
+        List<int> waterIngressConditionsIds = codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Select(s => s.Id).ToList();
+        List<int> hydrotestKindIds = codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Select(s => s.Id).ToList();
+        List<int> hydrotestResultParameterIds = codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema).Select(s => s.Id).ToList();
+        List<int> groundwaterLevelMeasurementKindIds = codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Select(s => s.Id).ToList();
 
         // Seed Boreholes
         var borehole_ids = 1_000_000;
