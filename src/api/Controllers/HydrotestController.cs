@@ -148,11 +148,8 @@ public class HydrotestController : ControllerBase
 
     private List<int> GetCompatibleCodelistIds(int testKindGeolCode, string schema, Dictionary<int, List<int>> optionsLookup)
     {
-        // Get the list of Geolcodes from the optionsLookup based on the testKindGeolCode.
-        List<int> geolcodes = optionsLookup.TryGetValue(testKindGeolCode, out List<int>? tempIds) ? tempIds : new List<int>() { };
-
-        // If there are Geolcodes, find the compatible CodelistIds.
-        if (geolcodes.Any())
+        // Get the list of Geolcodes from the optionsLookup based on the testKindGeolCode and find the compatible CodelistIds.
+        if (optionsLookup.TryGetValue(testKindGeolCode, out List<int>? geolcodes))
         {
             return context.Codelists
                 .Where(c => c.Schema == schema && c.Geolcode != null && geolcodes.Contains(c.Geolcode.Value))
