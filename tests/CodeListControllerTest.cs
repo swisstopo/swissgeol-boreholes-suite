@@ -62,6 +62,33 @@ public class CodeListControllerTest
     }
 
     [TestMethod]
+    public async Task GetHydrotestCodesByTestKind()
+    {
+        var codeListsInfiltrationEssay = await controller.GetAsync("", 15203179);
+        Assert.AreEqual(6, codeListsInfiltrationEssay.Count());
+        Assert.IsTrue(codeListsInfiltrationEssay.All(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema
+                                                       || c.Schema == HydrogeologySchemas.EvaluationMethodSchema
+                                                       || c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema));
+
+        var codeListsPumpEssay = await controller.GetAsync("", 15203170);
+        Assert.AreEqual(13, codeListsPumpEssay.Count());
+        Assert.IsTrue(codeListsPumpEssay.All(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema
+                                                || c.Schema == HydrogeologySchemas.EvaluationMethodSchema
+                                                || c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema));
+
+        var codeListsExpertValue = await controller.GetAsync("", 15203182);
+        Assert.AreEqual(6, codeListsExpertValue.Count());
+        Assert.IsTrue(codeListsExpertValue.All(c => c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema));
+    }
+
+    [TestMethod]
+    public async Task GetHydrotestCodesByInexistantTestKind()
+    {
+        var codeListsInfiltrationEssay = await controller.GetAsync("", 6715779);
+        Assert.AreEqual(0, codeListsInfiltrationEssay.Count());
+    }
+
+    [TestMethod]
     public async Task EditCodelistWithMinimalCodelist()
     {
         var id = 1010;
