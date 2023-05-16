@@ -14,7 +14,7 @@ const rowLabelStyle = {
 };
 
 const flexRowStyle = {
-  flex: "1 1 100%"
+  flex: "1 1 100%",
 };
 
 const rowTextStyle = {
