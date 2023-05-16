@@ -26,8 +26,6 @@ public class BoreholeFileUploadServiceTest
     public void TestInitialize()
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
-        var webHostEnvironment = new Mock<IWebHostEnvironment>();
-        webHostEnvironment.Setup(env => env.EnvironmentName).Returns("Development");
 
         context = ContextFactory.CreateContext();
         adminUser = context.Users.FirstOrDefault(u => u.Name == "admin") ?? throw new InvalidOperationException("No User found in database.");
@@ -50,7 +48,7 @@ public class BoreholeFileUploadServiceTest
                 UseHttp = configuration["S3:SECURE"] == "0",
             });
 
-        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object, contextAccessorMock.Object, webHostEnvironment.Object, s3ClientMock);
+        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object, contextAccessorMock.Object, s3ClientMock);
 
         bucketName = configuration["S3:BUCKET_NAME"];
         s3Client = s3ClientMock;
@@ -187,29 +185,6 @@ public class BoreholeFileUploadServiceTest
     [TestMethod]
     public async Task UploadObjectWithNotExistingBucketShouldCreateBucketAndUplaodObject()
     {
-        // If bucket exists delete it
-        var listBucketResponse = await s3Client.ListBucketsAsync(new ListBucketsRequest()).ConfigureAwait(false);
-        if (listBucketResponse.Buckets.Any(bucket => bucket.BucketName == bucketName))
-        {
-            // Delete all files in bucket
-            var listObjectRequest = new ListObjectsV2Request { BucketName = bucketName, MaxKeys = 1000 };
-            var listObjectResponse = await s3Client.ListObjectsV2Async(listObjectRequest).ConfigureAwait(false);
-
-            foreach (var item in listObjectResponse.S3Objects)
-            {
-                var deleteRequest = new DeleteObjectRequest { BucketName = bucketName, Key = item.Key };
-                await s3Client.DeleteObjectAsync(deleteRequest);
-            }
-
-            // Delete bucket
-            var bucketDeleteRequest = new DeleteBucketRequest() { BucketName = bucketName };
-            await s3Client.DeleteBucketAsync(bucketDeleteRequest).ConfigureAwait(false);
-        }
-
-        // Ensure bucket does not exist
-        listBucketResponse = await s3Client.ListBucketsAsync(new ListBucketsRequest()).ConfigureAwait(false);
-        Assert.IsFalse(listBucketResponse.Buckets.Any(bucket => bucket.BucketName == bucketName));
-
         // Create file to upload
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
 
