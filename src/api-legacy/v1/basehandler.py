@@ -38,7 +38,7 @@ class BaseHandler(web.RequestHandler):
             return
 
         auth_decoded = base64.decodestring(auth_header[6:].encode('utf-8'))
-        username, password = auth_decoded.decode('utf-8').split(':', 2)
+        username, password = auth_decoded.decode('utf-8').split(':', 1)
 
         async with self.pool.acquire() as conn: 
 
