@@ -11,8 +11,8 @@
 ### Changed
 
 - Changed style of the inputs when editing _lithological_descriptions_ and _facies_descriptions_ to _outlined_.
-- Borehole duplicates are only identified within the same workgroup when importing boreholes
-- Filter contents are shown directly below the filter group without reordering
+- Borehole duplicates are only identified within the same workgroup when importing boreholes.
+- Filter contents are shown directly below the filter group without reordering.
 
 ### Fixed
 - Fix and extend chronostratigraphy geolcodes.
