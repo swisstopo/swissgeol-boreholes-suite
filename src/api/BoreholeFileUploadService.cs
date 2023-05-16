@@ -112,11 +112,14 @@ public class BoreholeFileUploadService
         try
         {
             // Create bucket if it doesn't exist.
-            var listBucketResponse = await s3Client.ListBucketsAsync(new ListBucketsRequest()).ConfigureAwait(false);
-            if (!listBucketResponse.Buckets.Any(bucket => bucket.BucketName == bucketName))
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
             {
-                var putBucketRequest = new PutBucketRequest { BucketName = bucketName, UseClientRegion = true };
-                PutBucketResponse putBucketResponse = await s3Client.PutBucketAsync(putBucketRequest).ConfigureAwait(false);
+                var listBucketResponse = await s3Client.ListBucketsAsync(new ListBucketsRequest()).ConfigureAwait(false);
+                if (!listBucketResponse.Buckets.Any(bucket => bucket.BucketName == bucketName))
+                {
+                    var putBucketRequest = new PutBucketRequest { BucketName = bucketName, UseClientRegion = true };
+                    PutBucketResponse putBucketResponse = await s3Client.PutBucketAsync(putBucketRequest).ConfigureAwait(false);
+                }
             }
 
             // Upload file
