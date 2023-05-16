@@ -107,6 +107,7 @@ describe("Tests for the hydrotest editor.", () => {
     closeDropdown();
 
     // check flow direction options
+    cy.wait(2000);
     openDropdown("flow-direction-select");
     checkDropdownOptionsLength(2);
     selectDropdownOption(1);
