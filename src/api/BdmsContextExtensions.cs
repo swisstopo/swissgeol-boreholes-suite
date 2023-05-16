@@ -102,6 +102,9 @@ public static class BdmsContextExtensions
         List<int> hydrotestKindIds = codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Select(s => s.Id).ToList();
         List<int> hydrotestResultParameterIds = codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema).Select(s => s.Id).ToList();
         List<int> groundwaterLevelMeasurementKindIds = codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Select(s => s.Id).ToList();
+        List<int> fieldMeasurementSampleTypeIds = codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Select(s => s.Id).ToList();
+        List<int> fieldMeasurementParameterIds = codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Select(s => s.Id).ToList();
+
 
         // Seed Boreholes
         var borehole_ids = 1_000_000;
@@ -644,6 +647,26 @@ public static class BdmsContextExtensions
         var groundwaterLevelMeasurements = observations.Where(o => o.Type == ObservationType.GroundwaterLevelMeasurement).Select(observation => SeededGroundwaterLevelMeasurements(observation)).ToList();
 
         context.BulkInsert(groundwaterLevelMeasurements, bulkConfig);
+
+        // Seed field measurements
+        var fakeFieldMeasurements = new Faker<FieldMeasurement>()
+            .RuleFor(o => o.SampleTypeId, f => f.PickRandom(fieldMeasurementSampleTypeIds))
+            .RuleFor(o => o.SampleType, _ => default!)
+            .RuleFor(o => o.ParameterId, f => f.PickRandom(fieldMeasurementParameterIds))
+            .RuleFor(o => o.Parameter, _ => default!)
+            .RuleFor(o => o.Value, f => f.Random.Double(1, 5000));
+
+        FieldMeasurement SeededFieldMeasurements(Observation observation)
+        {
+            return fakeFieldMeasurements
+                .UseSeed(observation.Id)
+                .RuleFor(o => o.Id, _ => observation.Id)
+                .Generate();
+        }
+
+        var fieldMeasurements = observations.Where(o => o.Type == ObservationType.FieldMeasurement).Select(observation => SeededFieldMeasurements(observation)).ToList();
+
+        context.BulkInsert(fieldMeasurements, bulkConfig);
 
         context.SaveChanges();
 
