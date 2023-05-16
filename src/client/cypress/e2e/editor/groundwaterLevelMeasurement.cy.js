@@ -73,7 +73,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     cy.get('[data-cy="close-icon"]').click({ force: true });
 
     //assert groundwater level measurement is displayed
-    cy.contains("Drucksonde");
+    cy.contains("Manometer");
     cy.contains("789.12");
     cy.contains("5.4567");
     cy.contains("fraglich");
@@ -91,7 +91,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
       .eq(1)
       .click();
     cy.get('[data-cy="close-icon"]').click({ force: true });
-    cy.contains("Lichtlot");
+    cy.contains("Drucksonde");
 
     // delete groundwater level measurement
     cy.get('[data-cy="delete-icon"]').click({ force: true });

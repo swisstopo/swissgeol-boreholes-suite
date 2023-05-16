@@ -18,7 +18,7 @@ import GroundwaterLevelMeasurementDisplay from "./groundwaterLevelMeasurementDis
 
 const GroundwaterLevelMeasurement = props => {
   const { isEditable, boreholeId } = props;
-  const { data: waterIngresses, isSuccess } =
+  const { data: groundwaterLevelMeasurements, isSuccess } =
     useGroundwaterLevelMeasurements(boreholeId);
   const { t } = useTranslation();
   const {
@@ -36,8 +36,8 @@ const GroundwaterLevelMeasurement = props => {
   ] = useState([]);
 
   useEffect(() => {
-    setDisplayedGroundwaterLevelMeasurements(waterIngresses);
-  }, [waterIngresses]);
+    setDisplayedGroundwaterLevelMeasurements(groundwaterLevelMeasurements);
+  }, [groundwaterLevelMeasurements]);
 
   // scroll to newly added item
   const groundwaterLevelMeasurementRefs = useMemo(
@@ -88,7 +88,7 @@ const GroundwaterLevelMeasurement = props => {
                 if (selectedGroundwaterLevelMeasurement === null) {
                   const tempWaterIngress = { id: 0 };
                   setDisplayedGroundwaterLevelMeasurements([
-                    ...waterIngresses,
+                    ...groundwaterLevelMeasurements,
                     tempWaterIngress,
                   ]);
                   setSelectedGroundwaterLevelMeasurement(tempWaterIngress);
