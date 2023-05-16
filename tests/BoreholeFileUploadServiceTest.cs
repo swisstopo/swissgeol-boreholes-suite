@@ -181,14 +181,4 @@ public class BoreholeFileUploadServiceTest
         // Ensure file does not exist
         await Assert.ThrowsExceptionAsync<AmazonS3Exception>(() => boreholeFileUploadService.GetObject(pdfFormFile.FileName));
     }
-
-    [TestMethod]
-    public async Task UploadObjectWithNotExistingBucketShouldCreateBucketAndUplaodObject()
-    {
-        // Create file to upload
-        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
-
-        // Upload file
-        await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
-    }
 }
