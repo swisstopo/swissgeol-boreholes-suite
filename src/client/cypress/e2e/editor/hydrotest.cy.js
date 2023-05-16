@@ -11,9 +11,9 @@ const closeDropdown = () => {
 };
 
 const checkDropdownOptionsLength = length => {
-  cy.get('.MuiPaper-elevation [role="listbox"]')
-    .find('[role="option"]')
-    .should("have.length", length);
+  cy.get('.MuiPaper-elevation [role="listbox"]').should($listbox => {
+    expect($listbox.find('[role="option"]')).to.have.length(length);
+  });
 };
 
 const selectDropdownOption = index => {
