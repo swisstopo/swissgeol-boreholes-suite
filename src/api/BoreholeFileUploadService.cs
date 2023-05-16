@@ -1,6 +1,5 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
-using Amazon.S3.Util;
 using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -112,13 +111,6 @@ public class BoreholeFileUploadService
     {
         try
         {
-            // Create bucket if it doesn't exist.
-            if (!await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName).ConfigureAwait(false))
-            {
-                var putBucketRequest = new PutBucketRequest { BucketName = bucketName, UseClientRegion = true };
-                PutBucketResponse putBucketResponse = await s3Client.PutBucketAsync(putBucketRequest).ConfigureAwait(false);
-            }
-
             // Upload file
             var putObjectRequest = new PutObjectRequest { BucketName = bucketName, Key = objectName, InputStream = file.OpenReadStream(), ContentType = file.ContentType };
             await s3Client.PutObjectAsync(putObjectRequest).ConfigureAwait(false);

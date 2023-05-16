@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using BDMS.Controllers;
 using BDMS.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,9 @@ namespace BDMS;
 public class UploadControllerTest
 {
     private const int MaxBoreholeSeedId = 1009999;
+    private const int MaxStratigraphySeedId = 6009999;
+    private const int MaxLayerSeedId = 7099999;
+
     private BdmsContext context;
     private UploadController controller;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
@@ -64,13 +68,58 @@ public class UploadControllerTest
         // Remove boreholes that were uploaded.
         var addedBoreholes = context.Boreholes.Where(b => b.Id > MaxBoreholeSeedId);
         var addedWorkflows = context.Workflows.Where(w => addedBoreholes.Select(b => b.Id).Contains(w.BoreholeId));
+        var addedStratigraphies = context.Stratigraphies.Where(s => s.Id > MaxStratigraphySeedId);
+        var addedLayers = context.Layers.Where(l => l.Id > MaxLayerSeedId);
         context.Boreholes.RemoveRange(addedBoreholes);
         context.Workflows.RemoveRange(addedWorkflows);
+        context.Stratigraphies.RemoveRange(addedStratigraphies);
+        context.Layers.RemoveRange(addedLayers);
         context.SaveChanges();
 
         await context.DisposeAsync();
         httpClientFactoryMock.Verify();
         loggerMock.Verify();
+    }
+
+    [TestMethod]
+    public async Task UploadLithologyShouldSaveData()
+    {
+        httpClientFactoryMock
+           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+           .Returns(() => new HttpClient())
+           .Verifiable();
+
+        var boreholeCsvFile = GetFormFileByExistingFile("data_sets/import_litho/borehole.csv");
+        var lithoCsvFile = GetFormFileByExistingFile("data_sets/import_litho/litho.csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: lithoCsvFile, attachments: null);
+
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(1, okResult.Value);
+
+        // Assert imported values
+        var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ToList().Find(b => b.OriginalName == "Seth Patel");
+        Assert.AreEqual(1, borehole.WorkgroupId);
+        Assert.AreEqual("Seth Patel", borehole.OriginalName);
+
+        // Assert imported stratigraphy & lithologies
+        Assert.AreEqual(2, borehole.Stratigraphies.Count);
+
+        // First stratigraphy
+        var stratigraphy = borehole.Stratigraphies.First();
+        Assert.AreEqual(2, stratigraphy.Layers.Count);
+        var lithology = stratigraphy.Layers.First(l => l.FromDepth == 0.125);
+        Assert.AreEqual(100, lithology.ToDepth);
+        lithology = stratigraphy.Layers.First(l => l.FromDepth == 11);
+        Assert.AreEqual(12, lithology.ToDepth);
+
+        // Second stratigraphy
+        stratigraphy = borehole.Stratigraphies.Skip(1).First();
+        Assert.AreEqual(1, stratigraphy.Layers.Count);
+        lithology = stratigraphy.Layers.First();
+        Assert.AreEqual(55, lithology.FromDepth);
+        Assert.AreEqual(55.23, lithology.ToDepth);
     }
 
     [TestMethod]
@@ -124,7 +173,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("minimal_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, attachments: null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -165,7 +214,7 @@ public class UploadControllerTest
         var firstPdfFormFile = GetRandomPDFFile("attachment_1.pdf");
         var secondPdfFormFile = GetRandomPDFFile("attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -184,7 +233,7 @@ public class UploadControllerTest
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -203,7 +252,7 @@ public class UploadControllerTest
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -220,7 +269,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("special_chars_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -239,7 +288,7 @@ public class UploadControllerTest
     {
         var boreholeCsvFile = GetFormFileByExistingFile("no_coordinates_provided_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -261,7 +310,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv95_coordinates_provided_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -290,7 +339,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv03_coordinates_provided_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -319,7 +368,7 @@ public class UploadControllerTest
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv03_out_of_range_coordinates_provided_testdata.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -343,7 +392,7 @@ public class UploadControllerTest
     {
         var boreholeCsvFile = new FormFile(null, 0, 0, null, "non_existent_file.csv");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -355,7 +404,7 @@ public class UploadControllerTest
     {
         var invalidFileTypeBoreholeFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "invalid_file_type.txt");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, invalidFileTypeBoreholeFile, null);
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, invalidFileTypeBoreholeFile, lithologyFile: null, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -374,7 +423,7 @@ public class UploadControllerTest
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -398,7 +447,7 @@ public class UploadControllerTest
         var firstPdfFormFile = GetFormFileByExistingFile(firstAttachmentFileName);
         var secondPdfFormFile = GetFormFileByExistingFile(secondAttachmentFileName);
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -424,7 +473,7 @@ public class UploadControllerTest
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_with_wrong_extension.txt");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -438,7 +487,7 @@ public class UploadControllerTest
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
         var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -461,7 +510,7 @@ public class UploadControllerTest
         var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
         var whiteSpacePdf = GetFormFileByExistingFile("white space.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, new List<IFormFile>() { firstPdfFormFile, whiteSpacePdf });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, whiteSpacePdf });
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -543,6 +592,26 @@ public class UploadControllerTest
     }
 
     [TestMethod]
+    public async Task UploadLithologyMultipleRowsMissingRequiredFieldsShouldReturnError()
+    {
+        var boreholeCsvFile = GetFormFileByExistingFile("data_sets/import_litho_missing_required_fields/borehole.csv");
+        var lithoCsvFile = GetFormFileByExistingFile("data_sets/import_litho_missing_required_fields/litho.csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithoCsvFile);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        Assert.AreEqual(3, problemDetails.Errors.Count);
+
+        CollectionAssert.AreEquivalent(new[] { "Field 'to_depth' is required." }, problemDetails.Errors["Row1"]);
+        CollectionAssert.AreEquivalent(new[] { "Field 'from_depth' is required." }, problemDetails.Errors["Row2"]);
+        CollectionAssert.AreEquivalent(new[] { "Field 'from_depth' is required." }, problemDetails.Errors["Row3"]);
+    }
+
+    [TestMethod]
     public async Task UploadRequiredHeadersMissingShouldReturnError()
     {
         var boreholeCsvFile = GetFormFileByExistingFile("missing_required_headers_testdata.csv");
@@ -559,6 +628,70 @@ public class UploadControllerTest
         StringAssert.Contains(problemDetails.Detail, "Header with name 'Location_y'[0] was not found.");
         StringAssert.Contains(problemDetails.Detail, "Header with name 'OriginalName'[0] was not found.");
         StringAssert.Contains(problemDetails.Detail, "Header with name 'ImportId'[0] was not found.");
+    }
+
+    [TestMethod]
+    public async Task UploadLithologyRequiredHeadersMissingShouldReturnError()
+    {
+        var boreholeCsvFile = GetFormFileByExistingFile("data_sets/import_litho_missing_required_headers/borehole.csv");
+        var lithoCsvFile = GetFormFileByExistingFile("data_sets/import_litho_missing_required_headers/litho.csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithoCsvFile);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+
+        ProblemDetails problemDetails = (ProblemDetails)result.Value!;
+        StringAssert.Contains(problemDetails.Detail, "Header with name 'ImportId'[0] was not found.");
+        StringAssert.Contains(problemDetails.Detail, "Header with name 'StratiImportId'[0] was not found.");
+        StringAssert.Contains(problemDetails.Detail, "Header with name 'FromDepth'[0] was not found.");
+        StringAssert.Contains(problemDetails.Detail, "Header with name 'ToDepth'[0] was not found.");
+    }
+
+    [TestMethod]
+    public async Task UploadLithologyDiffInStratiAttributesForSameStratiIdShouldReturnError()
+    {
+        var boreholeCsvFile = GetFormFileByExistingFile("data_sets/import_litho_diff_in_strati_attributes_for_same_starti_id/borehole.csv");
+        var lithoCsvFile = GetFormFileByExistingFile("data_sets/import_litho_diff_in_strati_attributes_for_same_starti_id/litho.csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithoCsvFile);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        Assert.AreEqual(1, problemDetails.Errors.Count);
+
+        CollectionAssert.AreEquivalent(new[]
+        {
+            $"Lithology with {nameof(LithologyImport.StratiImportId)} '1001' has various {nameof(LithologyImport.StratiName)}.",
+            $"Lithology with {nameof(LithologyImport.StratiImportId)} '1001' has various {nameof(LithologyImport.StratiDate)}.",
+        },
+        problemDetails.Errors["Row1"]);
+    }
+
+    [TestMethod]
+    public async Task UploadLithologyWithImportIdNotPresentInBoreholeFileShouldReturnError()
+    {
+        var boreholeCsvFile = GetFormFileByExistingFile("data_sets/import_litho_import_id_not_present_in_borehole_file/borehole.csv");
+        var lithoCsvFile = GetFormFileByExistingFile("data_sets/import_litho_import_id_not_present_in_borehole_file/litho.csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithoCsvFile);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        Assert.AreEqual(1, problemDetails.Errors.Count);
+
+        CollectionAssert.AreEquivalent(new[]
+        {
+            $"Borehole with ImportId '2' not found.",
+        },
+        problemDetails.Errors["Row2"]);
     }
 
     [TestMethod]
