@@ -394,7 +394,7 @@ class MenuEditorForm extends React.Component {
                       : null,
                 }}>
                 <img
-                  alt="Water ingress"
+                  alt="Groundwater Level Measurement"
                   src={process.env.PUBLIC_URL + "/img/Hydrogeology.png"}
                   style={{
                     height: "1.5em",
@@ -408,6 +408,41 @@ class MenuEditorForm extends React.Component {
                       firstUpperCase
                       id="groundwater_level_measurement_word_break"
                     />
+                  </List.Header>
+                </List.Content>
+              </List.Item>
+              <List.Item
+                active={
+                  location.pathname ===
+                  `${process.env.PUBLIC_URL}/editor/${match.params.id}/hydrogeology/fieldmeasurement`
+                }
+                onClick={() => {
+                  history.push(
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/hydrogeology/fieldmeasurement`,
+                  );
+                }}
+                style={{
+                  padding: "1em",
+                  paddingLeft: 40,
+                  display: "flex",
+                  borderLeft:
+                    location.pathname ===
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/hydrogeology/fieldmeasurement`
+                      ? "0.25em solid rgb(237, 29, 36)"
+                      : null,
+                }}>
+                <img
+                  alt="Field Measurement"
+                  src={process.env.PUBLIC_URL + "/img/Hydrogeology.png"}
+                  style={{
+                    height: "1.5em",
+                    paddingRight: "1em",
+                    opacity: this.state.completionIsVisible ? 1 : 0.5,
+                  }}
+                />
+                <List.Content>
+                  <List.Header as="h3" data-cy="hydrogeology-menu-item">
+                    <TranslationText firstUpperCase id="field_measurement" />
                   </List.Header>
                 </List.Content>
               </List.Item>

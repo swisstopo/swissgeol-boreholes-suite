@@ -415,6 +415,68 @@ export const useGroundwaterLevelMeasurementMutations = () => {
   };
 };
 
+export const fieldMeasurementsQueryKey = "fieldMeasurements";
+
+export const useFieldMeasurements = boreholeId =>
+  useQuery({
+    queryKey: [fieldMeasurementsQueryKey, boreholeId],
+    queryFn: async () => {
+      return await fetchApiV2(
+        `fieldmeasurement?boreholeId=${boreholeId}`,
+        "GET",
+      );
+    },
+  });
+
+export const useFieldMeasurementMutations = () => {
+  const queryClient = useQueryClient();
+  const useAddFieldMeasurement = useMutation(
+    async fieldMeasurement => {
+      return await fetchApiV2("fieldmeasurement", "POST", fieldMeasurement);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [fieldMeasurementsQueryKey],
+        });
+      },
+    },
+  );
+  const useUpdateFieldMeasurement = useMutation(
+    async fieldMeasurement => {
+      return await fetchApiV2("fieldmeasurement", "PUT", fieldMeasurement);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [fieldMeasurementsQueryKey],
+        });
+      },
+    },
+  );
+  const useDeleteFieldMeasurement = useMutation(
+    async fieldMeasurementId => {
+      return await fetchApiV2(
+        `fieldmeasurement?id=${fieldMeasurementId}`,
+        "DELETE",
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [fieldMeasurementsQueryKey],
+        });
+      },
+    },
+  );
+
+  return {
+    add: useAddFieldMeasurement,
+    update: useUpdateFieldMeasurement,
+    delete: useDeleteFieldMeasurement,
+  };
+};
+
 // Upload borehole attachment
 export const uploadBoreholeAttachment = async (boreholeId, attachment) => {
   return await fetchApiV2(

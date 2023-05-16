@@ -51,6 +51,10 @@ export const interceptApiCalls = () => {
     return (req.alias = `groundwaterlevelmeasurement_${req.method}`);
   });
 
+  cy.intercept("/api/v2/fieldmeasurement*", req => {
+    return (req.alias = `fieldmeasurement_${req.method}`);
+  });
+
   cy.intercept("/api/v2/hydrotest*", req => {
     return (req.alias = `hydrotest_${req.method}`);
   });

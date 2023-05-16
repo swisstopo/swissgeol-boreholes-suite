@@ -26,6 +26,7 @@ import WaterIngress from "./hydrogeology/waterIngress";
 import GroundwaterLevelMeasurement from "./hydrogeology/groundwaterLevelMeasurement";
 import Hydrotest from "./hydrogeology/hydrotest";
 import { AlertContext } from "../../alert/alertContext";
+import FieldMeasurement from "./hydrogeology/fieldMeasurement";
 
 class BoreholeForm extends React.Component {
   static contextType = AlertContext;
@@ -503,6 +504,19 @@ class BoreholeForm extends React.Component {
             }
             render={() => (
               <GroundwaterLevelMeasurement
+                isEditable={isEditable}
+                boreholeId={borehole.data.id}
+              />
+            )}
+          />
+          <Route
+            exact
+            path={
+              process.env.PUBLIC_URL +
+              "/editor/:id/hydrogeology/fieldmeasurement"
+            }
+            render={() => (
+              <FieldMeasurement
                 isEditable={isEditable}
                 boreholeId={borehole.data.id}
               />
