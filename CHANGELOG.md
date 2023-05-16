@@ -15,6 +15,7 @@
 - Borehole duplicates are only identified within the same workgroup when importing boreholes.
 
 ### Fixed
+
 - Fixed and extended chronostratigraphy geolcodes.
 
 ## v2.0.298 - 2023-04-18
