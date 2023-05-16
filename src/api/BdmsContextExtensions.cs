@@ -105,7 +105,6 @@ public static class BdmsContextExtensions
         List<int> fieldMeasurementSampleTypeIds = codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Select(s => s.Id).ToList();
         List<int> fieldMeasurementParameterIds = codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Select(s => s.Id).ToList();
 
-
         // Seed Boreholes
         var borehole_ids = 1_000_000;
         var boreholeRange = Enumerable.Range(borehole_ids, 10000).ToList();
