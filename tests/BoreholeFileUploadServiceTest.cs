@@ -186,7 +186,8 @@ public class BoreholeFileUploadServiceTest
     public async Task UploadObjectWithNotExistingBucketShouldCreateBucketAndUplaodObject()
     {
         // If bucket exists delete it
-        if (await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName).ConfigureAwait(false))
+        var listBucketResponse = await s3Client.ListBucketsAsync(new ListBucketsRequest()).ConfigureAwait(false);
+        if (listBucketResponse.Buckets.Any(bucket => bucket.BucketName == bucketName))
         {
             // Delete all files in bucket
             var listObjectRequest = new ListObjectsV2Request { BucketName = bucketName, MaxKeys = 1000 };
@@ -204,7 +205,8 @@ public class BoreholeFileUploadServiceTest
         }
 
         // Ensure bucket does not exist
-        Assert.IsFalse(await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName).ConfigureAwait(false));
+        listBucketResponse = await s3Client.ListBucketsAsync(new ListBucketsRequest()).ConfigureAwait(false);
+        Assert.IsFalse(listBucketResponse.Buckets.Any(bucket => bucket.BucketName == bucketName));
 
         // Create file to upload
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
