@@ -101,8 +101,8 @@ public class HydrotestControllerTests
             CompletionFinished = true,
             Comment = "Test comment",
             BoreholeId = 1008104,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 4).Id,
-            TestKindId = context.Codelists.Where(c => c.Schema == "htest101").Single(c => c.Geolcode == 1).Id,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
+            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 1).Id,
         };
 
         var updatedHydrotest = new Hydrotest
@@ -119,8 +119,9 @@ public class HydrotestControllerTests
             CompletionFinished = true,
             Comment = "Updated test comment",
             BoreholeId = 1008105,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 2).Id,
-            TestKindId = context.Codelists.Where(c => c.Schema == "htest101").Single(c => c.Geolcode == 3).Id,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
+            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 3).Id,
+            CodelistIds = new List<int> { 15203187, 15203189 },
         };
 
         try
@@ -128,7 +129,7 @@ public class HydrotestControllerTests
             context.Hydrotests.Add(originalHydrotest);
             await context.SaveChangesAsync();
 
-            var result = await controller.EditAsync(updatedHydrotest) as OkObjectResult;
+            var result = await controller.EditHydrotestAsync(updatedHydrotest) as OkObjectResult;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
@@ -147,6 +148,8 @@ public class HydrotestControllerTests
             Assert.AreEqual(updatedHydrotest.BoreholeId, editedHydrotest.BoreholeId);
             Assert.AreEqual(updatedHydrotest.ReliabilityId, editedHydrotest.ReliabilityId);
             Assert.AreEqual(updatedHydrotest.TestKindId, editedHydrotest.TestKindId);
+            Assert.AreEqual("Entnahme", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).De);
+            Assert.AreEqual("stationär", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).De);
         }
         finally
         {
@@ -159,9 +162,9 @@ public class HydrotestControllerTests
     [TestMethod]
     public async Task EditAsyncInvalidEntityReturnsNotFound()
     {
-        var nonExistentHydrotest = new Hydrotest { Id = 999 };
+        var nonExistentHydrotest = new Hydrotest { Id = 678135, TestKindId = 344179 };
 
-        var result = await controller.EditAsync(nonExistentHydrotest) as NotFoundResult;
+        var result = await controller.EditHydrotestAsync(nonExistentHydrotest) as NotFoundResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(StatusCodes.Status404NotFound, result.StatusCode);
@@ -183,8 +186,9 @@ public class HydrotestControllerTests
             CompletionFinished = false,
             Comment = "New test comment",
             BoreholeId = 1006493,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 3).Id,
-            TestKindId = context.Codelists.Where(c => c.Schema == "htest101").Single(c => c.Geolcode == 2).Id,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
+            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id,
+            HydrotestResults = new List<HydrotestResult>() { new HydrotestResult { ParameterId = 15203194 } },
         };
 
         try
@@ -223,5 +227,33 @@ public class HydrotestControllerTests
                 await context.SaveChangesAsync();
             }
         }
+    }
+
+    [TestMethod]
+    public async Task CreateHydrotestWithIncompatibleCodelists()
+    {
+        var newHydrotest = new Hydrotest
+        {
+            Type = ObservationType.Hydrotest,
+            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id,
+            CodelistIds = new List<int>() { 23, 45 },
+        };
+
+        var createResponse = await controller.CreateAsync(newHydrotest);
+        Assert.IsInstanceOfType(createResponse, typeof(BadRequestObjectResult));
+    }
+
+    [TestMethod]
+    public async Task CreateHydrotestWithIncompatibleHydrotestResults()
+    {
+        var newHydrotest = new Hydrotest
+        {
+            Type = ObservationType.Hydrotest,
+            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id,
+            HydrotestResults = new List<HydrotestResult>() { new HydrotestResult { ParameterId = 73825 } },
+        };
+
+        var createResponse = await controller.CreateAsync(newHydrotest);
+        Assert.IsInstanceOfType(createResponse, typeof(BadRequestObjectResult));
     }
 }

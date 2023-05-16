@@ -46,6 +46,15 @@ const theme = createTheme({
       color: "black",
     },
   },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 960,
+      lg: 1500,
+      xl: 1800,
+    },
+  },
   components: {
     MuiButton: {
       variants: [

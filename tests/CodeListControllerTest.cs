@@ -31,7 +31,7 @@ public class CodeListControllerTest
     public async Task GetAllEntriesAsync()
     {
         var codeLists = await controller.GetAsync();
-        Assert.AreEqual(2447, codeLists.Count());
+        Assert.AreEqual(2453, codeLists.Count());
     }
 
     [TestMethod]
@@ -59,6 +59,33 @@ public class CodeListControllerTest
         Assert.AreEqual(700, codeListToTest.Order);
         Assert.AreEqual("jm", codeListToTest.Code);
         Assert.AreEqual(new LTree("15001001.15001049.15001065.15001070"), codeListToTest.Path);
+    }
+
+    [TestMethod]
+    public async Task GetHydrotestCodesByTestKind()
+    {
+        var codeListsInfiltrationEssay = await controller.GetAsync("", 15203179);
+        Assert.AreEqual(6, codeListsInfiltrationEssay.Count());
+        Assert.IsTrue(codeListsInfiltrationEssay.All(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema
+                                                       || c.Schema == HydrogeologySchemas.EvaluationMethodSchema
+                                                       || c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema));
+
+        var codeListsPumpEssay = await controller.GetAsync("", 15203170);
+        Assert.AreEqual(13, codeListsPumpEssay.Count());
+        Assert.IsTrue(codeListsPumpEssay.All(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema
+                                                || c.Schema == HydrogeologySchemas.EvaluationMethodSchema
+                                                || c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema));
+
+        var codeListsExpertValue = await controller.GetAsync("", 15203182);
+        Assert.AreEqual(6, codeListsExpertValue.Count());
+        Assert.IsTrue(codeListsExpertValue.All(c => c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema));
+    }
+
+    [TestMethod]
+    public async Task GetHydrotestCodesByInexistantTestKind()
+    {
+        var codeListsInfiltrationEssay = await controller.GetAsync("", 6715779);
+        Assert.AreEqual(0, codeListsInfiltrationEssay.Count());
     }
 
     [TestMethod]
