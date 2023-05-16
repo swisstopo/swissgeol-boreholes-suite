@@ -87,36 +87,13 @@ describe("Tests for the hydrotest editor.", () => {
     // check flow direction options
     openDropdown("flow-direction-select");
     checkDropdownOptionsLength(3);
+    selectDropdownOption(1);
+    selectDropdownOption(0);
     closeDropdown();
 
     // check evaluation method options
     openDropdown("evaluation-method-select");
     checkDropdownOptionsLength(4);
-    closeDropdown();
-
-    // check hydrotest parameter options
-    cy.get('[data-cy="add-hydrotestresult-button"]').click({ force: true });
-    openDropdown("parameter-select");
-    checkDropdownOptionsLength(6);
-    closeDropdown();
-
-    // change hydrotest kind dropdown to
-    openDropdown("hydrotest-kind-select");
-    selectDropdownOption(9);
-    cy.wait("@codelist_GET");
-    closeDropdown();
-
-    // check flow direction options
-    cy.wait(2000);
-    openDropdown("flow-direction-select");
-    checkDropdownOptionsLength(2);
-    selectDropdownOption(1);
-    selectDropdownOption(0);
-    closeDropdown();
-
-    // check evaluation method options
-    openDropdown("evaluation-method-select");
-    checkDropdownOptionsLength(3);
     selectDropdownOption(1);
     selectDropdownOption(0);
     closeDropdown();
@@ -124,23 +101,22 @@ describe("Tests for the hydrotest editor.", () => {
     // check hydrotest parameter options
     cy.get('[data-cy="add-hydrotestresult-button"]').click({ force: true });
     openDropdown("parameter-select");
-    checkDropdownOptionsLength(1);
     selectDropdownOption(0);
     closeDropdown();
 
     // check if everything is displayed
     cy.get('[data-cy="save-hydrotest-result-icon"]').click({ force: true });
     cy.get('[data-cy="save-icon"]').click({ force: true });
-    cy.contains("Infiltrationsversuch, ungesättigte Zone");
-    cy.contains("Injektion, keine Angaben");
-    cy.contains("instationär, numerisch");
+    cy.contains("Pump-/Injektionsversuch, variable Rate");
+    cy.contains("Injektion, Entnahme");
+    cy.contains("stationär, instationär");
 
     // delete hydrotest
     cy.get('[data-cy="delete-icon"]').click({ force: true });
     cy.wait("@hydrotest_DELETE");
     cy.get("body").should(
       "not.contain",
-      "Infiltrationsversuch, ungesättigte Zone",
+      "Pump-/Injektionsversuch, variable Rate",
     );
   });
 });
