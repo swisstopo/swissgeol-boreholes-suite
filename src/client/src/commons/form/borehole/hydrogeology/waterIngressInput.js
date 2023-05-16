@@ -131,6 +131,7 @@ const WaterIngressInput = props => {
                       }}>
                       {domains?.data
                         ?.filter(d => d.schema === "waing101")
+                        .sort((a, b) => a.order - b.order)
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>
                             {d[i18n.language]}
@@ -166,6 +167,7 @@ const WaterIngressInput = props => {
                       </MenuItem>
                       {domains?.data
                         ?.filter(d => d.schema === "waing102")
+                        .sort((a, b) => a.order - b.order)
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>
                             {d[i18n.language]}
