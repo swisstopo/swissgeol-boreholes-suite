@@ -56,7 +56,7 @@ export const interceptApiCalls = () => {
   });
 
   cy.intercept("/api/v2/codelist*", req => {
-    return (req.alias = `codelist${req.method}`);
+    return (req.alias = `codelist_${req.method}`);
   });
 };
 
