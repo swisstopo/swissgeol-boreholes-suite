@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using BDMS.Controllers;
 using BDMS.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,8 @@ public class UploadControllerTest
     public void TestInitialize()
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+        var webHostEnvironment = new Mock<IWebHostEnvironment>();
+        webHostEnvironment.Setup(env => env.EnvironmentName).Returns("Development");
 
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
@@ -56,7 +59,7 @@ public class UploadControllerTest
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, context.Users.FirstOrDefault().Name) }));
-        var boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerBoreholeFileUploadService.Object, contextAccessorMock.Object, s3ClientMock);
+        var boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerBoreholeFileUploadService.Object, contextAccessorMock.Object, webHostEnvironment.Object, s3ClientMock);
 
         controller = new UploadController(ContextFactory.CreateContext(), loggerMock.Object, locationService, coordinateService, boreholeFileUploadService) { ControllerContext = GetControllerContextAdmin() };
     }

@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,7 +26,8 @@ public class BoreholeFileUploadServiceTest
     public void TestInitialize()
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+        var webHostEnvironment = new Mock<IWebHostEnvironment>();
+        webHostEnvironment.Setup(env => env.EnvironmentName).Returns("Development");
 
         context = ContextFactory.CreateContext();
         adminUser = context.Users.FirstOrDefault(u => u.Name == "admin") ?? throw new InvalidOperationException("No User found in database.");
@@ -48,7 +50,7 @@ public class BoreholeFileUploadServiceTest
                 UseHttp = configuration["S3:SECURE"] == "0",
             });
 
-        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object, contextAccessorMock.Object, s3ClientMock);
+        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object, contextAccessorMock.Object, webHostEnvironment.Object, s3ClientMock);
 
         bucketName = configuration["S3:BUCKET_NAME"];
         s3Client = s3ClientMock;
