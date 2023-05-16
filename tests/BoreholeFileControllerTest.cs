@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using BDMS.Controllers;
 using BDMS.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,8 @@ public class BoreholeFileControllerTest
     public void TestInitialize()
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+        var webHostEnvironment = new Mock<IWebHostEnvironment>();
+        webHostEnvironment.Setup(env => env.EnvironmentName).Returns("Development");
 
         context = ContextFactory.CreateContext();
         adminUser = context.Users.FirstOrDefault(u => u.Name == "admin") ?? throw new InvalidOperationException("No User found in database.");
@@ -47,7 +50,7 @@ public class BoreholeFileControllerTest
 
         var boreholeFileUploadServiceLoggerMock = new Mock<ILogger<BoreholeFileUploadService>>(MockBehavior.Strict);
         boreholeFileUploadServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, boreholeFileUploadServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock);
+        boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, boreholeFileUploadServiceLoggerMock.Object, contextAccessorMock.Object, webHostEnvironment.Object, s3ClientMock);
 
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
