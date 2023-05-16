@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useDomains } from "../../../../api/fetchApiV2";
-import ClearIcon from "@mui/icons-material/Clear";
+import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
 import { AlertContext } from "../../../alert/alertContext";
 import ObservationInput from "./observationInput";
@@ -131,6 +131,7 @@ const WaterIngressInput = props => {
                       }}>
                       {domains?.data
                         ?.filter(d => d.schema === "waing101")
+                        .sort((a, b) => a.order - b.order)
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>
                             {d[i18n.language]}
@@ -166,6 +167,7 @@ const WaterIngressInput = props => {
                       </MenuItem>
                       {domains?.data
                         ?.filter(d => d.schema === "waing102")
+                        .sort((a, b) => a.order - b.order)
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>
                             {d[i18n.language]}
@@ -179,7 +181,8 @@ const WaterIngressInput = props => {
           </Stack>
           <Box sx={{ marginLeft: "auto" }}>
             <Tooltip title={t("close")}>
-              <ClearIcon
+              <CheckIcon
+                sx={{ color: formState.isValid ? "#0080008c" : "disabled" }}
                 data-cy="close-icon"
                 onClick={() => closeFormIfCompleted()}
               />

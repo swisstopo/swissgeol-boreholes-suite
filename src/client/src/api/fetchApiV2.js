@@ -184,6 +184,18 @@ export const useDomainSchema = schema =>
     },
   );
 
+export const useHydrotestDomains = testKindId =>
+  useQuery(
+    ["domains", testKindId],
+    async () => {
+      return await fetchApiV2(`codelist?testKindId=${testKindId}`, "GET");
+    },
+    {
+      staleTime: 10 * (60 * 1000), // 10 mins
+      cacheTime: 15 * (60 * 1000), // 15 mins
+    },
+  );
+
 export const layerQueryKey = "layers";
 
 export const useLayers = profileId =>
@@ -325,11 +337,81 @@ export const useWaterIngressMutations = () => {
       },
     },
   );
-
   return {
     add: useAddWaterIngress,
     update: useUpdateWaterIngress,
     delete: useDeleteWaterIngress,
+  };
+};
+
+export const groundwaterLevelMeasurementsQueryKey =
+  "groundwaterLevelMeasurements";
+
+export const useGroundwaterLevelMeasurements = boreholeId =>
+  useQuery({
+    queryKey: [groundwaterLevelMeasurementsQueryKey, boreholeId],
+    queryFn: async () => {
+      return await fetchApiV2(
+        `groundwaterlevelmeasurement?boreholeId=${boreholeId}`,
+        "GET",
+      );
+    },
+  });
+
+export const useGroundwaterLevelMeasurementMutations = () => {
+  const queryClient = useQueryClient();
+  const useAddGroundwaterLevelMeasurement = useMutation(
+    async groundwaterLevelMeasurement => {
+      return await fetchApiV2(
+        "groundwaterlevelmeasurement",
+        "POST",
+        groundwaterLevelMeasurement,
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [groundwaterLevelMeasurementsQueryKey],
+        });
+      },
+    },
+  );
+  const useUpdateGroundwaterLevelMeasurement = useMutation(
+    async groundwaterLevelMeasurement => {
+      return await fetchApiV2(
+        "groundwaterlevelmeasurement",
+        "PUT",
+        groundwaterLevelMeasurement,
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [groundwaterLevelMeasurementsQueryKey],
+        });
+      },
+    },
+  );
+  const useDeleteGroundwaterLevelMeasurement = useMutation(
+    async groundwaterLevelMeasurementId => {
+      return await fetchApiV2(
+        `groundwaterlevelmeasurement?id=${groundwaterLevelMeasurementId}`,
+        "DELETE",
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [groundwaterLevelMeasurementsQueryKey],
+        });
+      },
+    },
+  );
+
+  return {
+    add: useAddGroundwaterLevelMeasurement,
+    update: useUpdateGroundwaterLevelMeasurement,
+    delete: useDeleteGroundwaterLevelMeasurement,
   };
 };
 
@@ -386,4 +468,60 @@ export const updateBoreholeAttachment = async (
     },
     false,
   );
+};
+
+export const hydrotestQueryKey = "hydrotests";
+
+export const useHydrotests = boreholeId =>
+  useQuery({
+    queryKey: [hydrotestQueryKey, boreholeId],
+    queryFn: async () => {
+      return await fetchApiV2(`hydrotest?boreholeId=${boreholeId}`, "GET");
+    },
+  });
+
+export const useHydrotestMutations = () => {
+  const queryClient = useQueryClient();
+  const useAddHydrotests = useMutation(
+    async hydrotest => {
+      return await fetchApiV2("hydrotest", "POST", hydrotest);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [hydrotestQueryKey],
+        });
+      },
+    },
+  );
+  const useUpdateHydrotests = useMutation(
+    async hydrotest => {
+      return await fetchApiV2("hydrotest", "PUT", hydrotest);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [hydrotestQueryKey],
+        });
+      },
+    },
+  );
+  const useDeleteHydrotests = useMutation(
+    async hydrotestId => {
+      return await fetchApiV2(`hydrotest?id=${hydrotestId}`, "DELETE");
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [hydrotestQueryKey],
+        });
+      },
+    },
+  );
+
+  return {
+    add: useAddHydrotests,
+    update: useUpdateHydrotests,
+    delete: useDeleteHydrotests,
+  };
 };

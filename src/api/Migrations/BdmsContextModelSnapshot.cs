@@ -767,11 +767,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("id_cli_fk");
 
-                    b.Property<string>("SchemaName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("code_cli");
-
                     b.HasKey("HydrotestId", "CodelistId");
 
                     b.HasIndex("CodelistId");
@@ -1558,6 +1553,27 @@ namespace BDMS.Migrations
                     b.ToTable("workgroups", "bdms");
                 });
 
+            modelBuilder.Entity("BDMS.Models.GroundwaterLevelMeasurement", b =>
+                {
+                    b.HasBaseType("BDMS.Models.Observation");
+
+                    b.Property<int>("KindId")
+                        .HasColumnType("integer")
+                        .HasColumnName("kind");
+
+                    b.Property<double?>("LevelM")
+                        .HasColumnType("double precision")
+                        .HasColumnName("level_m");
+
+                    b.Property<double?>("LevelMasl")
+                        .HasColumnType("double precision")
+                        .HasColumnName("level_masl");
+
+                    b.HasIndex("KindId");
+
+                    b.ToTable("groundwater_level_measurement", "bdms");
+                });
+
             modelBuilder.Entity("BDMS.Models.Hydrotest", b =>
                 {
                     b.HasBaseType("BDMS.Models.Observation");
@@ -2234,6 +2250,23 @@ namespace BDMS.Migrations
                     b.Navigation("Borehole");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BDMS.Models.GroundwaterLevelMeasurement", b =>
+                {
+                    b.HasOne("BDMS.Models.Observation", null)
+                        .WithOne()
+                        .HasForeignKey("BDMS.Models.GroundwaterLevelMeasurement", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "Kind")
+                        .WithMany()
+                        .HasForeignKey("KindId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Kind");
                 });
 
             modelBuilder.Entity("BDMS.Models.Hydrotest", b =>

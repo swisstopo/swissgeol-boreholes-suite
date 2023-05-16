@@ -6,7 +6,8 @@
 
 - Added link to online help in import dialog.
 - Upload borehole attachments using borehole import feature.
-- Add `import_id` as required field for borehole import.
+- Added `import_id` as required field for borehole import.
+- Added functionality to add, edit and delete hydrotests, which belong to the hydrogeology observations of a borehole.
 
 ### Changed
 
@@ -14,17 +15,19 @@
 - Borehole duplicates are only identified within the same workgroup when importing boreholes.
 - Filter contents are shown directly below the filter group without reordering.
 
+
 ### Fixed
-- Fix and extend chronostratigraphy geolcodes.
+
+- Fixed and extended chronostratigraphy geolcodes.
 
 ## v2.0.298 - 2023-04-18
 
 ### Added
 
-- Define borehole csv import fields `original_name`, `location_x` and `location_y` as required.
-- Add validation for required borehole csv import fields. 
+- Defined borehole csv import fields `original_name`, `location_x` and `location_y` as required.
+- Added validation for required borehole csv import fields. 
 - Added online help.
-- Add validation for duplicated boreholes during the cvs import.
+- Added validation for duplicated boreholes during the cvs import.
 - Added functionality to add, edit and delete wateringresses, which belong to the hydrogeology observations of a borehole.
 - Use .NET API for managing borehole files.
 
@@ -32,19 +35,19 @@
 
 - Changed all db attributes of type _date_ to _timestamp with timezone_.
 - Support `ID Kernlager` (_drill core storage facility ID_) in csv import.
-- Remove _clone_ and _delete_ icons in chronostratigraphy header.
-- Make csv import validation error modal content scrollable.
-- Replace csv import validation messages with more specific messages.
-- Update csv borehole upload endpoint to additionally handle list of PDF's.
+- Removed _clone_ and _delete_ icons in chronostratigraphy header.
+- Made csv import validation error modal content scrollable.
+- Replaced csv import validation messages with more specific messages.
+- Updated csv borehole upload endpoint to additionally handle list of PDF's.
 
 ### Fixed
 
-- Fix scrolling behaviour for _lithological_descriptions_ and _facies_descriptions_.
-- Fix missing datapoints on map zoom after filtering by map extent.
-- Fix table was reset to page 1 when returning to borehole list from detail with appearance _Map & List|Details_ and _List|Details & Map_.
-- Fix search filters were not applied to points on map.
-- Fix scrolling behaviour for _lithology_layers_.
-- Fix error when repeatedly sorting by "original name" that caused the application to crash under special circumstances.
+- Fixed scrolling behaviour for _lithological_descriptions_ and _facies_descriptions_.
+- Fixed missing datapoints on map zoom after filtering by map extent.
+- Fixed table was reset to page 1 when returning to borehole list from detail with appearance _Map & List|Details_ and _List|Details & Map_.
+- Fixed search filters were not applied to points on map.
+- Fixed scrolling behaviour for _lithology_layers_.
+- Fixed error when repeatedly sorting by "original name" that caused the application to crash under special circumstances.
 
 ## v2.0.273 - 2023-04-04
 
@@ -52,53 +55,53 @@
 
 - Added functionality to edit facies description seperately from lithology.
 - Added functionality to scroll to newly created lithology layer.
-- Add separate panel to edit chronostratigraphy layers.
-- Add minimal csv-import for boreholes.
-- Add option to edit workgroup in bulk edit dialog.
+- Added separate panel to edit chronostratigraphy layers.
+- Added minimal csv-import for boreholes.
+- Added option to edit workgroup in bulk edit dialog.
 
 ### Changed
 
-- Memorize table and map state when navigating through the application.
+- Memorized table and map state when navigating through the application.
 - When leaving settings page, correctly navigate back to the previously selected mode (viewer or editor).
 - Display loader icon when fetching data for stratigraphy or users.
-- Remove _lithological description_ and _facies description_ from lithology layer in viewer mode, editor mode and in settings.
+- Removed _lithological description_ and _facies description_ from lithology layer in viewer mode, editor mode and in settings.
 - Removed _set manually_ from resolving options when deleting a lithology layer.
 - Display lithology layer details in lithology column in editor mode.
 - Immediately delete layers in _casing_ and _backfill_ columns, without showing a delete dialog.
 - Removed export functionality.
 - Removed blue info button of displayed maps in map settings.
-- Update Chronostratigraphy Codelist entries.
-- Make Lithology a sub-menu of Stratigraphy.
+- Updated Chronostratigraphy Codelist entries.
+- Made Lithology a sub-menu of Stratigraphy.
 - Display chronostratigraphy colors in chronostratigraphy editor.
-- Migrate chronostratigraphy _Middle Jurassic undifferenciated_ to _Middle Jurassic_.
-- Remove height reference system column from editor view list.
-- Remove import settings from administrator settings.
-- Enable editor mode settings for all user types.
-- Replace csv import coordinates related columns by `location_x` and `location_y`.
+- Migrated chronostratigraphy _Middle Jurassic undifferenciated_ to _Middle Jurassic_.
+- Removed height reference system column from editor view list.
+- Removed import settings from administrator settings.
+- Enabled editor mode settings for all user types.
+- Replaced csv import coordinates related columns by `location_x` and `location_y`.
 - Auto detect the provided coordinate reference system in the csv import and calculate the coordinates for the not provided reference system. 
 
 ### Fixed
 
 - Creating, editing or deleting lithological descriptions was not allowed for non-admin users.
 - When creating and locating a new borehole, each click added a new point on the map.
-- Add missing translations when editing a locked borehole, giving feedback or deleting an ID type.
-- Fix internal error when adding a backfill with _no casing_.
-- Fix internal error in viewer/editor settings for _Stratigraphy fields_ when clicking _Select all_.
-- Fix error when downloading a borehole profile.
-- Fix bug where a facies description with a height of 0 could be created.
-- Fix broken layout of _lithological description_ and _facies description_ columns when a gap of more than one layer was created in the _lithology_ column.
-- Fix bug where lithological descriptions where not copied when copying boreholes or stratigraphies.
-- Fix bug where coordinates were not updated when pasted in the coordinate input.
+- Added missing translations when editing a locked borehole, giving feedback or deleting an ID type.
+- Fixed internal error when adding a backfill with _no casing_.
+- Fixed internal error in viewer/editor settings for _Stratigraphy fields_ when clicking _Select all_.
+- Fixed error when downloading a borehole profile.
+- Fixed bug where a facies description with a height of 0 could be created.
+- Fixed broken layout of _lithological description_ and _facies description_ columns when a gap of more than one layer was created in the _lithology_ column.
+- Fixed bug where lithological descriptions where not copied when copying boreholes or stratigraphies.
+- Fixed bug where coordinates were not updated when pasted in the coordinate input.
 - Empty text or numeric fields are always displayed as `-` in the detail sections of the viewer mode.
-- Enable translation of transparency label in map settings.
-- Remove unnecessary Italian text in publish confirmation modal.
-- Add status submit message in all languages.
-- Allow uploading the same file for different boreholes.
+- Enabled translation of transparency label in map settings.
+- Removed unnecessary Italian text in publish confirmation modal.
+- Added status submit message in all languages.
+- Allowed uploading the same file for different boreholes.
 - Display an error message if a file is already uploaded for a particular borehole.
-- Resolve error when selecting `Instrumentation` with no EDIT role and no stratigraphy defined for borehole.
-- Fix and improve flaky Instrumentation tests.
-- Improve rendering of Instrumentations.
-- Remove unnecessary borehole property `date` from csv import as well as in the database.
+- Resolved error when selecting `Instrumentation` with no EDIT role and no stratigraphy defined for borehole.
+- Fixed and improve flaky Instrumentation tests.
+- Improved rendering of Instrumentations.
+- Removed unnecessary borehole property `date` from csv import as well as in the database.
 
 ## v2.0.186 - 2023-02-13
 
@@ -118,7 +121,7 @@
 
 ### Fixed
 
-- Fix bug where selecting the location filter as viewer or editor caused the application to crash.
+- Fixed bug where selecting the location filter as viewer or editor caused the application to crash.
 - When copying a borehole, layer properties with multiple values (i.e. USCS3) were ignored and not copied.
 - Copying a borehole was not allowed as non-admin user.
 
@@ -131,19 +134,19 @@
 ### Changed
 
 - Get Municipality, Canton, Country from geo.admin.ch service. Removed obsolete Canton / Municipality tables.
-- Remove unnecessary units from various labels.
-- Reuse styles in map component.
-- Remove unnecessary JSON attributes when loading borehole geometries.
-- Place `original_lithology` field after `lithology` in viewer/editor settings for _Stratigraphy fields_.
+- Removed unnecessary units from various labels.
+- Reused styles in map component.
+- Removed unnecessary JSON attributes when loading borehole geometries.
+- Placed `original_lithology` field after `lithology` in viewer/editor settings for _Stratigraphy fields_.
 - Empty text or numeric fields are always displayed as `-` in the detail sections of the viewer mode.
-- Add workgroup filter to viewer.
+- Added workgroup filter to viewer.
 - Removed unused table `bdms.geodin_files` from database.
 
 ### Fixed
 
-- Fix partly unresponsive UI by avoiding unnecessary data loading on startup.
-- Fix bug where setting or changing the borehole location on the map in editor mode caused the application to freeze.
-- Disable possibility to draw and move point in detail map when borehole is not locked.
+- Fixed partly unresponsive UI by avoiding unnecessary data loading on startup.
+- Fixed bug where setting or changing the borehole location on the map in editor mode caused the application to freeze.
+- Disabled possibility to draw and move point in detail map when borehole is not locked.
 - When copying a stratigraphy, layer properties with multiple values (i.e. USCS3) were ignored and not copied.
 
 ## v2.0.133 - 2023-01-19
@@ -173,33 +176,33 @@
 
 ### Changed
 
-- Migrate existing LV95 coordinates into LV03 coordinates using 'shift' method. Preserve original LV95 coordinates for some selected boreholes (e.g. Bülach-1-1, ...).
+- Migrated existing LV95 coordinates into LV03 coordinates using 'shift' method. Preserve original LV95 coordinates for some selected boreholes (e.g. Bülach-1-1, ...).
 - Points on the overview map are now displayed as clusters depending on zoom level.
-- Order codelists in translation UI by `order` column instead of by `geolcode`.
+- Ordered codelists in translation UI by `order` column instead of by `geolcode`.
 - Coordinates, elevations diameters and depths in inputs and texts are now displayed with thousand separators.
 - Removed `mentions` functionality in workflow comments.
 - Removed unused columns from database: `borehole.import_id`, `borehole.tecto_id_cli`, `stratigraphy.import_id`, `layer.import_id`, `layer.tectonic_unit_id_cli`, `layer.symbol_id_cli`, `layer.soil_state_id_cli`, `layer.kirost_id_cli`.
 - Removed unused table `bdms.statigraphy_codelist` from database.
-- Removed  `layer.unconrocks_id_cli` and `layer.lithok_id_cli` from database.
+- Removed `layer.unconrocks_id_cli` and `layer.lithok_id_cli` from database.
 - Changed cardinality of `uscs3` field on `bdms.layer` to m:n.
 
 ### Fixed
 
-- Fix sending feedback e-mail.
+- Fixed sending feedback e-mail.
 - Display `lithology_top_bedrock`, `lithostratigraphy_top_bedrock`and `chronostratigraphy_top_bedrock` as domain trees in bulk edit.
 - Added space above the instrument list.
-- Fix bug where casing IDs could be selected, even though the name of completion was `No casing`.
-- Fix bug where filtering by `identifier` led to bugs in bulk edit.
-- Fix bug where points with spatial reference system LV03 were not correctly displayed on detail map.
-- Fix bug where groundwater radio buttons were not displayed.
+- Fixed bug where casing IDs could be selected, even though the name of completion was `No casing`.
+- Fixed bug where filtering by `identifier` led to bugs in bulk edit.
+- Fixed bug where points with spatial reference system LV03 were not correctly displayed on detail map.
+- Fixed bug where groundwater radio buttons were not displayed.
 - Correctly display number of boreholes, independently of map appearance.
-- Disable possibility to draw and move point in detail map when borehole is not locked.
-- Fix layout of comments in publication workflow.
+- Disabled possibility to draw and move point in detail map when borehole is not locked.
+- Fixed layout of comments in publication workflow.
 - Immediately update tickboxes in admin user role UI.
 - Display dropdown with values from schema `qt_top_bedrock` for attribute `qt_depth` to streamline all qt drowpdowns
 - Display _Filter by map_ in Editor when appearance is _Large Map_.
-- Fix bug where clicks on clusters or points have been ignored on viewer map.
-- Fix bug where updating of `qt_depth` led to error.
+- Fixed bug where clicks on clusters or points have been ignored on viewer map.
+- Fixed bug where updating of `qt_depth` led to error.
 
 ## v2.0.65 - 2022-11-04
 
@@ -219,31 +222,31 @@
 
 ### Changed
 
-- Update _Dokumentation_ page in settings.
-- Standardize messages for empty profiles, empty casing and missing stratigraphy.
-- Update the app title in the top left to show the new _boreholes.swissgeol.ch_ name including the correct environment.
+- Updated _Dokumentation_ page in settings.
+- Standardized messages for empty profiles, empty casing and missing stratigraphy.
+- Updated the app title in the top left to show the new _boreholes.swissgeol.ch_ name including the correct environment.
 - Removed _Enter as viewer_ login option.
 
 ### Fixed
 
-- Add missing option _Keine Angabe_ for layer_striae.
-- Fix blank screen in viewer mode.
-- Add missing package to fix Docker health check in production.
-- Fix broken total_depth attribute reference in table.
-- Improve stratigraphy viewer.
-- Fix terms of service.
+- Added missing option _Keine Angabe_ for layer_striae.
+- Fixed blank screen in viewer mode.
+- Added missing package to fix Docker health check in production.
+- Fixed broken total_depth attribute reference in table.
+- Improved stratigraphy viewer.
+- Fixed terms of service.
 - Always show up to date login screen text.
-- Fix filter dropdowns not updating.
-- Fix appearance setting label.
-- Fix error highlight of identifier fields.
-- Fix bulk edit.
-- Fix sorting in borehole tables in viewer and editor mode.
-- Fix text displayed in backfill tab, when no backfill is available.
-- Fix text displayed in instrument tab, when no instrument is available.
-- Fix dialog message when enabling user.
-- Fix creation of user with admin role.
-- Add missing translations when publishing new welcome messages.
-- Fix copying of boreholes.
-- Add missing checks for contributions when deleting users.
+- Fixed filter dropdowns not updating.
+- Fixed appearance setting label.
+- Fixed error highlight of identifier fields.
+- Fixed bulk edit.
+- Fixed sorting in borehole tables in viewer and editor mode.
+- Fixed text displayed in backfill tab, when no backfill is available.
+- Fixed text displayed in instrument tab, when no instrument is available.
+- Fixed dialog message when enabling user.
+- Fixed creation of user with admin role.
+- Added missing translations when publishing new welcome messages.
+- Fixed copying of boreholes.
+- Added missing checks for contributions when deleting users.
 - Removed obsolete `borehole.contact_id` column.
 - Always displays `Show all` button when editing instruments.

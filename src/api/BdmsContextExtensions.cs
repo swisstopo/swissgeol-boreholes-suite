@@ -96,11 +96,12 @@ public static class BdmsContextExtensions
         List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
         List<int> referenceElevationTypeIds = codelists.Where(c => c.Schema == "ibor117").Select(s => s.Id).ToList();
-        List<int> waterIngressReliabilityIds = codelists.Where(c => c.Schema == "observ101").Select(s => s.Id).ToList();
-        List<int> waterIngressQuantityIds = codelists.Where(c => c.Schema == "waing101").Select(s => s.Id).ToList();
-        List<int> waterIngressConditionsIds = codelists.Where(c => c.Schema == "waing102").Select(s => s.Id).ToList();
-        List<int> hydrotestKindIds = codelists.Where(c => c.Schema == "htest101").Select(s => s.Id).ToList();
-        List<int> hydrotestResultParameterIds = codelists.Where(c => c.Schema == "htestres101").Select(s => s.Id).ToList();
+        List<int> waterIngressReliabilityIds = codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Select(s => s.Id).ToList();
+        List<int> waterIngressQuantityIds = codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Select(s => s.Id).ToList();
+        List<int> waterIngressConditionsIds = codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Select(s => s.Id).ToList();
+        List<int> hydrotestKindIds = codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Select(s => s.Id).ToList();
+        List<int> hydrotestResultParameterIds = codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema).Select(s => s.Id).ToList();
+        List<int> groundwaterLevelMeasurementKindIds = codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Select(s => s.Id).ToList();
 
         // Seed Boreholes
         var borehole_ids = 1_000_000;
@@ -624,6 +625,25 @@ public static class BdmsContextExtensions
 
         HydrotestResult SeededHydrotestResults(int seed) => fakeHydrotestResults.UseSeed(seed).Generate();
         context.BulkInsert(hydrotestResultRange.Select(SeededHydrotestResults).ToList(), bulkConfig);
+
+        // Seed groundwater level measurements
+        var fakeGroundwaterLevelMeasurements = new Faker<GroundwaterLevelMeasurement>()
+            .RuleFor(o => o.KindId, f => f.PickRandom(groundwaterLevelMeasurementKindIds))
+            .RuleFor(o => o.Kind, _ => default!)
+            .RuleFor(o => o.LevelM, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.LevelMasl, f => f.Random.Double(1, 5000));
+
+        GroundwaterLevelMeasurement SeededGroundwaterLevelMeasurements(Observation observation)
+        {
+            return fakeGroundwaterLevelMeasurements
+                .UseSeed(observation.Id)
+                .RuleFor(o => o.Id, _ => observation.Id)
+                .Generate();
+        }
+
+        var groundwaterLevelMeasurements = observations.Where(o => o.Type == ObservationType.GroundwaterLevelMeasurement).Select(observation => SeededGroundwaterLevelMeasurements(observation)).ToList();
+
+        context.BulkInsert(groundwaterLevelMeasurements, bulkConfig);
 
         context.SaveChanges();
 
