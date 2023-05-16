@@ -86,12 +86,14 @@ const GroundwaterLevelMeasurement = props => {
               onClick={e => {
                 e.stopPropagation();
                 if (selectedGroundwaterLevelMeasurement === null) {
-                  const tempWaterIngress = { id: 0 };
+                  const tempGroundwaterLevelMeasurement = { id: 0 };
                   setDisplayedGroundwaterLevelMeasurements([
                     ...groundwaterLevelMeasurements,
-                    tempWaterIngress,
+                    tempGroundwaterLevelMeasurement,
                   ]);
-                  setSelectedGroundwaterLevelMeasurement(tempWaterIngress);
+                  setSelectedGroundwaterLevelMeasurement(
+                    tempGroundwaterLevelMeasurement,
+                  );
                 }
               }}
             />

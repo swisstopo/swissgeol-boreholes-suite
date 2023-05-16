@@ -74,12 +74,12 @@ const FieldMeasurement = props => {
               onClick={e => {
                 e.stopPropagation();
                 if (selectedFieldMeasurement === null) {
-                  const tempWaterIngress = { id: 0 };
+                  const tempFieldMeasurement = { id: 0 };
                   setDisplayedFieldMeasurements([
                     ...fieldMeasurements,
-                    tempWaterIngress,
+                    tempFieldMeasurement,
                   ]);
-                  setSelectedFieldMeasurement(tempWaterIngress);
+                  setSelectedFieldMeasurement(tempFieldMeasurement);
                 }
               }}
             />
