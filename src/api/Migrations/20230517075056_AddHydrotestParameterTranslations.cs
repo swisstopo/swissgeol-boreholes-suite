@@ -67,7 +67,7 @@ public partial class AddHydrotestParameterTranslations : Migration
             INSERT INTO bdms.codelist(
                 id_cli, geolcode, schema_cli, code_cli, text_cli_de, description_cli_de, text_cli_fr, description_cli_fr, text_cli_it,
                 description_cli_it, text_cli_en, description_cli_en, order_cli, conf_cli, default_cli, path_cli
-                ) VALUES (15203203, 010, 'htestres101', '', 'keine Angaben', '', 'sans indication', '', 'senza indicazioni', '', 'not specified', '', 10, NULL, False, '');");
+                ) VALUES (15203223, 010, 'htestres101', '', 'keine Angaben', '', 'sans indication', '', 'senza indicazioni', '', 'not specified', '', 10, NULL, False, '');");
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
