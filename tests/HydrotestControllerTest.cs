@@ -76,7 +76,7 @@ public class HydrotestControllerTests
         // Assert hydrotestresult
         Assert.AreEqual(hydrotest.HydrotestResults.Count, 10);
         var testResult = hydrotest.HydrotestResults.Single(r => r.Id == 13000375);
-        Assert.AreEqual(testResult.ParameterId, 15203200);
+        Assert.AreEqual(testResult.ParameterId, 15203201);
         Assert.AreEqual(testResult.Value, 4390.010689483961);
         Assert.AreEqual(testResult.MaxValue, 3484.6578809254142);
         Assert.AreEqual(testResult.MinValue, 3823.8737230477263);

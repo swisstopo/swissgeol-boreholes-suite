@@ -32,6 +32,25 @@ const IdentifierSegment = props => {
           {borehole.data.lock !== null ? <TranslationText id="delete" /> : null}
         </div>
       </div>
+      <div
+        className="flex_row"
+        data-cy="identifier-application"
+        style={{
+          paddingTop: "0.5em",
+        }}>
+        <div className="flex_fill">ID boreholes.swissgeol.ch</div>
+        <div className="flex_fill">{borehole.data.id}</div>
+        <div>
+          {borehole.data.lock !== null ? (
+            <div
+              style={{
+                visibility: "hidden",
+              }}>
+              <TranslationText id="delete" />
+            </div>
+          ) : null}
+        </div>
+      </div>
       {borehole.data.custom.identifiers
         ? borehole.data.custom.identifiers.map((identifier, idx) => (
             <div
