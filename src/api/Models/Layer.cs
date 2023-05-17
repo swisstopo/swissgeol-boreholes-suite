@@ -409,7 +409,7 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets the <see cref="Codelist"/>s used by the <see cref="Layer"/>.
     /// </summary>
-    public ICollection<Codelist>? Codelists { get; set; }
+    public ICollection<Codelist>? Codelists { get; }
 
     /// <summary>
     /// Gets the<see cref= "LayerCodelist"/> join table entities.
