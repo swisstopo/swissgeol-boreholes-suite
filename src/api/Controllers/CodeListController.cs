@@ -3,6 +3,9 @@ using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using System.Data;
+using System.Text;
 
 namespace BDMS.Controllers;
 
@@ -12,11 +15,13 @@ public class CodeListController : ControllerBase
 {
     private readonly BdmsContext context;
     private readonly ILogger logger;
+    private readonly IConfiguration configuration;
 
-    public CodeListController(BdmsContext context, ILogger<CodeListController> logger)
+    public CodeListController(BdmsContext context, IConfiguration configuration, ILogger<CodeListController> logger)
     {
         this.context = context;
         this.logger = logger;
+        this.configuration = configuration;
     }
 
     /// <summary>
@@ -90,5 +95,20 @@ public class CodeListController : ControllerBase
             logger.LogError(ex, errorMessage);
             return Problem(errorMessage, statusCode: StatusCodes.Status400BadRequest);
         }
+    }
+
+    [HttpGet("csv")]
+    public async Task<ContentResult> DownloadCsvAsync(CancellationToken cancellationToken)
+    {
+        using var connection = new NpgsqlConnection(configuration.GetConnectionString("BdmsContext"));
+        await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+        using var reader = await connection.BeginTextExportAsync(
+            @"COPY (
+            SELECT id_cli, schema_cli, code_cli, text_cli_en, description_cli_en, text_cli_de, description_cli_de, text_cli_fr, description_cli_fr, text_cli_it, description_cli_it, text_cli_ro, description_cli_ro
+            FROM bdms.codelist) TO STDOUT WITH DELIMITER ',' CSV HEADER;",
+            cancellationToken).ConfigureAwait(false);
+
+        Response.Headers.ContentDisposition = "attachment; filename=codelist_export.csv";
+        return Content(await reader.ReadToEndAsync().ConfigureAwait(false), "text/csv", Encoding.UTF8);
     }
 }
