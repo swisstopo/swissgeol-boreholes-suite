@@ -15,16 +15,14 @@ public class BoreholeFileUploadService
     private readonly BdmsContext context;
     private readonly ILogger logger;
     private readonly IHttpContextAccessor httpContextAccessor;
-    private readonly IWebHostEnvironment webHostEnvironment;
     private readonly IAmazonS3 s3Client;
     private readonly string bucketName;
 
-    public BoreholeFileUploadService(BdmsContext context, IConfiguration configuration, ILogger<BoreholeFileUploadService> logger, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment, IAmazonS3 s3Client)
+    public BoreholeFileUploadService(BdmsContext context, IConfiguration configuration, ILogger<BoreholeFileUploadService> logger, IHttpContextAccessor httpContextAccessor, IAmazonS3 s3Client)
     {
         this.logger = logger;
         this.httpContextAccessor = httpContextAccessor;
         this.context = context;
-        this.webHostEnvironment = webHostEnvironment;
         this.s3Client = s3Client;
         bucketName = configuration["S3:BUCKET_NAME"];
     }
@@ -113,17 +111,6 @@ public class BoreholeFileUploadService
     {
         try
         {
-            // Create bucket if it doesn't exist.
-            if (webHostEnvironment.IsDevelopment())
-            {
-                var listBucketResponse = await s3Client.ListBucketsAsync(new ListBucketsRequest()).ConfigureAwait(false);
-                if (!listBucketResponse.Buckets.Any(bucket => bucket.BucketName == bucketName))
-                {
-                    var putBucketRequest = new PutBucketRequest { BucketName = bucketName, UseClientRegion = true };
-                    PutBucketResponse putBucketResponse = await s3Client.PutBucketAsync(putBucketRequest).ConfigureAwait(false);
-                }
-            }
-
             // Upload file
             var putObjectRequest = new PutObjectRequest { BucketName = bucketName, Key = objectName, InputStream = file.OpenReadStream(), ContentType = file.ContentType };
             await s3Client.PutObjectAsync(putObjectRequest).ConfigureAwait(false);
