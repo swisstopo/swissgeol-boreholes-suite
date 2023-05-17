@@ -222,7 +222,6 @@ public class LayerControllerTest
         Assert.AreEqual(400, badRequestResult.StatusCode);
     }
 
-    // Test for CreateAsync
     [TestMethod]
     public async Task CreateWithCompleteLayer()
     {
@@ -310,7 +309,7 @@ public class LayerControllerTest
             var okResult = response as OkObjectResult;
 
             addedLayer = context.Layers.Include(l => l.Codelists).Single(c => c.Id == layerToAdd.Id);
-            // Compare each property with id
+
             Assert.AreEqual(layerToAdd.AlterationId, addedLayer.AlterationId);
             Assert.AreEqual(layerToAdd.Casing, addedLayer.Casing);
             Assert.AreEqual(layerToAdd.CasingDateFinish, addedLayer.CasingDateFinish);
