@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { AlertContext } from "../../../alert/alertContext";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const FieldMeasurementInput = props => {
   const {
@@ -145,7 +146,11 @@ const FieldMeasurementInput = props => {
                         trigger();
                       }}>
                       {domains?.data
-                        ?.filter(d => d.schema === "field101")
+                        ?.filter(
+                          d =>
+                            d.schema ===
+                            hydrogeologySchemaConstants.fieldSampleType,
+                        )
                         .sort((a, b) => a.order - b.order)
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>
@@ -187,7 +192,11 @@ const FieldMeasurementInput = props => {
                         trigger();
                       }}>
                       {domains?.data
-                        ?.filter(d => d.schema === "field102")
+                        ?.filter(
+                          d =>
+                            d.schema ===
+                            hydrogeologySchemaConstants.fieldParameter,
+                        )
                         .sort((a, b) => a.order - b.order)
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>

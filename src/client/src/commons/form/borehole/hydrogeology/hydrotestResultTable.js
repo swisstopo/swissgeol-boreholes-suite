@@ -19,6 +19,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { ParameterUnits } from "./parameterUnits";
 import { AlertContext } from "../../../alert/alertContext";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const HydrotestResultTable = ({
   isEditable,
@@ -236,7 +237,11 @@ const HydrotestResultTable = ({
                           borderRadius: "4px",
                         }}>
                         {filteredTestKindDomains?.data
-                          ?.filter(d => d.schema === "htestres101")
+                          ?.filter(
+                            d =>
+                              d.schema ===
+                              hydrogeologySchemaConstants.hydrotestResultParameter,
+                          )
                           .map(d => (
                             <MenuItem key={d.id} value={d.id}>
                               {d[i18n.language]}

@@ -11,6 +11,7 @@ import {
 import { styled } from "@mui/system";
 import { useDomains, useCasings } from "../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const ObservationInput = props => {
   const { observation, boreholeId, register, formState, trigger, control } =
@@ -172,7 +173,11 @@ const ObservationInput = props => {
                   trigger("reliabilityId");
                 }}>
                 {domains?.data
-                  ?.filter(d => d.schema === "observ101")
+                  ?.filter(
+                    d =>
+                      d.schema ===
+                      hydrogeologySchemaConstants.observationReliability,
+                  )
                   .sort((a, b) => a.order - b.order)
 
                   .map(d => (

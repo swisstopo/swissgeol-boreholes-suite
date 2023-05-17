@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { AlertContext } from "../../../alert/alertContext";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const GroundwaterLevelMeasurementInput = props => {
   const {
@@ -133,7 +134,11 @@ const GroundwaterLevelMeasurementInput = props => {
                         trigger();
                       }}>
                       {domains?.data
-                        ?.filter(d => d.schema === "gwlme101")
+                        ?.filter(
+                          d =>
+                            d.schema ===
+                            hydrogeologySchemaConstants.groundwaterLevelMeasurementKind,
+                        )
                         .sort((a, b) => a.order - b.order)
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>

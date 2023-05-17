@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { useHydrotestDomains, useDomains } from "../../../../api/fetchApiV2";
 import { AlertContext } from "../../../alert/alertContext";
 import { ObservationType } from "./observationType";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const HydrotestInput = ({
   hydrotest,
@@ -184,7 +185,11 @@ const HydrotestInput = ({
                       }}
                       onMouseDown={handleMouseDown}>
                       {domains?.data
-                        ?.filter(d => d.schema === "htest101")
+                        ?.filter(
+                          d =>
+                            d.schema ===
+                            hydrogeologySchemaConstants.hydrotestKind,
+                        )
                         .sort((a, b) => a.order - b.order)
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>
@@ -203,7 +208,11 @@ const HydrotestInput = ({
                   control={control}
                   defaultValue={
                     hydrotest?.codelists
-                      ?.filter(c => c.schema === "htest102")
+                      ?.filter(
+                        c =>
+                          c.schema ===
+                          hydrogeologySchemaConstants.hydrotestFlowDirection,
+                      )
                       .map(c => c.id) || []
                   }
                   render={({ field }) => (
@@ -213,7 +222,9 @@ const HydrotestInput = ({
                       disabled={
                         !!formState.errors.testKindId ||
                         !filteredTestKindDomains?.data?.filter(
-                          d => d.schema === "htest102",
+                          d =>
+                            d.schema ===
+                            hydrogeologySchemaConstants.hydrotestFlowDirection,
                         ).length > 0
                       }
                       label={t("flowDirection")}
@@ -228,7 +239,11 @@ const HydrotestInput = ({
                         field.onChange(e.target.value);
                       }}>
                       {filteredTestKindDomains?.data
-                        ?.filter(d => d.schema === "htest102")
+                        ?.filter(
+                          d =>
+                            d.schema ===
+                            hydrogeologySchemaConstants.hydrotestFlowDirection,
+                        )
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>
                             {d[i18n.language]}
@@ -248,7 +263,11 @@ const HydrotestInput = ({
                   control={control}
                   defaultValue={
                     hydrotest?.codelists
-                      ?.filter(c => c.schema === "htest103")
+                      ?.filter(
+                        c =>
+                          c.schema ===
+                          hydrogeologySchemaConstants.hydrotestEvaluationMethod,
+                      )
                       .map(c => c.id) || []
                   }
                   render={({ field }) => (
@@ -258,7 +277,9 @@ const HydrotestInput = ({
                       disabled={
                         !!formState.errors.testKindId ||
                         !filteredTestKindDomains?.data?.filter(
-                          d => d.schema === "htest103",
+                          d =>
+                            d.schema ===
+                            hydrogeologySchemaConstants.hydrotestEvaluationMethod,
                         ).length > 0
                       }
                       label={t("evaluationMethod")}
@@ -273,7 +294,11 @@ const HydrotestInput = ({
                         field.onChange(e.target.value);
                       }}>
                       {filteredTestKindDomains?.data
-                        ?.filter(d => d.schema === "htest103")
+                        ?.filter(
+                          d =>
+                            d.schema ===
+                            hydrogeologySchemaConstants.hydrotestEvaluationMethod,
+                        )
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>
                             {d[i18n.language]}

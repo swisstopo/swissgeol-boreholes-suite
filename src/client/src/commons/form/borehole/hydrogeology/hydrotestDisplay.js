@@ -10,6 +10,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 import ObservationDisplay from "./observationDisplay";
 import HydrotestResultTable from "./hydrotestResultTable";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const HydrotestDisplay = props => {
   const {
@@ -48,7 +49,11 @@ const HydrotestDisplay = props => {
               <Typography variant="subtitle2">{t("flowDirection")}</Typography>
               <TypographyWithBottomMargin variant="subtitle1">
                 {hydrotest.codelists
-                  .filter(c => c.schema === "htest102")
+                  .filter(
+                    c =>
+                      c.schema ===
+                      hydrogeologySchemaConstants.hydrotestFlowDirection,
+                  )
                   .map(c => c[i18n.language])
                   .join(", ") || "-"}
               </TypographyWithBottomMargin>
@@ -61,7 +66,11 @@ const HydrotestDisplay = props => {
               </Typography>
               <TypographyWithBottomMargin variant="subtitle1">
                 {hydrotest.codelists
-                  .filter(c => c.schema === "htest103")
+                  .filter(
+                    c =>
+                      c.schema ===
+                      hydrogeologySchemaConstants.hydrotestEvaluationMethod,
+                  )
                   .map(c => c[i18n.language])
                   .join(", ") || "-"}
               </TypographyWithBottomMargin>
