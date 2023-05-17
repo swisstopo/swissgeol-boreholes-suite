@@ -99,7 +99,6 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
     var s3ConfigSection = builder.Configuration.GetSection("S3");
     var clientConfig = new AmazonS3Config
     {
-        ForcePathStyle = true,
         ServiceURL = s3ConfigSection.GetValue<string>("ENDPOINT"),
         UseHttp = s3ConfigSection.GetValue<string>("SECURE") == "0",
     };
@@ -113,6 +112,9 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
         var credentials = new InstanceProfileAWSCredentials();
         return new AmazonS3Client(credentials, clientConfig);
     }
+
+    // Force path style must be enabled for local minIO server
+    clientConfig.ForcePathStyle = true;
 
     return new AmazonS3Client(accessKey, secretKey, clientConfig);
 });
