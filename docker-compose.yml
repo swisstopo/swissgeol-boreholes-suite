@@ -8,7 +8,8 @@ services:
       MINIO_ROOT_PASSWORD: YELLOWMONKEY
     volumes:
       - ./data/minio:/data
-    command: server /data -console-address ":9002"
+    entrypoint: sh
+    command: -c 'mkdir -p /data/CANNONFLEA && /opt/bin/minio server /data -console-address ":9002"'
     ports:
       - 9000:9000
   db:

@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -179,38 +180,5 @@ public class BoreholeFileUploadServiceTest
 
         // Ensure file does not exist
         await Assert.ThrowsExceptionAsync<AmazonS3Exception>(() => boreholeFileUploadService.GetObject(pdfFormFile.FileName));
-    }
-
-    [TestMethod]
-    public async Task UploadObjectWithNotExistingBucketShouldCreateBucketAndUplaodObject()
-    {
-        // If bucket exists delete it
-        var listBucketResponse = await s3Client.ListBucketsAsync(new ListBucketsRequest()).ConfigureAwait(false);
-        if (listBucketResponse.Buckets.Any(bucket => bucket.BucketName == bucketName))
-        {
-            // Delete all files in bucket
-            var listObjectRequest = new ListObjectsV2Request { BucketName = bucketName, MaxKeys = 1000 };
-            var listObjectResponse = await s3Client.ListObjectsV2Async(listObjectRequest).ConfigureAwait(false);
-
-            foreach (var item in listObjectResponse.S3Objects)
-            {
-                var deleteRequest = new DeleteObjectRequest { BucketName = bucketName, Key = item.Key };
-                await s3Client.DeleteObjectAsync(deleteRequest);
-            }
-
-            // Delete bucket
-            var bucketDeleteRequest = new DeleteBucketRequest() { BucketName = bucketName };
-            await s3Client.DeleteBucketAsync(bucketDeleteRequest).ConfigureAwait(false);
-        }
-
-        // Ensure bucket does not exist
-        listBucketResponse = await s3Client.ListBucketsAsync(new ListBucketsRequest()).ConfigureAwait(false);
-        Assert.IsFalse(listBucketResponse.Buckets.Any(bucket => bucket.BucketName == bucketName));
-
-        // Create file to upload
-        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.pdf");
-
-        // Upload file
-        await boreholeFileUploadService.UploadObject(pdfFormFile, pdfFormFile.FileName);
     }
 }
