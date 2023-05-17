@@ -111,7 +111,7 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
     // If access key or secret key is not specified, try get them via IAM
     if (string.IsNullOrEmpty(accessKey) || string.IsNullOrEmpty(secretKey))
     {
-        using var credentials = new InstanceProfileAWSCredentials();
+        var credentials = new InstanceProfileAWSCredentials();
         return new AmazonS3Client(credentials, clientConfig);
     }
 
