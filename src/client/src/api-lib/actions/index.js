@@ -1,5 +1,6 @@
 import axios from "axios";
 import store from "../reducers";
+import { getBasicAuthHeaderValue } from "../../api/authentication";
 
 function getAuthorizationHeaders(headers = {}) {
   if (
@@ -7,8 +8,11 @@ function getAuthorizationHeaders(headers = {}) {
     store.getState().hasOwnProperty("core_user") &&
     store.getState().core_user.authentication !== null
   ) {
-    const a = store.getState().core_user.authentication;
-    headers.Authorization = `Basic ${btoa(`${a.username}:${a.password}`)}`;
+    const credentials = store.getState().core_user.authentication;
+    headers.Authorization = getBasicAuthHeaderValue(
+      credentials.username,
+      credentials.password,
+    );
     headers["bdms-authorization"] = "bdms-v1";
   }
   return headers;

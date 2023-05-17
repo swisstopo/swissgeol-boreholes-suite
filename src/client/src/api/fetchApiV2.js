@@ -1,5 +1,6 @@
 import store from "../reducers";
 import { useQuery, useMutation, useQueryClient } from "react-query";
+import { getBasicAuthHeaderValue } from "./authentication";
 
 /**
  * Fetch data from the C# Api.
@@ -21,9 +22,10 @@ export async function fetchApiV2(
   const credentials = store.getState().core_user.authentication;
   const body = isFileUpload ? payload : JSON.stringify(payload);
   let headers = {
-    Authorization: `Basic ${btoa(
-      `${credentials.username}:${credentials.password}`,
-    )}`,
+    Authorization: getBasicAuthHeaderValue(
+      credentials.username,
+      credentials.password,
+    ),
   };
   if (!isFileUpload && !isFileDownload)
     headers = { ...headers, "Content-Type": "application/json" };

@@ -28,6 +28,7 @@ import {
 } from "../../api-lib/index";
 import { AlertContext } from "../alert/alertContext";
 import store from "../../reducers";
+import { getBasicAuthHeaderValue } from "../../api/authentication";
 
 class BoreholeEditorTable extends TTable {
   static contextType = AlertContext;
@@ -175,9 +176,10 @@ class BoreholeEditorTable extends TTable {
         credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Basic ${btoa(
-            `${credentials.username}:${credentials.password}`,
-          )}`,
+          Authorization: getBasicAuthHeaderValue(
+            credentials.username,
+            credentials.password,
+          ),
         },
       },
     ).then(r => {
