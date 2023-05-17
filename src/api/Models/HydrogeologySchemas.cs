@@ -13,4 +13,6 @@ public static class HydrogeologySchemas
     public const string EvaluationMethodSchema = "htest103";
     public const string HydrotestResultParameterSchema = "htestres101";
     public const string GroundwaterLevelMeasurementKindSchema = "gwlme101";
+    public const string FieldMeasurementSampleTypeSchema = "field101";
+    public const string FieldMeasurementParameterSchema = "field102";
 }
