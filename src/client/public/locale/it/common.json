@@ -436,5 +436,6 @@
   "field_measurement": "Misurazione in campo",
   "field_measurement_sample_type": "Tipo di campionamento",
   "fieldMeasurementRequiredFieldsAlert": "'Tipo di campionamento', 'Parametro', 'Valore', 'Ora di inizio' e 'Affidabilità delle informazioni' sono campi obbligatori, la voce non può essere salvata se non sono compilati.",
-  "msgFieldMeasurementsEmpty": "Nessuna misurazione in campo disponibile"
+  "msgFieldMeasurementsEmpty": "Nessuna misurazione in campo disponibile",
+  "saveHydrotestResultAlert": "Si prega di salvare il risultato corrente dell'hydrotest prima di salvare l'hydrotest."
 }

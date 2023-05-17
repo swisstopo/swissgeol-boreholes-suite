@@ -32,8 +32,9 @@ const HydrotestResultTable = ({
   setAddedHydrotestFromResultTable,
   filteredTestKindDomains,
   hydrotestKindId,
+  editingId,
+  setEditingId,
 }) => {
-  const [editingId, setEditingId] = useState(null);
   const [formValues, setFormValues] = useState({
     parameterId: null,
     value: null,

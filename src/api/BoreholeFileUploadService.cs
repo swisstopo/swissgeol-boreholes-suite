@@ -25,6 +25,11 @@ public class BoreholeFileUploadService
         this.context = context;
         this.s3Client = s3Client;
         bucketName = configuration["S3:BUCKET_NAME"];
+
+        logger.LogError("@@@@@@ sadfsdaswdwqdwqd21321321312312312312");
+        logger.LogError("Region: " + configuration["S3:REGION"]);
+        logger.LogError(" s3Client.Config.ServiceURL: " + s3Client.Config.ServiceURL);
+        logger.LogError(" bucketName: " + bucketName);
     }
 
     /// <summary>
