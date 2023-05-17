@@ -77,6 +77,7 @@ const HydrotestDisplay = props => {
                 isEditable={false}
                 isAddingHydrotestResult={false}
                 setIsAddingHydrotestResult={() => {}}
+                editingId={null}
               />
             </>
           )}
