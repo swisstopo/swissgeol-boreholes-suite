@@ -4,8 +4,6 @@ import { withTranslation } from "react-i18next";
 
 import { Icon } from "semantic-ui-react";
 
-import { downloadBoreholeAttachment } from "../../api/fetchApiV2";
-
 class DownloadLink extends React.Component {
   constructor(props) {
     super(props);
@@ -17,7 +15,7 @@ class DownloadLink extends React.Component {
   render() {
     const props = this.props;
 
-    if (props.id.lenght === 0) {
+    if (props.onDownload === null) {
       return null;
     }
 
@@ -35,15 +33,12 @@ class DownloadLink extends React.Component {
                 {
                   downloading: true,
                 },
-                () => {
-                  if (this.props.type === "attachment") {
-                    downloadBoreholeAttachment(props.id).then(() => {
-                      this.setState({
-                        downloading: false,
-                      });
+                () =>
+                  props.onDownload().then(() => {
+                    this.setState({
+                      downloading: false,
                     });
-                  }
-                },
+                  }),
               );
             }
           }}>
@@ -62,15 +57,13 @@ class DownloadLink extends React.Component {
 
 DownloadLink.propTypes = {
   caption: PropTypes.string,
-  id: PropTypes.number,
   style: PropTypes.object,
-  type: PropTypes.string,
+  onDownload: PropTypes.func,
 };
 
 DownloadLink.defaultProps = {
-  id: null,
   caption: "Download",
-  type: "attachment",
+  onDownload: null,
 };
 
 export default withTranslation()(DownloadLink);

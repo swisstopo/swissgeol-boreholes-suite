@@ -5,6 +5,7 @@ import { Button, Checkbox, Icon, Table, TextArea } from "semantic-ui-react";
 import DateText from "../../form/dateText";
 import DownloadLink from "../downloadlink";
 import TranslationText from "../../form/translationText";
+import { downloadBoreholeAttachment } from "../../../api/fetchApiV2";
 
 const FilesTableComponent = props => {
   return (
@@ -65,7 +66,9 @@ const FilesTableComponent = props => {
               <Table.Cell>
                 <DownloadLink
                   caption={boreholeFile.file.name}
-                  id={boreholeFile.fileId}
+                  onDownload={() =>
+                    downloadBoreholeAttachment(boreholeFile.fileId)
+                  }
                 />
               </Table.Cell>
               <Table.Cell>
