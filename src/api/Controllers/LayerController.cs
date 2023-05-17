@@ -73,8 +73,21 @@ public class LayerController : BdmsControllerBase<Layer>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> CreateAsync(Layer entity)
-        => base.CreateAsync(entity);
+    public override async Task<IActionResult> CreateAsync(Layer entity)
+    {
+        // If any code list ids are specified, map the according code lists to the layer.
+        if (entity.CodelistIds != null)
+        {
+            var codeLists = await context.Codelists
+                .Where(c => entity.CodelistIds.Contains(c.Id))
+                .ToListAsync().ConfigureAwait(false);
+
+            // Create a layer code list entry for each provided code list id.
+            entity.LayerCodelists = codeLists.Where(c => c.Schema != null).Select(c => new LayerCodelist { Codelist = c, CodelistId = c.Id, SchemaName = c.Schema! }).ToList();
+        }
+
+        return await base.CreateAsync(entity).ConfigureAwait(false);
+    }
 
     private IQueryable<Layer> GetLayersWithIncludes()
     {
