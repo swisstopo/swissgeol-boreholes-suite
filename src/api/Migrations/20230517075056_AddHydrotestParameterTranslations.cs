@@ -28,7 +28,7 @@ public partial class AddHydrotestParameterTranslations : Migration
             WHERE id_cli = 15203196;
 
             UPDATE bdms.codelist
-            SET text_cli_fr = 'dimension d'écoulement',
+            SET text_cli_fr = 'dimension d''écoulement',
                 text_cli_it = 'dimensione del flusso',
                 text_cli_en = 'flow dimension'
             WHERE id_cli = 15203197;
@@ -40,7 +40,7 @@ public partial class AddHydrotestParameterTranslations : Migration
             WHERE id_cli = 15203198;
 
             UPDATE bdms.codelist
-            SET text_cli_fr = 'coefficient d'emmagasinement',
+            SET text_cli_fr = 'coefficient d''emmagasinement',
                 text_cli_it = 'coefficiente di stoccaggio specifico',
                 text_cli_en = 'specific storage coefficient'
             WHERE id_cli = 15203199;
