@@ -72,16 +72,8 @@ public class BoreholeFileUploadService
 
                 fileId = bdmsFile.Id;
 
-                try
-                {
-                    // Upload the file to the cloud storage.
-                    await UploadObject(file, fileNameGuid).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, $"Error uploading file <{file.FileName}> (with GUID {fileNameGuid}) to cloud storage.");
-                    throw;
-                }
+                // Upload the file to the cloud storage.
+                await UploadObject(file, fileNameGuid).ConfigureAwait(false);
             }
 
             // Link file to the borehole.
@@ -115,12 +107,7 @@ public class BoreholeFileUploadService
             var putObjectRequest = new PutObjectRequest { BucketName = bucketName, Key = objectName, InputStream = file.OpenReadStream(), ContentType = file.ContentType };
             await s3Client.PutObjectAsync(putObjectRequest).ConfigureAwait(false);
         }
-        catch (AmazonS3Exception e)
-        {
-            logger.LogError(e, $"Error uploading file <{file.FileName}> to cloud storage.");
-            throw;
-        }
-        catch (Exception ex)
+        catch (AmazonS3Exception ex)
         {
             logger.LogError(ex, $"Error uploading file <{file.FileName}> to cloud storage.");
             throw;
@@ -144,7 +131,7 @@ public class BoreholeFileUploadService
             await getObjectResponse.ResponseStream.CopyToAsync(memoryStream).ConfigureAwait(false);
             return memoryStream.ToArray();
         }
-        catch (Exception ex)
+        catch (AmazonS3Exception ex)
         {
             logger.LogError(ex, $"Error downloading file <{objectName}> from cloud storage.");
             throw;
@@ -162,7 +149,7 @@ public class BoreholeFileUploadService
             var request = new DeleteObjectRequest { BucketName = bucketName, Key = objectName };
             var response = await s3Client.DeleteObjectAsync(request).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (AmazonS3Exception ex)
         {
             logger.LogError(ex, $"Error deleting file <{objectName}> from cloud storage.");
             throw;
