@@ -115,6 +115,11 @@ public class BoreholeFileUploadService
             var putObjectRequest = new PutObjectRequest { BucketName = bucketName, Key = objectName, InputStream = file.OpenReadStream(), ContentType = file.ContentType };
             await s3Client.PutObjectAsync(putObjectRequest).ConfigureAwait(false);
         }
+        catch (AmazonS3Exception e)
+        {
+            logger.LogError(e, $"Error uploading file <{file.FileName}> to cloud storage.");
+            throw;
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, $"Error uploading file <{file.FileName}> to cloud storage.");

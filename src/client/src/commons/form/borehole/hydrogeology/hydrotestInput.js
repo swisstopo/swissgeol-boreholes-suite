@@ -29,6 +29,8 @@ const HydrotestInput = ({
   setAddedHydrotestFromResultTable,
 }) => {
   const [isAddingHydrotestResult, setIsAddingHydrotestResult] = useState(false);
+  const [editingHydrotestResultId, setEditingHydrotestResultId] =
+    useState(null);
   const [hydrotestKindId, setHydrotestKindId] = useState(
     hydrotest?.testKindId || 0,
   );
@@ -50,6 +52,9 @@ const HydrotestInput = ({
     const formValues = getValues();
     if (!formValues.reliabilityId || !formValues.startTime) {
       alertContext.error(t("hydrotestRequiredFieldsAlert"));
+    }
+    if (editingHydrotestResultId) {
+      alertContext.error(t("saveHydrotestResultAlert"));
     } else {
       handleSubmit(submitForm)();
       setSelectedHydrotest(null);
@@ -122,6 +127,7 @@ const HydrotestInput = ({
   const canAddHydrotestResults =
     formState.isValid &&
     !isAddingHydrotestResult &&
+    !editingHydrotestResultId &&
     filteredTestKindDomains?.data?.length !== 0;
 
   return (
@@ -318,12 +324,19 @@ const HydrotestInput = ({
               }
               hydrotestKindId={hydrotestKindId}
               filteredTestKindDomains={filteredTestKindDomains}
+              editingId={editingHydrotestResultId}
+              setEditingId={setEditingHydrotestResultId}
             />
           </Stack>
           <Box sx={{ marginLeft: "auto" }}>
             <Tooltip title={t("save")}>
               <CheckIcon
-                sx={{ color: formState.isValid ? "#0080008c" : "disabled" }}
+                sx={{
+                  color:
+                    formState.isValid && !editingHydrotestResultId
+                      ? "#0080008c"
+                      : "disabled",
+                }}
                 data-cy="save-icon"
                 onClick={() => closeFormIfCompleted()}
               />
