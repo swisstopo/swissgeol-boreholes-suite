@@ -401,13 +401,19 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     public string? OriginalLithology { get; set; }
 
     /// <summary>
+    /// Gets or sets the code list ids of the <see cref="Layer"/>'s many to many code list relations.
+    /// </summary>
+    [NotMapped]
+    public ICollection<int>? CodelistIds { get; set; } = new List<int>();
+
+    /// <summary>
     /// Gets the <see cref="Codelist"/>s used by the <see cref="Layer"/>.
     /// </summary>
-    public ICollection<Codelist>? Codelists { get; }
+    public ICollection<Codelist>? Codelists { get; set; }
 
     /// <summary>
     /// Gets the<see cref= "LayerCodelist"/> join table entities.
     /// </summary>
     [JsonIgnore]
-    public IList<LayerCodelist>? LayerCodelists { get; }
+    public IList<LayerCodelist>? LayerCodelists { get; set; }
 }
