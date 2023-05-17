@@ -20,6 +20,7 @@
 ### Fixed
 
 - Fixed and extended chronostratigraphy geolcodes.
+- Fixed login with passwords containing `:` and other non ASCII characters.
 
 ## v2.0.298 - 2023-04-18
 
