@@ -98,6 +98,7 @@ public class CodeListController : ControllerBase
     }
 
     [HttpGet("csv")]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ContentResult> DownloadCsvAsync(CancellationToken cancellationToken)
     {
         using var connection = new NpgsqlConnection(configuration.GetConnectionString("BdmsContext"));
