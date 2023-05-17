@@ -149,7 +149,7 @@ const FieldMeasurementInput = props => {
                         ?.filter(
                           d =>
                             d.schema ===
-                            hydrogeologySchemaConstants.fieldSampleType,
+                            hydrogeologySchemaConstants.fieldMeasurementSampleType,
                         )
                         .sort((a, b) => a.order - b.order)
                         .map(d => (
@@ -195,7 +195,7 @@ const FieldMeasurementInput = props => {
                         ?.filter(
                           d =>
                             d.schema ===
-                            hydrogeologySchemaConstants.fieldParameter,
+                            hydrogeologySchemaConstants.fieldMeasurementParameter,
                         )
                         .sort((a, b) => a.order - b.order)
                         .map(d => (
