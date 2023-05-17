@@ -392,7 +392,8 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.OriginalLithology, f => f.Random.Words(5).OrNull(f, .05f))
             .RuleFor(o => o.LayerCodelists, _ => new Collection<LayerCodelist>())
             .RuleFor(o => o.Codelists, _ => new Collection<Codelist>())
-            .RuleFor(o => o.Id, f => layer_ids++);
+            .RuleFor(o => o.Id, f => layer_ids++)
+            .RuleFor(o => o.CodelistIds, new List<int>());
 
         Layer SeededLayers(int seed) => fakelayers.UseSeed(seed).Generate();
 
