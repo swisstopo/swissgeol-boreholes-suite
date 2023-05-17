@@ -432,5 +432,6 @@
   "maxValue": "Valeur maximale",
   "hydrotestRequiredFieldsAlert": "'Heure de début', 'Fiabilité des informations' et 'Type d'essai' sont des champs obligatoires, l'entrée ne peut pas être enregistrée si elles ne sont pas remplies.",
   "hydrotestResultRequiredFieldsAlert": "'Paramètre' est un champ obligatoire, l'entrée ne peut pas être sauvegardée si elle n'est pas remplie.",
-  "hydrotestResultsWillBeDeleted": "Attention! Si vous modifiez le type d'essai, tous les résultats de l'hydrotest associés seront supprimés."
+  "hydrotestResultsWillBeDeleted": "Attention! Si vous modifiez le type d'essai, tous les résultats de l'hydrotest associés seront supprimés.",
+  "saveHydrotestResultAlert": "Veuillez sauvegarder le résultat actuel de l'hydrotest avant de sauvegarder l'hydrotest."
 }
