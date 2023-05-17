@@ -1,6 +1,7 @@
 ﻿using BDMS.Controllers;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -14,16 +15,21 @@ public class LayerControllerTest
     private BdmsContext context;
     private LayerController controller;
 
+    private int layerCount;
+
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.CreateContext();
         controller = new LayerController(ContextFactory.CreateContext(), new Mock<ILogger<Layer>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        layerCount = context.Layers.Count();
     }
 
     [TestCleanup]
     public async Task TestCleanup()
     {
+        Assert.AreEqual(layerCount, context.Layers.Count(), "Tests need to remove layers, they created.");
+
         await context.DisposeAsync();
     }
 
@@ -214,5 +220,155 @@ public class LayerControllerTest
         var response = await controller.EditAsync(null);
         var badRequestResult = response as BadRequestObjectResult;
         Assert.AreEqual(400, badRequestResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task CreateWithCompleteLayer()
+    {
+        var firstCodeListId = 9100;
+        var secondCodeListId = 9101;
+
+        var layerToAdd = new Layer
+        {
+            Alteration = null,
+            AlterationId = null,
+            Casing = "invoice overriding",
+            CasingDateFinish = new DateTime(2021, 5, 29, 21, 00, 00).ToUniversalTime(),
+            CasingDateSpud = new DateTime(2021, 7, 16, 13, 20, 25).ToUniversalTime(),
+            CasingInnerDiameter = 10.9742215,
+            CasingKind = null,
+            CasingKindId = null,
+            CasingMaterial = null,
+            CasingMaterialId = null,
+            CasingOuterDiameter = 13.89372933,
+            Chronostratigraphy = null,
+            ChronostratigraphyId = 15001136,
+            Cohesion = null,
+            CohesionId = 21116001,
+            Compactness = null,
+            CompactnessId = 21102007,
+            Consistance = null,
+            ConsistanceId = 21103004,
+            CreatedBy = null,
+            CreatedById = 3,
+            Created = new DateTime(2021, 8, 3, 6, 15, 55).ToUniversalTime(),
+            DescriptionFacies = "Awesome Steel Gloves bandwidth Berkshire Mission open system",
+            DescriptionLithological = "Metal Baby grow",
+            FillKind = null,
+            FillKindId = 25000302,
+            FillMaterial = null,
+            FillMaterialId = 25000306,
+            FromDepth = 90,
+            GradationId = 30000016,
+            GrainSize1 = null,
+            GrainSize1Id = 21101004,
+            GrainSize2 = null,
+            GrainSize2Id = 21103009,
+            Humidity = null,
+            HumidityId = 21105001,
+            Id = 8_000_000,
+            Instrument = "Metal",
+            InstrumentKind = null,
+            InstrumentKindId = 25000209,
+            InstrumentStatus = null,
+            InstrumentStatusId = 25000215,
+            InstrumentCasing = null,
+            InstrumentCasingId = 6_000_008,
+            IsLast = true,
+            IsStriae = true,
+            IsUndefined = false,
+            Lithology = null,
+            LithologyId = 15101055,
+            LithologyTopBedrock = null,
+            LithologyTopBedrockId = 15104417,
+            Lithostratigraphy = null,
+            LithostratigraphyId = null,
+            Notes = "Baby grow strategic haptic",
+            OriginalUscs = "Bedfordshire",
+            Plasticity = null,
+            PlasticityId = 21101005,
+            QtDescription = null,
+            QtDescriptionId = null,
+            Stratigraphy = null,
+            StratigraphyId = 6_000_008,
+            ToDepth = 100,
+            Updated = new DateTime(2021, 2, 14, 8, 55, 34).ToUniversalTime(),
+            UpdatedBy = null,
+            UpdatedById = 3,
+            Uscs1 = null,
+            Uscs1Id = 23101016,
+            Uscs2 = null,
+            Uscs2Id = 23101010,
+            CodelistIds = new List<int> { firstCodeListId, secondCodeListId },
+        };
+
+        Layer? addedLayer = null;
+        try
+        {
+            var response = await controller.CreateAsync(layerToAdd);
+            var okResult = response as OkObjectResult;
+
+            addedLayer = context.Layers.Include(l => l.Codelists).Single(c => c.Id == layerToAdd.Id);
+
+            Assert.AreEqual(layerToAdd.AlterationId, addedLayer.AlterationId);
+            Assert.AreEqual(layerToAdd.Casing, addedLayer.Casing);
+            Assert.AreEqual(layerToAdd.CasingDateFinish, addedLayer.CasingDateFinish);
+            Assert.AreEqual(layerToAdd.CasingDateSpud, addedLayer.CasingDateSpud);
+            Assert.AreEqual(layerToAdd.CasingInnerDiameter, addedLayer.CasingInnerDiameter);
+            Assert.AreEqual(layerToAdd.CasingKindId, addedLayer.CasingKindId);
+            Assert.AreEqual(layerToAdd.CasingMaterialId, addedLayer.CasingMaterialId);
+            Assert.AreEqual(layerToAdd.CasingOuterDiameter, addedLayer.CasingOuterDiameter);
+            Assert.AreEqual(layerToAdd.ChronostratigraphyId, addedLayer.ChronostratigraphyId);
+            Assert.AreEqual(layerToAdd.CohesionId, addedLayer.CohesionId);
+            Assert.AreEqual(layerToAdd.CompactnessId, addedLayer.CompactnessId);
+            Assert.AreEqual(layerToAdd.ConsistanceId, addedLayer.ConsistanceId);
+            Assert.AreEqual(layerToAdd.DescriptionFacies, addedLayer.DescriptionFacies);
+            Assert.AreEqual(layerToAdd.DescriptionLithological, addedLayer.DescriptionLithological);
+            Assert.AreEqual(layerToAdd.FillKindId, addedLayer.FillKindId);
+            Assert.AreEqual(layerToAdd.FillMaterialId, addedLayer.FillMaterialId);
+            Assert.AreEqual(layerToAdd.FromDepth, addedLayer.FromDepth);
+            Assert.AreEqual(layerToAdd.GradationId, addedLayer.GradationId);
+            Assert.AreEqual(layerToAdd.GrainSize1Id, addedLayer.GrainSize1Id);
+            Assert.AreEqual(layerToAdd.GrainSize2Id, addedLayer.GrainSize2Id);
+            Assert.AreEqual(layerToAdd.HumidityId, addedLayer.HumidityId);
+            Assert.AreEqual(layerToAdd.Id, addedLayer.Id);
+            Assert.AreEqual(layerToAdd.Instrument, addedLayer.Instrument);
+            Assert.AreEqual(layerToAdd.InstrumentKindId, addedLayer.InstrumentKindId);
+            Assert.AreEqual(layerToAdd.InstrumentStatusId, addedLayer.InstrumentStatusId);
+            Assert.AreEqual(layerToAdd.InstrumentCasingId, addedLayer.InstrumentCasingId);
+            Assert.AreEqual(layerToAdd.IsLast, addedLayer.IsLast);
+            Assert.AreEqual(layerToAdd.IsStriae, addedLayer.IsStriae);
+            Assert.AreEqual(layerToAdd.IsUndefined, addedLayer.IsUndefined);
+            Assert.AreEqual(layerToAdd.LithologyId, addedLayer.LithologyId);
+            Assert.AreEqual(layerToAdd.LithologyTopBedrockId, addedLayer.LithologyTopBedrockId);
+            Assert.AreEqual(layerToAdd.LithostratigraphyId, addedLayer.LithostratigraphyId);
+            Assert.AreEqual(layerToAdd.Notes, addedLayer.Notes);
+            Assert.AreEqual(layerToAdd.OriginalUscs, addedLayer.OriginalUscs);
+            Assert.AreEqual(layerToAdd.PlasticityId, addedLayer.PlasticityId);
+            Assert.AreEqual(layerToAdd.QtDescriptionId, addedLayer.QtDescriptionId);
+            Assert.AreEqual(layerToAdd.StratigraphyId, addedLayer.StratigraphyId);
+            Assert.AreEqual(layerToAdd.ToDepth, addedLayer.ToDepth);
+            Assert.AreEqual(layerToAdd.Uscs1Id, addedLayer.Uscs1Id);
+            Assert.AreEqual(layerToAdd.Uscs2Id, addedLayer.Uscs2Id);
+
+            Assert.AreEqual(layerToAdd.Updated.Value.Date, addedLayer.Updated?.Date);
+            Assert.AreEqual(layerToAdd.UpdatedById, addedLayer.UpdatedById);
+            Assert.AreEqual(layerToAdd.CreatedById, addedLayer.CreatedById);
+            Assert.AreEqual(layerToAdd.Created.Value.Date, addedLayer.Created?.Date);
+
+            Assert.AreEqual(layerToAdd.LayerCodelists.Count, addedLayer.LayerCodelists.Count);
+            var layerCodeList = addedLayer.LayerCodelists.Single(c => c.CodelistId == firstCodeListId);
+            Assert.IsNotNull(layerCodeList.Codelist);
+            layerCodeList = addedLayer.LayerCodelists.Single(c => c.CodelistId == secondCodeListId);
+            Assert.IsNotNull(layerCodeList.Codelist);
+        }
+        finally
+        {
+            if (addedLayer != null)
+            {
+                context.Layers.Remove(addedLayer);
+                context.SaveChanges();
+            }
+        }
     }
 }
