@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-indent */
-import React from "react";
+import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
@@ -208,8 +208,8 @@ class SearchComponent extends React.Component {
           </Form>
         </div>
         {this.state?.searchList?.map((filter, idx) => (
-          <Styled.FilterContainer key={idx}>
-            {!filter?.isSelected && (
+          <Fragment>
+            <Styled.FilterContainer key={idx}>
               <Styled.FilterButton
                 isLast={idx === this.state?.searchList?.length - 1}
                 isSelected={filter?.isSelected}
@@ -233,37 +233,26 @@ class SearchComponent extends React.Component {
                   </span>
                 </div>
               </Styled.FilterButton>
+            </Styled.FilterContainer>
+            {this.handleButtonSelected() !== null && filter?.isSelected && (
+              <Styled.FormFilterContainer>
+                <ListFilter
+                  attribute={this.handleButtonSelected()}
+                  resetBoreInc={this.props.resetBoreInc}
+                  resetBoreIncDir={this.props.resetBoreIncDir}
+                  resetDepth={this.props.resetDepth}
+                  resetDrillDiameter={this.props.resetDrillDiameter}
+                  resetDrilling={this.props.resetDrilling}
+                  resetElevation={this.props.resetElevation}
+                  resetRestriction={this.props.resetRestriction}
+                  resetTotBedrock={this.props.resetTotBedrock}
+                  search={this.props.search}
+                  setFilter={this.props.setFilter}
+                  settings={this.props.settings.data.filter}
+                />
+              </Styled.FormFilterContainer>
             )}
-          </Styled.FilterContainer>
-        ))}
-        {this.state?.searchList?.map((filter, idx) => (
-          <Styled.FilterContainer key={idx}>
-            {filter?.isSelected && (
-              <Styled.FilterButton
-                isSelected={filter?.isSelected}
-                onClick={() => {
-                  this.setState(prevState => ({
-                    ...prevState,
-                    // update an array of objects:
-                    searchList: prevState.searchList.map(obj =>
-                      obj.id === idx
-                        ? { ...obj, isSelected: !obj.isSelected }
-                        : { ...obj, isSelected: false },
-                    ),
-                  }));
-                }}>
-                <div>
-                  <Icon
-                    name={`caret ${filter?.isSelected ? "down" : "right"}`}
-                  />{" "}
-                  <span>
-                    <TranslationText id={filter?.translationId} />
-                  </span>
-                </div>
-                <Icon name={"close"} />
-              </Styled.FilterButton>
-            )}
-          </Styled.FilterContainer>
+          </Fragment>
         ))}
 
         {this.state?.searchList?.[6]?.name === "workgroup" &&
@@ -276,25 +265,6 @@ class SearchComponent extends React.Component {
               workgroups={user.data.workgroups}
             />
           )}
-
-        {this.handleButtonSelected() !== null && (
-          <Styled.FormFilterContainer>
-            <ListFilter
-              attribute={this.handleButtonSelected()}
-              resetBoreInc={this.props.resetBoreInc}
-              resetBoreIncDir={this.props.resetBoreIncDir}
-              resetDepth={this.props.resetDepth}
-              resetDrillDiameter={this.props.resetDrillDiameter}
-              resetDrilling={this.props.resetDrilling}
-              resetElevation={this.props.resetElevation}
-              resetRestriction={this.props.resetRestriction}
-              resetTotBedrock={this.props.resetTotBedrock}
-              search={this.props.search}
-              setFilter={this.props.setFilter}
-              settings={this.props.settings.data.filter}
-            />
-          </Styled.FormFilterContainer>
-        )}
       </Styled.Container>
     );
   }
