@@ -6,6 +6,29 @@ import DateText from "../../form/dateText";
 import TranslationText from "../../form/translationText";
 import { NumericFormat } from "react-number-format";
 
+// Constants for styles
+const rowLabelStyle = {
+  fontSize: "0.8em",
+  color: "#787878",
+  lineHeight: "1em",
+};
+
+const flexRowStyle = {
+  flex: "1 1 100%",
+};
+
+const rowTextStyle = {
+  marginBottom: "0.4em",
+};
+
+const rowContainerStyle = {
+  borderBottom: "thin solid rgba(0, 0, 0, 0.15)",
+  display: "flex",
+  flexDirection: "row",
+  margin: "0.5em 0px",
+  padding: "0.5em",
+};
+
 // if it's text: this.getTextRow(translationId, data)
 // if it's numeric with thousand separators: this.getNumericTextRow(translationId, data)
 // if it's dropdown :  this.getDomainRow(schema,data,translationId)
@@ -65,20 +88,10 @@ class MetaComponent extends React.Component {
 
     return (
       <div key={schema}>
-        <div
-          style={{
-            fontSize: "0.8em",
-            color: "#787878",
-            lineHeight: "1em",
-          }}>
+        <div style={rowLabelStyle}>
           <TranslationText id={schema} />
         </div>
-        <div
-          style={{
-            marginBottom: "0.4em",
-          }}>
-          {coordinates}
-        </div>
+        <div style={rowTextStyle}>{coordinates}</div>
       </div>
     );
   }
@@ -86,21 +99,13 @@ class MetaComponent extends React.Component {
   getTextRow(schema, text, key = Math.random().toString(16).substring(2, 8)) {
     return (
       <div key={key}>
-        <div
-          style={{
-            fontSize: "0.8em",
-            color: "#787878",
-            lineHeight: "1em",
-          }}>
+        <div style={rowLabelStyle}>
           <TranslationText
             id={schema}
             // ns='borehole'
           />
         </div>
-        <div
-          style={{
-            marginBottom: "0.4em",
-          }}>
+        <div style={rowTextStyle}>
           {_.isNil(text) || text === "" ? "-" : text}
         </div>
       </div>
@@ -111,18 +116,10 @@ class MetaComponent extends React.Component {
     const { data } = this.props;
     return (
       <div>
-        <div
-          style={{
-            fontSize: "0.8em",
-            color: "#787878",
-            lineHeight: "1em",
-          }}>
+        <div style={rowLabelStyle}>
           <TranslationText id="locked_status" />
         </div>
-        <div
-          style={{
-            marginBottom: "0.4em",
-          }}>
+        <div style={rowTextStyle}>
           <TranslationText id={`status${data.role.toLowerCase()}`} />
         </div>
       </div>
@@ -137,18 +134,10 @@ class MetaComponent extends React.Component {
     } else {
       return (
         <div>
-          <div
-            style={{
-              fontSize: "0.8em",
-              color: "#787878",
-              lineHeight: "1em",
-            }}>
+          <div style={rowLabelStyle}>
             <TranslationText id="date" />
           </div>
-          <div
-            style={{
-              marginBottom: "0.4em",
-            }}>
+          <div style={rowTextStyle}>
             <TranslationText id="inProgress" />
           </div>
         </div>
@@ -165,29 +154,16 @@ class MetaComponent extends React.Component {
         ret.push(
           <div key={index}>
             {ret.length === 0 ? (
-              <div
-                style={{
-                  fontSize: "0.8em",
-                  color: "#787878",
-                  lineHeight: "1em",
-                }}>
+              <div style={rowLabelStyle}>
                 <TranslationText id="currentVersion" />
               </div>
             ) : null}
             {ret.length === 1 ? (
-              <div
-                style={{
-                  fontSize: "0.8em",
-                  color: "#787878",
-                  lineHeight: "1em",
-                }}>
+              <div style={rowLabelStyle}>
                 <TranslationText id="previousVersions" />
               </div>
             ) : null}
-            <div
-              style={{
-                marginBottom: "0.4em",
-              }}>
+            <div style={rowTextStyle}>
               <DateText date={pubblication.finished} hours />
             </div>
           </div>,
@@ -206,120 +182,65 @@ class MetaComponent extends React.Component {
         style={{
           minWidth: "250px",
         }}>
-        {data.custom.identifiers && data.custom.identifiers.length > 0 ? (
+        <div style={{ ...rowContainerStyle, flexDirection: "row" }}>
           <div
+            key={`bdms-metadata-cmp-identifiers-application`}
             style={{
-              borderBottom: "thin solid rgba(0, 0, 0, 0.15)",
-              display: "flex",
-              flexDirection: "column",
-              margin: margin,
-              padding: padding,
+              ...flexRowStyle,
+              ...rowTextStyle,
             }}>
-            {data.custom.identifiers.map((identifier, index) => (
-              <div
-                key={`bdms-metadata-cmp-identifiers-${index}`}
-                style={{
-                  flex: "1 1 100%",
-                  marginBottom: "0.4em",
-                }}>
-                <div
-                  style={{
-                    fontSize: "0.8em",
-                    color: "#787878",
-                    lineHeight: "1em",
-                  }}>
-                  <DomainText id={identifier.id} schema="borehole_identifier" />
-                </div>
-                {identifier.value}
-              </div>
-            ))}
+            <div style={rowLabelStyle}>ID boreholes.swissgeol.ch</div>
+            {data.id}
           </div>
-        ) : null}
-
-        <div
-          style={{
-            borderBottom: "thin solid rgba(0, 0, 0, 0.15)",
-            display: "flex",
-            flexDirection: "row",
-            margin: margin,
-            padding: padding,
-          }}>
-          <div
-            style={{
-              flex: "1 1 100%",
-            }}>
+          {data.custom.identifiers
+            ? data.custom.identifiers.map((identifier, index) => (
+                <div
+                  key={`bdms-metadata-cmp-identifiers-${index}`}
+                  style={{
+                    flexRowStyle,
+                    ...rowTextStyle,
+                  }}>
+                  <div style={rowLabelStyle}>
+                    <DomainText
+                      id={identifier.id}
+                      schema="borehole_identifier"
+                    />
+                  </div>
+                  {identifier.value}
+                </div>
+              ))
+            : null}
+        </div>
+        <div style={rowContainerStyle}>
+          <div style={flexRowStyle}>
             {this.getTextRow("original_name", data.extended.original_name)}
             {this.getTextRow("alternate_name", data.custom.alternate_name)}
           </div>
-          <div
-            style={{
-              flex: "1 1 100%",
-            }}>
+          <div style={flexRowStyle}>
             {this.getTextRow("project_name", data.custom.project_name)}
           </div>
         </div>
 
-        <div
-          style={{
-            borderBottom: "thin solid rgba(0, 0, 0, 0.15)",
-            display: "flex",
-            flexDirection: "row",
-            margin: margin,
-            padding: padding,
-          }}>
-          <div
-            style={{
-              flex: "1 1 100%",
-            }}>
-            {this.getStatusRow()}
-          </div>
-          <div
-            style={{
-              flex: "1 1 100%",
-            }}>
+        <div style={rowContainerStyle}>
+          <div style={flexRowStyle}>{this.getStatusRow()}</div>
+          <div style={flexRowStyle}>
             {data.role === "PUBLIC" && data.pubblications !== null
               ? this.getPublicationsRows()
               : this.getStatusDate()}
           </div>
         </div>
 
-        <div
-          style={{
-            borderBottom: "thin solid rgba(0, 0, 0, 0.15)",
-            display: "flex",
-            flexDirection: "row",
-            margin: margin,
-            padding: padding,
-          }}>
-          <div
-            data-cy="restriction-label"
-            style={{
-              flex: "1 1 100%",
-            }}>
+        <div style={rowContainerStyle}>
+          <div data-cy="restriction-label" style={flexRowStyle}>
             {this.getDomainRow("restriction", data.restriction, "restriction")}
           </div>
-          <div
-            data-cy="restriction_until-label"
-            style={{
-              flex: "1 1 100%",
-            }}>
+          <div data-cy="restriction_until-label" style={flexRowStyle}>
             {this.getTextRow("restriction_until", data.restriction_until)}
           </div>
         </div>
 
-        <div
-          style={{
-            borderBottom: "thin solid rgba(0, 0, 0, 0.15)",
-            display: "flex",
-            flexDirection: "row",
-            margin: margin,
-            padding: padding,
-          }}>
-          <div
-            data-cy="coordinates-div"
-            style={{
-              flex: "1 1 100%",
-            }}>
+        <div style={rowContainerStyle}>
+          <div data-cy="coordinates-div" style={flexRowStyle}>
             {this.getNumericTextRow(
               "coordinatesLV95",
               data.location_x,
@@ -341,10 +262,7 @@ class MetaComponent extends React.Component {
               "reference_elevation_type",
             )}
           </div>
-          <div
-            style={{
-              flex: "1 1 100%",
-            }}>
+          <div style={flexRowStyle}>
             {this.getDomainRow("qt_location", data.qt_location)}
             {this.getDomainRow("qt_elevation", data.qt_elevation)}
             {this.getDomainRow(
@@ -356,24 +274,11 @@ class MetaComponent extends React.Component {
           </div>
         </div>
 
-        <div
-          style={{
-            borderBottom: "thin solid rgba(0, 0, 0, 0.15)",
-            display: "flex",
-            flexDirection: "row",
-            margin: margin,
-            padding: padding,
-          }}>
-          <div
-            style={{
-              flex: "1 1 100%",
-            }}>
+        <div style={rowContainerStyle}>
+          <div style={flexRowStyle}>
             {this.getTextRow("canton", data.custom.canton)}
           </div>
-          <div
-            style={{
-              flex: "1 1 100%",
-            }}>
+          <div style={flexRowStyle}>
             {this.getTextRow("city", data.custom.municipality)}
           </div>
         </div>
@@ -390,10 +295,7 @@ class MetaComponent extends React.Component {
               display: "flex",
               flexDirection: "row",
             }}>
-            <div
-              style={{
-                flex: "1 1 100%",
-              }}>
+            <div style={flexRowStyle}>
               {this.getDomainRow("kind", data.kind)}
               {this.getDomainRow(
                 "extended.purpose",
@@ -417,10 +319,7 @@ class MetaComponent extends React.Component {
                 "qt_bore_inc_dir",
               )}
             </div>
-            <div
-              style={{
-                flex: "1 1 100%",
-              }}>
+            <div style={flexRowStyle}>
               {this.getDomainRow(
                 "extended.drilling_method",
                 data.extended.drilling_method,
@@ -448,18 +347,8 @@ class MetaComponent extends React.Component {
           </div>
         </div>
 
-        <div
-          style={{
-            borderBottom: "thin solid rgba(0, 0, 0, 0.15)",
-            display: "flex",
-            flexDirection: "row",
-            margin: margin,
-            padding: padding,
-          }}>
-          <div
-            style={{
-              flex: "1 1 100%",
-            }}>
+        <div style={rowContainerStyle}>
+          <div style={flexRowStyle}>
             {this.getNumericTextRow(
               "totaldepth",
               data.total_depth !== null ? data.total_depth : null,
@@ -494,11 +383,7 @@ class MetaComponent extends React.Component {
               "lithostratigraphy_top_bedrock",
             )}
           </div>
-          <div
-            data-cy="qt_depth-label"
-            style={{
-              flex: "1 1 100%",
-            }}>
+          <div data-cy="qt_depth-label" style={flexRowStyle}>
             {this.getDomainRow(
               "custom.qt_top_bedrock",
               data.custom.qt_depth,
