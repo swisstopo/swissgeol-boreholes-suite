@@ -1,7 +1,5 @@
 ﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace BDMS.Controllers;
 
