@@ -10,7 +10,7 @@ using System.Security.Claims;
 namespace BDMS;
 
 [TestClass]
-public class GroundwaterLevelMeasurementControllerTests
+public class GroundwaterLevelMeasurementControllerTest
 {
     private BdmsContext context;
     private GroundwaterLevelMeasurementController controller;
@@ -95,8 +95,8 @@ public class GroundwaterLevelMeasurementControllerTests
             CompletionFinished = true,
             Comment = "Test comment",
             BoreholeId = 1008104,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 4).Id,
-            KindId = context.Codelists.Where(c => c.Schema == "gwlme101").Single(c => c.Geolcode == 3).Id,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
+            KindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Single(c => c.Geolcode == 3).Id,
             LevelM = 0.0,
             LevelMasl = 0.0,
         };
@@ -115,8 +115,8 @@ public class GroundwaterLevelMeasurementControllerTests
             CompletionFinished = true,
             Comment = "Updated test comment",
             BoreholeId = 1008105,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 2).Id,
-            KindId = context.Codelists.Where(c => c.Schema == "gwlme101").Single(c => c.Geolcode == 1).Id,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
+            KindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Single(c => c.Geolcode == 1).Id,
             LevelM = 1.1,
             LevelMasl = 1.1,
         };
@@ -183,8 +183,8 @@ public class GroundwaterLevelMeasurementControllerTests
             CompletionFinished = false,
             Comment = "New test comment",
             BoreholeId = 1006493,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 3).Id,
-            KindId = context.Codelists.Where(c => c.Schema == "gwlme101").Single(c => c.Geolcode == 2).Id,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
+            KindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Single(c => c.Geolcode == 2).Id,
             LevelM = 348.4563,
             LevelMasl = 9945.15,
         };
