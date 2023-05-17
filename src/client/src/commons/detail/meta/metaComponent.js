@@ -182,7 +182,7 @@ class MetaComponent extends React.Component {
         style={{
           minWidth: "250px",
         }}>
-        <div style={{ ...rowContainerStyle, flexDirection: "row" }}>
+        <div style={{ ...rowContainerStyle, flexDirection: "column" }}>
           <div
             key={`bdms-metadata-cmp-identifiers-application`}
             style={{
