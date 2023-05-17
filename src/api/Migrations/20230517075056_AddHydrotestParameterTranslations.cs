@@ -60,8 +60,8 @@ public partial class AddHydrotestParameterTranslations : Migration
             UPDATE bdms.codelist
             SET text_cli_fr = 'autre',
                 text_cli_it = 'altro',
-                text_cli_en = 'other'
-                text_cli_de = 'anderer
+                text_cli_en = 'other',
+                text_cli_de = 'anderer'
             WHERE id_cli = 15203202;
 
             INSERT INTO bdms.codelist(
