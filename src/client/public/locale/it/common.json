@@ -433,5 +433,9 @@
   "hydrotestRequiredFieldsAlert": "'Ora di inizio', 'Affidabilità delle informazioni' e 'Tipo di hydrotest' sono campi obbligatori, la voce non può essere salvata se non sono compilati.",
   "hydrotestResultRequiredFieldsAlert": "'Parametro' è un campo obbligatorio, la voce non può essere salvata se non è compilata.",
   "hydrotestResultsWillBeDeleted": "Attenzione! Se si modifica il tipo di test, tutti i risultati di hydrotest associati verranno eliminati.",
+  "field_measurement": "Misurazione in campo",
+  "field_measurement_sample_type": "Tipo di campionamento",
+  "fieldMeasurementRequiredFieldsAlert": "'Tipo di campionamento', 'Parametro', 'Valore', 'Ora di inizio' e 'Affidabilità delle informazioni' sono campi obbligatori, la voce non può essere salvata se non sono compilati.",
+  "msgFieldMeasurementsEmpty": "Nessuna misurazione in campo disponibile",
   "saveHydrotestResultAlert": "Si prega di salvare il risultato corrente dell'hydrotest prima di salvare l'hydrotest."
 }

@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { AlertContext } from "../../../alert/alertContext";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
+import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const WaterIngressInput = props => {
   const {
@@ -130,7 +131,11 @@ const WaterIngressInput = props => {
                         trigger();
                       }}>
                       {domains?.data
-                        ?.filter(d => d.schema === "waing101")
+                        ?.filter(
+                          d =>
+                            d.schema ===
+                            hydrogeologySchemaConstants.waterIngressQuantity,
+                        )
                         .sort((a, b) => a.order - b.order)
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>
@@ -166,7 +171,11 @@ const WaterIngressInput = props => {
                         <em>{t("reset")}</em>
                       </MenuItem>
                       {domains?.data
-                        ?.filter(d => d.schema === "waing102")
+                        ?.filter(
+                          d =>
+                            d.schema ===
+                            hydrogeologySchemaConstants.waterIngressConditions,
+                        )
                         .sort((a, b) => a.order - b.order)
                         .map(d => (
                           <MenuItem key={d.id} value={d.id}>

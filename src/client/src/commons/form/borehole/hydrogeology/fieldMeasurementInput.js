@@ -17,13 +17,13 @@ import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
-const GroundwaterLevelMeasurementInput = props => {
+const FieldMeasurementInput = props => {
   const {
-    groundwaterLevelMeasurement,
-    setSelectedGroundwaterLevelMeasurement,
+    fieldMeasurement,
+    setSelectedFieldMeasurement,
     boreholeId,
-    addGroundwaterLevelMeasurement,
-    updateGroundwaterLevelMeasurement,
+    addFieldMeasurement,
+    updateFieldMeasurement,
   } = props;
   const domains = useDomains();
   const { t, i18n } = useTranslation();
@@ -48,24 +48,31 @@ const GroundwaterLevelMeasurementInput = props => {
     //convert dates to IsoStrings
     data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
-    if (data.startTime && data.kindId && data.reliabilityId) {
-      if (groundwaterLevelMeasurement.id === 0) {
-        addGroundwaterLevelMeasurement({
+    if (
+      data.startTime &&
+      data.parameterId &&
+      data.sampleTypeId &&
+      data.value &&
+      data.reliabilityId
+    ) {
+      if (fieldMeasurement.id === 0) {
+        addFieldMeasurement({
           ...data,
-          type: ObservationType.groundwaterLevelMeasurement,
+          type: ObservationType.fieldMeasurement,
           boreholeId: boreholeId,
         });
       } else {
-        delete groundwaterLevelMeasurement.casing;
-        delete groundwaterLevelMeasurement.kind;
-        delete groundwaterLevelMeasurement.reliability;
-        updateGroundwaterLevelMeasurement({
-          ...groundwaterLevelMeasurement,
+        delete fieldMeasurement.casing;
+        delete fieldMeasurement.sampeType;
+        delete fieldMeasurement.parameter;
+        delete fieldMeasurement.reliability;
+        updateFieldMeasurement({
+          ...fieldMeasurement,
           ...data,
         });
       }
     } else {
-      setSelectedGroundwaterLevelMeasurement(null);
+      setSelectedFieldMeasurement(null);
     }
   };
 
@@ -73,14 +80,19 @@ const GroundwaterLevelMeasurementInput = props => {
     const formValues = getValues();
     if (
       !formValues.reliabilityId ||
-      !formValues.kindId ||
-      !formValues.startTime
+      !formValues.startTime ||
+      !formValues.sampleTypeId ||
+      !formValues.parameterId ||
+      !formValues.value
     ) {
-      alertContext.error(t("gwlmRequiredFieldsAlert"));
+      alertContext.error(t("fieldMeasurementRequiredFieldsAlert"));
     } else {
-      setSelectedGroundwaterLevelMeasurement(null);
+      setSelectedFieldMeasurement(null);
     }
   };
+
+  const getInputFieldBackgroundColor = errorFieldName =>
+    Boolean(errorFieldName) ? "#fff6f6" : "transparent";
 
   return (
     <Card
@@ -95,7 +107,7 @@ const GroundwaterLevelMeasurementInput = props => {
         <Stack direction="row" sx={{ width: "100%" }}>
           <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
             <ObservationInput
-              observation={groundwaterLevelMeasurement}
+              observation={fieldMeasurement}
               boreholeId={boreholeId}
               register={register}
               control={control}
@@ -107,25 +119,25 @@ const GroundwaterLevelMeasurementInput = props => {
                 variant="outlined"
                 sx={{ flex: "1", marginRight: "10px" }}>
                 <Controller
-                  name="kindId"
+                  name="sampleTypeId"
                   control={control}
-                  defaultValue={groundwaterLevelMeasurement.kindId}
+                  defaultValue={fieldMeasurement.sampleTypeId}
                   rules={{ required: true }}
                   render={({ field }) => (
                     <TextField
                       {...field}
                       select
                       size="small"
-                      label={t("gwlm_kind")}
+                      label={t("field_measurement_sample_type")}
                       variant="outlined"
                       value={field.value || ""}
-                      data-cy="kind-select"
-                      error={Boolean(formState.errors.kindId)}
+                      data-cy="sample-type-select"
+                      error={Boolean(formState.errors.sampleTypeId)}
                       InputLabelProps={{ shrink: true }}
                       sx={{
-                        backgroundColor: Boolean(formState.errors.kindId)
-                          ? "#fff6f6"
-                          : "transparent",
+                        backgroundColor: getInputFieldBackgroundColor(
+                          formState.errors.sampleTypeId,
+                        ),
                         borderRadius: "4px",
                       }}
                       onChange={e => {
@@ -137,7 +149,53 @@ const GroundwaterLevelMeasurementInput = props => {
                         ?.filter(
                           d =>
                             d.schema ===
-                            hydrogeologySchemaConstants.groundwaterLevelMeasurementKind,
+                            hydrogeologySchemaConstants.fieldMeasurementSampleType,
+                        )
+                        .sort((a, b) => a.order - b.order)
+                        .map(d => (
+                          <MenuItem key={d.id} value={d.id}>
+                            {d[i18n.language]}
+                          </MenuItem>
+                        ))}
+                    </TextField>
+                  )}
+                />
+              </FormControl>
+              <FormControl
+                variant="outlined"
+                sx={{ flex: "1", marginRight: "10px" }}>
+                <Controller
+                  name="parameterId"
+                  control={control}
+                  defaultValue={fieldMeasurement.parameterId}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      select
+                      size="small"
+                      label={t("parameter")}
+                      variant="outlined"
+                      value={field.value || ""}
+                      data-cy="parameter-select"
+                      error={Boolean(formState.errors.parameterId)}
+                      InputLabelProps={{ shrink: true }}
+                      sx={{
+                        backgroundColor: getInputFieldBackgroundColor(
+                          formState.errors.parameterId,
+                        ),
+                        borderRadius: "4px",
+                      }}
+                      onChange={e => {
+                        e.stopPropagation();
+                        field.onChange(e.target.value);
+                        trigger();
+                      }}>
+                      {domains?.data
+                        ?.filter(
+                          d =>
+                            d.schema ===
+                            hydrogeologySchemaConstants.fieldMeasurementParameter,
                         )
                         .sort((a, b) => a.order - b.order)
                         .map(d => (
@@ -152,29 +210,29 @@ const GroundwaterLevelMeasurementInput = props => {
             </Stack>
             <Stack direction="row">
               <TextField
-                sx={{ flex: "1", marginTop: "10px", marginRight: "10px" }}
-                {...register("levelM", {
+                sx={{
+                  flex: "1",
+                  marginTop: "10px",
+                  marginRight: "10px",
+                  backgroundColor: getInputFieldBackgroundColor(
+                    formState.errors.value,
+                  ),
+                  borderRadius: "4px",
+                }}
+                error={Boolean(formState.errors.value)}
+                {...register("value", {
                   valueAsNumber: true,
+                  required: true,
                 })}
                 type="number"
                 size="small"
-                data-cy="level-m-textfield"
-                label={t("gwlm_levelm")}
-                defaultValue={groundwaterLevelMeasurement.levelM}
+                data-cy="value-textfield"
+                label={t("value")}
+                defaultValue={fieldMeasurement.value}
                 variant="outlined"
-                InputLabelProps={{ shrink: true }}
-              />
-              <TextField
-                sx={{ flex: "1", marginTop: "10px", marginRight: "10px" }}
-                {...register("levelMasl", {
-                  valueAsNumber: true,
-                })}
-                type="number"
-                size="small"
-                data-cy="level-masl-textfield"
-                label={t("gwlm_levelmasl")}
-                defaultValue={groundwaterLevelMeasurement.levelMasl}
-                variant="outlined"
+                onBlur={() => {
+                  trigger("value");
+                }}
                 InputLabelProps={{ shrink: true }}
               />
             </Stack>
@@ -194,4 +252,4 @@ const GroundwaterLevelMeasurementInput = props => {
   );
 };
 
-export default GroundwaterLevelMeasurementInput;
+export default FieldMeasurementInput;
