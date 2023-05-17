@@ -113,7 +113,8 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
         return new AmazonS3Client(credentials, clientConfig);
     }
 
-    if (builder.Environment.IsDevelopment()) clientConfig.ForcePathStyle = true;
+    // Force path style must be enabled for local minIO server
+    clientConfig.ForcePathStyle = true;
 
     return new AmazonS3Client(accessKey, secretKey, clientConfig);
 });
