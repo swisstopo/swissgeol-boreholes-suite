@@ -53,7 +53,7 @@
   "creationdate": "Erstellungsdatum",
   "csvFormat": "Dateiformat CSV-UTF8",
   "csvFormatExplanation": "Das CSV-UTF8 File sollte die folgenden Spaltenüberschriften enthalten und eine beliebige Anzahl an Einträgen unter den Überschriften",
-  "csvCodeListReferenceExplanation": "Als Referenz für die verschiedenen Codes kann folgender export verwendet werden.",
+  "csvCodeListReferenceExplanation": "Als Referenz für die verschiedenen Codes kann folgender Export verwendet werden.",
   "currentVersion": "Aktuelle Version",
   "cuttings": "Bohrgut",
   "date": "Datum",
