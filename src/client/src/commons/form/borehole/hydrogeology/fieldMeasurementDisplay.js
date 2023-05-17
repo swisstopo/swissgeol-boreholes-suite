@@ -9,22 +9,20 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 import ObservationDisplay from "./observationDisplay";
-import HydrotestResultTable from "./hydrotestResultTable";
-import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
-const HydrotestDisplay = props => {
+const FieldMeasurementDisplay = props => {
   const {
-    hydrotest,
-    selectedHydrotest,
-    setSelectedHydrotest,
+    fieldMeasurement,
+    selectedFieldMeasurement,
+    setSelectedFieldMeasurement,
     isEditable,
-    deleteHydrotest,
+    deleteFieldMeasurement,
   } = props;
   const { t, i18n } = useTranslation();
 
   return (
     <Card
-      key={hydrotest.id}
+      key={fieldMeasurement.id}
       sx={{
         border: "1px solid lightgrey",
         borderRadius: "3px",
@@ -35,61 +33,33 @@ const HydrotestDisplay = props => {
       <StackFullWidth direction="row" justifyContent="space-between">
         <StackFullWidth direction="column" justifyContent="space-between">
           <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
-            {t("hydrotest")}
+            {t("field_measurement")}
           </Typography>
-          <ObservationDisplay observation={hydrotest} />
-          <StackFullWidth direction="row" spacing={1}>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("hydrotestKind")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {hydrotest.testKind?.[i18n.language] || "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("flowDirection")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {hydrotest.codelists
-                  .filter(
-                    c =>
-                      c.schema ===
-                      hydrogeologySchemaConstants.hydrotestFlowDirection,
-                  )
-                  .map(c => c[i18n.language])
-                  .join(", ") || "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
-          </StackFullWidth>
+          <ObservationDisplay observation={fieldMeasurement} />
           <StackFullWidth direction="row" spacing={1}>
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">
-                {t("evaluationMethod")}
+                {t("field_measurement_sample_type")}
               </Typography>
               <TypographyWithBottomMargin variant="subtitle1">
-                {hydrotest.codelists
-                  .filter(
-                    c =>
-                      c.schema ===
-                      hydrogeologySchemaConstants.hydrotestEvaluationMethod,
-                  )
-                  .map(c => c[i18n.language])
-                  .join(", ") || "-"}
+                {fieldMeasurement.sampleType?.[i18n.language] || "-"}
+              </TypographyWithBottomMargin>
+            </StackHalfWidth>
+            <StackHalfWidth direction="column">
+              <Typography variant="subtitle2">{t("parameter")}</Typography>
+              <TypographyWithBottomMargin variant="subtitle1">
+                {fieldMeasurement.parameter?.[i18n.language] || "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
           </StackFullWidth>
-          {hydrotest.hydrotestResults?.length > 0 && (
-            <>
-              <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
-                {t("hydrotestResult")}
-              </Typography>
-              <HydrotestResultTable
-                hydrotest={hydrotest}
-                isEditable={false}
-                isAddingHydrotestResult={false}
-                setIsAddingHydrotestResult={() => {}}
-                editingId={null}
-              />
-            </>
-          )}
+          <StackFullWidth direction="row" spacing={1}>
+            <StackHalfWidth direction="column">
+              <Typography variant="subtitle2">{t("value")}</Typography>
+              <TypographyWithBottomMargin variant="subtitle1">
+                {fieldMeasurement.value || "-"}
+              </TypographyWithBottomMargin>
+            </StackHalfWidth>
+          </StackFullWidth>
         </StackFullWidth>
         <Stack
           direction="row"
@@ -99,11 +69,12 @@ const HydrotestDisplay = props => {
           }}>
           <Tooltip title={t("edit")}>
             <ModeEditIcon
-              color={selectedHydrotest ? "disabled" : "black"}
+              color={selectedFieldMeasurement ? "disabled" : "black"}
               data-cy="edit-icon"
               onClick={e => {
                 e.stopPropagation();
-                !selectedHydrotest && setSelectedHydrotest(hydrotest);
+                !selectedFieldMeasurement &&
+                  setSelectedFieldMeasurement(fieldMeasurement);
               }}
             />
           </Tooltip>
@@ -111,12 +82,13 @@ const HydrotestDisplay = props => {
             <DeleteIcon
               data-cy="delete-icon"
               sx={{
-                color: selectedHydrotest ? "rgba(0, 0, 0, 0.26)" : "red",
+                color: selectedFieldMeasurement ? "rgba(0, 0, 0, 0.26)" : "red",
                 opacity: 0.7,
               }}
               onClick={e => {
                 e.stopPropagation();
-                !selectedHydrotest && deleteHydrotest(hydrotest.id);
+                !selectedFieldMeasurement &&
+                  deleteFieldMeasurement(fieldMeasurement.id);
               }}
             />
           </Tooltip>
@@ -127,4 +99,4 @@ const HydrotestDisplay = props => {
   );
 };
 
-export default HydrotestDisplay;
+export default FieldMeasurementDisplay;

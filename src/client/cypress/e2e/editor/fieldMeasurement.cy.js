@@ -1,6 +1,6 @@
 import { createBorehole, adminUserAuth, login } from "../testHelpers";
 
-describe("Tests for the groundwater level measurement editor.", () => {
+describe("Tests for the field measurement editor.", () => {
   beforeEach(function () {
     // add new borehole
     createBorehole({ "extended.original_name": "INTEADAL" })
@@ -21,9 +21,9 @@ describe("Tests for the groundwater level measurement editor.", () => {
         expect(response.body).to.have.property("success", true);
       });
 
-    // open groundwater level measurement editor
+    // open field measurement editor
     cy.get("@borehole_id").then(id =>
-      login(`editor/${id}/hydrogeology/groundwaterlevelmeasurement`),
+      login(`editor/${id}/hydrogeology/fieldmeasurement`),
     );
 
     // start editing session
@@ -31,26 +31,16 @@ describe("Tests for the groundwater level measurement editor.", () => {
     cy.wait("@edit_lock");
   });
 
-  it("Creates, updates and deletes groundwater level measurement", () => {
+  it("Creates, updates and deletes field measurement", () => {
     // switch to german
     cy.get('[data-cy="menu"]').click({ force: true });
     cy.contains("span", "DE").click({ force: true });
 
-    // create groundwater level measurement
-    cy.get('[data-cy="add-groundwaterlevelmeasurement-button"]').click({
+    // create field measurement
+    cy.get('[data-cy="add-fieldmeasurement-button"]').click({
       force: true,
     });
-    cy.wait("@groundwaterlevelmeasurement_GET");
-
-    // fill kind dropdown
-    cy.get('[data-cy="kind-select"]')
-      .find('[role="button"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(2)
-      .click();
+    cy.wait("@fieldmeasurement_GET");
 
     // fill reliability dropdown
     cy.get('[data-cy="reliability-select"]')
@@ -65,24 +55,8 @@ describe("Tests for the groundwater level measurement editor.", () => {
     // fill start time
     cy.get('[data-cy="start-time-textfield"]').type("2012-11-14T12:06");
 
-    // fill levels
-    cy.get('[data-cy="level-m-textfield"]').type("789.12");
-    cy.get('[data-cy="level-masl-textfield"]').type("5.4567");
-
-    // close editing mask
-    cy.get('[data-cy="close-icon"]').click({ force: true });
-
-    //assert groundwater level measurement is displayed
-    cy.contains("Manometer");
-    cy.contains("789.12");
-    cy.contains("5.4567");
-    cy.contains("fraglich");
-
-    // edit groundwater level measurement
-    cy.get('[data-cy="edit-icon"]').click({ force: true });
-
-    // change kind dropdown
-    cy.get('[data-cy="kind-select"]')
+    // fill sample type dropdown
+    cy.get('[data-cy="sample-type-select"]')
       .find('[role="button"]')
       .click({ force: true });
 
@@ -90,12 +64,46 @@ describe("Tests for the groundwater level measurement editor.", () => {
       .find('[role="option"]')
       .eq(1)
       .click();
-    cy.get('[data-cy="close-icon"]').click({ force: true });
-    cy.contains("Drucksonde");
 
-    // delete groundwater level measurement
+    // fill parameter dropdown
+    cy.get('[data-cy="parameter-select"]')
+      .find('[role="button"]')
+      .click({ force: true });
+
+    cy.get('.MuiPaper-elevation [role="listbox"]')
+      .find('[role="option"]')
+      .eq(2)
+      .click();
+
+    // fill value
+    cy.get('[data-cy="value-textfield"]').type("77.1045");
+
+    // close editing mask
+    cy.get('[data-cy="close-icon"]').click({ force: true });
+
+    //assert field measurementis displayed
+    cy.contains("Schöpfprobe");
+    cy.contains("elektrische Leitfähigkeit (20 °C)");
+    cy.contains("77.1045");
+
+    // edit field measurement
+    cy.get('[data-cy="edit-icon"]').click({ force: true });
+
+    // fill sample type dropdown
+    cy.get('[data-cy="sample-type-select"]')
+      .find('[role="button"]')
+      .click({ force: true });
+
+    cy.get('.MuiPaper-elevation [role="listbox"]')
+      .find('[role="option"]')
+      .eq(0)
+      .click();
+    cy.get('[data-cy="close-icon"]').click({ force: true });
+    cy.contains("Pumpprobe");
+
+    // delete field measurement
     cy.get('[data-cy="delete-icon"]').click({ force: true });
-    cy.wait("@groundwaterlevelmeasurement_DELETE");
-    cy.get("body").should("not.contain", "Drucksonde");
+    cy.wait("@fieldmeasurement_DELETE");
+    cy.get("body").should("not.contain", "Pumpprobe");
   });
 });

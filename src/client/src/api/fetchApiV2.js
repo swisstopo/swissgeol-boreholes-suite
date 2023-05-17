@@ -1,5 +1,6 @@
 import store from "../reducers";
 import { useQuery, useMutation, useQueryClient } from "react-query";
+import { getBasicAuthHeaderValue } from "./authentication";
 
 /**
  * Fetch data from the C# Api.
@@ -21,9 +22,10 @@ export async function fetchApiV2(
   const credentials = store.getState().core_user.authentication;
   const body = isFileUpload ? payload : JSON.stringify(payload);
   let headers = {
-    Authorization: `Basic ${btoa(
-      `${credentials.username}:${credentials.password}`,
-    )}`,
+    Authorization: getBasicAuthHeaderValue(
+      credentials.username,
+      credentials.password,
+    ),
   };
   if (!isFileUpload && !isFileDownload)
     headers = { ...headers, "Content-Type": "application/json" };
@@ -412,6 +414,68 @@ export const useGroundwaterLevelMeasurementMutations = () => {
     add: useAddGroundwaterLevelMeasurement,
     update: useUpdateGroundwaterLevelMeasurement,
     delete: useDeleteGroundwaterLevelMeasurement,
+  };
+};
+
+export const fieldMeasurementsQueryKey = "fieldMeasurements";
+
+export const useFieldMeasurements = boreholeId =>
+  useQuery({
+    queryKey: [fieldMeasurementsQueryKey, boreholeId],
+    queryFn: async () => {
+      return await fetchApiV2(
+        `fieldmeasurement?boreholeId=${boreholeId}`,
+        "GET",
+      );
+    },
+  });
+
+export const useFieldMeasurementMutations = () => {
+  const queryClient = useQueryClient();
+  const useAddFieldMeasurement = useMutation(
+    async fieldMeasurement => {
+      return await fetchApiV2("fieldmeasurement", "POST", fieldMeasurement);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [fieldMeasurementsQueryKey],
+        });
+      },
+    },
+  );
+  const useUpdateFieldMeasurement = useMutation(
+    async fieldMeasurement => {
+      return await fetchApiV2("fieldmeasurement", "PUT", fieldMeasurement);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [fieldMeasurementsQueryKey],
+        });
+      },
+    },
+  );
+  const useDeleteFieldMeasurement = useMutation(
+    async fieldMeasurementId => {
+      return await fetchApiV2(
+        `fieldmeasurement?id=${fieldMeasurementId}`,
+        "DELETE",
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [fieldMeasurementsQueryKey],
+        });
+      },
+    },
+  );
+
+  return {
+    add: useAddFieldMeasurement,
+    update: useUpdateFieldMeasurement,
+    delete: useDeleteFieldMeasurement,
   };
 };
 

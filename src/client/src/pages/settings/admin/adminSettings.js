@@ -190,8 +190,12 @@ class AdminSettings extends React.Component {
                 fluid
                 label={<TranslationText id="username" />}
                 onChange={e => {
+                  const filteredValue = e.target.value.replace(
+                    /[^A-Za-z0-9@.+_-]/g,
+                    "",
+                  ); // Limit to alphabetic characters
                   this.setState({
-                    uUsername: e.target.value,
+                    uUsername: filteredValue,
                   });
                 }}
                 placeholder={t("username")}
