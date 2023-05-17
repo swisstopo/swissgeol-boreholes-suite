@@ -8,7 +8,6 @@ const WorkgroupRadioGroup = props => {
     <Form
       size="tiny"
       style={{
-        marginBottom: "1em",
         border: "1px solid #e0e0e0",
         padding: "0.5em",
       }}>
