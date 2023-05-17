@@ -33,6 +33,7 @@ public class BdmsContext : DbContext
     public DbSet<Hydrotest> Hydrotests { get; set; }
     public DbSet<HydrotestResult> HydrotestResults { get; set; }
     public DbSet<GroundwaterLevelMeasurement> GroundwaterLevelMeasurements { get; set; }
+    public DbSet<FieldMeasurement> FieldMeasurements { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)
@@ -185,5 +186,7 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Hydrotest>().HasOne(l => l.TestKind).WithMany().HasForeignKey(l => l.TestKindId);
 
         modelBuilder.Entity<GroundwaterLevelMeasurement>().ToTable("groundwater_level_measurement").HasBaseType<Observation>();
+
+        modelBuilder.Entity<FieldMeasurement>().ToTable("field_measurement").HasBaseType<Observation>();
     }
 }
