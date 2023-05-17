@@ -99,9 +99,9 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
     var s3ConfigSection = builder.Configuration.GetSection("S3");
     var clientConfig = new AmazonS3Config
     {
-        AuthenticationRegion = s3ConfigSection.GetValue<string>("REGION"),
+        //AuthenticationRegion = s3ConfigSection.GetValue<string>("REGION"),
         ServiceURL = s3ConfigSection.GetValue<string>("ENDPOINT"),
-        ForcePathStyle = true,
+        //ForcePathStyle = true,
         UseHttp = s3ConfigSection.GetValue<string>("SECURE") == "0",
     };
 
