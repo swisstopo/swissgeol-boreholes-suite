@@ -111,14 +111,6 @@ public class BoreholeFileUploadService
     {
         try
         {
-            // Create bucket if it doesn't exist.
-            var listBucketResponse = await s3Client.ListBucketsAsync(new ListBucketsRequest()).ConfigureAwait(false);
-            if (!listBucketResponse.Buckets.Any(bucket => bucket.BucketName == bucketName))
-            {
-                var putBucketRequest = new PutBucketRequest { BucketName = bucketName, UseClientRegion = true };
-                PutBucketResponse putBucketResponse = await s3Client.PutBucketAsync(putBucketRequest).ConfigureAwait(false);
-            }
-
             // Upload file
             var putObjectRequest = new PutObjectRequest { BucketName = bucketName, Key = objectName, InputStream = file.OpenReadStream(), ContentType = file.ContentType };
             await s3Client.PutObjectAsync(putObjectRequest).ConfigureAwait(false);
