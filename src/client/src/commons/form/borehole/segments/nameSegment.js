@@ -1,27 +1,15 @@
 import React from "react";
 import TranslationText from "../../translationText";
-import { Form, Input, Segment, Message } from "semantic-ui-react";
+import { Form, Input, Segment } from "semantic-ui-react";
 
 const NameSegment = props => {
-  const {
-    size,
-    borehole,
-    originalNameCheck,
-    originalNameFetch,
-    alternateNameCheck,
-    alternateNameFetch,
-    updateChange,
-    check,
-  } = props;
+  const { size, borehole, updateChange } = props;
   return (
     <Segment>
       <Form autoComplete="off" error size={size}>
         <Form.Group widths="equal">
           <Form.Field
-            error={
-              borehole.data.extended.original_name === "" ||
-              (originalNameCheck === false && originalNameFetch === false)
-            }
+            error={borehole.data.extended.original_name === ""}
             required>
             <label>
               <TranslationText id="original_name" />
@@ -30,16 +18,7 @@ const NameSegment = props => {
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              icon={
-                originalNameCheck === true && originalNameFetch === false
-                  ? "check"
-                  : "delete"
-              }
               iconPosition="left"
-              loading={originalNameFetch}
-              onChange={e => {
-                check("extended.original_name", e.target.value);
-              }}
               spellCheck="false"
               value={borehole.data.extended.original_name ?? ""}
             />
@@ -60,19 +39,6 @@ const NameSegment = props => {
             />
           </Form.Field>
         </Form.Group>
-        {originalNameCheck === false && originalNameFetch === false ? (
-          <Message
-            content={
-              <div>
-                <TranslationText id="original_name" />
-                {", "}
-                <TranslationText id="duplicate" />
-              </div>
-            }
-            error
-            size={size}
-          />
-        ) : null}
         <Form.Group widths="equal">
           <Form.Field>
             <label>
@@ -82,16 +48,7 @@ const NameSegment = props => {
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              icon={
-                alternateNameCheck === true && alternateNameFetch === false
-                  ? "check"
-                  : "delete"
-              }
               iconPosition="left"
-              loading={alternateNameFetch}
-              onChange={e => {
-                check("custom.alternate_name", e.target.value);
-              }}
               spellCheck="false"
               value={borehole.data.custom.alternate_name ?? ""}
             />
