@@ -276,8 +276,12 @@ const HydrotestResultTable = ({
                         onChange={handleChange("value")}
                       />
                     ) : (
-                      result?.value &&
-                      result?.value + " " + getParameterUnit(result.parameterId)
+                      result?.value && (
+                        <>
+                          <span>{result?.value + " "}</span>
+                          {getParameterUnit(result.parameterId)}
+                        </>
+                      )
                     )}
                   </TableCell>
                   <TableCell sx={tableCellStyles}>
@@ -301,10 +305,12 @@ const HydrotestResultTable = ({
                         onChange={handleChange("minValue")}
                       />
                     ) : (
-                      result?.minValue &&
-                      result?.minValue +
-                        " " +
-                        getParameterUnit(result.parameterId)
+                      result?.minValue && (
+                        <>
+                          <span>{result?.minValue + " "}</span>
+                          {getParameterUnit(result.parameterId)}
+                        </>
+                      )
                     )}
                   </TableCell>
                   <TableCell sx={tableCellStyles}>
@@ -328,10 +334,12 @@ const HydrotestResultTable = ({
                         onChange={handleChange("maxValue")}
                       />
                     ) : (
-                      result?.maxValue &&
-                      result?.maxValue +
-                        " " +
-                        getParameterUnit(result.parameterId)
+                      result?.maxValue && (
+                        <>
+                          <span>{result?.maxValue + " "}</span>
+                          {getParameterUnit(result.parameterId)}
+                        </>
+                      )
                     )}
                   </TableCell>
                   {isEditable && (
