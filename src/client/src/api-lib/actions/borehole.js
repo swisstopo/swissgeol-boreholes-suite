@@ -1,4 +1,4 @@
-import { fetch, uploadFile } from "./index";
+import { fetch } from "./index";
 
 export function loadBoreholes(
   page = undefined,
