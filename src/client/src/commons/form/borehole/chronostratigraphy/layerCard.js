@@ -332,7 +332,9 @@ const LayerCard = ({
   );
 
   const cardContent = (
-    <Box sx={{ flex: "1", display: "flex", position: "relative" }}>
+    <Box
+      data-cy="layer-card"
+      sx={{ flex: "1", display: "flex", position: "relative" }}>
       <Box sx={{ position: "absolute", top: "0", left: "0", right: "0" }}>
         {headerBar}
       </Box>
