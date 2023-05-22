@@ -201,8 +201,10 @@ export const useHydrotestDomains = testKindId =>
 export const layerQueryKey = "layers";
 
 export const useLayers = profileId =>
-  useQuery([layerQueryKey, profileId], () => {
-    return fetchLayersByProfileId(profileId);
+  useQuery({
+    queryKey: [layerQueryKey, profileId],
+    queryFn: () => fetchLayersByProfileId(profileId),
+    enabled: !!profileId,
   });
 
 export const lithologicalDescriptionQueryKey = "lithoDesc";
@@ -253,6 +255,7 @@ export const useChronostratigraphies = stratigraphyID =>
         "GET",
       );
     },
+    enabled: !!stratigraphyID,
   });
 
 export const useChronostratigraphyMutations = () => {
