@@ -1,10 +1,14 @@
 ﻿using BDMS.Controllers;
 using BDMS.Models;
+using Bogus.DataSets;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Text;
 
 namespace BDMS;
 
@@ -18,7 +22,11 @@ public class CodeListControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.CreateContext();
-        controller = new CodeListController(ContextFactory.CreateContext(), new Mock<ILogger<CodeListController>>().Object);
+        var configurationMock = new Mock<IConfiguration>();
+        configurationMock
+            .Setup(c => c.GetSection("ConnectionStrings")["BdmsContext"])
+            .Returns(ContextFactory.ConnectionString);
+        controller = new CodeListController(ContextFactory.CreateContext(), configurationMock.Object, new Mock<ILogger<CodeListController>>().Object);
     }
 
     [TestCleanup]
@@ -268,5 +276,23 @@ public class CodeListControllerTest
         var response = await controller.EditAsync(null);
         var badRequestResult = response as BadRequestObjectResult;
         Assert.AreEqual(400, badRequestResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task GetCsvExport()
+    {
+        var httpContext = new DefaultHttpContext();
+        controller.ControllerContext.HttpContext = httpContext;
+
+        var response = await controller.DownloadCsvAsync(CancellationToken.None).ConfigureAwait(false);
+        Assert.IsInstanceOfType(response, typeof(ContentResult));
+
+        Assert.AreEqual("text/csv; charset=utf-8", response.ContentType);
+        Assert.AreEqual("attachment; filename=codelist_export.csv", httpContext.Response.Headers["Content-Disposition"].ToString());
+
+        var expectedHeader = "id_cli,schema_cli,code_cli,text_cli_en,description_cli_en,text_cli_de,description_cli_de,text_cli_fr,description_cli_fr,text_cli_it,description_cli_it,text_cli_ro,description_cli_ro";
+
+        Assert.AreEqual(expectedHeader, response.Content.Split('\n')[0]);
+        Assert.AreEqual(2470, response.Content.Split('\n').Length);
     }
 }

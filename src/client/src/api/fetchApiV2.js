@@ -589,3 +589,6 @@ export const useHydrotestMutations = () => {
     delete: useDeleteHydrotests,
   };
 };
+
+export const downloadCodelistCsv = () =>
+  fetchApiV2(`codelist/csv`, "GET", null, false, true);
