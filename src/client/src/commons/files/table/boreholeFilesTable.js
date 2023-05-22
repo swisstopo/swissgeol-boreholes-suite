@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import { getBoreholeFiles } from "../../../api-lib/index";
+import { getBoreholeAttachments } from "../../../api/fetchApiV2";
 
 import FilesTableComponent from "./filesTableComponent";
 
@@ -30,12 +30,12 @@ export default class BoreholeFilesTable extends Component {
           files: [],
         },
         () => {
-          getBoreholeFiles(this.props.id)
+          getBoreholeAttachments(this.props.id)
             .then(response => {
-              if (response.data.success) {
+              if (response) {
                 this.setState({
                   fetching: false,
-                  files: response.data.data,
+                  files: response,
                 });
               }
             })

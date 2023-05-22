@@ -72,11 +72,6 @@ import {
   patchBorehole,
   patchBoreholes,
   getGeojson,
-  getBoreholeFiles,
-  getEditorBoreholeFiles,
-  uploadBoreholeAttachment,
-  detachFile,
-  patchFile,
 } from "./actions/borehole";
 
 import {
@@ -194,11 +189,6 @@ export {
   patchBorehole,
   patchBoreholes,
   getGeojson,
-  getBoreholeFiles,
-  getEditorBoreholeFiles,
-  uploadBoreholeAttachment,
-  detachFile,
-  patchFile,
   listIdentifier,
   createIdentifier,
   deleteIdentifier,
