@@ -5,6 +5,8 @@
  * unit of measurement as a value. This mapping is used to determine the unit of measurement for
  * a particular parameter based on its GeolCode.
  *
+ * The units are defined in jsx to allow correctly displaying the exponent.
+ *
  * Key-value pairs in `ParameterUnits`:
  * - `1`, `2`: "m/s" (meters per second)
  * - `3`: "m2/s" (square meters per second)
@@ -16,13 +18,17 @@
  */
 
 export const ParameterUnits = {
-  1: "m/s",
-  2: "m/s",
-  3: "m2/s",
-  4: "",
-  5: "Pa",
-  6: "1/m",
-  7: "Lu",
-  8: "m",
-  9: "",
+  1: <>m/s</>,
+  2: <>m/s</>,
+  3: (
+    <>
+      m<sup>2</sup>/s
+    </>
+  ),
+  4: <></>,
+  5: <>Pa</>,
+  6: <>1/m</>,
+  7: <>Lu</>,
+  8: <>m</>,
+  9: <></>,
 };

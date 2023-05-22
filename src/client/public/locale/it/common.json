@@ -53,6 +53,7 @@
   "creationdate": "Data di creazione",
   "csvFormat": "Formato CSV-UTF8",
   "csvFormatExplanation": "Il file CSV-UTF8 deve contenere le seguenti intestazioni di colonna e un numero qualsiasi di voci sotto le intestazioni",
+  "csvCodeListReferenceExplanation": "La seguente esportazione può essere utilizzata come riferimento per i diversi codici.",
   "currentVersion": "Versione corrente",
   "cuttings": "Detriti di perforazione generati dallo scalpello (cuttings / carota)",
   "date": "Data",

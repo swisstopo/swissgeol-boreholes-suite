@@ -10,6 +10,7 @@
 - Added `import_id` as required field for borehole import.
 - Added functionality to add, edit and delete hydrotests, which belong to the hydrogeology observations of a borehole.
 - Added functionality to add, edit and delete field measurement, which belong to the hydrogeology observations of a borehole.
+- Added csv export for current codelist table.
 
 ### Changed
 

@@ -53,6 +53,7 @@
   "creationdate": "Creation date",
   "csvFormat": "CSV-UTF8 format",
   "csvFormatExplanation": "The CSV-UTF8 file should contain the following column headings and any number of entries below the headings",
+  "csvCodeListReferenceExplanation": "The following export can be used as a reference for the different codes.",
   "currentVersion": "Current version",
   "cuttings": "Borehole cuttings / core",
   "date": "Date",
