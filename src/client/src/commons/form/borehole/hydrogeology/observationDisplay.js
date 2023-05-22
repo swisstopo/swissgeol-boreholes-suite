@@ -50,13 +50,17 @@ const ObservationDisplay = props => {
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("fromDepthM")}</Typography>
               <TypographyWithBottomMargin variant="subtitle1">
-                {observation.fromDepthM ? observation.fromDepthM : "-"}
+                {observation.fromDepthM || observation.fromDepthM === 0
+                  ? observation.fromDepthM
+                  : "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("toDepthM")}</Typography>
               <TypographyWithBottomMargin variant="subtitle1">
-                {observation.toDepthM ? observation.toDepthM : "-"}
+                {observation.toDepthM || observation.toDepthM === 0
+                  ? observation.toDepthM
+                  : "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
           </StackFullWidth>
@@ -64,13 +68,17 @@ const ObservationDisplay = props => {
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2"> {t("fromDepthMasl")}</Typography>
               <TypographyWithBottomMargin variant="subtitle1">
-                {observation.fromDepthMasl ? observation.fromDepthMasl : "-"}
+                {observation.fromDepthMasl || observation.fromDepthMasl === 0
+                  ? observation.fromDepthMasl
+                  : "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2"> {t("toDepthMasl")}</Typography>
               <TypographyWithBottomMargin variant="subtitle1">
-                {observation.toDepthMasl ? observation.toDepthMasl : "-"}
+                {observation.toDepthMasl || observation.toDepthMasl === 0
+                  ? observation.toDepthMasl
+                  : "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
           </StackFullWidth>
