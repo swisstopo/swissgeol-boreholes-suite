@@ -1,4 +1,4 @@
-import { fetch, uploadFile } from "./index";
+import { fetch } from "./index";
 
 export function loadBoreholes(
   page = undefined,
@@ -149,48 +149,5 @@ export function getGeojson(filter = {}) {
   return fetch("/borehole", {
     action: "GEOJSON",
     filter: filter,
-  });
-}
-
-export function getBoreholeFiles(id) {
-  return fetch("/borehole", {
-    action: "LISTFILES",
-    id: id,
-  });
-}
-
-export function getEditorBoreholeFiles(id) {
-  return fetch("/borehole/edit", {
-    action: "LISTFILES",
-    id: id,
-  });
-}
-
-export function uploadBoreholeAttachment(id, file) {
-  return uploadFile(
-    "/borehole/edit/files",
-    {
-      action: "ATTACHFILE",
-      id: id,
-    },
-    file,
-  );
-}
-
-export function detachFile(id, file_id) {
-  return fetch("/borehole/edit/files", {
-    action: "DETACHFILE",
-    id: id,
-    file_id: file_id,
-  });
-}
-
-export function patchFile(id, fid, field, value) {
-  return fetch("/borehole/edit/files", {
-    action: "PATCH",
-    id: id,
-    fid: fid,
-    field: field,
-    value: value,
   });
 }
