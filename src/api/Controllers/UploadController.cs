@@ -176,6 +176,8 @@ public class UploadController : ControllerBase
                 // Group lithology records by import id to get lithologies by boreholes.
                 var boreholeGroups = lithologyImports.GroupBy(l => l.ImportId);
 
+                var codeLists = await context.Codelists.ToListAsync().ConfigureAwait(false);
+
                 var stratiesToAdd = new List<Stratigraphy>();
                 var lithologiesToAdd = new List<Layer>();
                 foreach (var boreholeLithologies in boreholeGroups)
@@ -196,7 +198,22 @@ public class UploadController : ControllerBase
                         // Create a lithology for each record in the group (same strati id) and assign it to the new stratigraphy.
                         var lithologies = stratiGroup.Select(sg =>
                         {
+                            var codeListIds = new List<int>();
+
+                            try
+                            {
+                                // Select all code list ids of all multi value code list properties.
+                                var codeListIdStrings = sg.Color?.Split(",").Concat(sg.OrganicComponent.Split(",")).Concat(sg.GrainShape.Split(",")).Concat(sg.GrainGranularity.Split(",")).Concat(sg.Uscs3.Split(",")).Concat(sg.Debris.Split(",")).ToList();
+                                codeListIds = codeListIdStrings?.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
+                            }
+                            catch
+                            {
+                                logger.LogError("Invalid code list value of any multi code list property.");
+                                throw;
+                            }
+
                             var lithology = (Layer)sg;
+                            lithology.LayerCodelists = codeLists.Where(c => codeListIds.Contains(c.Id) && c.Schema != null).Select(c => new LayerCodelist { Codelist = c, CodelistId = c.Id, SchemaName = c.Schema! }).ToList();
                             lithology.Stratigraphy = strati;
                             return lithology;
                         }).ToList();
@@ -327,6 +344,17 @@ public class UploadController : ControllerBase
             if (!importIds.Contains(lithology.value.ImportId))
             {
                 ModelState.AddModelError($"Row{lithology.index}", $"Borehole with {nameof(LithologyImport.ImportId)} '{lithology.value.ImportId}' not found.");
+            }
+
+            // Check if all multi code list values are numbers
+            try
+            {
+                var codeListIdStrings = lithology.value.Color?.Split(",").Concat(lithology.value.OrganicComponent.Split(",")).Concat(lithology.value.GrainShape.Split(",")).Concat(lithology.value.GrainGranularity.Split(",")).Concat(lithology.value.Uscs3.Split(",")).Concat(lithology.value.Debris.Split(",")).ToList();
+                var codeListIds = codeListIdStrings?.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
+            }
+            catch
+            {
+                ModelState.AddModelError($"Row{lithology.index}", $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.Color)}, {nameof(LithologyImport.OrganicComponent)}, {nameof(LithologyImport.GrainShape)}, {nameof(LithologyImport.GrainGranularity)}, {nameof(LithologyImport.Uscs3)}, {nameof(LithologyImport.Debris)}.");
             }
         }
 
@@ -574,6 +602,12 @@ public class UploadController : ControllerBase
             Map(m => m.FillKindId).Optional();
             Map(m => m.LithologyTopBedrockId).Optional();
             Map(m => m.OriginalLithology).Optional();
+            Map(m => m.Color).Optional();
+            Map(m => m.OrganicComponent).Optional();
+            Map(m => m.GrainShape).Optional();
+            Map(m => m.GrainGranularity).Optional();
+            Map(m => m.Uscs3).Optional();
+            Map(m => m.Debris).Optional();
         }
     }
 
