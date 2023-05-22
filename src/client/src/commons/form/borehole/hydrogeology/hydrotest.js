@@ -104,7 +104,7 @@ const Hydrotest = ({ isEditable, boreholeId }) => {
         sx={{ overflow: "auto", maxHeight: "85vh" }}>
         {displayedHydrotests?.length > 0 &&
           displayedHydrotests
-            ?.sort((a, b) => new Date(a.updated) - new Date(b.updated))
+            ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
             .map((hydrotest, index) => {
               const isSelected = selectedHydrotest?.id === hydrotest.id;
               const isTempHydrotest = hydrotest.id === 0;
