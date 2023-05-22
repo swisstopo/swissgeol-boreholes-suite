@@ -48,13 +48,19 @@ const GroundwaterLevelMeasurementDisplay = props => {
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("gwlm_levelm")}</Typography>
               <TypographyWithBottomMargin variant="subtitle1">
-                {groundwaterLevelMeasurement.levelM || "-"}
+                {groundwaterLevelMeasurement.levelM ||
+                groundwaterLevelMeasurement.levelM === 0
+                  ? groundwaterLevelMeasurement.levelM
+                  : "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("gwlm_levelmasl")}</Typography>
               <TypographyWithBottomMargin variant="subtitle1">
-                {groundwaterLevelMeasurement.levelMasl || "-"}
+                {groundwaterLevelMeasurement.levelMasl ||
+                groundwaterLevelMeasurement.levelMasl === 0
+                  ? groundwaterLevelMeasurement.levelMasl
+                  : "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
           </StackFullWidth>
