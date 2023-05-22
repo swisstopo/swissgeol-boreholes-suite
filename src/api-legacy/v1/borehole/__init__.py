@@ -17,6 +17,4 @@ from bms.v1.borehole.check import CheckBorehole
 from bms.v1.borehole.patch import PatchBorehole
 from bms.v1.borehole.multipatch import MultiPatchBorehole
 from bms.v1.borehole.geojson import ListGeojson
-from bms.v1.borehole.detachfile import DetachFile
-from bms.v1.borehole.patchfile import PatchFile
 from bms.v1.borehole.copy import CopyBorehole
