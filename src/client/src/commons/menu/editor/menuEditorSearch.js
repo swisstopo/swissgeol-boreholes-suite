@@ -21,7 +21,8 @@ import {
 import { createBorehole } from "../../../api-lib/index";
 import { AlertContext } from "../../alert/alertContext";
 import SearchEditorComponent from "../../search/editor/searchEditorComponent";
-import { importBoreholes } from "../../../api/fetchApiV2";
+import { downloadCodelistCsv, importBoreholes } from "../../../api/fetchApiV2";
+import Downloadlink from "../../files/downloadlink";
 
 let isMounted = true;
 
@@ -249,6 +250,17 @@ class MenuEditorSearch extends React.Component {
                   "has_groundwater;lithology_top_bedrock_id;" +
                   "chronostratigraphy_id;lithostratigraphy_id;attachments;"}
               </div>
+              <p>
+                <div>
+                  <TranslationText id="csvCodeListReferenceExplanation" />
+                </div>
+                <div>
+                  <Downloadlink
+                    caption="Codelist"
+                    onDownload={downloadCodelistCsv}
+                  />
+                </div>
+              </p>
               <span
                 style={{
                   fontWeight: "bold",
