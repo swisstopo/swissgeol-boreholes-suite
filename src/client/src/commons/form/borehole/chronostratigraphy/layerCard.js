@@ -23,7 +23,7 @@ import { useTranslation } from "react-i18next";
 import {
   useChronostratigraphyMutations,
   useDomainSchema,
-} from "../../../../../../../api/fetchApiV2";
+} from "../../../../api/fetchApiV2";
 
 const State = Object.freeze({
   EDITING: Symbol("Editing"),
@@ -56,9 +56,18 @@ const LayerCard = ({
   const [toDepth, setToDepth] = useState(null);
   const [options, setOptions] = useState(null);
   const [selection, setSelection] = useState(null);
-  const [cardState, setCardState] = useState(
-    isEditable ? State.EDITABLE : State.DISPLAY,
-  );
+  const [cardState, setCardState] = useState(null);
+
+  useEffect(() => {
+    setCardState(prevState => {
+      // do not resurrect deleted layers
+      if (prevState === State.DELETED) {
+        return prevState;
+      } else {
+        return isEditable ? State.EDITABLE : State.DISPLAY;
+      }
+    });
+  }, [isEditable]);
 
   // create options array from codelist schema
   useEffect(() => {
@@ -362,6 +371,7 @@ const LayerCard = ({
           <Card
             square
             variant="outlined"
+            onWheel={e => e.stopPropagation()}
             sx={{ height: `${height}px`, display: "flex", overflow: "auto" }}>
             <Box sx={{ minHeight: "14em", flex: "1", display: "flex" }}>
               {cardContent}

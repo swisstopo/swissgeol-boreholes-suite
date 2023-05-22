@@ -27,6 +27,7 @@ import GroundwaterLevelMeasurement from "./hydrogeology/groundwaterLevelMeasurem
 import Hydrotest from "./hydrogeology/hydrotest";
 import { AlertContext } from "../../alert/alertContext";
 import FieldMeasurement from "./hydrogeology/fieldMeasurement";
+import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel";
 
 class BoreholeForm extends React.Component {
   static contextType = AlertContext;
@@ -466,10 +467,8 @@ class BoreholeForm extends React.Component {
               "/editor/:id/stratigraphy/chronostratigraphy"
             }
             render={() => (
-              <Profile
+              <ChronostratigraphyPanel
                 id={parseInt(this.props.match.params.id, 10)}
-                kind="stratigraphy"
-                isChronostratigraphy={true}
                 unlocked={isEditable}
               />
             )}

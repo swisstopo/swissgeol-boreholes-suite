@@ -229,6 +229,19 @@ export const useCasings = boreholeId =>
     return fetchCasingsByBoreholeId(boreholeId);
   });
 
+export const useLithologyStratigraphies = boreholeId => {
+  const kindId = 3000; // stratigraphy
+  return useQuery({
+    queryKey: ["lithologyStratigraphies", boreholeId],
+    queryFn: async () => {
+      return await fetchApiV2(
+        `stratigraphy?kindId=${kindId}&boreholeId=${boreholeId}`,
+        "GET",
+      );
+    },
+  });
+};
+
 export const chronostratigraphiesQueryKey = "chronostratigraphies";
 
 export const useChronostratigraphies = stratigraphyID =>
