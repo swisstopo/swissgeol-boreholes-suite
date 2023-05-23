@@ -266,6 +266,7 @@
   "municipality": "Comune",
   "name": "Nome",
   "new": "Nuovo {{what}}",
+  "newBorehole": "Nuova perforazione",
   "no": "No",
   "no_casing": "Senza tubazione",
   "noComments": "Nessun commento",
