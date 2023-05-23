@@ -65,7 +65,7 @@ const ObservationInput = props => {
           type="number"
           size="small"
           data-cy="depth-from-m-textfield"
-          label={t("fromDepthM")}
+          label={t("fromdepth")}
           defaultValue={observation.fromDepthM}
           variant="outlined"
           InputLabelProps={{ shrink: true }}
@@ -77,7 +77,7 @@ const ObservationInput = props => {
           type="number"
           size="small"
           data-cy="depth-to-m-textfield"
-          label={t("toDepthM")}
+          label={t("todepth")}
           defaultValue={observation.toDepthM}
           variant="outlined"
           InputLabelProps={{ shrink: true }}

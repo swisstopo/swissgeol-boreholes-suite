@@ -174,7 +174,7 @@ export const boreholeSearchData = [
     inputType: "number",
     hasTwoFields: true,
     isVisibleValue: "length",
-    placeholder: "fromdepth",
+    placeholder: "from",
   },
   {
     id: 17,
@@ -185,7 +185,7 @@ export const boreholeSearchData = [
     inputType: "number",
     hasTwoFields: true,
     isVisibleValue: "length",
-    placeholder: "todepth",
+    placeholder: "to",
   },
   {
     id: 18,
@@ -196,7 +196,7 @@ export const boreholeSearchData = [
     inputType: "number",
     hasTwoFields: true,
     isVisibleValue: "total_depth_tvd",
-    placeholder: "fromdepth",
+    placeholder: "from",
   },
   {
     id: 19,
@@ -207,7 +207,7 @@ export const boreholeSearchData = [
     inputType: "number",
     hasTwoFields: true,
     isVisibleValue: "total_depth_tvd",
-    placeholder: "todepth",
+    placeholder: "to",
   },
   {
     id: 20,
@@ -218,7 +218,7 @@ export const boreholeSearchData = [
     inputType: "number",
     hasTwoFields: true,
     isVisibleValue: "extended.top_bedrock",
-    placeholder: "fromdepth",
+    placeholder: "from",
   },
   {
     id: 21,
@@ -229,7 +229,7 @@ export const boreholeSearchData = [
     inputType: "number",
     hasTwoFields: true,
     isVisibleValue: "extended.top_bedrock",
-    placeholder: "todepth",
+    placeholder: "to",
   },
   {
     id: 22,
@@ -240,7 +240,7 @@ export const boreholeSearchData = [
     inputType: "number",
     hasTwoFields: true,
     isVisibleValue: "extended.top_bedrock_tvd",
-    placeholder: "fromdepth",
+    placeholder: "from",
   },
   {
     id: 23,
@@ -251,7 +251,7 @@ export const boreholeSearchData = [
     inputType: "number",
     hasTwoFields: true,
     isVisibleValue: "extended.top_bedrock_tvd",
-    placeholder: "todepth",
+    placeholder: "to",
   },
   {
     id: 24,

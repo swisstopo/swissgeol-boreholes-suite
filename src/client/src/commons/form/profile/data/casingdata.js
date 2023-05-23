@@ -37,7 +37,7 @@ export const casingData = {
     {
       id: 1,
       type: "Input",
-      label: "layer_depth_from",
+      label: "fromdepth",
       value: "depth_from",
       isVisible: true,
       require: true,
@@ -46,7 +46,7 @@ export const casingData = {
     {
       id: 2,
       type: "Input",
-      label: "layer_depth_to",
+      label: "todepth",
       value: "depth_to",
       isVisible: true,
       require: true,
