@@ -202,13 +202,11 @@ public class UploadController : ControllerBase
 
                             try
                             {
-                                // Select all code list ids of all multi value code list properties.
-                                var codeListIdStrings = sg.Color?.Split(",").Concat(sg.OrganicComponent.Split(",")).Concat(sg.GrainShape.Split(",")).Concat(sg.GrainGranularity.Split(",")).Concat(sg.Uscs3.Split(",")).Concat(sg.Debris.Split(",")).ToList();
-                                codeListIds = codeListIdStrings?.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
+                                ParseMultiValueCodeListIds(sg);
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                logger.LogError("Invalid code list value of any multi code list property.");
+                                logger.LogError("Invalid code list value of any multi code list property.", ex);
                                 throw;
                             }
 
@@ -244,6 +242,13 @@ public class UploadController : ControllerBase
             logger.LogError("Error while importing borehole(s) to workgroup with id <{WorkgroupId}>: <{Error}>", workgroupId, ex);
             return Problem("Error while importing borehole(s).");
         }
+    }
+
+    private List<int> ParseMultiValueCodeListIds(LithologyImport lithologyImport)
+    {
+        // Select all code list ids of all multi value code list properties.
+        var codeListIdStrings = lithologyImport.Color?.Split(",").Concat(lithologyImport.OrganicComponent.Split(",")).Concat(lithologyImport.GrainShape.Split(",")).Concat(lithologyImport.GrainGranularity.Split(",")).Concat(lithologyImport.Uscs3.Split(",")).Concat(lithologyImport.Debris.Split(",")).ToList();
+        return codeListIdStrings?.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
     }
 
     private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, IList<IFormFile>? attachments = null)
@@ -349,8 +354,7 @@ public class UploadController : ControllerBase
             // Check if all multi code list values are numbers
             try
             {
-                var codeListIdStrings = lithology.value.Color?.Split(",").Concat(lithology.value.OrganicComponent.Split(",")).Concat(lithology.value.GrainShape.Split(",")).Concat(lithology.value.GrainGranularity.Split(",")).Concat(lithology.value.Uscs3.Split(",")).Concat(lithology.value.Debris.Split(",")).ToList();
-                var codeListIds = codeListIdStrings?.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
+                ParseMultiValueCodeListIds(lithology.value);
             }
             catch
             {
