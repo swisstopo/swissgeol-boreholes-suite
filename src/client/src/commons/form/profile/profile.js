@@ -12,14 +12,13 @@ import ProfileInstrument from "./components/profileInstrument/profileInstrument"
 import TranslationText from "../translationText";
 import { profileKind } from "./constance";
 import { Loader } from "semantic-ui-react";
-import ChronostratigraphyPanel from "./components/profileLayers/components/chronoStratigraphyLayers/chronostratigraphyPanel";
 
 const Profile = props => {
   const { user, borehole } = useSelector(state => ({
     borehole: state.core_borehole,
     user: state.core_user,
   }));
-  const { kind, isChronostratigraphy } = props;
+  const { kind } = props;
 
   const [isEditable, setIsEditable] = useState(false);
   const [selectedStratigraphy, setSelectedStratigraphy] = useState(null);
@@ -201,33 +200,23 @@ const Profile = props => {
                   onUpdated,
                   attribute: attributesBasedKind?.profileInfo,
                   boreholeID: borehole.data.id,
-                  // If the stratigraphy is a chronostratigraphy, we don't want to allow the user to copy or delete it
-                  allowCopyAndDelete: !isChronostratigraphy,
                 }}
               />
-
-              {isChronostratigraphy ? (
-                <ChronostratigraphyPanel
-                  isEditable={isEditable}
-                  selectedStratigraphyID={selectedStratigraphy.id}
-                />
-              ) : (
-                <ProfileLayers
-                  data={{
-                    selectedStratigraphyID: selectedStratigraphy
-                      ? selectedStratigraphy.id
-                      : null,
-                    isEditable,
-                    selectedLayer,
-                    setSelectedLayer: e => {
-                      setSelectedLayer(e);
-                    },
-                    reloadLayer,
-                    onUpdated,
-                    stratigraphyKind,
-                  }}
-                />
-              )}
+              <ProfileLayers
+                data={{
+                  selectedStratigraphyID: selectedStratigraphy
+                    ? selectedStratigraphy.id
+                    : null,
+                  isEditable,
+                  selectedLayer,
+                  setSelectedLayer: e => {
+                    setSelectedLayer(e);
+                  },
+                  reloadLayer,
+                  onUpdated,
+                  stratigraphyKind,
+                }}
+              />
             </Styled.FirstColumn>
             {selectedLayer !== null && (
               <Styled.SecondColumn>

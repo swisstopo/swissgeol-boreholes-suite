@@ -28,6 +28,9 @@ const theme = createTheme({
       main: "#9f3a38",
       background: "#fff6f6",
     },
+    neutral: {
+      main: "#d8d8d8",
+    },
   },
   typography: {
     fontFamily: "Lato",
