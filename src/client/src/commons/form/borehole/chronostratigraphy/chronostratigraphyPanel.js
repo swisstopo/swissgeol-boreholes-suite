@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Stack,
   CircularProgress,
@@ -25,16 +25,19 @@ const ChronostratigraphyPanel = ({
 
   const { t } = useTranslation();
 
+  useEffect(() => {
+    // select stratigraphy if none is selected
+    if (chronostratigraphyQueryData && !stratigraphyId) {
+      setStratigraphyId(
+        chronostratigraphyQueryData.find(x => x.isPrimary)?.id ??
+          chronostratigraphyQueryData[0]?.id ??
+          "",
+      );
+    }
+  }, [chronostratigraphyQueryData, stratigraphyId]);
+
   if (!chronostratigraphyQueryData) {
     return <CircularProgress />;
-  }
-
-  if (!stratigraphyId) {
-    setStratigraphyId(
-      chronostratigraphyQueryData.find(x => x.isPrimary)?.id ??
-        chronostratigraphyQueryData[0]?.id ??
-        "",
-    );
   }
 
   return (
