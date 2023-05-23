@@ -189,7 +189,9 @@ class MetaComponent extends React.Component {
               ...flexRowStyle,
               ...rowTextStyle,
             }}>
-            <div style={rowLabelStyle}>ID boreholes.swissgeol.ch</div>
+            <div style={rowLabelStyle}>
+              <TranslationText id="borehole_technical_id" />
+            </div>
             {data.id}
           </div>
           {data.custom.identifiers
