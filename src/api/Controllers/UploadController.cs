@@ -176,6 +176,8 @@ public class UploadController : ControllerBase
                 // Group lithology records by import id to get lithologies by boreholes.
                 var boreholeGroups = lithologyImports.GroupBy(l => l.ImportId);
 
+                var codeLists = await context.Codelists.ToListAsync().ConfigureAwait(false);
+
                 var stratiesToAdd = new List<Stratigraphy>();
                 var lithologiesToAdd = new List<Layer>();
                 foreach (var boreholeLithologies in boreholeGroups)
@@ -196,7 +198,20 @@ public class UploadController : ControllerBase
                         // Create a lithology for each record in the group (same strati id) and assign it to the new stratigraphy.
                         var lithologies = stratiGroup.Select(sg =>
                         {
+                            var codeListIds = new List<int>();
+
+                            try
+                            {
+                                codeListIds = ParseMultiValueCodeListIds(sg);
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.LogError("Invalid code list value of any multi code list property.", ex);
+                                throw;
+                            }
+
                             var lithology = (Layer)sg;
+                            lithology.LayerCodelists = codeLists.Where(c => codeListIds.Contains(c.Id) && c.Schema != null).Select(c => new LayerCodelist { Codelist = c, CodelistId = c.Id, SchemaName = c.Schema! }).ToList();
                             lithology.Stratigraphy = strati;
                             return lithology;
                         }).ToList();
@@ -227,6 +242,13 @@ public class UploadController : ControllerBase
             logger.LogError("Error while importing borehole(s) to workgroup with id <{WorkgroupId}>: <{Error}>", workgroupId, ex);
             return Problem("Error while importing borehole(s).");
         }
+    }
+
+    private List<int> ParseMultiValueCodeListIds(LithologyImport lithologyImport)
+    {
+        // Select all code list ids of all multi value code list properties.
+        var codeListIdStrings = lithologyImport.Color?.Split(",").Concat(lithologyImport.OrganicComponent.Split(",")).Concat(lithologyImport.GrainShape.Split(",")).Concat(lithologyImport.GrainGranularity.Split(",")).Concat(lithologyImport.Uscs3.Split(",")).Concat(lithologyImport.Debris.Split(",")).ToList();
+        return codeListIdStrings?.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
     }
 
     private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, IList<IFormFile>? attachments = null)
@@ -327,6 +349,16 @@ public class UploadController : ControllerBase
             if (!importIds.Contains(lithology.value.ImportId))
             {
                 ModelState.AddModelError($"Row{lithology.index}", $"Borehole with {nameof(LithologyImport.ImportId)} '{lithology.value.ImportId}' not found.");
+            }
+
+            // Check if all multi code list values are numbers
+            try
+            {
+                ParseMultiValueCodeListIds(lithology.value);
+            }
+            catch
+            {
+                ModelState.AddModelError($"Row{lithology.index}", $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.Color)}, {nameof(LithologyImport.OrganicComponent)}, {nameof(LithologyImport.GrainShape)}, {nameof(LithologyImport.GrainGranularity)}, {nameof(LithologyImport.Uscs3)}, {nameof(LithologyImport.Debris)}.");
             }
         }
 
@@ -574,6 +606,12 @@ public class UploadController : ControllerBase
             Map(m => m.FillKindId).Optional();
             Map(m => m.LithologyTopBedrockId).Optional();
             Map(m => m.OriginalLithology).Optional();
+            Map(m => m.Color).Optional();
+            Map(m => m.OrganicComponent).Optional();
+            Map(m => m.GrainShape).Optional();
+            Map(m => m.GrainGranularity).Optional();
+            Map(m => m.Uscs3).Optional();
+            Map(m => m.Debris).Optional();
         }
     }
 
