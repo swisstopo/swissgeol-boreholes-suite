@@ -71,7 +71,7 @@ public class FaciesDescriptionControllerTest
         Assert.AreEqual(40, faciesDescription.FromDepth);
         Assert.AreEqual(50, faciesDescription.ToDepth);
         Assert.AreEqual("radical Technician Personal Loan Account", faciesDescription.Description);
-        Assert.AreEqual(9002, faciesDescription.QtDescriptionId);
+        Assert.AreEqual(9003, faciesDescription.QtDescriptionId);
         Assert.AreEqual(6_000_001, faciesDescription.StratigraphyId);
     }
 

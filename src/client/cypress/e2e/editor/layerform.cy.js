@@ -59,7 +59,7 @@ describe("Tests for the layer form.", () => {
           "erratic block",
           "not specified",
           "beige",
-          "light yellow",
+          "not specified",
         ]);
       }
     });

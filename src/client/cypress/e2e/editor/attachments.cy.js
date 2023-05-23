@@ -5,7 +5,7 @@ import {
 } from "../testHelpers";
 
 describe("Tests for 'Attachments' edit page.", () => {
-  it.skip("creates, downloads and deletes attachments.", () => {
+  it("creates, downloads and deletes attachments.", () => {
     createAndEditBoreholeAsAdmin({
       "extended.original_name": "JUNIORSOUFFLE",
     });
@@ -44,8 +44,9 @@ describe("Tests for 'Attachments' edit page.", () => {
     cy.get("tbody").children().contains("td", "application/pdf");
 
     // create file "IRATETRINITY.pdf" for input
+    let fileContent = Math.random().toString();
     cy.get("input[type=file]").selectFile({
-      contents: Cypress.Buffer.from(Math.random().toString()),
+      contents: Cypress.Buffer.from(fileContent),
       fileName: "IRATETRINITY.pdf",
       mimeType: "application/pdf",
     });
@@ -58,6 +59,22 @@ describe("Tests for 'Attachments' edit page.", () => {
     cy.wait(["@getAllAttachments"]);
     cy.get("tbody").children().should("have.length", 2);
     cy.get("tbody").children().contains("td", "application/pdf");
+
+    // Select "IRATETRINITY.pdf" second time.
+    cy.get("input[type=file]").selectFile({
+      contents: Cypress.Buffer.from(fileContent),
+      fileName: "IRATETRINITY.pdf",
+      mimeType: "application/pdf",
+    });
+
+    // Upload "IRATETRINITY.pdf" second time. Should not be uploaded.
+    cy.get('[data-cy="attachments-upload-button"]')
+      .should("be.visible")
+      .click();
+    cy.wait(["@upload-files"]);
+
+    // Check if error message is displayed.
+    cy.contains("This file has already been uploaded for this borehole");
 
     // Ensure file does not exist in download folder before download. If so, delete it.
     deleteDownloadedFile("IRATETRINITY.pdf");

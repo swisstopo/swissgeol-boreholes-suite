@@ -63,7 +63,7 @@ describe("Tests for the lithological description column.", () => {
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
       .find('[role="option"]')
-      .last()
+      .eq(5)
       .click();
 
     // stop editing
