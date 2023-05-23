@@ -51,7 +51,7 @@ export const TestResultParameterUnits = {
 
 export const FieldMeasurementParameterUnits = {
   1: "°C",
-  2: "-",
+  2: "",
   3: "µS/cm",
   4: "µS/cm",
   5: "mV",
