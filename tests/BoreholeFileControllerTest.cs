@@ -297,7 +297,6 @@ public class BoreholeFileControllerTest
         IActionResult response = await controller.Upload(pdfFormFile, minBoreholeId);
         ObjectResult result = (ObjectResult)response;
         Assert.AreEqual((int)HttpStatusCode.InternalServerError, result.StatusCode);
-        ProblemDetails problemDetails = (ProblemDetails)result.Value!;
     }
 
     [TestMethod]
