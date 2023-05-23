@@ -8,5 +8,5 @@ export const hydrogeologySchemaConstants = {
   hydrotestResultParameter: "hydrotest_result",
   groundwaterLevelMeasurementKind: "groundwaterlevel_kind",
   fieldMeasurementSampleType: "fieldmeasurement_type",
-  fieldMeasurementParameter: "fieldmeasurement_type",
+  fieldMeasurementParameter: "fieldmeasurement_parameter",
 };
