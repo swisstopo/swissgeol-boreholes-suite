@@ -24,4 +24,40 @@ public class LithologyImport : Layer
     /// Gets or sets the <see cref="LithologyImport"/>'s stratigraphy's name.
     /// </summary>
     public string? StratiName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="LithologyImport"/>'s color code list ids.
+    /// Represents a list of code list ids in form of a comma separated string.
+    /// </summary>
+    public string Color { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="LithologyImport"/>'s organic component code list ids.
+    /// Represents a list of code list ids in form of a comma separated string.
+    /// </summary>
+    public string OrganicComponent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="LithologyImport"/>'s grain shape code list ids.
+    /// Represents a list of code list ids in form of a comma separated string.
+    /// </summary>
+    public string GrainShape { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="LithologyImport"/>'s grain granularity code list ids.
+    /// Represents a list of code list ids in form of a comma separated string.
+    /// </summary>
+    public string GrainGranularity { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="LithologyImport"/>'s uscs_3 code list ids.
+    /// Represents a list of code list ids in form of a comma separated string.
+    /// </summary>
+    public string Uscs3 { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="LithologyImport"/>'s debris code list ids.
+    /// Represents a list of code list ids in form of a comma separated string.
+    /// </summary>
+    public string Debris { get; set; }
 }
