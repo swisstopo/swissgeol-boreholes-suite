@@ -12,14 +12,17 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {
   useFieldMeasurementMutations,
   useFieldMeasurements,
+  useDomains,
 } from "../../../../api/fetchApiV2";
 import FieldMeasurementInput from "./fieldMeasurementInput";
 import FieldMeasurementDisplay from "./fieldMeasurementDisplay";
+import { FieldMeasurementParameterUnits } from "./parameterUnits";
 
 const FieldMeasurement = props => {
   const { isEditable, boreholeId } = props;
   const { data: fieldMeasurements, isSuccess } =
     useFieldMeasurements(boreholeId);
+  const { data: domains } = useDomains();
   const { t } = useTranslation();
   const {
     add: { mutate: addFieldMeasurement },
@@ -59,6 +62,12 @@ const FieldMeasurement = props => {
         });
     }
   }, [displayedFieldMeasurements, fieldMeasurementRefs]);
+
+  const getParameterUnit = parameterId => {
+    return FieldMeasurementParameterUnits[
+      domains?.find(d => d.id === parameterId)?.geolcode
+    ];
+  };
 
   return (
     <Stack sx={{ flexGrow: 1 }}>
@@ -123,6 +132,7 @@ const FieldMeasurement = props => {
                         updateFieldMeasurement={updateFieldMeasurement}
                         addFieldMeasurement={addFieldMeasurement}
                         boreholeId={boreholeId}
+                        getParameterUnit={getParameterUnit}
                       />
                     ) : (
                       !isTempGwlm && (
@@ -134,6 +144,7 @@ const FieldMeasurement = props => {
                           }
                           isEditable={isEditable}
                           deleteFieldMeasurement={deleteFieldMeasurement}
+                          getParameterUnit={getParameterUnit}
                         />
                       )
                     )
