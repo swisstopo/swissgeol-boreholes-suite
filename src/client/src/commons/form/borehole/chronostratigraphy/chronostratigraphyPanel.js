@@ -61,19 +61,24 @@ const ChronostratigraphyPanel = ({
         renderItems={(navState, setNavState) => {
           return (
             <>
-              <NavigationLens
-                navState={navState}
-                setNavState={setNavState}
+              <NavigationChild
+                moveChildren={false}
                 sx={{ flex: "0 0 4em" }}
-                renderBackground={(lensNavState, setLensNavState) => (
-                  <LithologyViewProfile
-                    navState={lensNavState}
-                    setNavState={setLensNavState}
-                    stratigraphyId={stratigraphyId}
-                    minPixelHeightForDepthLabel={Number.MAX_VALUE}
-                  />
-                )}
-              />
+                navState={navState}
+                setNavState={setNavState}>
+                <NavigationLens
+                  navState={navState}
+                  setNavState={setNavState}
+                  renderBackground={(lensNavState, setLensNavState) => (
+                    <LithologyViewProfile
+                      navState={lensNavState}
+                      setNavState={setLensNavState}
+                      stratigraphyId={stratigraphyId}
+                      minPixelHeightForDepthLabel={Number.MAX_VALUE}
+                    />
+                  )}
+                />
+              </NavigationChild>
               <NavigationChild
                 sx={{ flex: "0 0 8em" }}
                 navState={navState}

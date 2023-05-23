@@ -6,7 +6,14 @@ import useResizeObserver from "@react-hook/resize-observer";
  * Positions its children accoring to the lensStart and lensSize properties of navState.
  * Handles the resizing of the header.
  */
-const NavigationChild = ({ navState, setNavState, header, children, sx }) => {
+const NavigationChild = ({
+  navState,
+  setNavState,
+  header,
+  children,
+  sx,
+  moveChildren = true,
+}) => {
   const [id] = useState(Math.random().toString(36).substring(2, 10));
 
   const headerRef = useRef(null);
@@ -25,16 +32,21 @@ const NavigationChild = ({ navState, setNavState, header, children, sx }) => {
         }}>
         <Box ref={headerRef}>{header}</Box>
       </Box>
-      <Box sx={{ overflow: "hidden", flex: "1 1 100%", position: "relative" }}>
+      {moveChildren ? (
         <Box
-          sx={{
-            position: "absolute",
-            top: -navState.pixelPerMeter * navState.lensStart,
-            width: "100%",
-          }}>
-          {children}
+          sx={{ overflow: "hidden", flex: "1 1 100%", position: "relative" }}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: -navState.pixelPerMeter * navState.lensStart,
+              width: "100%",
+            }}>
+            {children}
+          </Box>
         </Box>
-      </Box>
+      ) : (
+        children
+      )}
     </Box>
   );
 };
