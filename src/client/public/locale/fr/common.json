@@ -420,7 +420,7 @@
   "gwlm_kind": "Méthode de mesure des eaux souterraines",
   "gwlm_levelm": "Profondeur [m MD]",
   "gwlm_levelmasl": "Niveau [m s.m.]",
-  "gwlmRequiredFieldsAlert": "'Méthode de mesure des eaux souterrainess', 'Heure de Début' et 'Fiabilité des informations' sont des champs obligatoires, l'entrée ne peut pas être enregistrée si elles ne sont pas remplies.",
+  "gwlmRequiredFieldsAlert": "'Méthode de mesure des eaux souterrainess', 'Début' et 'Fiabilité des informations' sont des champs obligatoires, l'entrée ne peut pas être enregistrée si elles ne sont pas remplies.",
   "msgGroundwaterLevelMeasurementsEmpty": "Aucune mesure des eaux souterraines disponible.",
   "hydrotest": "Hydrotest",
   "hydrotestKind": "Type d'hydro-test",
