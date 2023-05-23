@@ -5,6 +5,23 @@ import { KeyboardArrowUp, KeyboardArrowDown } from "@mui/icons-material";
 import DraggableCore from "react-draggable";
 import { NumericFormat } from "react-number-format";
 import useResizeObserver from "@react-hook/resize-observer";
+import { styled } from "@mui/material/styles";
+
+const BackgroundShade = styled(Box)(() => ({
+  position: "absolute",
+  background: "rgba(0, 0, 0, 0.3)",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+}));
+
+const LensDepthLabel = styled(NumericFormat)(() => ({
+  fontSize: "0.8em",
+  fontWeight: "bold",
+  textAlign: "center",
+  color: "black",
+}));
 
 const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
   const [backgroundNavState, setBackgroundNavState] = useState(navState);
@@ -69,31 +86,21 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
           background: theme.palette.neutral.main,
         }}>
         {renderBackground(backgroundNavState, setBackgroundNavState)}
-        <Box
+        <BackgroundShade
           sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
             bottom:
               (navState.maxContent - navState.lensStart) *
                 backgroundNavState.pixelPerMeter -
               2 + // a bit less to prevent visual glitches
               "px",
-            background: "rgba(0, 0, 0, 0.3)",
           }}
         />
-        <Box
+        <BackgroundShade
           sx={{
-            position: "absolute",
             top:
               navState.lensStart * backgroundNavState.pixelPerMeter +
               lensHeight +
               "px",
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0, 0, 0, 0.3)",
           }}
         />
         <DraggableCore
@@ -124,34 +131,18 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
             }}>
             {lensHeight > minPixelHeightForDepthLabel && (
               <>
-                <Box
-                  sx={{
-                    fontSize: "0.8em",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    color: "black",
-                  }}>
-                  <NumericFormat
-                    value={Math.round(navState.lensStart)}
-                    thousandSeparator="'"
-                    displayType="text"
-                    suffix={" m"}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    fontSize: "0.8em",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    color: "black",
-                  }}>
-                  <NumericFormat
-                    value={Math.round(navState.lensStart + navState.lensSize)}
-                    thousandSeparator="'"
-                    displayType="text"
-                    suffix={" m"}
-                  />
-                </Box>
+                <LensDepthLabel
+                  value={Math.round(navState.lensStart)}
+                  thousandSeparator="'"
+                  displayType="text"
+                  suffix={" m"}
+                />
+                <LensDepthLabel
+                  value={Math.round(navState.lensStart + navState.lensSize)}
+                  thousandSeparator="'"
+                  displayType="text"
+                  suffix={" m"}
+                />
               </>
             )}
           </Box>
