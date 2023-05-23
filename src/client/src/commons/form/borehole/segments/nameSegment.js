@@ -18,7 +18,9 @@ const NameSegment = props => {
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              iconPosition="left"
+              onChange={e => {
+                updateChange("extended.original_name", e.target.value);
+              }}
               spellCheck="false"
               value={borehole.data.extended.original_name ?? ""}
             />
@@ -48,7 +50,9 @@ const NameSegment = props => {
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              iconPosition="left"
+              onChange={e => {
+                updateChange("custom.alternate_name", e.target.value);
+              }}
               spellCheck="false"
               value={borehole.data.custom.alternate_name ?? ""}
             />
