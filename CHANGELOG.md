@@ -11,6 +11,7 @@
 - Added functionality to add, edit and delete hydrotests, which belong to the hydrogeology observations of a borehole.
 - Added functionality to add, edit and delete field measurement, which belong to the hydrogeology observations of a borehole.
 - Added csv export for current codelist table.
+- Added the fields _qt_location_, _qt_elevation_, _reference_elevation_qt_ and _reference_elevation_type_ to bulk editing.
 
 ### Changed
 
@@ -18,7 +19,6 @@
 - Borehole duplicates are only identified within the same workgroup when importing boreholes.
 - Filter contents are shown directly below the filter group without reordering.
 - The duplicate check for a borehole's _original_name_ and _alternate_name_ have been removed. Duplicate names are now allowed.
-
 
 ### Fixed
 
