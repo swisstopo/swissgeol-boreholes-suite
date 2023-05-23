@@ -202,7 +202,7 @@ public class UploadController : ControllerBase
 
                             try
                             {
-                                ParseMultiValueCodeListIds(sg);
+                                codeListIds = ParseMultiValueCodeListIds(sg);
                             }
                             catch (Exception ex)
                             {
