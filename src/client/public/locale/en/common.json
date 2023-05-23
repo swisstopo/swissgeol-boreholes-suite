@@ -423,7 +423,7 @@
   "gwlmRequiredFieldsAlert": "'Method of groundwater measurement', 'Start' and 'Reliability of data' are mandatory fields, the entry cannot be saved if they are not filled out.",
   "msgGroundwaterLevelMeasurementsEmpty": "No groundwater measurements available.",
   "hydrotest": "Hydrotest",
-  "hydrotestKind": "Typ of hydrotest",
+  "hydrotestKind": "Type of hydrotest",
   "flowDirection": "Flow direction",
   "evaluationMethod": "Evaluation method",
   "hydrotestResult": "Hydrotest result",
