@@ -137,14 +137,6 @@ export function updateBorehole(data) {
   };
 }
 
-export function checkBorehole(attribute, text) {
-  return fetch("/borehole/edit", {
-    action: "CHECK",
-    attribute: attribute,
-    text: text,
-  });
-}
-
 export function getGeojson(filter = {}) {
   return fetch("/borehole", {
     action: "GEOJSON",

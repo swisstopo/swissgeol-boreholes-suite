@@ -7,7 +7,6 @@ import { Route, Switch, withRouter } from "react-router-dom";
 import {
   updateBorehole,
   loadBorehole,
-  checkBorehole,
   patchBorehole,
 } from "../../../api-lib/index";
 
@@ -40,10 +39,6 @@ class BoreholeForm extends React.Component {
       loadingFetch: false,
       patchFetch: false,
       creationFetch: false,
-      "extended.original_name_check": true,
-      "extended.original_name_fetch": false,
-      "custom.alternate_name_check": true,
-      "custom.alternate_name_fetch": false,
       identifier: null,
       identifierValue: "",
 
@@ -58,7 +53,6 @@ class BoreholeForm extends React.Component {
       note: "",
     };
     this.loadOrCreate = this.loadOrCreate.bind(this);
-    this.check = this.check.bind(this);
     this.checkLock = this.checkLock.bind(this);
     this.isNumber = this.isNumber.bind(this);
     this.updateNumber = this.updateNumber.bind(this);
@@ -115,95 +109,6 @@ class BoreholeForm extends React.Component {
         },
       );
     }
-  }
-
-  check(attribute, value) {
-    const { t } = this.props;
-    if (this.props.borehole.data.role !== "EDIT") {
-      this.context.error(
-        t("common:errorStartEditingWrongStatus", {
-          status: this.props.borehole.data.role,
-        }),
-      );
-      return;
-    }
-    if (
-      this.props.borehole.data.lock === null ||
-      this.props.borehole.data.lock.username !== this.props.user.data.username
-    ) {
-      this.context.error(t("common:errorStartEditing"));
-      return;
-    }
-    // Check for uniqueness and patch
-    const state = {
-      ...this.state,
-      patchFetch: true,
-    };
-
-    const borehole = {
-      ...this.props.borehole.data,
-    };
-    _.set(borehole, attribute, value);
-    state[attribute + "_fetch"] = true;
-
-    // update state
-    this.setState(state, () => {
-      if (this.checkattribute) {
-        clearTimeout(this.checkattribute);
-        this.checkattribute = false;
-      }
-      this.checkattribute = setTimeout(() => {
-        checkBorehole(attribute, value)
-          .then(response => {
-            if (response.data.success) {
-              let state = {};
-              state[attribute + "_check"] = response.data.check;
-              state[attribute + "_fetch"] = false;
-              this.setState(state);
-              if (response.data.check) {
-                // patch attribute
-                patchBorehole(borehole.id, attribute, value)
-                  .then(response => {
-                    if (response.data.success) {
-                      this.setState(
-                        {
-                          patchFetch: false,
-                        },
-                        () => {
-                          borehole.percentage = response.data.percentage;
-                          borehole.lock = response.data.lock;
-                          borehole.updater = response.data.updater;
-                          this.props.updateBorehole(borehole);
-                        },
-                      );
-                    } else if (response.status === 200) {
-                      this.context.error(response.data.message);
-                      if (response.data.error === "E-900") {
-                        this.setState(
-                          {
-                            patchFetch: false,
-                          },
-                          () => {
-                            borehole.lock = null;
-                            this.props.updateBorehole(borehole);
-                          },
-                        );
-                      } else {
-                        window.location.reload();
-                      }
-                    }
-                  })
-                  .catch(error => {
-                    console.error(error);
-                  });
-              }
-            }
-          })
-          .catch(function (error) {
-            console.error(error);
-          });
-      }, 250);
-    });
   }
 
   checkLock() {
@@ -403,12 +308,7 @@ class BoreholeForm extends React.Component {
                 <NameSegment
                   size={size}
                   borehole={borehole}
-                  originalNameCheck={this.state["extended.original_name_check"]}
-                  originalNameFetch={this.state["extended.original_name_fetch"]}
-                  alternateNameCheck={this.state["custom.alternate_name_check"]}
-                  alternateNameFetch={this.state["custom.alternate_name_fetch"]}
-                  updateChange={this.updateChange}
-                  check={this.check}></NameSegment>
+                  updateChange={this.updateChange}></NameSegment>
                 <RestrictionSegment
                   size={size}
                   borehole={borehole}
