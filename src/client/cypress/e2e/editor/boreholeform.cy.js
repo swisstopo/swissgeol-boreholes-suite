@@ -19,10 +19,10 @@ describe("Test for the borehole form.", () => {
       if (locationDropdownValues.length === 6) {
         expect(locationDropdownValues).to.deep.eq([
           "ID Kernlager",
-          "restricted until",
-          "reconstructed",
-          "reconstructed",
-          "reconstructed",
+          "not specified",
+          "not specified",
+          "not specified",
+          "not specified",
           "kelly bushing",
         ]);
       }
