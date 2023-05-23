@@ -17,6 +17,7 @@ const FieldMeasurementDisplay = props => {
     setSelectedFieldMeasurement,
     isEditable,
     deleteFieldMeasurement,
+    getParameterUnit,
   } = props;
   const { t, i18n } = useTranslation();
 
@@ -56,7 +57,12 @@ const FieldMeasurementDisplay = props => {
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("value")}</Typography>
               <TypographyWithBottomMargin variant="subtitle1">
-                {fieldMeasurement.value || "-"}
+                {fieldMeasurement?.value && (
+                  <>
+                    <span>{fieldMeasurement?.value + " "}</span>
+                    {getParameterUnit(fieldMeasurement.parameterId)}
+                  </>
+                )}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
           </StackFullWidth>

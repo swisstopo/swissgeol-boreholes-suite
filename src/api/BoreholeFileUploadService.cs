@@ -76,14 +76,14 @@ public class BoreholeFileUploadService
                 await UploadObject(file, fileNameGuid).ConfigureAwait(false);
             }
 
-            // Link file to the borehole.
-            if (!context.BoreholeFiles.Any(bf => bf.BoreholeId == boreholeId && bf.FileId == fileId))
-            {
-                var boreholeFile = new BoreholeFile { FileId = (int)fileId, BoreholeId = boreholeId, UserId = user.Id, Attached = DateTime.UtcNow };
+            // If file is already linked to the borehole, throw an exception.
+            if (context.BoreholeFiles.Any(bf => bf.BoreholeId == boreholeId && bf.FileId == fileId)) throw new InvalidOperationException($"File <{file.FileName}> is already attached to borehole with Id <{boreholeId}>.");
 
-                await context.BoreholeFiles.AddAsync(boreholeFile).ConfigureAwait(false);
-                await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext).ConfigureAwait(false);
-            }
+            // Link file to the borehole.
+            var boreholeFile = new BoreholeFile { FileId = (int)fileId, BoreholeId = boreholeId, UserId = user.Id, Attached = DateTime.UtcNow };
+
+            await context.BoreholeFiles.AddAsync(boreholeFile).ConfigureAwait(false);
+            await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext).ConfigureAwait(false);
 
             if (transaction != null) await transaction.CommitAsync().ConfigureAwait(false);
         }
