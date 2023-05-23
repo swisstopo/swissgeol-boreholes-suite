@@ -201,7 +201,11 @@ class MenuEditorSearch extends React.Component {
         <Segment clearing>
           <Header
             floated="left"
-            content={<TranslationText id="newBorehole" />}
+            content={
+              <TranslationText
+                id={this.state.upload === true ? "import" : "newBorehole"}
+              />
+            }
             icon={this.state.upload === true ? "upload" : "plus"}
           />
           <Header as="h4" floated="right">

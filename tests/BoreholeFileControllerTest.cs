@@ -286,6 +286,20 @@ public class BoreholeFileControllerTest
     }
 
     [TestMethod]
+    public async Task UploadWithFileAlreadyAttachedShouldThrowError()
+    {
+        var fileName = $"{Guid.NewGuid()}.pdf";
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
+
+        await controller.Upload(pdfFormFile, minBoreholeId);
+
+        IActionResult response = await controller.Upload(pdfFormFile, minBoreholeId);
+        ObjectResult result = (ObjectResult)response;
+        Assert.AreEqual((int)HttpStatusCode.InternalServerError, result.StatusCode);
+    }
+
+    [TestMethod]
     public async Task UploadWithMissingFile() => await AssertIsBadRequestResponse(() => controller.Upload(null, 1));
 
     [TestMethod]

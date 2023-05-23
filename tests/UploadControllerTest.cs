@@ -123,6 +123,50 @@ public class UploadControllerTest
     }
 
     [TestMethod]
+    public async Task UploadLithologyWithMultiCodeListPropertiesProvidedShouldSaveData()
+    {
+        httpClientFactoryMock
+           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+           .Returns(() => new HttpClient())
+           .Verifiable();
+
+        var boreholeCsvFile = GetFormFileByExistingFile("data_sets/import_litho_with_multi_code_list_properties/borehole.csv");
+        var lithoCsvFile = GetFormFileByExistingFile("data_sets/import_litho_with_multi_code_list_properties/litho.csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: lithoCsvFile, attachments: null);
+
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(1, okResult.Value);
+
+        // Assert imported values
+        var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.LayerCodelists).ToList().Find(b => b.OriginalName == "Seth Patel");
+        Assert.AreEqual(1, borehole.WorkgroupId);
+        Assert.AreEqual("Seth Patel", borehole.OriginalName);
+
+        // Assert imported stratigraphy & lithologies
+        Assert.AreEqual(2, borehole.Stratigraphies.Count);
+
+        // First stratigraphy
+        var stratigraphy = borehole.Stratigraphies.First();
+        Assert.AreEqual(2, stratigraphy.Layers.Count);
+        var lithology = stratigraphy.Layers.First(l => l.FromDepth == 0.125);
+        Assert.AreEqual(100, lithology.ToDepth);
+        Assert.AreEqual(16, lithology.LayerCodelists.Count);
+        lithology = stratigraphy.Layers.First(l => l.FromDepth == 11);
+        Assert.AreEqual(12, lithology.ToDepth);
+        Assert.AreEqual(1, lithology.LayerCodelists.Count);
+
+        // Second stratigraphy
+        stratigraphy = borehole.Stratigraphies.Skip(1).First();
+        Assert.AreEqual(1, stratigraphy.Layers.Count);
+        lithology = stratigraphy.Layers.First();
+        Assert.AreEqual(55, lithology.FromDepth);
+        Assert.AreEqual(55.23, lithology.ToDepth);
+        Assert.AreEqual(2, lithology.LayerCodelists.Count);
+    }
+
+    [TestMethod]
     public async Task UploadShouldSaveDataToDatabaseAsync()
     {
         httpClientFactoryMock
@@ -710,6 +754,25 @@ public class UploadControllerTest
 
         CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Row1"]);
         CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Row2"]);
+    }
+
+    [TestMethod]
+    public async Task UploadLithologyWithInvalidCodeListIdsShouldSaveData()
+    {
+        var boreholeCsvFile = GetFormFileByExistingFile("data_sets/import_litho_with_invalid_code_list_ids/borehole.csv");
+        var lithoCsvFile = GetFormFileByExistingFile("data_sets/import_litho_with_invalid_code_list_ids/litho.csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: lithoCsvFile, attachments: null);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        Assert.AreEqual(2, problemDetails.Errors.Count);
+
+        CollectionAssert.AreEquivalent(new[] { "One or more invalid (not a number) code list id in any of the following properties: Color, OrganicComponent, GrainShape, GrainGranularity, Uscs3, Debris.", }, problemDetails.Errors["Row1"]);
+        CollectionAssert.AreEquivalent(new[] { "One or more invalid (not a number) code list id in any of the following properties: Color, OrganicComponent, GrainShape, GrainGranularity, Uscs3, Debris.", }, problemDetails.Errors["Row2"]);
     }
 
     [TestMethod]

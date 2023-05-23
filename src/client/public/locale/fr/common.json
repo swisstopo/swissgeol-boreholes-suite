@@ -53,7 +53,7 @@
   "creationdate": "Date de création",
   "csvFormat": "Format CSV-UTF8",
   "csvFormatExplanation": "Le fichier CSV-UTF8 doit contenir les en-têtes de colonne suivants et un nombre quelconque d'entrées sous les en-têtes",
-  "csvCodeListReferenceExplanation": "L'exportation suivante peut être utilisée comme référence pour les différents codes.",
+  "csvCodeListReferenceExplanation": "La liste suivante peut être utilisée comme référence pour les différents codes.",
   "currentVersion": "Version actuelle",
   "cuttings": "Matériel de forage (cuttings / carotte)",
   "date": "Date",

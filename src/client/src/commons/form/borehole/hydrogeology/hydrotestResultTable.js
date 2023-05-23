@@ -17,7 +17,7 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
 import { useDomains } from "../../../../api/fetchApiV2";
-import { ParameterUnits } from "./parameterUnits";
+import { TestResultParameterUnits } from "./parameterUnits";
 import { AlertContext } from "../../../alert/alertContext";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
@@ -174,7 +174,7 @@ const HydrotestResultTable = ({
   };
 
   const getParameterUnit = parameterId => {
-    return ParameterUnits[
+    return TestResultParameterUnits[
       domains?.data?.find(d => d.id === parameterId).geolcode
     ];
   };

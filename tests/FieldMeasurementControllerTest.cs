@@ -183,7 +183,7 @@ public class FieldMeasurementControllerTest
             CompletionFinished = false,
             Comment = "New test comment",
             BoreholeId = 1006493,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == "observ101").Single(c => c.Geolcode == 3).Id,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == "observation_reliability").Single(c => c.Geolcode == 3).Id,
             SampleTypeId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Single(c => c.Geolcode == 1).Id,
             ParameterId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Single(c => c.Geolcode == 1).Id,
             Value = 9453.456,

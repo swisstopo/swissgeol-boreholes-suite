@@ -4,6 +4,7 @@ import {
   Box,
   Card,
   FormControl,
+  InputAdornment,
   MenuItem,
   Stack,
   TextField,
@@ -24,6 +25,7 @@ const FieldMeasurementInput = props => {
     boreholeId,
     addFieldMeasurement,
     updateFieldMeasurement,
+    getParameterUnit,
   } = props;
   const domains = useDomains();
   const { t, i18n } = useTranslation();
@@ -93,6 +95,8 @@ const FieldMeasurementInput = props => {
 
   const getInputFieldBackgroundColor = errorFieldName =>
     Boolean(errorFieldName) ? "#fff6f6" : "transparent";
+
+  const currentParameterId = getValues("parameterId");
 
   return (
     <Card
@@ -232,6 +236,14 @@ const FieldMeasurementInput = props => {
                 variant="outlined"
                 onBlur={() => {
                   trigger("value");
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {currentParameterId &&
+                        getParameterUnit(currentParameterId)}
+                    </InputAdornment>
+                  ),
                 }}
                 InputLabelProps={{ shrink: true }}
               />
