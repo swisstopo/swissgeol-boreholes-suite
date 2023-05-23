@@ -37,6 +37,16 @@ class MultipleForm extends React.Component {
           api: "restriction_until",
           value: null,
         },
+        qt_location: { api: "qt_location", value: null },
+        qt_elevation: { api: "qt_elevation", value: null },
+        reference_elevation_qt: {
+          api: "qt_reference_elevation",
+          value: null,
+        },
+        reference_elevation_type: {
+          api: "reference_elevation_type",
+          value: null,
+        },
         kind: { api: "kind", value: null },
         drilling_method: { api: "extended.drilling_method", value: null },
         purpose: { api: "extended.purpose", value: null },
@@ -329,6 +339,12 @@ class MultipleForm extends React.Component {
                 )}
               </Form.Field>
             ) : null}
+            {this.getGroup([
+              this.getDomain("qt_location"),
+              this.getDomain("qt_elevation"),
+              this.getDomain("reference_elevation_qt", "qt_elevation"),
+              this.getDomain("reference_elevation_type", "ibor117"),
+            ])}
             {this.getGroup([
               this.getDomain("kind"),
               this.getDomain("drilling_method"),
