@@ -201,8 +201,10 @@ export const useHydrotestDomains = testKindId =>
 export const layerQueryKey = "layers";
 
 export const useLayers = profileId =>
-  useQuery([layerQueryKey, profileId], () => {
-    return fetchLayersByProfileId(profileId);
+  useQuery({
+    queryKey: [layerQueryKey, profileId],
+    queryFn: () => fetchLayersByProfileId(profileId),
+    enabled: !!profileId,
   });
 
 export const lithologicalDescriptionQueryKey = "lithoDesc";
@@ -229,6 +231,19 @@ export const useCasings = boreholeId =>
     return fetchCasingsByBoreholeId(boreholeId);
   });
 
+export const useLithologyStratigraphies = boreholeId => {
+  const kindId = 3000; // stratigraphy
+  return useQuery({
+    queryKey: ["lithologyStratigraphies", boreholeId],
+    queryFn: async () => {
+      return await fetchApiV2(
+        `stratigraphy?kindId=${kindId}&boreholeId=${boreholeId}`,
+        "GET",
+      );
+    },
+  });
+};
+
 export const chronostratigraphiesQueryKey = "chronostratigraphies";
 
 export const useChronostratigraphies = stratigraphyID =>
@@ -240,6 +255,7 @@ export const useChronostratigraphies = stratigraphyID =>
         "GET",
       );
     },
+    enabled: !!stratigraphyID,
   });
 
 export const useChronostratigraphyMutations = () => {

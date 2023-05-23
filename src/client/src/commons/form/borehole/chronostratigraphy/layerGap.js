@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, Stack, Typography, CardActionArea } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useChronostratigraphyMutations } from "../../../../../../../api/fetchApiV2";
+import { useChronostratigraphyMutations } from "../../../../api/fetchApiV2";
 import {
   ArrowDownward,
   ArrowUpward,

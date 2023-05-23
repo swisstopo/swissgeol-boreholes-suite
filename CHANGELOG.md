@@ -18,7 +18,7 @@
 - Borehole duplicates are only identified within the same workgroup when importing boreholes.
 - Filter contents are shown directly below the filter group without reordering.
 - The duplicate check for a borehole's _original_name_ and _alternate_name_ have been removed. Duplicate names are now allowed.
-
+- Improve chronostratigraphy edit, change the stratigraphy selection to a simple dropdown.
 
 ### Fixed
 
