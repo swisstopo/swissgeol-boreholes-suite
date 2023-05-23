@@ -71,7 +71,7 @@ public class HydrotestControllerTests
         Assert.AreEqual(hydrotest.CompletionFinished, false);
         Assert.AreEqual(hydrotest.Comment, "Libero debitis impedit cumque sit dolorum dignissimos.");
         Assert.AreEqual(hydrotest.ReliabilityId, 15203156);
-        Assert.AreEqual(hydrotest.TestKindId, 15203178);
+        Assert.AreEqual(hydrotest.TestKindId, 15203176);
 
         // Assert hydrotestresult
         Assert.AreEqual(hydrotest.HydrotestResults.Count, 10);

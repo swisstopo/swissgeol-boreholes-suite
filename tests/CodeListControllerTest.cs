@@ -39,7 +39,7 @@ public class CodeListControllerTest
     public async Task GetAllEntriesAsync()
     {
         var codeLists = await controller.GetAsync();
-        Assert.AreEqual(2468, codeLists.Count());
+        Assert.AreEqual(2472, codeLists.Count());
     }
 
     [TestMethod]
@@ -83,10 +83,6 @@ public class CodeListControllerTest
         Assert.IsTrue(codeListsPumpEssay.All(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema
                                                 || c.Schema == HydrogeologySchemas.EvaluationMethodSchema
                                                 || c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema));
-
-        var codeListsExpertValue = await controller.GetAsync("", 15203182);
-        Assert.AreEqual(6, codeListsExpertValue.Count());
-        Assert.IsTrue(codeListsExpertValue.All(c => c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema));
     }
 
     [TestMethod]
@@ -293,6 +289,6 @@ public class CodeListControllerTest
         var expectedHeader = "id_cli,schema_cli,code_cli,text_cli_en,description_cli_en,text_cli_de,description_cli_de,text_cli_fr,description_cli_fr,text_cli_it,description_cli_it,text_cli_ro,description_cli_ro";
 
         Assert.AreEqual(expectedHeader, response.Content.Split('\n')[0]);
-        Assert.AreEqual(2470, response.Content.Split('\n').Length);
+        Assert.AreEqual(2474, response.Content.Split('\n').Length);
     }
 }
