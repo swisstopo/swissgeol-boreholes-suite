@@ -14,7 +14,6 @@ from bms import (
 )
 from bms.v1.handlers import Producer
 from bms.v1.borehole import (
-    CheckBorehole,
     StartEditing,
     Lock,
     Unlock,
@@ -183,9 +182,6 @@ class BoreholeProducerHandler(Producer):
                 elif action == 'MULTIPATCH':
                     exe = MultiPatchBorehole(conn)
                     request['user'] = self.user
-
-                elif action == 'CHECK':
-                    exe = CheckBorehole(conn)
 
                 elif action == 'IDS':
                     exe = BoreholeIds(conn)
