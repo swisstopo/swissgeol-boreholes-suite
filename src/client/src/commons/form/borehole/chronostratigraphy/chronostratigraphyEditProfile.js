@@ -22,18 +22,6 @@ import { AddCircle, VisibilityOff, Visibility } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import NavigationChild from "./navigationChild";
 
-const getHeader = t => {
-  return [
-    { title: t("eon"), isVisible: true },
-    { title: t("era"), isVisible: true },
-    { title: t("period"), isVisible: true },
-    { title: t("epoch"), isVisible: true },
-    { title: t("subepoch"), isVisible: true },
-    { title: t("age"), isVisible: true },
-    { title: t("subage"), isVisible: true },
-  ];
-};
-
 const ChronostratigraphyEditProfile = ({
   selectedStratigraphyID,
   isEditable,
@@ -47,11 +35,15 @@ const ChronostratigraphyEditProfile = ({
     add: { mutate: addChronostratigraphy },
   } = useChronostratigraphyMutations();
 
-  const [header, setHeader] = useState(getHeader(t));
-
-  useEffect(() => {
-    return setHeader(getHeader(t));
-  }, [t]);
+  const [header, setHeader] = useState([
+    { title: "eon", isVisible: true },
+    { title: "era", isVisible: true },
+    { title: "period", isVisible: true },
+    { title: "epoch", isVisible: true },
+    { title: "subepoch", isVisible: true },
+    { title: "age", isVisible: true },
+    { title: "subage", isVisible: true },
+  ]);
 
   useEffect(() => {
     setNavState(prev => prev.setContentHeightFromLayers("chrono", layers));
@@ -140,7 +132,7 @@ const ChronostratigraphyEditProfile = ({
                 );
               }}
               data-cy={`chrono-visibility-${index}`}>
-              <Typography noWrap>{h.title}</Typography>
+              <Typography noWrap>{t(h.title)}</Typography>
             </Button>
           ))}
         </ButtonGroup>
@@ -161,7 +153,7 @@ const ChronostratigraphyEditProfile = ({
                       borderBottom: "solid 1px rgba(0, 0, 0, 0.12)",
                     }}>
                     <Typography noWrap variant="subtitle1">
-                      {h.title}
+                      {t(h.title)}
                     </Typography>
                   </TableCell>
                 ),
