@@ -38,7 +38,7 @@ const IdentifierSegment = props => {
         style={{
           paddingTop: "0.5em",
         }}>
-        <div className="flex_fill">ID boreholes.swissgeol.ch</div>
+        <div className="flex_fill">{t("borehole_technical_id")}</div>
         <div className="flex_fill">{borehole.data.id}</div>
         <div>
           {borehole.data.lock !== null ? (

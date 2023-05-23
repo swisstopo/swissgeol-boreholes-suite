@@ -18,6 +18,7 @@
 - Borehole duplicates are only identified within the same workgroup when importing boreholes.
 - Filter contents are shown directly below the filter group without reordering.
 - Harmonized labels for _from_depth_ and _to_depth_ fields across the application.
+- The duplicate checks for a borehole's _original_name_ and _alternate_name_ have been removed. Duplicate names are now allowed.
 
 ### Fixed
 

@@ -24,6 +24,7 @@
   "borehole_identifier": "ID Typ",
   "borehole_identifier_value": "ID Code",
   "boreholeidentifiers": "ID Typen",
+  "borehole_technical_id": "ID boreholes.swissgeol.ch",
   "boreholes": "Bohrungen",
   "boreholestatus": "Bohrungsstatus",
   "bulkEditing": "Mehrfachbearbeitung",
