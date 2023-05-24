@@ -7,14 +7,7 @@ import { profileKind } from "../../../../constance";
 import { copyStratigraphy } from "../../../../../../../api/fetchApiV2";
 
 const InfoCheckBox = props => {
-  const {
-    kind,
-    profileInfo,
-    updateChange,
-    isEditable,
-    onUpdated,
-    allowCopyAndDelete,
-  } = props.data;
+  const { kind, profileInfo, updateChange, isEditable, onUpdated } = props.data;
 
   return (
     <Styled.CheckBoxContainer>
@@ -40,7 +33,7 @@ const InfoCheckBox = props => {
           </>
         )}
       </Styled.FormContainer>
-      {isEditable && allowCopyAndDelete && (
+      {isEditable && (
         <div style={{ display: "flex" }} data-cy="clone-and-delete-buttons">
           <Button
             // disabled={!_.isEmpty(consistency)}

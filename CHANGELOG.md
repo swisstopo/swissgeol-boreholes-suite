@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+## v2.0.400 - 2023-05-24
+
 ### Added
 
 - Added link to online help in import dialog.
@@ -32,6 +34,8 @@
 - Fixed login with passwords containing `:` and other non ASCII characters.
 - Fixed label of _completion_finished_ in hydrogeological observations, which used to be always in german.
 - The chronostratigraphy edit panel shows progress indicator when no stratigraphies or lithologies exist.
+- Copy and delete buttons not visible when editing lithology.
+- Show stratigraphy with empty name as unknown.
 
 ## v2.0.298 - 2023-04-18
 
