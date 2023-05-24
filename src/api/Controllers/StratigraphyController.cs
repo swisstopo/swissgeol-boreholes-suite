@@ -41,11 +41,6 @@ public class StratigraphyController : ControllerBase
             stratigraphies = stratigraphies.Where(l => l.KindId == kindId);
         }
 
-        if (!stratigraphies.Any())
-        {
-            return NotFound();
-        }
-
         return await stratigraphies.ToListAsync().ConfigureAwait(false);
     }
 
