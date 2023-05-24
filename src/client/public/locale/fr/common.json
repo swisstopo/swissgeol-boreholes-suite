@@ -433,5 +433,7 @@
   "field_measurement_sample_type": "Type d'échantillonnage",
   "fieldMeasurementRequiredFieldsAlert": "'Type d'échantillonnage', 'Paramètre', 'Valeur', 'Début' et 'Fiabilité des informations' sont des champs obligatoires, l'entrée ne peut pas être enregistrée si elles ne sont pas remplies.",
   "msgFieldMeasurementsEmpty": "Aucune mesure de terrain disponible.",
-  "saveHydrotestResultAlert": "Veuillez sauvegarder le résultat actuel de l'hydrotest avant de sauvegarder l'hydro-test."
+  "saveHydrotestResultAlert": "Veuillez sauvegarder le résultat actuel de l'hydrotest avant de sauvegarder l'hydro-test.",
+  "msgChronostratigraphyEmpty": "Aucune profil chronostratigraphie disponible",
+  "msgChronostratigraphyEmptyEditing": "Vous devez d'abord créer une stratigraphie avant de pouvoir créer un profil chronostratigraphique"
 }

@@ -16,6 +16,7 @@ public class LayerControllerTest
     private LayerController controller;
 
     private int layerCount;
+    private int stratigraphyCount;
 
     [TestInitialize]
     public void TestInitialize()
@@ -23,12 +24,14 @@ public class LayerControllerTest
         context = ContextFactory.CreateContext();
         controller = new LayerController(ContextFactory.CreateContext(), new Mock<ILogger<Layer>>().Object) { ControllerContext = GetControllerContextAdmin() };
         layerCount = context.Layers.Count();
+        stratigraphyCount = context.Stratigraphies.Count();
     }
 
     [TestCleanup]
     public async Task TestCleanup()
     {
         Assert.AreEqual(layerCount, context.Layers.Count(), "Tests need to remove layers, they created.");
+        Assert.AreEqual(stratigraphyCount, context.Stratigraphies.Count(), "Tests need to remove stratigraphies, they created.");
 
         await context.DisposeAsync();
     }
@@ -44,10 +47,37 @@ public class LayerControllerTest
     }
 
     [TestMethod]
-    public async Task GetEntriesByProfileIdReturnsNotFoundForInexistentId()
+    public async Task GetEntriesByProfileIdInexistentId()
     {
-        var result = await controller.GetAsync(94578122).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        var response = await controller.GetAsync(94578122).ConfigureAwait(false);
+        var layers = response?.Value;
+        Assert.IsNotNull(layers);
+        Assert.AreEqual(0, layers.Count());
+    }
+
+    [TestMethod]
+    public async Task GetEntriesByProfileIdExistingIdNoLayers()
+    {
+        var emptyStratigraphy = new Stratigraphy()
+        {
+            KindId = 3000,
+        };
+        try
+        {
+            context.Stratigraphies.Add(emptyStratigraphy);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+
+            var response = await controller.GetAsync(emptyStratigraphy.Id).ConfigureAwait(false);
+            var layers = response?.Value;
+            Assert.IsNotNull(layers);
+            Assert.AreEqual(0, layers.Count());
+        }
+        finally
+        {
+            var cleanupContext = ContextFactory.CreateContext();
+            cleanupContext.Remove(emptyStratigraphy);
+            await cleanupContext.SaveChangesAsync();
+        }
     }
 
     [TestMethod]

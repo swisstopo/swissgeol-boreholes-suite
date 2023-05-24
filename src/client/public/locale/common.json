@@ -398,5 +398,7 @@
   "maxValue": "",
   "hydrotestResultRequiredFieldsAlert": "",
   "hydrotestResultsWillBeDeleted": "",
-  "saveHydrotestResultAlert": ""
+  "saveHydrotestResultAlert": "",
+  "msgChronostratigraphyEmpty": "",
+  "msgChronostratigraphyEmptyEditing": ""
 }
