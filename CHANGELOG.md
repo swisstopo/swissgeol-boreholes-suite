@@ -1,5 +1,9 @@
 # Changelog
 
+### Added
+
+- Lithology csv import.
+
 ## [Unreleased]
 
 ### Added
