@@ -1,12 +1,12 @@
 export const instrumentEditorData = [
   {
     id: 0,
-    label: "fromMeters",
+    label: "fromdepth",
     value: "fromMeters",
   },
   {
     id: 1,
-    label: "toMeters",
+    label: "todepth",
     value: "toMeters",
   },
   {

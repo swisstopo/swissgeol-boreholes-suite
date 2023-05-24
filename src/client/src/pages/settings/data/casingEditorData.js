@@ -16,12 +16,12 @@ export const casingEditorData = [
   },
   {
     id: 3,
-    label: "layer_depth_from",
+    label: "fromdepth",
     value: "layer_depth_from",
   },
   {
     id: 4,
-    label: "layer_depth_to",
+    label: "todepth",
     value: "layer_depth_to",
   },
   {
