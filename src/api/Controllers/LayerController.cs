@@ -32,11 +32,6 @@ public class LayerController : BdmsControllerBase<Layer>
             layers = layers.Where(l => l.StratigraphyId == profileId);
         }
 
-        if (!layers.Any())
-        {
-            return NotFound();
-        }
-
         return await layers.ToListAsync().ConfigureAwait(false);
     }
 
