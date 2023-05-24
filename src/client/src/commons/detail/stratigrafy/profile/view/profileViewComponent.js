@@ -226,8 +226,8 @@ const ProfileView = props => {
                   }}
                 />
               </div>
-              {getNumericTextRow("layer_depth_from", layer.fromDepth)}
-              {getNumericTextRow("layer_depth_to", layer.toDepth)}
+              {getNumericTextRow("fromdepth", layer.fromDepth)}
+              {getNumericTextRow("todepth", layer.toDepth)}
               {getTextRow(
                 "layer_last",
                 layer.isLast === true
