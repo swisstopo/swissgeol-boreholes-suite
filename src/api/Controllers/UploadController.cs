@@ -190,7 +190,7 @@ public class UploadController : ControllerBase
                         var strati = new Stratigraphy
                         {
                             BoreholeId = boreholeImports.Single(bhi => bhi.ImportId == boreholeLithologies.Key).Id,
-                            Date = stratiGroup.First().StratiDate,
+                            Date = stratiGroup.First().StratiDate != null ? DateTime.SpecifyKind(stratiGroup.First().StratiDate!.Value, DateTimeKind.Utc) : null,
                             Name = stratiGroup.First().StratiName,
                             KindId = lithoStratiKindId,
                         };
