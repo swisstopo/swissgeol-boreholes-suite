@@ -18,7 +18,8 @@
 - Changed style of the inputs when editing _lithological_descriptions_ and _facies_descriptions_ to _outlined_.
 - Borehole duplicates are only identified within the same workgroup when importing boreholes.
 - Filter contents are shown directly below the filter group without reordering.
-- The duplicate check for a borehole's _original_name_ and _alternate_name_ have been removed. Duplicate names are now allowed.
+- Harmonized labels for _from_depth_ and _to_depth_ fields across the application.
+- The duplicate checks for a borehole's _original_name_ and _alternate_name_ have been removed. Duplicate names are now allowed.
 - Improve chronostratigraphy edit, change the stratigraphy selection to a simple dropdown.
 
 ### Fixed
