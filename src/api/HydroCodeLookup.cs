@@ -28,6 +28,7 @@ public static class HydroCodeLookup
         { 9, new List<int> { 1, 3, 8 } },
         { 10, new List<int> { 2 } },
         { 15, new List<int> { 1, 3, 4, 5, 6, 8 } },
+        { 16, new List<int> { 1, 3, 4, 5, 6, 8 } },
     };
 
     /// <summary>
