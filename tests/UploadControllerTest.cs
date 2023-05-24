@@ -1,7 +1,6 @@
 ﻿using Amazon.S3;
 using BDMS.Controllers;
 using BDMS.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -108,7 +107,7 @@ public class UploadControllerTest
 
         // First stratigraphy
         var stratigraphy = borehole.Stratigraphies.First();
-        Assert.AreEqual(new DateTime(2021,8,6), stratigraphy.Date?.Date);
+        Assert.AreEqual(new DateTime(2021, 8, 6), stratigraphy.Date?.Date);
         Assert.AreEqual("Bennett", stratigraphy.Name);
         Assert.AreEqual(2, stratigraphy.Layers.Count);
         var lithology = stratigraphy.Layers.First(l => l.FromDepth == 0.125);
