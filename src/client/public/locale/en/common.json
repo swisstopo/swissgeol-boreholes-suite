@@ -441,5 +441,5 @@
   "msgFieldMeasurementsEmpty": "No field measurements available.",
   "saveHydrotestResultAlert": "Please save the current result of the hydrotest before saving the hydrotest.",
   "msgChronostratigraphyEmpty": "No chronostratigraphic profile available",
-  "msgChronostratigraphyEmptyEditing": "You should first create a lithology profile before you can create a chronostratigraphy profile"
+  "msgChronostratigraphyEmptyEditing": "You should first create a stratigraphy before you can create a chronostratigraphy profile"
 }

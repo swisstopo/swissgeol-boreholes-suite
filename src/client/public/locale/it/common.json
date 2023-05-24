@@ -441,5 +441,5 @@
   "msgFieldMeasurementsEmpty": "Nessuna misurazione in campo disponibile",
   "saveHydrotestResultAlert": "Si prega di salvare il risultato corrente di test idrico prima di salvare il test idrico.",
   "msgChronostratigraphyEmpty": "Nessuno profilo cronostratigrafia disponibile",
-  "msgChronostratigraphyEmptyEditing": "Prima di creare un profilo cronostratigrafico è necessario creare un profilo litologico"
+  "msgChronostratigraphyEmptyEditing": "Prima di creare un profilo cronostratigrafico è necessario creare una stratigrafia"
 }
