@@ -54,7 +54,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.contains("button", "Bulk editing").click({ force: true });
 
     cy.get(".modal .toggle")
-      .should("have.length", 25)
+      .should("have.length", 29)
       .each((el, index, list) => {
         cy.wrap(el).click({ force: true });
         cy.get(".modal form .field").should("exist");
@@ -68,13 +68,13 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 
-    cy.get(".modal .toggle").should("have.length", 25);
+    cy.get(".modal .toggle").should("have.length", 29);
     changeWorkgroupRoleForUser(6, 1, "EDIT", "ENABLE");
     login("/editor");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 
-    cy.get(".modal .toggle").should("have.length", 26);
+    cy.get(".modal .toggle").should("have.length", 30);
     // select all bulk edit fields and insert values
     cy.contains("button", "Workgroup").click({ force: true });
     cy.get('[data-cy="workgroup-select"]')
@@ -118,7 +118,7 @@ describe("Test the borehole bulk edit feature.", () => {
         cy.get(`.react-datepicker__day--013`).click();
       });
     cy.get('[data-cy="domain-dropdown"]')
-      .should("have.length", 11)
+      .should("have.length", 15)
       .each((el, index, list) =>
         cy.wrap(el).click().find('[role="option"]').last().click(),
       );
