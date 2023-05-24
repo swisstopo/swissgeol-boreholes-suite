@@ -70,7 +70,7 @@ const ChronostratigraphyPanel = ({
         sx={{ margin: "1em 0" }}>
         {chronostratigraphyQueryData.map(s => (
           <MenuItem key={s.id} value={s.id}>
-            {s.name}
+            {s.name || t("np")}
           </MenuItem>
         ))}
       </TextField>
