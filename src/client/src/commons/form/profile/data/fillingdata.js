@@ -30,7 +30,7 @@ export const fillingData = {
     {
       id: 0,
       type: "Input",
-      label: "layer_depth_from",
+      label: "fromdepth",
       value: "depth_from",
       isVisible: true,
       require: true,
@@ -39,7 +39,7 @@ export const fillingData = {
     {
       id: 1,
       type: "Input",
-      label: "layer_depth_to",
+      label: "fromdepth",
       value: "depth_to",
       isVisible: true,
       require: true,

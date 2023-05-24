@@ -48,7 +48,7 @@ const ObservationDisplay = props => {
         <>
           <StackFullWidth direction="row" spacing={1}>
             <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("fromDepthM")}</Typography>
+              <Typography variant="subtitle2">{t("fromdepth")}</Typography>
               <TypographyWithBottomMargin variant="subtitle1">
                 {observation.fromDepthM || observation.fromDepthM === 0
                   ? observation.fromDepthM
@@ -56,7 +56,7 @@ const ObservationDisplay = props => {
               </TypographyWithBottomMargin>
             </StackHalfWidth>
             <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("toDepthM")}</Typography>
+              <Typography variant="subtitle2">{t("todepth")}</Typography>
               <TypographyWithBottomMargin variant="subtitle1">
                 {observation.toDepthM || observation.toDepthM === 0
                   ? observation.toDepthM

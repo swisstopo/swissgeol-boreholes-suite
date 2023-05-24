@@ -1,12 +1,12 @@
 export const stratigraphyFilterEditorData = [
   {
     id: 0,
-    label: "layer_depth_from",
+    label: "fromdepth",
     value: "layer.depth_from",
   },
   {
     id: 1,
-    label: "layer_depth_to",
+    label: "todepth",
     value: "layer.depth_to",
   },
   {
