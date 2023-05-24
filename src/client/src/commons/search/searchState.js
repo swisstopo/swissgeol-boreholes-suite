@@ -139,7 +139,7 @@ const initialState = {
     qt_top_bedrock_tvd: null,
 
     reference_elevation_type: null,
-    qt_reference_evelation: null,
+    qt_reference_elevation: null,
     qt_elevation: null,
     qt_location: null,
     reference_elevation_from: "",

@@ -143,7 +143,7 @@ export const LocationSearchData = [
     id: 15,
     type: "Dropdown",
     label: "reference_elevation_qt",
-    value: "qt_reference_evelation",
+    value: "qt_reference_elevation",
     schema: "qt_elevation",
     multiple: false,
     search: false,
