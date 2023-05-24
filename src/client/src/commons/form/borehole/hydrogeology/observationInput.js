@@ -206,7 +206,7 @@ const ObservationInput = props => {
               )}
             />
           }
-          label="Ausbau fertiggestellt"
+          label={t("completionFinished")}
         />
       </Stack>
       <Stack direction="row">
