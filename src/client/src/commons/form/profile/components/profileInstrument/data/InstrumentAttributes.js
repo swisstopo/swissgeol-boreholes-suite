@@ -2,7 +2,7 @@ export const InstrumentAttributes = [
   {
     id: 0,
     type: "Input",
-    label: "fromMeters",
+    label: "fromdepth",
     value: "fromDepth",
     require: true,
     isNumber: true,
@@ -11,7 +11,7 @@ export const InstrumentAttributes = [
   {
     id: 1,
     type: "Input",
-    label: "toMeters",
+    label: "todepth",
     value: "toDepth",
     require: true,
     isNumber: true,

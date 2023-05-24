@@ -18,7 +18,7 @@ export const stratigraphyData = {
     {
       id: 0,
       type: "Input",
-      label: "layer_depth_from",
+      label: "fromdepth",
       value: "depth_from",
       require: true,
       isNumber: true,
@@ -27,7 +27,7 @@ export const stratigraphyData = {
     {
       id: 1,
       type: "Input",
-      label: "layer_depth_to",
+      label: "todepth",
       value: "depth_to",
       require: true,
       isNumber: true,
