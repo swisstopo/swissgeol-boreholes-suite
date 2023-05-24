@@ -436,5 +436,5 @@
   "msgFieldMeasurementsEmpty": "Keine Feldmessungen vorhanden",
   "saveHydrotestResultAlert": "Bitte speichern Sie das aktuelle Resultat des Hydrotests, bevor Sie den Hydrotest speichern.",
   "msgChronostratigraphyEmpty": "Kein Chronostratigraphieprofil verfügbar",
-  "msgChronostratigraphyEmptyEditing": "Sie sollten zuerst eine Stratigraphie erstellen, bevor Sie ein Chronostratigraphieprofil erstellen können"
+  "msgChronostratigraphyEmptyEditing": "Sie müssen zuerst eine Stratigraphie erstellen, bevor Sie ein Chronostratigraphieprofil erstellen können"
 }
