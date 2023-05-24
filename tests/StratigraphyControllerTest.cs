@@ -19,6 +19,7 @@ public class StratigraphyControllerTest
     private StratigraphyController controller;
 
     private int stratigraphyCount;
+    private int boreholeCount;
 
     [TestInitialize]
     public void TestInitialize()
@@ -27,12 +28,14 @@ public class StratigraphyControllerTest
         controller = new StratigraphyController(context, new Mock<ILogger<StratigraphyController>>().Object) { ControllerContext = GetControllerContextAdmin() };
 
         stratigraphyCount = context.Stratigraphies.Count();
+        boreholeCount = context.Boreholes.Count();
     }
 
     [TestCleanup]
     public async Task TestCleanup()
     {
         Assert.AreEqual(stratigraphyCount, context.Stratigraphies.Count(), "Tests need to remove stratigraphies, they created.");
+        Assert.AreEqual(boreholeCount, context.Boreholes.Count(), "Tests need to remove boreholes, they created.");
 
         await context.DisposeAsync();
     }
@@ -50,8 +53,31 @@ public class StratigraphyControllerTest
     public async Task GetEntriesByBoreholeIdForInexistentId()
     {
         var response = await controller.GetAsync(81294572).ConfigureAwait(false);
-        var notFoundResult = response.Result as NotFoundResult;
-        Assert.AreEqual(404, notFoundResult.StatusCode);
+        var layers = response?.Value;
+        Assert.IsNotNull(layers);
+        Assert.AreEqual(0, layers.Count());
+    }
+
+    [TestMethod]
+    public async Task GetEntriesByProfileIdExistingIdNoLayers()
+    {
+        var emptyBorehole = new Borehole();
+        try
+        {
+            context.Boreholes.Add(emptyBorehole);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+
+            var response = await controller.GetAsync(emptyBorehole.Id).ConfigureAwait(false);
+            var layers = response?.Value;
+            Assert.IsNotNull(layers);
+            Assert.AreEqual(0, layers.Count());
+        }
+        finally
+        {
+            var cleanupContext = ContextFactory.CreateContext();
+            cleanupContext.Remove(emptyBorehole);
+            await cleanupContext.SaveChangesAsync();
+        }
     }
 
     [TestMethod]

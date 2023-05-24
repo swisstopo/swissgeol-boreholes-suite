@@ -433,5 +433,7 @@
   "field_measurement_sample_type": "Sampling type",
   "fieldMeasurementRequiredFieldsAlert": "'Sampling type', 'Parameter', 'Value', 'Start' and 'Reliability of data' are mandatory fields, the entry cannot be saved if they are not filled out.",
   "msgFieldMeasurementsEmpty": "No field measurements available.",
-  "saveHydrotestResultAlert": "Please save the current result of the hydrotest before saving the hydrotest."
+  "saveHydrotestResultAlert": "Please save the current result of the hydrotest before saving the hydrotest.",
+  "msgChronostratigraphyEmpty": "No chronostratigraphic profile available",
+  "msgChronostratigraphyEmptyEditing": "You should first create a stratigraphy before you can create a chronostratigraphy profile"
 }

@@ -13,6 +13,8 @@ import NavigationLens from "./navigationLens";
 import LithologyViewProfile from "./lithologyViewProfile";
 import ChronostratigraphyEditProfile from "./chronostratigraphyEditProfile";
 import NavigationChild from "./navigationChild";
+import TranslationText from "../../translationText";
+import * as Styled from "../../profile/styles";
 
 const ChronostratigraphyPanel = ({
   id: selectedBoreholeId,
@@ -37,7 +39,23 @@ const ChronostratigraphyPanel = ({
   }, [chronostratigraphyQueryData, stratigraphyId]);
 
   if (!chronostratigraphyQueryData) {
-    return <CircularProgress />;
+    return (
+      <Styled.Empty>
+        <CircularProgress />
+      </Styled.Empty>
+    );
+  } else if (chronostratigraphyQueryData.length === 0) {
+    return (
+      <Styled.Empty data-cy="stratigraphy-message">
+        <TranslationText
+          id={
+            isEditable
+              ? "msgChronostratigraphyEmptyEditing"
+              : "msgChronostratigraphyEmpty"
+          }
+        />
+      </Styled.Empty>
+    );
   }
 
   return (
