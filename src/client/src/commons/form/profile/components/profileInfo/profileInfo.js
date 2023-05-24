@@ -22,7 +22,6 @@ const ProfileInfo = props => {
     attribute,
     kind,
     boreholeID,
-    allowCopyAndDelete,
   } = props.data;
 
   const mounted = useRef(false);
@@ -120,7 +119,6 @@ const ProfileInfo = props => {
           updateChange,
           isEditable,
           onUpdated,
-          allowCopyAndDelete: allowCopyAndDelete,
         }}
       />
     </Styled.Container>
