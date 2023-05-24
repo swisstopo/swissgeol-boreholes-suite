@@ -168,7 +168,7 @@ public class UploadController : ControllerBase
             }
 
             // Add lithology imports if provided
-            if (lithologyImports.Count > 0)
+            if (lithologyImports.Any())
             {
                 // Get the kind id of a lithostratigraphy.
                 var lithoStratiKindId = context.Codelists.Single(cl => cl.Schema == "layer_kind" && cl.IsDefault == true).Id;
@@ -247,11 +247,11 @@ public class UploadController : ControllerBase
     internal List<int> ParseMultiValueCodeListIds(LithologyImport lithologyImport)
     {
         // Select all code list ids of all multi value code list properties.
-        string[] commaSeparatedStrings = { lithologyImport.ColorIds, lithologyImport.OrganicComponentIds, lithologyImport.GrainShapeIds, lithologyImport.GrainGranularityIds, lithologyImport.Uscs3Ids, lithologyImport.DebrisIds };
-        string combinedString = string.Join(",", commaSeparatedStrings);
-        var codeListIdStrings = combinedString.Split(",").ToList();
+        var splittedList = new[] { lithologyImport.ColorIds, lithologyImport.OrganicComponentIds, lithologyImport.GrainShapeIds, lithologyImport.GrainGranularityIds, lithologyImport.Uscs3Ids, lithologyImport.DebrisIds }
+            .SelectMany(str => str.Split(','))
+            .ToList();
 
-        return codeListIdStrings.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
+        return splittedList.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
     }
 
     private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, IList<IFormFile>? attachments = null)
