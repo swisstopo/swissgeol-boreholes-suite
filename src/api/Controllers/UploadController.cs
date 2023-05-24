@@ -1,4 +1,4 @@
-using BDMS.Authentication;
+﻿using BDMS.Authentication;
 using BDMS.Models;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -24,7 +24,7 @@ public class UploadController : ControllerBase
     private readonly int sridLv95 = 2056;
     private readonly int sridLv03 = 21781;
     private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
-    private readonly CsvConfiguration csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
+    private readonly CsvConfiguration csvConfig = new(new CultureInfo("de-CH"))
     {
         Delimiter = ";",
         IgnoreReferences = true,
@@ -168,7 +168,7 @@ public class UploadController : ControllerBase
             }
 
             // Add lithology imports if provided
-            if (lithologyImports != null)
+            if (lithologyImports.Count > 0)
             {
                 // Get the kind id of a lithostratigraphy.
                 var lithoStratiKindId = context.Codelists.Single(cl => cl.Schema == "layer_kind" && cl.IsDefault == true).Id;

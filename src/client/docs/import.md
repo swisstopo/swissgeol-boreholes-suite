@@ -14,21 +14,25 @@ Zunächst sollte die CSV-Datei den Anforderungen und dem Format entsprechen, wie
 2. In die Editor-Ansicht wechseln.
 3. Unten links auf die Schaltfläche _Importieren_ klicken.
 
-### Schritt 3: CSV-Datei selektieren
+### Schritt 3: Bohrloch CSV-Datei selektieren
 
 1. Schaltfläche _Datei auswählen_ anklicken und die vorbereitete CSV-Datei auswählen.
 2. Unter _Arbeitsgruppe_ die Arbeitsgruppe auswählen, in welche die Bohrdaten importiert werden sollen (neue Arbeitsgruppen können nur als "Admin-User" erstellt werden).
 
-### Schritt 4: Bohrlochanhänge selektieren
+### Schritt 4: Bohrlochanhänge selektieren (optional)
 
 1. Schaltfläche _Dateien hier ablegen oder klicken, um sie hochzuladen_ anklicken und die vorbereitete PDF-Datei(en) auswählen.
 
-### Schritt 5: Dateien hochladen
+### Schritt 5: Lithologie CSV-Datei selektieren (optional)
+
+1. Schaltfläche _Dateien hier ablegen oder klicken, um sie hochzuladen_ anklicken und die vorbereitete Lithologie CSV-Datei auswählen.
+
+### Schritt 6: Dateien hochladen
 
 1. Import-Prozess mit einem Klick auf _Importieren_ starten.
 2. Warten, bis der Upload abgeschlossen ist und die Daten in der Anwendung verfügbar sind.
 
-## Format und Anforderungen an die CSV-Datei
+## Format und Anforderungen an die CSV-Dateien
 
 Die CSV-Datei muss den folgenden Anforderungen und dem Format entsprechen, damit sie erfolgreich in die Webapplikation importiert werden kann:
 
@@ -38,7 +42,15 @@ Die CSV-Datei muss den folgenden Anforderungen und dem Format entsprechen, damit
 * Die Spaltenüberschriften müssen den vorgegebenen Feldnamen aus dem Import-Dialog entsprechen.
 * Die Werte in den Spalten müssen den erwarteten Datentypen entsprechen (z.B. numerisch für Tiefe, Text für Namen, etc.).
 
-## Format
+## Format und Anforderungen an die Dateien der Bohrloch Anhänge
+
+Die Anhangsdatei muss den folgenden Anforderungen und dem Format entsprechen, damit sie erfolgreich in die Webapplikation importiert werden kann:
+
+* Die Datei muss im PDF-Format vorliegen und _.pdf_ als Dateiendung haben.
+* Die Datei darf maximal 200 MB gross sein.
+* Der Dateiname darf keine Leerzeichen enthalten.
+
+## Bohrloch Datei Format
 
 Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format vorliegen. Die erste Zeile wird als Spaltentitel/Spaltenname interpretiert, die restlichen Zeilen als Daten. 
 
@@ -95,13 +107,44 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | lithostratigraphy_id        | ID (Codeliste) | Nein        | Lithostratigraphie Top Fels                                                                       |
 | attachments                 | Text           | Nein        | Kommaseparierte Dateinamen der Anhänge mit Dateiendung z.B. anhang_1.pdf,anhang_2.pdf             |
 
-### Format und Anforderungen an die Dateien der Anhänge
+## Lithologie Datei Format
 
-Die Anhangsdatei muss den folgenden Anforderungen und dem Format entsprechen, damit sie erfolgreich in die Webapplikation importiert werden kann:
+Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format vorliegen. Die erste Zeile wird als Spaltentitel/Spaltenname interpretiert, die restlichen Zeilen als Daten.
 
-* Die Datei muss im PDF-Format vorliegen und _.pdf_ als Dateiendung haben.
-* Die Datei darf maximal 200 MB gross sein.
-* Der Dateiname darf keine Leerzeichen enthalten.
+| Feldname               | Datentyp         | Pflichtfeld | Beschreibung                                                                                                               |
+|------------------------|------------------|-------------|----------------------------------------------------------------------------------------------------------------------------|
+| import_id              | Zahl             | Ja          | Zufällig gewählte Zahl. Wird nicht gepeichert. Muss mit einer import_id aus der Bohrloch Datei übereinstimmen.             |
+| strati_import_id       | Zahl             | Ja          | Zufällig gewählte Zahl. Wird nicht gepeichert. Muss pro Stratigraphie identisch sein.                                      |
+| strati_date            | Datum            | Nein        | Datum der Stratigraphie. Muss pro Stratigraphie identisch sein.                                                            |
+| strati_name            | Text             | Nein        | Name der Stratigraphie. Muss pro Stratigraphie identisch sein.                                                             |
+| from_depth             | Zahl             | Ja          | Von Tiefe der Schicht.                                                                                                     |
+| to_depth               | Zahl             | Ja          | Bis Tiefe der Schicht.                                                                                                     |
+| is_last                | True/False       | Nein        | Ist die Schicht die letzte in der Stratigraphie?                                                                           |
+| qt_description_id      | ID (Codeliste)   | Nein        | Qualität der Beschreibung.                                                                                                                  |
+| lithology_id           | ID (Codeliste)   | Nein        | Lithologie.                                                                                                                |
+| lithostratigraphy_id   | ID (Codeliste)   | Nein        | Lithologiestratigrafie.                                                                                                    |
+| chronostratigraphy_id  | ID (Codeliste)   | Nein        | Chronostratigrafie.                                                                                                        |
+| original_uscs          | Text             | Nein        | USCS Originalklassifikation.                                                                                                                |
+| uscs_determination_id  | ID (Codeliste)   | Nein        | USCS Bestimmungsmethode.                                                                                                                |
+| uscs_1_id              | ID (Codeliste)   | Nein        | USCS 1.                                                                                                                    |
+| grain_size_1_id        | ID (Codeliste)   | Nein        | Korngröße 1.                                                                                                               |
+| uscs_2_id              | ID (Codeliste)   | Nein        | USCS 2.                                                                                                                    |
+| grain_size_2_id        | ID (Codeliste)   | Nein        | Korngröße 2.                                                                                                               |
+| is_striae              | True/False       | Nein        | Striemung.                                                                                                                 |
+| consistance_id         | ID (Codeliste)   | Nein        | Konsistenz.                                                                                                                |
+| plasticity_id          | ID (Codeliste)   | Nein        | Plastizität.                                                                                                               |
+| compactness_id         | ID (Codeliste)   | Nein        | Lagerungsdichte.                                                                                                           |
+| cohesion_id            | ID (Codeliste)   | Nein        | Kohäsion.                                                                                                                  |
+| humidity_id            | ID (Codeliste)   | Nein        | Feuchtigkeit.                                                                                                              |
+| alteration_id          | ID (Codeliste)   | Nein        | Verwitterung.                                                                                                              |
+| notes                  | Text             | Nein        | Notizen.                                                                                                                   |
+| original_lithology     | Text             | Nein        | Ursprüngliche Lithologie.                                                                                                  |
+| uscs_3_ids             | Text             | Nein        | Kommaseparierte code list ids der USCS 3.                                                                                  |
+| grain_shape_ids        | Text             | Nein        | Kommaseparierte code list ids der Korn Formen.                                                                             |
+| grain_granularity_ids  | Text             | Nein        | Kommaseparierte code list ids der Kornrundungen.                                                                           |
+| organic_component_ids  | Text             | Nein        | Kommaseparierte code list ids der Organischen Komponenten.                                                                 |
+| debris_ids             | Text             | Nein        | Kommaseparierte code list ids der Grobbestandteile.                                                                                  |
+| color_ids              | Text             | Nein        | Kommaseparierte code list ids der Farben.                                                                                  |
 
 ## Validierung
 
