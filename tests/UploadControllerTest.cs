@@ -1,4 +1,4 @@
-﻿using Amazon.S3;
+using Amazon.S3;
 using BDMS.Controllers;
 using BDMS.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -884,5 +884,12 @@ public class UploadControllerTest
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);
         Assert.AreEqual("POINT (2000000 1000000)", borehole.Geometry.ToString());
+    }
+
+    [TestMethod]
+    public void ParseMultiValueCodeListIds()
+    {
+        CollectionAssert.AreEquivalent(new List<int>() { 500, 200 }, controller.ParseMultiValueCodeListIds(new LithologyImport() { OrganicComponentIds = "500,200" }));
+        CollectionAssert.AreEquivalent(new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }, controller.ParseMultiValueCodeListIds(new LithologyImport() { ColorIds = "1,2", OrganicComponentIds = "3,4", GrainShapeIds = "5,6", GrainGranularityIds = "7,8", Uscs3Ids = "9,10", DebrisIds = "11,12" }));
     }
 }

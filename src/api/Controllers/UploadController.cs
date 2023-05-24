@@ -1,4 +1,4 @@
-﻿using BDMS.Authentication;
+using BDMS.Authentication;
 using BDMS.Models;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -244,11 +244,14 @@ public class UploadController : ControllerBase
         }
     }
 
-    private List<int> ParseMultiValueCodeListIds(LithologyImport lithologyImport)
+    internal List<int> ParseMultiValueCodeListIds(LithologyImport lithologyImport)
     {
         // Select all code list ids of all multi value code list properties.
-        var codeListIdStrings = lithologyImport.Color?.Split(",").Concat(lithologyImport.OrganicComponent.Split(",")).Concat(lithologyImport.GrainShape.Split(",")).Concat(lithologyImport.GrainGranularity.Split(",")).Concat(lithologyImport.Uscs3.Split(",")).Concat(lithologyImport.Debris.Split(",")).ToList();
-        return codeListIdStrings?.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
+        string[] commaSeparatedStrings = { lithologyImport.ColorIds, lithologyImport.OrganicComponentIds, lithologyImport.GrainShapeIds, lithologyImport.GrainGranularityIds, lithologyImport.Uscs3Ids, lithologyImport.DebrisIds };
+        string combinedString = string.Join(",", commaSeparatedStrings);
+        var codeListIdStrings = combinedString.Split(",").ToList();
+
+        return codeListIdStrings.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
     }
 
     private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, IList<IFormFile>? attachments = null)
