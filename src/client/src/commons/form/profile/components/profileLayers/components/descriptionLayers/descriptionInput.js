@@ -74,7 +74,7 @@ const DescriptionInput = props => {
         sx={{ flex: "1", margin: "10px" }}
         variant="outlined"
         size="small"
-        label={t("layer_depth_from")}
+        label={t("fromdepth")}
         defaultValue={item.fromDepth}
         disabled={fromDepthOptions?.length === 1}
         data-cy="from-depth-select"
@@ -129,7 +129,7 @@ const DescriptionInput = props => {
           sx={{ flex: "1", margin: "10px" }}
           variant="outlined"
           size="small"
-          label={t("layer_depth_from")}
+          label={t("todepth")}
           defaultValue={item.toDepth}
           disabled={toDepthOptions?.length === 1}
           data-cy="to-depth-select"
