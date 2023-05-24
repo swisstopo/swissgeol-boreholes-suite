@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.0.400 - 2023-05-24
+
 ### Added
 
 - Added link to online help in import dialog.
