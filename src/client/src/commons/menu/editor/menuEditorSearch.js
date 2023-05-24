@@ -42,6 +42,7 @@ class MenuEditorSearch extends React.Component {
       upload: false,
       selectedFile: null,
       selectedBoreholeAttachments: null,
+      selectedLithologyFile: null,
       scroller: false,
       workgroup: wgs !== null && wgs.length > 0 ? wgs[0].id : null,
       validationErrorModal: false,
@@ -51,6 +52,10 @@ class MenuEditorSearch extends React.Component {
 
   handleBoreholeAttachmentChange = attachmentsFromDropzone => {
     this.setState({ selectedBoreholeAttachments: attachmentsFromDropzone });
+  };
+
+  handleLithologyFileChange = lithologyFileFromDropzone => {
+    this.setState({ selectedLithologyFile: lithologyFileFromDropzone });
   };
 
   componentDidMount() {
@@ -308,6 +313,58 @@ class MenuEditorSearch extends React.Component {
                   maxFilesToSelectAtOnce="10"
                   maxFilesToUpload="100"
                 />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  borderBottom: "0.2em solid",
+                  borderColor: "black",
+                }}>
+                <div
+                  style={{
+                    flex: "1",
+                    padding: "10px",
+                    width: "50%",
+                  }}>
+                  <div>
+                    <TranslationText id="csvFormatExplanation" />.
+                  </div>
+                  <div
+                    style={{
+                      border: "thin solid #787878",
+                      margin: "1em 0px",
+                      padding: "1em",
+                      overflow: "auto",
+                      whiteSpace: "nowrap",
+                    }}>
+                    {"import_id;strati_import_id;strati_date;strati_name;from_depth;to_depth;" +
+                      "is_last;qt_description_id;lithology_id;lithostratigraphy_id;chronostratigraphy_id;" +
+                      "original_uscs;uscs_determination_id;uscs_1_id;grain_size_1_id;uscs_2_id;grain_size_2_id;" +
+                      "is_striae;consistance_id;plasticity_id;compactness_id;cohesion_id;humidity_id;alteration_id;" +
+                      "notes;original_lithology;uscs_3_ids;grain_shape_ids;grain_granularity_ids;organic_component_ids;" +
+                      "debris_ids;color_ids"}
+                  </div>
+                </div>
+                <div
+                  data-cy="import-lithologyFile-input"
+                  style={{
+                    padding: "1em",
+                    width: "50%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}>
+                  <FileDropzone
+                    onHandleBoreholeAttachmentChange={
+                      this.handleLithologyFileChange
+                    }
+                    acceptedFileExtension=".csv"
+                    maxFilesToSelectAtOnce="1"
+                    maxFilesToUpload="1"
+                  />
+                </div>
               </div>
             </div>
           ) : null}
@@ -372,6 +429,14 @@ class MenuEditorSearch extends React.Component {
                       this.state.selectedBoreholeAttachments.forEach(
                         attachment => {
                           combinedFormData.append("attachments", attachment);
+                        },
+                      );
+                      this.state.selectedLithologyFile.forEach(
+                        lithologyFile => {
+                          combinedFormData.append(
+                            "lithologyFile",
+                            lithologyFile,
+                          );
                         },
                       );
                     }
