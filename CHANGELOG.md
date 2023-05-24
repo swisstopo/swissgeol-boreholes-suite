@@ -1,10 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
 ### Added
 
 - Lithology csv import.
-
-## [Unreleased]
 
 ## v2.0.400 - 2023-05-24
 
