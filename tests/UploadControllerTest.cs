@@ -771,8 +771,8 @@ public class UploadControllerTest
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(2, problemDetails.Errors.Count);
 
-        CollectionAssert.AreEquivalent(new[] { "One or more invalid (not a number) code list id in any of the following properties: Color, OrganicComponent, GrainShape, GrainGranularity, Uscs3, Debris.", }, problemDetails.Errors["Row1"]);
-        CollectionAssert.AreEquivalent(new[] { "One or more invalid (not a number) code list id in any of the following properties: Color, OrganicComponent, GrainShape, GrainGranularity, Uscs3, Debris.", }, problemDetails.Errors["Row2"]);
+        CollectionAssert.AreEquivalent(new[] { $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.ColorIds)}, {nameof(LithologyImport.OrganicComponentIds)}, {nameof(LithologyImport.GrainShapeIds)}, {nameof(LithologyImport.GrainGranularityIds)}, {nameof(LithologyImport.Uscs3Ids)}, {nameof(LithologyImport.DebrisIds)}.", }, problemDetails.Errors["Row1"]);
+        CollectionAssert.AreEquivalent(new[] { $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.ColorIds)}, {nameof(LithologyImport.OrganicComponentIds)}, {nameof(LithologyImport.GrainShapeIds)}, {nameof(LithologyImport.GrainGranularityIds)}, {nameof(LithologyImport.Uscs3Ids)}, {nameof(LithologyImport.DebrisIds)}.", }, problemDetails.Errors["Row2"]);
     }
 
     [TestMethod]

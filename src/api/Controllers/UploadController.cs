@@ -361,7 +361,7 @@ public class UploadController : ControllerBase
             }
             catch
             {
-                ModelState.AddModelError($"Row{lithology.index}", $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.Color)}, {nameof(LithologyImport.OrganicComponent)}, {nameof(LithologyImport.GrainShape)}, {nameof(LithologyImport.GrainGranularity)}, {nameof(LithologyImport.Uscs3)}, {nameof(LithologyImport.Debris)}.");
+                ModelState.AddModelError($"Row{lithology.index}", $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.ColorIds)}, {nameof(LithologyImport.OrganicComponentIds)}, {nameof(LithologyImport.GrainShapeIds)}, {nameof(LithologyImport.GrainGranularityIds)}, {nameof(LithologyImport.Uscs3Ids)}, {nameof(LithologyImport.DebrisIds)}.");
             }
         }
 
@@ -609,12 +609,12 @@ public class UploadController : ControllerBase
             Map(m => m.FillKindId).Optional();
             Map(m => m.LithologyTopBedrockId).Optional();
             Map(m => m.OriginalLithology).Optional();
-            Map(m => m.Color).Optional();
-            Map(m => m.OrganicComponent).Optional();
-            Map(m => m.GrainShape).Optional();
-            Map(m => m.GrainGranularity).Optional();
-            Map(m => m.Uscs3).Optional();
-            Map(m => m.Debris).Optional();
+            Map(m => m.ColorIds).Optional();
+            Map(m => m.OrganicComponentIds).Optional();
+            Map(m => m.GrainShapeIds).Optional();
+            Map(m => m.GrainGranularityIds).Optional();
+            Map(m => m.Uscs3Ids).Optional();
+            Map(m => m.DebrisIds).Optional();
         }
     }
 
