@@ -71,7 +71,6 @@ describe("Tests for the chronostratigraphy editor.", () => {
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");
     cy.wait("@chronostratigraphy_GET");
-    cy.wait(2000); // wait to increase the chance that the lithology displays correctly
   });
 
   it("Creates, updates and deletes chronostratigraphy layers", () => {
@@ -80,10 +79,8 @@ describe("Tests for the chronostratigraphy editor.", () => {
     cy.wait("@chronostratigraphy_POST");
 
     // edit chronostratigraphy
-    cy.get(
-      '[data-cy="chrono-layers"]:nth-child(1) [data-testid="EditIcon"]',
-    ).click();
-    cy.get('[data-cy="chrono-layers"]:nth-child(1) :nth-child(4)').click();
+    cy.get('[data-cy="layer-card"] [data-testid="EditIcon"]').click();
+    cy.get('[data-cy="layer-card"] :nth-child(4)').click();
 
     // Ensure clone and delete buttons in header are disabled for chronostratigraphy.
     cy.get('[data-cy="clone-and-delete-buttons"]').should("not.exist");
@@ -93,14 +90,10 @@ describe("Tests for the chronostratigraphy editor.", () => {
       .eq(1)
       .click();
     cy.wait("@chronostratigraphy_PUT");
-    cy.get(
-      '[data-cy="chrono-layers"]:nth-child(1) [data-testid="CloseIcon"]',
-    ).click();
+    cy.get('[data-cy="layer-card"] [data-testid="CloseIcon"]').click();
 
     // delete chronostratigraphy
-    cy.get(
-      '[data-cy="chrono-layers"]:nth-child(1) [data-testid="DeleteIcon"]',
-    ).click();
+    cy.get('[data-cy="layer-card"] [data-testid="DeleteIcon"]').click();
     cy.wait("@chronostratigraphy_DELETE");
   });
 });
