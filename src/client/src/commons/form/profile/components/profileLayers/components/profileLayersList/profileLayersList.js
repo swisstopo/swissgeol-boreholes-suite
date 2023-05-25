@@ -83,7 +83,7 @@ const ProfileLayersList = props => {
 
   const uselessStrings = useMemo(
     () => [
-      "keine Angaben",
+      "keine Angabe",
       "sans indication",
       "senza indicazioni",
       "not specified",
