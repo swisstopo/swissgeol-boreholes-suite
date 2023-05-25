@@ -29,7 +29,6 @@ public class HydrotestController : ControllerBase
     public async Task<IEnumerable<Hydrotest>> GetAsync([FromQuery] int? boreholeId = null)
     {
         var hydrotestes = context.Hydrotests
-            .Include(w => w.TestKind)
             .Include(w => w.Codelists)
             .Include(w => w.Reliability)
             .Include(w => w.HydrotestResults).ThenInclude(h => h.Parameter)
@@ -82,33 +81,26 @@ public class HydrotestController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        if (!AreHydrotestCodelistsCompatible(hydrotest))
+        if (AreCodelistIdsPresent(hydrotest))
         {
-            return BadRequest("You submitted codelists for evaluation method, flow direction, or hydrotest results that are not compatible with the provided hydrotest kind.");
+            hydrotest.Codelists = await GetCodelists((List<int>)hydrotest.CodelistIds!).ConfigureAwait(false);
+
+            if (!AreHydrotestCodelistsCompatible(hydrotest))
+            {
+                return BadRequest("You submitted codelists for evaluation method, flow direction, or hydrotest results that are not compatible with the provided hydrotest kind.");
+            }
         }
 
-        if (hydrotest.CodelistIds != null)
-        {
-            hydrotest.Codelists = await context.Codelists
-                .Where(c => hydrotest.CodelistIds.Contains(c.Id))
-                .ToListAsync().ConfigureAwait(false);
-        }
+        var hydrotestToEdit = await GetHydrotestToEdit(hydrotest.Id).ConfigureAwait(false);
 
         if (hydrotest.Id != 0)
         {
-            var hydrotestToEdit = await context.Hydrotests
-                .Include(h => h.Codelists)
-                .Include(h => h.HydrotestResults)
-                .SingleOrDefaultAsync(w => w.Id == hydrotest.Id).ConfigureAwait(false);
-
             if (hydrotestToEdit == null)
             {
                 return NotFound();
             }
 
-            context.Entry(hydrotestToEdit).CurrentValues.SetValues(hydrotest);
-            hydrotestToEdit.Codelists = hydrotest.Codelists;
-            hydrotestToEdit.HydrotestResults = hydrotest.HydrotestResults;
+            UpdateHydrotest(hydrotest, hydrotestToEdit);
         }
         else
         {
@@ -118,15 +110,50 @@ public class HydrotestController : ControllerBase
         return await SaveChangesAsync(() => Ok(hydrotest)).ConfigureAwait(false);
     }
 
+    private async Task<Hydrotest?> GetHydrotestToEdit(int id)
+    {
+        return await context.Hydrotests
+        .Include(h => h.Codelists)
+        .Include(h => h.HydrotestResults)
+        .SingleOrDefaultAsync(w => w.Id == id).ConfigureAwait(false);
+    }
+
+    private void UpdateHydrotest(Hydrotest source, Hydrotest target)
+    {
+        context.Entry(target).CurrentValues.SetValues(source);
+        target.Codelists = source.Codelists;
+        target.HydrotestResults = source.HydrotestResults;
+    }
+
+    private async Task<List<Codelist>> GetCodelists(List<int> codelistIds)
+    {
+        return await context.Codelists
+                    .Where(c => codelistIds.Contains(c.Id))
+                    .ToListAsync().ConfigureAwait(false);
+    }
+
+    private bool AreCodelistIdsPresent(Hydrotest hydrotest)
+    {
+        return hydrotest.CodelistIds != null && hydrotest.CodelistIds.Any();
+    }
+
     private bool AreHydrotestCodelistsCompatible(Hydrotest hydrotest)
     {
-        // Get the Geolcode associated with the TestKindId.
-        int testKindGeolCode = context.Codelists.SingleOrDefault(c => c.Id == hydrotest.TestKindId)?.Geolcode ?? 0;
+        // Get the Geolcodes associated with the TestKindIds.
+        var hydrotestKindCodelistIds = hydrotest.Codelists!
+            .Where(hc => hc.Schema == HydrogeologySchemas.HydrotestKindSchema)
+            .Select(hc => hc.Id)
+            .ToList();  // is retrieve twice!
+
+        var testKindGeolCodes = context.Codelists
+            .Where(c => hydrotestKindCodelistIds.Contains(c.Id) && c.Geolcode.HasValue)
+            .Select(c => c.Geolcode!.Value)
+            .ToList();
 
         // If there are HydrotestResults, check if the ParameterIds in the results are compatible.
-        if (hydrotest.HydrotestResults?.Any() == true)
+        if (hydrotest.HydrotestResults?.Any() == true && testKindGeolCodes.Any())
         {
-            var compatibleParameterIds = GetCompatibleCodelistIds(testKindGeolCode, HydrogeologySchemas.HydrotestResultParameterSchema, HydroCodeLookup.HydrotestResultParameterOptions);
+            var compatibleParameterIds = GetCompatibleCodelistIds(testKindGeolCodes.ToList(), HydrogeologySchemas.HydrotestResultParameterSchema, HydroCodeLookup.HydrotestResultParameterOptions);
             if (!hydrotest.HydrotestResults.All(r => compatibleParameterIds.Contains(r.ParameterId)))
             {
                 return false;
@@ -136,28 +163,40 @@ public class HydrotestController : ControllerBase
         var compatibleCodelistIds = new List<int>();
 
         // If there are CodelistIds, find the compatible CodelistIds for the flow direction and evaluation method options.
-        if (hydrotest.CodelistIds?.Any() == true)
+        if (hydrotest.CodelistIds?.Any() == true && testKindGeolCodes.Any())
         {
-            compatibleCodelistIds.AddRange(GetCompatibleCodelistIds(testKindGeolCode, HydrogeologySchemas.FlowdirectionSchema, HydroCodeLookup.HydrotestFlowDirectionOptions));
-            compatibleCodelistIds.AddRange(GetCompatibleCodelistIds(testKindGeolCode, HydrogeologySchemas.EvaluationMethodSchema, HydroCodeLookup.HydrotestEvaluationMethodOptions));
+            compatibleCodelistIds.AddRange(hydrotestKindCodelistIds);
+            compatibleCodelistIds.AddRange(GetCompatibleCodelistIds(testKindGeolCodes, HydrogeologySchemas.FlowdirectionSchema, HydroCodeLookup.HydrotestFlowDirectionOptions));
+            compatibleCodelistIds.AddRange(GetCompatibleCodelistIds(testKindGeolCodes, HydrogeologySchemas.EvaluationMethodSchema, HydroCodeLookup.HydrotestEvaluationMethodOptions));
         }
 
         // Return true if all CodelistIds are compatible, or there are no CodelistIds.
         return hydrotest.CodelistIds?.All(c => compatibleCodelistIds.Contains(c)) ?? true;
     }
 
-    private List<int> GetCompatibleCodelistIds(int testKindGeolCode, string schema, Dictionary<int, List<int>> optionsLookup)
+    private List<int> GetCompatibleCodelistIds(List<int> testKindGeolCodes, string schema, Dictionary<int, List<int>> optionsLookup)
     {
         // Get the list of Geolcodes from the optionsLookup based on the testKindGeolCode and find the compatible CodelistIds.
-        if (optionsLookup.TryGetValue(testKindGeolCode, out List<int>? geolcodes))
+        var compatibleGeolCodes = new List<int>();
+        testKindGeolCodes.ForEach(t =>
         {
-            return context.Codelists
-                .Where(c => c.Schema == schema && c.Geolcode != null && geolcodes.Contains(c.Geolcode.Value))
-                .Select(c => c.Id)
-                .ToList();
-        }
+            if (optionsLookup.TryGetValue(t, out List<int>? geolcodes))
+            {
+                compatibleGeolCodes.AddRange(context.Codelists
+                    .Where(c => c.Schema == schema && c.Geolcode != null && geolcodes.Contains(c.Geolcode.Value))
+                    .Select(c => c.Id)
+                    .ToList());
+            }
+        });
 
-        return new List<int>();
+        if (compatibleGeolCodes.Any())
+        {
+            return compatibleGeolCodes.Distinct().ToList();
+        }
+        else
+        {
+            return new List<int>();
+        }
     }
 
     private async Task<IActionResult> SaveChangesAsync(Func<IActionResult> successResult)
