@@ -10,6 +10,10 @@
 
 - Enable all file types as borehole attachments.
 
+### Fixed
+
+- Ensure duplicated boreholes are detected during borehole import.
+
 ## v2.0.400 - 2023-05-24
 
 ### Added
