@@ -8,7 +8,7 @@
 
 ### Fixed
 
-- When setting the application to german _keine_Angabe_ was unecessarily display in the lithology subtitle.
+- When the application was set to German, an issue occurred where the term 'keine_Angabe' was unnecessarily displayed in the lithology subtitle.
 
 ## v2.0.400 - 2023-05-24
 
