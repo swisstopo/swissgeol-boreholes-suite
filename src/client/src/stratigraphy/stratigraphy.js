@@ -49,7 +49,7 @@ const Stratigraphy = props => {
   }, []);
 
   const sortedData = useMemo(
-    () => data.toSorted((a, b) => a.fromDepth - b.fromDepth),
+    () => data.slice().sort((a, b) => a.fromDepth - b.fromDepth),
     [data],
   );
 
