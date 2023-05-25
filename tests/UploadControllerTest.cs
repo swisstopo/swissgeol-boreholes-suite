@@ -1,7 +1,6 @@
 ﻿using Amazon.S3;
 using BDMS.Controllers;
 using BDMS.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -99,7 +98,7 @@ public class UploadControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ToList().Find(b => b.OriginalName == "Seth Patel");
+        var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.LayerCodelists).ToList().Find(b => b.OriginalName == "Seth Patel");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Seth Patel", borehole.OriginalName);
 
@@ -108,9 +107,33 @@ public class UploadControllerTest
 
         // First stratigraphy
         var stratigraphy = borehole.Stratigraphies.First();
+        Assert.AreEqual(new DateTime(2021, 8, 6), stratigraphy.Date?.Date);
+        Assert.AreEqual("Bennett", stratigraphy.Name);
         Assert.AreEqual(2, stratigraphy.Layers.Count);
         var lithology = stratigraphy.Layers.First(l => l.FromDepth == 0.125);
         Assert.AreEqual(100, lithology.ToDepth);
+        Assert.AreEqual(false, lithology.IsLast);
+        Assert.AreEqual(9001, lithology.QtDescriptionId);
+        Assert.AreEqual(15104448, lithology.LithologyId);
+        Assert.AreEqual(15202034, lithology.LithostratigraphyId);
+        Assert.AreEqual(15001069, lithology.ChronostratigraphyId);
+        Assert.AreEqual("Granite", lithology.OriginalUscs);
+        Assert.AreEqual(23107001, lithology.UscsDeterminationId);
+        Assert.AreEqual(23101005, lithology.Uscs1Id);
+        Assert.AreEqual(21101001, lithology.GrainSize1Id);
+        Assert.AreEqual(23101008, lithology.Uscs2Id);
+        Assert.AreEqual(21103008, lithology.GrainSize2Id);
+        Assert.AreEqual(false, lithology.IsStriae);
+        Assert.AreEqual(21103003, lithology.ConsistanceId);
+        Assert.AreEqual(21101001, lithology.PlasticityId);
+        Assert.AreEqual(21102007, lithology.CompactnessId);
+        Assert.AreEqual(21116005, lithology.CohesionId);
+        Assert.AreEqual(21105002, lithology.HumidityId);
+        Assert.AreEqual(21106004, lithology.AlterationId);
+        Assert.AreEqual("instruction set Dynamic backing up Lock", lithology.Notes);
+        Assert.AreEqual("trace back Peso", lithology.OriginalLithology);
+        var lithoCodeLists = lithology.LayerCodelists;
+        Assert.AreEqual(14, lithoCodeLists.Count);
         lithology = stratigraphy.Layers.First(l => l.FromDepth == 11);
         Assert.AreEqual(12, lithology.ToDepth);
 
@@ -771,8 +794,8 @@ public class UploadControllerTest
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(2, problemDetails.Errors.Count);
 
-        CollectionAssert.AreEquivalent(new[] { "One or more invalid (not a number) code list id in any of the following properties: Color, OrganicComponent, GrainShape, GrainGranularity, Uscs3, Debris.", }, problemDetails.Errors["Row1"]);
-        CollectionAssert.AreEquivalent(new[] { "One or more invalid (not a number) code list id in any of the following properties: Color, OrganicComponent, GrainShape, GrainGranularity, Uscs3, Debris.", }, problemDetails.Errors["Row2"]);
+        CollectionAssert.AreEquivalent(new[] { $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.ColorIds)}, {nameof(LithologyImport.OrganicComponentIds)}, {nameof(LithologyImport.GrainShapeIds)}, {nameof(LithologyImport.GrainGranularityIds)}, {nameof(LithologyImport.Uscs3Ids)}, {nameof(LithologyImport.DebrisIds)}.", }, problemDetails.Errors["Row1"]);
+        CollectionAssert.AreEquivalent(new[] { $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.ColorIds)}, {nameof(LithologyImport.OrganicComponentIds)}, {nameof(LithologyImport.GrainShapeIds)}, {nameof(LithologyImport.GrainGranularityIds)}, {nameof(LithologyImport.Uscs3Ids)}, {nameof(LithologyImport.DebrisIds)}.", }, problemDetails.Errors["Row2"]);
     }
 
     [TestMethod]
@@ -884,5 +907,12 @@ public class UploadControllerTest
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);
         Assert.AreEqual("POINT (2000000 1000000)", borehole.Geometry.ToString());
+    }
+
+    [TestMethod]
+    public void ParseMultiValueCodeListIds()
+    {
+        CollectionAssert.AreEquivalent(new List<int>() { 500, 200 }, controller.ParseMultiValueCodeListIds(new LithologyImport() { OrganicComponentIds = "500,200" }));
+        CollectionAssert.AreEquivalent(new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }, controller.ParseMultiValueCodeListIds(new LithologyImport() { ColorIds = "1,2", OrganicComponentIds = "3,4", GrainShapeIds = "5,6", GrainGranularityIds = "7,8", Uscs3Ids = "9,10", DebrisIds = "11,12" }));
     }
 }

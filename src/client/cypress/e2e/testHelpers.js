@@ -265,14 +265,22 @@ export const readDownloadedFile = fileName => {
 };
 
 // Get the file to import from the fixtures folder
-export const getImportFileFromFixtures = (fileName, encopding) => {
+export const getImportFileFromFixtures = (fileName, encoding, dataSet) => {
   // Define the path to the file
-  let filePath = "/import/" + fileName;
+  let filePath = "/import/";
+  if (dataSet) {
+    filePath = filePath + "/data-sets/" + dataSet + "/";
+  }
+  filePath = filePath + fileName;
 
   // Override the path in case of windows os
   if (Cypress.platform === "win32") {
-    filePath = "\\import\\" + fileName;
+    if (dataSet) {
+      filePath = "\\import\\data-sets\\" + dataSet + "\\" + fileName;
+    } else {
+      filePath = "\\import\\" + fileName;
+    }
   }
 
-  return cy.fixture(filePath, { encoding: encopding });
+  return cy.fixture(filePath, { encoding: encoding });
 };

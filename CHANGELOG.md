@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Lithology csv import.
+
 ## v2.0.400 - 2023-05-24
 
 ### Added

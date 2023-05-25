@@ -42,6 +42,7 @@ class MenuEditorSearch extends React.Component {
       upload: false,
       selectedFile: null,
       selectedBoreholeAttachments: null,
+      selectedLithologyFile: null,
       scroller: false,
       workgroup: wgs !== null && wgs.length > 0 ? wgs[0].id : null,
       validationErrorModal: false,
@@ -51,6 +52,10 @@ class MenuEditorSearch extends React.Component {
 
   handleBoreholeAttachmentChange = attachmentsFromDropzone => {
     this.setState({ selectedBoreholeAttachments: attachmentsFromDropzone });
+  };
+
+  handleLithologyFileChange = lithologyFileFromDropzone => {
+    this.setState({ selectedLithologyFile: lithologyFileFromDropzone });
   };
 
   componentDidMount() {
@@ -197,7 +202,7 @@ class MenuEditorSearch extends React.Component {
           });
         }}
         open={this.state.modal === true}
-        size="tiny">
+        size="large">
         <Segment clearing>
           <Header
             floated="left"
@@ -222,38 +227,6 @@ class MenuEditorSearch extends React.Component {
         <Modal.Content>
           {this.state.upload === true ? (
             <div>
-              <span
-                style={{
-                  fontWeight: "bold",
-                }}>
-                <TranslationText id="csvFormat" />
-              </span>
-              <div>
-                <TranslationText id="csvFormatExplanation" />.
-              </div>
-              <div
-                style={{
-                  border: "thin solid #787878",
-                  margin: "1em 0px",
-                  padding: "1em",
-                  overflow: "auto",
-                  whiteSpace: "nowrap",
-                }}>
-                {"import_id;id_geodin_shortname;id_info_geol;id_original;" +
-                  "id_canton;id_geo_quat;id_geo_mol;id_geo_therm;id_top_fels;" +
-                  "id_geodin;id_kernlager;original_name;project_name;alternate_name;" +
-                  "restriction_id;restriction_until;location_x;location_y;" +
-                  "qt_location_id;elevation_z;qt_elevation_id;" +
-                  "reference_elevation;reference_elevation_type_id;" +
-                  "qt_reference_elevation_id;hrs_id;kind_id;drilling_date;" +
-                  "drilling_diameter;drilling_method_id;purpose_id;spud_date;" +
-                  "cuttings_id;status_id;inclination;inclination_direction;" +
-                  "qt_inclination_direction_id;remarks;total_depth;qt_depth_id;" +
-                  "total_depth_tvd;qt_total_depth_tvd_id;top_bedrock;" +
-                  "qt_top_bedrock_id;top_bedrock_tvd;qt_top_bedrock_tvd_id;" +
-                  "has_groundwater;lithology_top_bedrock_id;" +
-                  "chronostratigraphy_id;lithostratigraphy_id;attachments;"}
-              </div>
               <p>
                 <div>
                   <TranslationText id="csvCodeListReferenceExplanation" />
@@ -265,49 +238,175 @@ class MenuEditorSearch extends React.Component {
                   />
                 </div>
               </p>
-              <span
-                style={{
-                  fontWeight: "bold",
-                }}>
-                <TranslationText id="importBoreholeFile" />:
-              </span>
               <div
-                data-cy="import-boreholeFile-input"
                 style={{
-                  padding: "1em",
+                  display: "flex",
+                  borderBottom: "0.2em solid",
+                  borderColor: "black",
                 }}>
-                <Input
-                  accept=".csv"
-                  onChange={e => {
-                    const formdata = new FormData();
-                    formdata.append("boreholesFile", e.target.files[0]);
-                    this.setState({
-                      selectedFile: formdata,
-                    });
-                  }}
-                  type="file"
-                  aria-label="import-boreholeFile-input"
-                />
+                <div
+                  style={{
+                    flex: "1",
+                    width: "50%",
+                  }}>
+                  <span
+                    style={{
+                      fontWeight: "bold",
+                    }}>
+                    <TranslationText id="csvFormat" />
+                  </span>
+                  <div>
+                    <TranslationText id="csvFormatExplanation" />.
+                  </div>
+                  <div
+                    style={{
+                      border: "thin solid #787878",
+                      margin: "1em 0px",
+                      padding: "1em",
+                      overflow: "auto",
+                      whiteSpace: "nowrap",
+                    }}>
+                    {"import_id;id_geodin_shortname;id_info_geol;id_original;" +
+                      "id_canton;id_geo_quat;id_geo_mol;id_geo_therm;id_top_fels;" +
+                      "id_geodin;id_kernlager;original_name;project_name;alternate_name;" +
+                      "restriction_id;restriction_until;location_x;location_y;" +
+                      "qt_location_id;elevation_z;qt_elevation_id;" +
+                      "reference_elevation;reference_elevation_type_id;" +
+                      "qt_reference_elevation_id;hrs_id;kind_id;drilling_date;" +
+                      "drilling_diameter;drilling_method_id;purpose_id;spud_date;" +
+                      "cuttings_id;status_id;inclination;inclination_direction;" +
+                      "qt_inclination_direction_id;remarks;total_depth;qt_depth_id;" +
+                      "total_depth_tvd;qt_total_depth_tvd_id;top_bedrock;" +
+                      "qt_top_bedrock_id;top_bedrock_tvd;qt_top_bedrock_tvd_id;" +
+                      "has_groundwater;lithology_top_bedrock_id;" +
+                      "chronostratigraphy_id;lithostratigraphy_id;attachments;"}
+                  </div>
+                </div>
+                <div
+                  style={{
+                    width: "50%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}>
+                  <div>
+                    <span
+                      style={{
+                        fontWeight: "bold",
+                      }}>
+                      <TranslationText id="importBoreholeFile" />:
+                    </span>
+                    <div
+                      data-cy="import-boreholeFile-input"
+                      style={{
+                        padding: "1em",
+                      }}>
+                      <Input
+                        accept=".csv"
+                        onChange={e => {
+                          const formdata = new FormData();
+                          formdata.append("boreholesFile", e.target.files[0]);
+                          this.setState({
+                            selectedFile: formdata,
+                          });
+                        }}
+                        type="file"
+                        aria-label="import-boreholeFile-input"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <span
-                style={{
-                  fontWeight: "bold",
-                }}>
-                <TranslationText id="importBoreholeAttachment" />:
-              </span>
               <div
-                data-cy="import-boreholeFile-attachments-input"
                 style={{
-                  padding: "1em",
+                  display: "flex",
+                  borderBottom: "0.2em solid",
+                  borderColor: "black",
                 }}>
-                <FileDropzone
-                  onHandleBoreholeAttachmentChange={
-                    this.handleBoreholeAttachmentChange
-                  }
-                  acceptedFileExtension=".pdf"
-                  maxFilesToSelectAtOnce="10"
-                  maxFilesToUpload="100"
-                />
+                <div
+                  style={{
+                    flex: "1",
+                    padding: "10px",
+                    width: "50%",
+                  }}>
+                  <span
+                    style={{
+                      fontWeight: "bold",
+                    }}>
+                    <TranslationText id="importBoreholeAttachment" />:
+                  </span>
+                </div>
+                <div
+                  data-cy="import-boreholeFile-attachments-input"
+                  style={{
+                    padding: "1em",
+                    width: "50%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}>
+                  <FileDropzone
+                    onHandleBoreholeAttachmentChange={
+                      this.handleBoreholeAttachmentChange
+                    }
+                    acceptedFileExtension=".pdf"
+                    maxFilesToSelectAtOnce="10"
+                    maxFilesToUpload="100"
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  borderBottom: "0.2em solid",
+                  borderColor: "black",
+                }}>
+                <div
+                  style={{
+                    flex: "1",
+                    padding: "10px",
+                    width: "50%",
+                  }}>
+                  <div>
+                    <TranslationText id="csvFormatExplanation" />.
+                  </div>
+                  <div
+                    style={{
+                      border: "thin solid #787878",
+                      margin: "1em 0px",
+                      padding: "1em",
+                      overflow: "auto",
+                      whiteSpace: "nowrap",
+                    }}>
+                    {"import_id;strati_import_id;strati_date;strati_name;from_depth;to_depth;" +
+                      "is_last;qt_description_id;lithology_id;lithostratigraphy_id;chronostratigraphy_id;" +
+                      "original_uscs;uscs_determination_id;uscs_1_id;grain_size_1_id;uscs_2_id;grain_size_2_id;" +
+                      "is_striae;consistance_id;plasticity_id;compactness_id;cohesion_id;humidity_id;alteration_id;" +
+                      "notes;original_lithology;uscs_3_ids;grain_shape_ids;grain_granularity_ids;organic_component_ids;" +
+                      "debris_ids;color_ids"}
+                  </div>
+                </div>
+                <div
+                  data-cy="import-lithologyFile-input"
+                  style={{
+                    padding: "1em",
+                    width: "50%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}>
+                  <FileDropzone
+                    onHandleBoreholeAttachmentChange={
+                      this.handleLithologyFileChange
+                    }
+                    acceptedFileExtension=".csv"
+                    maxFilesToSelectAtOnce="1"
+                    maxFilesToUpload="1"
+                  />
+                </div>
               </div>
             </div>
           ) : null}
@@ -372,6 +471,14 @@ class MenuEditorSearch extends React.Component {
                       this.state.selectedBoreholeAttachments.forEach(
                         attachment => {
                           combinedFormData.append("attachments", attachment);
+                        },
+                      );
+                      this.state.selectedLithologyFile.forEach(
+                        lithologyFile => {
+                          combinedFormData.append(
+                            "lithologyFile",
+                            lithologyFile,
+                          );
                         },
                       );
                     }

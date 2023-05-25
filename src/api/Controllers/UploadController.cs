@@ -24,7 +24,7 @@ public class UploadController : ControllerBase
     private readonly int sridLv95 = 2056;
     private readonly int sridLv03 = 21781;
     private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
-    private readonly CsvConfiguration csvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
+    private readonly CsvConfiguration csvConfig = new(new CultureInfo("de-CH"))
     {
         Delimiter = ";",
         IgnoreReferences = true,
@@ -168,7 +168,7 @@ public class UploadController : ControllerBase
             }
 
             // Add lithology imports if provided
-            if (lithologyImports != null)
+            if (lithologyImports.Any())
             {
                 // Get the kind id of a lithostratigraphy.
                 var lithoStratiKindId = context.Codelists.Single(cl => cl.Schema == "layer_kind" && cl.IsDefault == true).Id;
@@ -190,7 +190,7 @@ public class UploadController : ControllerBase
                         var strati = new Stratigraphy
                         {
                             BoreholeId = boreholeImports.Single(bhi => bhi.ImportId == boreholeLithologies.Key).Id,
-                            Date = stratiGroup.First().StratiDate,
+                            Date = stratiGroup.First().StratiDate != null ? DateTime.SpecifyKind(stratiGroup.First().StratiDate!.Value, DateTimeKind.Utc) : null,
                             Name = stratiGroup.First().StratiName,
                             KindId = lithoStratiKindId,
                         };
@@ -244,11 +244,14 @@ public class UploadController : ControllerBase
         }
     }
 
-    private List<int> ParseMultiValueCodeListIds(LithologyImport lithologyImport)
+    internal List<int> ParseMultiValueCodeListIds(LithologyImport lithologyImport)
     {
         // Select all code list ids of all multi value code list properties.
-        var codeListIdStrings = lithologyImport.Color?.Split(",").Concat(lithologyImport.OrganicComponent.Split(",")).Concat(lithologyImport.GrainShape.Split(",")).Concat(lithologyImport.GrainGranularity.Split(",")).Concat(lithologyImport.Uscs3.Split(",")).Concat(lithologyImport.Debris.Split(",")).ToList();
-        return codeListIdStrings?.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
+        var splittedList = new[] { lithologyImport.ColorIds, lithologyImport.OrganicComponentIds, lithologyImport.GrainShapeIds, lithologyImport.GrainGranularityIds, lithologyImport.Uscs3Ids, lithologyImport.DebrisIds }
+            .SelectMany(str => str.Split(','))
+            .ToList();
+
+        return splittedList.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
     }
 
     private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, IList<IFormFile>? attachments = null)
@@ -358,7 +361,7 @@ public class UploadController : ControllerBase
             }
             catch
             {
-                ModelState.AddModelError($"Row{lithology.index}", $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.Color)}, {nameof(LithologyImport.OrganicComponent)}, {nameof(LithologyImport.GrainShape)}, {nameof(LithologyImport.GrainGranularity)}, {nameof(LithologyImport.Uscs3)}, {nameof(LithologyImport.Debris)}.");
+                ModelState.AddModelError($"Row{lithology.index}", $"One or more invalid (not a number) code list id in any of the following properties: {nameof(LithologyImport.ColorIds)}, {nameof(LithologyImport.OrganicComponentIds)}, {nameof(LithologyImport.GrainShapeIds)}, {nameof(LithologyImport.GrainGranularityIds)}, {nameof(LithologyImport.Uscs3Ids)}, {nameof(LithologyImport.DebrisIds)}.");
             }
         }
 
@@ -606,12 +609,12 @@ public class UploadController : ControllerBase
             Map(m => m.FillKindId).Optional();
             Map(m => m.LithologyTopBedrockId).Optional();
             Map(m => m.OriginalLithology).Optional();
-            Map(m => m.Color).Optional();
-            Map(m => m.OrganicComponent).Optional();
-            Map(m => m.GrainShape).Optional();
-            Map(m => m.GrainGranularity).Optional();
-            Map(m => m.Uscs3).Optional();
-            Map(m => m.Debris).Optional();
+            Map(m => m.ColorIds).Optional();
+            Map(m => m.OrganicComponentIds).Optional();
+            Map(m => m.GrainShapeIds).Optional();
+            Map(m => m.GrainGranularityIds).Optional();
+            Map(m => m.Uscs3Ids).Optional();
+            Map(m => m.DebrisIds).Optional();
         }
     }
 
