@@ -19,8 +19,8 @@ describe("Tests for 'Attachments' edit page.", () => {
     // create file "LOUDSPATULA.pdf" for input
     cy.get("input[type=file]").selectFile({
       contents: Cypress.Buffer.from(Math.random().toString()),
-      fileName: "LOUDSPATULA.pdf",
-      mimeType: "application/pdf",
+      fileName: "LOUDSPATULA.txt",
+      mimeType: "text/plain",
     });
 
     // intercept get all Attachments for borehole request
@@ -41,7 +41,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
     // check list of attachments
     cy.get("tbody").children().should("have.length", 1);
-    cy.get("tbody").children().contains("td", "application/pdf");
+    cy.get("tbody").children().contains("td", "text/plain");
 
     // create file "IRATETRINITY.pdf" for input
     let fileContent = Math.random().toString();
@@ -58,6 +58,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     cy.wait(["@upload-files"]);
     cy.wait(["@getAllAttachments"]);
     cy.get("tbody").children().should("have.length", 2);
+    cy.get("tbody").children().contains("td", "text/plain");
     cy.get("tbody").children().contains("td", "application/pdf");
 
     // Select "IRATETRINITY.pdf" second time.

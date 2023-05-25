@@ -351,7 +351,6 @@ class MenuEditorSearch extends React.Component {
                     onHandleBoreholeAttachmentChange={
                       this.handleBoreholeAttachmentChange
                     }
-                    acceptedFileExtension=".pdf"
                     maxFilesToSelectAtOnce="10"
                     maxFilesToUpload="100"
                   />
