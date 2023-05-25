@@ -67,6 +67,7 @@ describe("Tests for the hydrotest editor.", () => {
     openDropdown("hydrotest-kind-select");
     selectDropdownOption(2);
     cy.wait("@codelist_GET");
+    closeDropdown();
 
     // fill reliability dropdown
     openDropdown("reliability-select");
