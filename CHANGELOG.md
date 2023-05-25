@@ -10,6 +10,10 @@
 
 - Enable all file types as borehole attachments.
 
+### Fixed
+
+- Fix italian translation for _completionFinished_.
+
 ## v2.0.400 - 2023-05-24
 
 ### Added
