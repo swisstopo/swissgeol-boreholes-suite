@@ -6,6 +6,10 @@
 
 - Lithology csv import.
 
+### Changed
+
+- Enable all file types as borehole attachments.
+
 ## v2.0.400 - 2023-05-24
 
 ### Added

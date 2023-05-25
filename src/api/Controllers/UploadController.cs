@@ -62,9 +62,6 @@ public class UploadController : ControllerBase
             // Checks if the provided boreholes file is a CSV file.
             if (!FileTypeChecker.IsCsv(boreholesFile)) return BadRequest("Invalid file type for borehole csv.");
 
-            // Checks if any of the provided attachments is not a PDF file.
-            if (attachments?.Any(pdfFile => !FileTypeChecker.IsPdf(pdfFile)) == true) return BadRequest("Invalid file type for pdf attachment.");
-
             // Checks if any of the provided attachments has a whitespace in its file name.
             if (attachments?.Any(pdfFile => pdfFile.FileName.Any(char.IsWhiteSpace)) == true) return BadRequest("One or more file name(s) contain a whitespace.");
 
