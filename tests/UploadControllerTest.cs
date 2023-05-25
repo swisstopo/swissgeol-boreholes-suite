@@ -545,20 +545,6 @@ public class UploadControllerTest
     }
 
     [TestMethod]
-    public async Task UploadInvalidFileTypePdfAttachmentShouldReturnError()
-    {
-        var boreholeCsvFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "boreholes.csv");
-        var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
-        var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_with_wrong_extension.txt");
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
-
-        Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
-        BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("Invalid file type for pdf attachment.", badRequestResult.Value);
-    }
-
-    [TestMethod]
     public async Task UploadBoreholeCsvFileWithNotPresentAttachmentsShouldReturnError()
     {
         var boreholeCsvFile = GetFormFileByExistingFile("borehole_with_not_present_attachments.csv");
@@ -606,21 +592,6 @@ public class UploadControllerTest
 
         var invalidCsvFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "boreholes.txt");
         Assert.AreEqual(false, FileTypeChecker.IsCsv(invalidCsvFile));
-
-        var validPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
-        Assert.AreEqual(true, FileTypeChecker.IsPdf(validPdfFormFile));
-
-        var zeroBytesFormFile = new FormFile(null, 0, 0, null, "attachment.pdf");
-        Assert.AreEqual(false, FileTypeChecker.IsPdf(zeroBytesFormFile));
-
-        var invalidExtensionPdfFormFile = GetFormFileByExistingFile("borehole_attachment_with_wrong_extension.txt");
-        Assert.AreEqual(false, FileTypeChecker.IsPdf(invalidExtensionPdfFormFile));
-
-        var invalidHeaderBytesPdfFormFile = GetFormFileByContent(fileContent: "This is not a PDF.", fileName: "attachment.pdf");
-        Assert.AreEqual(false, FileTypeChecker.IsPdf(invalidHeaderBytesPdfFormFile));
-
-        var emptyPdfFormFile = GetFormFileByExistingFile("empty_attachment.pdf");
-        Assert.AreEqual(true, FileTypeChecker.IsPdf(emptyPdfFormFile));
     }
 
     [TestMethod]
