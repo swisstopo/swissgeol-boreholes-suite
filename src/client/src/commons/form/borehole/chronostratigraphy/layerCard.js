@@ -58,6 +58,8 @@ const LayerCard = ({
   const [selection, setSelection] = useState(null);
   const [cardState, setCardState] = useState(null);
 
+  const minPixelHeightForDepthLabels = 65;
+
   useEffect(() => {
     setCardState(prevState => {
       // do not resurrect deleted layers
@@ -205,12 +207,14 @@ const LayerCard = ({
   const headerBar = (
     <Stack
       direction="row"
-      sx={{ padding: "1em", alignItems: "flex-start", flex: "0 1 0%" }}>
-      {[State.DISPLAY, State.EDITABLE].includes(cardState) && (
-        <Typography>{layer?.fromDepth ?? "-"} m</Typography>
-      )}
+      sx={{ padding: "0.2em 1em", alignItems: "flex-start", flex: "0 1 0%" }}>
+      {[State.DISPLAY, State.EDITABLE].includes(cardState) &&
+        height >= minPixelHeightForDepthLabels && (
+          <Typography>{layer?.fromDepth ?? "-"} m</Typography>
+        )}
       {State.EDITING === cardState && (
         <TextField
+          sx={{ margin: "0.8em 0" }}
           label={t("fromdepth")}
           defaultValue={fromDepth ?? layer.fromDepth}
           error={!!fromDepthErrorMessage}
@@ -311,12 +315,14 @@ const LayerCard = ({
   const footerBar = (
     <Stack
       direction="row"
-      sx={{ padding: "1em", alignItems: "flex-end", flex: "0 1 0%" }}>
-      {[State.DISPLAY, State.EDITABLE].includes(cardState) && (
-        <Typography>{layer?.toDepth ?? "-"} m</Typography>
-      )}
+      sx={{ padding: "0.2em 1em", alignItems: "flex-end", flex: "0 1 0%" }}>
+      {[State.DISPLAY, State.EDITABLE].includes(cardState) &&
+        height >= minPixelHeightForDepthLabels && (
+          <Typography>{layer?.toDepth ?? "-"} m</Typography>
+        )}
       {State.EDITING === cardState && (
         <TextField
+          sx={{ margin: "0.8em 0" }}
           label={t("todepth")}
           defaultValue={toDepth ?? layer.toDepth}
           error={!!toDepthErrorMessage}
