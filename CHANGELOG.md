@@ -12,7 +12,9 @@
 
 ### Fixed
 
-- Fix italian translation for _completionFinished_.
+- Fixed italian translation for _completionFinished_.
+- Ensure duplicated boreholes are detected during borehole import.
+- When the application was set to German, an issue occurred where the term 'keine_Angabe' was unecessarily displayed in the lithology subtitle.
 
 ## v2.0.400 - 2023-05-24
 

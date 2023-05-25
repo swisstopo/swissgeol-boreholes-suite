@@ -138,12 +138,12 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | alteration_id          | ID (Codeliste)   | Nein        | Verwitterung                                                                                                               |
 | notes                  | Text             | Nein        | Notizen                                                                                                                    |
 | original_lithology     | Text             | Nein        | Ursprüngliche Lithologie                                                                                                   |
-| uscs_3_ids             | Text             | Nein        | Kommaseparierte Codeliste IDs der USCS 3                                                                                   |
-| grain_shape_ids        | Text             | Nein        | Kommaseparierte Codeliste IDs der Korn Formen                                                                              |
-| grain_granularity_ids  | Text             | Nein        | Kommaseparierte Codeliste IDs der Kornrundungen                                                                            |
-| organic_component_ids  | Text             | Nein        | Kommaseparierte Codeliste IDs der Organischen Komponenten                                                                  |
-| debris_ids             | Text             | Nein        | Kommaseparierte Codeliste IDs der Grobbestandteile                                                                         |
-| color_ids              | Text             | Nein        | Kommaseparierte Codeliste IDs der Farben                                                                                   |
+| uscs_3_ids             | ID (Codeliste) | Nein        | Kommaseparierte Codeliste IDs der USCS 3                                                                                   |
+| grain_shape_ids        | ID (Codeliste) | Nein        | Kommaseparierte Codeliste IDs der Korn Formen                                                                              |
+| grain_granularity_ids  | ID (Codeliste) | Nein        | Kommaseparierte Codeliste IDs der Kornrundungen                                                                            |
+| organic_component_ids  | ID (Codeliste) | Nein        | Kommaseparierte Codeliste IDs der Organischen Komponenten                                                                  |
+| debris_ids             | ID (Codeliste) | Nein        | Kommaseparierte Codeliste IDs der Grobbestandteile                                                                         |
+| color_ids              | ID (Codeliste)   | Nein        | Kommaseparierte Codeliste IDs der Farben                                                                                   |
 
 ## Validierung
 
