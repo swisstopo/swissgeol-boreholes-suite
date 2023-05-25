@@ -21,7 +21,7 @@ Zunächst sollte die CSV-Datei den Anforderungen und dem Format entsprechen, wie
 
 ### Schritt 4: Bohrlochanhänge selektieren (optional)
 
-1. Schaltfläche _Dateien hier ablegen oder klicken, um sie hochzuladen_ anklicken und die vorbereitete PDF-Datei(en) auswählen.
+1. Schaltfläche _Dateien hier ablegen oder klicken, um sie hochzuladen_ anklicken und die vorbereitete Datei(en) auswählen.
 
 ### Schritt 5: Lithologie CSV-Datei selektieren (optional)
 
@@ -46,7 +46,6 @@ Die CSV-Datei muss den folgenden Anforderungen und dem Format entsprechen, damit
 
 Die Anhangsdatei muss den folgenden Anforderungen und dem Format entsprechen, damit sie erfolgreich in die Webapplikation importiert werden kann:
 
-* Die Datei muss im PDF-Format vorliegen und _.pdf_ als Dateiendung haben.
 * Die Datei darf maximal 200 MB gross sein.
 * Der Dateiname darf keine Leerzeichen enthalten.
 
@@ -105,7 +104,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | lithology_top_bedrock_id    | ID (Codeliste) | Nein        | Lithologie Top Fels                                                                               |
 | chronostratigraphy_id       | ID (Codeliste) | Nein        | Chronostratigraphie Top Fels                                                                      |
 | lithostratigraphy_id        | ID (Codeliste) | Nein        | Lithostratigraphie Top Fels                                                                       |
-| attachments                 | Text           | Nein        | Kommaseparierte Dateinamen der Anhänge mit Dateiendung z.B. anhang_1.pdf,anhang_2.pdf             |
+| attachments                 | Text           | Nein        | Kommaseparierte Dateinamen der Anhänge mit Dateiendung z.B. anhang_1.pdf,anhang_2.zip             |
 
 ## Lithologie Datei Format
 
