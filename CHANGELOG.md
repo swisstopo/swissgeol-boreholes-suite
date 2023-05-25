@@ -37,6 +37,7 @@
 - Copy and delete buttons not visible when editing lithology.
 - Show stratigraphy with empty name as unknown.
 - Chronostratigraphy fields were not translated.
+- Lithology layers not sorted by depth in viewer.
 
 ## v2.0.298 - 2023-04-18
 
