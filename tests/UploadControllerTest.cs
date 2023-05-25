@@ -818,6 +818,16 @@ public class UploadControllerTest
             TotalDepth = null,
             WorkgroupId = 1,
         });
+        context.Boreholes.Add(new Borehole
+        {
+            Id = 2100002,
+            LocationX = 2676701,
+            LocationY = 1185081,
+            LocationXLV03 = 676700,
+            LocationYLV03 = 185081,
+            TotalDepth = 1000,
+            WorkgroupId = 1,
+        });
         context.SaveChanges();
 
         var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInDb.csv");
@@ -829,10 +839,11 @@ public class UploadControllerTest
         Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
-        Assert.AreEqual(2, problemDetails.Errors.Count);
+        Assert.AreEqual(3, problemDetails.Errors.Count);
 
         CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row1"]);
         CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row2"]);
+        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row3"]);
     }
 
     [TestMethod]
