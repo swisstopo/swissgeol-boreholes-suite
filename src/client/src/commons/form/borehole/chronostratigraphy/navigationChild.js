@@ -29,6 +29,7 @@ const NavigationChild = ({
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          textAlign: "center",
         }}>
         <Box ref={headerRef}>{header}</Box>
       </Box>
