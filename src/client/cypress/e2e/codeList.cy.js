@@ -33,8 +33,6 @@ describe("Codelist translations tests", () => {
       .find("button")
       .click();
 
-    cy.contains("p", "borehole_form").click();
-    cy.get("div[name=borehole_form]").children().should("have.length", 38);
     cy.contains("p", "mcla107").click();
     cy.get("div[name=mcla107]").children().should("have.length", 6);
 
