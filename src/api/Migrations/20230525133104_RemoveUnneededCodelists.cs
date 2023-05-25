@@ -14,7 +14,9 @@ public partial class RemoveUnneededCodelists : Migration
 
            	DELETE FROM bdms.codelist
 	        WHERE schema_cli = 'borehole_form';
-");
+
+           	DELETE FROM bdms.codelist
+	        WHERE schema_cli = 'custom.qt_depth';");
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
