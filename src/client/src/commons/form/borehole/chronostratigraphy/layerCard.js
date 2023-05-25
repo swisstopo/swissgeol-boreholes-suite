@@ -293,7 +293,7 @@ const LayerCard = ({
                       options={options[index] ?? []}
                       value={selectedItem?.label ? selectedItem : null}
                       renderInput={params => (
-                        <TextField {...params} label={header[index].title} />
+                        <TextField {...params} label={t(header[index].title)} />
                       )}
                       onChange={(event, value) =>
                         handleLayerChange(value, index)
