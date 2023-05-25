@@ -6,6 +6,10 @@
 
 - Lithology csv import.
 
+### Changed
+
+- The hydrotest input mask now supports selecting multiple hydrotest kinds.
+
 ## v2.0.400 - 2023-05-24
 
 ### Added
