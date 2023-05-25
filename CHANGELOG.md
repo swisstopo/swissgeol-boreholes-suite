@@ -10,6 +10,10 @@
 
 - Enable all file types as borehole attachments.
 
+### Fixed
+
+- Workgroup dropdown in the import menu was not scrollable.
+
 ## v2.0.400 - 2023-05-24
 
 ### Added
