@@ -6,6 +6,10 @@
 
 - Lithology csv import.
 
+### Fixed
+
+- When setting the application to german _keine_Angabe_ was unecessarily display in the lithology subtitle.
+
 ## v2.0.400 - 2023-05-24
 
 ### Added
