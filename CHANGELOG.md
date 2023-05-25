@@ -6,6 +6,10 @@
 
 - Lithology csv import.
 
+### Changed
+
+- Enable all file types as borehole attachments.
+
 ### Fixed
 
 - Ensure duplicated boreholes are detected during borehole import.

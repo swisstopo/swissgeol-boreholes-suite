@@ -278,14 +278,25 @@ public class UploadControllerTest
            .Verifiable();
 
         var boreholeCsvFormFile = GetFormFileByExistingFile("borehole_with_attachments.csv");
-        var firstPdfFormFile = GetRandomPDFFile("attachment_1.pdf");
-        var secondPdfFormFile = GetRandomPDFFile("attachment_2.pdf");
+        var firstAttachmentFile = GetRandomPDFFile("attachment_1.pdf");
+        var secondAttachmentFile = GetRandomFile("attachment_2.txt");
+        var thirdAttachmentFile = GetRandomFile("attachment_3.zip");
+        var fourthAttachmentFile = GetRandomFile("attachment_4.jpg");
+        var fifthAttachmentFile = GetRandomFile("attachment_5.csv");
+        var sixthAttachmentFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
+        var seventhAttachmentFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
+        var eighthAttachmentFile = GetFormFileByExistingFile("borehole_attachment_3.csv");
+        var ninthAttachmentFile = GetFormFileByExistingFile("borehole_attachment_4.zip");
+        var tenthAttachmentFile = GetFormFileByExistingFile("borehole_attachment_5.png");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstAttachmentFile, secondAttachmentFile, thirdAttachmentFile, fourthAttachmentFile, fifthAttachmentFile, sixthAttachmentFile, seventhAttachmentFile, eighthAttachmentFile, ninthAttachmentFile, tenthAttachmentFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
+
+        var borehole = context.Boreholes.Include(b => b.BoreholeFiles).Single(b => b.OriginalName == "ACORNFLEA");
+        Assert.AreEqual(10, borehole.BoreholeFiles.Count);
     }
 
     [TestMethod]
@@ -297,10 +308,10 @@ public class UploadControllerTest
            .Verifiable();
 
         var boreholeCsvFormFile = GetFormFileByExistingFile("boreholes_not_all_have_attachments.csv");
-        var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
-        var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
+        var firstAttachmentFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
+        var secondAttachmentFile = GetFormFileByExistingFile("borehole_attachment_2.pdf");
 
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstAttachmentFile, secondAttachmentFile });
 
         Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         OkObjectResult okResult = (OkObjectResult)response.Result!;
@@ -534,20 +545,6 @@ public class UploadControllerTest
     }
 
     [TestMethod]
-    public async Task UploadInvalidFileTypePdfAttachmentShouldReturnError()
-    {
-        var boreholeCsvFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "boreholes.csv");
-        var firstPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
-        var secondPdfFormFile = GetFormFileByExistingFile("borehole_attachment_with_wrong_extension.txt");
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
-
-        Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
-        BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("Invalid file type for pdf attachment.", badRequestResult.Value);
-    }
-
-    [TestMethod]
     public async Task UploadBoreholeCsvFileWithNotPresentAttachmentsShouldReturnError()
     {
         var boreholeCsvFile = GetFormFileByExistingFile("borehole_with_not_present_attachments.csv");
@@ -595,21 +592,6 @@ public class UploadControllerTest
 
         var invalidCsvFile = GetFormFileByContent(fileContent: "This is the content of the file.", fileName: "boreholes.txt");
         Assert.AreEqual(false, FileTypeChecker.IsCsv(invalidCsvFile));
-
-        var validPdfFormFile = GetFormFileByExistingFile("borehole_attachment_1.pdf");
-        Assert.AreEqual(true, FileTypeChecker.IsPdf(validPdfFormFile));
-
-        var zeroBytesFormFile = new FormFile(null, 0, 0, null, "attachment.pdf");
-        Assert.AreEqual(false, FileTypeChecker.IsPdf(zeroBytesFormFile));
-
-        var invalidExtensionPdfFormFile = GetFormFileByExistingFile("borehole_attachment_with_wrong_extension.txt");
-        Assert.AreEqual(false, FileTypeChecker.IsPdf(invalidExtensionPdfFormFile));
-
-        var invalidHeaderBytesPdfFormFile = GetFormFileByContent(fileContent: "This is not a PDF.", fileName: "attachment.pdf");
-        Assert.AreEqual(false, FileTypeChecker.IsPdf(invalidHeaderBytesPdfFormFile));
-
-        var emptyPdfFormFile = GetFormFileByExistingFile("empty_attachment.pdf");
-        Assert.AreEqual(true, FileTypeChecker.IsPdf(emptyPdfFormFile));
     }
 
     [TestMethod]

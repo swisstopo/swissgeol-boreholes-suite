@@ -36,6 +36,15 @@
     <None Update="TestData\boreholes_not_all_have_attachments.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\borehole_attachment_3.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\borehole_attachment_4.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\borehole_attachment_5.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\borehole_with_mixed_case_in_attachments_filenames.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

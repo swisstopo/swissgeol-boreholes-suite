@@ -123,7 +123,6 @@ class EditorBoreholeFilesTable extends Component {
           <div className="bdms-padding-1">
             <TranslationText id="uploadNewFile" />: &nbsp;
             <input
-              accept=".pdf"
               onChange={e => {
                 const formData = new FormData();
                 formData.append("file", e.target.files[0]);
