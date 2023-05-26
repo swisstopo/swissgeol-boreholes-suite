@@ -14,6 +14,7 @@
 
 - Ensure duplicated boreholes are detected during borehole import.
 - When the application was set to German, an issue occurred where the term 'keine_Angabe' was unecessarily displayed in the lithology subtitle.
+- Ensure borehole attachments can be managed by any user role.
 
 ## v2.0.400 - 2023-05-24
 
