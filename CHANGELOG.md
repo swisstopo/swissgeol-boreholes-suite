@@ -13,8 +13,11 @@
 ### Fixed
 
 - Fixed italian translation for _completionFinished_.
+- Workgroup dropdown in the import menu was not scrollable.
 - Ensure duplicated boreholes are detected during borehole import.
 - When the application was set to German, an issue occurred where the term 'keine_Angabe' was unecessarily displayed in the lithology subtitle.
+- Ensure copied stratigraphy is not primary.
+- Ensure borehole attachments can be managed by any user role.
 
 ## v2.0.400 - 2023-05-24
 
@@ -37,6 +40,7 @@
 - Harmonized labels for _from_depth_ and _to_depth_ fields across the application.
 - The duplicate checks for a borehole's _original_name_ and _alternate_name_ have been removed. Duplicate names are now allowed.
 - Improve chronostratigraphy edit, change the stratigraphy selection to a simple dropdown.
+- Hide overlapping chronostratigraphy layer depth labels and add depth scale.
 
 ### Fixed
 
