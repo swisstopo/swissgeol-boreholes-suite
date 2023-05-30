@@ -124,11 +124,20 @@ class EditorBoreholeFilesTable extends Component {
             <TranslationText id="uploadNewFile" />: &nbsp;
             <input
               onChange={e => {
-                const formData = new FormData();
-                formData.append("file", e.target.files[0]);
-                this.setState({
-                  file: formData,
-                });
+                const file = e.target.files[0];
+                const maxSizeInBytes = 200 * 1024 * 1024; // 200 MB (as stated in the import docs)
+
+                // If file size is less than max allowed size, upload file. Otherwise, display error message.
+                if (file && file.size <= maxSizeInBytes) {
+                  const formData = new FormData();
+                  formData.append("file", file);
+                  this.setState({
+                    file: formData,
+                  });
+                } else {
+                  this.context.error(t("maxfileSizeExceeded") + " (200 MB)");
+                  this.input.value = null; // Reset the input to clear the selected file
+                }
               }}
               ref={e => (this.input = e)}
               style={{
@@ -153,9 +162,15 @@ class EditorBoreholeFilesTable extends Component {
                       this.state.file,
                     ).then(r => {
                       if (r.ok === false) {
-                        this.context.error(
-                          t("errorDuplicatedUploadPerBorehole"),
-                        );
+                        if (r.status === 400) {
+                          this.context.error(
+                            t("errorDuplicatedUploadPerBorehole"),
+                          );
+                        } else {
+                          this.context.error(
+                            t("errorDuringBoreholeFileUpload"),
+                          );
+                        }
                       }
                       this.input.value = "";
                       this.setState(
