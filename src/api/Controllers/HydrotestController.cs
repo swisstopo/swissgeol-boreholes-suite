@@ -143,7 +143,7 @@ public class HydrotestController : ControllerBase
         var hydrotestKindCodelistIds = hydrotest.Codelists!
             .Where(hc => hc.Schema == HydrogeologySchemas.HydrotestKindSchema)
             .Select(hc => hc.Id)
-            .ToList();  // is retrieve twice!
+            .ToList();
 
         var testKindGeolCodes = context.Codelists
             .Where(c => hydrotestKindCodelistIds.Contains(c.Id) && c.Geolcode.HasValue)
@@ -153,7 +153,7 @@ public class HydrotestController : ControllerBase
         // If there are HydrotestResults, check if the ParameterIds in the results are compatible.
         if (hydrotest.HydrotestResults?.Any() == true && testKindGeolCodes.Any())
         {
-            var compatibleParameterIds = GetCompatibleCodelistIds(testKindGeolCodes.ToList(), HydrogeologySchemas.HydrotestResultParameterSchema, HydroCodeLookup.HydrotestResultParameterOptions);
+            var compatibleParameterIds = GetCompatibleCodelistIds(testKindGeolCodes, HydrogeologySchemas.HydrotestResultParameterSchema, HydroCodeLookup.HydrotestResultParameterOptions);
             if (!hydrotest.HydrotestResults.All(r => compatibleParameterIds.Contains(r.ParameterId)))
             {
                 return false;
