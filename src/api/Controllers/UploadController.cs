@@ -257,12 +257,7 @@ public class UploadController : ControllerBase
         var boreholesFromDb = context.Boreholes
             .Where(b => b.WorkgroupId == workgroupId)
             .AsNoTracking()
-            .Select(b => new { b.Id, b.TotalDepth, b.LocationX, b.LocationY })
-            .ToList();
-
-        // Combine boreholes from db with boreholes from the provided list
-        var boreholesCombined = boreholesFromDb
-            .Concat(boreholesFromFile.Select(b => new { b.Id, b.TotalDepth, b.LocationX, b.LocationY }))
+            .Select(b => new { b.Id, b.TotalDepth, b.LocationX, b.LocationY, b.LocationXLV03, b.LocationYLV03 })
             .ToList();
 
         // Iterate over provided boreholes, validate them, and create error messages when necessary. Use a non-zero based index for error message keys (e.g. 'Row1').
@@ -283,23 +278,23 @@ public class UploadController : ControllerBase
                 ModelState.AddModelError($"Row{boreholeFromFile.index}", string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"));
             }
 
-            // TODO: Refactor logic to determine whether the duplicated borehole is in the db or the provided file (#584)
-            // Until refactoring check for duplicatedBoreholes.Count > 1.
-            // Check if borehole with same coordinates (in tolerance) and same total depth occurs multiple times in list.
-            var duplicatedBoreholes = boreholesCombined
-                .Where(b =>
-                    CompareValuesWithTolerance(b.TotalDepth, boreholeFromFile.value.TotalDepth, 0) &&
-                    CompareValuesWithTolerance(b.LocationX, boreholeFromFile.value.LocationX, 2) &&
-                    CompareValuesWithTolerance(b.LocationY, boreholeFromFile.value.LocationY, 2))
-                .ToList();
-
-            if (duplicatedBoreholes.Count > 1)
+            // Check if any borehole with same coordinates (in tolerance) and same total depth is duplicated in file
+            if (boreholesFromFile.Any(b =>
+                b.ImportId != boreholeFromFile.value.ImportId &&
+                CompareValuesWithTolerance(b.TotalDepth, boreholeFromFile.value.TotalDepth, 0) &&
+                CompareValuesWithTolerance(b.LocationX, boreholeFromFile.value.LocationX, 2) &&
+                CompareValuesWithTolerance(b.LocationY, boreholeFromFile.value.LocationY, 2)))
             {
-                // Adjust error msg depending on where the duplicated borehole is (db or file).
-                var errorMsg = $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)}";
-                errorMsg += duplicatedBoreholes.Any(x => x.Id > 0) ? " already exists in database." : " is provided multiple times.";
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.");
+            }
 
-                ModelState.AddModelError($"Row{boreholeFromFile.index}", errorMsg);
+            // Check if borehole with same coordinates (in tolerance) and same total depth already exists in db.
+            if (boreholesFromDb.Any(b =>
+                CompareValuesWithTolerance(b.TotalDepth, boreholeFromFile.value.TotalDepth, 0) &&
+                (CompareValuesWithTolerance(b.LocationX, boreholeFromFile.value.LocationX, 2) || CompareValuesWithTolerance(b.LocationXLV03, boreholeFromFile.value.LocationX, 2)) &&
+                (CompareValuesWithTolerance(b.LocationY, boreholeFromFile.value.LocationY, 2) || CompareValuesWithTolerance(b.LocationYLV03, boreholeFromFile.value.LocationY, 2))))
+            {
+                ModelState.AddModelError($"Row{boreholeFromFile.index}", $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.");
             }
 
             // Checks if each file name in the comma separated string is present in the list of the attachments.

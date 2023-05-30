@@ -108,6 +108,7 @@ public class StratigraphyController : ControllerBase
         }
 
         stratigraphy.Name += " (Clone)";
+        stratigraphy.IsPrimary = false;
 
         var entityEntry = await context.AddAsync(stratigraphy).ConfigureAwait(false);
         await context.SaveChangesAsync().ConfigureAwait(false);

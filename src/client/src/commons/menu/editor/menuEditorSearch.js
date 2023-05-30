@@ -6,10 +6,10 @@ import { withRouter } from "react-router-dom";
 import { NumericFormat } from "react-number-format";
 import TranslationText from "../../form/translationText";
 import { FileDropzone } from "../../files/fileDropzone";
+import { MenuItem, Select, FormControl } from "@mui/material/";
 
 import {
   Button,
-  Dropdown,
   Header,
   Icon,
   Input,
@@ -422,29 +422,37 @@ class MenuEditorSearch extends React.Component {
               }}>
               {(() => {
                 const wg = this.state.enabledWorkgroups;
+                const options = wg
+                  .filter(w => w.roles.indexOf("EDIT") >= 0)
+                  .map(wg => ({
+                    key: wg["id"],
+                    text: wg["workgroup"],
+                    value: wg["id"],
+                  }));
                 if (wg.length === 0) {
                   return <TranslationText id="disabled" />;
                 } else if (wg.length === 1) {
                   return wg[0].workgroup;
                 }
                 return (
-                  <Dropdown
-                    item
-                    onChange={(ev, data) => {
-                      this.setState({
-                        workgroup: data.value,
-                      });
-                    }}
-                    options={wg
-                      .filter(w => w.roles.indexOf("EDIT") >= 0)
-                      .map(wg => ({
-                        key: wg["id"],
-                        text: wg["workgroup"],
-                        value: wg["id"],
-                      }))}
-                    simple
-                    value={this.state.workgroup}
-                  />
+                  <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                    <Select
+                      renderValue={selected => {
+                        return options.find(o => o.value === selected)?.text;
+                      }}
+                      onChange={(e, data) => {
+                        this.setState({
+                          workgroup: e.target.value,
+                        });
+                      }}
+                      value={this.state.workgroup}>
+                      {options.map(o => (
+                        <MenuItem key={o.id} value={o.value}>
+                          {o.text}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 );
               })()}
             </div>
