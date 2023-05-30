@@ -16,6 +16,7 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class UploadController : ControllerBase
 {
+    private const int MaxFileSize = 205_000_000;
     private readonly BdmsContext context;
     private readonly ILogger logger;
     private readonly LocationService locationService;
@@ -51,6 +52,8 @@ public class UploadController : ControllerBase
     /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
+    [RequestSizeLimit(205_000_000)]
+    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile, IFormFile? lithologyFile = null, IList<IFormFile>? attachments = null)
     {
         logger.LogInformation("Import borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
@@ -63,7 +66,10 @@ public class UploadController : ControllerBase
             if (!FileTypeChecker.IsCsv(boreholesFile)) return BadRequest("Invalid file type for borehole csv.");
 
             // Checks if any of the provided attachments has a whitespace in its file name.
-            if (attachments?.Any(pdfFile => pdfFile.FileName.Any(char.IsWhiteSpace)) == true) return BadRequest("One or more file name(s) contain a whitespace.");
+            if (attachments?.Any(a => a.FileName.Any(char.IsWhiteSpace)) == true) return BadRequest("One or more file name(s) contain a whitespace.");
+
+            // Checks if any of the provided attachments exceeds the maximum file size.
+            if (attachments?.Any(a => a.Length > MaxFileSize) == true) return BadRequest($"One or more attachment exceed maximum file size of {MaxFileSize} bytes.");
 
             // if a lithology file is provided, checks if it is a CSV file.
             if (lithologyFile != null && !FileTypeChecker.IsCsv(lithologyFile)) return BadRequest("Invalid file type for lithology csv.");
