@@ -1,38 +1,31 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useDropzone } from "react-dropzone";
-import styled from "styled-components";
 import { useTranslation } from "react-i18next";
-import { Chip } from "@mui/material";
-
-const defaultDropzoneTextColor = "#9f9f9f";
-
-const Container = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: ${props => props.minHeight || "15vh"};
-  max-width: 95vw;
-  font-size: 20px;
-  border-width: 2px;
-  border-radius: 5px;
-  border-color: "#d1d6d991";
-  border-style: dashed;
-  background-color: #d1d6d991;
-  color: ${defaultDropzoneTextColor};
-  outline: none;
-  transition: border 0.24s ease-in-out;
-`;
+import { Box, Chip } from "@mui/material";
 
 export const FileDropzone = props => {
+  const {
+    onHandleFileChange,
+    defaultText,
+    maxFilesToSelectAtOnce,
+    maxFilesToUpload,
+    acceptedFileExtension,
+    isDisabled,
+    dataCy,
+  } = props;
   const { t } = useTranslation();
   const [files, setFiles] = useState([]);
-  const [dropZoneText, setDropZoneText] = useState(t("dropZoneDefaultText"));
-  const [dropZoneTextColor, setDropZoneTextColor] = useState(
-    defaultDropzoneTextColor,
-  );
+  const [dropZoneText, setDropZoneText] = useState(null);
+  const [dropZoneTextColor, setDropZoneTextColor] = useState(null);
+  const defaultDropzoneTextColor = isDisabled ? "#9f9f9f" : "#2185d0";
+  const initialDropzoneText = isDisabled
+    ? t("dropZoneChooseBoreholeFilesFirst")
+    : t(defaultText);
 
-  const { onHandleBoreholeAttachmentChange } = props;
+  useEffect(() => {
+    setDropZoneText(initialDropzoneText);
+    setDropZoneTextColor(defaultDropzoneTextColor);
+  }, [defaultDropzoneTextColor, initialDropzoneText]);
 
   // Set the color of the dropzone text to red and display an error message
   const showErrorMsg = useCallback(
@@ -47,8 +40,8 @@ export const FileDropzone = props => {
             t("dropZoneMaximumFilesToSelectAtOnce") +
               " (max: " +
               Math.min(
-                props.maxFilesToSelectAtOnce,
-                props.maxFilesToUpload - files.length,
+                maxFilesToSelectAtOnce,
+                maxFilesToUpload - files.length,
               ) +
               ")",
           );
@@ -60,7 +53,7 @@ export const FileDropzone = props => {
           setDropZoneText(
             t("dropZoneMaxFilesToUploadReached") +
               " (max additional: " +
-              (props.maxFilesToUpload - files.length) +
+              (maxFilesToUpload - files.length) +
               ")",
           );
           break;
@@ -68,29 +61,53 @@ export const FileDropzone = props => {
           setDropZoneText(t("dropZoneDefaultErrorMsg"));
       }
     },
-    [files.length, props.maxFilesToSelectAtOnce, props.maxFilesToUpload, t],
+    [files.length, maxFilesToSelectAtOnce, maxFilesToUpload, t],
   );
+
+  const dropzoneRef = useRef(null);
+
+  useEffect(() => {
+    const div = dropzoneRef.current;
+    const handleDragOver = e => {
+      e.stopPropagation();
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "copy";
+    };
+
+    div.addEventListener("dragover", handleDragOver);
+
+    return () => {
+      div.removeEventListener("dragover", handleDragOver);
+    };
+  }, []);
 
   // Is called when the files array changes. This is used to update the file list in the parent component.
   useEffect(() => {
-    onHandleBoreholeAttachmentChange(files);
-  }, [files, onHandleBoreholeAttachmentChange]);
+    onHandleFileChange(files);
+  }, [files, onHandleFileChange]);
 
   // Is called when the selected/dropped files are accepted
   const onDropAccepted = useCallback(
     acceptedFiles => {
       // Check if the max number of files to upload would be exceeded with the new selected files.
       // If not, add the new files to the files array.
-      if (files.length + acceptedFiles.length > props.maxFilesToUpload) {
+      if (files.length + acceptedFiles.length > maxFilesToUpload) {
         const errorCode = "max-upload-reached";
         showErrorMsg(errorCode);
       } else {
         setDropZoneTextColor(defaultDropzoneTextColor);
-        setDropZoneText(t("dropZoneDefaultText"));
+        setDropZoneText(t(defaultText));
         setFiles(prevFiles => [...prevFiles, ...acceptedFiles]);
       }
     },
-    [files.length, props.maxFilesToUpload, showErrorMsg, t],
+    [
+      defaultDropzoneTextColor,
+      defaultText,
+      files.length,
+      maxFilesToUpload,
+      showErrorMsg,
+      t,
+    ],
   );
 
   // Is called when a accepted file is removed.
@@ -109,7 +126,7 @@ export const FileDropzone = props => {
 
   // Sets the accepted file types for the dropzone
   const setFileAcceptedFileTypes = () => {
-    switch (props.acceptedFileExtension) {
+    switch (acceptedFileExtension) {
       case ".pdf":
         return { "application/pdf": [".pdf"] };
       case ".csv":
@@ -120,51 +137,80 @@ export const FileDropzone = props => {
   };
 
   // Create the dropzone
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDropRejected,
     onDropAccepted,
-    maxFiles: props.maxFilesToSelectAtOnce,
+    maxFiles: maxFilesToSelectAtOnce,
     maxSize: 209715200,
     accept: setFileAcceptedFileTypes(),
-    disabled: files.length >= props.maxFilesToUpload,
+    disabled: isDisabled || files.length >= maxFilesToUpload,
+    noClick: isDisabled,
+    noKeyboard: isDisabled,
   });
 
+  const dropZoneStyles = {
+    flex: 1,
+    display: "flex",
+    padding: "15px",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+    minHeight: "10vh",
+    maxWidth: "95vw",
+    fontSize: "20px",
+    borderWidth: "2px",
+    borderRadius: "5px",
+    borderColor: defaultDropzoneTextColor,
+    borderStyle: "dashed",
+    backgroundColor: "#d1d6d991",
+    color: defaultDropzoneTextColor,
+    outline: "none",
+    transition: "border 0.24s ease-in-out",
+  };
+
   return (
-    <div className="dropzone-wrapper">
-      <Container minHeight={"4vh"} {...getRootProps()}>
-        <p style={{ marginBottom: "0", color: dropZoneTextColor }}>
+    <div
+      ref={dropzoneRef}
+      data-cy={dataCy}
+      style={{ paddingLeft: "2em", width: "50%" }}>
+      <Box minHeight={"7vh"} style={dropZoneStyles} {...getRootProps()}>
+        <p
+          style={{
+            marginBottom: "0",
+            color: dropZoneTextColor,
+          }}>
           {dropZoneText}
         </p>
         <input {...getInputProps()} aria-label="import-boreholeFile-input" />
-      </Container>
-      {files.length > 0 ? (
-        <div
-          style={{
-            backgroundColor: "#ffffff",
-            minHeight: "auto",
-          }}>
+        {files.length > 0 ? (
           <div
             style={{
-              display: "inline-flex",
-              flexWrap: "wrap",
-              width: "100%",
+              minHeight: "auto",
             }}>
-            {files.map(file => (
-              <div
-                style={{
-                  display: "flex",
-                  fontSize: "12px",
-                }}>
-                <Chip
-                  label={file.name}
-                  variant="outlined"
-                  onDelete={() => removeFile(file)}
-                />
-              </div>
-            ))}
+            <div
+              style={{
+                display: "inline-flex",
+                flexWrap: "wrap",
+                width: "100%",
+              }}>
+              {files.map(file => (
+                <div
+                  style={{
+                    display: "flex",
+                    fontSize: "12px",
+                  }}>
+                  <Chip
+                    sx={{ backgroundColor: "#ffffff", mr: 0.5, mb: 0.5 }}
+                    label={file.name}
+                    variant="outlined"
+                    onDelete={() => removeFile(file)}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+      </Box>
     </div>
   );
 };
