@@ -276,9 +276,22 @@ public class BoreholeFileControllerTest
     }
 
     [TestMethod]
-    public async Task UploadWithMissingBoreholeFileId()
+    public async Task UploadWithFileToLargeShouldThrowError()
     {
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
+
+        long targetSizeInBytes = 210 * 1024 * 1024; // 210MB
+        byte[] content = new byte[targetSizeInBytes];
+        var stream = new MemoryStream(content);
+
+        var formFile = new FormFile(stream, 0, stream.Length, "file", "dummy.txt");
+
+        await AssertIsBadRequestResponse(() => controller.Upload(formFile, minBoreholeId));
+    }
+
+    [TestMethod]
+    public async Task UploadWithMissingBoreholeFileId()
+    {
         var content = Guid.NewGuid().ToString();
         var firstPdfFormFile = GetFormFileByContent(content, "file_1.pdf");
 

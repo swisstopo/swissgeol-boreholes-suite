@@ -867,6 +867,25 @@ public class UploadControllerTest
     }
 
     [TestMethod]
+    public async Task UploadWithAttachmentToLargeShouldThrowError()
+    {
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+        var boreholeCsvFile = GetRandomFile("borehoel.csv");
+
+        long targetSizeInBytes = 210 * 1024 * 1024; // 210MB
+        byte[] content = new byte[targetSizeInBytes];
+        var stream = new MemoryStream(content);
+
+        var attachment = new FormFile(stream, 0, stream.Length, "file", "dummy.txt");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null, new[] { attachment });
+
+        Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
+        BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
+        Assert.AreEqual($"One or more attachment exceed maximum file size of {200_000_000} bytes.", badRequestResult.Value);
+    }
+
+    [TestMethod]
     public void CompareValueWithTolerance()
     {
         Assert.AreEqual(true, UploadController.CompareValuesWithTolerance(null, null, 0));
