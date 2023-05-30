@@ -31,7 +31,7 @@ public class CodeListController : ControllerBase
     /// <param name="testKindIds">The hydrotest kinds used to filter the codelists to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Codelist>> GetAsync(string? schema = null, string? testKindIds = null)
+    public async Task<IEnumerable<Codelist>> GetAsync(string? schema = null, int[]? testKindIds = null)
     {
         var codeLists = context.Codelists.AsQueryable();
 
@@ -40,16 +40,15 @@ public class CodeListController : ControllerBase
             codeLists = codeLists.Where(c => c.Schema == schema);
         }
 
-        if (!string.IsNullOrEmpty(testKindIds))
+        if (testKindIds != null)
         {
-            var kindIds = testKindIds.Split(',').Select(int.Parse).ToList();
-            if (kindIds.Any())
+            if (testKindIds.Any())
             {
                 List<int> hydrotestResultGeolcodes = new();
                 List<int> flowDirectionGeolCodes = new();
                 List<int> evaluationMethodIds = new();
 
-                kindIds.ForEach(testKindId =>
+                Array.ForEach(testKindIds, testKindId =>
                 {
                     // Get the Geolcode associated with the TestKindId.
                     int testKindGeolCode = context.Codelists.SingleOrDefault(c => c.Id == testKindId)?.Geolcode ?? 0;
