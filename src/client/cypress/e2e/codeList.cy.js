@@ -33,6 +33,8 @@ describe("Codelist translations tests", () => {
       .find("button")
       .click();
 
+    cy.contains("p", "mlpr102").click();
+    cy.get("div[name=mlpr102]").children().should("have.length", 6);
     cy.contains("p", "mcla107").click();
     cy.get("div[name=mcla107]").children().should("have.length", 6);
 
@@ -61,30 +63,27 @@ describe("Codelist translations tests", () => {
     cy.get("input[name=english-input]").should("have.value", "");
 
     // click on different record.
-    cy.contains("div", "Bohrzweck").click();
+    cy.contains("div", "sehr dicht").click();
 
     // assure input fields are filled
-    cy.get("input[name=german-input]").should("have.value", "Bohrzweck");
-    cy.get("input[name=french-input]").should("have.value", "But du forage");
-    cy.get("input[name=italian-input]").should(
-      "have.value",
-      "scopo perforazione",
-    );
-    cy.get("input[name=english-input]").should("have.value", "Purpose");
+    cy.get("input[name=german-input]").should("have.value", "sehr dicht");
+    cy.get("input[name=french-input]").should("have.value", "très compact");
+    cy.get("input[name=italian-input]").should("have.value", "molto compatto");
+    cy.get("input[name=english-input]").should("have.value", "very dense");
 
     // edit translation
-    cy.get("input[name=german-input]").click().clear().type("Neuer Bohrzweck");
+    cy.get("input[name=german-input]").click().clear().type("undicht");
     cy.contains("button", "Save").click();
 
     // translation was updated
-    cy.get("input[name=german-input]").should("have.value", "Neuer Bohrzweck");
+    cy.get("input[name=german-input]").should("have.value", "undicht");
 
     // undo edit translation
-    cy.get("input[name=german-input]").click().clear().type("Bohrzweck");
+    cy.get("input[name=german-input]").click().clear().type("sehr dicht");
     cy.contains("button", "Save").click();
 
     // translation was updated
-    cy.get("input[name=german-input]").should("have.value", "Bohrzweck");
+    cy.get("input[name=german-input]").should("have.value", "sehr dicht");
   });
 
   it("Editor cannot open codelist translation section", () => {
