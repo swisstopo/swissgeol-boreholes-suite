@@ -84,6 +84,16 @@ internal static class Helpers
     }
 
     /// <summary>
+    /// Creates a FormFile from a random string.
+    /// </summary>
+    internal static FormFile GetRandomFile(string fileName)
+    {
+        byte[] fileBytes = Guid.NewGuid().ToByteArray();
+
+        return new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, fileName) { Headers = new HeaderDictionary(), ContentType = GetContentType(fileName) };
+    }
+
+    /// <summary>
     /// Get the content type of a file based on its extension.
     /// </summary>
     private static string GetContentType(string fileName)

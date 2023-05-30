@@ -23,10 +23,10 @@ describe("Test for importing boreholes.", () => {
         attachmentFileList.items.add(file);
       },
     );
-    getImportFileFromFixtures("borehole_attachment_2.pdf", "utf-8").then(
+    getImportFileFromFixtures("borehole_attachment_2.zip", "utf-8").then(
       fileContent => {
-        const file = new File([fileContent], "borehole_attachment_2.pdf", {
-          type: "application/pdf",
+        const file = new File([fileContent], "borehole_attachment_2.zip", {
+          type: "application/zip",
         });
         attachmentFileList.items.add(file);
       },

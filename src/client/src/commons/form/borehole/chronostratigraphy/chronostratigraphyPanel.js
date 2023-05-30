@@ -15,6 +15,7 @@ import ChronostratigraphyEditProfile from "./chronostratigraphyEditProfile";
 import NavigationChild from "./navigationChild";
 import TranslationText from "../../translationText";
 import * as Styled from "../../profile/styles";
+import Scale from "./scale";
 
 const ChronostratigraphyPanel = ({
   id: selectedBoreholeId,
@@ -107,6 +108,13 @@ const ChronostratigraphyPanel = ({
                   navState={navState}
                   setNavState={setNavState}
                 />
+              </NavigationChild>
+              <NavigationChild
+                sx={{ flex: "0 0 4em" }}
+                navState={navState}
+                setNavState={setNavState}
+                header={<Typography>{t("depthMD")}</Typography>}>
+                <Scale navState={navState} />
               </NavigationChild>
               <ChronostratigraphyEditProfile
                 selectedStratigraphyID={stratigraphyId}

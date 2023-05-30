@@ -67,6 +67,7 @@
   "deletelayer": "Delete this layer",
   "deletelayerconfirmation": "You are about to delete this layer, how do you want to proceed?",
   "deleting": "Deleting {{what}}",
+  "depthMD": "Depth [m\u00A0MD]",
   "details": "Details",
   "disable": "Disable",
   "disabled": "Disabled",

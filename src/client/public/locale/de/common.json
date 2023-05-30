@@ -67,6 +67,7 @@
   "deletelayer": "Bestehende Schicht löschen",
   "deletelayerconfirmation": "Sie löschen diese Schicht. Wie wollen Sie fortfahren?",
   "deleting": "{{what}} löschen",
+  "depthMD": "Tiefe [m\u00A0MD]",
   "details": "Einzelheiten",
   "disable": "Deaktivieren",
   "disabled": "Deaktiviert",

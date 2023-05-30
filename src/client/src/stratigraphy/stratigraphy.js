@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import * as Styled from "./styles";
 import PropTypes from "prop-types";
 import Draggable from "react-draggable";
@@ -47,6 +47,11 @@ const Stratigraphy = props => {
     };
     // eslint-disable-next-line
   }, []);
+
+  const sortedData = useMemo(
+    () => data.slice().sort((a, b) => a.fromDepth - b.fromDepth),
+    [data],
+  );
 
   const handleTitle = layer => {
     if (getTitle !== undefined && typeof getTitle === "function") {
@@ -143,16 +148,18 @@ const Stratigraphy = props => {
   const updateDimensions = () => {
     console.log("updateDimensions");
     if (element !== undefined && element !== null) {
-      if (data.length > 0) {
+      if (sortedData.length > 0) {
       }
       setState(prevState => ({
         ...prevState,
         height: element.current?.clientHeight,
         // add const 1.5 to show the red line in last layer when its selected
         pxm:
-          data.length > 0
+          sortedData.length > 0
             ? (element.current?.clientHeight - 1.5) /
-              Math.max(...data.map(l => l[mapping.to]).filter(l => l !== null))
+              Math.max(
+                ...sortedData.map(l => l[mapping.to]).filter(l => l !== null),
+              )
             : 0,
       }));
     }
@@ -194,7 +201,7 @@ const Stratigraphy = props => {
         ...props.style,
       }}>
       <Styled.FirstColumn>
-        {data?.map((layer, idx) => (
+        {sortedData?.map((layer, idx) => (
           <div key={"stratigraphy-minimap-layer-" + idx}>
             {
               (isLayerSelected =
@@ -260,7 +267,7 @@ const Stratigraphy = props => {
 
       <Styled.ColumnsContainer>
         <Styled.ShakingColumns offset={"-" + offset + "px"}>
-          {data.map((layer, idx) => {
+          {sortedData.map((layer, idx) => {
             const layerHeight =
               factor * (layer[mapping.to] - layer[mapping.from]);
             return (

@@ -123,6 +123,7 @@ public class StratigraphyControllerTest
             Assert.AreEqual("Earnest Little (Clone)", copiedStratigraphy.Name);
             Assert.AreEqual("admin", copiedStratigraphy.CreatedBy.Name);
             Assert.AreEqual("controller", copiedStratigraphy.UpdatedBy.Name);
+            Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
             Assert.AreSame(originalStratigraphy.Kind, copiedStratigraphy.Kind);
             Assert.AreEqual(originalStratigraphy.FillCasing.Kind, copiedStratigraphy.FillCasing.Kind);
 

@@ -67,6 +67,7 @@
   "deletelayer": "Supprimer cette couche",
   "deletelayerconfirmation": "Vous êtes sur le point de supprimer cette couche, comment voulez-vous procéder?",
   "deleting": "Suppression de {{what}}",
+  "depthMD": "Profondeur [m\u00A0MD]",
   "details": "Détails",
   "disable": "Désactiver",
   "disabled": "Désactivé",

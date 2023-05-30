@@ -1,4 +1,6 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -27,6 +29,7 @@ public class BoreholeFileController : ControllerBase
     /// <param name="file">The file to upload and link to the <see cref="Borehole"/>.</param>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded <paramref name="file"/> to.</param>
     [HttpPost("upload")]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> Upload(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
     {
         if (file == null || file.Length == 0) return BadRequest("No file provided.");
@@ -50,6 +53,7 @@ public class BoreholeFileController : ControllerBase
     /// <param name="boreholeFileId">The <see cref="BoreholeFile.FileId"/> of the file to download.</param>
     /// <returns>The stream of the downloaded file.</returns>
     [HttpGet("download")]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> Download([Range(1, int.MaxValue)] int boreholeFileId)
     {
         if (boreholeFileId == 0) return BadRequest("No boreholeFileId provided.");
@@ -80,6 +84,7 @@ public class BoreholeFileController : ControllerBase
     /// <param name="boreholeId">The id of the <see cref="Borehole"/>.</param>
     /// <returns>A list of <see cref="BoreholeFile"/>.</returns>
     [HttpGet("getAllForBorehole")]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<BoreholeFile>>> GetAllOfBorehole([Required, Range(1, int.MaxValue)] int boreholeId)
     {
         if (boreholeId == 0) return BadRequest("No boreholeId provided.");
@@ -100,6 +105,7 @@ public class BoreholeFileController : ControllerBase
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> of the borehole to detach the file from.</param>
     /// <param name="boreholeFileId">The <see cref="BoreholeFile.FileId"/> of the file to detach from the borehole.</param>
     [HttpPost("detachFile")]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> DetachFromBorehole([Required, Range(1, int.MaxValue)] int boreholeId, [Range(1, int.MaxValue)] int boreholeFileId)
     {
         if (boreholeId == 0) return BadRequest("No boreholeId provided.");
@@ -148,6 +154,7 @@ public class BoreholeFileController : ControllerBase
     /// Only the <see cref="BoreholeFile.Public"/> and <see cref="BoreholeFile.Description"/> properties can be updated.
     /// </remarks>
     [HttpPut("update")]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> Update([FromBody] BoreholeFileUpdate boreholeFileUpdate, [Required, Range(1, int.MaxValue)] int boreholeId, [Range(1, int.MaxValue)] int boreholeFileId)
     {
         if (boreholeFileUpdate == null) return BadRequest("No boreholeFileUpdate provided.");
