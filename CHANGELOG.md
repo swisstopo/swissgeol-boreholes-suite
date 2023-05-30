@@ -12,6 +12,7 @@
 
 ### Fixed
 
+- Fixed italian translation for _completionFinished_.
 - Workgroup dropdown in the import menu was not scrollable.
 - Ensure duplicated boreholes are detected during borehole import.
 - When the application was set to German, an issue occurred where the term 'keine_Angabe' was unecessarily displayed in the lithology subtitle.
