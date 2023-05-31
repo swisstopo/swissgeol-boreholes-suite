@@ -289,7 +289,7 @@ class MenuEditorSearch extends React.Component {
                 <FileDropzone
                   onHandleFileChange={this.handleBoreholeFileChange}
                   defaultText={"dropZoneBoreholesText"}
-                  acceptedFileExtension={".csv"}
+                  restrictAcceptedFileTypeToCsv={true}
                   maxFilesToSelectAtOnce={1}
                   maxFilesToUpload={1}
                   isDisabled={false}
@@ -309,9 +309,7 @@ class MenuEditorSearch extends React.Component {
                 <FileDropzone
                   onHandleFileChange={this.handleBoreholeAttachmentChange}
                   defaultText={"dropZoneAttachmentsText"}
-                  acceptedFileExtension={".pdf"}
-                  maxFilesToSelectAtOnce={10}
-                  maxFilesToUpload={100}
+                  restrictAcceptedFileTypeToCsv={false}
                   isDisabled={!this.state.selectedFile?.length > 0}
                   dataCy={"import-boreholeFile-attachments-input"}
                 />
@@ -335,7 +333,7 @@ class MenuEditorSearch extends React.Component {
                 <FileDropzone
                   onHandleFileChange={this.handleLithologyFileChange}
                   defaultText={"dropZoneLithologyText"}
-                  acceptedFileExtension={".csv"}
+                  restrictAcceptedFileTypeToCsv={true}
                   maxFilesToSelectAtOnce={1}
                   maxFilesToUpload={1}
                   isDisabled={!this.state.selectedFile?.length > 0}

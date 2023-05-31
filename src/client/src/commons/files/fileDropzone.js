@@ -128,10 +128,9 @@ export const FileDropzone = props => {
   const { getRootProps, getInputProps } = useDropzone({
     onDropRejected,
     onDropAccepted,
-    maxFiles: maxFilesToSelectAtOnce,
+    maxFiles: maxFilesToSelectAtOnce || Infinity,
     maxSize: 209715200,
     accept: restrictAcceptedFileTypeToCsv ? { "text/csv": [".csv"] } : "*",
-    disabled: isDisabled || files.length >= maxFilesToUpload,
     noClick: isDisabled,
     noKeyboard: isDisabled,
   });
