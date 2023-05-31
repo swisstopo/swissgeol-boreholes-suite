@@ -51,7 +51,6 @@ class CommentComponent extends React.Component {
 }
 
 CommentComponent.propTypes = {
-  fields: PropTypes.array,
   height: PropTypes.number,
   onChange: PropTypes.func,
   readOnly: PropTypes.bool,
@@ -59,7 +58,6 @@ CommentComponent.propTypes = {
 };
 
 CommentComponent.defaultProps = {
-  fields: [],
   height: 150,
   language: "en",
   readOnly: false,

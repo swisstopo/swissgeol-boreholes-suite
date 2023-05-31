@@ -5,17 +5,9 @@ import { withTranslation } from "react-i18next";
 import CommentComponent from "./commentComponent";
 
 const CommentArea = props => {
-  const { domains, readOnly, height, onChange, value, i18n, border } = props;
+  const { readOnly, height, onChange, value, border } = props;
   return (
     <CommentComponent
-      fields={
-        domains.data.hasOwnProperty("borehole_form")
-          ? domains.data.borehole_form.map(item => ({
-              id: item.code,
-              display: item[i18n.language].text,
-            }))
-          : []
-      }
       height={height}
       onChange={onChange}
       readOnly={readOnly}

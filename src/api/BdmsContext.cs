@@ -183,8 +183,6 @@ public class BdmsContext : DbContext
                         .HasForeignKey(l => l.HydrotestId),
                     j => j.HasKey(lc => new { lc.HydrotestId, lc.CodelistId }));
 
-        modelBuilder.Entity<Hydrotest>().HasOne(l => l.TestKind).WithMany().HasForeignKey(l => l.TestKindId);
-
         modelBuilder.Entity<GroundwaterLevelMeasurement>().ToTable("groundwater_level_measurement").HasBaseType<Observation>();
 
         modelBuilder.Entity<FieldMeasurement>().ToTable("field_measurement").HasBaseType<Observation>();

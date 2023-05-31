@@ -588,9 +588,7 @@ public static class BdmsContextExtensions
         var waterIngresses = observations.Where(o => o.Type == ObservationType.WaterIngress).Select(observation => SeededWaterIngresses(observation)).ToList();
 
         // Seed hydrotests
-        var fakeHydrotests = new Faker<Hydrotest>()
-            .RuleFor(o => o.TestKindId, f => f.PickRandom(hydrotestKindIds))
-            .RuleFor(o => o.TestKind, _ => default!);
+        var fakeHydrotests = new Faker<Hydrotest>();
 
         Hydrotest SeededHydrotests(Observation observation)
         {

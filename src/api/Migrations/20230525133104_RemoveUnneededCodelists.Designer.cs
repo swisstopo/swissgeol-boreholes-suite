@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20230525133104_RemoveUnneededCodelists")]
+    partial class RemoveUnneededCodelists
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1601,6 +1603,12 @@ namespace BDMS.Migrations
                 {
                     b.HasBaseType("BDMS.Models.Observation");
 
+                    b.Property<int>("TestKindId")
+                        .HasColumnType("integer")
+                        .HasColumnName("testkind");
+
+                    b.HasIndex("TestKindId");
+
                     b.ToTable("hydrotest", "bdms");
                 });
 
@@ -2318,6 +2326,14 @@ namespace BDMS.Migrations
                         .HasForeignKey("BDMS.Models.Hydrotest", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "TestKind")
+                        .WithMany()
+                        .HasForeignKey("TestKindId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TestKind");
                 });
 
             modelBuilder.Entity("BDMS.Models.WaterIngress", b =>

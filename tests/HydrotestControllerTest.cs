@@ -71,7 +71,6 @@ public class HydrotestControllerTests
         Assert.AreEqual(hydrotest.CompletionFinished, false);
         Assert.AreEqual(hydrotest.Comment, "Libero debitis impedit cumque sit dolorum dignissimos.");
         Assert.AreEqual(hydrotest.ReliabilityId, 15203156);
-        Assert.AreEqual(hydrotest.TestKindId, 15203176);
 
         // Assert hydrotestresult
         Assert.AreEqual(hydrotest.HydrotestResults.Count, 10);
@@ -102,7 +101,7 @@ public class HydrotestControllerTests
             Comment = "Test comment",
             BoreholeId = 1008104,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
-            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 1).Id,
+            CodelistIds = new List<int> { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 1).Id }, // test kind
         };
 
         var updatedHydrotest = new Hydrotest
@@ -120,8 +119,7 @@ public class HydrotestControllerTests
             Comment = "Updated test comment",
             BoreholeId = 1008105,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
-            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 3).Id,
-            CodelistIds = new List<int> { 15203187, 15203189 },
+            CodelistIds = new List<int> { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 3).Id, 15203187, 15203189 },
         };
 
         try
@@ -147,7 +145,7 @@ public class HydrotestControllerTests
             Assert.AreEqual(updatedHydrotest.Comment, editedHydrotest.Comment);
             Assert.AreEqual(updatedHydrotest.BoreholeId, editedHydrotest.BoreholeId);
             Assert.AreEqual(updatedHydrotest.ReliabilityId, editedHydrotest.ReliabilityId);
-            Assert.AreEqual(updatedHydrotest.TestKindId, editedHydrotest.TestKindId);
+            CollectionAssert.AreEqual(updatedHydrotest.CodelistIds!.ToList(), editedHydrotest.Codelists!.Select(c => c.Id).ToList());
             Assert.AreEqual("Entnahme", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).De);
             Assert.AreEqual("stationär", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).De);
         }
@@ -162,7 +160,7 @@ public class HydrotestControllerTests
     [TestMethod]
     public async Task EditAsyncInvalidEntityReturnsNotFound()
     {
-        var nonExistentHydrotest = new Hydrotest { Id = 678135, TestKindId = 344179 };
+        var nonExistentHydrotest = new Hydrotest { Id = 678135 };
 
         var result = await controller.EditHydrotestAsync(nonExistentHydrotest) as NotFoundResult;
 
@@ -187,14 +185,17 @@ public class HydrotestControllerTests
             Comment = "New test comment",
             BoreholeId = 1006493,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
-            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id,
+            CodelistIds = new List<int>() { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id },
             HydrotestResults = new List<HydrotestResult>() { new HydrotestResult { ParameterId = 15203194 } },
         };
 
+        Hydrotest? addedHydrotest = null;
+
         try
         {
-            var createResponse = await controller.CreateAsync(newHydrotest);
-            Assert.IsInstanceOfType(createResponse, typeof(OkObjectResult));
+            var okObjectResult = (OkObjectResult)await controller.CreateAsync(newHydrotest);
+            Assert.IsInstanceOfType(okObjectResult, typeof(OkObjectResult));
+            addedHydrotest = (Hydrotest)okObjectResult.Value!;
 
             newHydrotest = await context.Hydrotests.FindAsync(newHydrotest.Id);
             Assert.IsNotNull(newHydrotest);
@@ -210,7 +211,7 @@ public class HydrotestControllerTests
             Assert.AreEqual(newHydrotest.Comment, "New test comment");
             Assert.AreEqual(newHydrotest.BoreholeId, 1006493);
             Assert.AreEqual(newHydrotest.ReliabilityId, 15203158);
-            Assert.AreEqual(newHydrotest.TestKindId, 15203171);
+            CollectionAssert.Contains((System.Collections.ICollection)newHydrotest.CodelistIds!, 15203171); // Test kind Id
 
             var deleteResponse = await controller.DeleteAsync(newHydrotest.Id);
             Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
@@ -220,11 +221,57 @@ public class HydrotestControllerTests
         }
         finally
         {
-            var addedHydrotest = context.Hydrotests.SingleOrDefault(w => w.Id == 3);
             if (addedHydrotest != null)
             {
-                context.Hydrotests.Remove(addedHydrotest);
-                await context.SaveChangesAsync();
+                var hydrotestToDelete = context.Hydrotests.SingleOrDefault(w => w.Id == addedHydrotest.Id);
+                if (hydrotestToDelete != null)
+                {
+                    context.Hydrotests.Remove(hydrotestToDelete);
+                    await context.SaveChangesAsync();
+                }
+            }
+        }
+    }
+
+    [TestMethod]
+    public async Task CreateHydrotestWithSeveralTestKinds()
+    {
+        var newHydrotest = new Hydrotest
+        {
+            Type = ObservationType.Hydrotest,
+            BoreholeId = 1006493,
+            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
+            CodelistIds = new List<int>()
+            {
+                context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id,
+                context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 1).Id,
+                context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 4).Id,
+            },
+        };
+
+        Hydrotest? addedHydrotest = null;
+
+        try
+        {
+            var okObjectResult = (ObjectResult)await controller.CreateAsync(newHydrotest);
+            Assert.IsInstanceOfType(okObjectResult, typeof(OkObjectResult));
+            addedHydrotest = (Hydrotest)okObjectResult.Value!;
+
+            var savedHydrotest = context.Hydrotests.SingleOrDefault(w => w.Id == addedHydrotest.Id);
+
+            Assert.AreEqual(savedHydrotest.Codelists.Count, 3);
+            Assert.AreEqual(savedHydrotest.Codelists.Single(c => c.Geolcode == 2).De, context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).De);
+        }
+        finally
+        {
+            if (addedHydrotest != null)
+            {
+                var hydrotestToDelete = context.Hydrotests.SingleOrDefault(w => w.Id == addedHydrotest.Id);
+                if (hydrotestToDelete != null)
+                {
+                    context.Hydrotests.Remove(hydrotestToDelete);
+                    await context.SaveChangesAsync();
+                }
             }
         }
     }
@@ -235,8 +282,7 @@ public class HydrotestControllerTests
         var newHydrotest = new Hydrotest
         {
             Type = ObservationType.Hydrotest,
-            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id,
-            CodelistIds = new List<int>() { 23, 45 },
+            CodelistIds = new List<int>() { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id, 23, 45 },
         };
 
         var createResponse = await controller.CreateAsync(newHydrotest);
@@ -249,7 +295,8 @@ public class HydrotestControllerTests
         var newHydrotest = new Hydrotest
         {
             Type = ObservationType.Hydrotest,
-            TestKindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id,
+            CodelistIds = new List<int>() { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id },
+
             HydrotestResults = new List<HydrotestResult>() { new HydrotestResult { ParameterId = 73825 } },
         };
 
