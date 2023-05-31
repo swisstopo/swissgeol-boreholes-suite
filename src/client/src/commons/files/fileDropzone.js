@@ -9,7 +9,7 @@ export const FileDropzone = props => {
     defaultText,
     maxFilesToSelectAtOnce,
     maxFilesToUpload,
-    acceptedFileExtension,
+    restrictAcceptedFileTypeToCsv,
     isDisabled,
     dataCy,
   } = props;
@@ -124,25 +124,13 @@ export const FileDropzone = props => {
     [showErrorMsg],
   );
 
-  // Sets the accepted file types for the dropzone
-  const setFileAcceptedFileTypes = () => {
-    switch (acceptedFileExtension) {
-      case ".pdf":
-        return { "application/pdf": [".pdf"] };
-      case ".csv":
-        return { "text/csv": [".csv"] };
-      default:
-        break;
-    }
-  };
-
   // Create the dropzone
   const { getRootProps, getInputProps } = useDropzone({
     onDropRejected,
     onDropAccepted,
     maxFiles: maxFilesToSelectAtOnce,
     maxSize: 209715200,
-    accept: setFileAcceptedFileTypes(),
+    accept: restrictAcceptedFileTypeToCsv ? { "text/csv": [".csv"] } : "*",
     disabled: isDisabled || files.length >= maxFilesToUpload,
     noClick: isDisabled,
     noKeyboard: isDisabled,

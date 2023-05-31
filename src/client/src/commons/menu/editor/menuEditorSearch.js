@@ -107,7 +107,6 @@ class MenuEditorSearch extends React.Component {
   }
 
   render() {
-    console.log(!this.state.selectedFile?.length > 0);
     const { history, boreholes, t } = this.props;
     return [
       <div
