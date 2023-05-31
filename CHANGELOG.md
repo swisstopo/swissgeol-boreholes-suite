@@ -8,7 +8,8 @@
 
 ### Changed
 
-- Enable all file types as borehole attachments.
+- Enabled all file types as borehole attachments.
+- Improved appearance of import UI.
 
 ### Fixed
 
