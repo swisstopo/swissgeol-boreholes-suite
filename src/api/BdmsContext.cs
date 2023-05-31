@@ -28,6 +28,7 @@ public class BdmsContext : DbContext
     public DbSet<LithologicalDescription> LithologicalDescriptions { get; set; }
     public DbSet<FaciesDescription> FaciesDescriptions { get; set; }
     public DbSet<ChronostratigraphyLayer> ChronostratigraphyLayers { get; set; }
+    public DbSet<LithostratigraphyLayer> LithostratigraphyLayers { get; set; }
     public DbSet<Observation> Observations { get; set; }
     public DbSet<WaterIngress> WaterIngresses { get; set; }
     public DbSet<Hydrotest> Hydrotests { get; set; }
