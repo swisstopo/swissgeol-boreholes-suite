@@ -31,7 +31,7 @@ const HydrotestResultTable = ({
   submitForm,
   setAddedHydrotestFromResultTable,
   filteredTestKindDomains,
-  hydrotestKindId,
+  hydrotestKindIds,
   editingId,
   setEditingId,
 }) => {
@@ -71,7 +71,7 @@ const HydrotestResultTable = ({
       const existingResults = removeParameter(hydrotest.hydrotestResults || []);
       updateHydrotest({
         ...hydrotest,
-        testKindId: hydrotestKindId,
+        codelistIds: [...hydrotest.codelistIds, ...hydrotestKindIds],
         hydrotestResults: [...existingResults, newTestResult],
       });
     }
@@ -83,7 +83,7 @@ const HydrotestResultTable = ({
     );
     updateHydrotest({
       ...hydrotest,
-      testKindId: hydrotestKindId,
+      codelistIds: [...hydrotest.codelistIds, ...hydrotestKindIds],
       hydrotestResults: [...unchangedResults, updatedTestResult],
     });
   };
@@ -94,6 +94,7 @@ const HydrotestResultTable = ({
     );
     updateHydrotest({
       ...hydrotest,
+      codelistIds: [...hydrotest.codelistIds, ...hydrotestKindIds],
       hydrotestResults: [...remainingResults],
     });
   };

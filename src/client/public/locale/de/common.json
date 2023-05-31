@@ -433,7 +433,7 @@
   "maxValue": "Maximalwert",
   "hydrotestRequiredFieldsAlert": "'Beginn', 'Zuverlässigkeit der Angabe' und 'Art des Hydrotests' sind obligatorische Felder, der Eintrag kann nicht gespeichert werden, wenn sie nicht ausgefüllt sind.",
   "hydrotestResultRequiredFieldsAlert": "'Parameter' ist ein obligatorisches Feld, der Eintrag kann nicht gespeichert werden, wenn es nicht ausgefüllt ist.",
-  "hydrotestResultsWillBeDeleted": "Achtung! Wenn Sie die Art des Hydrotests ändern, werden alle zugehörigen Resultate des Hydrotests gelöscht.",
+  "hydrotestResultsWillBeDeleted": "Achtung! Wenn Sie eine Art des Hydrotests löschen, werden inkompatible Testresultate gelöscht.",
   "field_measurement": "Feldmessung",
   "field_measurement_sample_type": "Beprobungstyp",
   "fieldMeasurementRequiredFieldsAlert": "'Beprobungstyp', 'Parameter', 'Wert', 'Beginn' und 'Zuverlässigkeit der Angaben' sind obligatorische Felder, der Eintrag kann nicht gespeichert werden, wenn sie nicht ausgefüllt sind.",

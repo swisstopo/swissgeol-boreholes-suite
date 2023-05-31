@@ -28,10 +28,10 @@ public class CodeListController : ControllerBase
     /// Asynchronously gets the <see cref="Codelist"/>s, optionally filtered by <paramref name="schema"/>.
     /// </summary>
     /// <param name="schema">The schema of the codelists to get.</param>
-    /// <param name="testKindId">The hydrotest kind used to filter the codelists to get.</param>
+    /// <param name="testKindIds">The hydrotest kinds used to filter the codelists to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Codelist>> GetAsync(string? schema = null, int? testKindId = null)
+    public async Task<IEnumerable<Codelist>> GetAsync(string? schema = null, [FromQuery(Name = "testKindIds")] int[]? testKindIds = null)
     {
         var codeLists = context.Codelists.AsQueryable();
 
@@ -40,22 +40,32 @@ public class CodeListController : ControllerBase
             codeLists = codeLists.Where(c => c.Schema == schema);
         }
 
-        if (testKindId.HasValue)
+        if (testKindIds != null)
         {
-            // Get the Geolcode associated with the TestKindId.
-            int testKindGeolCode = context.Codelists.SingleOrDefault(c => c.Id == testKindId)?.Geolcode ?? 0;
+            if (testKindIds.Any())
+            {
+                List<int> hydrotestResultGeolcodes = new();
+                List<int> flowDirectionGeolCodes = new();
+                List<int> evaluationMethodIds = new();
 
-            // Get the lists of Geolcodes from the HydroCodeLookup based on the testKindGeolCode.
-            List<int> hydrotestResultGeolcodes = HydroCodeLookup.HydrotestResultParameterOptions.TryGetValue(testKindGeolCode, out List<int>? tempHRIds) ? tempHRIds : new List<int>();
-            List<int> flowDirectionGeolCodes = HydroCodeLookup.HydrotestFlowDirectionOptions.TryGetValue(testKindGeolCode, out List<int>? tempFDIds) ? tempFDIds : new List<int>();
-            List<int> evaluationMethodIds = HydroCodeLookup.HydrotestEvaluationMethodOptions.TryGetValue(testKindGeolCode, out List<int>? tempEMIds) ? tempEMIds : new List<int>();
+                Array.ForEach(testKindIds, testKindId =>
+                {
+                    // Get the Geolcode associated with the TestKindId.
+                    int testKindGeolCode = context.Codelists.SingleOrDefault(c => c.Id == testKindId)?.Geolcode ?? 0;
 
-            // Return the Codelists where the Codelist's Geolcode matches any of the compatible geolcodes form  the HydroCodeLookup.
-            codeLists = codeLists.Where(c =>
-                c.Geolcode != null &&
-                ((c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema && hydrotestResultGeolcodes.Contains(c.Geolcode.Value)) ||
-                (c.Schema == HydrogeologySchemas.FlowdirectionSchema && flowDirectionGeolCodes.Contains(c.Geolcode.Value)) ||
-                (c.Schema == HydrogeologySchemas.EvaluationMethodSchema && evaluationMethodIds.Contains(c.Geolcode.Value))));
+                    // Get the lists of Geolcodes from the HydroCodeLookup based on the testKindGeolCode.
+                    hydrotestResultGeolcodes.AddRange(HydroCodeLookup.HydrotestResultParameterOptions.TryGetValue(testKindGeolCode, out List<int>? tempHRIds) ? tempHRIds : new List<int>());
+                    flowDirectionGeolCodes.AddRange(HydroCodeLookup.HydrotestFlowDirectionOptions.TryGetValue(testKindGeolCode, out List<int>? tempFDIds) ? tempFDIds : new List<int>());
+                    evaluationMethodIds.AddRange(HydroCodeLookup.HydrotestEvaluationMethodOptions.TryGetValue(testKindGeolCode, out List<int>? tempEMIds) ? tempEMIds : new List<int>());
+                });
+
+                // Return the Codelists where the Codelist's Geolcode matches any of the compatible geolcodes form  the HydroCodeLookup.
+                codeLists = codeLists.Where(c =>
+                    c.Geolcode != null &&
+                    ((c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema && hydrotestResultGeolcodes.Contains(c.Geolcode.Value)) ||
+                    (c.Schema == HydrogeologySchemas.FlowdirectionSchema && flowDirectionGeolCodes.Contains(c.Geolcode.Value)) ||
+                    (c.Schema == HydrogeologySchemas.EvaluationMethodSchema && evaluationMethodIds.Contains(c.Geolcode.Value))));
+            }
         }
 
         return await codeLists.AsNoTracking().ToListAsync().ConfigureAwait(false);

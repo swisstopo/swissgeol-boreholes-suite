@@ -8,6 +8,7 @@
 
 ### Changed
 
+- The hydrotest input mask now supports selecting multiple hydrotest kinds.
 - Enabled all file types as borehole attachments.
 - Improved appearance of import UI.
 

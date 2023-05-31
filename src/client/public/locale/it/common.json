@@ -431,7 +431,7 @@
   "maxValue": "Valore massimo",
   "hydrotestRequiredFieldsAlert": "'Inizio', 'Affidabilità delle informazioni' e 'Tipo di test idrico' sono campi obbligatori, la voce non può essere salvata se non sono compilati.",
   "hydrotestResultRequiredFieldsAlert": "'Parametro' è un campo obbligatorio, la voce non può essere salvata se non è compilata.",
-  "hydrotestResultsWillBeDeleted": "Attenzione! Se si modifica il tipo di test idrico, tutti i risultati di test idrico associati verranno eliminati.",
+  "hydrotestResultsWillBeDeleted": "Attenzione! Se si elimina un tipo di test idrico, i risultati dei test incompatibili verranno eliminati.",
   "field_measurement": "Misurazione in campo",
   "field_measurement_sample_type": "Tipo di campionamento",
   "fieldMeasurementRequiredFieldsAlert": "'Tipo di campionamento', 'Parametro', 'Valore', 'Inizio' e 'Affidabilità delle informazioni' sono campi obbligatori, la voce non può essere salvata se non sono compilati.",
