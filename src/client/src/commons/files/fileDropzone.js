@@ -137,7 +137,7 @@ export const FileDropzone = props => {
   };
 
   // Create the dropzone
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDropRejected,
     onDropAccepted,
     maxFiles: maxFilesToSelectAtOnce,
