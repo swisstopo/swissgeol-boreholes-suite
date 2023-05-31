@@ -88,6 +88,10 @@ public class BoreholeControllerTest
             Assert.AreNotEqual(originalStratigraphy.ChronostratigraphyLayers.First().Id, copiedstratigraphy.ChronostratigraphyLayers.First().Id);
             Assert.AreEqual(originalStratigraphy.ChronostratigraphyLayers.First().ChronostratigraphyId, copiedstratigraphy.ChronostratigraphyLayers.First().ChronostratigraphyId);
 
+            Assert.AreNotSame(originalStratigraphy.LithostratigraphyLayers, copiedstratigraphy.LithostratigraphyLayers);
+            Assert.AreNotEqual(originalStratigraphy.LithostratigraphyLayers.First().Id, copiedstratigraphy.LithostratigraphyLayers.First().Id);
+            Assert.AreEqual(originalStratigraphy.LithostratigraphyLayers.First().LithostratigraphyId, copiedstratigraphy.LithostratigraphyLayers.First().LithostratigraphyId);
+
             Assert.AreNotSame(originalBorehole.BoreholeFiles, copiedBorehole.BoreholeFiles);
             Assert.AreNotEqual(originalBorehole.BoreholeFiles.First().BoreholeId, copiedBorehole.BoreholeFiles.First().BoreholeId);
             Assert.AreEqual(originalBorehole.BoreholeFiles.First().FileId, copiedBorehole.BoreholeFiles.First().FileId);
@@ -111,10 +115,12 @@ public class BoreholeControllerTest
             var lithologicalDescriptionsToRemove = stratigraphiesToRemove.SelectMany(s => s.LithologicalDescriptions);
             var faciesDescriptionsToRemove = stratigraphiesToRemove.SelectMany(s => s.FaciesDescriptions);
             var chronostratigraphiesToRemove = stratigraphiesToRemove.SelectMany(s => s.ChronostratigraphyLayers);
+            var lithostratigraphiesToRemove = stratigraphiesToRemove.SelectMany(s => s.LithostratigraphyLayers);
             context.Layers.RemoveRange(layersToRemove);
             context.LithologicalDescriptions.RemoveRange(lithologicalDescriptionsToRemove);
             context.FaciesDescriptions.RemoveRange(faciesDescriptionsToRemove);
             context.ChronostratigraphyLayers.RemoveRange(chronostratigraphiesToRemove);
+            context.LithostratigraphyLayers.RemoveRange(lithostratigraphiesToRemove);
             context.Stratigraphies.RemoveRange(stratigraphiesToRemove);
             context.Boreholes.Remove(copiedBorehole);
             context.SaveChanges();
@@ -132,6 +138,7 @@ public class BoreholeControllerTest
             .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithostratigraphyLayers)
             .Include(b => b.CreatedBy)
             .Include(b => b.UpdatedBy)
             .Include(b => b.LockedBy)
