@@ -31,7 +31,7 @@ public class CodeListController : ControllerBase
     /// <param name="testKindIds">The hydrotest kinds used to filter the codelists to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Codelist>> GetAsync(string? schema = null, int[]? testKindIds = null)
+    public async Task<IEnumerable<Codelist>> GetAsync(string? schema = null, [FromQuery(Name = "testKindIds")] int[]? testKindIds = null)
     {
         var codeLists = context.Codelists.AsQueryable();
 
