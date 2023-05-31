@@ -42,7 +42,12 @@ const HydrotestDisplay = props => {
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("hydrotestKind")}</Typography>
               <TypographyWithBottomMargin variant="subtitle1">
-                {hydrotest.testKind?.[i18n.language] || "-"}
+                {hydrotest.codelists
+                  .filter(
+                    c => c.schema === hydrogeologySchemaConstants.hydrotestKind,
+                  )
+                  .map(c => c[i18n.language])
+                  .join(", ") || "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
             <StackHalfWidth direction="column">

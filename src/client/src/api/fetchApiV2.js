@@ -186,17 +186,23 @@ export const useDomainSchema = schema =>
     },
   );
 
-export const useHydrotestDomains = testKindId =>
-  useQuery(
-    ["domains", testKindId],
+export const useHydrotestDomains = testKindIds => {
+  let queryString = "";
+  testKindIds.forEach(id => {
+    queryString += `testKindIds=${id}&`;
+  });
+
+  return useQuery(
+    ["domains", queryString],
     async () => {
-      return await fetchApiV2(`codelist?testKindId=${testKindId}`, "GET");
+      return await fetchApiV2(`codelist?${queryString}`, "GET");
     },
     {
       staleTime: 10 * (60 * 1000), // 10 mins
       cacheTime: 15 * (60 * 1000), // 15 mins
     },
   );
+};
 
 export const layerQueryKey = "layers";
 
