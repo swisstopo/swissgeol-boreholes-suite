@@ -187,11 +187,15 @@ export const useDomainSchema = schema =>
   );
 
 export const useHydrotestDomains = testKindIds => {
-  const idString = testKindIds.join(",");
+  let queryString = "";
+  testKindIds.forEach(id => {
+    queryString += `testKindIds=${id}&`;
+  });
+
   return useQuery(
-    ["domains", idString],
+    ["domains", queryString],
     async () => {
-      return await fetchApiV2(`codelist?testKindIds=${idString}`, "GET");
+      return await fetchApiV2(`codelist?${queryString}`, "GET");
     },
     {
       staleTime: 10 * (60 * 1000), // 10 mins
