@@ -431,7 +431,7 @@
   "maxValue": "Valeur maximale",
   "hydrotestRequiredFieldsAlert": "'Heure de début', 'Fiabilité des informations' et 'Type d'hydro-test' sont des champs obligatoires, l'entrée ne peut pas être enregistrée si elles ne sont pas remplies.",
   "hydrotestResultRequiredFieldsAlert": "'Paramètre' est un champ obligatoire, l'entrée ne peut pas être sauvegardée si elle n'est pas remplie.",
-  "hydrotestResultsWillBeDeleted": "Attention! Si vous modifiez le type d'hydro-test, tous les résultats de l'hydro-test associés seront supprimés.",
+  "hydrotestResultsWillBeDeleted": "Attention! Si vous supprimez un type d'hydrotest, les résultats de tests incompatibles seront supprimés.",
   "field_measurement": "Mesure de terrain",
   "field_measurement_sample_type": "Type d'échantillonnage",
   "fieldMeasurementRequiredFieldsAlert": "'Type d'échantillonnage', 'Paramètre', 'Valeur', 'Début' et 'Fiabilité des informations' sont des champs obligatoires, l'entrée ne peut pas être enregistrée si elles ne sont pas remplies.",

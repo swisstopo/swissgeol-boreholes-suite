@@ -3,7 +3,7 @@
 namespace BDMS;
 
 /// <summary>
-/// The HydroCodeLookup static class provides mappings between <see cref="Hydrotest.TestKindId"/> identifiers
+/// The HydroCodeLookup static class provides mappings between testKindId identifiers
 /// and compatible geolcodes for hydrotest results, flow directions, and evaluation methods.
 /// </summary>
 /// <remarks>
@@ -13,7 +13,7 @@ namespace BDMS;
 public static class HydroCodeLookup
 {
     /// <summary>
-    /// Gets a dictionary that maps a <see cref="Hydrotest.TestKindId"/> identifier to a list of compatible geolcodes for the <see cref="HydrotestResult.Parameter"/> of a <see cref="HydrotestResult"/>.
+    /// Gets a dictionary that maps a testKindId identifier to a list of compatible geolcodes for the <see cref="HydrotestResult.Parameter"/> of a <see cref="HydrotestResult"/>.
     /// </summary>
     public static Dictionary<int, List<int>> HydrotestResultParameterOptions { get; } = new()
     {
@@ -32,7 +32,7 @@ public static class HydroCodeLookup
     };
 
     /// <summary>
-    /// Gets a dictionary that maps a <see cref="Hydrotest.TestKindId"/> identifier to a list of compatible geolcodes for <see cref="Hydrotest"/> flow directions.
+    /// Gets a dictionary that maps a testKindId identifier to a list of compatible geolcodes for <see cref="Hydrotest"/> flow directions.
     /// </summary>
     public static Dictionary<int, List<int>> HydrotestFlowDirectionOptions { get; } = new()
     {
@@ -49,7 +49,7 @@ public static class HydroCodeLookup
     };
 
     /// <summary>
-    /// Gets a dictionary that maps a <see cref="Hydrotest.TestKindId"/> identifier to a list of compatible geolcodes for <see cref="Hydrotest"/> evaluation methods.
+    /// Gets a dictionary that maps a testKindId identifier to a list of compatible geolcodes for <see cref="Hydrotest"/> evaluation methods.
     /// </summary>
     public static Dictionary<int, List<int>> HydrotestEvaluationMethodOptions { get; } = new()
     {

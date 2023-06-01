@@ -3,6 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import {
   Box,
   Card,
+  Chip,
   FormControl,
   IconButton,
   MenuItem,
@@ -15,6 +16,7 @@ import ObservationInput from "./observationInput";
 import HydrotestResultTable from "./hydrotestResultTable";
 import CheckIcon from "@mui/icons-material/Check";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
 import { useHydrotestDomains, useDomains } from "../../../../api/fetchApiV2";
 import { AlertContext } from "../../../alert/alertContext";
@@ -32,11 +34,13 @@ const HydrotestInput = ({
   const [isAddingHydrotestResult, setIsAddingHydrotestResult] = useState(false);
   const [editingHydrotestResultId, setEditingHydrotestResultId] =
     useState(null);
-  const [hydrotestKindId, setHydrotestKindId] = useState(
-    hydrotest?.testKindId || 0,
+  const [hydrotestKindIds, setHydrotestKindIds] = useState(
+    hydrotest?.codelists
+      ?.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestKind)
+      .map(c => c.id) || [],
   );
   const domains = useDomains();
-  const filteredTestKindDomains = useHydrotestDomains(hydrotestKindId);
+  const filteredTestKindDomains = useHydrotestDomains(hydrotestKindIds);
   const { t, i18n } = useTranslation();
   const {
     handleSubmit,
@@ -49,36 +53,118 @@ const HydrotestInput = ({
   } = useForm();
   const alertContext = useContext(AlertContext);
 
+  // trigger form validation on mount
+  useEffect(() => {
+    trigger();
+  }, [trigger]);
+
+  const getFilteredDomains = (schema, data) =>
+    data?.filter(c => c.schema === schema).map(c => c.id);
+
+  const getCompatibleValues = (allowedIds, formValues) =>
+    formValues?.filter(c => allowedIds?.includes(c)) || [];
+
+  useEffect(() => {
+    // check the compatibility of codelists (flowdirection, evaluationMethod, hydrotestResultParameter) when the hydrotestKinds (and therefore the filteredTestKindDomains) change.
+    if (filteredTestKindDomains.data?.length > 0) {
+      const formValues = getValues();
+      // delete flowDirections, evaluationMethods that are not longer compatible with the selected hydrotestKinds.
+      const allowedEvalutationMethodId = getFilteredDomains(
+        hydrogeologySchemaConstants.hydrotestEvaluationMethod,
+        filteredTestKindDomains.data,
+      );
+      const allowedFlowDirectionIds = getFilteredDomains(
+        hydrogeologySchemaConstants.hydrotestFlowDirection,
+        filteredTestKindDomains.data,
+      );
+
+      const compatibleEvaluationMethods = getCompatibleValues(
+        allowedEvalutationMethodId,
+        formValues.evaluationMethodId,
+      );
+      const compatibleFlowDirections = getCompatibleValues(
+        allowedFlowDirectionIds,
+        formValues.flowDirectionId,
+      );
+
+      // set form values
+      setValue("evaluationMethodId", compatibleEvaluationMethods);
+      setValue("flowDirectionId", compatibleFlowDirections);
+
+      // delete hydrotestResults that are not longer compatible with the selected hydrotestKinds.
+      const allowedHydrotestResultParameterIds = getFilteredDomains(
+        hydrogeologySchemaConstants.hydrotestResultParameter,
+        filteredTestKindDomains.data,
+      );
+
+      const compatibleHydrotestParameterIds = getCompatibleValues(
+        allowedHydrotestResultParameterIds,
+        hydrotest.hydrotestResults?.map(h => h.parameterId),
+      );
+
+      if (!(hydrotest?.hydrotestResults?.length > 0)) return;
+      const filteredHydrotestResults = hydrotest.hydrotestResults
+        .filter(h => compatibleHydrotestParameterIds.includes(h.parameterId))
+        .map(r => {
+          delete r.parameter;
+          return r;
+        });
+
+      if (filteredHydrotestResults.length >= hydrotest.hydrotestResults.length)
+        return;
+
+      updateHydrotest({
+        ...hydrotest,
+        codelistIds:
+          hydrotest?.codelists?.length > 0
+            ? [...hydrotest?.codelists?.map(c => c.id)]
+            : [],
+        hydrotestResults: filteredHydrotestResults,
+      });
+    }
+  }, [
+    filteredTestKindDomains,
+    getValues,
+    hydrotest,
+    setValue,
+    updateHydrotest,
+  ]);
+
   const closeFormIfCompleted = () => {
     const formValues = getValues();
-    if (!formValues.reliabilityId || !formValues.startTime) {
+    if (
+      !formValues.reliabilityId ||
+      !formValues.startTime ||
+      formValues.testKindId?.length < 1
+    ) {
       alertContext.error(t("hydrotestRequiredFieldsAlert"));
-    }
-    if (editingHydrotestResultId) {
-      alertContext.error(t("saveHydrotestResultAlert"));
     } else {
-      handleSubmit(submitForm)();
-      setSelectedHydrotest(null);
+      if (editingHydrotestResultId) {
+        alertContext.error(t("saveHydrotestResultAlert"));
+      } else {
+        handleSubmit(submitForm)();
+        setSelectedHydrotest(null);
+      }
     }
   };
 
   const convertDateToIsoString = dateTime =>
     dateTime ? dateTime + ":00.000Z" : null;
 
-  // trigger form validation on mount
-  useEffect(() => {
-    trigger();
-  }, [trigger]);
-
   const prepareFormDataForSubmit = data => {
     data.startTime = convertDateToIsoString(data?.startTime);
     data.endTime = convertDateToIsoString(data?.endTime);
 
     // add codelists
-    data.codelistIds = [...data.flowDirectionId, ...data.evaluationMethodId];
+    data.codelistIds = [
+      ...data.flowDirectionId,
+      ...data.evaluationMethodId,
+      ...data.testKindId,
+    ];
 
     delete data.flowDirectionId;
     delete data.evaluationMethodId;
+    delete data.testKindId;
     return data;
   };
 
@@ -91,7 +177,7 @@ const HydrotestInput = ({
         return h;
       }) || [];
 
-    if (data.startTime && data.reliabilityId && data.testKindId) {
+    if (data.startTime && data.reliabilityId) {
       if (hydrotest.id === 0) {
         addHydrotest({
           ...data,
@@ -114,15 +200,75 @@ const HydrotestInput = ({
 
   const deleteHydrotestResults = () => {
     if (hydrotest?.hydrotestResults?.length > 0) {
-      updateHydrotest({ ...hydrotest, hydrotestResults: [] });
+      updateHydrotest({
+        ...hydrotest,
+        codelistIds: [...hydrotest.codelistIds, ...hydrotestKindIds],
+        hydrotestResults: [],
+      });
     }
   };
-  // warn user that when changing testtype the results will be deleted.
-  const handleMouseDown = e => {
-    e.preventDefault();
-    if (hydrotest?.hydrotestResults?.length > 0) {
+
+  const resetRelatedFormValues = () => {
+    setValue("flowDirectionId", []);
+    setValue("evaluationMethodId", []);
+    deleteHydrotestResults();
+  };
+
+  const handleDeleteHover = field => {
+    if (
+      field.name === "testKindId" &&
+      hydrotest?.hydrotestResults?.length > 0
+    ) {
       alertContext.error(t("hydrotestResultsWillBeDeleted"));
     }
+  };
+
+  const ChipBox = (selection, field) => {
+    const handleDelete = valueToDelete => {
+      const updatedValues = field.value.filter(
+        value => value !== valueToDelete,
+      );
+      field.onChange(updatedValues);
+      setHydrotestKindIds(updatedValues);
+
+      if (updatedValues.length === 0) {
+        resetRelatedFormValues();
+        trigger();
+      }
+    };
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 0.5,
+        }}>
+        {selection.map(selectedValue => {
+          const selectedOption = domains?.data?.find(
+            option => option.id === selectedValue,
+          );
+          return (
+            <Chip
+              key={selectedValue}
+              label={
+                selectedOption ? selectedOption[i18n.language] : selectedValue
+              }
+              deleteIcon={
+                <CancelIcon
+                  onMouseDown={e => e.stopPropagation()}
+                  onMouseOver={() => handleDeleteHover(field)}
+                />
+              }
+              onClick={e => e.stopPropagation()}
+              onDelete={e => {
+                e.stopPropagation();
+                handleDelete(selectedValue);
+              }}
+            />
+          );
+        })}
+      </Box>
+    );
   };
 
   const canAddHydrotestResults =
@@ -161,7 +307,15 @@ const HydrotestInput = ({
                 <Controller
                   name="testKindId"
                   control={control}
-                  defaultValue={hydrotest.testKindId}
+                  defaultValue={
+                    hydrotest?.codelists
+                      ?.filter(
+                        c =>
+                          c.schema ===
+                          hydrogeologySchemaConstants.hydrotestKind,
+                      )
+                      .map(c => c.id) || []
+                  }
                   rules={{ required: true }}
                   render={({ field }) => (
                     <TextField
@@ -174,6 +328,10 @@ const HydrotestInput = ({
                       data-cy="hydrotest-kind-select"
                       error={!!formState.errors.testKindId}
                       InputLabelProps={{ shrink: true }}
+                      SelectProps={{
+                        multiple: true,
+                        renderValue: selection => ChipBox(selection, field),
+                      }}
                       sx={{
                         backgroundColor: !!formState.errors.testKindId
                           ? "#fff6f6"
@@ -183,13 +341,12 @@ const HydrotestInput = ({
                       onChange={e => {
                         e.stopPropagation();
                         field.onChange(e.target.value);
-                        setValue("flowDirectionId", []);
-                        setValue("evaluationMethodId", []);
-                        deleteHydrotestResults();
-                        setHydrotestKindId(e.target.value);
+                        if (e.target.value.length === 0) {
+                          resetRelatedFormValues();
+                        }
                         trigger();
-                      }}
-                      onMouseDown={handleMouseDown}>
+                        setHydrotestKindIds(e.target.value);
+                      }}>
                       {domains?.data
                         ?.filter(
                           d =>
@@ -239,7 +396,10 @@ const HydrotestInput = ({
                       value={field.value || ""}
                       data-cy="flow-direction-select"
                       InputLabelProps={{ shrink: true }}
-                      SelectProps={{ multiple: true }}
+                      SelectProps={{
+                        multiple: true,
+                        renderValue: selection => ChipBox(selection, field),
+                      }}
                       onChange={e => {
                         e.stopPropagation();
                         field.onChange(e.target.value);
@@ -294,7 +454,10 @@ const HydrotestInput = ({
                       value={field.value || ""}
                       data-cy="evaluation-method-select"
                       InputLabelProps={{ shrink: true }}
-                      SelectProps={{ multiple: true }}
+                      SelectProps={{
+                        multiple: true,
+                        renderValue: selection => ChipBox(selection, field),
+                      }}
                       onChange={e => {
                         e.stopPropagation();
                         field.onChange(e.target.value);
@@ -347,7 +510,7 @@ const HydrotestInput = ({
               setAddedHydrotestFromResultTable={
                 setAddedHydrotestFromResultTable
               }
-              hydrotestKindId={hydrotestKindId}
+              hydrotestKindIds={hydrotestKindIds}
               filteredTestKindDomains={filteredTestKindDomains}
               editingId={editingHydrotestResultId}
               setEditingId={setEditingHydrotestResultId}

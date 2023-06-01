@@ -28,6 +28,7 @@ public class BdmsContext : DbContext
     public DbSet<LithologicalDescription> LithologicalDescriptions { get; set; }
     public DbSet<FaciesDescription> FaciesDescriptions { get; set; }
     public DbSet<ChronostratigraphyLayer> ChronostratigraphyLayers { get; set; }
+    public DbSet<LithostratigraphyLayer> LithostratigraphyLayers { get; set; }
     public DbSet<Observation> Observations { get; set; }
     public DbSet<WaterIngress> WaterIngresses { get; set; }
     public DbSet<Hydrotest> Hydrotests { get; set; }
@@ -182,8 +183,6 @@ public class BdmsContext : DbContext
                         .WithMany(b => b.HydrotestCodelists)
                         .HasForeignKey(l => l.HydrotestId),
                     j => j.HasKey(lc => new { lc.HydrotestId, lc.CodelistId }));
-
-        modelBuilder.Entity<Hydrotest>().HasOne(l => l.TestKind).WithMany().HasForeignKey(l => l.TestKindId);
 
         modelBuilder.Entity<GroundwaterLevelMeasurement>().ToTable("groundwater_level_measurement").HasBaseType<Observation>();
 

@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20230524125115_AllowMultipleTestKinds")]
+    partial class AllowMultipleTestKinds
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1168,64 +1170,6 @@ namespace BDMS.Migrations
                     b.ToTable("lithological_description", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.LithostratigraphyLayer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("creator");
-
-                    b.Property<double?>("FromDepth")
-                        .HasColumnType("double precision")
-                        .HasColumnName("depth_from");
-
-                    b.Property<bool?>("IsLast")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_last");
-
-                    b.Property<int?>("LithostratigraphyId")
-                        .HasColumnType("integer")
-                        .HasColumnName("lithostratigraphy_id");
-
-                    b.Property<int>("StratigraphyId")
-                        .HasColumnType("integer")
-                        .HasColumnName("stratigraphy_id");
-
-                    b.Property<double?>("ToDepth")
-                        .HasColumnType("double precision")
-                        .HasColumnName("depth_to");
-
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("update");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("updater");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("LithostratigraphyId");
-
-                    b.HasIndex("StratigraphyId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("lithostratigraphy", "bdms");
-                });
-
             modelBuilder.Entity("BDMS.Models.Observation", b =>
                 {
                     b.Property<int>("Id")
@@ -2216,35 +2160,6 @@ namespace BDMS.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
-            modelBuilder.Entity("BDMS.Models.LithostratigraphyLayer", b =>
-                {
-                    b.HasOne("BDMS.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BDMS.Models.Codelist", "Lithostratigraphy")
-                        .WithMany()
-                        .HasForeignKey("LithostratigraphyId");
-
-                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
-                        .WithMany("LithostratigraphyLayers")
-                        .HasForeignKey("StratigraphyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.User", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("Lithostratigraphy");
-
-                    b.Navigation("Stratigraphy");
-
-                    b.Navigation("UpdatedBy");
-                });
-
             modelBuilder.Entity("BDMS.Models.Observation", b =>
                 {
                     b.HasOne("BDMS.Models.Borehole", "Borehole")
@@ -2469,8 +2384,6 @@ namespace BDMS.Migrations
                     b.Navigation("Layers");
 
                     b.Navigation("LithologicalDescriptions");
-
-                    b.Navigation("LithostratigraphyLayers");
                 });
 
             modelBuilder.Entity("BDMS.Models.User", b =>
