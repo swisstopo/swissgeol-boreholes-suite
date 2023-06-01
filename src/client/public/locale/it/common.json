@@ -174,6 +174,7 @@
   "importedData": "Dati importati",
   "boreholesImported": "perforazioni Tre pozzi sono stati importati",
   "boreholesImportError": "Nessuna perforazione poteva essere importato! Assicurati che il file CSV-UTF8 caricato sia nel formato corretto.",
+  "boreholesImportLongRunning": "L'import sta eseguendo in background. Questo processo potrebbe richiedere alcuni minuti. Una volta completato, le perforazioni saranno visibili nell'elenco.",
   "inclination": "Inclinazione al punto di perforazione [°]",
   "inclination_direction": "Direzione inclinazione al punto di perforazione [°]",
   "inProgress": "In corso",
