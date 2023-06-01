@@ -100,7 +100,15 @@ const theme = createTheme({
 });
 
 class App extends React.Component {
+  handleDragOver = e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "none";
+  };
+
   componentDidMount() {
+    // Prevent showing the 'copy' cursor when dragging over the page.
+    document.addEventListener("dragover", this.handleDragOver);
+
     // Get the scrollbar width
     var scrollDiv = document.createElement("div");
     scrollDiv.className = "scrollbar-measure";
@@ -109,6 +117,10 @@ class App extends React.Component {
     this.props.setScrollbarWidth(scrollbarWidth + "px");
     // Delete the DIV
     document.body.removeChild(scrollDiv);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("dragover", this.handleDragOver);
   }
 
   render() {
