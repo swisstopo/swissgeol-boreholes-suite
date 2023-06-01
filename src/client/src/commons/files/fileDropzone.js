@@ -169,7 +169,7 @@ export const FileDropzone = props => {
           {dropZoneText}
         </p>
         <input {...getInputProps()} aria-label="import-boreholeFile-input" />
-        {files.length > 0 ? (
+        {files.length > 0 && (
           <div
             style={{
               minHeight: "auto",
@@ -196,7 +196,7 @@ export const FileDropzone = props => {
               ))}
             </div>
           </div>
-        ) : null}
+        )}
       </Box>
     </div>
   );
