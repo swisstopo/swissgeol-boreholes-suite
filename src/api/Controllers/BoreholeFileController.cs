@@ -31,7 +31,7 @@ public class BoreholeFileController : ControllerBase
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded <paramref name="file"/> to.</param>
     [HttpPost("upload")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    [RequestSizeLimit(205_000_000)]
+    [RequestSizeLimit(MaxFileSize)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<IActionResult> Upload(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
     {

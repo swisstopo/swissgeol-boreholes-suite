@@ -52,7 +52,7 @@ public class UploadController : ControllerBase
     /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
-    [RequestSizeLimit(205_000_000)]
+    [RequestSizeLimit(MaxFileSize)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile, IFormFile? lithologyFile = null, IList<IFormFile>? attachments = null)
     {
