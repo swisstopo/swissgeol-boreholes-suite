@@ -64,23 +64,6 @@ export const FileDropzone = props => {
     [files.length, maxFilesToSelectAtOnce, maxFilesToUpload, t],
   );
 
-  const dropzoneRef = useRef(null);
-
-  useEffect(() => {
-    const div = dropzoneRef.current;
-    const handleDragOver = e => {
-      e.stopPropagation();
-      e.preventDefault();
-      e.dataTransfer.dropEffect = "copy";
-    };
-
-    div.addEventListener("dragover", handleDragOver);
-
-    return () => {
-      div.removeEventListener("dragover", handleDragOver);
-    };
-  }, []);
-
   // Is called when the files array changes. This is used to update the file list in the parent component.
   useEffect(() => {
     onHandleFileChange(files);
@@ -156,11 +139,16 @@ export const FileDropzone = props => {
   };
 
   return (
-    <div
-      ref={dropzoneRef}
-      data-cy={dataCy}
-      style={{ paddingLeft: "2em", width: "50%" }}>
-      <Box minHeight={"7vh"} style={dropZoneStyles} {...getRootProps()}>
+    <div data-cy={dataCy} style={{ paddingLeft: "2em", width: "50%" }}>
+      <Box
+        minHeight={"7vh"}
+        style={dropZoneStyles}
+        {...getRootProps()}
+        onDragOver={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          e.dataTransfer.dropEffect = isDisabled ? "none" : "copy";
+        }}>
         <p
           style={{
             marginBottom: "0",
