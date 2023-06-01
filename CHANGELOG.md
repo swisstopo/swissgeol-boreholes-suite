@@ -5,6 +5,7 @@
 ### Added
 
 - Lithology csv import.
+- Table and controller for lithostratigraphy.
 
 ### Changed
 
