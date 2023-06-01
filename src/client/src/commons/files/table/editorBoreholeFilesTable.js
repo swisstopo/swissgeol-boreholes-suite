@@ -125,7 +125,7 @@ class EditorBoreholeFilesTable extends Component {
             <input
               onChange={e => {
                 const file = e.target.files[0];
-                const maxSizeInBytes = 200 * 1024 * 1024; // 200 MB (as stated in the import docs)
+                const maxSizeInBytes = 205000000; // 200 MB (as stated in the import docs)
 
                 // If file size is less than max allowed size, upload file. Otherwise, display error message.
                 if (file && file.size <= maxSizeInBytes) {
