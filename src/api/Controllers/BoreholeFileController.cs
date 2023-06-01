@@ -11,6 +11,7 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class BoreholeFileController : ControllerBase
 {
+    private const int MaxFileSize = 205_000_000;
     private readonly BdmsContext context;
     private readonly BoreholeFileUploadService boreholeFileUploadService;
     private readonly ILogger logger;
@@ -30,15 +31,24 @@ public class BoreholeFileController : ControllerBase
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded <paramref name="file"/> to.</param>
     [HttpPost("upload")]
     [Authorize(Policy = PolicyNames.Viewer)]
+    [RequestSizeLimit(MaxFileSize)]
+    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<IActionResult> Upload(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
     {
         if (file == null || file.Length == 0) return BadRequest("No file provided.");
         if (boreholeId == 0) return BadRequest("No boreholeId provided.");
 
+        if (file.Length > MaxFileSize) return BadRequest($"File size exceeds maximum file size of {MaxFileSize} bytes.");
+
         try
         {
             await boreholeFileUploadService.UploadFileAndLinkToBorehole(file, boreholeId).ConfigureAwait(false);
             return Ok();
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogError(ex, "An error occurred while uploading the file.");
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
