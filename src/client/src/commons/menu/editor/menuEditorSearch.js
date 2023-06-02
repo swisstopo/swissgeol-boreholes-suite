@@ -304,7 +304,7 @@ class MenuEditorSearch extends React.Component {
                   style={{
                     width: "50%",
                   }}>
-                  <TranslationText id="importBoreholeAttachment" />:
+                  <TranslationText id="importBoreholeAttachment" />
                 </Stack>
                 <FileDropzone
                   onHandleFileChange={this.handleBoreholeAttachmentChange}
