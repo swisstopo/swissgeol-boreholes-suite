@@ -888,6 +888,21 @@ public class UploadControllerTest
     }
 
     [TestMethod]
+    public async Task UploadWithMaxValidationErrorsExceededShouldReturnError()
+    {
+        var boreholeCsvFile = GetFormFileByExistingFile("maxValidationErrorsExceeded.csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile);
+
+        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
+        ObjectResult result = (ObjectResult)response.Result!;
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+
+        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
+        Assert.AreEqual(1000, problemDetails.Errors.Count);
+    }
+
+    [TestMethod]
     public void CompareValueWithTolerance()
     {
         Assert.AreEqual(true, UploadController.CompareValuesWithTolerance(null, null, 0));
