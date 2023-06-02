@@ -175,7 +175,7 @@
   "importDate": "Date d'importation",
   "importedBy": "Importé par",
   "importedData": "Données importées",
-  "boreholesImported": "Forages ont été importés",
+  "boreholesImported": "forages ont été importés",
   "boreholesImportError": "Aucun forage n'a pu être importé! Assurez-vous que le fichier CSV-UTF8 téléchargé est au format correct.",
   "boreholesImportLongRunning": "L'importation s'exécute en arrière-plan. Ce processus peut prendre quelques minutes. Une fois terminée, les forages seront visibles dans la liste.",
   "inclination": "Inclinaison à l’implantation sondage [°]",
