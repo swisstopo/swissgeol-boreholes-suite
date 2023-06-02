@@ -1,16 +1,26 @@
 import { login, getImportFileFromFixtures } from "../../e2e/testHelpers";
 
 describe("Test for importing boreholes.", () => {
-  it("Sucessfully imports multiple boreholes.", () => {
+  it("Successfully imports multiple boreholes.", () => {
     login("/editor");
     cy.contains("a", "Import").click();
 
     // Select borehole csv file
-    getImportFileFromFixtures("boreholes-multiple-valid.csv", null).as(
-      "boreholes-multiple-valid",
+    let boreholeFile = new DataTransfer();
+    getImportFileFromFixtures("boreholes-multiple-valid.csv", "utf-8").then(
+      fileContent => {
+        const file = new File([fileContent], "boreholes-multiple-valid.csv", {
+          type: "text/csv",
+        });
+        boreholeFile.items.add(file);
+      },
     );
+
     cy.get('[data-cy="import-boreholeFile-input"]').within(() => {
-      cy.get("input[type=file]").selectFile("@boreholes-multiple-valid");
+      cy.get("input[type=file]", { force: true }).then(input => {
+        input[0].files = boreholeFile.files;
+        input[0].dispatchEvent(new Event("change", { bubbles: true }));
+      });
     });
 
     // Select borehole attachments
@@ -70,14 +80,27 @@ describe("Test for importing boreholes.", () => {
     login("/editor");
     cy.contains("a", "Import").click();
 
+    // Select borehole csv file
+    let boreholeFile = new DataTransfer();
     getImportFileFromFixtures(
       "boreholes-missing-fields-and-duplicates.csv",
       null,
-    ).as("boreholes-missing-fields-and-duplicated");
-    cy.get('[data-cy="import-boreholeFile-input"]').within(() => {
-      cy.get("input[type=file]").selectFile(
-        "@boreholes-missing-fields-and-duplicated",
+    ).then(fileContent => {
+      const file = new File(
+        [fileContent],
+        "boreholes-missing-fields-and-duplicates.csv",
+        {
+          type: "text/csv",
+        },
       );
+      boreholeFile.items.add(file);
+    });
+
+    cy.get('[data-cy="import-boreholeFile-input"]').within(() => {
+      cy.get("input[type=file]", { force: true }).then(input => {
+        input[0].files = boreholeFile.files;
+        input[0].dispatchEvent(new Event("change", { bubbles: true }));
+      });
     });
 
     cy.intercept("/api/v2/upload?workgroupId=1").as("borehole-upload");
@@ -104,13 +127,21 @@ describe("Test for importing boreholes.", () => {
     cy.contains("a", "Import").click();
 
     // Select borehole csv file
-    getImportFileFromFixtures(
-      "borehole-valid.csv",
-      null,
-      "invalid-lithology",
-    ).as("borehole-valid");
+    let boreholeFile = new DataTransfer();
+    getImportFileFromFixtures("boreholes-multiple-valid.csv", null).then(
+      fileContent => {
+        const file = new File([fileContent], "boreholes-multiple-valid.csv", {
+          type: "text/csv",
+        });
+        boreholeFile.items.add(file);
+      },
+    );
+
     cy.get('[data-cy="import-boreholeFile-input"]').within(() => {
-      cy.get("input[type=file]").selectFile("@borehole-valid");
+      cy.get("input[type=file]", { force: true }).then(input => {
+        input[0].files = boreholeFile.files;
+        input[0].dispatchEvent(new Event("change", { bubbles: true }));
+      });
     });
 
     // Select lithology csv file
