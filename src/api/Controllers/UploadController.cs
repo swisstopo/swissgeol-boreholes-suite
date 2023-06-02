@@ -56,6 +56,9 @@ public class UploadController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile, IFormFile? lithologyFile = null, IList<IFormFile>? attachments = null)
     {
+        // Increase max allowed errors to be able to return more validation errors at once.
+        ModelState.MaxAllowedErrors = 1000;
+
         logger.LogInformation("Import borehole(s) to workgroup with id <{WorkgroupId}>", workgroupId);
         try
         {
