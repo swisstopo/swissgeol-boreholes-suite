@@ -100,6 +100,7 @@ class MenuEditorSearch extends React.Component {
           padding: "1em",
           overflow: "auto",
           whiteSpace: "nowrap",
+          marginTop: "0.5em",
         }}>
         {headings}
       </div>
