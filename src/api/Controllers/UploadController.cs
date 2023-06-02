@@ -72,7 +72,7 @@ public class UploadController : ControllerBase
             if (attachments?.Any(a => a.FileName.Any(char.IsWhiteSpace)) == true) return BadRequest("One or more file name(s) contain a whitespace.");
 
             // Checks if any of the provided attachments exceeds the maximum file size.
-            if (attachments?.Any(a => a.Length > MaxFileSize) == true) return BadRequest($"One or more attachment exceed maximum file size of {MaxFileSize / 1_000_000} Mb.");
+            if (attachments?.Any(a => a.Length > MaxFileSize) == true) return BadRequest($"One or more attachment exceed maximum file size of {MaxFileSize / 1024 / 1024} Mb.");
 
             // if a lithology file is provided, checks if it is a CSV file.
             if (lithologyFile != null && !FileTypeChecker.IsCsv(lithologyFile)) return BadRequest("Invalid file type for lithology csv.");

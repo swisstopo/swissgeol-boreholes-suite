@@ -884,7 +884,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual($"One or more attachment exceed maximum file size of 210 Mb.", badRequestResult.Value);
+        Assert.AreEqual($"One or more attachment exceed maximum file size of 200 Mb.", badRequestResult.Value);
     }
 
     [TestMethod]
