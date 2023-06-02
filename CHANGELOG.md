@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.0.422 - 2023-06-02
+
 ### Added
 
 - Lithology csv import.
