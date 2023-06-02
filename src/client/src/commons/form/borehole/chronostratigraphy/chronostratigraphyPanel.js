@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import NavigationContainer from "./navigationContainer";
 import NavigationLens from "./navigationLens";
 import LithologyViewProfile from "./lithologyViewProfile";
+import LithostratigraphyViewProfile from "./lithostratigraphyViewProfile";
 import ChronostratigraphyEditProfile from "./chronostratigraphyEditProfile";
 import NavigationChild from "./navigationChild";
 import Scale from "./scale";
@@ -37,12 +38,19 @@ const ChronostratigraphyPanel = ({
                     navState={navState}
                     setNavState={setNavState}
                     renderBackground={(lensNavState, setLensNavState) => (
-                      <LithologyViewProfile
-                        navState={lensNavState}
-                        setNavState={setLensNavState}
-                        stratigraphyId={stratigraphyId}
-                        minPixelHeightForDepthLabel={Number.MAX_VALUE}
-                      />
+                      <>
+                        <LithostratigraphyViewProfile
+                          navState={lensNavState}
+                          setNavState={setLensNavState}
+                          stratigraphyId={stratigraphyId}
+                        />
+                        <LithologyViewProfile
+                          navState={lensNavState}
+                          setNavState={setLensNavState}
+                          stratigraphyId={stratigraphyId}
+                          minPixelHeightForDepthLabel={Number.MAX_VALUE}
+                        />
+                      </>
                     )}
                   />
                 </NavigationChild>
@@ -51,6 +59,11 @@ const ChronostratigraphyPanel = ({
                   navState={navState}
                   setNavState={setNavState}
                   header={<Typography>{t("lithology")}</Typography>}>
+                  <LithostratigraphyViewProfile
+                    stratigraphyId={stratigraphyId}
+                    navState={navState}
+                    setNavState={setNavState}
+                  />
                   <LithologyViewProfile
                     stratigraphyId={stratigraphyId}
                     navState={navState}

@@ -22,6 +22,7 @@ export class NavState {
   #maxContent;
   #maxHeader;
   #pxpm;
+  #lensEnd;
 
   constructor(navState) {
     // At which depth in meter does the visible part begin
@@ -44,6 +45,7 @@ export class NavState {
     this.#maxContent = getMax(this.contentHeights);
     this.#maxHeader = getMax(this.headerHeights);
     this.#pxpm = (this.height - this.maxHeader) / this.lensSize;
+    this.#lensEnd = this.lensStart + this.lensSize;
 
     Object.freeze(this);
   }
@@ -109,6 +111,10 @@ export class NavState {
 
   get lensSize() {
     return this.rawLensSize === 0 ? this.maxContent : this.rawLensSize;
+  }
+
+  get lensEnd() {
+    return this.#lensEnd;
   }
 }
 
