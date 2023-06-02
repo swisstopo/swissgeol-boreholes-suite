@@ -449,6 +449,10 @@ class MenuEditorSearch extends React.Component {
                               this.setState({ validationErrorModal: true });
                               this.setState({ errorResponse: errorResponse });
                               this.props.refresh();
+                            } else if (errorResponse.status === 504) {
+                              this.context.error(
+                                `${t("boreholesImportLongRunning")}`,
+                              );
                             } else {
                               this.context.error(
                                 `${t("boreholesImportError")}`,

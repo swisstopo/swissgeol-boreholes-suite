@@ -23,6 +23,7 @@
 - Ensure copied stratigraphy is not primary.
 - Ensure borehole attachments can be managed by any user role.
 - Enable upload of borehole attachments with a size of up to 200 Mb. 
+- Show message when borehole import takes longer than 30 seconds.
 
 ## v2.0.400 - 2023-05-24
 
