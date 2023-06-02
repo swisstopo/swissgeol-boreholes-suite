@@ -98,7 +98,9 @@ const LayerCard = ({
       setSelection(
         selections
           .slice(0, header.length)
-          .concat(Array(header.length - selections.length).fill(null)),
+          .concat(
+            Array(Math.max(0, header.length - selections.length)).fill(null),
+          ),
       );
     }
   }, [dataProperty, header.length, layer, options]);

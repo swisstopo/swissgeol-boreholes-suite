@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import NavigationContainer from "./navigationContainer";
 import NavigationLens from "./navigationLens";
 import LithologyViewProfile from "./lithologyViewProfile";
-import ChronostratigraphyEditProfile from "./chronostratigraphyEditProfile";
+import LithostratigraphyEditProfile from "./lithostratigraphyEditProfile";
 import NavigationChild from "./navigationChild";
 import Scale from "./scale";
 import StratigraphySelection from "./stratigraphySelection";
@@ -64,7 +64,7 @@ const LithostratigraphyPanel = ({
                   header={<Typography>{t("depthMD")}</Typography>}>
                   <Scale navState={navState} />
                 </NavigationChild>
-                <ChronostratigraphyEditProfile
+                <LithostratigraphyEditProfile
                   selectedStratigraphyID={stratigraphyId}
                   isEditable={isEditable}
                   navState={navState}
