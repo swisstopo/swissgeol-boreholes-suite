@@ -1,6 +1,6 @@
 import { createBorehole, adminUserAuth, login } from "../testHelpers";
 
-describe("Tests for the chronostratigraphy editor.", () => {
+describe("Tests for the lithostratigraphy editor.", () => {
   beforeEach(function () {
     // Add new borehole with some lithology layers
     createBorehole({ "extended.original_name": "INTEADAL" })
@@ -23,7 +23,6 @@ describe("Tests for the chronostratigraphy editor.", () => {
         [
           {
             lithologyId: 15101044,
-            lithostratigraphyId: 15200091,
             fromDepth: 0,
             toDepth: 25,
           },
@@ -37,7 +36,6 @@ describe("Tests for the chronostratigraphy editor.", () => {
             toDepth: 40,
           },
           {
-            lithostratigraphyId: 15200235,
             fromDepth: 40,
             toDepth: 43,
           },
@@ -61,39 +59,41 @@ describe("Tests for the chronostratigraphy editor.", () => {
         });
       });
 
-    // open chronostratigraphy editor
+    // open lithostratigraphy editor
     cy.get("@borehole_id").then(id =>
-      login(`editor/${id}/stratigraphy/chronostratigraphy`),
+      login(`editor/${id}/stratigraphy/lithostratigraphy`),
     );
     cy.wait("@layer-by-profileId");
 
     // start editing session
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");
-    cy.wait("@chronostratigraphy_GET");
+    cy.wait("@lithostratigraphy_GET");
   });
 
-  it("Creates, updates and deletes chronostratigraphy layers", () => {
-    // create chronostratigraphy
+  it("Creates, updates and deletes lithostratigraphy layers", () => {
+    // create lithostratigraphy
     cy.get('[data-cy="add-layer-button"]').click({ force: true });
-    cy.wait("@chronostratigraphy_POST");
+    cy.wait("@lithostratigraphy_POST");
 
-    // edit chronostratigraphy
+    // edit lithostratigraphy
     cy.get('[data-cy="layer-card"] [data-testid="EditIcon"]').click();
-    cy.get('[data-cy="layer-card"] :nth-child(4)').click();
+    cy.get(
+      '[data-cy="layer-card"] :nth-child(2) > .MuiAutocomplete-root',
+    ).click();
 
-    // Ensure clone and delete buttons in header are disabled for chronostratigraphy.
+    // Ensure clone and delete buttons in header are disabled for lithostratigraphy.
     cy.get('[data-cy="clone-and-delete-buttons"]').should("not.exist");
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
       .find('[role="option"]')
       .eq(1)
       .click();
-    cy.wait("@chronostratigraphy_PUT");
+    cy.wait("@lithostratigraphy_PUT");
     cy.get('[data-cy="layer-card"] [data-testid="CloseIcon"]').click();
 
-    // delete chronostratigraphy
+    // delete lithostratigraphy
     cy.get('[data-cy="layer-card"] [data-testid="DeleteIcon"]').click();
-    cy.wait("@chronostratigraphy_DELETE");
+    cy.wait("@lithostratigraphy_DELETE");
   });
 });

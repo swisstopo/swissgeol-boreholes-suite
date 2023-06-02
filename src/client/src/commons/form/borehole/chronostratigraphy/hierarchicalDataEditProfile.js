@@ -138,7 +138,7 @@ const HierarchicalDataEditProfile = ({
                 ),
               );
             }}
-            data-cy="add-chrono-button">
+            data-cy="add-layer-button">
             <AddCircle />
           </IconButton>
         )}
@@ -160,7 +160,7 @@ const HierarchicalDataEditProfile = ({
                   ),
                 );
               }}
-              data-cy={`chrono-visibility-${index}`}>
+              data-cy={`column-visibility-${index}`}>
               <Typography noWrap>{t(h.title)}</Typography>
             </Button>
           ))}
