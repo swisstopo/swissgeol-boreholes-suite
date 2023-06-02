@@ -12,6 +12,7 @@
 - The hydrotest input mask now supports selecting multiple hydrotest kinds.
 - Enabled all file types as borehole attachments.
 - Improved appearance of import UI.
+- Upgraded to OpenLayers 7.
 
 ### Fixed
 
@@ -21,7 +22,7 @@
 - When the application was set to German, an issue occurred where the term 'keine_Angabe' was unecessarily displayed in the lithology subtitle.
 - Ensure copied stratigraphy is not primary.
 - Ensure borehole attachments can be managed by any user role.
-- Enable upload of borehole attachments with a size of up to 200 Mb. 
+- Enable upload of borehole attachments with a size of up to 200 Mb.
 
 ## v2.0.400 - 2023-05-24
 
