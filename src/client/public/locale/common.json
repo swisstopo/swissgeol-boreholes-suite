@@ -407,6 +407,8 @@
   "hydrotestResultRequiredFieldsAlert": "",
   "hydrotestResultsWillBeDeleted": "",
   "saveHydrotestResultAlert": "",
+  "msgLithostratigraphyEmptyEditing": "",
+  "msgLithostratigraphyEmpty": "",
   "msgChronostratigraphyEmpty": "",
   "msgChronostratigraphyEmptyEditing": ""
 }

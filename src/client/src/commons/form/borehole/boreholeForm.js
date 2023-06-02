@@ -27,6 +27,7 @@ import Hydrotest from "./hydrogeology/hydrotest";
 import { AlertContext } from "../../alert/alertContext";
 import FieldMeasurement from "./hydrogeology/fieldMeasurement";
 import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel";
+import LithostratigraphyPanel from "./chronostratigraphy/lithostratigraphyPanel";
 
 class BoreholeForm extends React.Component {
   static contextType = AlertContext;
@@ -368,6 +369,19 @@ class BoreholeForm extends React.Component {
             }
             render={() => (
               <ChronostratigraphyPanel
+                id={parseInt(this.props.match.params.id, 10)}
+                unlocked={isEditable}
+              />
+            )}
+          />
+          <Route
+            exact
+            path={
+              process.env.PUBLIC_URL +
+              "/editor/:id/stratigraphy/lithostratigraphy"
+            }
+            render={() => (
+              <LithostratigraphyPanel
                 id={parseInt(this.props.match.params.id, 10)}
                 unlocked={isEditable}
               />

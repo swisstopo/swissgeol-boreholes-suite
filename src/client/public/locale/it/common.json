@@ -441,6 +441,8 @@
   "fieldMeasurementRequiredFieldsAlert": "'Tipo di campionamento', 'Parametro', 'Valore', 'Inizio' e 'Affidabilità delle informazioni' sono campi obbligatori, la voce non può essere salvata se non sono compilati.",
   "msgFieldMeasurementsEmpty": "Nessuna misurazione in campo disponibile",
   "saveHydrotestResultAlert": "Si prega di salvare il risultato corrente di test idrico prima di salvare il test idrico.",
+  "msgLithostratigraphyEmptyEditing": "Nessuno profilo litostratigrafia disponibile",
+  "msgLithostratigraphyEmpty": "Prima di creare un profilo litostratigrafico è necessario creare una stratigrafia",
   "msgChronostratigraphyEmpty": "Nessuno profilo cronostratigrafia disponibile",
   "msgChronostratigraphyEmptyEditing": "Prima di creare un profilo cronostratigrafico è necessario creare una stratigrafia"
 }
