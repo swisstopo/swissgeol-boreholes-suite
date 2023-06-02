@@ -6,17 +6,9 @@ import { withRouter } from "react-router-dom";
 import { NumericFormat } from "react-number-format";
 import TranslationText from "../../form/translationText";
 import { FileDropzone } from "../../files/fileDropzone";
-import { MenuItem, Select, FormControl } from "@mui/material/";
+import { Box, Stack, MenuItem, Select, FormControl } from "@mui/material/";
 
-import {
-  Button,
-  Header,
-  Icon,
-  Input,
-  Menu,
-  Modal,
-  Segment,
-} from "semantic-ui-react";
+import { Button, Header, Icon, Menu, Modal, Segment } from "semantic-ui-react";
 
 import { createBorehole } from "../../../api-lib/index";
 import { AlertContext } from "../../alert/alertContext";
@@ -58,6 +50,10 @@ class MenuEditorSearch extends React.Component {
     this.setState({ selectedLithologyFile: lithologyFileFromDropzone });
   };
 
+  handleBoreholeFileChange = boreholeFileFromDropzone => {
+    this.setState({ selectedFile: boreholeFileFromDropzone });
+  };
+
   componentDidMount() {
     if (isMounted) {
       this.updateDimensions();
@@ -82,6 +78,32 @@ class MenuEditorSearch extends React.Component {
         scroller: true,
       });
     }
+  }
+
+  SeparatorLine() {
+    return (
+      <Box
+        style={{
+          borderBottom: "0.2em solid",
+          borderColor: "black",
+          marginTop: "1em",
+        }}
+      />
+    );
+  }
+
+  ExampleHeadings(headings) {
+    return (
+      <div
+        style={{
+          border: "thin solid #787878",
+          padding: "1em",
+          overflow: "auto",
+          whiteSpace: "nowrap",
+        }}>
+        {headings}
+      </div>
+    );
   }
 
   render() {
@@ -189,7 +211,6 @@ class MenuEditorSearch extends React.Component {
             padding: "1.5em",
           }}>
           <Icon name="add" size="tiny" />
-
           <TranslationText firstUpperCase id="new" />
         </Menu.Item>
       </Menu>,
@@ -226,47 +247,30 @@ class MenuEditorSearch extends React.Component {
         </Segment>
         <Modal.Content>
           {this.state.upload === true ? (
-            <div>
+            <>
               <p>
                 <div>
                   <TranslationText id="csvCodeListReferenceExplanation" />
-                </div>
-                <div>
                   <Downloadlink
+                    style={{ marginLeft: "0.2em" }}
                     caption="Codelist"
                     onDownload={downloadCodelistCsv}
                   />
                 </div>
               </p>
-              <div
-                style={{
-                  display: "flex",
-                  borderBottom: "0.2em solid",
-                  borderColor: "black",
-                }}>
-                <div
-                  style={{
-                    flex: "1",
+              {this.SeparatorLine()}
+              <h3>
+                <TranslationText firstUpperCase id="boreholes" />
+              </h3>
+              <Stack direction="row" alignItems="flex-start">
+                <Stack
+                  direction="column"
+                  sx={{
                     width: "50%",
                   }}>
-                  <span
-                    style={{
-                      fontWeight: "bold",
-                    }}>
-                    <TranslationText id="csvFormat" />
-                  </span>
-                  <div>
-                    <TranslationText id="csvFormatExplanation" />.
-                  </div>
-                  <div
-                    style={{
-                      border: "thin solid #787878",
-                      margin: "1em 0px",
-                      padding: "1em",
-                      overflow: "auto",
-                      whiteSpace: "nowrap",
-                    }}>
-                    {"import_id;id_geodin_shortname;id_info_geol;id_original;" +
+                  <TranslationText id="csvFormatExplanation" />.
+                  {this.ExampleHeadings(
+                    "import_id;id_geodin_shortname;id_info_geol;id_original;" +
                       "id_canton;id_geo_quat;id_geo_mol;id_geo_therm;id_top_fels;" +
                       "id_geodin;id_kernlager;original_name;project_name;alternate_name;" +
                       "restriction_id;restriction_until;location_x;location_y;" +
@@ -279,143 +283,70 @@ class MenuEditorSearch extends React.Component {
                       "total_depth_tvd;qt_total_depth_tvd_id;top_bedrock;" +
                       "qt_top_bedrock_id;top_bedrock_tvd;qt_top_bedrock_tvd_id;" +
                       "has_groundwater;lithology_top_bedrock_id;" +
-                      "chronostratigraphy_id;lithostratigraphy_id;attachments;"}
-                  </div>
-                </div>
-                <div
+                      "chronostratigraphy_id;lithostratigraphy_id;attachments;",
+                  )}
+                </Stack>
+                <FileDropzone
+                  onHandleFileChange={this.handleBoreholeFileChange}
+                  defaultText={"dropZoneBoreholesText"}
+                  restrictAcceptedFileTypeToCsv={true}
+                  maxFilesToSelectAtOnce={1}
+                  maxFilesToUpload={1}
+                  isDisabled={false}
+                  dataCy={"import-boreholeFile-input"}
+                />
+              </Stack>
+              <h3>
+                <TranslationText firstUpperCase id="attachments" />
+              </h3>
+              <Stack direction="row" alignItems="flex-start">
+                <Stack
                   style={{
                     width: "50%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    textAlign: "center",
                   }}>
-                  <div>
-                    <span
-                      style={{
-                        fontWeight: "bold",
-                      }}>
-                      <TranslationText id="importBoreholeFile" />:
-                    </span>
-                    <div
-                      data-cy="import-boreholeFile-input"
-                      style={{
-                        padding: "1em",
-                      }}>
-                      <Input
-                        accept=".csv"
-                        onChange={e => {
-                          const formdata = new FormData();
-                          formdata.append("boreholesFile", e.target.files[0]);
-                          this.setState({
-                            selectedFile: formdata,
-                          });
-                        }}
-                        type="file"
-                        aria-label="import-boreholeFile-input"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  borderBottom: "0.2em solid",
-                  borderColor: "black",
-                }}>
-                <div
-                  style={{
-                    flex: "1",
-                    padding: "10px",
-                    width: "50%",
-                  }}>
-                  <span
-                    style={{
-                      fontWeight: "bold",
-                    }}>
-                    <TranslationText id="importBoreholeAttachment" />:
-                  </span>
-                </div>
-                <div
-                  data-cy="import-boreholeFile-attachments-input"
-                  style={{
-                    padding: "1em",
-                    width: "50%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    textAlign: "center",
-                  }}>
-                  <FileDropzone
-                    onHandleBoreholeAttachmentChange={
-                      this.handleBoreholeAttachmentChange
-                    }
-                    maxFilesToSelectAtOnce="10"
-                    maxFilesToUpload="100"
-                  />
-                </div>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  borderBottom: "0.2em solid",
-                  borderColor: "black",
-                }}>
-                <div
-                  style={{
-                    flex: "1",
-                    padding: "10px",
-                    width: "50%",
-                  }}>
-                  <div>
-                    <TranslationText id="csvFormatExplanation" />.
-                  </div>
-                  <div
-                    style={{
-                      border: "thin solid #787878",
-                      margin: "1em 0px",
-                      padding: "1em",
-                      overflow: "auto",
-                      whiteSpace: "nowrap",
-                    }}>
-                    {"import_id;strati_import_id;strati_date;strati_name;from_depth;to_depth;" +
+                  <TranslationText id="importBoreholeAttachment" />:
+                </Stack>
+                <FileDropzone
+                  onHandleFileChange={this.handleBoreholeAttachmentChange}
+                  defaultText={"dropZoneAttachmentsText"}
+                  restrictAcceptedFileTypeToCsv={false}
+                  isDisabled={!this.state.selectedFile?.length > 0}
+                  dataCy={"import-boreholeFile-attachments-input"}
+                />
+              </Stack>
+              {this.SeparatorLine()}
+              <h3>
+                <TranslationText firstUpperCase id="lithology" />
+              </h3>
+              <Stack direction="row" alignItems="flex-start">
+                <Stack sx={{ width: "50%" }}>
+                  <TranslationText id="csvFormatExplanation" />.
+                  {this.ExampleHeadings(
+                    "import_id;strati_import_id;strati_date;strati_name;from_depth;to_depth;" +
                       "is_last;qt_description_id;lithology_id;lithostratigraphy_id;chronostratigraphy_id;" +
                       "original_uscs;uscs_determination_id;uscs_1_id;grain_size_1_id;uscs_2_id;grain_size_2_id;" +
                       "is_striae;consistance_id;plasticity_id;compactness_id;cohesion_id;humidity_id;alteration_id;" +
                       "notes;original_lithology;uscs_3_ids;grain_shape_ids;grain_granularity_ids;organic_component_ids;" +
-                      "debris_ids;color_ids"}
-                  </div>
-                </div>
-                <div
-                  data-cy="import-lithologyFile-input"
-                  style={{
-                    padding: "1em",
-                    width: "50%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    textAlign: "center",
-                  }}>
-                  <FileDropzone
-                    onHandleBoreholeAttachmentChange={
-                      this.handleLithologyFileChange
-                    }
-                    acceptedFileExtension=".csv"
-                    maxFilesToSelectAtOnce="1"
-                    maxFilesToUpload="1"
-                  />
-                </div>
-              </div>
-            </div>
+                      "debris_ids;color_ids",
+                  )}
+                </Stack>
+                <FileDropzone
+                  onHandleFileChange={this.handleLithologyFileChange}
+                  defaultText={"dropZoneLithologyText"}
+                  restrictAcceptedFileTypeToCsv={true}
+                  maxFilesToSelectAtOnce={1}
+                  maxFilesToUpload={1}
+                  isDisabled={!this.state.selectedFile?.length > 0}
+                  dataCy={"import-lithologyFile-input"}
+                />
+              </Stack>
+              {this.SeparatorLine()}
+            </>
           ) : null}
-          <div>
-            <span
-              style={{
-                fontWeight: "bold",
-              }}>
-              <TranslationText id="workgroup" />
-            </span>
+          <>
+            <h3>
+              <TranslationText firstUpperCase id="workgroup" />
+            </h3>
             <div
               style={{
                 padding: "1em",
@@ -456,13 +387,14 @@ class MenuEditorSearch extends React.Component {
                 );
               })()}
             </div>
-          </div>
+          </>
         </Modal.Content>
         <Modal.Actions>
           <Button
             disabled={
               this.state.enabledWorkgroups.length === 0 ||
-              (this.state.upload === true && this.state.selectedFile === null)
+              (this.state.upload === true &&
+                !this.state.selectedFile?.length > 0)
             }
             loading={this.state.creating === true}
             onClick={() => {
@@ -474,7 +406,10 @@ class MenuEditorSearch extends React.Component {
                   if (this.state.upload === true) {
                     let combinedFormData = new FormData();
                     if (this.state.selectedFile !== null) {
-                      combinedFormData = this.state.selectedFile;
+                      this.state.selectedFile.forEach(boreholeFile => {
+                        combinedFormData.append("boreholesFile", boreholeFile);
+                      });
+
                       this.state.selectedBoreholeAttachments.forEach(
                         attachment => {
                           combinedFormData.append("attachments", attachment);
