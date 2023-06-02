@@ -327,7 +327,7 @@ class MenuEditorSearch extends React.Component {
                       "original_uscs;uscs_determination_id;uscs_1_id;grain_size_1_id;uscs_2_id;grain_size_2_id;" +
                       "is_striae;consistance_id;plasticity_id;compactness_id;cohesion_id;humidity_id;alteration_id;" +
                       "notes;original_lithology;uscs_3_ids;grain_shape_ids;grain_granularity_ids;organic_component_ids;" +
-                      "debris_ids;color_ids",
+                      "debris_ids;color_ids;gradation_id;lithology_top_bedrock_id;",
                   )}
                 </Stack>
                 <FileDropzone

@@ -132,6 +132,8 @@ public class UploadControllerTest
         Assert.AreEqual(21106004, lithology.AlterationId);
         Assert.AreEqual("instruction set Dynamic backing up Lock", lithology.Notes);
         Assert.AreEqual("trace back Peso", lithology.OriginalLithology);
+        Assert.AreEqual(30000018, lithology.GradationId);
+        Assert.AreEqual(15101001, lithology.LithologyTopBedrockId);
         var lithoCodeLists = lithology.LayerCodelists;
         Assert.AreEqual(14, lithoCodeLists.Count);
         lithology = stratigraphy.Layers.First(l => l.FromDepth == 11);
