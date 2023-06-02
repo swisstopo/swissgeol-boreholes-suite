@@ -17,7 +17,9 @@
     "Daniel Jovanovic <daniel.jovanovic@geowerkstatt.ch> (https://github.com/danjov)",
     "Mira Bleuler <mira.bleuler@geowerkstatt.ch> (https://github.com/MiraGeowerkstatt)",
     "Patrick Ackermann <patrick.ackermann@geowerkstatt.ch> (https://github.com/patrickackermann)",
-    "Philipp Lüthi <philipp.luethi@geowerkstatt.ch> (https://github.com/Philippluca)"
+    "Philipp Lüthi <philipp.luethi@geowerkstatt.ch> (https://github.com/Philippluca)",
+    "Frederic Stahel <frederic.stahel@geowerkstatt.ch> (https://github.com/Lehats)",
+    "Roswita Tschümperlin <roswita.tschuemperlin@geowerkstatt.ch> (https://github.com/tschumpr)"
   ],
   "dependencies": {
     "@emotion/react": "^11.10.4",
