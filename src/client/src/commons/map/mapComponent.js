@@ -40,9 +40,11 @@ const projections = {
 };
 
 const boreholeStyleCache = {};
+const virtualBoreholeStyleCache = {};
 const trialpitStyleCache = {};
 const probingStyleCache = {};
 const deepBoreholeStyleCache = {};
+const otherStyleCache = {};
 const clusterStyleCache = {};
 
 const blackStroke = new Stroke({ color: "black", width: 1 });
@@ -577,6 +579,24 @@ class MapComponent extends React.Component {
       conf = {
         image: image,
       };
+    } else if (kind === "V") {
+      // virtual borehole
+      let image = virtualBoreholeStyleCache[res];
+      if (!image) {
+        image = new RegularShape({
+          fill: fill,
+          stroke: blackStroke,
+          points: 5,
+          radius: 8,
+          radius2: 4,
+          angle: 0,
+        });
+        virtualBoreholeStyleCache[res] = image;
+      }
+
+      conf = {
+        image: image,
+      };
     } else if (kind === "SS") {
       // trial pits
       let image = trialpitStyleCache[res];
@@ -612,8 +632,25 @@ class MapComponent extends React.Component {
       conf = {
         image: image,
       };
+    } else if (kind === "a") {
+      // other
+      let image = otherStyleCache[res];
+      if (!image) {
+        image = new RegularShape({
+          fill: fill,
+          stroke: blackStroke,
+          points: 6,
+          radius: 7,
+          angle: 0,
+        });
+        otherStyleCache[res] = image;
+      }
+
+      conf = {
+        image: image,
+      };
     } else {
-      // Not set and if(kind==='a'){ // deep boreholes
+      // Not set
       let image = deepBoreholeStyleCache[res];
       if (!image) {
         image = new RegularShape({
