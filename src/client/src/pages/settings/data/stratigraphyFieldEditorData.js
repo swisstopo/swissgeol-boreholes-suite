@@ -25,11 +25,6 @@ export const stratigraphyFieldEditorData = [
     value: "lithostratigraphy",
   },
   {
-    id: 5,
-    label: "chronostratigraphy",
-    value: "chronostratigraphy",
-  },
-  {
     id: 6,
     label: "uscs_original",
     value: "uscs_original",

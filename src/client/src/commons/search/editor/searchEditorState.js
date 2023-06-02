@@ -63,7 +63,6 @@ const initialState = {
 
     lithology: null,
     lithostratigraphy: null,
-    chronostratigraphy: null,
 
     color: null,
     plasticity: null,

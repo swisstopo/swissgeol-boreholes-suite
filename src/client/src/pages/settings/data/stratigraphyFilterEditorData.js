@@ -30,11 +30,6 @@ export const stratigraphyFilterEditorData = [
     value: "layer.lithostratigraphy",
   },
   {
-    id: 6,
-    label: "chronostratigraphy",
-    value: "layer.chronostratigraphy",
-  },
-  {
     id: 7,
     label: "uscs_original",
     value: "layer.uscs_original",

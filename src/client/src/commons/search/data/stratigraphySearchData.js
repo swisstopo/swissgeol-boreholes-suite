@@ -94,22 +94,6 @@ export const stratigraphySearchData = [
     isVisibleValue: "layer.lithostratigraphy",
   },
   {
-    id: 8,
-    type: "DomainTree",
-    label: "chronostratigraphy",
-    value: "chronostratigraphy",
-    schema: "custom.chronostratigraphy_top_bedrock",
-    levels: {
-      1: "1st_order_eon",
-      2: "2nd_order_era",
-      3: "3rd_order_period",
-      4: "4th_order_epoch",
-      5: "5th_order_sub_epoch",
-      6: "6th_order_sub_stage",
-    },
-    isVisibleValue: "layer.chronostratigraphy",
-  },
-  {
     id: 9,
     type: "Input",
     label: "uscs_original",
