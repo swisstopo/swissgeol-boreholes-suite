@@ -874,7 +874,7 @@ public class UploadControllerTest
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
         var boreholeCsvFile = GetRandomFile("borehoel.csv");
 
-        long targetSizeInBytes = 210 * 1024 * 1024; // 210MB
+        long targetSizeInBytes = 201 * 1024 * 1024; // 201MB
         byte[] content = new byte[targetSizeInBytes];
         var stream = new MemoryStream(content);
 
@@ -884,7 +884,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual($"One or more attachment exceed maximum file size of 205000000 bytes.", badRequestResult.Value);
+        Assert.AreEqual($"One or more attachment exceed maximum file size of 210 Mb.", badRequestResult.Value);
     }
 
     [TestMethod]
