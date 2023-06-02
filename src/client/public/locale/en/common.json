@@ -170,7 +170,7 @@
   "hrs": "Height reference system",
   "iagree": "I agree",
   "identifierManager": "Manage ID types",
-  "importBoreholeAttachment": "Select one or multiple file(s) to upload",
+  "importBoreholeAttachment": "Select one or multiple file(s) to upload:",
   "importBoreholeFile": "Select a CSV-UTF8 file to upload",
   "importDate": "Import date",
   "importedBy": "Imported by",
