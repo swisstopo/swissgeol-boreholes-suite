@@ -6,6 +6,7 @@
 
 - Lithology csv import.
 - Table and controller for lithostratigraphy.
+- Added new symbols for borehole types 'virtual borehole' and 'other'.
 
 ### Changed
 
