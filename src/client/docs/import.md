@@ -145,7 +145,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | debris_ids               | ID (Codeliste)   | Nein        | Kommaseparierte Codeliste IDs der Grobbestandteile                                                                         |
 | color_ids                | ID (Codeliste)   | Nein        | Kommaseparierte Codeliste IDs der Farben                                                                                   |
 | gradation_id             | ID (Codeliste)   | Nein        | Abstufung                                                                                                                  |
-| lithology_top_bedrock_id | ID (Codeliste)   | Nein        | Lithologie Top Fels                                                                                                        |
+| lithology_top_bedrock_id | ID (Codeliste)   | Nein        | Lithologie Grobbestandteile                                                                                                         |
 
 ## Validierung
 
