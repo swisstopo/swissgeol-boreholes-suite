@@ -100,6 +100,7 @@ class MenuEditorSearch extends React.Component {
           padding: "1em",
           overflow: "auto",
           whiteSpace: "nowrap",
+          marginTop: "0.5em",
         }}>
         {headings}
       </div>
@@ -268,7 +269,7 @@ class MenuEditorSearch extends React.Component {
                   sx={{
                     width: "50%",
                   }}>
-                  <TranslationText id="csvFormatExplanation" />.
+                  <TranslationText id="csvFormatExplanation" />
                   {this.ExampleHeadings(
                     "import_id;id_geodin_shortname;id_info_geol;id_original;" +
                       "id_canton;id_geo_quat;id_geo_mol;id_geo_therm;id_top_fels;" +
@@ -304,7 +305,7 @@ class MenuEditorSearch extends React.Component {
                   style={{
                     width: "50%",
                   }}>
-                  <TranslationText id="importBoreholeAttachment" />:
+                  <TranslationText id="importBoreholeAttachment" />
                 </Stack>
                 <FileDropzone
                   onHandleFileChange={this.handleBoreholeAttachmentChange}
@@ -320,7 +321,7 @@ class MenuEditorSearch extends React.Component {
               </h3>
               <Stack direction="row" alignItems="flex-start">
                 <Stack sx={{ width: "50%" }}>
-                  <TranslationText id="csvFormatExplanation" />.
+                  <TranslationText id="csvFormatExplanation" />
                   {this.ExampleHeadings(
                     "import_id;strati_import_id;strati_date;strati_name;from_depth;to_depth;" +
                       "is_last;qt_description_id;lithology_id;lithostratigraphy_id;chronostratigraphy_id;" +
