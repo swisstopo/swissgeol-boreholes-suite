@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Upgraded to OpenLayers 7.
+
 ## v2.0.422 - 2023-06-02
 
 ### Added
@@ -14,7 +18,6 @@
 - The hydrotest input mask now supports selecting multiple hydrotest kinds.
 - Enable all file types as borehole attachments.
 - Improved appearance of import UI.
-- Upgraded to OpenLayers 7.
 - Increased maximum of displayed validation errors during borehole import to 1000.
 
 ### Fixed
