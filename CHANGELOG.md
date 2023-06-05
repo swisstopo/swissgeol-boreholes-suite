@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Updated the lithostratigraphy codelist table.
+
 ## v2.0.422 - 2023-06-02
 
 ### Added
