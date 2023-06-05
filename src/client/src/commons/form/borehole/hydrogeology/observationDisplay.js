@@ -131,7 +131,7 @@ const ObservationDisplay = props => {
           </StackFullWidth>
           <Typography variant="subtitle2"> {t("casing")}</Typography>
           <TypographyWithBottomMargin variant="subtitle1">
-            {observation.casing?.name || "-"}
+            {observation.casing?.id ? observation.casing.name || t("np") : "-"}
           </TypographyWithBottomMargin>
           <Typography variant="subtitle2">{t("comment")}</Typography>
           <TypographyWithBottomMargin

@@ -6,6 +6,10 @@
 
 - Updated the lithostratigraphy codelist table.
 
+### Fixed
+
+- Fixed bug where empty strings were displayed instead of _unknown_ in the _casing_ dropdown when adding water ingresses, hydrotests, groundwater measurements or field measurements.
+
 ## v2.0.422 - 2023-06-02
 
 ### Added
