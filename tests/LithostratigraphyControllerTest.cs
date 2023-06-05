@@ -80,7 +80,7 @@ public class LithostratigraphyControllerTest
         Assert.AreEqual(14_000_014, lithostratigraphy.Id);
         Assert.AreEqual(40, lithostratigraphy.FromDepth);
         Assert.AreEqual(50, lithostratigraphy.ToDepth);
-        Assert.AreEqual(15_201_257, lithostratigraphy.LithostratigraphyId);
+        Assert.AreEqual(15_202_396, lithostratigraphy.LithostratigraphyId);
         Assert.AreEqual(6_000_001, lithostratigraphy.StratigraphyId);
     }
 
