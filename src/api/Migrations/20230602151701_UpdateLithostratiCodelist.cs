@@ -1535,7 +1535,7 @@ VALUES
     (15200491, 'Wedelsandstein-Formation', 15130, '{""color"":[185,160,140]}', '15200491'),
     (15200493, 'Murchisonaeoolith-Formation', 15140, '{""color"":[190,165,160]}', '15200493');
 
--- remove references to codelists that get deletet
+-- remove references to codelists that get deleted
 UPDATE bdms.layer SET lithostratigraphy_id_cli = NULL 
 WHERE lithostratigraphy_id_cli NOT IN (SELECT geolcode FROM new_lithostrati nl);
 
