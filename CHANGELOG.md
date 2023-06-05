@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Panel to edit lithostratigraphy layers.
+
 ## v2.0.422 - 2023-06-02
 
 ### Added
