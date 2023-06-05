@@ -25,11 +25,6 @@ export const stratigraphyFilterEditorData = [
     value: "original_lithology",
   },
   {
-    id: 5,
-    label: "lithostratigraphy",
-    value: "layer.lithostratigraphy",
-  },
-  {
     id: 7,
     label: "uscs_original",
     value: "layer.uscs_original",

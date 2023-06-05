@@ -45,7 +45,6 @@ const ProfileAttributes = props => {
       last: null,
       qt_description: null,
       lithology: null,
-      lithostratigraphy: null,
       color: [],
       plasticity: null,
       humidity: null,

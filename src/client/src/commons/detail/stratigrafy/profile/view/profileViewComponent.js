@@ -240,7 +240,6 @@ const ProfileView = props => {
 
               {getDomainRow(layer.lithology, "lithology")}
               {getTextRow("original_lithology", layer.originalLithology)}
-              {getDomainRow(layer.lithostratigraphy, "lithostratigraphy")}
               {getTextRow("uscs_original", layer.originalUscs)}
               {getDomainRow(layer.uscsDetermination, "uscs_determination")}
               {getDomainRow(layer.uscs1, "uscs_1")}

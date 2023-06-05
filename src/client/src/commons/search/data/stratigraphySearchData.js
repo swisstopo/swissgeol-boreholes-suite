@@ -77,22 +77,6 @@ export const stratigraphySearchData = [
     require: false,
     isVisibleValue: "original_lithology",
   },
-
-  {
-    id: 7,
-    type: "DomainTree",
-    label: "lithostratigraphy",
-    value: "lithostratigraphy",
-    schema: "custom.lithostratigraphy_top_bedrock",
-    levels: {
-      1: "super",
-      2: "group",
-      3: "subgroup",
-      4: "superformation",
-      5: "formation",
-    },
-    isVisibleValue: "layer.lithostratigraphy",
-  },
   {
     id: 9,
     type: "Input",

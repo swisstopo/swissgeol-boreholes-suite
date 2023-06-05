@@ -88,7 +88,6 @@ const initialState = {
         description: true,
         geology: true,
         lithology: true,
-        lithostratigraphy: true,
         color: true,
         plasticity: true,
         humidity: true,
