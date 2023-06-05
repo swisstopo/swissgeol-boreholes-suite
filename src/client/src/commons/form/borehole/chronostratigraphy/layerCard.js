@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import {
   CardActionArea,
-  Stack,
   Typography,
   Box,
   Card,
@@ -9,13 +8,8 @@ import {
   TextField,
   InputAdornment,
   Skeleton,
-  TableCell,
-  Table,
-  Tooltip,
-  TableRow,
   CircularProgress,
   Autocomplete,
-  TableBody,
 } from "@mui/material";
 import { Close, Delete, Edit } from "@mui/icons-material";
 import { ClickAwayListener } from "@mui/base";
@@ -189,16 +183,23 @@ const LayerCard = ({
   }
 
   const headerBar = (
-    <Stack
-      direction="row"
-      sx={{ padding: "0.2em 1em", alignItems: "flex-start", flex: "0 1 0%" }}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "flex-start",
+        padding: "0.2rem 1rem",
+        position: "absolute",
+        top: "0",
+        left: "0",
+        right: "0",
+      }}>
       {[State.DISPLAY, State.EDITABLE].includes(cardState) &&
         height >= minPixelHeightForDepthLabels && (
           <Typography>{layer?.fromDepth ?? "-"} m</Typography>
         )}
       {State.EDITING === cardState && (
         <TextField
-          sx={{ margin: "0.8em 0" }}
+          sx={{ margin: "0.8rem 0" }}
           label={t("fromdepth")}
           defaultValue={fromDepth ?? layer.fromDepth}
           error={!!fromDepthErrorMessage}
@@ -246,67 +247,24 @@ const LayerCard = ({
           </IconButton>
         </>
       )}
-    </Stack>
-  );
-
-  const contentPart = (
-    <Table sx={{ tableLayout: "fixed", flex: "1" }}>
-      <TableBody>
-        <TableRow>
-          {selection.map(
-            (selectedItem, index) =>
-              header[index].isVisible && (
-                <TableCell
-                  key={index}
-                  sx={{
-                    paddingTop: "0",
-                    paddingBottom: "0",
-                    backgroundColor: selectedItem?.color
-                      ? `rgb(${selectedItem?.color?.join()})`
-                      : "transparent",
-                    borderBottom: "none",
-                    borderLeft:
-                      index === 0 ? "none" : "solid 1px rgba(0, 0, 0, 0.12)",
-                  }}>
-                  {[State.DISPLAY, State.EDITABLE].includes(cardState) && (
-                    <Tooltip title={selectedItem?.label}>
-                      <Typography sx={{ textAlign: "center" }}>
-                        {selectedItem?.label ?? "-"}
-                      </Typography>
-                    </Tooltip>
-                  )}
-                  {State.EDITING === cardState && (
-                    <Autocomplete
-                      size="small"
-                      options={options[index] ?? []}
-                      value={selectedItem?.label ? selectedItem : null}
-                      renderInput={params => (
-                        <TextField {...params} label={t(header[index].title)} />
-                      )}
-                      onChange={(event, value) =>
-                        handleLayerChange(value, index)
-                      }
-                    />
-                  )}
-                </TableCell>
-              ),
-          )}
-        </TableRow>
-      </TableBody>
-    </Table>
+    </Box>
   );
 
   const footerBar = (
-    <Stack
-      direction="row"
-      sx={{ padding: "0.2em 1em", alignItems: "flex-end", flex: "0 1 0%" }}>
+    <Box
+      sx={{
+        padding: "0.2rem 1rem",
+        position: "absolute",
+        left: "0",
+        bottom: "0",
+      }}>
       {[State.DISPLAY, State.EDITABLE].includes(cardState) &&
         height >= minPixelHeightForDepthLabels && (
           <Typography>{layer?.toDepth ?? "-"} m</Typography>
         )}
       {State.EDITING === cardState && (
         <TextField
-          sx={{ margin: "0.8em 0" }}
+          sx={{ margin: "0.8rem 0" }}
           label={t("todepth")}
           defaultValue={toDepth ?? layer.toDepth}
           error={!!toDepthErrorMessage}
@@ -318,57 +276,86 @@ const LayerCard = ({
           size="small"
         />
       )}
-    </Stack>
+    </Box>
   );
 
   const cardContent = (
     <Box
-      data-cy="layer-card"
-      sx={{ flex: "1", display: "flex", position: "relative" }}>
-      <Box sx={{ position: "absolute", top: "0", left: "0", right: "0" }}>
-        {headerBar}
-      </Box>
-      {contentPart}
-      <Box sx={{ position: "absolute", bottom: "0", left: "0", right: "0" }}>
-        {footerBar}
-      </Box>
+      sx={{
+        display: "grid",
+        gridTemplateColumns: `repeat(${header.reduce(
+          (acc, h) => acc + h.isVisible,
+          0,
+        )},minmax(0,1fr))`,
+        justifyItems: "stretch",
+        alignItems: "stretch",
+        borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
+        borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+        minHeight: State.EDITING === cardState ? "14rem" : "0",
+        height: height + "px",
+        position: "relative",
+        overflowY: "hidden",
+      }}>
+      {selection.map(
+        (selectedItem, index) =>
+          header[index].isVisible && (
+            <Box
+              key={index}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: selectedItem?.color
+                  ? `rgb(${selectedItem?.color?.join()})`
+                  : "transparent",
+                borderRight: "1px solid rgba(0, 0, 0, 0.12)",
+                padding: "0 1rem",
+              }}>
+              {[State.DISPLAY, State.EDITABLE].includes(cardState) && (
+                <Typography sx={{ textAlign: "center" }}>
+                  {selectedItem?.label ?? "-"}
+                </Typography>
+              )}
+              {State.EDITING === cardState && (
+                <Autocomplete
+                  sx={{ flex: "1" }}
+                  size="small"
+                  options={options[index] ?? []}
+                  value={selectedItem?.label ? selectedItem : null}
+                  renderInput={params => (
+                    <TextField {...params} label={t(header[index].title)} />
+                  )}
+                  onChange={(event, value) => handleLayerChange(value, index)}
+                />
+              )}
+            </Box>
+          ),
+      )}
+      {headerBar}
+      {footerBar}
     </Box>
   );
 
   return (
     <>
-      {State.DISPLAY === cardState && (
-        <Card
-          square
-          variant="outlined"
-          sx={{ height: `${height}px`, display: "flex" }}>
-          {cardContent}
-        </Card>
-      )}
+      {State.DISPLAY === cardState && cardContent}
       {State.EDITABLE === cardState && (
-        <Card
-          square
-          variant="outlined"
-          sx={{ height: `${height}px`, display: "flex" }}>
-          <CardActionArea
-            sx={{ display: "flex", flexDirection: "column" }}
-            onClick={() => setCardState(State.EDITING)}
-            component="div">
-            {cardContent}
-          </CardActionArea>
-        </Card>
+        <CardActionArea
+          onClick={() => setCardState(State.EDITING)}
+          component="div">
+          {cardContent}
+        </CardActionArea>
       )}
       {State.EDITING === cardState && (
         <ClickAwayListener onClickAway={() => setCardState(State.EDITABLE)}>
-          <Card
-            square
-            variant="outlined"
+          <Box
             onWheel={e => e.stopPropagation()}
-            sx={{ height: `${height}px`, display: "flex", overflow: "auto" }}>
-            <Box sx={{ minHeight: "14em", flex: "1", display: "flex" }}>
-              {cardContent}
-            </Box>
-          </Card>
+            sx={{
+              height: height + "px",
+              overflowY: "auto",
+            }}>
+            {cardContent}
+          </Box>
         </ClickAwayListener>
       )}
       {State.DELETED === cardState && (
