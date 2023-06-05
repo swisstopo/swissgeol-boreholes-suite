@@ -34,13 +34,12 @@ class AddBedrock(Action):
                     INSERT INTO bdms.layer(
                         id_sty_fk, creator_lay, updater_lay,
                         depth_from_lay,
-                        chronostratigraphy_id_cli,
                         lithology_top_bedrock_id_cli,
                         lithostratigraphy_id_cli,
                         last_lay
                     )
                     VALUES (
-                        $1, $2, $3, $4, $5, $6, $7, False
+                        $1, $2, $3, $4, $5, $6, False
                     )
                     RETURNING
                         id_lay
@@ -48,8 +47,6 @@ class AddBedrock(Action):
                     id, user_id, user_id,
                     bedrock[1],
                     bedrock[2],
-                    bedrock[3],
-                    bedrock[4]
-                )
+                    bedrock[3]                )
             )
         }

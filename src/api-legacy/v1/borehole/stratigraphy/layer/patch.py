@@ -29,9 +29,6 @@ class PatchLayer(Action):
         elif field == 'lithostratigraphy':
             column = 'lithostratigraphy_id_cli'
 
-        elif field == 'chronostratigraphy':
-            column = 'chronostratigraphy_id_cli'
-
         elif field == 'plasticity':
             column = 'plasticity_id_cli'
 
@@ -180,7 +177,6 @@ class PatchLayer(Action):
                 'qt_description',
                 'lithology',
                 'lithostratigraphy',
-                'chronostratigraphy',
                 'plasticity',
                 'humidity',
                 'consistance',
@@ -209,9 +205,6 @@ class PatchLayer(Action):
 
                 elif field == 'lithostratigraphy':
                     schema = 'custom.lithostratigraphy_top_bedrock'
-
-                elif field == 'chronostratigraphy':
-                    schema = 'custom.chronostratigraphy_top_bedrock'
 
                 elif field == 'plasticity':
                     schema = 'mlpr101'

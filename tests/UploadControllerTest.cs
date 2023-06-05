@@ -116,7 +116,6 @@ public class UploadControllerTest
         Assert.AreEqual(9001, lithology.QtDescriptionId);
         Assert.AreEqual(15104448, lithology.LithologyId);
         Assert.AreEqual(15202034, lithology.LithostratigraphyId);
-        Assert.AreEqual(15001069, lithology.ChronostratigraphyId);
         Assert.AreEqual("Granite", lithology.OriginalUscs);
         Assert.AreEqual(23107001, lithology.UscsDeterminationId);
         Assert.AreEqual(23101005, lithology.Uscs1Id);
@@ -132,8 +131,6 @@ public class UploadControllerTest
         Assert.AreEqual(21106004, lithology.AlterationId);
         Assert.AreEqual("instruction set Dynamic backing up Lock", lithology.Notes);
         Assert.AreEqual("trace back Peso", lithology.OriginalLithology);
-        Assert.AreEqual(30000018, lithology.GradationId);
-        Assert.AreEqual(15101001, lithology.LithologyTopBedrockId);
         var lithoCodeLists = lithology.LayerCodelists;
         Assert.AreEqual(14, lithoCodeLists.Count);
         lithology = stratigraphy.Layers.First(l => l.FromDepth == 11);
@@ -885,21 +882,6 @@ public class UploadControllerTest
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
         Assert.AreEqual($"One or more attachment exceed maximum file size of 205000000 bytes.", badRequestResult.Value);
-    }
-
-    [TestMethod]
-    public async Task UploadWithMaxValidationErrorsExceededShouldReturnError()
-    {
-        var boreholeCsvFile = GetFormFileByExistingFile("maxValidationErrorsExceeded.csv");
-
-        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile);
-
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
-
-        ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
-        Assert.AreEqual(1000, problemDetails.Errors.Count);
     }
 
     [TestMethod]

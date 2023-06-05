@@ -19,7 +19,6 @@ class ListLayers(Action):
             END AS msm_to,
             lithostratigraphy_id_cli as lithostratigraphy,
             layer.lithology_id_cli as lithology,
-            layer.chronostratigraphy_id_cli AS chronostratigraphy,
             layer.uscs_1_id_cli AS uscs_1
 
         FROM
