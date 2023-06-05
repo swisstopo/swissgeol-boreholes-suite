@@ -166,6 +166,8 @@
   "importBoreholeAttachment": "",
   "importBoreholeFile": "",
   "importedData": "",
+  "boreholesImportError": "",
+  "boreholesImportLongRunning": "",
   "inclination": "",
   "inclinationdirection": "",
   "instrument": "",

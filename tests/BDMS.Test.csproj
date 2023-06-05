@@ -105,6 +105,9 @@
     <None Update="TestData\duplicateBoreholesInDbButDifferentWorkgroup.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\maxValidationErrorsExceeded.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\empty_attachment.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

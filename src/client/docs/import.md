@@ -110,40 +110,42 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 
 Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format vorliegen. Die erste Zeile wird als Spaltentitel/Spaltenname interpretiert, die restlichen Zeilen als Daten.
 
-| Feldname               | Datentyp         | Pflichtfeld | Beschreibung                                                                                                               |
-|------------------------|------------------|-------------|----------------------------------------------------------------------------------------------------------------------------|
-| import_id              | Zahl             | Ja          | Zufällig gewählte Zahl. Wird nicht gepeichert. Muss mit einer import_id aus der Bohrloch Datei übereinstimmen              |
-| strati_import_id       | Zahl             | Ja          | Zufällig gewählte Zahl. Wird nicht gepeichert. Muss pro Stratigraphie identisch sein                                       |
-| strati_date            | Datum            | Nein        | Datum der Stratigraphie. Muss pro Stratigraphie identisch sein                                                             |
-| strati_name            | Text             | Nein        | Name der Stratigraphie. Muss pro Stratigraphie identisch sein                                                              |
-| from_depth             | Zahl             | Ja          | Von Tiefe der Schicht                                                                                                      |
-| to_depth               | Zahl             | Ja          | Bis Tiefe der Schicht                                                                                                      |
-| is_last                | True/False       | Nein        | Ist die Schicht die letzte in der Stratigraphie?                                                                           |
-| qt_description_id      | ID (Codeliste)   | Nein        | Qualität der Beschreibung                                                                                                  |
-| lithology_id           | ID (Codeliste)   | Nein        | Lithologie                                                                                                                 |
-| lithostratigraphy_id   | ID (Codeliste)   | Nein        | Lithologiestratigrafie                                                                                                     |
-| chronostratigraphy_id  | ID (Codeliste)   | Nein        | Chronostratigrafie                                                                                                         |
-| original_uscs          | Text             | Nein        | USCS Originalklassifikation                                                                                                |
-| uscs_determination_id  | ID (Codeliste)   | Nein        | USCS Bestimmungsmethode                                                                                                    |
-| uscs_1_id              | ID (Codeliste)   | Nein        | USCS 1                                                                                                                     |
-| grain_size_1_id        | ID (Codeliste)   | Nein        | Korngrösse 1                                                                                                               |
-| uscs_2_id              | ID (Codeliste)   | Nein        | USCS 2                                                                                                                     |
-| grain_size_2_id        | ID (Codeliste)   | Nein        | Korngrösse 2                                                                                                               |
-| is_striae              | True/False       | Nein        | Striemung                                                                                                                  |
-| consistance_id         | ID (Codeliste)   | Nein        | Konsistenz                                                                                                                 |
-| plasticity_id          | ID (Codeliste)   | Nein        | Plastizität                                                                                                                |
-| compactness_id         | ID (Codeliste)   | Nein        | Lagerungsdichte                                                                                                            |
-| cohesion_id            | ID (Codeliste)   | Nein        | Kohäsion                                                                                                                   |
-| humidity_id            | ID (Codeliste)   | Nein        | Feuchtigkeit                                                                                                               |
-| alteration_id          | ID (Codeliste)   | Nein        | Verwitterung                                                                                                               |
-| notes                  | Text             | Nein        | Notizen                                                                                                                    |
-| original_lithology     | Text             | Nein        | Ursprüngliche Lithologie                                                                                                   |
-| uscs_3_ids             | ID (Codeliste) | Nein        | Kommaseparierte Codeliste IDs der USCS 3                                                                                   |
-| grain_shape_ids        | ID (Codeliste) | Nein        | Kommaseparierte Codeliste IDs der Korn Formen                                                                              |
-| grain_granularity_ids  | ID (Codeliste) | Nein        | Kommaseparierte Codeliste IDs der Kornrundungen                                                                            |
-| organic_component_ids  | ID (Codeliste) | Nein        | Kommaseparierte Codeliste IDs der Organischen Komponenten                                                                  |
-| debris_ids             | ID (Codeliste) | Nein        | Kommaseparierte Codeliste IDs der Grobbestandteile                                                                         |
-| color_ids              | ID (Codeliste)   | Nein        | Kommaseparierte Codeliste IDs der Farben                                                                                   |
+| Feldname                 | Datentyp         | Pflichtfeld | Beschreibung                                                                                                               |
+|--------------------------|------------------|-------------|----------------------------------------------------------------------------------------------------------------------------|
+| import_id                | Zahl             | Ja          | Zufällig gewählte Zahl. Wird nicht gepeichert. Muss mit einer import_id aus der Bohrloch Datei übereinstimmen              |
+| strati_import_id         | Zahl             | Ja          | Zufällig gewählte Zahl. Wird nicht gepeichert. Muss pro Stratigraphie identisch sein                                       |
+| strati_date              | Datum            | Nein        | Datum der Stratigraphie. Muss pro Stratigraphie identisch sein                                                             |
+| strati_name              | Text             | Nein        | Name der Stratigraphie. Muss pro Stratigraphie identisch sein                                                              |
+| from_depth               | Zahl             | Ja          | Von Tiefe der Schicht                                                                                                      |
+| to_depth                 | Zahl             | Ja          | Bis Tiefe der Schicht                                                                                                      |
+| is_last                  | True/False       | Nein        | Ist die Schicht die letzte in der Stratigraphie?                                                                           |
+| qt_description_id        | ID (Codeliste)   | Nein        | Qualität der Beschreibung                                                                                                  |
+| lithology_id             | ID (Codeliste)   | Nein        | Lithologie                                                                                                                 |
+| lithostratigraphy_id     | ID (Codeliste)   | Nein        | Lithologiestratigrafie                                                                                                     |
+| chronostratigraphy_id    | ID (Codeliste)   | Nein        | Chronostratigrafie                                                                                                         |
+| original_uscs            | Text             | Nein        | USCS Originalklassifikation                                                                                                |
+| uscs_determination_id    | ID (Codeliste)   | Nein        | USCS Bestimmungsmethode                                                                                                    |
+| uscs_1_id                | ID (Codeliste)   | Nein        | USCS 1                                                                                                                     |
+| grain_size_1_id          | ID (Codeliste)   | Nein        | Korngrösse 1                                                                                                               |
+| uscs_2_id                | ID (Codeliste)   | Nein        | USCS 2                                                                                                                     |
+| grain_size_2_id          | ID (Codeliste)   | Nein        | Korngrösse 2                                                                                                               |
+| is_striae                | True/False       | Nein        | Striemung                                                                                                                  |
+| consistance_id           | ID (Codeliste)   | Nein        | Konsistenz                                                                                                                 |
+| plasticity_id            | ID (Codeliste)   | Nein        | Plastizität                                                                                                                |
+| compactness_id           | ID (Codeliste)   | Nein        | Lagerungsdichte                                                                                                            |
+| cohesion_id              | ID (Codeliste)   | Nein        | Kohäsion                                                                                                                   |
+| humidity_id              | ID (Codeliste)   | Nein        | Feuchtigkeit                                                                                                               |
+| alteration_id            | ID (Codeliste)   | Nein        | Verwitterung                                                                                                               |
+| notes                    | Text             | Nein        | Notizen                                                                                                                    |
+| original_lithology       | Text             | Nein        | Ursprüngliche Lithologie                                                                                                   |
+| uscs_3_ids               | ID (Codeliste)   | Nein        | Kommaseparierte Codeliste IDs der USCS 3                                                                                   |
+| grain_shape_ids          | ID (Codeliste)   | Nein        | Kommaseparierte Codeliste IDs der Korn Formen                                                                              |
+| grain_granularity_ids    | ID (Codeliste)   | Nein        | Kommaseparierte Codeliste IDs der Kornrundungen                                                                            |
+| organic_component_ids    | ID (Codeliste)   | Nein        | Kommaseparierte Codeliste IDs der Organischen Komponenten                                                                  |
+| debris_ids               | ID (Codeliste)   | Nein        | Kommaseparierte Codeliste IDs der Grobbestandteile                                                                         |
+| color_ids                | ID (Codeliste)   | Nein        | Kommaseparierte Codeliste IDs der Farben                                                                                   |
+| gradation_id             | ID (Codeliste)   | Nein        | Abstufung                                                                                                                  |
+| lithology_top_bedrock_id | ID (Codeliste)   | Nein        | Lithologie Top Fels                                                                                                        |
 
 ## Validierung
 

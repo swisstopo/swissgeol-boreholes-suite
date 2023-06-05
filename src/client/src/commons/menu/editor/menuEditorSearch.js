@@ -100,6 +100,7 @@ class MenuEditorSearch extends React.Component {
           padding: "1em",
           overflow: "auto",
           whiteSpace: "nowrap",
+          marginTop: "0.5em",
         }}>
         {headings}
       </div>
@@ -268,7 +269,7 @@ class MenuEditorSearch extends React.Component {
                   sx={{
                     width: "50%",
                   }}>
-                  <TranslationText id="csvFormatExplanation" />.
+                  <TranslationText id="csvFormatExplanation" />
                   {this.ExampleHeadings(
                     "import_id;id_geodin_shortname;id_info_geol;id_original;" +
                       "id_canton;id_geo_quat;id_geo_mol;id_geo_therm;id_top_fels;" +
@@ -304,7 +305,7 @@ class MenuEditorSearch extends React.Component {
                   style={{
                     width: "50%",
                   }}>
-                  <TranslationText id="importBoreholeAttachment" />:
+                  <TranslationText id="importBoreholeAttachment" />
                 </Stack>
                 <FileDropzone
                   onHandleFileChange={this.handleBoreholeAttachmentChange}
@@ -320,14 +321,14 @@ class MenuEditorSearch extends React.Component {
               </h3>
               <Stack direction="row" alignItems="flex-start">
                 <Stack sx={{ width: "50%" }}>
-                  <TranslationText id="csvFormatExplanation" />.
+                  <TranslationText id="csvFormatExplanation" />
                   {this.ExampleHeadings(
                     "import_id;strati_import_id;strati_date;strati_name;from_depth;to_depth;" +
                       "is_last;qt_description_id;lithology_id;lithostratigraphy_id;chronostratigraphy_id;" +
                       "original_uscs;uscs_determination_id;uscs_1_id;grain_size_1_id;uscs_2_id;grain_size_2_id;" +
                       "is_striae;consistance_id;plasticity_id;compactness_id;cohesion_id;humidity_id;alteration_id;" +
                       "notes;original_lithology;uscs_3_ids;grain_shape_ids;grain_granularity_ids;organic_component_ids;" +
-                      "debris_ids;color_ids",
+                      "debris_ids;color_ids;gradation_id;lithology_top_bedrock_id;",
                   )}
                 </Stack>
                 <FileDropzone
@@ -443,16 +444,35 @@ class MenuEditorSearch extends React.Component {
                             );
                             this.props.refresh();
                           } else {
-                            // If response is a validation error, open validation error modal.
-                            let errorResponse = await response.json();
-                            if (errorResponse.status === 400) {
-                              this.setState({ validationErrorModal: true });
-                              this.setState({ errorResponse: errorResponse });
-                              this.props.refresh();
-                            } else {
-                              this.context.error(
-                                `${t("boreholesImportError")}`,
-                              );
+                            let responseBody = await response.text();
+                            try {
+                              // Try to parse response body as JSON in case of ValidationProblemDetails
+                              responseBody = JSON.parse(responseBody);
+                            } finally {
+                              if (response.status === 400) {
+                                // If response is of type ValidationProblemDetails, open validation error modal.
+                                if (responseBody.errors) {
+                                  this.setState({
+                                    validationErrorModal: true,
+                                  });
+                                  this.setState({
+                                    errorResponse: responseBody,
+                                  });
+                                  this.props.refresh();
+                                }
+                                // If response is of type ProblemDetails, show error message.
+                                else {
+                                  this.context.error(`${responseBody}`);
+                                }
+                              } else if (response.status === 504) {
+                                this.context.error(
+                                  `${t("boreholesImportLongRunning")}`,
+                                );
+                              } else {
+                                this.context.error(
+                                  `${t("boreholesImportError")}`,
+                                );
+                              }
                             }
                           }
                         },
