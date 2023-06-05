@@ -11,7 +11,7 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class BoreholeFileController : ControllerBase
 {
-    private const int MaxFileSize = 205_000_000;
+    private const int MaxFileSize = 210_000_000; // 1024 x 1024 x 200 = 209715200 bytes
     private readonly BdmsContext context;
     private readonly BoreholeFileUploadService boreholeFileUploadService;
     private readonly ILogger logger;
@@ -31,7 +31,7 @@ public class BoreholeFileController : ControllerBase
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded <paramref name="file"/> to.</param>
     [HttpPost("upload")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    [RequestSizeLimit(MaxFileSize)]
+    [RequestSizeLimit(int.MaxValue)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<IActionResult> Upload(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
     {
