@@ -146,8 +146,8 @@ public class HydrotestControllerTests
             Assert.AreEqual(updatedHydrotest.BoreholeId, editedHydrotest.BoreholeId);
             Assert.AreEqual(updatedHydrotest.ReliabilityId, editedHydrotest.ReliabilityId);
             CollectionAssert.AreEqual(updatedHydrotest.CodelistIds!.ToList(), editedHydrotest.Codelists!.Select(c => c.Id).ToList());
-            Assert.AreEqual("Gouille-Verte-Member", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).De);
-            Assert.AreEqual("Dent-de-Nendaz-Member", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).De);
+            Assert.AreEqual("Entnahme", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).De);
+            Assert.AreEqual("stationär", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).De);
         }
         finally
         {

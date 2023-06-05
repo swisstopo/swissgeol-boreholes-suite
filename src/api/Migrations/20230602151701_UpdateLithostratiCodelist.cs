@@ -1523,30 +1523,30 @@ VALUES
     (15206018, 'Lochsiten-Kalk', 15010, '{""color"":[150,200,200]}', '15206018'),
     (15206019, 'Salleren-Brekzie', 15020, '{""color"":[150,200,200]}', '15206019');
 
+-- remove references to codelists that get deletet
 UPDATE bdms.layer SET lithostratigraphy_id_cli = NULL 
-WHERE lithostratigraphy_id_cli IS NOT NULL AND NOT EXISTS (SELECT * FROM new_lithostrati nl WHERE lithostratigraphy_id_cli = nl.geolcode);
+WHERE lithostratigraphy_id_cli NOT IN (SELECT geolcode FROM new_lithostrati nl);
 
 UPDATE bdms.lithostratigraphy SET lithostratigraphy_id = NULL 
-WHERE lithostratigraphy_id IS NOT NULL AND NOT EXISTS (SELECT * FROM new_lithostrati nl WHERE lithostratigraphy_id = nl.geolcode);
+WHERE lithostratigraphy_id NOT IN (SELECT geolcode FROM new_lithostrati nl);
 
 UPDATE bdms.bdms.borehole SET lithostrat_id_cli = NULL 
-WHERE lithostrat_id_cli IS NOT NULL AND NOT EXISTS (SELECT * FROM new_lithostrati nl WHERE lithostrat_id_cli = nl.geolcode);
+WHERE lithostrat_id_cli NOT IN (SELECT geolcode FROM new_lithostrati nl);
 
-DELETE FROM bdms.codelist cl WHERE schema_cli = 'custom.lithostratigraphy_top_bedrock' AND NOT EXISTS (
-    SELECT * FROM new_lithostrati nl WHERE cl.geolcode = nl.geolcode
-);
-
+-- insert new lithostratigraphy codelist
 INSERT INTO bdms.codelist (id_cli, geolcode, schema_cli, code_cli, text_cli_en, description_cli_en, text_cli_de, description_cli_de, text_cli_fr, description_cli_fr, text_cli_it, description_cli_it, order_cli, conf_cli, path_cli)
-SELECT geolcode, geolcode, 'custom.lithostratigraphy_top_bedrock', '', text_cli, '', text_cli, '', text_cli, '', text_cli, '', order_cli, conf_cli, path_cli
-FROM new_lithostrati
-ON CONFLICT (id_cli) DO UPDATE SET
-    text_cli_en = EXCLUDED.text_cli_en,
-    text_cli_de = EXCLUDED.text_cli_de,
-    text_cli_fr = EXCLUDED.text_cli_fr,
-    text_cli_it = EXCLUDED.text_cli_it,
-    order_cli = EXCLUDED.order_cli,
-    conf_cli = EXCLUDED.conf_cli,
-    path_cli = EXCLUDED.path_cli;
+SELECT geolcode + 100000, geolcode, 'custom.lithostratigraphy_top_bedrock', '', text_cli, '', text_cli, '', text_cli, '', text_cli, '', order_cli, conf_cli, path_cli
+FROM new_lithostrati;
+
+-- change ids of existing lithostratigraphy codelists, geolcode + 100'000
+UPDATE bdms.layer SET lithostratigraphy_id_cli = lithostratigraphy_id_cli + 100000;
+
+UPDATE bdms.lithostratigraphy SET lithostratigraphy_id = lithostratigraphy_id + 100000;
+
+UPDATE bdms.bdms.borehole SET lithostrat_id_cli = lithostrat_id_cli + 100000;
+
+-- delete old codelist entries
+DELETE FROM bdms.codelist cl WHERE schema_cli = 'custom.lithostratigraphy_top_bedrock' AND id_cli = geolcode;
 ");
     }
 
