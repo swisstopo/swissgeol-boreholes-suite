@@ -279,6 +279,7 @@ const LayerCard = ({
 
   const cardContent = (
     <Box
+      data-cy="layer-card"
       sx={{
         display: "grid",
         gridTemplateColumns: `repeat(${header.reduce(
