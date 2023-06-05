@@ -53,7 +53,7 @@ public class UploadController : ControllerBase
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
-    [RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue)]
+    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadFileAsync(int workgroupId, IFormFile boreholesFile, IFormFile? lithologyFile = null, IList<IFormFile>? attachments = null)
     {
         // Increase max allowed errors to be able to return more validation errors at once.
