@@ -1521,7 +1521,19 @@ VALUES
     (15206009, 'Sorico-Tonalit', 14990, '{""color"":[225,0,100]}', '15206007.15206009'),
     (15206010, 'Jorio-Tonalit', 15000, '{""color"":[225,0,100]}', '15206007.15206010'),
     (15206018, 'Lochsiten-Kalk', 15010, '{""color"":[150,200,200]}', '15206018'),
-    (15206019, 'Salleren-Brekzie', 15020, '{""color"":[150,200,200]}', '15206019');
+    (15206019, 'Salleren-Brekzie', 15020, '{""color"":[150,200,200]}', '15206019'),
+    (15200473, 'Untere-Felsenkalke-Formation', 15030, '{""color"":[210,235,255]}', '15200473'),
+    (15200475, 'Oberjura-Massenkalk-Formation', 15040, '{""color"":[175,225,250]}', '15200475'),
+    (15200479, 'Ornatenton-Formation', 15050, '{""color"":[200,190,140]}', '15200479'),
+    (15200480, 'Glaukonitsandmergel-Subformation', 15060, '{""color"":[200,190,140]}', '15200479.15200480'),
+    (15200483, 'Wutach-Formation', 15070, '{""color"":[200,180,140]}', '15200483'),
+    (15200484, 'Variansmergel-Formation', 15080, '{""color"":[215,185,145]}', '15200484'),
+    (15200486, 'Hamitenton-Formation', 15090, '{""color"":[170,140,115]}', '15200486'),
+    (15200487, 'Parkinsonioolith-Subformation', 15100, '{""color"":[170,140,115]}', '15200486.15200487'),
+    (15200488, 'Gosheim-Formation', 15110, '{""color"":[180,150,120]}', '15200488'),
+    (15200490, 'Humphriesioolith-Subformation', 15120, '{""color"":[180,150,120]}', '15200488.15200490'),
+    (15200491, 'Wedelsandstein-Formation', 15130, '{""color"":[185,160,140]}', '15200491'),
+    (15200493, 'Murchisonaeoolith-Formation', 15140, '{""color"":[190,165,160]}', '15200493');
 
 -- remove references to codelists that get deletet
 UPDATE bdms.layer SET lithostratigraphy_id_cli = NULL 
