@@ -24,7 +24,9 @@ import { useDomainSchema } from "../../../../api/fetchApiV2";
  */
 const HierarchicalDataEditProfile = ({
   layerData: layers, // array of layers
-  mutations, // object with add/update/delete functions
+  addLayer, // function that adds a layer
+  deleteLayer, // function that deletes a layer
+  updateLayer, // function that updates a layer
   headerLabels, // array of translation keys
   domainSchemaName, // string that specifies the codelist schema to use
   dataProperty, // string that specifies the property of the layer object that contains the data
@@ -36,9 +38,6 @@ const HierarchicalDataEditProfile = ({
   setNavState,
 }) => {
   const { t, i18n } = useTranslation();
-  const {
-    add: { mutate: addLayer },
-  } = mutations;
 
   const [id] = useState(Math.random().toString(36).substring(2, 10));
   const [options, setOptions] = useState(null);
@@ -86,7 +85,8 @@ const HierarchicalDataEditProfile = ({
       if (layer.fromDepth > previousLayerToDepth) {
         layerDisplayStack.push(
           <LayerGap
-            mutations={mutations}
+            addLayer={addLayer}
+            updateLayer={updateLayer}
             key={-index}
             previousLayer={layers[index - 1]}
             nextLayer={layers[index]}
@@ -100,7 +100,8 @@ const HierarchicalDataEditProfile = ({
       }
       layerDisplayStack.push(
         <LayerCard
-          mutations={mutations}
+          updateLayer={updateLayer}
+          deleteLayer={deleteLayer}
           dataProperty={dataProperty}
           options={options}
           key={layer.id}

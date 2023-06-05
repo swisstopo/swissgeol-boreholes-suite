@@ -19,12 +19,18 @@ const ChronostratigraphyEditProfile = ({
   const { t } = useTranslation();
 
   const { data: layers } = useChronostratigraphies(selectedStratigraphyID);
-  const mutations = useChronostratigraphyMutations();
+  const {
+    add: { mutate: addLayer },
+    delete: { mutate: deleteLayer },
+    update: { mutate: updateLayer },
+  } = useChronostratigraphyMutations();
 
   return (
     <HierarchicalDataEditProfile
       layerData={layers}
-      mutations={mutations}
+      addLayer={addLayer}
+      deleteLayer={deleteLayer}
+      updateLayer={updateLayer}
       headerLabels={[
         "eon",
         "era",

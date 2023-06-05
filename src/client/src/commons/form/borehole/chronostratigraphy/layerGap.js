@@ -30,10 +30,8 @@ const IconTypography = ({ icon, text }) => {
  * It offers solutions to fix the gap like extending the upper layer or filling the gap with an empty layers.
  */
 const LayerGap = ({
-  mutations: {
-    add: { mutate: addLayer },
-    update: { mutate: updateLayer },
-  },
+  addLayer,
+  updateLayer,
   previousLayer,
   nextLayer,
   isEditable,

@@ -19,12 +19,18 @@ const LithostratigraphyEditProfile = ({
   const { t } = useTranslation();
 
   const { data: layers } = useLithostratigraphies(selectedStratigraphyID);
-  const mutations = useLithostratigraphyMutations();
+  const {
+    add: { mutate: addLayer },
+    delete: { mutate: deleteLayer },
+    update: { mutate: updateLayer },
+  } = useLithostratigraphyMutations();
 
   return (
     <HierarchicalDataEditProfile
       layerData={layers}
-      mutations={mutations}
+      addLayer={addLayer}
+      deleteLayer={deleteLayer}
+      updateLayer={updateLayer}
       headerLabels={["formation", "member", "bed"]}
       domainSchemaName="custom.lithostratigraphy_top_bedrock"
       dataProperty="lithostratigraphyId"

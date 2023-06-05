@@ -23,10 +23,8 @@ const State = Object.freeze({
 });
 
 const LayerCard = ({
-  mutations: {
-    update: { mutate: updateLayer },
-    delete: { mutate: deleteLayer },
-  },
+  updateLayer,
+  deleteLayer,
   dataProperty, // string that specifies the property of the layer object that contains the data
   layer, // {id, fromDepth, toDepth, [dataProperty]}: the layer object to display
   minFromDepth, // number: minimal allowed fromDepth
