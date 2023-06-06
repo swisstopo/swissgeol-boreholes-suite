@@ -2098,13 +2098,32 @@ INSERT INTO bdms.codelist (
     order_cli, conf_cli,
     default_cli, path_cli
 ) VALUES (
+    30000307, 30000307,
+    'kind', 'V',
+    'Virtuelle Bohrung', '',
+    'forage virtuel', '',
+    'perforazione virtuale', '',
+    'virtual borehole', '',
+    2, NULL,
+    False, ''
+);
+INSERT INTO bdms.codelist (
+    id_cli, geolcode,
+    schema_cli, code_cli,
+    text_cli_de, description_cli_de,
+    text_cli_fr, description_cli_fr,
+    text_cli_it, description_cli_it,
+    text_cli_en, description_cli_en,
+    order_cli, conf_cli,
+    default_cli, path_cli
+) VALUES (
     20101002, 20101002,
     'kind', 'RS',
     'Rammsondierung', '',
     'sondage au pénétromètre', '',
     'sondaggio penetrometrico', '',
     'penetration test', '',
-    2, NULL,
+    3, NULL,
     False, ''
 );
 INSERT INTO bdms.codelist (
@@ -2123,7 +2142,7 @@ INSERT INTO bdms.codelist (
     'fouille', '',
     'trincea di riconoscimento', '',
     'trial pit', '',
-    3, NULL,
+    4, NULL,
     False, ''
 );
 INSERT INTO bdms.codelist (
@@ -2142,7 +2161,7 @@ INSERT INTO bdms.codelist (
     'autre', '',
     'altro', '',
     'other', '',
-    4, NULL,
+    5, NULL,
     False, ''
 );
 INSERT INTO bdms.codelist (

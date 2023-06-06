@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added new symbols for borehole types 'virtual borehole' and 'other'.
+
 ### Changed
 
 - Updated the lithostratigraphy codelist table.
