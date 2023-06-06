@@ -57,18 +57,6 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     [Column("depth_to_lay")]
     public double? ToDepth { get; set; }
 
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s lithological description.
-    /// </summary>
-    [Column("lithological_description_lay")]
-    public string? DescriptionLithological { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s facies description.
-    /// </summary>
-    [Column("facies_description_lay")]
-    public string? DescriptionFacies { get; set; }
-
     /// <inheritdoc />
     [Column("last_lay")]
     public bool? IsLast { get; set; }

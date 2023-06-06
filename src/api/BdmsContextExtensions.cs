@@ -382,8 +382,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Uscs2, _ => default!)
             .RuleFor(o => o.UscsDeterminationId, f => f.PickRandom(uscsDeterminationIds).OrNull(f, .05f))
             .RuleFor(o => o.UscsDetermination, _ => default!)
-            .RuleFor(o => o.DescriptionFacies, f => f.Random.Words(5).OrNull(f, .05f))
-            .RuleFor(o => o.DescriptionLithological, f => f.Random.Words(3).OrNull(f, .05f))
             .RuleFor(o => o.Instrument, f => f.Music.Genre().OrNull(f, .05f))
             .RuleFor(o => o.LithologyTopBedrockId, f => f.PickRandom(lithologyTopBedrockIds).OrNull(f, .05f))
             .RuleFor(o => o.LithologyTopBedrock, _ => default!)
