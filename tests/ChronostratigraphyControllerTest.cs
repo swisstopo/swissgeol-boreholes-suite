@@ -88,7 +88,7 @@ public class ChronostratigraphyControllerTest
             Id = 11_000_039,
             IsLast = true,
             Chronostratigraphy = null,
-            ChronostratigraphyId = 15_001_087,
+            ChronostratigraphyId = 15_001_088,
             Updated = new DateTime(2021, 6, 27, 4, 22,  39).ToUniversalTime(),
             UpdatedBy = null,
             UpdatedById = 5,
@@ -106,10 +106,10 @@ public class ChronostratigraphyControllerTest
         };
 
         var chronostratigraphyToEdit = context.ChronostratigraphyLayers.Single(c => c.Id == id);
-        Assert.AreEqual(2, chronostratigraphyToEdit.CreatedById);
-        Assert.AreEqual(5, chronostratigraphyToEdit.UpdatedById);
-        Assert.AreEqual(6_000_003, chronostratigraphyToEdit.StratigraphyId);
-        Assert.AreEqual(15_001_088, chronostratigraphyToEdit.ChronostratigraphyId);
+        Assert.AreEqual(originalChronostratigraphy.CreatedById, chronostratigraphyToEdit.CreatedById);
+        Assert.AreEqual(originalChronostratigraphy.UpdatedById, chronostratigraphyToEdit.UpdatedById);
+        Assert.AreEqual(originalChronostratigraphy.StratigraphyId, chronostratigraphyToEdit.StratigraphyId);
+        Assert.AreEqual(originalChronostratigraphy.ChronostratigraphyId, chronostratigraphyToEdit.ChronostratigraphyId);
 
         try
         {
