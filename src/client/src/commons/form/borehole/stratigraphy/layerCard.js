@@ -6,7 +6,6 @@ import {
   Card,
   IconButton,
   TextField,
-  InputAdornment,
   Skeleton,
   CircularProgress,
   Autocomplete,
