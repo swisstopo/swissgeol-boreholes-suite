@@ -9,10 +9,7 @@ import NavigationChild from "./navigationChild";
 import Scale from "./scale";
 import StratigraphySelection from "./stratigraphySelection";
 
-const LithostratigraphyPanel = ({
-  id: selectedBoreholeId,
-  unlocked: isEditable,
-}) => {
+const LithostratigraphyPanel = ({ id: selectedBoreholeId, isEditable }) => {
   const { t } = useTranslation();
 
   return (

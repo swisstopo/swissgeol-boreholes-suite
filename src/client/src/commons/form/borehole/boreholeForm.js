@@ -370,7 +370,7 @@ class BoreholeForm extends React.Component {
             render={() => (
               <ChronostratigraphyPanel
                 id={parseInt(this.props.match.params.id, 10)}
-                unlocked={isEditable}
+                isEditable={isEditable}
               />
             )}
           />
@@ -383,7 +383,7 @@ class BoreholeForm extends React.Component {
             render={() => (
               <LithostratigraphyPanel
                 id={parseInt(this.props.match.params.id, 10)}
-                unlocked={isEditable}
+                isEditable={isEditable}
               />
             )}
           />
