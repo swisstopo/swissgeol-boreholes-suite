@@ -152,9 +152,9 @@ describe("Borehole list tests", () => {
     // sort by borehole type
     cy.contains("th", "Borehole type").click();
     cy.wait("@editorBorehole");
-    cy.get("tbody").children().eq(0).contains("td", "not specified");
-    cy.get("tbody").children().eq(1).contains("td", "not specified");
-    cy.get("tbody").children().eq(2).contains("td", "not specified");
+    cy.get("tbody").children().eq(0).contains("td", "virtual borehole");
+    cy.get("tbody").children().eq(1).contains("td", "virtual borehole");
+    cy.get("tbody").children().eq(2).contains("td", "virtual borehole");
 
     // sort by borehole status
     cy.contains("th", "Borehole status").click();
