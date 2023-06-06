@@ -225,9 +225,9 @@ const ProfileLayersList = props => {
         }}>
         <Styled.CardPattern
           id="pattern"
-          b={lithostratiColor[2]}
-          g={lithostratiColor[1]}
           r={lithostratiColor[0]}
+          g={lithostratiColor[1]}
+          b={lithostratiColor[2]}
           style={{
             backgroundImage: itemWithValidation?.pattern
               ? 'url("' +
