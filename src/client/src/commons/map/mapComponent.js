@@ -14,7 +14,7 @@ import { Cluster } from "ol/source";
 import GeoJSON from "ol/format/GeoJSON";
 import Select from "ol/interaction/Select";
 import Overlay from "ol/Overlay.js";
-import { defaults as defaultControls } from "ol/control/util";
+import { defaults as defaultControls } from "ol/control";
 import { click, pointerMove } from "ol/events/condition";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
 import { createEmpty, extend } from "ol/extent";
