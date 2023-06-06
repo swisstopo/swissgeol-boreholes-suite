@@ -44,7 +44,7 @@ Die CSV-Datei muss den folgenden Anforderungen und dem Format entsprechen, damit
 
 ## Format und Anforderungen an die Dateien der Bohrlochanhänge
 
-Die Anhangsdatei muss den folgenden Anforderungen und dem Format entsprechen, damit sie erfolgreich in die Webapplikation importiert werden kann:
+Die Anhangsdatei muss den folgenden Anforderungen entsprechen, damit sie erfolgreich in die Webapplikation importiert werden kann:
 
 * Die Datei darf maximal 200 MB gross sein.
 * Der Dateiname darf keine Leerzeichen enthalten.
@@ -145,7 +145,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | debris_ids               | ID (Codeliste)   | Nein        | Kommaseparierte Codeliste IDs der Grobbestandteile                                                                         |
 | color_ids                | ID (Codeliste)   | Nein        | Kommaseparierte Codeliste IDs der Farben                                                                                   |
 | gradation_id             | ID (Codeliste)   | Nein        | Abstufung                                                                                                                  |
-| lithology_top_bedrock_id | ID (Codeliste)   | Nein        | Lithologie Top Fels                                                                                                        |
+| lithology_top_bedrock_id | ID (Codeliste)   | Nein        | Lithologie Grobbestandteile                                                                                                         |
 
 ## Validierung
 

@@ -242,7 +242,7 @@ const ObservationInput = props => {
                 </MenuItem>
                 {casings?.data?.map(d => (
                   <MenuItem key={d.id} value={d.id}>
-                    {d.name}
+                    {d.name || t("np")}
                   </MenuItem>
                 ))}
               </TextField>

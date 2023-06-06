@@ -17,7 +17,7 @@ import Modify from "ol/interaction/Modify";
 import Point from "ol/geom/Point";
 import Polygon from "ol/geom/Polygon";
 import Feature from "ol/Feature";
-import { defaults as defaultControls } from "ol/control/util";
+import { defaults as defaultControls } from "ol/control";
 import { get as getProjection } from "ol/proj";
 import { register } from "ol/proj/proj4";
 import proj4 from "proj4";
