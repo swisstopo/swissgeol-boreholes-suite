@@ -445,7 +445,7 @@
   "formation": "Formation",
   "member": "Member",
   "bed": "Bank",
-  "msgLithostratigraphyEmptyEditing": "Kein Lithostratigraphyprofil verfügbar",
+  "msgLithostratigraphyEmptyEditing": "Kein Lithostratigraphieprofil verfügbar",
   "msgLithostratigraphyEmpty": "Sie müssen zuerst eine Stratigraphie erstellen, bevor Sie ein Lithostratigraphyprofil erstellen können",
   "msgChronostratigraphyEmpty": "Kein Chronostratigraphieprofil verfügbar",
   "msgChronostratigraphyEmptyEditing": "Sie müssen zuerst eine Stratigraphie erstellen, bevor Sie ein Chronostratigraphieprofil erstellen können"
