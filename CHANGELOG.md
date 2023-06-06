@@ -2,9 +2,15 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Updated the lithostratigraphy codelist table.
+- Upgraded to OpenLayers 7.
+
 ### Fixed
 
-- Fix label and setting for lithology top bedrock attribute of layer
+- Fixed bug where empty strings were displayed instead of _unknown_ in the _casing_ dropdown when adding water ingresses, hydrotests, groundwater measurements or field measurements.
+- Fixed label and setting for lithology top bedrock attribute of layer.
 
 ## v2.0.422 - 2023-06-02
 
