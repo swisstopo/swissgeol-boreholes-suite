@@ -441,6 +441,11 @@
   "fieldMeasurementRequiredFieldsAlert": "'Sampling type', 'Parameter', 'Value', 'Start' and 'Reliability of data' are mandatory fields, the entry cannot be saved if they are not filled out.",
   "msgFieldMeasurementsEmpty": "No field measurements available.",
   "saveHydrotestResultAlert": "Please save the current result of the hydrotest before saving the hydrotest.",
+  "formation": "Formation",
+  "member": "Member",
+  "bed": "Bed",
+  "msgLithostratigraphyEmpty": "No lithostratigraphic profile available",
+  "msgLithostratigraphyEmptyEditing": "You should first create a stratigraphy before you can create a lithostratigraphy profile",
   "msgChronostratigraphyEmpty": "No chronostratigraphic profile available",
   "msgChronostratigraphyEmptyEditing": "You should first create a stratigraphy before you can create a chronostratigraphy profile"
 }

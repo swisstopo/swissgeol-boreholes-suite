@@ -407,6 +407,11 @@
   "hydrotestResultRequiredFieldsAlert": "",
   "hydrotestResultsWillBeDeleted": "",
   "saveHydrotestResultAlert": "",
+  "formation": "",
+  "member": "",
+  "bed": "",
+  "msgLithostratigraphyEmpty": "",
+  "msgLithostratigraphyEmptyEditing": "",
   "msgChronostratigraphyEmpty": "",
   "msgChronostratigraphyEmptyEditing": ""
 }

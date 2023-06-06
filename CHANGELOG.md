@@ -5,6 +5,7 @@
 ### Added
 
 - Added new symbols for borehole types 'virtual borehole' and 'other'.
+- Panel to edit lithostratigraphy layers.
 
 ### Changed
 
