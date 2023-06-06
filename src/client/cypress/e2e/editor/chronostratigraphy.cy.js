@@ -39,7 +39,7 @@ describe("Tests for the chronostratigraphy editor.", () => {
           ],
           lithostratigraphy: [
             {
-              lithostratigraphyId: 15200363,
+              lithostratigraphyId: 15300363,
               fromDepth: 0,
               toDepth: 35,
             },
@@ -48,7 +48,7 @@ describe("Tests for the chronostratigraphy editor.", () => {
               toDepth: 40,
             },
             {
-              lithostratigraphyId: 15200093,
+              lithostratigraphyId: 15300093,
               fromDepth: 40,
               toDepth: 43,
             },

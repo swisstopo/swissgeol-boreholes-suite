@@ -115,7 +115,7 @@ public class UploadControllerTest
         Assert.AreEqual(false, lithology.IsLast);
         Assert.AreEqual(9001, lithology.QtDescriptionId);
         Assert.AreEqual(15104448, lithology.LithologyId);
-        Assert.AreEqual(15202034, lithology.LithostratigraphyId);
+        Assert.AreEqual(15302034, lithology.LithostratigraphyId);
         Assert.AreEqual(15001069, lithology.ChronostratigraphyId);
         Assert.AreEqual("Granite", lithology.OriginalUscs);
         Assert.AreEqual(23107001, lithology.UscsDeterminationId);
@@ -874,7 +874,7 @@ public class UploadControllerTest
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
         var boreholeCsvFile = GetRandomFile("borehoel.csv");
 
-        long targetSizeInBytes = 210 * 1024 * 1024; // 210MB
+        long targetSizeInBytes = 201 * 1024 * 1024; // 201MB
         byte[] content = new byte[targetSizeInBytes];
         var stream = new MemoryStream(content);
 
@@ -884,7 +884,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual($"One or more attachment exceed maximum file size of 205000000 bytes.", badRequestResult.Value);
+        Assert.AreEqual($"One or more attachment exceed maximum file size of 200 Mb.", badRequestResult.Value);
     }
 
     [TestMethod]
