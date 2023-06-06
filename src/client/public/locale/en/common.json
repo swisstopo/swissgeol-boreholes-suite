@@ -444,8 +444,8 @@
   "formation": "Formation",
   "member": "Member",
   "bed": "Bed",
-  "msgLithostratigraphyEmptyEditing": "No lithostratigraphic profile available",
-  "msgLithostratigraphyEmpty": "You should first create a stratigraphy before you can create a lithostratigraphy profile",
+  "msgLithostratigraphyEmpty": "No lithostratigraphic profile available",
+  "msgLithostratigraphyEmptyEditing": "You should first create a stratigraphy before you can create a lithostratigraphy profile",
   "msgChronostratigraphyEmpty": "No chronostratigraphic profile available",
   "msgChronostratigraphyEmptyEditing": "You should first create a stratigraphy before you can create a chronostratigraphy profile"
 }
