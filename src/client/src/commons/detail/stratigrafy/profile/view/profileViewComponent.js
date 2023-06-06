@@ -32,10 +32,6 @@ const ProfileView = props => {
 
   function getDomainRow(code, fieldName) {
     const text = code?.[i18n.language];
-    if (fieldName === "layer_lithology_top_bedrock") {
-      fieldName = "lithology_top_bedrock";
-    } // Fixes discrepancy between fieldName translationId and fieldName in visible Fields array.
-
     return getRowIfVisible(fieldName, getRow(text, fieldName));
   }
 
