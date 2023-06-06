@@ -61,7 +61,7 @@ const LithologyViewProfile = ({
                       value={layer.toDepth}
                       thousandSeparator="'"
                       displayType="text"
-                      suffix={" m"}
+                      suffix={" [m MD]"}
                     />
                   </Box>
                 )}

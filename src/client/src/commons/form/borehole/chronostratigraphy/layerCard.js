@@ -193,7 +193,7 @@ const LayerCard = ({
       }}>
       {[State.DISPLAY, State.EDITABLE].includes(cardState) &&
         height >= minPixelHeightForDepthLabels && (
-          <Typography>{layer?.fromDepth ?? "-"} m</Typography>
+          <Typography>{layer?.fromDepth ?? "-"} [m MD]</Typography>
         )}
       {State.EDITING === cardState && (
         <TextField
@@ -203,9 +203,6 @@ const LayerCard = ({
           error={!!fromDepthErrorMessage}
           helperText={fromDepthErrorMessage}
           onBlur={e => handleFromDepth(e.target.value)}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">m</InputAdornment>,
-          }}
           size="small"
         />
       )}
@@ -258,7 +255,7 @@ const LayerCard = ({
       }}>
       {[State.DISPLAY, State.EDITABLE].includes(cardState) &&
         height >= minPixelHeightForDepthLabels && (
-          <Typography>{layer?.toDepth ?? "-"} m</Typography>
+          <Typography>{layer?.toDepth ?? "-"} [m MD]</Typography>
         )}
       {State.EDITING === cardState && (
         <TextField
@@ -268,9 +265,6 @@ const LayerCard = ({
           error={!!toDepthErrorMessage}
           helperText={toDepthErrorMessage}
           onBlur={e => handleToDepth(e.target.value)}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">m</InputAdornment>,
-          }}
           size="small"
         />
       )}
