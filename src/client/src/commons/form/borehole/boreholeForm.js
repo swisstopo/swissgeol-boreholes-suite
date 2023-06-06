@@ -26,8 +26,8 @@ import GroundwaterLevelMeasurement from "./hydrogeology/groundwaterLevelMeasurem
 import Hydrotest from "./hydrogeology/hydrotest";
 import { AlertContext } from "../../alert/alertContext";
 import FieldMeasurement from "./hydrogeology/fieldMeasurement";
-import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel";
-import LithostratigraphyPanel from "./chronostratigraphy/lithostratigraphyPanel";
+import ChronostratigraphyPanel from "./stratigraphy/chronostratigraphyPanel";
+import LithostratigraphyPanel from "./stratigraphy/lithostratigraphyPanel";
 
 class BoreholeForm extends React.Component {
   static contextType = AlertContext;
