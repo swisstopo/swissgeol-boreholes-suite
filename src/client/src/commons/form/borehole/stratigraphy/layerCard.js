@@ -1,29 +1,18 @@
 import React, { useEffect, useState, useCallback } from "react";
 import {
   CardActionArea,
-  Stack,
   Typography,
   Box,
   Card,
   IconButton,
   TextField,
-  InputAdornment,
   Skeleton,
-  TableCell,
-  Table,
-  Tooltip,
-  TableRow,
   CircularProgress,
   Autocomplete,
-  TableBody,
 } from "@mui/material";
 import { Close, Delete, Edit } from "@mui/icons-material";
 import { ClickAwayListener } from "@mui/base";
 import { useTranslation } from "react-i18next";
-import {
-  useChronostratigraphyMutations,
-  useDomainSchema,
-} from "../../../../api/fetchApiV2";
 
 const State = Object.freeze({
   EDITING: Symbol("Editing"),
@@ -33,28 +22,23 @@ const State = Object.freeze({
 });
 
 const LayerCard = ({
-  layer, // {id, fromDepth, toDepth, chronostratigraphyId}: the layer object to display
+  updateLayer,
+  deleteLayer,
+  dataProperty, // string that specifies the property of the layer object that contains the data
+  layer, // {id, fromDepth, toDepth, [dataProperty]}: the layer object to display
   minFromDepth, // number: minimal allowed fromDepth
   maxToDepth, // number: maximal allowed toDepth
   header, // Array<{title, isVisible}>: header object with titles and visibility
+  options, // options array for every level of the hierarchy
   isEditable, // boolean: specifies if values can be edited
-  height, // height of the layerCard
+  height, // height of the layerCard in pixels
 }) => {
-  const { t, i18n } = useTranslation();
-
-  const {
-    update: { mutate: updateChronostratigraphy },
-    delete: { mutate: deleteChronostratigraphy },
-  } = useChronostratigraphyMutations();
-  const { data: schemaData } = useDomainSchema(
-    "custom.chronostratigraphy_top_bedrock",
-  );
+  const { t } = useTranslation();
 
   const [fromDepthErrorMessage, setFromDepthErrorMessage] = useState("");
   const [toDepthErrorMessage, setToDepthErrorMessage] = useState("");
   const [fromDepth, setFromDepth] = useState(null);
   const [toDepth, setToDepth] = useState(null);
-  const [options, setOptions] = useState(null);
   const [selection, setSelection] = useState(null);
   const [cardState, setCardState] = useState(null);
 
@@ -71,35 +55,24 @@ const LayerCard = ({
     });
   }, [isEditable]);
 
-  // create options array from codelist schema
-  useEffect(() => {
-    if (schemaData) {
-      setOptions(
-        [...schemaData]
-          .sort((a, b) => a.order - b.order)
-          .reduce((accu, d) => {
-            const level = d.path.split(".").length - 1;
-            (accu[level] = accu[level] || []).push({
-              label: d[i18n.language],
-              id: d.id,
-              color: JSON.parse(d.conf ?? null)?.color,
-            });
-            return accu;
-          }, []),
-      );
-    }
-  }, [i18n.language, schemaData]);
-
   // create selection array from the path of the selected codelist
   // one element for each header
   useEffect(() => {
-    if (layer && schemaData && options) {
+    if (layer && options) {
+      let selectedOption;
+      search: for (const optionsAtLevel of options) {
+        for (const option of optionsAtLevel) {
+          if (option.id === layer[dataProperty]) {
+            selectedOption = option;
+            break search;
+          }
+        }
+      }
+
       const selections =
-        schemaData
-          .find(c => c.id === layer.chronostratigraphyId)
-          ?.path?.split(".")
-          ?.map((id, index) => options[index].find(c => c.id === +id) ?? {}) ??
-        [];
+        selectedOption?.path?.map(
+          (id, index) => options[index].find(c => c.id === id) ?? {},
+        ) ?? [];
 
       // set color of empty path elements to the closest defined parent
       let currentColor = selections[0]?.color ?? null;
@@ -116,10 +89,12 @@ const LayerCard = ({
       setSelection(
         selections
           .slice(0, header.length)
-          .concat(Array(header.length - selections.length).fill(null)),
+          .concat(
+            Array(Math.max(0, header.length - selections.length)).fill(null),
+          ),
       );
     }
-  }, [header.length, layer, options, schemaData]);
+  }, [dataProperty, header.length, layer, options]);
 
   const handleFromDepth = useCallback(
     newFromDepth => {
@@ -137,14 +112,14 @@ const LayerCard = ({
       }
       setFromDepthErrorMessage(errors.join(", "));
       if (errors.length === 0 && layer.fromDepth !== +newFromDepth) {
-        updateChronostratigraphy({
+        updateLayer({
           ...layer,
           fromDepth: newFromDepth,
         });
       }
     },
 
-    [layer, minFromDepth, updateChronostratigraphy, t],
+    [layer, minFromDepth, updateLayer, t],
   );
 
   const handleToDepth = useCallback(
@@ -163,13 +138,13 @@ const LayerCard = ({
       }
       setToDepthErrorMessage(errors.join(", "));
       if (errors.length === 0 && layer.toDepth !== +newToDepth) {
-        updateChronostratigraphy({
+        updateLayer({
           ...layer,
           toDepth: newToDepth,
         });
       }
     },
-    [layer, maxToDepth, updateChronostratigraphy, t],
+    [layer, maxToDepth, updateLayer, t],
   );
 
   const handleLayerChange = (newValue, index) => {
@@ -182,13 +157,13 @@ const LayerCard = ({
       newValue = selection[i] ?? null;
     }
 
-    updateChronostratigraphy({
+    updateLayer({
       ...layer,
-      chronostratigraphyId: newValue?.id ?? null,
+      [dataProperty]: newValue?.id ?? null,
     });
   };
 
-  if (!schemaData || !layer || !options || !selection) {
+  if (!layer || !options || !selection) {
     return (
       <Card
         square
@@ -205,24 +180,28 @@ const LayerCard = ({
   }
 
   const headerBar = (
-    <Stack
-      direction="row"
-      sx={{ padding: "0.2em 1em", alignItems: "flex-start", flex: "0 1 0%" }}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "flex-start",
+        padding: "0.2rem 1rem",
+        position: "absolute",
+        top: "0",
+        left: "0",
+        right: "0",
+      }}>
       {[State.DISPLAY, State.EDITABLE].includes(cardState) &&
         height >= minPixelHeightForDepthLabels && (
-          <Typography>{layer?.fromDepth ?? "-"} m</Typography>
+          <Typography>{layer?.fromDepth ?? "-"} [m MD]</Typography>
         )}
       {State.EDITING === cardState && (
         <TextField
-          sx={{ margin: "0.8em 0" }}
+          sx={{ margin: "0.8rem 0" }}
           label={t("fromdepth")}
           defaultValue={fromDepth ?? layer.fromDepth}
           error={!!fromDepthErrorMessage}
           helperText={fromDepthErrorMessage}
           onBlur={e => handleFromDepth(e.target.value)}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">m</InputAdornment>,
-          }}
           size="small"
         />
       )}
@@ -256,135 +235,119 @@ const LayerCard = ({
             onClick={e => {
               e.stopPropagation();
               setCardState(State.DELETED);
-              deleteChronostratigraphy(layer.id);
+              deleteLayer(layer.id);
             }}>
             <Delete />
           </IconButton>
         </>
       )}
-    </Stack>
-  );
-
-  const contentPart = (
-    <Table sx={{ tableLayout: "fixed", flex: "1" }}>
-      <TableBody>
-        <TableRow>
-          {selection.map(
-            (selectedItem, index) =>
-              header[index].isVisible && (
-                <TableCell
-                  key={index}
-                  sx={{
-                    paddingTop: "0",
-                    paddingBottom: "0",
-                    backgroundColor: selectedItem?.color
-                      ? `rgb(${selectedItem?.color?.join()})`
-                      : "transparent",
-                    borderBottom: "none",
-                    borderLeft:
-                      index === 0 ? "none" : "solid 1px rgba(0, 0, 0, 0.12)",
-                  }}>
-                  {[State.DISPLAY, State.EDITABLE].includes(cardState) && (
-                    <Tooltip title={selectedItem?.label}>
-                      <Typography sx={{ textAlign: "center" }}>
-                        {selectedItem?.label ?? "-"}
-                      </Typography>
-                    </Tooltip>
-                  )}
-                  {State.EDITING === cardState && (
-                    <Autocomplete
-                      size="small"
-                      options={options[index] ?? []}
-                      value={selectedItem?.label ? selectedItem : null}
-                      renderInput={params => (
-                        <TextField {...params} label={t(header[index].title)} />
-                      )}
-                      onChange={(event, value) =>
-                        handleLayerChange(value, index)
-                      }
-                    />
-                  )}
-                </TableCell>
-              ),
-          )}
-        </TableRow>
-      </TableBody>
-    </Table>
+    </Box>
   );
 
   const footerBar = (
-    <Stack
-      direction="row"
-      sx={{ padding: "0.2em 1em", alignItems: "flex-end", flex: "0 1 0%" }}>
+    <Box
+      sx={{
+        padding: "0.2rem 1rem",
+        position: "absolute",
+        left: "0",
+        bottom: "0",
+      }}>
       {[State.DISPLAY, State.EDITABLE].includes(cardState) &&
         height >= minPixelHeightForDepthLabels && (
-          <Typography>{layer?.toDepth ?? "-"} m</Typography>
+          <Typography>{layer?.toDepth ?? "-"} [m MD]</Typography>
         )}
       {State.EDITING === cardState && (
         <TextField
-          sx={{ margin: "0.8em 0" }}
+          sx={{ margin: "0.8rem 0" }}
           label={t("todepth")}
           defaultValue={toDepth ?? layer.toDepth}
           error={!!toDepthErrorMessage}
           helperText={toDepthErrorMessage}
           onBlur={e => handleToDepth(e.target.value)}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">m</InputAdornment>,
-          }}
           size="small"
         />
       )}
-    </Stack>
+    </Box>
   );
 
   const cardContent = (
     <Box
       data-cy="layer-card"
-      sx={{ flex: "1", display: "flex", position: "relative" }}>
-      <Box sx={{ position: "absolute", top: "0", left: "0", right: "0" }}>
-        {headerBar}
-      </Box>
-      {contentPart}
-      <Box sx={{ position: "absolute", bottom: "0", left: "0", right: "0" }}>
-        {footerBar}
-      </Box>
+      sx={{
+        display: "grid",
+        gridTemplateColumns: `repeat(${header.reduce(
+          (acc, h) => acc + h.isVisible,
+          0,
+        )},minmax(0,1fr))`,
+        justifyItems: "stretch",
+        alignItems: "stretch",
+        borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
+        borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+        minHeight: State.EDITING === cardState ? "14rem" : "0",
+        height: height + "px",
+        position: "relative",
+        overflowY: "hidden",
+      }}>
+      {selection.map(
+        (selectedItem, index) =>
+          header[index].isVisible && (
+            <Box
+              key={index}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: selectedItem?.color
+                  ? `rgb(${selectedItem?.color?.join()})`
+                  : "transparent",
+                borderRight: "1px solid rgba(0, 0, 0, 0.12)",
+                padding: "0 1rem",
+              }}>
+              {[State.DISPLAY, State.EDITABLE].includes(cardState) && (
+                <Typography sx={{ textAlign: "center" }}>
+                  {selectedItem?.label ?? "-"}
+                </Typography>
+              )}
+              {State.EDITING === cardState && (
+                <Autocomplete
+                  sx={{ flex: "1" }}
+                  size="small"
+                  options={options[index] ?? []}
+                  value={selectedItem?.label ? selectedItem : null}
+                  renderInput={params => (
+                    <TextField {...params} label={t(header[index].title)} />
+                  )}
+                  onChange={(event, value) => handleLayerChange(value, index)}
+                />
+              )}
+            </Box>
+          ),
+      )}
+      {headerBar}
+      {footerBar}
     </Box>
   );
 
   return (
     <>
-      {State.DISPLAY === cardState && (
-        <Card
-          square
-          variant="outlined"
-          sx={{ height: `${height}px`, display: "flex" }}>
-          {cardContent}
-        </Card>
-      )}
+      {State.DISPLAY === cardState && cardContent}
       {State.EDITABLE === cardState && (
-        <Card
-          square
-          variant="outlined"
-          sx={{ height: `${height}px`, display: "flex" }}>
-          <CardActionArea
-            sx={{ display: "flex", flexDirection: "column" }}
-            onClick={() => setCardState(State.EDITING)}
-            component="div">
-            {cardContent}
-          </CardActionArea>
-        </Card>
+        <CardActionArea
+          onClick={() => setCardState(State.EDITING)}
+          component="div">
+          {cardContent}
+        </CardActionArea>
       )}
       {State.EDITING === cardState && (
         <ClickAwayListener onClickAway={() => setCardState(State.EDITABLE)}>
-          <Card
-            square
-            variant="outlined"
+          <Box
             onWheel={e => e.stopPropagation()}
-            sx={{ height: `${height}px`, display: "flex", overflow: "auto" }}>
-            <Box sx={{ minHeight: "14em", flex: "1", display: "flex" }}>
-              {cardContent}
-            </Box>
-          </Card>
+            sx={{
+              height: height + "px",
+              overflowY: "auto",
+            }}>
+            {cardContent}
+          </Box>
         </ClickAwayListener>
       )}
       {State.DELETED === cardState && (

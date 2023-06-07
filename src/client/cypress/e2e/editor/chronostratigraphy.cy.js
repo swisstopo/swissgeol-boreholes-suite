@@ -20,43 +20,58 @@ describe("Tests for the chronostratigraphy editor.", () => {
       .then(response => {
         expect(response.body).to.have.property("success", true);
 
-        [
-          {
-            lithologyId: 15101044,
-            lithostratigraphyId: 15300363,
-            fromDepth: 0,
-            toDepth: 25,
-          },
-          {
-            lithologyId: 15102027,
-            fromDepth: 25,
-            toDepth: 35,
-          },
-          {
-            fromDepth: 35,
-            toDepth: 40,
-          },
-          {
-            lithostratigraphyId: 15300093,
-            fromDepth: 40,
-            toDepth: 43,
-          },
-        ].forEach(layer => {
-          cy.request({
-            method: "POST",
-            url: "/api/v2/layer",
-            cache: "no-cache",
-            credentials: "same-origin",
-            headers: {
-              "Content-Type": "application/json",
+        const layers = {
+          layer: [
+            {
+              lithologyId: 15101044,
+              fromDepth: 0,
+              toDepth: 25,
             },
-            body: {
-              stratigraphyId: response.body.id,
-              ...layer,
+            {
+              lithologyId: 15102027,
+              fromDepth: 25,
+              toDepth: 35,
             },
-            auth: adminUserAuth,
-          }).then(response => {
-            expect(response).to.have.property("status", 200);
+            {
+              fromDepth: 35,
+              toDepth: 43,
+            },
+          ],
+          lithostratigraphy: [
+            {
+              lithostratigraphyId: 15300363,
+              fromDepth: 0,
+              toDepth: 35,
+            },
+            {
+              fromDepth: 35,
+              toDepth: 40,
+            },
+            {
+              lithostratigraphyId: 15300093,
+              fromDepth: 40,
+              toDepth: 43,
+            },
+          ],
+        };
+        Object.entries(layers).forEach(([key, value]) => {
+          value.forEach(layer => {
+            cy.request({
+              method: "POST",
+              url: "/api/v2/" + key,
+              cache: "no-cache",
+              credentials: "same-origin",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: {
+                stratigraphyId: response.body.id,
+                ...layer,
+              },
+              auth: adminUserAuth,
+            }).then(response => {
+              expect(response).to.have.property("status", 200);
+            });
           });
         });
       });
@@ -75,7 +90,7 @@ describe("Tests for the chronostratigraphy editor.", () => {
 
   it("Creates, updates and deletes chronostratigraphy layers", () => {
     // create chronostratigraphy
-    cy.get('[data-cy="add-chrono-button"]').click({ force: true });
+    cy.get('[data-cy="add-layer-button"]').click({ force: true });
     cy.wait("@chronostratigraphy_POST");
 
     // edit chronostratigraphy

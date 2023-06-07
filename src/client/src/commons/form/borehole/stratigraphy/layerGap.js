@@ -1,7 +1,6 @@
 import React from "react";
 import { Card, Stack, Typography, CardActionArea } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useChronostratigraphyMutations } from "../../../../api/fetchApiV2";
 import {
   ArrowDownward,
   ArrowUpward,
@@ -26,13 +25,20 @@ const IconTypography = ({ icon, text }) => {
   );
 };
 
-const LayerGap = ({ previousLayer, nextLayer, isEditable, height }) => {
+/**
+ * Component that is displayed if there is a gap between two layers.
+ * It offers solutions to fix the gap like extending the upper layer or filling the gap with an empty layers.
+ */
+const LayerGap = ({
+  addLayer,
+  updateLayer,
+  previousLayer,
+  nextLayer,
+  isEditable,
+  height,
+}) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const {
-    add: { mutate: addChronostratigraphy },
-    update: { mutate: updateChronostratigraphy },
-  } = useChronostratigraphyMutations();
 
   return (
     <Card square variant="outlined">
@@ -51,7 +57,7 @@ const LayerGap = ({ previousLayer, nextLayer, isEditable, height }) => {
               <CardActionArea
                 sx={{ flex: 1 }}
                 onClick={() =>
-                  updateChronostratigraphy({
+                  updateLayer({
                     ...previousLayer,
                     toDepth: nextLayer.fromDepth,
                   })
@@ -65,7 +71,7 @@ const LayerGap = ({ previousLayer, nextLayer, isEditable, height }) => {
             <CardActionArea
               sx={{ flex: 1 }}
               onClick={() =>
-                addChronostratigraphy({
+                addLayer({
                   stratigraphyId: nextLayer.stratigraphyId,
                   fromDepth: previousLayer?.toDepth ?? 0,
                   toDepth: nextLayer.fromDepth,
@@ -80,7 +86,7 @@ const LayerGap = ({ previousLayer, nextLayer, isEditable, height }) => {
               <CardActionArea
                 sx={{ flex: 1 }}
                 onClick={() =>
-                  updateChronostratigraphy({
+                  updateLayer({
                     ...nextLayer,
                     fromDepth: 0,
                   })
@@ -95,7 +101,7 @@ const LayerGap = ({ previousLayer, nextLayer, isEditable, height }) => {
               <CardActionArea
                 sx={{ flex: 1 }}
                 onClick={() =>
-                  updateChronostratigraphy({
+                  updateLayer({
                     ...nextLayer,
                     fromDepth: previousLayer.toDepth,
                   })

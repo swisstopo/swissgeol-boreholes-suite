@@ -86,8 +86,8 @@ export const stratigraphyFieldEditorData = [
   },
   {
     id: 17,
-    label: "lithology_top_bedrock",
-    value: "lithology_top_bedrock",
+    label: "layer_lithology_top_bedrock",
+    value: "layer_lithology_top_bedrock",
   },
   {
     id: 18,

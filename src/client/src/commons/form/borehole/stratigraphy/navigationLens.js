@@ -135,13 +135,11 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
                   value={Math.round(navState.lensStart)}
                   thousandSeparator="'"
                   displayType="text"
-                  suffix={" m"}
                 />
                 <LensDepthLabel
                   value={Math.round(navState.lensStart + navState.lensSize)}
                   thousandSeparator="'"
                   displayType="text"
-                  suffix={" m"}
                 />
               </>
             )}

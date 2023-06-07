@@ -14,40 +14,64 @@ import {
 } from "@mui/material";
 import LayerCard from "./layerCard";
 import LayerGap from "./layerGap";
-import {
-  useChronostratigraphies,
-  useChronostratigraphyMutations,
-} from "../../../../api/fetchApiV2";
 import { AddCircle, VisibilityOff, Visibility } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import NavigationChild from "./navigationChild";
+import { useDomainSchema } from "../../../../api/fetchApiV2";
 
-const ChronostratigraphyEditProfile = ({
+/**
+ * Component for editing hierarchical layer data.
+ */
+const HierarchicalDataEditProfile = ({
+  layerData: layers, // array of layers
+  addLayer, // function that adds a layer
+  deleteLayer, // function that deletes a layer
+  updateLayer, // function that updates a layer
+  headerLabels, // array of translation keys
+  domainSchemaName, // string that specifies the codelist schema to use
+  dataProperty, // string that specifies the property of the layer object that contains the data
+  titel, // The titel, displayed in the header
   selectedStratigraphyID,
   isEditable,
   sx,
   navState,
   setNavState,
 }) => {
-  const { data: layers } = useChronostratigraphies(selectedStratigraphyID);
-  const { t } = useTranslation();
-  const {
-    add: { mutate: addChronostratigraphy },
-  } = useChronostratigraphyMutations();
+  const { t, i18n } = useTranslation();
 
-  const [header, setHeader] = useState([
-    { title: "eon", isVisible: true },
-    { title: "era", isVisible: true },
-    { title: "period", isVisible: true },
-    { title: "epoch", isVisible: true },
-    { title: "subepoch", isVisible: true },
-    { title: "age", isVisible: true },
-    { title: "subage", isVisible: true },
-  ]);
+  const [id] = useState(Math.random().toString(36).substring(2, 10));
+  const [options, setOptions] = useState(null);
+  const [header, setHeader] = useState(
+    headerLabels.map(h => ({ title: h, isVisible: true })),
+  );
+
+  const { data: schemaData } = useDomainSchema(domainSchemaName);
+
+  // create options array from codelist schema
+  // The options are the same for all layers
+  useEffect(() => {
+    if (schemaData) {
+      setOptions(
+        [...schemaData]
+          .sort((a, b) => a.order - b.order)
+          .reduce((accu, d) => {
+            const path = d.path.split(".").map(id => +id);
+            const level = path.length - 1;
+            (accu[level] = accu[level] || []).push({
+              label: d[i18n.language],
+              id: d.id,
+              color: JSON.parse(d.conf ?? null)?.color,
+              path: path,
+            });
+            return accu;
+          }, []),
+      );
+    }
+  }, [i18n.language, schemaData]);
 
   useEffect(() => {
-    setNavState(prev => prev.setContentHeightFromLayers("chrono", layers));
-  }, [layers, setNavState]);
+    setNavState(prev => prev.setContentHeightFromLayers(id, layers));
+  }, [id, layers, setNavState]);
 
   const layerDisplayStack = [];
   if (layers) {
@@ -61,6 +85,8 @@ const ChronostratigraphyEditProfile = ({
       if (layer.fromDepth > previousLayerToDepth) {
         layerDisplayStack.push(
           <LayerGap
+            addLayer={addLayer}
+            updateLayer={updateLayer}
             key={-index}
             previousLayer={layers[index - 1]}
             nextLayer={layers[index]}
@@ -74,6 +100,10 @@ const ChronostratigraphyEditProfile = ({
       }
       layerDisplayStack.push(
         <LayerCard
+          updateLayer={updateLayer}
+          deleteLayer={deleteLayer}
+          dataProperty={dataProperty}
+          options={options}
           key={layer.id}
           layer={layer}
           minFromDepth={previousLayerToDepth}
@@ -89,14 +119,14 @@ const ChronostratigraphyEditProfile = ({
   const headerElement = (
     <Box>
       <Stack direction="row" sx={{ alignItems: "center", padding: "1em" }}>
-        <Typography>{t("chronostratigraphy")}</Typography>
+        <Typography>{titel}</Typography>
         {isEditable && (
           <IconButton
             aria-label={t("add")}
             onClick={() => {
               const newFromDepth = layers.at(-1)?.toDepth ?? 0;
               const newToDepth = newFromDepth + 10; // new layer is created with a depth of 10m
-              addChronostratigraphy({
+              addLayer({
                 stratigraphyId: selectedStratigraphyID,
                 fromDepth: newFromDepth,
                 toDepth: newToDepth,
@@ -109,7 +139,7 @@ const ChronostratigraphyEditProfile = ({
                 ),
               );
             }}
-            data-cy="add-chrono-button">
+            data-cy="add-layer-button">
             <AddCircle />
           </IconButton>
         )}
@@ -131,7 +161,7 @@ const ChronostratigraphyEditProfile = ({
                   ),
                 );
               }}
-              data-cy={`chrono-visibility-${index}`}>
+              data-cy={`column-visibility-${index}`}>
               <Typography noWrap>{t(h.title)}</Typography>
             </Button>
           ))}
@@ -175,4 +205,4 @@ const ChronostratigraphyEditProfile = ({
   );
 };
 
-export default ChronostratigraphyEditProfile;
+export default HierarchicalDataEditProfile;

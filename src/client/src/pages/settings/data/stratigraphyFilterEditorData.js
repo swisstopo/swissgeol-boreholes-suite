@@ -91,7 +91,7 @@ export const stratigraphyFilterEditorData = [
   },
   {
     id: 18,
-    label: "lithology_top_bedrock",
+    label: "layer_lithology_top_bedrock",
     value: "layer.lithology_top_bedrock",
   },
   {

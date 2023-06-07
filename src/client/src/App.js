@@ -7,6 +7,7 @@ import {
   Redirect,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import HomeComponent from "./pages/home/homeComponent";
 import EditorComponent from "./pages/editor/editorComponent";
@@ -171,6 +172,7 @@ class App extends React.Component {
                 />
               </Switch>
             </Router>
+            <ReactQueryDevtools />
           </QueryClientProvider>
         </ThemeProvider>
       </AlertProvider>
