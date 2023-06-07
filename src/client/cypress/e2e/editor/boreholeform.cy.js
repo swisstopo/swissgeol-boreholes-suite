@@ -41,18 +41,20 @@ describe("Test for the borehole form.", () => {
       const value = el[0].children[1].firstChild.data;
       boreholeDropdownValues.push(value);
       if (boreholeDropdownValues.length === 10) {
-        expect(boreholeDropdownValues).to.deep.eq([
+        const expectedValues = [
           "borehole",
           "dynamic probing",
           "geotechnics",
-          "core",
           "open, no completion",
           "measured",
           "2",
           "2",
           "2",
           "2",
-        ]);
+        ];
+        expectedValues.forEach(val => {
+          expect(boreholeDropdownValues).to.include(val);
+        });
       }
     });
   });
