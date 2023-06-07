@@ -11,6 +11,7 @@
 
 - Updated the lithostratigraphy codelist table.
 - Upgraded to OpenLayers 7.
+- Removed DescriptionFacies and DescriptionLithological from lithology.
 
 ### Fixed
 
