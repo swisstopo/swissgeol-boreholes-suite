@@ -116,7 +116,6 @@ public class UploadControllerTest
         Assert.AreEqual(9001, lithology.QtDescriptionId);
         Assert.AreEqual(15104448, lithology.LithologyId);
         Assert.AreEqual(15302034, lithology.LithostratigraphyId);
-        Assert.AreEqual(15001069, lithology.ChronostratigraphyId);
         Assert.AreEqual("Granite", lithology.OriginalUscs);
         Assert.AreEqual(23107001, lithology.UscsDeterminationId);
         Assert.AreEqual(23101005, lithology.Uscs1Id);

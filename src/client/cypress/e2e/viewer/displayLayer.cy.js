@@ -92,9 +92,9 @@ describe("Test for the borehole form.", () => {
     // fill radio
     cy.get(".ui.radio.checkbox").first().click();
 
-    // Lithology, Lithostratigraphy and Chronostratigraphy
+    // Lithology
     cy.get('[data-cy="domain-tree"] > input')
-      .should("have.length", 3)
+      .should("have.length", 1)
       .each((el, index, list) => {
         cy.wrap(el).scrollIntoView().click();
         cy.get('.modal [role="listitem"]').eq(5).click();
@@ -149,7 +149,7 @@ describe("Test for the borehole form.", () => {
     cy.get(".PrivateSwitchBase-input").click({ force: true });
     cy.get('[data-cy="stratigraphy-layer-details"] h6').should(
       "have.length",
-      30,
+      28,
     );
   });
 

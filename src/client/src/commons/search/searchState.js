@@ -61,8 +61,6 @@ const initialState = {
     layer_geology: "",
 
     lithology: null,
-    lithostratigraphy: null,
-    chronostratigraphy: null,
 
     color: null,
     plasticity: null,
