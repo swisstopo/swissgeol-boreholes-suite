@@ -157,7 +157,7 @@ Für jeden bereitgestellten Header CSV-Datei muss für jede Zeile ein entspreche
 Beim Importprozess der Bohrdaten wird eine Duplikatsvalidierung durchgeführt, um sicherzustellen, dass kein Bohrloch mehrmals in der Datei vorhanden ist oder bereits in der Datenbank existiert.
 Duplikate werden nur innerhalb einer Arbeitsgruppe erkannt. Die Duplikaterkennung erfolgt anhand der Koordinaten mit einer Toleranz von +/- 2 Metern und der Gesamttiefe des Bohrlochs.
 
-### Borhlochanhänge
+### Bohrlochanhänge
 
 Überprüft wird, ob jeder Dateiname in der kommaseparierten Liste in dem _attachments_-Feld in der Liste der Anhänge vorhanden ist.
 
