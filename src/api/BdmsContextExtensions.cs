@@ -330,8 +330,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.CasingMaterialId, f => f.PickRandom(casingMaterialIds).OrNull(f, .6f))
             .RuleFor(o => o.CasingMaterial, _ => default!)
             .RuleFor(o => o.CasingOuterDiameter, f => f.Random.Double(0, 20))
-            .RuleFor(o => o.ChronostratigraphyId, f => f.PickRandom(chronostratigraphyTopBedrockIds).OrNull(f, .05f))
-            .RuleFor(o => o.Chronostratigraphy, _ => default!)
             .RuleFor(o => o.CohesionId, f => f.PickRandom(cohesionIds).OrNull(f, .05f))
             .RuleFor(o => o.Cohesion, _ => default!)
             .RuleFor(o => o.CompactnessId, f => f.PickRandom(compactnessIds).OrNull(f, .05f))

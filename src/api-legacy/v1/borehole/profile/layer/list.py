@@ -242,7 +242,6 @@ class ListGeologyLayers(ListLayers):
             END AS msm_to,
 
             layer.lithostratigraphy_id_cli as title,
-            layer.chronostratigraphy_id_cli AS subtitle,
             layer.lithology_id_cli as description,
             color.conf_cli -> 'color' as rgb,
             pattern.conf_cli ->> 'image' as pattern
@@ -326,7 +325,6 @@ class ListGeotechnicalLayers(ListLayers):
             END AS msm_to,
 
             layer.lithostratigraphy_id_cli as title,
-            layer.chronostratigraphy_id_cli AS subtitle,
             layer.lithostratigraphy_id_cli as description,
             color.conf_cli -> 'color' as rgb,
             pattern.conf_cli ->> 'image' as pattern

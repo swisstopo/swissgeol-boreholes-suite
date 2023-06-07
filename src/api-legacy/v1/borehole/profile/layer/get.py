@@ -182,7 +182,6 @@ class GetGeologyLayer(Action):
             layer.qt_description_id_cli AS qt_description,
             layer.lithology_id_cli AS lithology,
             layer.lithostratigraphy_id_cli AS lithostratigraphy,
-            layer.chronostratigraphy_id_cli AS chronostratigraphy,
             COALESCE(
                 mlpr112, '{}'::int[]
             ) AS color,

@@ -145,7 +145,6 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Layer>().HasOne(l => l.Alteration).WithMany().HasForeignKey(l => l.AlterationId);
         modelBuilder.Entity<Layer>().HasOne(l => l.CasingKind).WithMany().HasForeignKey(l => l.CasingKindId);
         modelBuilder.Entity<Layer>().HasOne(l => l.CasingMaterial).WithMany().HasForeignKey(l => l.CasingMaterialId);
-        modelBuilder.Entity<Layer>().HasOne(l => l.Chronostratigraphy).WithMany().HasForeignKey(l => l.ChronostratigraphyId);
         modelBuilder.Entity<Layer>().HasOne(l => l.Cohesion).WithMany().HasForeignKey(l => l.CohesionId);
         modelBuilder.Entity<Layer>().HasOne(l => l.Compactness).WithMany().HasForeignKey(l => l.CompactnessId);
         modelBuilder.Entity<Layer>().HasOne(l => l.Consistance).WithMany().HasForeignKey(l => l.ConsistanceId);
