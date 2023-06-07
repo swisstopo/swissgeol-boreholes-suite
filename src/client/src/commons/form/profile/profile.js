@@ -36,9 +36,7 @@ const Profile = props => {
     if (
       attribute === "depth_to" ||
       attribute === "depth_from" ||
-      attribute === "lithostratigraphy" ||
       attribute === "lithology" ||
-      attribute === "chronostratigraphy" ||
       attribute === "newLayer" ||
       attribute === "casing_kind" ||
       attribute === "casing_material" ||

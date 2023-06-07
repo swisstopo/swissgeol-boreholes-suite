@@ -575,7 +575,6 @@ public class UploadController : ControllerBase
             Map(m => m.IsLast).Optional();
             Map(m => m.QtDescriptionId).Optional();
             Map(m => m.LithologyId).Optional();
-            Map(m => m.ChronostratigraphyId).Optional();
             Map(m => m.PlasticityId).Optional();
             Map(m => m.ConsistanceId).Optional();
             Map(m => m.AlterationId).Optional();

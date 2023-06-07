@@ -82,7 +82,6 @@ public class LayerController : BdmsControllerBase<Layer>
         return context.Layers
             .Include(l => l.QtDescription)
             .Include(l => l.Lithology)
-            .Include(l => l.Chronostratigraphy)
             .Include(l => l.Plasticity)
             .Include(l => l.Consistance)
             .Include(l => l.Alteration)

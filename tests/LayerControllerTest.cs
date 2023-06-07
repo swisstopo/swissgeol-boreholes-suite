@@ -104,8 +104,8 @@ public class LayerControllerTest
         var layer = okResult.Value as Layer;
         Assert.AreEqual(7_000_005, layer.Id);
         Assert.AreEqual(2.274020571389245, layer.CasingInnerDiameter);
-        Assert.AreEqual("Plains hacking reboot web-enabled", layer.Notes);
-        Assert.AreEqual(15101037, layer.LithologyId);
+        Assert.AreEqual("Handcrafted Plains hacking reboot", layer.Notes);
+        Assert.AreEqual(15104431, layer.LithologyId);
     }
 
     [TestMethod]
@@ -125,8 +125,6 @@ public class LayerControllerTest
             CasingMaterial = null,
             CasingMaterialId = null,
             CasingOuterDiameter = 13.89372933,
-            Chronostratigraphy = null,
-            ChronostratigraphyId = 15001136,
             Cohesion = null,
             CohesionId = 21116001,
             Compactness = null,
@@ -198,9 +196,9 @@ public class LayerControllerTest
 
         var layerToEdit = context.Layers.Single(c => c.Id == id);
         Assert.AreEqual(3, layerToEdit.CreatedById);
-        Assert.AreEqual(3, layerToEdit.UpdatedById);
+        Assert.AreEqual(2, layerToEdit.UpdatedById);
         Assert.AreEqual(6_000_008, layerToEdit.InstrumentCasingId);
-        Assert.AreEqual("Exclusive Fully-configurable invoice Small Rubber Car", layerToEdit.Notes);
+        Assert.AreEqual("Practical Concrete Ball Fully-configurable invoice Small Rubber Car", layerToEdit.Notes);
 
         try
         {
@@ -269,8 +267,6 @@ public class LayerControllerTest
             CasingMaterial = null,
             CasingMaterialId = null,
             CasingOuterDiameter = 13.89372933,
-            Chronostratigraphy = null,
-            ChronostratigraphyId = 15001136,
             Cohesion = null,
             CohesionId = 21116001,
             Compactness = null,
@@ -344,7 +340,6 @@ public class LayerControllerTest
             Assert.AreEqual(layerToAdd.CasingKindId, addedLayer.CasingKindId);
             Assert.AreEqual(layerToAdd.CasingMaterialId, addedLayer.CasingMaterialId);
             Assert.AreEqual(layerToAdd.CasingOuterDiameter, addedLayer.CasingOuterDiameter);
-            Assert.AreEqual(layerToAdd.ChronostratigraphyId, addedLayer.ChronostratigraphyId);
             Assert.AreEqual(layerToAdd.CohesionId, addedLayer.CohesionId);
             Assert.AreEqual(layerToAdd.CompactnessId, addedLayer.CompactnessId);
             Assert.AreEqual(layerToAdd.ConsistanceId, addedLayer.ConsistanceId);

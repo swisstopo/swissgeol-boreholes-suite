@@ -585,12 +585,6 @@ class Action():
                 lithostratigraphy_id_cli = %s
             """ % self.getIdx())
 
-        if 'chronostratigraphy' in keys and filter['chronostratigraphy'] not in ['', None]:
-            params.append(filter['chronostratigraphy'])
-            where.append("""
-                chronostratigraphy_id_cli = %s
-            """ % self.getIdx())
-
         if 'plasticity' in keys and filter['plasticity'] not in ['', None]:
             params.append(filter['plasticity'])
             where.append("""

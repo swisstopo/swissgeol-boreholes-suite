@@ -84,17 +84,6 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     public Codelist? Lithology { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s chronostratigraphy.
-    /// </summary>
-    [Column("chronostratigraphy_id_cli")]
-    public int? ChronostratigraphyId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s chronostratigraphy.
-    /// </summary>
-    public Codelist? Chronostratigraphy { get; set; }
-
-    /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s plasticity.
     /// </summary>
     [Column("plasticity_id_cli")]
