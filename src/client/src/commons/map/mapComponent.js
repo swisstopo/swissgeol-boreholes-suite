@@ -255,6 +255,7 @@ class MapComponent extends React.Component {
         center: center,
         projection: projection,
         extent: extent,
+        showFullExtent: true,
       }),
     });
 
