@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20230606152236_RemoveUnusedDescriptionsFromLayer")]
+    partial class RemoveUnusedDescriptionsFromLayer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -873,6 +875,10 @@ namespace BDMS.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("casng_outer_diameter_lay");
 
+                    b.Property<int?>("ChronostratigraphyId")
+                        .HasColumnType("integer")
+                        .HasColumnName("chronostratigraphy_id_cli");
+
                     b.Property<int?>("CohesionId")
                         .HasColumnType("integer")
                         .HasColumnName("cohesion_id_cli");
@@ -1020,6 +1026,8 @@ namespace BDMS.Migrations
                     b.HasIndex("CasingKindId");
 
                     b.HasIndex("CasingMaterialId");
+
+                    b.HasIndex("ChronostratigraphyId");
 
                     b.HasIndex("CohesionId");
 
@@ -2001,6 +2009,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CasingMaterialId");
 
+                    b.HasOne("BDMS.Models.Codelist", "Chronostratigraphy")
+                        .WithMany()
+                        .HasForeignKey("ChronostratigraphyId");
+
                     b.HasOne("BDMS.Models.Codelist", "Cohesion")
                         .WithMany()
                         .HasForeignKey("CohesionId");
@@ -2100,6 +2112,8 @@ namespace BDMS.Migrations
                     b.Navigation("CasingKind");
 
                     b.Navigation("CasingMaterial");
+
+                    b.Navigation("Chronostratigraphy");
 
                     b.Navigation("Cohesion");
 

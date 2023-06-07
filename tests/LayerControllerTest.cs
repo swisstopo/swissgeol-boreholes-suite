@@ -104,7 +104,7 @@ public class LayerControllerTest
         var layer = okResult.Value as Layer;
         Assert.AreEqual(7_000_005, layer.Id);
         Assert.AreEqual(2.274020571389245, layer.CasingInnerDiameter);
-        Assert.AreEqual("deposit mobile Tasty Soft Mouse Drive", layer.Notes);
+        Assert.AreEqual("Handcrafted Plains hacking reboot", layer.Notes);
         Assert.AreEqual(15104431, layer.LithologyId);
     }
 
@@ -134,8 +134,6 @@ public class LayerControllerTest
             CreatedBy = null,
             CreatedById = 3,
             Created = new DateTime(2021, 8, 3, 6, 15, 55).ToUniversalTime(),
-            DescriptionFacies = "Awesome Steel Gloves bandwidth Berkshire Mission open system",
-            DescriptionLithological = "Metal Baby grow",
             FillKind = null,
             FillKindId = 25000302,
             FillMaterial = null,
@@ -200,7 +198,7 @@ public class LayerControllerTest
         Assert.AreEqual(3, layerToEdit.CreatedById);
         Assert.AreEqual(2, layerToEdit.UpdatedById);
         Assert.AreEqual(6_000_008, layerToEdit.InstrumentCasingId);
-        Assert.AreEqual("Metal Baby grow strategic", layerToEdit.Notes);
+        Assert.AreEqual("Practical Concrete Ball Fully-configurable invoice Small Rubber Car", layerToEdit.Notes);
 
         try
         {
@@ -278,8 +276,6 @@ public class LayerControllerTest
             CreatedBy = null,
             CreatedById = 3,
             Created = new DateTime(2021, 8, 3, 6, 15, 55).ToUniversalTime(),
-            DescriptionFacies = "Awesome Steel Gloves bandwidth Berkshire Mission open system",
-            DescriptionLithological = "Metal Baby grow",
             FillKind = null,
             FillKindId = 25000302,
             FillMaterial = null,
@@ -347,8 +343,6 @@ public class LayerControllerTest
             Assert.AreEqual(layerToAdd.CohesionId, addedLayer.CohesionId);
             Assert.AreEqual(layerToAdd.CompactnessId, addedLayer.CompactnessId);
             Assert.AreEqual(layerToAdd.ConsistanceId, addedLayer.ConsistanceId);
-            Assert.AreEqual(layerToAdd.DescriptionFacies, addedLayer.DescriptionFacies);
-            Assert.AreEqual(layerToAdd.DescriptionLithological, addedLayer.DescriptionLithological);
             Assert.AreEqual(layerToAdd.FillKindId, addedLayer.FillKindId);
             Assert.AreEqual(layerToAdd.FillMaterialId, addedLayer.FillMaterialId);
             Assert.AreEqual(layerToAdd.FromDepth, addedLayer.FromDepth);

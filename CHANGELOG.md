@@ -12,6 +12,7 @@
 - Updated the lithostratigraphy codelist table.
 - Upgraded to OpenLayers 7.
 - Removed lithostratigraphy and chronostratigraphy from lithology.
+- Removed obsolete columns `facies_description_lay` and `lithological_description_lay` from layer table.
 
 ### Fixed
 
