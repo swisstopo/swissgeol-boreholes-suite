@@ -162,6 +162,7 @@ class MenuEditorForm extends React.Component {
               borderLeft: [
                 `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy`,
                 `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy/chronostratigraphy`,
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy/lithostratigraphy`,
               ].includes(location.pathname)
                 ? "0.25em solid rgb(237, 29, 36)"
                 : null,
@@ -250,6 +251,37 @@ class MenuEditorForm extends React.Component {
                 <List.Content>
                   <List.Header as="h3" data-cy="chronostratigraphy-menu-item">
                     <TranslationText firstUpperCase id="chronostratigraphy" />
+                  </List.Header>
+                </List.Content>
+              </List.Item>
+              <List.Item
+                active={
+                  location.pathname ===
+                  `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy/lithostratigraphy`
+                }
+                onClick={() => {
+                  history.push(
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy/lithostratigraphy`,
+                  );
+                }}
+                style={{
+                  padding: "1em",
+                  paddingLeft: 40,
+                  display: "flex",
+                  borderLeft:
+                    location.pathname ===
+                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/stratigraphy/lithostratigraphy`
+                      ? "0.25em solid rgb(237, 29, 36)"
+                      : null,
+                }}>
+                <List.Icon
+                  name="align justify"
+                  size="large"
+                  verticalAlign="middle"
+                />
+                <List.Content>
+                  <List.Header as="h3" data-cy="lithostratigraphy-menu-item">
+                    <TranslationText firstUpperCase id="lithostratigraphy" />
                   </List.Header>
                 </List.Content>
               </List.Item>

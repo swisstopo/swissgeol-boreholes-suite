@@ -187,7 +187,7 @@ export const stratigraphyData = {
       id: 17,
       type: "Dropdown",
       label: "layer_lithology_top_bedrock",
-      value: "lithology_top_bedrock",
+      value: "layer_lithology_top_bedrock",
       schema: "custom.lithology_top_bedrock",
       multiple: false,
       search: true,

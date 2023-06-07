@@ -141,6 +141,10 @@ export function gapLayer(id, process = 0, value = null) {
 }
 
 export function patchLayer(id, field, value) {
+  if (field === "layer_lithology_top_bedrock") {
+    // Fixes discrepancy between field name in client and API.
+    field = "lithology_top_bedrock";
+  }
   return fetch("/borehole/stratigraphy/layer/edit", {
     action: "PATCH",
     id: id,

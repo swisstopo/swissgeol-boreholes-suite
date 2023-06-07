@@ -16,6 +16,7 @@ import { withTranslation } from "react-i18next";
 import * as Styled from "./styles";
 import { deleteLayer } from "../../../../../../../api-lib";
 import { AlertContext } from "../../../../../../alert/alertContext";
+import { useLithostratigraphies } from "../../../../../../../api/fetchApiV2";
 
 const ProfileLayersList = props => {
   const {
@@ -35,6 +36,23 @@ const ProfileLayersList = props => {
   const [showTopPopup, setShowTopPopup] = useState(false);
   const [showBottomPopup, setShowBottomPopup] = useState(false);
   const alertContext = useContext(AlertContext);
+
+  const { data: lithostrati } = useLithostratigraphies(item?.stratigraphyId);
+  const [lithostratiColor, setLithostratiColor] = useState([255, 255, 255]);
+  useEffect(() => {
+    if (lithostrati) {
+      const correspondingLithostrati = lithostrati.find(x => {
+        const middle = (item?.fromDepth + item?.toDepth) / 2;
+        return x.fromDepth <= middle && middle <= x.toDepth;
+      });
+      setLithostratiColor(
+        JSON.parse(correspondingLithostrati?.lithostratigraphy?.conf ?? null)
+          ?.color ?? [255, 255, 255],
+      );
+    } else {
+      setLithostratiColor([255, 255, 255]);
+    }
+  }, [item, lithostrati]);
 
   const checkHasWarning = useCallback(() => {
     if (
@@ -207,9 +225,9 @@ const ProfileLayersList = props => {
         }}>
         <Styled.CardPattern
           id="pattern"
-          b={itemWithValidation?.rgb?.[2]}
-          g={itemWithValidation?.rgb?.[1]}
-          r={itemWithValidation?.rgb?.[0]}
+          r={lithostratiColor[0]}
+          g={lithostratiColor[1]}
+          b={lithostratiColor[2]}
           style={{
             backgroundImage: itemWithValidation?.pattern
               ? 'url("' +

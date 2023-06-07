@@ -43,6 +43,10 @@ export const interceptApiCalls = () => {
     return (req.alias = `chronostratigraphy_${req.method}`);
   });
 
+  cy.intercept("/api/v2/lithostratigraphy*", req => {
+    return (req.alias = `lithostratigraphy_${req.method}`);
+  });
+
   cy.intercept("/api/v2/wateringress*", req => {
     return (req.alias = `wateringress_${req.method}`);
   });

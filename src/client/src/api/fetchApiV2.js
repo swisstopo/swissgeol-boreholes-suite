@@ -313,6 +313,69 @@ export const useChronostratigraphyMutations = () => {
   };
 };
 
+export const lithostratigraphiesQueryKey = "lithostratigraphies";
+
+export const useLithostratigraphies = stratigraphyID =>
+  useQuery({
+    queryKey: [lithostratigraphiesQueryKey, stratigraphyID],
+    queryFn: async () => {
+      return await fetchApiV2(
+        `lithostratigraphy?stratigraphyId=${stratigraphyID}`,
+        "GET",
+      );
+    },
+    enabled: !!stratigraphyID,
+  });
+
+export const useLithostratigraphyMutations = () => {
+  const queryClient = useQueryClient();
+  const useAddLithostratigraphy = useMutation(
+    async lithostratigraphy => {
+      return await fetchApiV2("lithostratigraphy", "POST", lithostratigraphy);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [lithostratigraphiesQueryKey],
+        });
+      },
+    },
+  );
+  const useUpdateLithostratigraphy = useMutation(
+    async lithostratigraphy => {
+      return await fetchApiV2("lithostratigraphy", "PUT", lithostratigraphy);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [lithostratigraphiesQueryKey],
+        });
+      },
+    },
+  );
+  const useDeleteLithostratigraphy = useMutation(
+    async lithostratigraphyId => {
+      return await fetchApiV2(
+        `lithostratigraphy?id=${lithostratigraphyId}`,
+        "DELETE",
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [lithostratigraphiesQueryKey],
+        });
+      },
+    },
+  );
+
+  return {
+    add: useAddLithostratigraphy,
+    update: useUpdateLithostratigraphy,
+    delete: useDeleteLithostratigraphy,
+  };
+};
+
 export const waterIngressQueryKey = "wateringresses";
 
 export const useWaterIngresses = boreholeId =>
