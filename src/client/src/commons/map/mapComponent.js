@@ -255,6 +255,7 @@ class MapComponent extends React.Component {
         center: center,
         projection: projection,
         extent: extent,
+        showFullExtent: true,
       }),
     });
 
@@ -537,7 +538,7 @@ class MapComponent extends React.Component {
     }
     if (refresh) {
       this.selectClick.getFeatures().clear();
-      this.points.refresh({ force: true });
+      this.points.changed();
     }
 
     this.map.updateSize();

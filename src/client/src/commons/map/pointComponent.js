@@ -145,6 +145,7 @@ class PointComponent extends React.Component {
         center: this.state.point !== null ? this.state.point : center,
         projection: projection,
         extent: extent,
+        showFullExtent: true,
       }),
     });
 
