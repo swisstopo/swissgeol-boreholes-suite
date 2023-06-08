@@ -116,7 +116,6 @@ class ListLayers(Action):
 
         config = {
             "title": "custom.lithostratigraphy_top_bedrock",
-            "subtitle": "custom.chronostratigraphy_top_bedrock",
             "description": "custom.lithology_top_bedrock"
         }
         kind = await self.conn.fetchval(f"""

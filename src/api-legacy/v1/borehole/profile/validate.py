@@ -128,7 +128,4 @@ class ValidateGeologyLayer(Action):
             if layer["title"] != self.borehole["custom"]["lithostratigraphy_top_bedrock"]:
                 validation["bedrockLitStratiWrong"] = True
 
-            if layer["subtitle"] != self.borehole["custom"]["chronostratigraphy_top_bedrock"]:
-                validation["bedrockChronoWrong"] = True
-
         return validation, result
