@@ -146,7 +146,6 @@ const Stratigraphy = props => {
   };
 
   const updateDimensions = () => {
-    console.log("updateDimensions");
     if (element !== undefined && element !== null) {
       if (sortedData.length > 0) {
       }
