@@ -47,6 +47,7 @@ public class HydrotestController : ControllerBase
     /// </summary>
     /// <param name="hydrotest">The hydrotest to create.</param>
     [HttpPost]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public virtual async Task<IActionResult> CreateAsync(Hydrotest hydrotest) => await ProcessHydrotestAsync(hydrotest).ConfigureAwait(false);
 
     /// <summary>
@@ -62,6 +63,7 @@ public class HydrotestController : ControllerBase
     /// </summary>
     /// <param name="id">The id of the hydrotest to delete.</param>
     [HttpDelete]
+    [Authorize(Policy = PolicyNames.Viewer)]
     public virtual async Task<IActionResult> DeleteAsync(int id)
     {
         var hydrotestToDelete = await context.FindAsync(typeof(Hydrotest), id).ConfigureAwait(false);
