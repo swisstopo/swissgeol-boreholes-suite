@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.0.441 - 2023-06-12
+
 ### Added
 
 - Added new symbols for borehole types 'virtual borehole' and 'other'.
