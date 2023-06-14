@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Removed lithostratigraphy from import.
+
 ## v2.0.441 - 2023-06-12
 
 ### Added
