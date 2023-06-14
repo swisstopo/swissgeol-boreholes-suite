@@ -66,7 +66,7 @@ const ProfileAttributes = props => {
       original_lithology: "",
       uscs_determination: [],
       debris: [],
-      lithology_top_bedrock: [],
+      layer_lithology_top_bedrock: [],
       gradation: null,
       notes: "",
       fill_material: null,
