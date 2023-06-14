@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added new field `national_interest`
+
 ## v2.0.441 - 2023-06-12
 
 ### Added
