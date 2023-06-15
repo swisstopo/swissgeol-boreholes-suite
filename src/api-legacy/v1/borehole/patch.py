@@ -189,6 +189,7 @@ class PatchBorehole(Action):
                 'extended.original_name',
                 'custom.alternate_name',
                 'custom.project_name',
+                'national_interest',
                 'location',
                 'location_x',
                 'location_y',
