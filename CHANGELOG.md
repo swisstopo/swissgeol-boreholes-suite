@@ -6,6 +6,10 @@
 
 - Removed lithostratigraphy from import.
 
+### Fixed
+
+- Fixed bug where value for debris lithology was not displayed.
+
 ## v2.0.441 - 2023-06-12
 
 ### Added
