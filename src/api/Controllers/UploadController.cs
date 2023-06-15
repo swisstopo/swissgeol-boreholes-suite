@@ -468,6 +468,7 @@ public class UploadController : ControllerBase
             Map(m => m.TotalDepth).Optional();
             Map(m => m.RestrictionId).Optional();
             Map(m => m.RestrictionUntil).Optional();
+            Map(m => m.IsNationalInterest).Optional();
             Map(m => m.AlternateName).Optional();
             Map(m => m.QtLocationId).Optional();
             Map(m => m.QtElevationId).Optional();

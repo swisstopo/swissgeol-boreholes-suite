@@ -193,7 +193,8 @@ public static class BdmsContextExtensions
                var point = new Point(f.Random.Int(2477750, 2830750), f.Random.Int(1066750, 1310750));
                point.SRID = 2056;
                return point.OrNull(f, .05f);
-           });
+           })
+            .RuleFor(o => o.IsNationalInterest, f => borehole_ids % 10 == 9);
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
         context.BulkInsert(boreholeRange.Select(SeededBoreholes).ToList(), bulkConfig);
