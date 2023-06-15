@@ -1,6 +1,12 @@
 import React from "react";
 import TranslationText from "../../translationText";
 import { Form, Segment } from "semantic-ui-react";
+import {
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@mui/material";
 
 import _ from "lodash";
 import moment from "moment";
@@ -11,6 +17,14 @@ import DateField from "../../dateField";
 
 const RestrictionSegment = props => {
   const { size, borehole, updateChange } = props;
+
+  const changeNationalInterest = value => {
+    updateChange(
+      "national_interest",
+      value === "true" ? true : value === "false" ? false : null,
+    );
+  };
+
   return (
     <Segment>
       <Form size={size}>
@@ -46,6 +60,40 @@ const RestrictionSegment = props => {
                 updateChange("restriction_until", selected, false);
               }}
             />
+          </Form.Field>
+        </Form.Group>
+        <Form.Group widths="equal">
+          <Form.Field>
+            <label>
+              <TranslationText id="national_interest" />
+            </label>
+            <FormControl
+              style={{
+                height: "36px",
+                display: "flex",
+                justifyContent: "space-around",
+              }}>
+              <RadioGroup
+                row
+                value={borehole.data.national_interest}
+                onChange={e => changeNationalInterest(e.target.value)}>
+                <FormControlLabel
+                  value={true}
+                  control={<Radio />}
+                  label={<TranslationText id={"yes"} />}
+                />
+                <FormControlLabel
+                  value={false}
+                  control={<Radio />}
+                  label={<TranslationText id={"no"} />}
+                />
+                <FormControlLabel
+                  value={null}
+                  control={<Radio />}
+                  label={<TranslationText id={"np"} />}
+                />
+              </RadioGroup>
+            </FormControl>
           </Form.Field>
         </Form.Group>
       </Form>

@@ -9,6 +9,9 @@ export const getData = async id => {
     .then(response => {
       if (response.data.success) {
         data = response.data.data;
+        // Fixes discrepancy between name in client and API.
+        data["layer_lithology_top_bedrock"] = data["lithology_top_bedrock"];
+        delete data["lithology_top_bedrock"];
       } else {
         alert(response.data.message);
       }

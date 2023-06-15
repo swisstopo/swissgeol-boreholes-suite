@@ -67,6 +67,15 @@ export const LocationSearchData = [
   },
   {
     id: 8,
+    type: "Radio",
+    label: "national_interest",
+    value: "national_interest",
+    to: false,
+    hasUnknown: true,
+    isVisibleValue: "national_interest",
+  },
+  {
+    id: 9,
     type: "Input",
     label: "elevation_z",
     value: "elevation_z_from",
@@ -77,7 +86,7 @@ export const LocationSearchData = [
     isVisibleValue: "elevation_z",
   },
   {
-    id: 9,
+    id: 10,
     type: "Input",
     label: "",
     value: "elevation_z_to",
@@ -88,7 +97,7 @@ export const LocationSearchData = [
     isVisibleValue: "elevation_z",
   },
   {
-    id: 10,
+    id: 11,
     type: "Input",
     label: "reference_elevation",
     value: "reference_elevation_from",
@@ -99,7 +108,7 @@ export const LocationSearchData = [
     isVisibleValue: "reference_elevation",
   },
   {
-    id: 11,
+    id: 12,
     type: "Input",
     label: "",
     value: "reference_elevation_to",
@@ -110,7 +119,7 @@ export const LocationSearchData = [
     isVisibleValue: "reference_elevation",
   },
   {
-    id: 12,
+    id: 13,
     type: "Dropdown",
     label: "reference_elevation_type",
     value: "reference_elevation_type",
@@ -120,7 +129,7 @@ export const LocationSearchData = [
     isVisibleValue: "reference_elevation_type",
   },
   {
-    id: 13,
+    id: 14,
     type: "Dropdown",
     label: "qt_location",
     value: "qt_location",
@@ -130,7 +139,7 @@ export const LocationSearchData = [
     isVisibleValue: "qt_location",
   },
   {
-    id: 14,
+    id: 15,
     type: "Dropdown",
     label: "qt_elevation",
     value: "qt_elevation",
@@ -140,7 +149,7 @@ export const LocationSearchData = [
     isVisibleValue: "qt_elevation",
   },
   {
-    id: 15,
+    id: 16,
     type: "Dropdown",
     label: "reference_elevation_qt",
     value: "qt_reference_elevation",
@@ -150,14 +159,14 @@ export const LocationSearchData = [
     isVisibleValue: "reference_elevation_qt",
   },
   {
-    id: 16,
+    id: 17,
     type: "Canton",
     label: "canton",
     value: "canton",
     isVisibleValue: "custom.canton",
   },
   {
-    id: 17,
+    id: 18,
     type: "ReferenceSystem",
     label: "srs",
     value: "srs",
