@@ -6,6 +6,12 @@ import DomainTree from "../../domain/tree/domainTree";
 import TranslationText from "../../translationText";
 import { NumericFormat } from "react-number-format";
 import { Form, Segment } from "semantic-ui-react";
+import {
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@mui/material";
 import { parseIfString } from "../../formUtils";
 
 const BoreholeDetailSegment = props => {
@@ -169,51 +175,71 @@ const BoreholeDetailSegment = props => {
           <label>
             <TranslationText id="groundwater" />
           </label>
-          <Form.Group inline>
-            <Form.Radio
-              checked={borehole.data.extended.groundwater === true}
-              label={t("common:yes")}
-              onChange={(e, d) => {
-                updateChange("extended.groundwater", true, false);
-              }}
-            />
-            <Form.Radio
-              checked={borehole.data.extended.groundwater === false}
-              label={t("common:no")}
-              onChange={(e, d) => {
-                updateChange("extended.groundwater", false, false);
-              }}
-            />
-            <Form.Radio
-              checked={borehole.data.extended.groundwater === null}
-              label={t("common:np")}
-              onChange={(e, d) => {
-                updateChange("extended.groundwater", null, false);
-              }}
-            />
-            {debug === true ? (
-              <div>
-                <div
-                  style={{
-                    color: "red",
-                  }}>
-                  trans=yes
-                </div>
-                <div
-                  style={{
-                    color: "red",
-                  }}>
-                  trans=no
-                </div>
-                <div
-                  style={{
-                    color: "red",
-                  }}>
-                  trans=np
-                </div>
-              </div>
-            ) : null}
-          </Form.Group>
+          <FormControl
+            style={{
+              height: "36px",
+              display: "flex",
+              justifyContent: "space-around",
+            }}>
+            <RadioGroup
+              row
+              value={
+                borehole.data.extended.groundwater === true
+                  ? "TRUE"
+                  : borehole.data.extended.groundwater === false
+                  ? "FALSE"
+                  : "NULL"
+              }
+              onChange={e => {
+                let value =
+                  e.target.value === "TRUE"
+                    ? true
+                    : e.target.value === "FALSE"
+                    ? false
+                    : null;
+                updateChange("extended.groundwater", value, false);
+              }}>
+              <FormControlLabel
+                value="TRUE"
+                control={
+                  <Radio
+                    sx={{
+                      "&.Mui-checked": {
+                        color: "black",
+                      },
+                    }}
+                  />
+                }
+                label={<TranslationText id={"yes"} />}
+              />
+              <FormControlLabel
+                value="FALSE"
+                control={
+                  <Radio
+                    sx={{
+                      "&.Mui-checked": {
+                        color: "black",
+                      },
+                    }}
+                  />
+                }
+                label={<TranslationText id={"no"} />}
+              />
+              <FormControlLabel
+                value="NULL"
+                control={
+                  <Radio
+                    sx={{
+                      "&.Mui-checked": {
+                        color: "black",
+                      },
+                    }}
+                  />
+                }
+                label={<TranslationText id={"np"} />}
+              />
+            </RadioGroup>
+          </FormControl>
         </Form.Field>
         <Form.Field required>
           <label>

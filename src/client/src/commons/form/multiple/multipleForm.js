@@ -11,6 +11,12 @@ import DateField from "../dateField";
 import TranslationText from "../translationText";
 
 import { Header, Input, Button, Form } from "semantic-ui-react";
+import {
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@mui/material";
 
 import { patchBoreholes } from "../../../api-lib/index";
 
@@ -225,6 +231,95 @@ class MultipleForm extends React.Component {
     );
   }
 
+  getRadio(field) {
+    const { t } = this.props;
+    if (!this.isActive(field)) {
+      return null;
+    }
+    return (
+      <Form.Field key={field}>
+        <label>{t(field)}</label>
+        <FormControl
+          style={{
+            height: "36px",
+            display: "flex",
+            justifyContent: "space-around",
+          }}>
+          <RadioGroup
+            row
+            value={
+              this.state.data[field].value === true
+                ? "TRUE"
+                : this.state.data[field].value === false
+                ? "FALSE"
+                : "NULL"
+            }
+            onChange={e => {
+              let newValue =
+                e.target.value === "TRUE"
+                  ? true
+                  : e.target.value === "FALSE"
+                  ? false
+                  : null;
+              this.setState({
+                ...this.state,
+                data: {
+                  ...this.state.data,
+                  [field]: {
+                    ...this.state.data[field],
+                    value: newValue,
+                  },
+                },
+              });
+            }}>
+            <FormControlLabel
+              data-cy="radio-yes"
+              value="TRUE"
+              control={
+                <Radio
+                  sx={{
+                    "&.Mui-checked": {
+                      color: "black",
+                    },
+                  }}
+                />
+              }
+              label={<TranslationText id={"yes"} />}
+            />
+            <FormControlLabel
+              data-cy="radio-no"
+              value="FALSE"
+              control={
+                <Radio
+                  sx={{
+                    "&.Mui-checked": {
+                      color: "black",
+                    },
+                  }}
+                />
+              }
+              label={<TranslationText id={"no"} />}
+            />
+            <FormControlLabel
+              data-cy="radio-np"
+              value="NULL"
+              control={
+                <Radio
+                  sx={{
+                    "&.Mui-checked": {
+                      color: "black",
+                    },
+                  }}
+                />
+              }
+              label={<TranslationText id={"np"} />}
+            />
+          </RadioGroup>
+        </FormControl>
+      </Form.Field>
+    );
+  }
+
   getDate(field, required = false) {
     const { t } = this.props;
     if (!this.isActive(field)) {
@@ -309,6 +404,7 @@ class MultipleForm extends React.Component {
                 this.state.data.restriction.value === 20111003,
               ),
             ])}
+            {this.getRadio("national_interest")}
             {this.isActive("workgroup") ? (
               <Form.Field key={"workgroup"}>
                 <label>{t("workgroup")}</label>
@@ -381,46 +477,7 @@ class MultipleForm extends React.Component {
               this.getInput("top_bedrock_tvd", "number"),
               this.getDomain("top_bedrock_tvd_qt", "custom.qt_top_bedrock"),
             ])}
-            {this.isActive("groundwater") ? (
-              <Form.Field required>
-                <label>{t("groundwater")}</label>
-                <Form.Group inline>
-                  <Form.Radio
-                    checked={this.state.data.groundwater.value === true}
-                    label={t("common:yes")}
-                    onChange={() => {
-                      this.setState(
-                        produce(draft => {
-                          draft.data.groundwater.value = true;
-                        }),
-                      );
-                    }}
-                  />
-                  <Form.Radio
-                    checked={this.state.data.groundwater.value === false}
-                    label={t("common:no")}
-                    onChange={() => {
-                      this.setState(
-                        produce(draft => {
-                          draft.data.groundwater.value = false;
-                        }),
-                      );
-                    }}
-                  />
-                  <Form.Radio
-                    checked={this.state.data.groundwater.value === null}
-                    label={t("common:np")}
-                    onChange={() => {
-                      this.setState(
-                        produce(draft => {
-                          draft.data.groundwater.value = null;
-                        }),
-                      );
-                    }}
-                  />
-                </Form.Group>
-              </Form.Field>
-            ) : null}
+            {this.getRadio("groundwater")}
             {this.getDomain(
               "lithology_top_bedrock",
               "custom.lithology_top_bedrock",

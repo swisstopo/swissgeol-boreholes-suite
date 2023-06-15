@@ -18,13 +18,6 @@ import DateField from "../../dateField";
 const RestrictionSegment = props => {
   const { size, borehole, updateChange } = props;
 
-  const changeNationalInterest = value => {
-    updateChange(
-      "national_interest",
-      value === "true" ? true : value === "false" ? false : null,
-    );
-  };
-
   return (
     <Segment>
       <Form size={size}>
@@ -63,7 +56,7 @@ const RestrictionSegment = props => {
           </Form.Field>
         </Form.Group>
         <Form.Group widths="equal">
-          <Form.Field>
+          <Form.Field required>
             <label>
               <TranslationText id="national_interest" />
             </label>
@@ -75,21 +68,59 @@ const RestrictionSegment = props => {
               }}>
               <RadioGroup
                 row
-                value={borehole.data.national_interest}
-                onChange={e => changeNationalInterest(e.target.value)}>
+                value={
+                  borehole.data.national_interest === true
+                    ? "TRUE"
+                    : borehole.data.national_interest === false
+                    ? "FALSE"
+                    : "NULL"
+                }
+                onChange={e => {
+                  let value =
+                    e.target.value === "TRUE"
+                      ? true
+                      : e.target.value === "FALSE"
+                      ? false
+                      : null;
+                  updateChange("national_interest", value, false);
+                }}>
                 <FormControlLabel
-                  value={true}
-                  control={<Radio />}
+                  value="TRUE"
+                  control={
+                    <Radio
+                      sx={{
+                        "&.Mui-checked": {
+                          color: "black",
+                        },
+                      }}
+                    />
+                  }
                   label={<TranslationText id={"yes"} />}
                 />
                 <FormControlLabel
-                  value={false}
-                  control={<Radio />}
+                  value="FALSE"
+                  control={
+                    <Radio
+                      sx={{
+                        "&.Mui-checked": {
+                          color: "black",
+                        },
+                      }}
+                    />
+                  }
                   label={<TranslationText id={"no"} />}
                 />
                 <FormControlLabel
-                  value={null}
-                  control={<Radio />}
+                  value="NULL"
+                  control={
+                    <Radio
+                      sx={{
+                        "&.Mui-checked": {
+                          color: "black",
+                        },
+                      }}
+                    />
+                  }
                   label={<TranslationText id={"np"} />}
                 />
               </RadioGroup>
