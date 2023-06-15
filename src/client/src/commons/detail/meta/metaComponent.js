@@ -112,6 +112,20 @@ class MetaComponent extends React.Component {
     );
   }
 
+  getBoolRow(schema, value) {
+    const translationId = value ? "yes" : value === false ? "no" : "np";
+    return (
+      <>
+        <div style={rowLabelStyle}>
+          <TranslationText id={schema} />
+        </div>
+        <div style={rowTextStyle}>
+          <TranslationText id={translationId} />
+        </div>
+      </>
+    );
+  }
+
   getStatusRow() {
     const { data } = this.props;
     return (
@@ -235,6 +249,7 @@ class MetaComponent extends React.Component {
         <div style={rowContainerStyle}>
           <div data-cy="restriction-label" style={flexRowStyle}>
             {this.getDomainRow("restriction", data.restriction, "restriction")}
+            {this.getBoolRow("national_interest", data.national_interest)}
           </div>
           <div data-cy="restriction_until-label" style={flexRowStyle}>
             {this.getTextRow("restriction_until", data.restriction_until)}

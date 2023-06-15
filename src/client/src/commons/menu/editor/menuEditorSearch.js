@@ -274,7 +274,7 @@ class MenuEditorSearch extends React.Component {
                     "import_id;id_geodin_shortname;id_info_geol;id_original;" +
                       "id_canton;id_geo_quat;id_geo_mol;id_geo_therm;id_top_fels;" +
                       "id_geodin;id_kernlager;original_name;project_name;alternate_name;" +
-                      "restriction_id;restriction_until;location_x;location_y;" +
+                      "restriction_id;restriction_until;is_national_interest;location_x;location_y;" +
                       "qt_location_id;elevation_z;qt_elevation_id;" +
                       "reference_elevation;reference_elevation_type_id;" +
                       "qt_reference_elevation_id;hrs_id;kind_id;drilling_date;" +

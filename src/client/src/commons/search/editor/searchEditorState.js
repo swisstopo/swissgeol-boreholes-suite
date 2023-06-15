@@ -18,6 +18,7 @@ const initialState = {
     landuse: null,
     restriction_until_from: "",
     restriction_until_to: "",
+    national_interest: -1,
     elevation_z_from: "",
     elevation_z_to: "",
     length_from: "",

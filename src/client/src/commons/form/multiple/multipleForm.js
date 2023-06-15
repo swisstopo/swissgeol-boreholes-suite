@@ -37,6 +37,7 @@ class MultipleForm extends React.Component {
           api: "restriction_until",
           value: null,
         },
+        national_interest: { api: "national_interest", value: null },
         qt_location: { api: "qt_location", value: null },
         qt_elevation: { api: "qt_elevation", value: null },
         reference_elevation_qt: {
