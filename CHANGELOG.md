@@ -6,6 +6,10 @@
 
 - Added new field `national_interest`
 
+### Changed
+
+- Removed `lithostratigraphy_id` from import.
+
 ### Fixed
 
 - Fixed bug where value for debris lithology was not displayed.
