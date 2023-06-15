@@ -32,7 +32,7 @@ class ListBorehole(Action):
                     restriction_until_bho,
                     'YYYY-MM-DD'
                 ) as restriction_until,
-
+                is_national_interest as national_interest,
                 location_x_bho as location_x,
                 location_y_bho as location_y,
                 location_x_lv03_bho as location_x_lv03,
@@ -234,6 +234,7 @@ class ListBorehole(Action):
                     restriction_until_bho,
                     'YYYY-MM-DD'
                 ) as restriction_until,
+                is_national_interest as national_interest,
 
                 location_x_bho as location_x,
                 location_y_bho as location_y,
@@ -404,6 +405,7 @@ class ListBorehole(Action):
                     restriction_until_bho,
                     'YYYY-MM-DD'
                 ) as restriction_until,
+                is_national_interest as national_interest,
                 location_x_bho as location_x,
                 location_y_bho as location_y,
                 location_x_lv03_bho as location_x_lv03,
