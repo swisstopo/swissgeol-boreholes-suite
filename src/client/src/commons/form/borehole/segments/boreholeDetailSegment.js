@@ -15,7 +15,7 @@ import {
 import { parseIfString } from "../../formUtils";
 
 const BoreholeDetailSegment = props => {
-  const { size, borehole, updateChange, updateNumber, debug, t } = props;
+  const { size, borehole, updateChange, updateNumber } = props;
   return (
     <Segment>
       <Form autoComplete="off" error size={size}>
