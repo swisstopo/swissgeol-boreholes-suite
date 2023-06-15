@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Removed lithostratigraphy from import.
+- Removed `lithostratigraphy_id` from import.
 
 ### Fixed
 
