@@ -147,7 +147,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s national interest.
     /// </summary>
-    [Column("is_national_interest")]    
+    [Column("is_national_interest")]
     public bool? IsNationalInterest { get; set; }
 
     /// <summary>
