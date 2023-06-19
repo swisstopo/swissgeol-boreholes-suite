@@ -11,8 +11,8 @@ import CodeListSettings from "./editor/codeListSettings";
 import TranslationText from "../../commons/form/translationText";
 import EditorSettingList from "./components/editorSettingList/editorSettingList";
 import { boreholeEditorData } from "./data/boreholeEditorData";
-import { stratigraphyFilterEditorData } from "./data/stratigraphyFilterEditorData";
-import { stratigraphyFieldEditorData } from "./data/stratigraphyFieldEditorData";
+import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData";
+import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData";
 import { casingEditorData } from "./data/casingEditorData";
 import { locationEditorData } from "./data/locationEditorData";
 import { instrumentEditorData } from "./data/instrumentEditorData";
@@ -44,7 +44,7 @@ class EditorSettings extends React.Component {
 
         {
           id: 2,
-          name: "stratigraphy",
+          name: "lithology",
           translationId: "searchFiltersLayers",
           isSelected: false,
         },
@@ -68,8 +68,8 @@ class EditorSettings extends React.Component {
         },
         {
           id: 6,
-          name: "stratigraphyfields",
-          translationId: "stratigraphyfields",
+          name: "lithologyfields",
+          translationId: "lithologyfields",
           isSelected: false,
         },
         {
@@ -87,16 +87,16 @@ class EditorSettings extends React.Component {
       selectedData = locationEditorData;
     } else if (name === "borehole" && isSelected) {
       selectedData = boreholeEditorData;
-    } else if (name === "stratigraphy" && isSelected) {
-      selectedData = stratigraphyFilterEditorData;
+    } else if (name === "lithology" && isSelected) {
+      selectedData = lithologyFilterEditorData;
     } else if (name === "casing" && isSelected) {
       selectedData = casingEditorData;
     } else if (name === "instrument" && isSelected) {
       selectedData = instrumentEditorData;
     } else if (name === "filling" && isSelected) {
       selectedData = fillingEditorData;
-    } else if (name === "stratigraphyfields" && isSelected) {
-      selectedData = stratigraphyFieldEditorData;
+    } else if (name === "lithologyfields" && isSelected) {
+      selectedData = lithologyFieldEditorData;
     } else if (name === "registration" && isSelected) {
       selectedData = registrationEditorData;
     } else {

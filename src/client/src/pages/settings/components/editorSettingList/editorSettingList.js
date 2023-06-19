@@ -19,7 +19,7 @@ const EditorSettingList = props => {
   } = props;
 
   const isChecked = item => {
-    return listName === "stratigraphyfields"
+    return listName === "lithologyfields"
       ? isVisible(item.value)
       : item.value.split(".").length > 1
       ? data?.[item.value.split(".")[0]]?.[item.value.split(".")[1]]
@@ -59,7 +59,7 @@ const EditorSettingList = props => {
       newData.push(element.value);
     });
 
-    if (listName === "stratigraphyfields") {
+    if (listName === "lithologyfields") {
       toggleFieldArray(newData, value);
     } else toggleFilterArray(newData, value);
   };
@@ -86,7 +86,7 @@ const EditorSettingList = props => {
           <Styled.CheckboxContainer
             checked={isChecked(item)}
             onChange={(e, d) => {
-              if (listName === "stratigraphyfields") {
+              if (listName === "lithologyfields") {
                 toggleField(item.value, d.checked);
               } else {
                 toggleFilter(item.value, d.checked);

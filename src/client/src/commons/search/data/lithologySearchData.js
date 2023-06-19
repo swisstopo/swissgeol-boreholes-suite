@@ -1,4 +1,4 @@
-export const stratigraphySearchData = [
+export const lithologySearchData = [
   {
     id: 0,
     type: "Input",

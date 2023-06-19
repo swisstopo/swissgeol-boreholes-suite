@@ -1,4 +1,4 @@
-export const stratigraphyFieldEditorData = [
+export const lithologyFieldEditorData = [
   {
     id: 0,
     label: "layer_last",
