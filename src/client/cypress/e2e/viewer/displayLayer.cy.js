@@ -112,7 +112,7 @@ describe("Test for the borehole form.", () => {
     cy.get("i[class='th big icon']").click();
     cy.contains("h4", "Settings").click();
     cy.contains("h3", "Viewer").click();
-    cy.contains("div", "Litography fields").click();
+    cy.contains("div", "Lithology fields").click();
 
     // select only one default field.
     cy.contains("button", "Unselect all").click();
