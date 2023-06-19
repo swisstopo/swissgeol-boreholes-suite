@@ -330,6 +330,7 @@ export function borehole() {
         kind: null,
         restriction: null,
         restriction_until: null,
+        national_interest: null,
         location_x: "",
         location_y: "",
         srs: null,

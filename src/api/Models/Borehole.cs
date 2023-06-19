@@ -145,6 +145,12 @@ public class Borehole : IChangeTracking, IIdentifyable
     public DateTime? RestrictionUntil { get; set; }
 
     /// <summary>
+    /// Gets or sets the <see cref="Borehole"/>'s national interest.
+    /// </summary>
+    [Column("national_interest")]
+    public bool? NationalInterest { get; set; }
+
+    /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s original name.
     /// </summary>
     [Column("original_name_bho")]

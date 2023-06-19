@@ -62,6 +62,9 @@ class PatchLayer(Action):
         elif field == 'restriction_until':
             column = 'restriction_until_lay'
 
+        elif field == 'national_interest':
+            column = 'national_interest'
+
         elif field == 'drilling_date':
             column = 'drilling_date_lay'
 

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added new field `national_interest` to borehole table.
+
 ### Changed
 
 - Removed `lithostratigraphy_id` from import.

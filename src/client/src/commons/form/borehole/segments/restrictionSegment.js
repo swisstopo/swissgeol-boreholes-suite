@@ -1,6 +1,12 @@
 import React from "react";
 import TranslationText from "../../translationText";
 import { Form, Segment } from "semantic-ui-react";
+import {
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@mui/material";
 
 import _ from "lodash";
 import moment from "moment";
@@ -11,6 +17,7 @@ import DateField from "../../dateField";
 
 const RestrictionSegment = props => {
   const { size, borehole, updateChange } = props;
+
   return (
     <Segment>
       <Form size={size}>
@@ -46,6 +53,49 @@ const RestrictionSegment = props => {
                 updateChange("restriction_until", selected, false);
               }}
             />
+          </Form.Field>
+        </Form.Group>
+        <Form.Group widths="equal">
+          <Form.Field required>
+            <label>
+              <TranslationText id="national_interest" />
+            </label>
+            <FormControl class="radio-group">
+              <RadioGroup
+                row
+                value={
+                  borehole.data.national_interest === true
+                    ? "TRUE"
+                    : borehole.data.national_interest === false
+                    ? "FALSE"
+                    : "NULL"
+                }
+                onChange={e => {
+                  let value =
+                    e.target.value === "TRUE"
+                      ? true
+                      : e.target.value === "FALSE"
+                      ? false
+                      : null;
+                  updateChange("national_interest", value, false);
+                }}>
+                <FormControlLabel
+                  value="TRUE"
+                  control={<Radio />}
+                  label={<TranslationText id={"yes"} />}
+                />
+                <FormControlLabel
+                  value="FALSE"
+                  control={<Radio />}
+                  label={<TranslationText id={"no"} />}
+                />
+                <FormControlLabel
+                  value="NULL"
+                  control={<Radio />}
+                  label={<TranslationText id={"np"} />}
+                />
+              </RadioGroup>
+            </FormControl>
           </Form.Field>
         </Form.Group>
       </Form>

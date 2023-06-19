@@ -110,6 +110,9 @@ class PatchBorehole(Action):
         elif field == 'restriction':
             column = 'restriction_id_cli'
 
+        elif field == 'national_interest':
+            column = 'national_interest'
+
         elif field == 'kind':
             column = 'kind_id_cli'
 
@@ -186,6 +189,7 @@ class PatchBorehole(Action):
                 'extended.original_name',
                 'custom.alternate_name',
                 'custom.project_name',
+                'national_interest',
                 'location',
                 'location_x',
                 'location_y',

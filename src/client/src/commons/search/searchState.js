@@ -22,6 +22,7 @@ const initialState = {
     restriction: null,
     restriction_until_from: "",
     restriction_until_to: "",
+    national_interest: -1,
     drilling_date_from: "",
     drilling_date_to: "",
     elevation_z_from: "",

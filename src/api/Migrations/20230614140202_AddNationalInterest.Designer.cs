@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20230614140202_AddNationalInterest")]
+    partial class AddNationalInterest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,6 +99,10 @@ namespace BDMS.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("inclination_direction_bho");
 
+                    b.Property<bool?>("NationalInterest")
+                        .HasColumnType("boolean")
+                        .HasColumnName("national_interest");
+
                     b.Property<bool?>("IsPublic")
                         .HasColumnType("boolean")
                         .HasColumnName("public_bho");
@@ -140,10 +146,6 @@ namespace BDMS.Migrations
                     b.Property<string>("Municipality")
                         .HasColumnType("text")
                         .HasColumnName("municipality_bho");
-
-                    b.Property<bool?>("NationalInterest")
-                        .HasColumnType("boolean")
-                        .HasColumnName("national_interest");
 
                     b.Property<string>("OriginalName")
                         .HasColumnType("text")

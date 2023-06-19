@@ -71,6 +71,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | alternate_name              | Text           | Nein        | Alternativer Name                                                                     |
 | restriction_id              | ID (Codeliste) | Nein        | Beschränkung                                                                          |
 | restriction_until           | Datum          | Nein        | Ablaufdatum der Beschränkung                                                          |
+| national_interest           | True/False     | Nein        | Nationales Interesse                                                                  |
 | location_x                  | Dezimalzahl    | Ja          | Koordinate Ost LV95                                                                   |
 | location_y                  | Dezimalzahl    | Ja          | Koordinate Nord LV95                                                                  |
 | qt_location_id              | ID (Codeliste) | Nein        | +/- Koordinaten [m]                                                                   |

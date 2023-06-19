@@ -380,13 +380,7 @@ const CoordinatesSegment = props => {
               control={control}
               defaultValue={referenceSystems.LV95.code}
               render={({ field }) => (
-                <FormControl
-                  {...field}
-                  style={{
-                    height: "36px",
-                    display: "flex",
-                    justifyContent: "space-around",
-                  }}>
+                <FormControl {...field} class="radio-group">
                   <RadioGroup
                     row
                     value={referenceSystem ?? referenceSystems.LV95.code}
@@ -394,15 +388,7 @@ const CoordinatesSegment = props => {
                     <FormControlLabel
                       value={referenceSystems.LV95.code}
                       sx={{ flexGrow: 1 }}
-                      control={
-                        <Radio
-                          sx={{
-                            "&.Mui-checked": {
-                              color: "black",
-                            },
-                          }}
-                        />
-                      }
+                      control={<Radio />}
                       label={
                         <DomainText
                           id={referenceSystems.LV95.code}
@@ -413,15 +399,7 @@ const CoordinatesSegment = props => {
                     <FormControlLabel
                       value={referenceSystems.LV03.code}
                       sx={{ flexGrow: 1 }}
-                      control={
-                        <Radio
-                          sx={{
-                            "&.Mui-checked": {
-                              color: "black",
-                            },
-                          }}
-                        />
-                      }
+                      control={<Radio />}
                       label={
                         <DomainText
                           id={referenceSystems.LV03.code}

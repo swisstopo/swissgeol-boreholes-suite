@@ -78,6 +78,9 @@ class Action():
         elif orderby == 'restriction_until':
             _orderby = 'restriction_until_bho'
 
+        elif orderby == 'national_interest':
+            orderby = 'national_interest'
+
         elif orderby == 'drilling_date':
             _orderby = 'drilling_date_bho'
 
@@ -854,6 +857,17 @@ class Action():
                 where.append("""
                     restriction_until_bho <= to_date(%s, 'YYYY-MM-DD')
                 """ % self.getIdx())
+
+            if 'national_interest' in keys and filter['national_interest'] != -1:
+                if filter['national_interest'] == None:
+                    where.append("""
+                        national_interest IS NULL
+                    """)
+                else:
+                    params.append(filter['national_interest'])
+                    where.append("""
+                        national_interest = %s
+                    """ % self.getIdx())
 
             if 'drilling_date_from' in keys and filter['drilling_date_from'] not in ['', None]:
                 params.append(filter['drilling_date_from'])

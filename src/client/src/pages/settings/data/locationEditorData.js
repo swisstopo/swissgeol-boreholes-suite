@@ -31,41 +31,46 @@ export const locationEditorData = [
   },
   {
     id: 6,
+    label: "national_interest",
+    value: "national_interest",
+  },
+  {
+    id: 7,
     label: "elevation_z",
     value: "elevation_z",
   },
   {
-    id: 7,
+    id: 8,
     label: "reference_elevation",
     value: "reference_elevation",
   },
   {
-    id: 8,
+    id: 9,
     label: "reference_elevation_type",
     value: "reference_elevation_type",
   },
   {
-    id: 9,
+    id: 10,
     label: "qt_location",
     value: "qt_location",
   },
   {
-    id: 10,
+    id: 11,
     label: "qt_elevation",
     value: "qt_elevation",
   },
   {
-    id: 11,
+    id: 12,
     label: "reference_elevation_qt",
     value: "reference_elevation_qt",
   },
   {
-    id: 12,
+    id: 13,
     label: "canton",
     value: "custom.canton",
   },
   {
-    id: 13,
+    id: 14,
     label: "srs",
     value: "srs",
   },
