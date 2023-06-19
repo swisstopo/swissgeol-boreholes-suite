@@ -111,7 +111,7 @@ class PatchBorehole(Action):
             column = 'restriction_id_cli'
 
         elif field == 'national_interest':
-            column = 'is_national_interest'
+            column = 'national_interest'
 
         elif field == 'kind':
             column = 'kind_id_cli'
