@@ -14,7 +14,7 @@ import { InstrumentSearchData } from "../data/InstrumentSearchData";
 import { fillingSearchData } from "../data/fillingSearchData";
 import { LocationSearchData } from "../data/LocationSearchData";
 import { boreholeSearchData } from "../data/boreholeSearchData";
-import { lithologySearchData as lithologySearchData } from "../data/lithologySearchData";
+import { lithologySearchData } from "../data/lithologySearchData";
 import { registrationSearchData } from "../data/registrationSearchData";
 
 class SearchEditorComponent extends React.Component {
@@ -118,7 +118,7 @@ class SearchEditorComponent extends React.Component {
       this.state?.searchList?.[4]?.name === "lithology" &&
       this.state?.searchList?.[4]?.isSelected
     ) {
-      selectedData = stratigraphySearchData;
+      selectedData = lithologySearchData;
     } else if (
       this.state?.searchList?.[5]?.name === "casing" &&
       this.state?.searchList?.[5]?.isSelected
