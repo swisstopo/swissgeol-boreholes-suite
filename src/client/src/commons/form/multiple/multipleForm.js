@@ -239,12 +239,7 @@ class MultipleForm extends React.Component {
     return (
       <Form.Field key={field}>
         <label>{t(field)}</label>
-        <FormControl
-          style={{
-            height: "36px",
-            display: "flex",
-            justifyContent: "space-around",
-          }}>
+        <FormControl class="radio-group">
           <RadioGroup
             row
             value={
@@ -275,43 +270,19 @@ class MultipleForm extends React.Component {
             <FormControlLabel
               data-cy="radio-yes"
               value="TRUE"
-              control={
-                <Radio
-                  sx={{
-                    "&.Mui-checked": {
-                      color: "black",
-                    },
-                  }}
-                />
-              }
+              control={<Radio />}
               label={<TranslationText id={"yes"} />}
             />
             <FormControlLabel
               data-cy="radio-no"
               value="FALSE"
-              control={
-                <Radio
-                  sx={{
-                    "&.Mui-checked": {
-                      color: "black",
-                    },
-                  }}
-                />
-              }
+              control={<Radio />}
               label={<TranslationText id={"no"} />}
             />
             <FormControlLabel
               data-cy="radio-np"
               value="NULL"
-              control={
-                <Radio
-                  sx={{
-                    "&.Mui-checked": {
-                      color: "black",
-                    },
-                  }}
-                />
-              }
+              control={<Radio />}
               label={<TranslationText id={"np"} />}
             />
           </RadioGroup>

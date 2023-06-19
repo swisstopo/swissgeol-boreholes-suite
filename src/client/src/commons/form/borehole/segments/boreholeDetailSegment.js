@@ -175,12 +175,7 @@ const BoreholeDetailSegment = props => {
           <label>
             <TranslationText id="groundwater" />
           </label>
-          <FormControl
-            style={{
-              height: "36px",
-              display: "flex",
-              justifyContent: "space-around",
-            }}>
+          <FormControl class="radio-group">
             <RadioGroup
               row
               value={
@@ -201,41 +196,17 @@ const BoreholeDetailSegment = props => {
               }}>
               <FormControlLabel
                 value="TRUE"
-                control={
-                  <Radio
-                    sx={{
-                      "&.Mui-checked": {
-                        color: "black",
-                      },
-                    }}
-                  />
-                }
+                control={<Radio />}
                 label={<TranslationText id={"yes"} />}
               />
               <FormControlLabel
                 value="FALSE"
-                control={
-                  <Radio
-                    sx={{
-                      "&.Mui-checked": {
-                        color: "black",
-                      },
-                    }}
-                  />
-                }
+                control={<Radio />}
                 label={<TranslationText id={"no"} />}
               />
               <FormControlLabel
                 value="NULL"
-                control={
-                  <Radio
-                    sx={{
-                      "&.Mui-checked": {
-                        color: "black",
-                      },
-                    }}
-                  />
-                }
+                control={<Radio />}
                 label={<TranslationText id={"np"} />}
               />
             </RadioGroup>
