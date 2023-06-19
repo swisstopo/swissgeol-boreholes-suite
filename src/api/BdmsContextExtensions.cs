@@ -194,7 +194,7 @@ public static class BdmsContextExtensions
                point.SRID = 2056;
                return point.OrNull(f, .05f);
            })
-            .RuleFor(o => o.IsNationalInterest, f => borehole_ids % 10 == 9);
+           .RuleFor(o => o.NationalInterest, f => borehole_ids % 10 == 9);
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
         context.BulkInsert(boreholeRange.Select(SeededBoreholes).ToList(), bulkConfig);

@@ -79,7 +79,7 @@ class Action():
             _orderby = 'restriction_until_bho'
 
         elif orderby == 'national_interest':
-            orderby = 'is_national_interest'
+            orderby = 'national_interest'
 
         elif orderby == 'drilling_date':
             _orderby = 'drilling_date_bho'
@@ -861,12 +861,12 @@ class Action():
             if 'national_interest' in keys and filter['national_interest'] != -1:
                 if filter['national_interest'] == None:
                     where.append("""
-                        is_national_interest IS NULL
+                        national_interest IS NULL
                     """)
                 else:
                     params.append(filter['national_interest'])
                     where.append("""
-                        is_national_interest = %s
+                        national_interest = %s
                     """ % self.getIdx())
 
             if 'drilling_date_from' in keys and filter['drilling_date_from'] not in ['', None]:

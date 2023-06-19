@@ -99,9 +99,9 @@ namespace BDMS.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("inclination_direction_bho");
 
-                    b.Property<bool?>("IsNationalInterest")
+                    b.Property<bool?>("NationalInterest")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_national_interest");
+                        .HasColumnName("national_interest");
 
                     b.Property<bool?>("IsPublic")
                         .HasColumnType("boolean")

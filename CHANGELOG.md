@@ -4,7 +4,7 @@
 
 ### Added
 
-- Added new field `national_interest`
+- Added new field `national_interest` to borehole table.
 
 ### Changed
 
