@@ -19,6 +19,8 @@ class ListEditingBorehole(Action):
 
         layer_where, layer_params, layer_joins = self.filterProfileLayers(
             filter)
+        
+        chronostratigraphy_where, chronostratigraphy_params, chronostratigraphy_joins = self.filterChronostratigraphy(filter)
 
         casing_where, casing_params, casing_joins = self.filterCasings(filter)
 
@@ -332,6 +334,43 @@ class ListEditingBorehole(Action):
             rowsSql += strt_sql
             cntSql += strt_sql
 
+        if len(chronostratigraphy_params) > 0:
+            joins_string = "\n".join(chronostratigraphy_joins) if len(
+                chronostratigraphy_joins) > 0 else ''
+            where_string = (
+                "AND {}".format(" AND ".join(chronostratigraphy_where))
+                if len(chronostratigraphy_where) > 0
+                else ''
+            )
+
+            strt_sql = """
+                INNER JOIN (
+                    SELECT DISTINCT
+                        id_bho_fk
+
+                    FROM
+                        bdms.stratigraphy
+                    
+                    INNER JOIN
+                        bdms.chronostratigraphy
+                    ON
+                        id_sty_fk = id_sty
+
+                    {}
+
+                    WHERE
+                        kind_id_cli = 3000
+
+                    {}
+                ) as chronostratigraphy
+                ON 
+                    borehole.id_bho = chronostratigraphy.id_bho_fk
+            """.format(
+                joins_string, where_string
+            )
+            rowsSql += strt_sql
+            cntSql += strt_sql
+
         if len(casing_params) > 0:
 
             joins_string = "\n".join(casing_joins) if len(
@@ -498,7 +537,7 @@ class ListEditingBorehole(Action):
         )
 
         rec = await self.conn.fetchrow(
-            sql, *(layer_params + casing_params +
+            sql, *(layer_params + chronostratigraphy_params + casing_params +
                    backfill_params + instrument_params + params)
         )
         return {
