@@ -27,13 +27,15 @@ describe("Search filter tests", () => {
     boreholeTypeDropdown.click();
     boreholeTypeDropdown
       .find("div[role='option']")
-      .should("have.length", 5)
+      .should("have.length", 7)
       .should(options => {
         expect(options[0]).to.have.text("Reset");
         expect(options[1]).to.have.text("borehole");
-        expect(options[2]).to.have.text("penetration test");
-        expect(options[3]).to.have.text("trial pit");
-        expect(options[4]).to.have.text("other");
+        expect(options[2]).to.have.text("virtual borehole");
+        expect(options[3]).to.have.text("penetration test");
+        expect(options[4]).to.have.text("trial pit");
+        expect(options[5]).to.have.text("other");
+        expect(options[6]).to.have.text("not specified");
       });
   });
 
@@ -128,7 +130,7 @@ describe("Search filter tests", () => {
     // check content of table
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .should("have.length", 11);
+      .should("have.length", 8);
   });
 
   it("filters boreholes by creation date", () => {
