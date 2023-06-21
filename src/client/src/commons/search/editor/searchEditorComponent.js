@@ -60,7 +60,7 @@ class SearchEditorComponent extends React.Component {
           id: 5,
           name: "chronostratigraphy",
           translationId: "chronostratigraphy",
-          isSelected: true,
+          isSelected: false,
         },
         {
           id: 6,
