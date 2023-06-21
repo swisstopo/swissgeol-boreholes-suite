@@ -182,6 +182,7 @@ class HierarchicalDataSearch extends React.Component {
               <Form.Select
                 data-cy="hierarchical-data-search"
                 fluid
+                search={true}
                 onChange={this.handleChange}
                 options={level.options}
                 value={level.selected}
