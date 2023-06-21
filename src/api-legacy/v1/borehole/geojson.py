@@ -12,6 +12,8 @@ class ListGeojson(Action):
 
         layer_where, layer_params, layer_joins = self.filterProfileLayers(filter)
 
+        chronostratigraphy_where, chronostratigraphy_params, chronostratigraphy_joins = self.filterChronostratigraphy(filter)
+
         casing_where, casing_params, casing_joins = self.filterCasings(filter)
 
         backfill_where, backfill_params, backfill_joins = self.filterBackfill(
@@ -59,6 +61,41 @@ class ListGeojson(Action):
                 ) as strt
                 ON 
                     borehole.id_bho = strt.id_bho_fk
+            """.format(
+                joins_string, where_string
+            )
+
+        if len(chronostratigraphy_params) > 0:
+
+            joins_string = "\n".join(chronostratigraphy_joins) if len(
+                chronostratigraphy_joins) > 0 else ''
+            where_string = (
+                "AND {}".format(" AND ".join(chronostratigraphy_where))
+                if len(chronostratigraphy_where) > 0
+                else ''
+            )
+
+            wr_strt += """
+                INNER JOIN (
+                    SELECT DISTINCT
+                        id_bho_fk
+
+                    FROM
+                        bdms.stratigraphy
+                    
+                    INNER JOIN
+                        bdms.chronostratigraphy
+                    ON
+                        id_sty_fk = id_sty
+                    {}
+
+                    WHERE
+                        kind_id_cli = 3000
+
+                    {}
+                ) as chronostratigraphy
+                ON 
+                    borehole.id_bho = chronostratigraphy.id_bho_fk
             """.format(
                 joins_string, where_string
             )
@@ -290,7 +327,7 @@ class ListGeojson(Action):
                             ), '{}'::json[]
                         ) AS features
                 ) t
-        """ % (wr_strt, wr), *(layer_params + casing_params +
+        """ % (wr_strt, wr), *(layer_params + chronostratigraphy_params + casing_params +
                    backfill_params + instrument_params + params))
         return {
             "data": self.decode(rec[0])
