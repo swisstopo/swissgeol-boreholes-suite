@@ -4,6 +4,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
+import _ from "lodash";
 
 import { loadDomains } from "../../../../api-lib/index";
 
@@ -36,6 +37,26 @@ class HierarchicalDataSearch extends React.Component {
       }
     }
     return null;
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const state = { ...prevState };
+    if (_.isNil(nextProps.selected)) {
+      if (nextProps.multiple === true) {
+        state.selected = [];
+      } else {
+        state.selected = null;
+      }
+    } else {
+      state.selected = nextProps.selected;
+    }
+    if (nextProps.i18n.language !== prevState.language) {
+      state.language = nextProps.i18n.language;
+    }
+    if (_.isEqual(state, prevState)) {
+      return null;
+    }
+    return state;
   }
 
   componentDidMount() {
