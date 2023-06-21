@@ -37,7 +37,7 @@ describe("Search filter tests", () => {
       });
   });
 
-  it.only("shows 'fiter by map' in editor on 'Large Map' appearance", () => {
+  it("shows 'fiter by map' in editor on 'Large Map' appearance", () => {
     loginAsViewer("/setting/editor");
 
     // Check if Editor mode settings are apparant
