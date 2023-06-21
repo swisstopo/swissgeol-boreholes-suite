@@ -5,10 +5,12 @@
 ### Added
 
 - Added new field `national_interest` to borehole table.
+- Added filter for chronostratigraphy.
 
 ### Changed
 
 - Removed `lithostratigraphy_id` from import.
+- Renamed stratigraphy filters to lithology.
 
 ### Fixed
 
