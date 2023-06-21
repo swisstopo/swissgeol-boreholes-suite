@@ -195,13 +195,12 @@ class HierarchicalDataSearch extends React.Component {
     return (
       <>
         {levels.map(level => (
-          <div key={level.key}>
+          <div key={level.key} data-cy="hierarchical-data-search">
             <Styled.Label>
               <TranslationText id={level.label} />
             </Styled.Label>
             <Styled.AttributesItem>
               <Form.Select
-                data-cy="hierarchical-data-search"
                 fluid
                 search={true}
                 onChange={this.handleChange}
