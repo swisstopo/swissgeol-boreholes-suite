@@ -195,7 +195,9 @@ class HierarchicalDataSearch extends React.Component {
     return (
       <>
         {levels.map(level => (
-          <div key={level.key} data-cy="hierarchical-data-search">
+          <div
+            key={schema + "_" + level.level}
+            data-cy="hierarchical-data-search">
             <Styled.Label>
               <TranslationText id={level.label} />
             </Styled.Label>
