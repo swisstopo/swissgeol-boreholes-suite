@@ -22,6 +22,8 @@ class ListEditingBorehole(Action):
         
         chronostratigraphy_where, chronostratigraphy_params, chronostratigraphy_joins = self.filterChronostratigraphy(filter)
 
+        lithostratigraphy_where, lithostratigraphy_params, lithostratigraphy_joins = self.filterLithostratigraphy(filter)
+
         casing_where, casing_params, casing_joins = self.filterCasings(filter)
 
         backfill_where, backfill_params, backfill_joins = self.filterBackfill(
@@ -371,6 +373,43 @@ class ListEditingBorehole(Action):
             rowsSql += strt_sql
             cntSql += strt_sql
 
+        if len(lithostratigraphy_params) > 0:
+            joins_string = "\n".join(lithostratigraphy_joins) if len(
+                lithostratigraphy_joins) > 0 else ''
+            where_string = (
+                "AND {}".format(" AND ".join(lithostratigraphy_where))
+                if len(lithostratigraphy_where) > 0
+                else ''
+            )
+
+            strt_sql = """
+                INNER JOIN (
+                    SELECT DISTINCT
+                        id_bho_fk
+
+                    FROM
+                        bdms.stratigraphy
+                    
+                    INNER JOIN
+                        bdms.lithostratigraphy
+                    ON
+                        stratigraphy_id = id_sty
+
+                    {}
+
+                    WHERE
+                        kind_id_cli = 3000
+
+                    {}
+                ) as lithostratigraphy
+                ON 
+                    borehole.id_bho = lithostratigraphy.id_bho_fk
+            """.format(
+                joins_string, where_string
+            )
+            rowsSql += strt_sql
+            cntSql += strt_sql
+
         if len(casing_params) > 0:
 
             joins_string = "\n".join(casing_joins) if len(
@@ -537,8 +576,8 @@ class ListEditingBorehole(Action):
         )
 
         rec = await self.conn.fetchrow(
-            sql, *(layer_params + chronostratigraphy_params + casing_params +
-                   backfill_params + instrument_params + params)
+            sql, *(layer_params + chronostratigraphy_params + lithostratigraphy_params + 
+                    casing_params + backfill_params + instrument_params + params)
         )
         return {
             "data": self.decode(rec[0]) if rec[0] is not None else [],
