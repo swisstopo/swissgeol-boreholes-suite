@@ -6,6 +6,7 @@
 
 - Added new field `national_interest` to borehole table.
 - Added filter for chronostratigraphy.
+- Added filter for lithostratigraphy.
 
 ### Changed
 
