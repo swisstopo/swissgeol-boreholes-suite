@@ -47,6 +47,9 @@ const ListFilter = props => {
     let isVisibleCounter = 0;
 
     for (let i = 0; i < attribute?.length; i++) {
+      if (attribute[i]?.hideShowAllFields === true) {
+        return false;
+      }
       if (isVisibleFunction(attribute[i]?.isVisibleValue)) {
         isVisibleCounter++;
       }
@@ -54,7 +57,9 @@ const ListFilter = props => {
 
     if (isVisibleCounter === attribute?.length) {
       return false;
-    } else return true;
+    } else {
+      return true;
+    }
   };
 
   const updateChange = (attribute, value, to = true, isNumber = false) => {
