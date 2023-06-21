@@ -239,7 +239,7 @@ class MultipleForm extends React.Component {
     return (
       <Form.Field key={field}>
         <label>{t(field)}</label>
-        <FormControl class="radio-group">
+        <FormControl className="radio-group">
           <RadioGroup
             row
             value={
