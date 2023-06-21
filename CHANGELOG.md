@@ -10,7 +10,7 @@
 ### Changed
 
 - Removed `lithostratigraphy_id` from import.
-- Renamed stratigraphy filters to lithology.
+- Renamed stratigraphy filter to lithology filter.
 
 ### Fixed
 
