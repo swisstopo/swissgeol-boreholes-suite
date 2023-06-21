@@ -5,6 +5,7 @@ import { Checkbox, Input, TextArea, Form } from "semantic-ui-react";
 import TranslationText from "../../form/translationText";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
+import HierarchicalDataSearch from "../../form/borehole/stratigraphy/hierarchicalDataSearch";
 import DomainDropdown from "../../form/domain/dropdown/domainDropdown";
 import DomainTree from "../../form/domain/tree/domainTree";
 import DateField from "../../form/dateField";
@@ -66,7 +67,8 @@ const ListFilter = props => {
       item.type === "Dropdown" ||
       item.type === "Canton" ||
       item.type === "City" ||
-      item.type === "ReferenceSystem"
+      item.type === "ReferenceSystem" ||
+      item.type === "HierarchicalData"
     ) {
       updateChange(item.value, null, false);
     } else if (item.type === "Radio") {
@@ -174,11 +176,12 @@ const ListFilter = props => {
               <Styled.AttributesContainer>
                 {(item.isVisible ||
                   isVisibleFunction(item.isVisibleValue) ||
-                  showAll) && (
-                  <Styled.Label>
-                    <TranslationText id={item.label} />
-                  </Styled.Label>
-                )}
+                  showAll) &&
+                  item.type !== "HierarchicalData" && (
+                    <Styled.Label>
+                      <TranslationText id={item.label} />
+                    </Styled.Label>
+                  )}
                 {item.type === "Input" &&
                   (item.isVisible ||
                     isVisibleFunction(item.isVisibleValue) ||
@@ -339,6 +342,24 @@ const ListFilter = props => {
                     </Styled.AttributesItem>
                   )}
 
+                {item.type === "HierarchicalData" &&
+                  (item.isVisible ||
+                    isVisibleFunction(item.isVisibleValue) ||
+                    showAll) && (
+                    <HierarchicalDataSearch
+                      onSelected={e => {
+                        updateChange(item.value, e.id, false);
+                      }}
+                      schema={item.schema}
+                      labels={item.labels}
+                      selected={
+                        _.isNil(search.filter?.[item.value])
+                          ? null
+                          : search.filter[item.value]
+                      }
+                    />
+                  )}
+
                 {item.type === "DomainTree" &&
                   (item.isVisible ||
                     isVisibleFunction(item.isVisibleValue) ||
@@ -394,6 +415,7 @@ const ListFilter = props => {
                 {(item.isVisible ||
                   isVisibleFunction(item.isVisibleValue) ||
                   showAll) &&
+                  item.type !== "HierarchicalData" &&
                   !item.hasTwoFields && (
                     <Styled.Reset>
                       <LabelReset
@@ -407,6 +429,7 @@ const ListFilter = props => {
                 {(item.isVisible ||
                   isVisibleFunction(item.isVisibleValue) ||
                   showAll) &&
+                  item.type !== "HierarchicalData" &&
                   item.hasTwoFields &&
                   item.label === "" && (
                     <Styled.Reset>

@@ -85,6 +85,9 @@ const initialState = {
     uscs_determination: null,
     debris: null,
 
+    // Chronostratigraphy filter
+    chronostratigraphy_id: null,
+
     casing_name: "",
     date_abd_from: null,
     date_abd_to: null,
