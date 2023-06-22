@@ -699,17 +699,25 @@ class Action():
                     id_wgp_fk = %s
                 """ % self.getIdx())
 
-            if 'borehole_identifier' in keys and filter['borehole_identifier'] != None:
-                params.append(int(filter['borehole_identifier']))
-                where.append("""
-                    borehole.id_bho IN (SELECT id_bho_fk FROM bdms.borehole_codelist WHERE id_cli_fk = %s)
-                """ % self.getIdx())
+            if 'borehole_identifier' in keys:
+                if filter['borehole_identifier'] == 0: 
+                    if 'identifier_value' in keys and filter['identifier_value'] not in ['', None]:
+                        params.append(int(filter['identifier_value']))
+                        where.append("""
+                            borehole.id_bho = %s
+                        """ % self.getIdx())
 
-            if 'identifier_value' in keys and filter['identifier_value'] not in ['', None]:
-                params.append("%%%s%%" % filter['identifier_value'])
-                where.append("""
-                    borehole.id_bho IN (SELECT id_bho_fk FROM bdms.borehole_codelist WHERE value_bco ILIKE %s)
-                """ % self.getIdx())
+                elif filter['borehole_identifier'] != None:
+                    params.append(int(filter['borehole_identifier']))
+                    where.append("""
+                        borehole.id_bho IN (SELECT id_bho_fk FROM bdms.borehole_codelist WHERE id_cli_fk = %s)
+                    """ % self.getIdx())
+
+                    if 'identifier_value' in keys and filter['identifier_value'] not in ['', None]:
+                        params.append("%%%s%%" % filter['identifier_value'])
+                        where.append("""
+                            borehole.id_bho IN (SELECT id_bho_fk FROM bdms.borehole_codelist WHERE value_bco ILIKE %s)
+                        """ % self.getIdx())
 
             if 'identifier' in keys and filter['identifier'] not in ['', None]:
                 if filter['identifier'] == '$null':
