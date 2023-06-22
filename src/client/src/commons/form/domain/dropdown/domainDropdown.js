@@ -60,7 +60,7 @@ class DomainDropdown extends React.Component {
           }
         }
       }
-      for (let i = 0; i < additionalValues.length; i++) {
+      for (let i = 0; i < additionalValues?.length; i++) {
         let h = additionalValues[i];
         for (var g = 0; g < data.value.length; g++) {
           const s = data.value[g];
@@ -92,7 +92,7 @@ class DomainDropdown extends React.Component {
             break;
           }
         }
-        for (let i = 0; i < additionalValues.length; i++) {
+        for (let i = 0; i < additionalValues?.length; i++) {
           let h = additionalValues[i];
           if (h.id === data.value) {
             this.setState({ selected: h.id });
