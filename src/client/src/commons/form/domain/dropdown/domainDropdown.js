@@ -47,13 +47,23 @@ class DomainDropdown extends React.Component {
   }
 
   handleChange(event, data) {
-    const { onSelected, domains, schema, multiple } = this.props;
+    const { onSelected, domains, schema, multiple, additionalValues } =
+      this.props;
     if (multiple === true) {
       const selection = [];
       for (let i = 0; i < domains.data[schema].length; i++) {
         let h = domains.data[schema][i];
         for (var f = 0; f < data.value.length; f++) {
           const s = data.value[f];
+          if (h.id === s) {
+            selection.push({ ...h });
+          }
+        }
+      }
+      for (let i = 0; i < additionalValues?.length; i++) {
+        let h = additionalValues[i];
+        for (var g = 0; g < data.value.length; g++) {
+          const s = data.value[g];
           if (h.id === s) {
             selection.push({ ...h });
           }
@@ -82,12 +92,22 @@ class DomainDropdown extends React.Component {
             break;
           }
         }
+        for (let i = 0; i < additionalValues?.length; i++) {
+          let h = additionalValues[i];
+          if (h.id === data.value) {
+            this.setState({ selected: h.id });
+            if (onSelected !== undefined) {
+              onSelected({ ...h });
+            }
+            break;
+          }
+        }
       }
     }
   }
 
   render() {
-    const { domains, schema, search, multiple } = this.props,
+    const { domains, schema, search, multiple, additionalValues } = this.props,
       { selected } = this.state;
     if (!domains.data.hasOwnProperty(schema)) {
       if (domains.isFetching === true) {
@@ -119,6 +139,16 @@ class DomainDropdown extends React.Component {
       );
     } else {
       data = domains.data[schema];
+    }
+    if (additionalValues !== undefined) {
+      additionalValues.forEach(value => {
+        if (value.translationId !== undefined) {
+          value[this.state.language].text = this.props.t(
+            "common:" + value.translationId,
+          );
+        }
+      });
+      data = data.concat(additionalValues);
     }
     options = _.concat(
       options,
@@ -217,6 +247,7 @@ DomainDropdown.propTypes = {
   reset: PropTypes.bool,
   schema: PropTypes.string,
   search: PropTypes.bool,
+  additionalValues: PropTypes.array,
   selected: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.arrayOf(PropTypes.number),

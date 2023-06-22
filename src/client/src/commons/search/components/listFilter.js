@@ -330,6 +330,7 @@ const ListFilter = props => {
                         }
                         schema={item.schema}
                         search={item.search}
+                        additionalValues={item.additionalValues}
                         selected={
                           _.isNil(search.filter?.[item.value])
                             ? null
