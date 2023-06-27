@@ -88,7 +88,7 @@ const initialState = {
     // Chronostratigraphy filter
     chronostratigraphy_id: null,
 
-    // Chronostratigraphy filter
+    // Lithostratigraphy filter
     lithostratigraphy_id: null,
 
     casing_name: "",
