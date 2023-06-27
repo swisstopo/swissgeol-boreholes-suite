@@ -6,6 +6,9 @@ describe("Hierachical data filter tests", () => {
     cy.contains("span", "Chronostratigraphy").click();
     cy.get("Show all fields").should("not.exist");
     cy.get('[data-cy="hierarchical-data-search"]').should("have.length", 7);
+    cy.contains("span", "Lithostratigraphy").click();
+    cy.get("Show all fields").should("not.exist");
+    cy.get('[data-cy="hierarchical-data-search"]').should("have.length", 3);
   });
 
   it("check hierarchical filtering", () => {

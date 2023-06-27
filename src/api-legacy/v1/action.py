@@ -1133,3 +1133,19 @@ class Action():
             """ % self.getIdx())
 
         return where, params, joins
+
+    def filterLithostratigraphy(self, filter={}):
+        params = []
+        where = []
+        joins = []
+
+        keys = filter.keys()
+
+        if 'lithostratigraphy_id' in keys and filter['lithostratigraphy_id'] not in ['', None]:
+
+            params.append(filter['lithostratigraphy_id'])
+            where.append("""
+                lithostratigraphy_id = %s
+            """ % self.getIdx())
+
+        return where, params, joins

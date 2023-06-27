@@ -17,6 +17,7 @@ import { boreholeSearchData } from "../data/boreholeSearchData";
 import { lithologySearchData } from "../data/lithologySearchData";
 import { registrationSearchData } from "../data/registrationSearchData";
 import { chronostratigraphySearchData } from "../data/chronostratigraphySearchData";
+import { lithostratigraphySearchData } from "../data/lithostratigraphySearchData";
 
 class SearchEditorComponent extends React.Component {
   constructor(props) {
@@ -64,24 +65,30 @@ class SearchEditorComponent extends React.Component {
         },
         {
           id: 6,
+          name: "lithostratigraphy",
+          translationId: "lithostratigraphy",
+          isSelected: false,
+        },
+        {
+          id: 7,
           name: "casing",
           translationId: "casing",
           isSelected: false,
         },
         {
-          id: 7,
+          id: 8,
           name: "instrument",
           translationId: "instrument",
           isSelected: false,
         },
         {
-          id: 8,
+          id: 9,
           name: "filling",
           translationId: "filling",
           isSelected: false,
         },
         {
-          id: 9,
+          id: 10,
           name: "registration",
           translationId: "registration",
           isSelectedd: false,
@@ -132,23 +139,28 @@ class SearchEditorComponent extends React.Component {
     ) {
       selectedData = chronostratigraphySearchData;
     } else if (
-      this.state?.searchList?.[6]?.name === "casing" &&
+      this.state?.searchList?.[6]?.name === "lithostratigraphy" &&
       this.state?.searchList?.[6]?.isSelected
+    ) {
+      selectedData = lithostratigraphySearchData;
+    } else if (
+      this.state?.searchList?.[7]?.name === "casing" &&
+      this.state?.searchList?.[7]?.isSelected
     ) {
       selectedData = casingSearchData;
     } else if (
-      this.state?.searchList?.[7]?.name === "instrument" &&
-      this.state?.searchList?.[7]?.isSelected
+      this.state?.searchList?.[8]?.name === "instrument" &&
+      this.state?.searchList?.[8]?.isSelected
     ) {
       selectedData = InstrumentSearchData;
     } else if (
-      this.state?.searchList?.[8]?.name === "filling" &&
-      this.state?.searchList?.[8]?.isSelected
+      this.state?.searchList?.[9]?.name === "filling" &&
+      this.state?.searchList?.[9]?.isSelected
     ) {
       selectedData = fillingSearchData;
     } else if (
-      this.state?.searchList?.[9]?.name === "registration" &&
-      this.state?.searchList?.[9]?.isSelected
+      this.state?.searchList?.[10]?.name === "registration" &&
+      this.state?.searchList?.[10]?.isSelected
     ) {
       selectedData = registrationSearchData;
     } else {
