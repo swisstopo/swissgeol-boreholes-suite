@@ -15,7 +15,7 @@ describe("Search filter tests", () => {
     indentifierDropdown.click();
     indentifierDropdown
       .find("div[role='option']")
-      .should("have.length", 11)
+      .should("have.length", 12)
       .should(options => {
         expect(options[0]).to.have.text("Reset");
         expect(options[1]).to.have.text("ID Original");
