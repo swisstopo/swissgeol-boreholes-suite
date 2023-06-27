@@ -15,7 +15,7 @@ describe("Search filter tests", () => {
     indentifierDropdown.click();
     indentifierDropdown
       .find("div[role='option']")
-      .should("have.length", 10)
+      .should("have.length", 12)
       .should(options => {
         expect(options[0]).to.have.text("Reset");
         expect(options[1]).to.have.text("ID Original");
@@ -27,17 +27,19 @@ describe("Search filter tests", () => {
     boreholeTypeDropdown.click();
     boreholeTypeDropdown
       .find("div[role='option']")
-      .should("have.length", 5)
+      .should("have.length", 7)
       .should(options => {
         expect(options[0]).to.have.text("Reset");
         expect(options[1]).to.have.text("borehole");
-        expect(options[2]).to.have.text("penetration test");
-        expect(options[3]).to.have.text("trial pit");
-        expect(options[4]).to.have.text("other");
+        expect(options[2]).to.have.text("virtual borehole");
+        expect(options[3]).to.have.text("penetration test");
+        expect(options[4]).to.have.text("trial pit");
+        expect(options[5]).to.have.text("other");
+        expect(options[6]).to.have.text("not specified");
       });
   });
 
-  it.only("shows 'fiter by map' in editor on 'Large Map' appearance", () => {
+  it("shows 'fiter by map' in editor on 'Large Map' appearance", () => {
     loginAsViewer("/setting/editor");
 
     // Check if Editor mode settings are apparant
@@ -118,7 +120,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by original lithology", () => {
     login("/editor");
-    cy.contains("Stratigraphy").click();
+    cy.contains("Lithology").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
     // input value
@@ -128,7 +130,7 @@ describe("Search filter tests", () => {
     // check content of table
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .should("have.length", 11);
+      .should("have.length", 8);
   });
 
   it("filters boreholes by creation date", () => {

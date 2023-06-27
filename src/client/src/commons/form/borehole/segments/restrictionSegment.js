@@ -60,7 +60,7 @@ const RestrictionSegment = props => {
             <label>
               <TranslationText id="national_interest" />
             </label>
-            <FormControl class="radio-group">
+            <FormControl className="radio-group">
               <RadioGroup
                 row
                 value={

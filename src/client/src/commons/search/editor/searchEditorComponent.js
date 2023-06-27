@@ -14,8 +14,9 @@ import { InstrumentSearchData } from "../data/InstrumentSearchData";
 import { fillingSearchData } from "../data/fillingSearchData";
 import { LocationSearchData } from "../data/LocationSearchData";
 import { boreholeSearchData } from "../data/boreholeSearchData";
-import { stratigraphySearchData } from "../data/stratigraphySearchData";
+import { lithologySearchData } from "../data/lithologySearchData";
 import { registrationSearchData } from "../data/registrationSearchData";
+import { chronostratigraphySearchData } from "../data/chronostratigraphySearchData";
 
 class SearchEditorComponent extends React.Component {
   constructor(props) {
@@ -51,30 +52,36 @@ class SearchEditorComponent extends React.Component {
         },
         {
           id: 4,
-          name: "stratigraphy",
-          translationId: "stratigraphy",
+          name: "lithology",
+          translationId: "lithology",
           isSelected: false,
         },
         {
           id: 5,
+          name: "chronostratigraphy",
+          translationId: "chronostratigraphy",
+          isSelected: false,
+        },
+        {
+          id: 6,
           name: "casing",
           translationId: "casing",
           isSelected: false,
         },
         {
-          id: 6,
+          id: 7,
           name: "instrument",
           translationId: "instrument",
           isSelected: false,
         },
         {
-          id: 7,
+          id: 8,
           name: "filling",
           translationId: "filling",
           isSelected: false,
         },
         {
-          id: 8,
+          id: 9,
           name: "registration",
           translationId: "registration",
           isSelectedd: false,
@@ -115,28 +122,33 @@ class SearchEditorComponent extends React.Component {
     ) {
       selectedData = boreholeSearchData;
     } else if (
-      this.state?.searchList?.[4]?.name === "stratigraphy" &&
+      this.state?.searchList?.[4]?.name === "lithology" &&
       this.state?.searchList?.[4]?.isSelected
     ) {
-      selectedData = stratigraphySearchData;
+      selectedData = lithologySearchData;
     } else if (
-      this.state?.searchList?.[5]?.name === "casing" &&
+      this.state?.searchList?.[5]?.name === "chronostratigraphy" &&
       this.state?.searchList?.[5]?.isSelected
+    ) {
+      selectedData = chronostratigraphySearchData;
+    } else if (
+      this.state?.searchList?.[6]?.name === "casing" &&
+      this.state?.searchList?.[6]?.isSelected
     ) {
       selectedData = casingSearchData;
     } else if (
-      this.state?.searchList?.[6]?.name === "instrument" &&
-      this.state?.searchList?.[6]?.isSelected
+      this.state?.searchList?.[7]?.name === "instrument" &&
+      this.state?.searchList?.[7]?.isSelected
     ) {
       selectedData = InstrumentSearchData;
     } else if (
-      this.state?.searchList?.[7]?.name === "filling" &&
-      this.state?.searchList?.[7]?.isSelected
+      this.state?.searchList?.[8]?.name === "filling" &&
+      this.state?.searchList?.[8]?.isSelected
     ) {
       selectedData = fillingSearchData;
     } else if (
-      this.state?.searchList?.[8]?.name === "registration" &&
-      this.state?.searchList?.[8]?.isSelected
+      this.state?.searchList?.[9]?.name === "registration" &&
+      this.state?.searchList?.[9]?.isSelected
     ) {
       selectedData = registrationSearchData;
     } else {

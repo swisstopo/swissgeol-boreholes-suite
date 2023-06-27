@@ -6,10 +6,12 @@
 
 - Added new field `national_interest` to borehole table.
 - Added support for _ID boreholes.swissgeol.ch_ as a filter ID type.
+- Added filter for chronostratigraphy.
 
 ### Changed
 
 - Removed `lithostratigraphy_id` from import.
+- Renamed stratigraphy filter to lithology filter.
 
 ### Fixed
 

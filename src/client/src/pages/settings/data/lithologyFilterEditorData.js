@@ -1,4 +1,4 @@
-export const stratigraphyFilterEditorData = [
+export const lithologyFilterEditorData = [
   {
     id: 0,
     label: "fromdepth",

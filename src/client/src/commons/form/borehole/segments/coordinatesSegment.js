@@ -380,7 +380,7 @@ const CoordinatesSegment = props => {
               control={control}
               defaultValue={referenceSystems.LV95.code}
               render={({ field }) => (
-                <FormControl {...field} class="radio-group">
+                <FormControl {...field} className="radio-group">
                   <RadioGroup
                     row
                     value={referenceSystem ?? referenceSystems.LV95.code}

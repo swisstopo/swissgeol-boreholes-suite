@@ -175,7 +175,7 @@ const BoreholeDetailSegment = props => {
           <label>
             <TranslationText id="groundwater" />
           </label>
-          <FormControl class="radio-group">
+          <FormControl className="radio-group">
             <RadioGroup
               row
               value={

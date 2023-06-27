@@ -1117,3 +1117,19 @@ class Action():
                 """ % self.getIdx())
 
         return where, params
+
+    def filterChronostratigraphy(self, filter={}):
+        params = []
+        where = []
+        joins = []
+
+        keys = filter.keys()
+
+        if 'chronostratigraphy_id' in keys and filter['chronostratigraphy_id'] not in ['', None]:
+
+            params.append(filter['chronostratigraphy_id'])
+            where.append("""
+                chronostratigraphy_id = %s
+            """ % self.getIdx())
+
+        return where, params, joins
