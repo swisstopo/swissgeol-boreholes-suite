@@ -95,48 +95,43 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
             ),
           });
         }
-        schemaData.forEach(entry => {
-          const path = entry.path.split(".").map(id => +id);
-          const level = path.length;
-          if (level === index + 1) {
-            let option = {
-              key: "dom-opt-" + entry.id,
-              value: entry.id,
-              text: entry[i18n.language],
-              content: (
-                <Header
-                  content={
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                      }}>
+
+        schemaData
+          .slice()
+          .sort((a, b) => a.order - b.order)
+          .forEach(entry => {
+            const path = entry.path.split(".").map(id => +id);
+            const level = path.length;
+            if (level === index + 1) {
+              let option = {
+                key: "dom-opt-" + entry.id,
+                value: entry.id,
+                text: entry[i18n.language],
+                content: (
+                  <Header
+                    content={
                       <div
                         style={{
-                          flex: "1 1 100%",
+                          display: "flex",
+                          flexDirection: "row",
                         }}>
-                        {entry[i18n.language]}
+                        <div
+                          style={{
+                            flex: "1 1 100%",
+                          }}>
+                          {entry[i18n.language]}
+                        </div>
                       </div>
-                    </div>
-                  }
-                />
-              ),
-            };
-            if (selectedIds.includes(entry.id)) {
-              selected = entry.id;
+                    }
+                  />
+                ),
+              };
+              if (selectedIds.includes(entry.id)) {
+                selected = entry.id;
+              }
+              options.push(option);
             }
-            options.push(option);
-          }
-        });
-        options.sort((a, b) => {
-          if (a.text < b.text) {
-            return -1;
-          }
-          if (a.text > b.text) {
-            return 1;
-          }
-          return 0;
-        });
+          });
         levels.push({
           level: index + 1,
           label: label,
