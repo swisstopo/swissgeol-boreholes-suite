@@ -11,6 +11,31 @@ describe("Hierachical data filter tests", () => {
     cy.get('[data-cy="hierarchical-data-search"]').should("have.length", 3);
   });
 
+  it("check sorting of filter values", () => {
+    login("/editor");
+    cy.contains("span", "Chronostratigraphy").click();
+    let periodsDropdown = cy.contains("label", "Period").next();
+    periodsDropdown.click();
+    periodsDropdown
+      .find("div[role='option']")
+      .should("have.length", 13)
+      .should(options => {
+        expect(options[0]).to.have.text("Reset");
+        expect(options[1]).to.have.text("Quaternary");
+        expect(options[2]).to.have.text("Neogene");
+        expect(options[3]).to.have.text("Paleogene");
+        expect(options[4]).to.have.text("Cretaceous");
+        expect(options[5]).to.have.text("Jurassic");
+        expect(options[6]).to.have.text("Triassic");
+        expect(options[7]).to.have.text("Permian");
+        expect(options[8]).to.have.text("Carboniferous");
+        expect(options[9]).to.have.text("Devonian");
+        expect(options[10]).to.have.text("Silurian");
+        expect(options[11]).to.have.text("Ordovician");
+        expect(options[12]).to.have.text("Cambrian");
+      });
+  });
+
   it("check hierarchical filtering", () => {
     const filterValues = [
       "Phanerozoic",
