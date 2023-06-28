@@ -95,6 +95,8 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
             ),
           });
         }
+
+        schemaData.sort((a, b) => a.order - b.order);
         schemaData.forEach(entry => {
           const path = entry.path.split(".").map(id => +id);
           const level = path.length;
@@ -127,15 +129,6 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
             }
             options.push(option);
           }
-        });
-        options.sort((a, b) => {
-          if (a.text < b.text) {
-            return -1;
-          }
-          if (a.text > b.text) {
-            return 1;
-          }
-          return 0;
         });
         levels.push({
           level: index + 1,
