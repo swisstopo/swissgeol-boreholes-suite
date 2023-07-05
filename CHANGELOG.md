@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.0.452 - 2023-07-05
+
 ### Added
 
 - Added new field `national_interest` to borehole table.
