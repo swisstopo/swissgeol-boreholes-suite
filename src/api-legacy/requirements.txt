@@ -2,7 +2,7 @@ pytest==5.4.2
 pylint==2.5.2
 asyncpg==0.24.0
 dateutils==0.6.8
-tornado==6.1
+tornado==6.3.3
 PyPDF2==1.27.5
 reportlab==3.5.55
 pyshp==2.1.0
