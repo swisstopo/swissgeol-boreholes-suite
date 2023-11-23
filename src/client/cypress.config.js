@@ -1,5 +1,4 @@
 const { defineConfig } = require("cypress");
-const { cloudPlugin } = require("cypress-cloud/plugin");
 
 module.exports = defineConfig({
   e2e: {
@@ -25,8 +24,6 @@ module.exports = defineConfig({
 
         return launchOptions;
       });
-
-      return cloudPlugin(on, config);
     },
   },
   defaultCommandTimeout: 10000,
