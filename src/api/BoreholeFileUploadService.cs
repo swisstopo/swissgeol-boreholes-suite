@@ -103,42 +103,6 @@ public class BoreholeFileUploadService
     /// <param name="objectName">The name of the file in the storage.</param>
     internal async Task UploadObject(IFormFile file, string objectName)
     {
-        //try
-        //{
-        //    var request = new PutBucketRequest
-        //    {
-        //        BucketName = "nono",
-        //        UseClientRegion = true,
-        //    };
-
-        //    var response = await s3Client.PutBucketAsync(request);
-        //}
-        //catch (AmazonS3Exception ex)
-        //{
-        //    Console.WriteLine($"Error creating bucket: '{ex.Message}'");
-        //    //throw;
-        //}
-
-        var response = await s3Client.DoesS3BucketExistAsync(bucketName);
-        if (!response)
-        {
-            try
-            {
-                var request = new PutBucketRequest
-                {
-                    BucketName = bucketName,
-                    UseClientRegion = true,
-                };
-
-                await s3Client.PutBucketAsync(request).ConfigureAwait(false);
-            }
-            catch (AmazonS3Exception ex)
-            {
-                Console.WriteLine($"Error creating bucket: '{ex.Message}'");
-                //throw;
-            }
-        }
-
         try
         {
             // Upload file
