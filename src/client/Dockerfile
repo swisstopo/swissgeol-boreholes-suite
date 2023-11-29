@@ -1,4 +1,4 @@
-FROM cypress/included:12.4.0 AS development
+FROM cypress/included:13.6.0 AS development
 ARG VERSION
 ARG REVISION
 ENV REACT_APP_VERSION ${VERSION}+${REVISION}
