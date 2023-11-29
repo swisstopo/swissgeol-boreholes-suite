@@ -4,7 +4,7 @@ asyncpg==0.24.0
 dateutils==0.6.8
 tornado==6.3.3
 PyPDF2==1.27.5
-reportlab==3.5.55
+reportlab==3.6.13
 pyshp==2.1.0
 svglib==1.0.0
 svg2rlg==0.3
