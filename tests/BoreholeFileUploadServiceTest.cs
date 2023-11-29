@@ -50,7 +50,7 @@ public class BoreholeFileUploadServiceTest
 
         boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerMock.Object, contextAccessorMock.Object, s3ClientMock);
 
-        bucketName = configuration["S3:BUCKET_NAME"];
+        bucketName = configuration["S3:BUCKET_NAME"].ToLowerInvariant();
         s3Client = s3ClientMock;
     }
 

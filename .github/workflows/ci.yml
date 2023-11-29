@@ -49,6 +49,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+
       - name: Build solution
         run: dotnet build BDMS.sln -c Release /warnaserror
 
@@ -59,9 +64,9 @@ jobs:
         run: npm ci
 
       - name: Cypress run
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         with:
-          command: npx cypress-cloud run --record --parallel --key ${{ secrets.CURRENTS_RECORD_KEY }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}}
+          command: npx cypress run --record --parallel --key ${{ secrets.CYPRESS_RECORD_KEY }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}}
           build: npm run build
           start: npm start
           wait-on: 'http://localhost:3000'
