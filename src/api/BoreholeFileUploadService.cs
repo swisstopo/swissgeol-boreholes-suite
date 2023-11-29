@@ -24,7 +24,9 @@ public class BoreholeFileUploadService
         this.httpContextAccessor = httpContextAccessor;
         this.context = context;
         this.s3Client = s3Client;
-        bucketName = configuration["S3:BUCKET_NAME"];
+#pragma warning disable CA1308
+        bucketName = configuration["S3:BUCKET_NAME"].ToLowerInvariant();
+#pragma warning restore CA1308
     }
 
     /// <summary>
