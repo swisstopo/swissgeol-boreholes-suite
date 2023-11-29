@@ -11,10 +11,10 @@ jobs:
     name: Build and run tests
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
 
@@ -27,10 +27,10 @@ jobs:
       - name: Run dotnet tests
         run: dotnet test BDMS.sln -c Release --no-build --verbosity normal --filter TestCategory!=LongRunning
 
-      - name: Setup Node.js 16
-        uses: actions/setup-node@v3
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
       - working-directory: ./src/client
         run: npm ci
@@ -47,10 +47,10 @@ jobs:
         containers: [1, 2, 3, 4, 5]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
 
