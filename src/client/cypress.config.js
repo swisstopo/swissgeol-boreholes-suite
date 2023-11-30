@@ -28,6 +28,7 @@ module.exports = defineConfig({
     },
   },
   defaultCommandTimeout: 10000,
+  waitForAnimations: false,
   animationDistanceThreshold: 50,
   retries: 3
 });
