@@ -117,6 +117,6 @@ public class CodeListController : ControllerBase
             cancellationToken).ConfigureAwait(false);
 
         Response.Headers.ContentDisposition = "attachment; filename=codelist_export.csv";
-        return Content(await reader.ReadToEndAsync().ConfigureAwait(false), "text/csv", Encoding.UTF8);
+        return Content(await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false), "text/csv", Encoding.UTF8);
     }
 }
