@@ -212,7 +212,7 @@ public class UploadController : ControllerBase
                             }
                             catch (Exception ex)
                             {
-                                logger.LogError("Invalid code list value of any multi code list property.", ex);
+                                logger.LogError(ex, "Invalid code list value of any multi code list property.");
                                 throw;
                             }
 
