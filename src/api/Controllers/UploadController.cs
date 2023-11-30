@@ -161,7 +161,7 @@ public class UploadController : ControllerBase
             // Add attachments to borehole.
             if (attachments != null)
             {
-                var boreholeImportsWithAttachments = boreholeImports.Where(x => x.Attachments?.Any() == true).ToList();
+                var boreholeImportsWithAttachments = boreholeImports.Where(x => x.Attachments?.Length > 0).ToList();
                 foreach (var boreholeImport in boreholeImportsWithAttachments)
                 {
                     var attachmentFileNames = boreholeImport.Attachments?.Split(",").Select(s => s.Replace(" ", "", StringComparison.InvariantCulture)).ToList();
@@ -174,7 +174,7 @@ public class UploadController : ControllerBase
             }
 
             // Add lithology imports if provided
-            if (lithologyImports.Any())
+            if (lithologyImports.Count > 0)
             {
                 // Get the kind id of a lithostratigraphy.
                 var lithoStratiKindId = context.Codelists.Single(cl => cl.Schema == "layer_kind" && cl.IsDefault == true).Id;
