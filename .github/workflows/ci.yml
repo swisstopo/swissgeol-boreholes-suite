@@ -27,10 +27,10 @@ jobs:
       - name: Run dotnet tests
         run: dotnet test BDMS.sln -c Release --no-build --verbosity normal --filter TestCategory!=LongRunning
 
-      - name: Setup Node.js 18
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - working-directory: ./src/client
         run: npm ci
