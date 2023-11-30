@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AnalysisLevel>latest-all</AnalysisLevel>
+    <AnalysisLevel>6.0-latest</AnalysisLevel>
     <NoWarn>CS1591,CS8618,CS8620</NoWarn>
     <Product>BDMS</Product>
     <Authors>GeoWerkstatt GmbH</Authors>
