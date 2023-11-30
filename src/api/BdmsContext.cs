@@ -39,7 +39,10 @@ public class BdmsContext : DbContext
     public BdmsContext(DbContextOptions options)
         : base(options)
     {
+#pragma warning disable CS0618 // Type or member is obsolete, however they do not plan on removing it any time soon.
+        // TODO: https://github.com/geoadmin/suite-bdms/issues/851
         NpgsqlConnection.GlobalTypeMapper.MapEnum<Role>();
+#pragma warning restore CS0618 // Type or member is obsolete, however they do not plan on removing it any time soon.
     }
 
     /// <summary>
