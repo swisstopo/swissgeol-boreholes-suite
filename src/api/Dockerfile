@@ -5,7 +5,7 @@ WORKDIR /src
 # Install missing packages
 RUN apt-get -y update
 RUN apt-get -y install git vim curl htop
-RUN dotnet tool install --global dotnet-ef
+RUN dotnet tool install --global dotnet-ef --version 6.0.7
 ENV PATH $PATH:/root/.dotnet/tools
 
 # Restore dependencies and tools

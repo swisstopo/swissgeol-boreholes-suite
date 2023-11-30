@@ -1,7 +1,7 @@
 const { defineConfig } = require("cypress");
-const { cloudPlugin } = require("cypress-cloud/plugin");
 
 module.exports = defineConfig({
+  projectId: "gv8yue",
   e2e: {
     baseUrl: "http://localhost:3000",
     video: false,
@@ -25,9 +25,10 @@ module.exports = defineConfig({
 
         return launchOptions;
       });
-
-      return cloudPlugin(on, config);
     },
   },
   defaultCommandTimeout: 10000,
+  waitForAnimations: false,
+  animationDistanceThreshold: 50,
+  retries: 3
 });
