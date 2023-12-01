@@ -421,7 +421,8 @@ public static class BdmsContextExtensions
                .RuleFor(o => o.Finished, _ => null);
 
         Workflow SeededWorkflows(int seed) => fakeWorkflows.UseSeed(seed).Generate();
-        context.BulkInsert(workflowRange.Select(SeededWorkflows).ToList(), bulkConfig);
+        var workflowsToInsert = workflowRange.Select(SeededWorkflows).ToList();
+        context.BulkInsert(workflowsToInsert, bulkConfig);
 
         // Seed lithologicalDescriptions
         var lithologicalDescription_ids = 9_000_000;
