@@ -55,6 +55,6 @@ public class Workflow : IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Role"/>.
     /// </summary>
-    [Column("id_rol_fk", TypeName = "int")]
+    [Column("id_rol_fk", TypeName = "integer")]
     public Role? Role { get; set; }
 }

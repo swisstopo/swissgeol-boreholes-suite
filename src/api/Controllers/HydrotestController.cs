@@ -136,7 +136,7 @@ public class HydrotestController : ControllerBase
 
     private bool AreCodelistIdsPresent(Hydrotest hydrotest)
     {
-        return hydrotest.CodelistIds != null && hydrotest.CodelistIds.Any();
+        return hydrotest.CodelistIds?.Count > 0;
     }
 
     private bool AreHydrotestCodelistsCompatible(Hydrotest hydrotest)
@@ -153,7 +153,7 @@ public class HydrotestController : ControllerBase
             .ToList();
 
         // If there are HydrotestResults, check if the ParameterIds in the results are compatible.
-        if (hydrotest.HydrotestResults?.Any() == true && testKindGeolCodes.Any())
+        if (hydrotest.HydrotestResults?.Count > 0 && testKindGeolCodes.Count > 0)
         {
             var compatibleParameterIds = GetCompatibleCodelistIds(testKindGeolCodes, HydrogeologySchemas.HydrotestResultParameterSchema, HydroCodeLookup.HydrotestResultParameterOptions);
             if (!hydrotest.HydrotestResults.All(r => compatibleParameterIds.Contains(r.ParameterId)))
@@ -165,7 +165,7 @@ public class HydrotestController : ControllerBase
         var compatibleCodelistIds = new List<int>();
 
         // If there are CodelistIds, find the compatible CodelistIds for the flow direction and evaluation method options.
-        if (hydrotest.CodelistIds?.Any() == true && testKindGeolCodes.Any())
+        if (hydrotest.CodelistIds?.Count > 0 && testKindGeolCodes.Count > 0)
         {
             compatibleCodelistIds.AddRange(hydrotestKindCodelistIds);
             compatibleCodelistIds.AddRange(GetCompatibleCodelistIds(testKindGeolCodes, HydrogeologySchemas.FlowdirectionSchema, HydroCodeLookup.HydrotestFlowDirectionOptions));
@@ -191,7 +191,7 @@ public class HydrotestController : ControllerBase
             }
         });
 
-        if (compatibleGeolCodes.Any())
+        if (compatibleGeolCodes.Count > 0)
         {
             return compatibleGeolCodes.Distinct().ToList();
         }

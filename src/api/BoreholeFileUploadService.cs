@@ -41,7 +41,7 @@ public class BoreholeFileUploadService
         using (SHA256 sha256Hash = SHA256.Create())
         {
             using Stream stream = file.OpenReadStream();
-            byte[] hashBytes = sha256Hash.ComputeHash(stream);
+            byte[] hashBytes = await sha256Hash.ComputeHashAsync(stream).ConfigureAwait(false);
             base64Hash = Convert.ToBase64String(hashBytes);
         }
 

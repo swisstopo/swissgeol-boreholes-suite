@@ -1,11 +1,11 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS development
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS development
 ENV ASPNETCORE_ENVIRONMENT=Development
 WORKDIR /src
 
 # Install missing packages
 RUN apt-get -y update
 RUN apt-get -y install git vim curl htop
-RUN dotnet tool install --global dotnet-ef --version 6.0.7
+RUN dotnet tool install --global dotnet-ef --version 8.0.0
 ENV PATH $PATH:/root/.dotnet/tools
 
 # Restore dependencies and tools
@@ -14,7 +14,7 @@ RUN dotnet restore
 
 ENTRYPOINT dotnet watch run --no-launch-profile
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG VERSION
 ARG REVISION
 WORKDIR /src
@@ -32,7 +32,7 @@ RUN dotnet publish \
   -p:SourceRevisionId=${REVISION} \
   -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS deploy
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS deploy
 ENV ASPNETCORE_ENVIRONMENT=Production
 WORKDIR /app
 

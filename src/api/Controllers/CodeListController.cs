@@ -40,32 +40,29 @@ public class CodeListController : ControllerBase
             codeLists = codeLists.Where(c => c.Schema == schema);
         }
 
-        if (testKindIds != null)
+        if (testKindIds?.Length > 0)
         {
-            if (testKindIds.Any())
+            List<int> hydrotestResultGeolcodes = new();
+            List<int> flowDirectionGeolCodes = new();
+            List<int> evaluationMethodIds = new();
+
+            Array.ForEach(testKindIds, testKindId =>
             {
-                List<int> hydrotestResultGeolcodes = new();
-                List<int> flowDirectionGeolCodes = new();
-                List<int> evaluationMethodIds = new();
+                // Get the Geolcode associated with the TestKindId.
+                int testKindGeolCode = context.Codelists.SingleOrDefault(c => c.Id == testKindId)?.Geolcode ?? 0;
 
-                Array.ForEach(testKindIds, testKindId =>
-                {
-                    // Get the Geolcode associated with the TestKindId.
-                    int testKindGeolCode = context.Codelists.SingleOrDefault(c => c.Id == testKindId)?.Geolcode ?? 0;
+                // Get the lists of Geolcodes from the HydroCodeLookup based on the testKindGeolCode.
+                hydrotestResultGeolcodes.AddRange(HydroCodeLookup.HydrotestResultParameterOptions.TryGetValue(testKindGeolCode, out List<int>? tempHRIds) ? tempHRIds : new List<int>());
+                flowDirectionGeolCodes.AddRange(HydroCodeLookup.HydrotestFlowDirectionOptions.TryGetValue(testKindGeolCode, out List<int>? tempFDIds) ? tempFDIds : new List<int>());
+                evaluationMethodIds.AddRange(HydroCodeLookup.HydrotestEvaluationMethodOptions.TryGetValue(testKindGeolCode, out List<int>? tempEMIds) ? tempEMIds : new List<int>());
+            });
 
-                    // Get the lists of Geolcodes from the HydroCodeLookup based on the testKindGeolCode.
-                    hydrotestResultGeolcodes.AddRange(HydroCodeLookup.HydrotestResultParameterOptions.TryGetValue(testKindGeolCode, out List<int>? tempHRIds) ? tempHRIds : new List<int>());
-                    flowDirectionGeolCodes.AddRange(HydroCodeLookup.HydrotestFlowDirectionOptions.TryGetValue(testKindGeolCode, out List<int>? tempFDIds) ? tempFDIds : new List<int>());
-                    evaluationMethodIds.AddRange(HydroCodeLookup.HydrotestEvaluationMethodOptions.TryGetValue(testKindGeolCode, out List<int>? tempEMIds) ? tempEMIds : new List<int>());
-                });
-
-                // Return the Codelists where the Codelist's Geolcode matches any of the compatible geolcodes form  the HydroCodeLookup.
-                codeLists = codeLists.Where(c =>
-                    c.Geolcode != null &&
-                    ((c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema && hydrotestResultGeolcodes.Contains(c.Geolcode.Value)) ||
-                    (c.Schema == HydrogeologySchemas.FlowdirectionSchema && flowDirectionGeolCodes.Contains(c.Geolcode.Value)) ||
-                    (c.Schema == HydrogeologySchemas.EvaluationMethodSchema && evaluationMethodIds.Contains(c.Geolcode.Value))));
-            }
+            // Return the Codelists where the Codelist's Geolcode matches any of the compatible geolcodes form  the HydroCodeLookup.
+            codeLists = codeLists.Where(c =>
+                c.Geolcode != null &&
+                ((c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema && hydrotestResultGeolcodes.Contains(c.Geolcode.Value)) ||
+                (c.Schema == HydrogeologySchemas.FlowdirectionSchema && flowDirectionGeolCodes.Contains(c.Geolcode.Value)) ||
+                (c.Schema == HydrogeologySchemas.EvaluationMethodSchema && evaluationMethodIds.Contains(c.Geolcode.Value))));
         }
 
         return await codeLists.AsNoTracking().ToListAsync().ConfigureAwait(false);
@@ -120,6 +117,6 @@ public class CodeListController : ControllerBase
             cancellationToken).ConfigureAwait(false);
 
         Response.Headers.ContentDisposition = "attachment; filename=codelist_export.csv";
-        return Content(await reader.ReadToEndAsync().ConfigureAwait(false), "text/csv", Encoding.UTF8);
+        return Content(await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false), "text/csv", Encoding.UTF8);
     }
 }

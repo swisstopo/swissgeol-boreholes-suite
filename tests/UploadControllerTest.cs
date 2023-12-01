@@ -431,7 +431,7 @@ public class UploadControllerTest
         Assert.AreEqual(1131551.4611465326, borehole.LocationY);
         Assert.AreEqual(649258.36125645251, borehole.LocationXLV03);
         Assert.AreEqual(131551.85893587855, borehole.LocationYLV03);
-        Assert.AreEqual("POINT (2649258.1270818082 1131551.4611465326)", borehole.Geometry.ToString());
+        Assert.AreEqual("POINT (2649258.127081808 1131551.4611465326)", borehole.Geometry.ToString());
         Assert.AreEqual("Valais", borehole.Canton);
         Assert.AreEqual("Schweiz", borehole.Country);
         Assert.AreEqual("Mörel-Filet", borehole.Municipality);

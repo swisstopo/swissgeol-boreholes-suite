@@ -271,7 +271,7 @@ public class CoordinateControllerTest
         Assert.AreEqual(ReferenceSystem.LV95, editierteBohrung.OriginalReferenceSystem);
         Assert.AreEqual(2582431.203588229, editierteBohrung.LocationX);
         Assert.AreEqual(1189604.098138797, editierteBohrung.LocationY);
-        Assert.AreEqual("POINT (2582431.2035882291 1189604.0981387971)", editierteBohrung.Geometry.ToString());
+        Assert.AreEqual("POINT (2582431.203588229 1189604.098138797)", editierteBohrung.Geometry.ToString());
         Assert.AreEqual(9876.543543544, editierteBohrung.LocationXLV03);
         Assert.AreEqual(1234.562356236, editierteBohrung.LocationYLV03);
     }
