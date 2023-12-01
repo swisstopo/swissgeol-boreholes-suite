@@ -18,7 +18,7 @@ RUN pip install mkdocs && mkdocs build -d ./public/help
 
 ENTRYPOINT npm run start
 
-FROM node:16-buster-slim AS deploy
+FROM node:20-buster-slim AS deploy
 ARG VERSION
 ARG REVISION
 ENV REACT_APP_VERSION ${VERSION}+${REVISION}
