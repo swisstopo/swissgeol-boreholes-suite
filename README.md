@@ -15,6 +15,8 @@ Folgende Komponenten müssen auf dem Entwicklungsrechner installiert sein:
 
 Damit auf dem Entwicklungsrechner keine Frameworks (Python, .NET, Node) installiert werden müssen, kann die vorkonfigurierte containerbasierte Entwicklungsumgebung mit Visual Studio Code verwendet werden. Dazu einfach das Source-Code Repository klonen und im Visual Studio Code laden. Wenn die Erweiterung "Remote – Containers" installiert ist, wird unten rechts in einer Notification dazu aufgefordert das Projekt im Container neu zu laden (Reload in Container). Das erstmalige Starten dauert etwas länger, da die Container erstellt werden müssen und die Umgebung mit den erforderlichen Extensions konfiguriert wird. Anschliessend kann die Webanwendung mit _F5_ gestartet werden.
 
+Falls doch lokal gearbeitet werden soll, kann [nvm](https://github.com/coreybutler/nvm-windows/releases) installiert werden, um die Node Version zu verwalten. Anschliessend kann mit `nvm use` die im Projekt verwendete Node Version aktiviert werden. Aktuell verwenden wir Node 20.
+
 **Folgende Dienste/Anwendungen sind anschliessend wie folgt verfügbar**
 
 | 🔖Dienst/Anwendung                                                                                                                                                                                | 🔗Adresse                                                                                      | 🧞Benutzername  | 🔐Passwort                       |
