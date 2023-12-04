@@ -388,7 +388,7 @@ const CoordinatesSegment = props => {
                     <FormControlLabel
                       value={referenceSystems.LV95.code}
                       sx={{ flexGrow: 1 }}
-                      control={<Radio />}
+                      control={<Radio disabled={!isEditable} />}
                       label={
                         <DomainText
                           id={referenceSystems.LV95.code}
@@ -399,7 +399,7 @@ const CoordinatesSegment = props => {
                     <FormControlLabel
                       value={referenceSystems.LV03.code}
                       sx={{ flexGrow: 1 }}
-                      control={<Radio />}
+                      control={<Radio disabled={!isEditable} />}
                       label={
                         <DomainText
                           id={referenceSystems.LV03.code}
@@ -444,7 +444,7 @@ const CoordinatesSegment = props => {
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
-                      readOnly={!isLV95}
+                      readOnly={!isLV95 || !isEditable}
                       onChange={e => {
                         changeCoordinate("LV95", "X", e.target.value);
                       }}
@@ -479,7 +479,7 @@ const CoordinatesSegment = props => {
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
-                      readOnly={!isLV95}
+                      readOnly={!isLV95 || !isEditable}
                       onChange={e => {
                         changeCoordinate("LV95", "Y", e.target.value);
                       }}
@@ -516,7 +516,7 @@ const CoordinatesSegment = props => {
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
-                      readOnly={isLV95}
+                      readOnly={isLV95 || !isEditable}
                       onChange={e => {
                         changeCoordinate("LV03", "X", e.target.value);
                       }}
@@ -551,7 +551,7 @@ const CoordinatesSegment = props => {
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
-                      readOnly={isLV95}
+                      readOnly={isLV95 || !isEditable}
                       onChange={e => {
                         changeCoordinate("LV03", "Y", e.target.value);
                       }}
@@ -576,6 +576,7 @@ const CoordinatesSegment = props => {
               }}
               schema="qt_location"
               selected={borehole.data.qt_location}
+              readOnly={!isEditable}
             />
           </Form.Field>
         </Form.Group>
@@ -597,6 +598,7 @@ const CoordinatesSegment = props => {
               spellCheck="false"
               value={borehole.data.elevation_z ?? ""}
               thousandSeparator="'"
+              readOnly={!isEditable}
             />
           </Form.Field>
 
@@ -610,6 +612,7 @@ const CoordinatesSegment = props => {
               }}
               schema="qt_elevation"
               selected={borehole.data.qt_elevation}
+              readOnly={!isEditable}
             />
           </Form.Field>
         </Form.Group>
@@ -640,6 +643,7 @@ const CoordinatesSegment = props => {
               spellCheck="false"
               value={borehole.data.reference_elevation ?? ""}
               thousandSeparator="'"
+              readOnly={!isEditable}
             />
           </Form.Field>
           <Form.Field required>
@@ -652,6 +656,7 @@ const CoordinatesSegment = props => {
               }}
               schema="qt_elevation"
               selected={borehole.data.qt_reference_elevation}
+              readOnly={!isEditable}
             />
           </Form.Field>
         </Form.Group>
@@ -668,6 +673,7 @@ const CoordinatesSegment = props => {
               }}
               schema="ibor117"
               selected={borehole.data.reference_elevation_type}
+              readOnly={!isEditable}
             />
           </Form.Field>
           <Form.Field required>
