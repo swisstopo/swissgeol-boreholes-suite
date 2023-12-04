@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Upgraded to OpenLayers 8.
+
+
 ## v2.0.452 - 2023-07-05
 
 ### Added
