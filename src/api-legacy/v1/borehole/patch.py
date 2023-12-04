@@ -156,10 +156,10 @@ class PatchBorehole(Action):
             column = 'qt_depth_id_cli'
 
         elif field == 'custom.qt_top_bedrock':
-            column = 'qt_top_bedrock_id_cli'
+            column = 'qt_top_bedrock'
 
         elif field == 'custom.qt_top_bedrock_tvd':
-            column = 'qt_top_bedrock_tvd_id_cli'
+            column = 'qt_top_bedrock_tvd'
 
         elif field == 'custom.lithology_top_bedrock':
             column = 'lithology_top_bedrock_id_cli'
@@ -207,6 +207,8 @@ class PatchBorehole(Action):
                 'total_depth_tvd',
                 'extended.top_bedrock',
                 'extended.top_bedrock_tvd',
+                'custom.qt_top_bedrock',
+                'custom.qt_top_bedrock_tvd',
                 'extended.groundwater',
                 'custom.mistakes',
                 'custom.remarks',
@@ -281,8 +283,6 @@ class PatchBorehole(Action):
                 'extended.status',
                 'custom.qt_bore_inc_dir',
                 'custom.qt_depth',
-                'custom.qt_top_bedrock',
-                'custom.qt_top_bedrock_tvd',
                 'custom.processing_status',
                 'custom.lithology_top_bedrock',
                 'custom.lithostratigraphy_top_bedrock',

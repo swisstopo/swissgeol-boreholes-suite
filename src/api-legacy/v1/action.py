@@ -1043,7 +1043,7 @@ class Action():
                     'qt_top_bedrock'] not in ['', None]:
                 params.append(int(filter['qt_top_bedrock']))
                 where.append("""
-                    qt_top_bedrock_id_cli = %s
+                    qt_top_bedrock = %s
                 """ % self.getIdx())
 
             if 'top_bedrock_tvd_from' in keys and filter['top_bedrock_tvd_from'] not in ['', None]:
@@ -1062,7 +1062,7 @@ class Action():
                     'qt_top_bedrock_tvd'] not in ['', None]:
                 params.append(int(filter['qt_top_bedrock_tvd']))
                 where.append("""
-                    qt_top_bedrock_tvd_id_cli = %s
+                    qt_top_bedrock_tvd = %s
                 """ % self.getIdx())
 
             if 'lithology_top_bedrock' in keys and filter[
