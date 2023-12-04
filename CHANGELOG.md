@@ -5,6 +5,8 @@
 ### Changed
 
 - Upgraded to OpenLayers 8.
+- Upgraded to .NET 8.
+- Upgraded to Node 20.
 
 ## v2.0.452 - 2023-07-05
 
