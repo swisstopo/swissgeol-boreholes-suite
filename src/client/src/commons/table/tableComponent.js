@@ -218,8 +218,8 @@ class TableComponent extends React.Component {
                       activeItem === item.id
                         ? "gray"
                         : this.props.highlight === item.id
-                        ? "lightgrey"
-                        : "white",
+                          ? "lightgrey"
+                          : "white",
                   }}>
                   {this.getCols(item, idx)}
                 </Table.Row>

@@ -53,8 +53,8 @@ class HomeComponent extends React.Component {
             !_.isNil(detail.borehole)
               ? [detail.borehole.id]
               : home.hover
-              ? [home.hover.id]
-              : []
+                ? [home.hover.id]
+                : []
           }
           hover={id => {
             if (_.isNil(detail.borehole)) {
