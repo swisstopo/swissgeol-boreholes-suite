@@ -24,8 +24,8 @@
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
-    "@mui/icons-material": "^5.10.6",
-    "@mui/material": "^5.10.6",
+    "@mui/icons-material": "^5.14.19",
+    "@mui/material": "^5.14.19",
     "@react-hook/resize-observer": "^1.2.6",
     "axios": "^1.6.0",
     "date-fns": "^2.9.0",
