@@ -246,16 +246,16 @@ class MultipleForm extends React.Component {
               this.state.data[field].value === true
                 ? "TRUE"
                 : this.state.data[field].value === false
-                ? "FALSE"
-                : "NULL"
+                  ? "FALSE"
+                  : "NULL"
             }
             onChange={e => {
               let newValue =
                 e.target.value === "TRUE"
                   ? true
                   : e.target.value === "FALSE"
-                  ? false
-                  : null;
+                    ? false
+                    : null;
               this.setState({
                 ...this.state,
                 data: {

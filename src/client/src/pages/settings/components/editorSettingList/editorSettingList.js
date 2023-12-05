@@ -22,8 +22,8 @@ const EditorSettingList = props => {
     return listName === "lithologyfields"
       ? isVisible(item.value)
       : item.value.split(".").length > 1
-      ? data?.[item.value.split(".")[0]]?.[item.value.split(".")[1]]
-      : data?.[item.value];
+        ? data?.[item.value.split(".")[0]]?.[item.value.split(".")[1]]
+        : data?.[item.value];
   };
   const isVisible = field => {
     if (_.has(codes, "data.layer_kind") && _.isArray(codes.data.layer_kind)) {

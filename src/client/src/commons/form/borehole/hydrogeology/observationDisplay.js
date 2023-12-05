@@ -124,8 +124,8 @@ const ObservationDisplay = props => {
                 {observation.completionFinished === null
                   ? "-"
                   : observation.completionFinished === true
-                  ? t("yes")
-                  : t("no")}
+                    ? t("yes")
+                    : t("no")}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
           </StackFullWidth>
