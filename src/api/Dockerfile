@@ -34,6 +34,7 @@ RUN dotnet publish \
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS deploy
 ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_HTTP_PORTS=80
 WORKDIR /app
 
 # Install missing packages
