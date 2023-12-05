@@ -42,7 +42,7 @@ describe("Tests for the wateringress editor.", () => {
 
     // fill quantity dropdown
     cy.get('[data-cy="quantity-select"]')
-      .find('[role="button"]')
+      .find('[role="combobox"]')
       .click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
@@ -52,7 +52,7 @@ describe("Tests for the wateringress editor.", () => {
 
     // fill conditions dropdown
     cy.get('[data-cy="conditions-select"]')
-      .find('[role="button"]')
+      .find('[role="combobox"]')
       .click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
@@ -62,7 +62,7 @@ describe("Tests for the wateringress editor.", () => {
 
     // fill reliability dropdown
     cy.get('[data-cy="reliability-select"]')
-      .find('[role="button"]')
+      .find('[role="combobox"]')
       .click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
@@ -86,7 +86,7 @@ describe("Tests for the wateringress editor.", () => {
 
     // change quantity dropdown
     cy.get('[data-cy="quantity-select"]')
-      .find('[role="button"]')
+      .find('[role="combobox"]')
       .click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')

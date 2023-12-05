@@ -44,7 +44,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     // fill kind dropdown
     cy.get('[data-cy="kind-select"]')
-      .find('[role="button"]')
+      .find('[role="combobox"]')
       .click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
@@ -54,7 +54,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     // fill reliability dropdown
     cy.get('[data-cy="reliability-select"]')
-      .find('[role="button"]')
+      .find('[role="combobox"]')
       .click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
@@ -83,7 +83,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     // change kind dropdown
     cy.get('[data-cy="kind-select"]')
-      .find('[role="button"]')
+      .find('[role="combobox"]')
       .click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
