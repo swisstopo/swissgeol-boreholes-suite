@@ -7,6 +7,7 @@
 - Upgraded to OpenLayers 8.
 - Upgraded to .NET 8.
 - Upgraded to Node 20.
+- Use a non-root user in the .NET Docker image.
 
 ## v2.0.452 - 2023-07-05
 

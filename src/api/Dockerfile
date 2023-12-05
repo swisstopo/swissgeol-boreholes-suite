@@ -54,4 +54,6 @@ COPY --from=build /app/publish .
 
 HEALTHCHECK CMD curl --fail http://localhost/ || exit 1
 
+# Switch to the non-root user 'app' defined in the base image
+USER $APP_UID
 ENTRYPOINT dotnet "BDMS.dll"
