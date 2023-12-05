@@ -2,7 +2,7 @@ import { createBorehole, adminUserAuth, login } from "../testHelpers";
 
 const openDropdown = dataCy => {
   cy.get(`[data-cy="${dataCy}"]`)
-    .find('[role="button"]')
+    .find('[role="combobox"]')
     .click({ force: true });
 };
 
