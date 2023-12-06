@@ -93,10 +93,3 @@ export function deleteUser(id) {
     id: id,
   });
 }
-
-export function checkUsername(username) {
-  return fetch("/user/edit", {
-    type: "CHECK",
-    username: username,
-  });
-}
