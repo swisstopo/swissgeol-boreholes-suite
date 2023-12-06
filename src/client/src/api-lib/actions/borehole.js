@@ -48,14 +48,6 @@ export function createBorehole(id = null) {
   });
 }
 
-export function copyBorehole(boreholeId, workgroupId) {
-  return fetch("/borehole/edit", {
-    action: "COPY",
-    borehole: boreholeId,
-    workgroup: workgroupId, // workgroup id
-  });
-}
-
 export function lockBorehole(id) {
   return fetch("/borehole/edit", {
     type: "LOCK",
