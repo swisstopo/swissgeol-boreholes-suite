@@ -67,8 +67,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      REACT_APP_PROXY_HOST_API_v1: http://api-legacy:8888/
-      REACT_APP_PROXY_HOST_API_v2: http://api:5000/
+      REACT_APP_PROXY_HOST_API: http://api:5000/
       WATCHPACK_POLLING: 'true'
   api-legacy:
     build:
