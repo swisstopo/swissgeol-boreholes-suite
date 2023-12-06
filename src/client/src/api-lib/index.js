@@ -3,7 +3,6 @@ import { getHeight, downloadBorehole } from "./actions";
 import {
   loadSettings,
   patchSettings,
-  patchEditorSettings,
   exportDownload,
 } from "./actions/settings";
 
@@ -132,7 +131,6 @@ export {
   downloadBorehole,
   loadSettings,
   patchSettings,
-  patchEditorSettings,
   exportDownload,
   acceptTerms,
   draftTerms,

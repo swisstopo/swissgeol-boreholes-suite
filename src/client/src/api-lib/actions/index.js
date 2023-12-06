@@ -100,10 +100,6 @@ export function downloadBorehole(params) {
   return downloadFile("/api/v1/borehole/download", params);
 }
 
-export function downloadAttachment(params) {
-  return downloadFile("/api/v1/borehole/edit/files", params);
-}
-
 export function fetch(path, action, method = "post", auth = null) {
   const conf = {
     url:
