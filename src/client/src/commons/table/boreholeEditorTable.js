@@ -7,6 +7,7 @@ import DomainText from "../form/domain/domainText";
 import DateText from "../form/dateText";
 import TranslationText from "../form/translationText";
 import { NumericFormat } from "react-number-format";
+import { copyBorehole } from "../../api/fetchApiV2";
 
 import TTable from "./table";
 
@@ -27,8 +28,6 @@ import {
   deleteBoreholes,
 } from "../../api-lib/index";
 import { AlertContext } from "../alert/alertContext";
-import store from "../../reducers";
-import { getBasicAuthHeaderValue } from "../../api/authentication";
 
 class BoreholeEditorTable extends TTable {
   static contextType = AlertContext;
@@ -166,35 +165,20 @@ class BoreholeEditorTable extends TTable {
       }
     }
   }
-  copyBorehole() {
-    const credentials = store.getState().core_user.authentication;
-    fetch(
-      `/api/v2/borehole/copy?id=${this.state.selected[0]}&workgroupId=${this.state.workgroup}`,
-      {
-        method: "POST",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: getBasicAuthHeaderValue(
-            credentials.username,
-            credentials.password,
-          ),
-        },
+  async copyBorehole() {
+    await copyBorehole(this.state.selected[0], this.state.workgroup).then(
+      boreholeId => {
+        this.setState(
+          {
+            copy: false,
+            copying: false,
+          },
+          () => {
+            super.handleClick({ id: boreholeId });
+          },
+        );
       },
-    ).then(r => {
-      this.setState(
-        {
-          copy: false,
-          copying: false,
-        },
-        async () => {
-          if (r.ok) {
-            super.handleClick({ id: await r.text() });
-          }
-        },
-      );
-    });
+    );
   }
   getHeaderLabel(key, disableOrdering = false) {
     const { store } = this.props;
@@ -479,8 +463,8 @@ class BoreholeEditorTable extends TTable {
                         {
                           copying: true,
                         },
-                        () => {
-                          this.copyBorehole();
+                        async () => {
+                          await this.copyBorehole();
                         },
                       );
                     }}
