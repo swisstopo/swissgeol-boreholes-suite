@@ -3,7 +3,9 @@ import DomainText from "../../../../../domain/domainText";
 import { Button } from "semantic-ui-react";
 
 export const Layer = styled.div`
-  box-shadow: inset -1px 0 0 lightgrey, inset 0 -1px 0 lightgrey;
+  box-shadow:
+    inset -1px 0 0 lightgrey,
+    inset 0 -1px 0 lightgrey;
   border-left: 2px solid lightgrey;
 `;
 
