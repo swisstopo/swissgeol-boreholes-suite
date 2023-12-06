@@ -26,7 +26,7 @@ import {
   updateUser,
   disableUser,
   deleteUser,
-  enableUser
+  enableUser,
 } from "./actions/user";
 
 import {
@@ -95,8 +95,6 @@ import {
   patchProfile,
   getLayerAttributes,
 } from "./actions/profile";
-
-import { loadProjects, createProject } from "./actions/project";
 
 import { loadDomains, patchCodeConfig } from "./actions/domains";
 
@@ -182,8 +180,6 @@ export {
   getProfileLayers,
   patchProfile,
   getLayerAttributes,
-  loadProjects,
-  createProject,
   loadDomains,
   patchCodeConfig,
   getWmts,

@@ -171,7 +171,6 @@ if __name__ == "__main__":
         FeedbackHandler,
 
         # Other handlers
-        ProjectHandler,
         CodeListHandler,
         Wmts,
         Wms,

@@ -56,7 +56,6 @@ from bms.v1.borehole.stratigraphy.layer.viewer import LayerViewerHandler
 
 from bms.v1.setting.handler import SettingHandler
 
-from bms.v1.borehole.project.handler import ProjectHandler
 from bms.v1.borehole.codelist.handler import CodeListHandler
 
 
