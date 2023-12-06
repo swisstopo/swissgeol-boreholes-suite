@@ -98,7 +98,7 @@ import {
 
 import { loadDomains, patchCodeConfig } from "./actions/domains";
 
-import { getWmts, getWms } from "./actions/geoapi";
+import { getWms } from "./actions/geoapi";
 
 import { createFeedback } from "./actions/feedback";
 
@@ -182,7 +182,6 @@ export {
   getLayerAttributes,
   loadDomains,
   patchCodeConfig,
-  getWmts,
   getWms,
   createFeedback,
 

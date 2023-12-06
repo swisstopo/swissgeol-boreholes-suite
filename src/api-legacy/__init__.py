@@ -81,7 +81,6 @@ from bms.v1.borehole import GetBorehole
 from bms.v1.borehole import PatchBorehole
 
 # GeoApi actions
-from bms.v1.geoapi import Wmts
 from bms.v1.geoapi import Wms
 
 # User actions
