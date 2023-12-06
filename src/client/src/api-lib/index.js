@@ -1,9 +1,4 @@
-import {
-  // fetch,
-  getHeight,
-  downloadBorehole,
-  downloadAttachment,
-} from "./actions";
+import { getHeight, downloadBorehole } from "./actions";
 
 import {
   loadSettings,
@@ -135,7 +130,6 @@ import store, {
 export {
   getHeight,
   downloadBorehole,
-  downloadAttachment,
   loadSettings,
   patchSettings,
   patchEditorSettings,
