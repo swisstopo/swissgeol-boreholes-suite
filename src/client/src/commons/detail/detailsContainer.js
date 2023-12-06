@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import _ from "lodash";
 import DetailsComponent from "./detailsComponent";
 
-import { getBorehole, getStratigraphiesByBorehole } from "../../api-lib/index";
+import { getBorehole } from "../../api-lib/index";
 
 class DetailsContainer extends React.Component {
   componentDidMount() {
@@ -68,23 +68,6 @@ const mapDispatchToProps = dispatch => {
                 type: "GETBOREHOLEDETAILS_OK",
                 borehole: response.data.data,
               });
-              getStratigraphiesByBorehole(id)
-                .then(function (response) {
-                  if (response.data.success) {
-                    dispatch({
-                      type: "GET_BOREHOLE_STRATIGRAPHIES_OK",
-                      stratigraphies: response.data.data,
-                    });
-                  } else {
-                    dispatch({
-                      type: "GET_BOREHOLE_STRATIGRAPHIES_ERROR",
-                      message: response.message,
-                    });
-                  }
-                })
-                .catch(function (error) {
-                  console.log(error);
-                });
             } else {
               dispatch({
                 type: "GETBOREHOLEDETAILS_ERROR",

@@ -76,7 +76,6 @@ import {
 } from "./actions/workflow";
 
 import {
-  getStratigraphiesByBorehole,
   createStratigraphy,
   deleteStratigraphy,
   addBedrock,
@@ -165,7 +164,6 @@ export {
   submitWorkflow,
   rejectWorkflow,
   resetWorkflow,
-  getStratigraphiesByBorehole,
   createStratigraphy,
   deleteStratigraphy,
   addBedrock,

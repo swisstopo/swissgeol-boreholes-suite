@@ -1,14 +1,5 @@
 import { fetch } from "./index";
 
-export function getStratigraphiesByBorehole(id) {
-  return fetch("/borehole/stratigraphy", {
-    action: "LIST",
-    filter: {
-      borehole: id,
-    },
-  });
-}
-
 // Create a new stratigraphy for the given borehole id
 export function createStratigraphy(id, kind = null) {
   return fetch("/borehole/stratigraphy/edit", {
