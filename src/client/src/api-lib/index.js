@@ -92,7 +92,6 @@ import {
   getProfile,
   getProfiles,
   getProfileLayers,
-  getProfileLayersGroups,
   patchProfile,
   getLayerAttributes,
 } from "./actions/profile";
@@ -181,7 +180,6 @@ export {
   getProfile,
   getProfiles,
   getProfileLayers,
-  getProfileLayersGroups,
   patchProfile,
   getLayerAttributes,
   loadProjects,

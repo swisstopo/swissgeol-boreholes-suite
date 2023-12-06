@@ -2,7 +2,6 @@
 from bms.v1.handlers import Viewer
 from bms.v1.borehole.profile.layer import (
     ListLayers,
-    ListGroupedLayers,
     GetLayer,
 )
 
@@ -11,7 +10,7 @@ class ProfileLayerViewerHandler(Viewer):
     async def execute(self, request):
         action = request.pop('action', None)
 
-        if action in ['LIST', 'GET', 'LISTGROUPED']:
+        if action in ['LIST', 'GET']:
 
             async with self.pool.acquire() as conn:
 
@@ -24,9 +23,6 @@ class ProfileLayerViewerHandler(Viewer):
 
                 elif action == 'LIST':
                     exe = ListLayers(conn)
-
-                elif action == 'LISTGROUPED':
-                    exe = ListGroupedLayers(conn)
 
                 request.pop('lang', None)
 
