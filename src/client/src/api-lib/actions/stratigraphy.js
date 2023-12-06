@@ -1,18 +1,5 @@
 import { fetch } from "./index";
 
-export function loadStratigraphies(
-  page = undefined,
-  limit = undefined,
-  filter = undefined,
-) {
-  return fetch("/borehole/stratigraphy", {
-    type: "LIST",
-    page: page,
-    limit: limit,
-    filter: filter,
-  });
-}
-
 export function getStratigraphies(borehole, kind) {
   return fetch("/borehole/stratigraphy", {
     action: "LIST",

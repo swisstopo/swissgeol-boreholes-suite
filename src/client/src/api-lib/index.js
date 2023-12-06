@@ -76,7 +76,6 @@ import {
 } from "./actions/workflow";
 
 import {
-  loadStratigraphies,
   getStratigraphies,
   getStratigraphiesByBorehole,
   getStratigraphy,
@@ -173,7 +172,6 @@ export {
   submitWorkflow,
   rejectWorkflow,
   resetWorkflow,
-  loadStratigraphies,
   getStratigraphies,
   getStratigraphiesByBorehole,
   getStratigraphy,
