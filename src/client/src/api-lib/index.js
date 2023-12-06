@@ -1,7 +1,6 @@
 import {
   // fetch,
   getHeight,
-  uploadFile,
   downloadBorehole,
   downloadAttachment,
 } from "./actions";
@@ -135,7 +134,6 @@ import store, {
 
 export {
   getHeight,
-  uploadFile,
   downloadBorehole,
   downloadAttachment,
   loadSettings,
