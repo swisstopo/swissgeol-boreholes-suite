@@ -1,10 +1,6 @@
 import { getHeight, downloadBorehole } from "./actions";
 
-import {
-  loadSettings,
-  patchSettings,
-  exportDownload,
-} from "./actions/settings";
+import { loadSettings, patchSettings } from "./actions/settings";
 
 import {
   acceptTerms,
@@ -131,7 +127,6 @@ export {
   downloadBorehole,
   loadSettings,
   patchSettings,
-  exportDownload,
   acceptTerms,
   draftTerms,
   getTerms,
