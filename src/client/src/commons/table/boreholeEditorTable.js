@@ -384,10 +384,10 @@ class BoreholeEditorTable extends TTable {
               {all === true
                 ? t("common:allSelected")
                 : selected.length === 1
-                ? t("common:oneSelected")
-                : t("common:someSelected", {
-                    howMany: selected.length,
-                  })}
+                  ? t("common:oneSelected")
+                  : t("common:someSelected", {
+                      howMany: selected.length,
+                    })}
             </span>{" "}
             (
             <span

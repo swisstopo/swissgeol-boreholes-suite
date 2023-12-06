@@ -194,16 +194,16 @@ const BoreholeDetailSegment = props => {
                 borehole.data.extended.groundwater === true
                   ? "TRUE"
                   : borehole.data.extended.groundwater === false
-                  ? "FALSE"
-                  : "NULL"
+                    ? "FALSE"
+                    : "NULL"
               }
               onChange={e => {
                 let value =
                   e.target.value === "TRUE"
                     ? true
                     : e.target.value === "FALSE"
-                    ? false
-                    : null;
+                      ? false
+                      : null;
                 updateChange("extended.groundwater", value, false);
               }}>
               <FormControlLabel

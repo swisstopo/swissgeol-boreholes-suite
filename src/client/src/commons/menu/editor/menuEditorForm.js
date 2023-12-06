@@ -847,12 +847,12 @@ class MenuEditorForm extends React.Component {
                       ")"
                     : borehole.data.lock.fullname
                   : borehole.data.updater.username ===
-                    this.props.user.data.username
-                  ? borehole.data.updater.fullname +
-                    " (" +
-                    t("common:you") +
-                    ")"
-                  : borehole.data.updater.fullname}
+                      this.props.user.data.username
+                    ? borehole.data.updater.fullname +
+                      " (" +
+                      t("common:you") +
+                      ")"
+                    : borehole.data.updater.fullname}
               </div>
               <div
                 style={{
@@ -918,8 +918,8 @@ class MenuEditorForm extends React.Component {
                 this.state.timeout >= 90
                   ? "red"
                   : this.state.timeout >= 80
-                  ? "orange"
-                  : "black"
+                    ? "orange"
+                    : "black"
               }
               percent={this.state.timeout}
               size="tiny"

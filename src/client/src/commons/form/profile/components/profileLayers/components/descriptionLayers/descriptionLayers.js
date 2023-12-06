@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, createRef } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
-import produce from "immer";
+import { produce } from "immer";
 import { useTranslation } from "react-i18next";
 import DescriptionInput from "./descriptionInput";
 import DescriptionDisplay from "./descriptionDisplay";
