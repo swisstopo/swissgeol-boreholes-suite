@@ -67,7 +67,6 @@ import {
 } from "./actions/identifier";
 
 import {
-  getWorkflows,
   loadWorkflows,
   patchWorkflow,
   updateWorkflow,
@@ -168,7 +167,6 @@ export {
   updateIdentifier,
   addIdentifier,
   removeIdentifier,
-  getWorkflows,
   loadWorkflows,
   patchWorkflow,
   updateWorkflow,
