@@ -18,15 +18,6 @@ export function createStratigraphy(id, kind = null) {
   });
 }
 
-export function patchStratigraphy(id, field, value) {
-  return fetch("/borehole/stratigraphy/edit", {
-    action: "PATCH",
-    id: id,
-    field: field,
-    value: value,
-  });
-}
-
 export function deleteStratigraphy(id) {
   return fetch("/borehole/stratigraphy/edit", {
     action: "DELETE",

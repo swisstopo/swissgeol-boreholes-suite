@@ -78,7 +78,6 @@ import {
 import {
   getStratigraphiesByBorehole,
   createStratigraphy,
-  patchStratigraphy,
   deleteStratigraphy,
   addBedrock,
   createLayer,
@@ -172,7 +171,6 @@ export {
   resetWorkflow,
   getStratigraphiesByBorehole,
   createStratigraphy,
-  patchStratigraphy,
   deleteStratigraphy,
   addBedrock,
   createLayer,
