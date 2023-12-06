@@ -24,8 +24,7 @@ from bms.v1.borehole import (
     MultiPatchBorehole,
     PatchBorehole,
     BoreholeIds,
-    EditingListFilesBorehole,
-    CopyBorehole
+    EditingListFilesBorehole
 )
 from bms.v1.setting import (
     PatchSetting
@@ -152,10 +151,6 @@ class BoreholeProducerHandler(Producer):
 
                 if action == 'CREATE':
                     exe = CreateBorehole(conn)
-                    request['user'] = self.user
-
-                elif action == 'COPY':
-                    exe = CopyBorehole(conn)
                     request['user'] = self.user
 
                 elif action == 'LOCK':

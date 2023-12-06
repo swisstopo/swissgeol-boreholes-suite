@@ -1,19 +1,5 @@
 import { fetch } from "./index";
 
-export function getWmts(language = "en") {
-  return fetch(
-    "/geoapi/wmts",
-    {
-      action: "WMTS_GETCAPABILITIES",
-      params: {
-        lang: language,
-      },
-    },
-    "get",
-  );
-}
-
-// export function getWms(language = 'en', auth = null){
 export function getWms(language = "en", url) {
   return fetch(
     "/geoapi/wms/swisstopo",
@@ -25,6 +11,6 @@ export function getWms(language = "en", url) {
         url: url,
       },
     },
-    "get", //, auth
+    "get",
   );
 }

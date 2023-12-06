@@ -123,7 +123,6 @@ if __name__ == "__main__":
 
         # Exceptions
         BmsDatabaseException,
-        DatabaseVersionMissmatch,
 
         # user handlers
         SettingHandler,
@@ -171,9 +170,7 @@ if __name__ == "__main__":
         FeedbackHandler,
 
         # Other handlers
-        ProjectHandler,
         CodeListHandler,
-        Wmts,
         Wms,
     )
 
@@ -240,7 +237,6 @@ if __name__ == "__main__":
 
         # Other handlers
         (r'/api/v1/borehole/codes', CodeListHandler),
-        (r"/api/v1/geoapi/wmts", Wmts),
         (r"/api/v1/geoapi/wms/swisstopo", Wms),
 
     ], **settings)

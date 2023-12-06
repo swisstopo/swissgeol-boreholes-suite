@@ -12,13 +12,6 @@ class BmsDatabaseException(BmsException):
     def __init__(self, *arg, **args):
         super().__init__(*arg, **args)
 
-class DatabaseVersionMissmatch(BmsDatabaseException):
-    def __init__(self, source_version, database_version):
-        super().__init__(
-            f"Database version (v{database_version}) missmatch. service-bdms requires (v{source_version})",
-            'E-010'
-        )
-
 class ActionWrong(BmsException):
     def __init__(self):
         super().__init__("Server error", 'E-000')

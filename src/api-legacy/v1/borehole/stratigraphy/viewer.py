@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from bms.v1.handlers import Viewer
 from bms.v1.borehole.stratigraphy import (
-    ListStratigraphies,
-    GetStratigraphy
+    ListStratigraphies
 )
 
 
@@ -20,11 +19,8 @@ class StratigraphyViewerHandler(Viewer):
                 exe = None
 
                 request['user'] = self.user
-                
-                if action == 'GET':
-                    exe = GetStratigraphy(conn)
 
-                elif action == 'LIST':
+                if action == 'LIST':
                     exe = ListStratigraphies(conn)
 
                 request.pop('lang', None)

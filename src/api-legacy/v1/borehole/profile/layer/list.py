@@ -5,47 +5,6 @@ from bms.v1.borehole.get import GetBorehole
 from bms.v1.borehole.profile import ValidateProfile
 from bms.v1.borehole.profile.get import GetProfile
 
-
-class ListGroupedLayers(Action):
-
-    async def execute(self, borehole: int, kinds: List[int] = None, user=None):
-
-        _KINDS = {
-            3000: "stratigraphy",
-            3002: "casing",
-            3003: "instrument",
-            3004: "filling",
-        }
-
-        if kinds is None:
-            kinds = [3000, 3001, 3002, 3003, 3004]
-        
-        # Load the main profiles for the given borehole
-        profiles = await self.conn.fetch(f"""
-            SELECT
-                id_sty,
-                kind_id_cli
-            FROM
-                bdms.stratigraphy
-            WHERE
-                id_bho_fk = $1
-            AND
-                kind_id_cli = ANY($2)
-            ORDER BY
-                kind_id_cli
-        """, borehole, kinds)
-
-        result = {}
-
-        for profile in profiles:
-            if _KINDS[profile[1]] not in result:
-                result[_KINDS[profile[1]]] = await ListLayers(self.conn).execute(
-                    profile[0], withValidation=False, user=user
-                )
-
-        return result
-
-
 class ListLayers(Action):
     sql = """
         SELECT
