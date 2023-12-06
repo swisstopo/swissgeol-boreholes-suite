@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-import produce from "immer";
+import { produce } from "immer";
 
 import DomainDropdown from "../domain/dropdown/domainDropdown";
 import DomainTree from "../domain/tree/domainTree";
