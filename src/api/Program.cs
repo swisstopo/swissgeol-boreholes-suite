@@ -119,6 +119,11 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
     return new AmazonS3Client(accessKey, secretKey, clientConfig);
 });
 
+builder.Services.AddScoped<LegacyApiAuthenticationMiddleware>();
+builder.Services
+    .AddReverseProxy()
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+
 var app = builder.Build();
 
 // Migrate db changes on startup
@@ -140,7 +145,9 @@ app.UseSwaggerUI(options =>
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<LegacyApiAuthenticationMiddleware>();
 
 app.MapControllers();
+app.MapReverseProxy();
 
 app.Run();
