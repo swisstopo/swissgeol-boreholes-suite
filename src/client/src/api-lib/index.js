@@ -84,7 +84,6 @@ import {
   createInstrument,
   deleteLayer,
   gapLayer,
-  loadLayers,
   getLayers,
   patchLayer,
 } from "./actions/stratigraphy";
@@ -177,7 +176,6 @@ export {
   createInstrument,
   deleteLayer,
   gapLayer,
-  loadLayers,
   getLayers,
   patchLayer,
   getProfile,

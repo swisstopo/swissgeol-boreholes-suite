@@ -33,13 +33,6 @@ export function addBedrock(id) {
   });
 }
 
-export function loadLayers(id) {
-  return fetch("/borehole/stratigraphy/layer", {
-    type: "LIST",
-    id: id, // stratigrafy id
-  });
-}
-
 export function getLayers(id) {
   return fetch("/borehole/stratigraphy/layer", {
     action: "LIST",
