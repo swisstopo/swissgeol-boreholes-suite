@@ -123,7 +123,6 @@ if __name__ == "__main__":
 
         # Exceptions
         BmsDatabaseException,
-        DatabaseVersionMissmatch,
 
         # user handlers
         SettingHandler,
