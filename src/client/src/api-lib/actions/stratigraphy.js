@@ -9,14 +9,6 @@ export function getStratigraphiesByBorehole(id) {
   });
 }
 
-// Load an existing stratigraphy given its id
-export function getStratigraphy(id) {
-  return fetch("/borehole/stratigraphy", {
-    action: "GET",
-    id: id,
-  });
-}
-
 // Create a new stratigraphy for the given borehole id
 export function createStratigraphy(id, kind = null) {
   return fetch("/borehole/stratigraphy/edit", {

@@ -77,7 +77,6 @@ import {
 
 import {
   getStratigraphiesByBorehole,
-  getStratigraphy,
   createStratigraphy,
   patchStratigraphy,
   deleteStratigraphy,
@@ -172,7 +171,6 @@ export {
   rejectWorkflow,
   resetWorkflow,
   getStratigraphiesByBorehole,
-  getStratigraphy,
   createStratigraphy,
   patchStratigraphy,
   deleteStratigraphy,
