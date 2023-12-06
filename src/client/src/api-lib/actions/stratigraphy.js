@@ -1,15 +1,5 @@
 import { fetch } from "./index";
 
-export function getStratigraphies(borehole, kind) {
-  return fetch("/borehole/stratigraphy", {
-    action: "LIST",
-    filter: {
-      borehole: borehole,
-      kind: kind,
-    },
-  });
-}
-
 export function getStratigraphiesByBorehole(id) {
   return fetch("/borehole/stratigraphy", {
     action: "LIST",
