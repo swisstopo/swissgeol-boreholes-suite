@@ -42,12 +42,6 @@ export function listWorkgroups() {
   });
 }
 
-export function getWorkgroups() {
-  return fetch("/user/workgroup/edit", {
-    action: "LIST",
-  });
-}
-
 export function setRole(user_id, workgroup_id, role_name, activateRole = true) {
   return fetch("/user/workgroup/edit", {
     action: "SET",

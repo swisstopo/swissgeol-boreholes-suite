@@ -35,7 +35,6 @@ import {
   disableWorkgroup,
   deleteWorkgroup,
   listWorkgroups,
-  getWorkgroups,
   setRole,
   updateWorkgroup,
 } from "./actions/workgroups";
@@ -148,7 +147,6 @@ export {
   disableWorkgroup,
   deleteWorkgroup,
   listWorkgroups,
-  getWorkgroups,
   setRole,
   updateWorkgroup,
   getBorehole,
