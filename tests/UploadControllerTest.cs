@@ -47,7 +47,6 @@ public class UploadControllerTest
 
         var s3ClientMock = new AmazonS3Client(configuration["S3:ACCESS_KEY"], configuration["S3:SECRET_KEY"], new AmazonS3Config()
         {
-            AuthenticationRegion = configuration["S3:REGION"],
             ServiceURL = configuration["S3:ENDPOINT"],
             ForcePathStyle = true,
             UseHttp = configuration["S3:SECURE"] == "0",

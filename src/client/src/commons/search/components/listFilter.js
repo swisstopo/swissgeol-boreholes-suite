@@ -158,6 +158,12 @@ const ListFilter = props => {
       updateChange("reference_elevation_to", "", false);
     } else if (item.value === "created_date_to") {
       resetCreatedDate();
+    } else if (item.value === "qt_top_bedrock_to") {
+      updateChange("qt_top_bedrock_from", "", false);
+      updateChange("qt_top_bedrock_to", "", false);
+    } else if (item.value === "qt_top_bedrock_tvd_to") {
+      updateChange("qt_top_bedrock_tvd_from", "", false);
+      updateChange("qt_top_bedrock_tvd_to", "", false);
     }
   };
 

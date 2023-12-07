@@ -234,29 +234,29 @@ const CoordinatesSegment = props => {
       currentFieldName === referenceSystems.LV95.fieldName.X
         ? value
         : LV95XFormValue
-        ? parseIfString(LV95XFormValue)
-        : null;
+          ? parseIfString(LV95XFormValue)
+          : null;
 
     const LV95Y =
       currentFieldName === referenceSystems.LV95.fieldName.Y
         ? value
         : LV95XFormValue
-        ? parseIfString(LV95YFormValue)
-        : null;
+          ? parseIfString(LV95YFormValue)
+          : null;
 
     const LV03X =
       currentFieldName === referenceSystems.LV03.fieldName.X
         ? value
         : LV03XFormValue
-        ? parseIfString(LV03XFormValue)
-        : null;
+          ? parseIfString(LV03XFormValue)
+          : null;
 
     const LV03Y =
       currentFieldName === referenceSystems.LV03.fieldName.Y
         ? value
         : LV03XFormValue
-        ? parseIfString(LV03YFormValue)
-        : null;
+          ? parseIfString(LV03YFormValue)
+          : null;
 
     return {
       LV95: {

@@ -80,6 +80,13 @@ export const importBoreholes = async (workgroupId, combinedFormData) => {
   );
 };
 
+export const copyBorehole = async (boreholeId, workgroupId) => {
+  return await fetchApiV2(
+    `borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`,
+    "POST",
+  );
+};
+
 // layers
 export const fetchLayerById = async id =>
   await fetchApiV2(`layer/${id}`, "GET");

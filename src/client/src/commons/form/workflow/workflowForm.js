@@ -303,8 +303,8 @@ class WorkflowForm extends React.Component {
                                 status[role].finished === null
                                   ? "orange"
                                   : current === true
-                                  ? "red"
-                                  : "green"
+                                    ? "red"
+                                    : "green"
                               }
                             />
                           </div>

@@ -67,16 +67,16 @@ const RestrictionSegment = props => {
                   borehole.data.national_interest === true
                     ? "TRUE"
                     : borehole.data.national_interest === false
-                    ? "FALSE"
-                    : "NULL"
+                      ? "FALSE"
+                      : "NULL"
                 }
                 onChange={e => {
                   let value =
                     e.target.value === "TRUE"
                       ? true
                       : e.target.value === "FALSE"
-                      ? false
-                      : null;
+                        ? false
+                        : null;
                   updateChange("national_interest", value, false);
                 }}>
                 <FormControlLabel

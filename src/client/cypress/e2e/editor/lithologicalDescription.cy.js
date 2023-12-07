@@ -58,7 +58,7 @@ describe("Tests for the lithological description column.", () => {
 
     // fill quality dropdown
     cy.get('[data-cy="qt-decription-select"]')
-      .find('[role="button"]')
+      .find('[role="combobox"]')
       .click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
@@ -83,7 +83,7 @@ describe("Tests for the lithological description column.", () => {
 
     // fill to depth dropdown
     cy.get('[data-cy="to-depth-select"]')
-      .find('[role="button"]')
+      .find('[role="combobox"]')
       .click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')

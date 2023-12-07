@@ -31,7 +31,7 @@ describe("Test for the borehole form.", () => {
     // fill all dropdowns on borehole tab
     cy.get('[data-cy="borehole-menu-item"]').click();
     cy.get('[data-cy="domain-dropdown"]')
-      .should("have.length", 10)
+      .should("have.length", 8)
       .each((el, index, list) =>
         cy.wrap(el).click().find('[role="option"]').eq(1).click(),
       );

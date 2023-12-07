@@ -1,17 +1,6 @@
-import {
-  // fetch,
-  getHeight,
-  uploadFile,
-  downloadBorehole,
-  downloadAttachment,
-} from "./actions";
+import { getHeight, downloadBorehole } from "./actions";
 
-import {
-  loadSettings,
-  patchSettings,
-  patchEditorSettings,
-  exportDownload,
-} from "./actions/settings";
+import { loadSettings, patchSettings } from "./actions/settings";
 
 import {
   acceptTerms,
@@ -38,7 +27,6 @@ import {
   disableUser,
   deleteUser,
   enableUser,
-  checkUsername,
 } from "./actions/user";
 
 import {
@@ -47,8 +35,6 @@ import {
   disableWorkgroup,
   deleteWorkgroup,
   listWorkgroups,
-  getWorkgroups,
-  listSuppliers,
   setRole,
   updateWorkgroup,
 } from "./actions/workgroups";
@@ -58,11 +44,9 @@ import {
   updateBorehole,
   loadBorehole,
   loadBoreholes,
-  loadBoreholeIds,
   getdBoreholeIds,
   loadEditingBoreholes,
   createBorehole,
-  copyBorehole,
   lockBorehole,
   unlockBorehole,
   editBorehole,
@@ -83,7 +67,6 @@ import {
 } from "./actions/identifier";
 
 import {
-  getWorkflows,
   loadWorkflows,
   patchWorkflow,
   updateWorkflow,
@@ -93,19 +76,14 @@ import {
 } from "./actions/workflow";
 
 import {
-  loadStratigraphies,
-  getStratigraphies,
   getStratigraphiesByBorehole,
-  getStratigraphy,
   createStratigraphy,
-  patchStratigraphy,
   deleteStratigraphy,
   addBedrock,
   createLayer,
   createInstrument,
   deleteLayer,
   gapLayer,
-  loadLayers,
   getLayers,
   patchLayer,
 } from "./actions/stratigraphy";
@@ -114,16 +92,13 @@ import {
   getProfile,
   getProfiles,
   getProfileLayers,
-  getProfileLayersGroups,
   patchProfile,
   getLayerAttributes,
 } from "./actions/profile";
 
-import { loadProjects, createProject } from "./actions/project";
-
 import { loadDomains, patchCodeConfig } from "./actions/domains";
 
-import { getWmts, getWms } from "./actions/geoapi";
+import { getWms } from "./actions/geoapi";
 
 import { createFeedback } from "./actions/feedback";
 
@@ -135,13 +110,9 @@ import store, {
 
 export {
   getHeight,
-  uploadFile,
   downloadBorehole,
-  downloadAttachment,
   loadSettings,
   patchSettings,
-  patchEditorSettings,
-  exportDownload,
   acceptTerms,
   draftTerms,
   getTerms,
@@ -160,14 +131,11 @@ export {
   disableUser,
   deleteUser,
   enableUser,
-  checkUsername,
   createWorkgroup,
   enableWorkgroup,
   disableWorkgroup,
   deleteWorkgroup,
   listWorkgroups,
-  getWorkgroups,
-  listSuppliers,
   setRole,
   updateWorkgroup,
   getBorehole,
@@ -175,10 +143,8 @@ export {
   updateBorehole,
   loadBoreholes,
   loadEditingBoreholes,
-  loadBoreholeIds,
   getdBoreholeIds,
   createBorehole,
-  copyBorehole,
   lockBorehole,
   unlockBorehole,
   editBorehole,
@@ -193,39 +159,29 @@ export {
   updateIdentifier,
   addIdentifier,
   removeIdentifier,
-  getWorkflows,
   loadWorkflows,
   patchWorkflow,
   updateWorkflow,
   submitWorkflow,
   rejectWorkflow,
   resetWorkflow,
-  loadStratigraphies,
-  getStratigraphies,
   getStratigraphiesByBorehole,
-  getStratigraphy,
   createStratigraphy,
-  patchStratigraphy,
   deleteStratigraphy,
   addBedrock,
   createLayer,
   createInstrument,
   deleteLayer,
   gapLayer,
-  loadLayers,
   getLayers,
   patchLayer,
   getProfile,
   getProfiles,
   getProfileLayers,
-  getProfileLayersGroups,
   patchProfile,
   getLayerAttributes,
-  loadProjects,
-  createProject,
   loadDomains,
   patchCodeConfig,
-  getWmts,
   getWms,
   createFeedback,
 

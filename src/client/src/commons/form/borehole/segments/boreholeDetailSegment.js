@@ -122,19 +122,24 @@ const BoreholeDetailSegment = props => {
             <label>
               <TranslationText id="qt_top_bedrock" />
             </label>
-            <DomainDropdown
-              onSelected={selected => {
-                updateChange("custom.qt_top_bedrock", selected.id, false);
+            <NumericFormat
+              autoCapitalize="off"
+              autoComplete="off"
+              autoCorrect="off"
+              onChange={e => {
+                updateNumber(
+                  "custom.qt_top_bedrock",
+                  e.target.value === "" ? null : parseIfString(e.target.value),
+                );
               }}
-              schema="custom.qt_top_bedrock"
-              selected={borehole.data.custom.qt_top_bedrock}
+              spellCheck="false"
+              value={borehole.data.custom.qt_top_bedrock}
+              thousandSeparator="'"
             />
           </Form.Field>
         </Form.Group>
         <Form.Group widths="equal">
-          <Form.Field
-            // error={borehole.extended.top_bedrock_tvd === true}
-            required>
+          <Form.Field required>
             <label>
               <TranslationText id="top_bedrock_tvd" />
             </label>
@@ -162,12 +167,19 @@ const BoreholeDetailSegment = props => {
             <label>
               <TranslationText id="top_bedrock_tvd_qt" />
             </label>
-            <DomainDropdown
-              onSelected={selected => {
-                updateChange("custom.qt_top_bedrock_tvd", selected.id, false);
+            <NumericFormat
+              autoCapitalize="off"
+              autoComplete="off"
+              autoCorrect="off"
+              onChange={e => {
+                updateNumber(
+                  "custom.qt_top_bedrock_tvd",
+                  e.target.value === "" ? null : parseIfString(e.target.value),
+                );
               }}
-              schema="custom.qt_top_bedrock"
-              selected={borehole.data.custom.qt_top_bedrock_tvd}
+              spellCheck="false"
+              value={borehole.data.custom.qt_top_bedrock_tvd}
+              thousandSeparator="'"
             />
           </Form.Field>
         </Form.Group>
@@ -182,16 +194,16 @@ const BoreholeDetailSegment = props => {
                 borehole.data.extended.groundwater === true
                   ? "TRUE"
                   : borehole.data.extended.groundwater === false
-                  ? "FALSE"
-                  : "NULL"
+                    ? "FALSE"
+                    : "NULL"
               }
               onChange={e => {
                 let value =
                   e.target.value === "TRUE"
                     ? true
                     : e.target.value === "FALSE"
-                    ? false
-                    : null;
+                      ? false
+                      : null;
                 updateChange("extended.groundwater", value, false);
               }}>
               <FormControlLabel

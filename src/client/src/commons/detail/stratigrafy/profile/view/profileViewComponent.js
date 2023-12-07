@@ -229,8 +229,8 @@ const ProfileView = props => {
                 layer.isLast === true
                   ? t("common:yes")
                   : layer.isLast === false
-                  ? t("common:no")
-                  : null,
+                    ? t("common:no")
+                    : null,
               )}
               {getDomainRow(layer.qtDescription, "qt_description")}
 
@@ -271,8 +271,8 @@ const ProfileView = props => {
                 layer.isStriae === true
                   ? t("common:yes")
                   : layer.isStriae === false
-                  ? t("common:no")
-                  : null,
+                    ? t("common:no")
+                    : null,
               )}
               {getDomainRowMultiple(
                 layer.codelists.filter(c => c.schema === "mlpr112"),

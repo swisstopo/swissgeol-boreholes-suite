@@ -2,7 +2,6 @@
 
 # Actions
 from bms.v1.borehole.profile.layer.list import (
-    ListGroupedLayers,
     ListLayers, 
     ListGeologyLayers,
     ListGeotechnicalLayers

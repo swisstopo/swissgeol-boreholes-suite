@@ -3,7 +3,6 @@ from bms.v1.handlers import Producer
 from bms.v1.borehole.stratigraphy import (
     AddBedrock,
     CreateStratigraphy,
-    PatchStartigraphy,
     DeleteStratigraphy,
     CloneStratigraphy
 )
@@ -18,8 +17,7 @@ class StratigraphyProducerHandler(Producer):
             'CHECK',
             'CLONE',
             'CREATE',
-            'DELETE',
-            'PATCH'
+            'DELETE'
         ]:
 
             async with self.pool.acquire() as conn:
@@ -40,8 +38,7 @@ class StratigraphyProducerHandler(Producer):
                     'ADDBEDROCK',
                     'CHECK',
                     'CLONE', 
-                    'DELETE',
-                    'PATCH',
+                    'DELETE'
                 ]:
                     # Get Borehole id
                     id_bho = await conn.fetchval("""
@@ -68,10 +65,6 @@ class StratigraphyProducerHandler(Producer):
 
                 elif action == 'DELETE':
                     exe = DeleteStratigraphy(conn)
-                    request['user_id'] = self.user['id']
-
-                elif action == 'PATCH':
-                    exe = PatchStartigraphy(conn)
                     request['user_id'] = self.user['id']
 
                 elif action == 'CLONE':
