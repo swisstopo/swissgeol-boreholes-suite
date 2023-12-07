@@ -54,13 +54,11 @@ class StratigraphiesComponent extends React.Component {
         render: () => (
           <div
             style={{
-              // flexGrow: 1,
               overflowY: "auto",
               height: "100%",
               border: "1px solid #D4D4D5",
               borderTop: "none",
               padding: "1em",
-              // border: 'thin solid #cecece'
             }}>
             <MetaComponent data={data.borehole} />
           </div>
@@ -68,12 +66,7 @@ class StratigraphiesComponent extends React.Component {
       },
       {
         menuItem: (
-          <Menu.Item
-            key={"str-tb-attachments"}
-            // style={{
-            //   color: '#2185d0'
-            // }}
-          >
+          <Menu.Item key={"str-tb-attachments"}>
             <div>
               <TranslationText id="attachments" />
               <br />
@@ -95,7 +88,6 @@ class StratigraphiesComponent extends React.Component {
               border: "1px solid #D4D4D5",
               borderTop: "none",
               padding: "1em",
-              // border: 'thin solid #cecece'
             }}>
             {data.borehole.attachments === 0 ? (
               "Empty"
@@ -128,7 +120,7 @@ class StratigraphiesComponent extends React.Component {
                       }}
                       options={data.borehole.stratigraphy.map(
                         (ditem, idx2) => ({
-                          value: idx2, // ditem.id,
+                          value: idx2,
                           selected: ditem.id === item.id,
                           text: (
                             <div>
@@ -175,13 +167,11 @@ class StratigraphiesComponent extends React.Component {
             render: () => (
               <div
                 style={{
-                  // flexGrow: 1,
                   overflow: "hidden",
                   height: "100%",
                   border: "1px solid #D4D4D5",
                   borderTop: "none",
                   padding: "1em",
-                  // border: 'thin solid #cecece'
                 }}>
                 <ProfileContainer id={item.id} stratigraphy={item} />
               </div>
@@ -192,7 +182,6 @@ class StratigraphiesComponent extends React.Component {
     return (
       <div
         style={{
-          // flex: "1 1 100%",
           flexGrow: 1,
           overflow: "hidden",
           height: "100%",
