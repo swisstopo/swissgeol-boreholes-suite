@@ -2,16 +2,20 @@
 
 namespace BDMS.Authentication;
 
+/// <summary>
+/// Middleware to authenticate requests to the legacy api before proxying.
+/// </summary>
+/// <param name="logger">The logger for the instance.</param>
 public class LegacyApiAuthenticationMiddleware(ILogger<LegacyApiAuthenticationMiddleware> logger) : IMiddleware
 {
     private readonly ILogger<LegacyApiAuthenticationMiddleware> logger = logger;
 
+    /// <inheritdoc/>
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        Claim? userName;
         if (context.Request.Path.StartsWithSegments(new PathString("/api/v1"), StringComparison.OrdinalIgnoreCase))
         {
-            userName = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+            var userName = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
             if (userName is not null)
             {
                 context.Request.Headers.Authorization = userName.Value;
