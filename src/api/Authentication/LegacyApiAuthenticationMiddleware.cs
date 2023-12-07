@@ -2,14 +2,9 @@
 
 namespace BDMS.Authentication;
 
-public class LegacyApiAuthenticationMiddleware : IMiddleware
+public class LegacyApiAuthenticationMiddleware(ILogger<LegacyApiAuthenticationMiddleware> logger) : IMiddleware
 {
-    private ILogger<LegacyApiAuthenticationMiddleware> logger;
-
-    public LegacyApiAuthenticationMiddleware(ILogger<LegacyApiAuthenticationMiddleware> logger)
-    {
-        this.logger = logger;
-    }
+    private readonly ILogger<LegacyApiAuthenticationMiddleware> logger = logger;
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -24,7 +19,7 @@ public class LegacyApiAuthenticationMiddleware : IMiddleware
                 await next.Invoke(context).ConfigureAwait(false);
 
                 logger.LogInformation("Authorized user <{UserName}> for legacy api accessing route <{Route}>", userName.Value, context.Request.Path);
-                return;    
+                return;
             }
         }
 
