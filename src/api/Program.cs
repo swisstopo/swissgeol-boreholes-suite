@@ -133,8 +133,6 @@ using var context = scope.ServiceProvider.GetRequiredService<BdmsContext>();
     }
 }
 
-scope.Dispose();
-
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
