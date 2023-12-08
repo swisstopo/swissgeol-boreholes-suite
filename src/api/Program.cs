@@ -122,9 +122,9 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
 var app = builder.Build();
 
 // Migrate db changes on startup
+using var scope = app.Services.CreateScope();
+using var context = scope.ServiceProvider.GetRequiredService<BdmsContext>();
 {
-    using var scope = app.Services.CreateScope();
-    using var context = scope.ServiceProvider.GetRequiredService<BdmsContext>();
     context.Database.Migrate();
 
     if (app.Environment.IsDevelopment())
@@ -132,6 +132,8 @@ var app = builder.Build();
         context.EnsureSeeded();
     }
 }
+
+scope.Dispose();
 
 app.UseSwagger();
 app.UseSwaggerUI(options =>
