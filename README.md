@@ -34,7 +34,7 @@ Falls doch lokal gearbeitet werden soll, kann [nvm](https://github.com/coreybutl
 🚀Hot Reload bei Änderungen im Python Code der Tornado REST API (`v1`)  
 🚀Hot Reload bei Änderungen im C# Code der .NET REST API (`v2`)
 
-❌Der Debug Output der Tornado REST API ist aktuell in VSCode nicht sichtbar. Bitte vorerst den Container Log benutzen `docker-compose logs api --follow`
+❌Der Debug Output der Tornado REST API ist aktuell in VSCode nicht sichtbar. Bitte vorerst den Container Log benutzen `docker compose logs api --follow`
 
 ## Cypress Tests
 
