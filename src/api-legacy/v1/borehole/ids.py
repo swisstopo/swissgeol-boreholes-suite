@@ -8,6 +8,7 @@ class BoreholeIds(Action):
     async def execute(self, filter={}, user=None):
 
         permissions = None
+
         if user is not None:
             # Exclude VIEW role to filter out published boreholes
             permissions = self.filterPermission(user, ['VIEW'])
