@@ -4,21 +4,19 @@ import { connect } from "react-redux";
 import _ from "lodash";
 import DetailsComponent from "./detailsComponent";
 
-import { getBorehole, getStratigraphiesByBorehole } from "../../api-lib/index";
+import { getBorehole } from "../../api-lib/index";
 
 class DetailsContainer extends React.Component {
   componentDidMount() {
     const { id } = this.props;
     if (!_.isNil(id)) {
       this.props.getBorehole(id);
-      // this.props.getStratigraphiesByBorehole(id);
     }
   }
   componentDidUpdate(prevProps) {
     const { id, detail } = this.props;
     if (detail.borehole !== null && id !== null && detail.borehole.id !== id) {
       this.props.getBorehole(id);
-      // this.props.getStratigraphiesByBorehole(id);
     } else if (detail.error !== null) {
     }
   }
@@ -38,7 +36,6 @@ DetailsContainer.propTypes = {
   detail: PropTypes.object,
   domains: PropTypes.object,
   getBorehole: PropTypes.func,
-  getStratigraphiesByBorehole: PropTypes.func,
   id: PropTypes.number,
 };
 
@@ -71,23 +68,6 @@ const mapDispatchToProps = dispatch => {
                 type: "GETBOREHOLEDETAILS_OK",
                 borehole: response.data.data,
               });
-              getStratigraphiesByBorehole(id)
-                .then(function (response) {
-                  if (response.data.success) {
-                    dispatch({
-                      type: "GET_BOREHOLE_STRATIGRAPHIES_OK",
-                      stratigraphies: response.data.data,
-                    });
-                  } else {
-                    dispatch({
-                      type: "GET_BOREHOLE_STRATIGRAPHIES_ERROR",
-                      message: response.message,
-                    });
-                  }
-                })
-                .catch(function (error) {
-                  console.log(error);
-                });
             } else {
               dispatch({
                 type: "GETBOREHOLEDETAILS_ERROR",
@@ -99,28 +79,6 @@ const mapDispatchToProps = dispatch => {
             console.log(error);
           });
       }
-    },
-    getStratigraphiesByBorehole: id => {
-      dispatch({
-        type: "GET_BOREHOLE_STRATIGRAPHIES",
-      });
-      getStratigraphiesByBorehole(id)
-        .then(function (response) {
-          if (response.data.success) {
-            dispatch({
-              type: "GET_BOREHOLE_STRATIGRAPHIES_OK",
-              stratigraphies: response.data.data,
-            });
-          } else {
-            dispatch({
-              type: "GET_BOREHOLE_STRATIGRAPHIES_ERROR",
-              message: response.message,
-            });
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
     },
   };
 };

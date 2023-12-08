@@ -9,7 +9,6 @@ PUBLIC = 4
 from bms.v1.basehandler import BaseHandler
 from bms.v1.exceptions import BmsException
 from bms.v1.exceptions import BmsDatabaseException
-from bms.v1.exceptions import DatabaseVersionMissmatch
 from bms.v1.exceptions import AuthenticationException
 from bms.v1.exceptions import AuthorizationException
 from bms.v1.exceptions import WorkgroupFreezed
@@ -36,7 +35,6 @@ from bms.v1.borehole.identifier import IdentifierAdminHandler
 from bms.v1.borehole.identifier import IdentifierViewerHandler
 
 # Stratigraphy's ACTION Handlers
-from bms.v1.borehole.stratigraphy.viewer import StratigraphyViewerHandler
 from bms.v1.borehole.stratigraphy.producer import StratigraphyProducerHandler
 
 # Profiles's ACTION Handlers
@@ -56,7 +54,6 @@ from bms.v1.borehole.stratigraphy.layer.viewer import LayerViewerHandler
 
 from bms.v1.setting.handler import SettingHandler
 
-from bms.v1.borehole.project.handler import ProjectHandler
 from bms.v1.borehole.codelist.handler import CodeListHandler
 
 
@@ -82,7 +79,6 @@ from bms.v1.borehole import GetBorehole
 from bms.v1.borehole import PatchBorehole
 
 # GeoApi actions
-from bms.v1.geoapi import Wmts
 from bms.v1.geoapi import Wms
 
 # User actions

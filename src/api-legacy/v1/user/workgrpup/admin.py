@@ -9,7 +9,6 @@ from bms.v1.user.workgrpup import (
     DisableWorkgroup,
     EnableWorkgroup,
     ListWorkgroups,
-    ListSuppliers,
     CreateWorkgroup,
     SetRole,
     UpdateWorkgroup
@@ -27,7 +26,6 @@ class WorkgroupAdminHandler(Admin):
             'DELETE',
             'ENABLE',
             'LIST',
-            'LIST_SUPPLIERS',
             'SET',
             'UPDATE'
         ]:
@@ -50,9 +48,6 @@ class WorkgroupAdminHandler(Admin):
 
                 if action == 'LIST':
                     exe = ListWorkgroups(conn)
-
-                elif action == 'LIST_SUPPLIERS':
-                    exe = ListSuppliers(conn)
 
                 elif action == 'CREATE':
                     exe = CreateWorkgroup(conn)

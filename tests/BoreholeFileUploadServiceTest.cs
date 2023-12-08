@@ -1,6 +1,5 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -42,7 +41,6 @@ public class BoreholeFileUploadServiceTest
             configuration["S3:SECRET_KEY"],
             new AmazonS3Config
             {
-                AuthenticationRegion = configuration["S3:REGION"],
                 ServiceURL = configuration["S3:ENDPOINT"],
                 ForcePathStyle = true,
                 UseHttp = configuration["S3:SECURE"] == "0",

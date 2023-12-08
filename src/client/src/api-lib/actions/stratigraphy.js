@@ -1,60 +1,11 @@
 import { fetch } from "./index";
 
-export function loadStratigraphies(
-  page = undefined,
-  limit = undefined,
-  filter = undefined,
-) {
-  return fetch("/borehole/stratigraphy", {
-    type: "LIST",
-    page: page,
-    limit: limit,
-    filter: filter,
-  });
-}
-
-export function getStratigraphies(borehole, kind) {
-  return fetch("/borehole/stratigraphy", {
-    action: "LIST",
-    filter: {
-      borehole: borehole,
-      kind: kind,
-    },
-  });
-}
-
-export function getStratigraphiesByBorehole(id) {
-  return fetch("/borehole/stratigraphy", {
-    action: "LIST",
-    filter: {
-      borehole: id,
-    },
-  });
-}
-
-// Load an existing stratigraphy given its id
-export function getStratigraphy(id) {
-  return fetch("/borehole/stratigraphy", {
-    action: "GET",
-    id: id,
-  });
-}
-
 // Create a new stratigraphy for the given borehole id
 export function createStratigraphy(id, kind = null) {
   return fetch("/borehole/stratigraphy/edit", {
     action: "CREATE",
     id: id,
     kind: kind,
-  });
-}
-
-export function patchStratigraphy(id, field, value) {
-  return fetch("/borehole/stratigraphy/edit", {
-    action: "PATCH",
-    id: id,
-    field: field,
-    value: value,
   });
 }
 
@@ -70,13 +21,6 @@ export function addBedrock(id) {
   return fetch("/borehole/stratigraphy/edit", {
     action: "ADDBEDROCK",
     id: id,
-  });
-}
-
-export function loadLayers(id) {
-  return fetch("/borehole/stratigraphy/layer", {
-    type: "LIST",
-    id: id, // stratigrafy id
   });
 }
 

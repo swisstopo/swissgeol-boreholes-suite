@@ -100,10 +100,6 @@ export function downloadBorehole(params) {
   return downloadFile("/api/v1/borehole/download", params);
 }
 
-export function downloadAttachment(params) {
-  return downloadFile("/api/v1/borehole/edit/files", params);
-}
-
 export function fetch(path, action, method = "post", auth = null) {
   const conf = {
     url:
@@ -188,26 +184,4 @@ export function fetch(path, action, method = "post", auth = null) {
       });
     };
   }
-}
-
-export function uploadFile(path, action, file) {
-  const data = new FormData();
-  data.append("file", file);
-  for (var property in action) {
-    if (action.hasOwnProperty(property)) {
-      data.append(property, action[property]);
-    }
-  }
-  return axios.post(
-    path.includes("http://") || path.includes("https://")
-      ? path
-      : process.env.PUBLIC_URL + "/api/v1" + path,
-    data,
-    {
-      // merge headers
-      headers: getAuthorizationHeaders({
-        "content-type": "multipart/form-data",
-      }),
-    },
-  );
 }
