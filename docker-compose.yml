@@ -107,6 +107,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: "curl --fail http://127.0.0.1:5000/api/v2/version || exit 1"
+      interval: 20s
+      timeout: 10s
+      retries: 30
+      start_period: 120s
     environment:
       ASPNETCORE_HTTP_PORTS: 5000
       DOTNET_USE_POLLING_FILE_WATCHER: 1

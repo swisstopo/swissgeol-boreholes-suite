@@ -129,11 +129,13 @@ var app = builder.Build();
 // Migrate db changes on startup
 using var scope = app.Services.CreateScope();
 using var context = scope.ServiceProvider.GetRequiredService<BdmsContext>();
-context.Database.Migrate();
-
-if (app.Environment.IsDevelopment())
 {
-    context.EnsureSeeded();
+    context.Database.Migrate();
+
+    if (app.Environment.IsDevelopment())
+    {
+        context.EnsureSeeded();
+    }
 }
 
 app.UseSwagger();
