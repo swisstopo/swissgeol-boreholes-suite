@@ -44,7 +44,7 @@ describe("Tests for the field measurement editor.", () => {
 
     // fill reliability dropdown
     cy.get('[data-cy="reliability-select"]')
-      .find('[role="button"]')
+      .find('[role="combobox"]')
       .click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
@@ -57,7 +57,7 @@ describe("Tests for the field measurement editor.", () => {
 
     // fill sample type dropdown
     cy.get('[data-cy="sample-type-select"]')
-      .find('[role="button"]')
+      .find('[role="combobox"]')
       .click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
@@ -67,7 +67,7 @@ describe("Tests for the field measurement editor.", () => {
 
     // fill parameter dropdown
     cy.get('[data-cy="parameter-select"]')
-      .find('[role="button"]')
+      .find('[role="combobox"]')
       .click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
@@ -91,7 +91,7 @@ describe("Tests for the field measurement editor.", () => {
 
     // fill sample type dropdown
     cy.get('[data-cy="sample-type-select"]')
-      .find('[role="button"]')
+      .find('[role="combobox"]')
       .click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')

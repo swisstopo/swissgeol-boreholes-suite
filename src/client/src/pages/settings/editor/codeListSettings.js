@@ -14,7 +14,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Icon, Form } from "semantic-ui-react";
 import { loadDomains } from "../../../api-lib/index";
 import TranslationText from "../../../commons/form/translationText";
-import produce from "immer";
+import { produce } from "immer";
 import { updateCodeLists, useDomains } from "../../../api/fetchApiV2";
 
 const CodeListSettings = () => {

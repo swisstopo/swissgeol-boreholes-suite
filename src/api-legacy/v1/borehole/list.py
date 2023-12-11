@@ -108,16 +108,10 @@ class ListBorehole(Action):
                 ) as qt_depth,
 
                 top_bedrock_bho as top_bedrock,
-                COALESCE(
-                    qt_tbed.text_cli_{language},
-                    qt_tbed.text_cli_{fallback}
-                ) as qt_top_bedrock,
+                qt_top_bedrock,
 
                 top_bedrock_tvd_bho as top_bedrock_tvd,
-                COALESCE(
-                    qt_tbed_tvd.text_cli_{language},
-                    qt_tbed_tvd.text_cli_{fallback}
-                ) as qt_top_bedrock_tvd,
+                qt_top_bedrock_tvd,
 
                 groundwater_bho as groundwater,
                 
@@ -127,12 +121,6 @@ class ListBorehole(Action):
 
             FROM
                 bdms.borehole
-
-            LEFT JOIN bdms.codelist as qt_tbed_tvd
-                ON qt_tbed_tvd.id_cli = qt_top_bedrock_tvd_id_cli
-
-            LEFT JOIN bdms.codelist as qt_tbed
-                ON qt_tbed.id_cli = qt_top_bedrock_id_cli
 
             LEFT JOIN bdms.codelist as rest
                 ON rest.id_cli = restriction_id_cli
@@ -327,12 +315,6 @@ class ListBorehole(Action):
             ) as idf
             ON
                 idf.id_bho_fk = id_bho
-
-            LEFT JOIN bdms.codelist as qt_tbed_tvd
-                ON qt_tbed_tvd.id_cli = qt_top_bedrock_tvd_id_cli
-
-            LEFT JOIN bdms.codelist as qt_tbed
-                ON qt_tbed.id_cli = qt_top_bedrock_id_cli
 
             LEFT JOIN bdms.codelist as rest
                 ON rest.id_cli = restriction_id_cli

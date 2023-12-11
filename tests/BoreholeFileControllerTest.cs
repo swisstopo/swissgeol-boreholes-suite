@@ -1,7 +1,6 @@
 ﻿using Amazon.S3;
 using BDMS.Controllers;
 using BDMS.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -40,7 +39,6 @@ public class BoreholeFileControllerTest
             configuration["S3:SECRET_KEY"],
             new AmazonS3Config
             {
-                AuthenticationRegion = configuration["S3:REGION"],
                 ServiceURL = configuration["S3:ENDPOINT"],
                 ForcePathStyle = true,
                 UseHttp = configuration["S3:SECURE"] == "0",

@@ -484,7 +484,7 @@ public class UploadController : ControllerBase
             Map(m => m.QtInclinationDirectionId).Optional();
             Map(m => m.QtDepthId).Optional();
             Map(m => m.TopBedrock).Optional();
-            Map(m => m.QtTopBedrockId).Optional();
+            Map(m => m.QtTopBedrock).Optional();
             Map(m => m.HasGroundwater).Optional();
             Map(m => m.Remarks).Optional();
             Map(m => m.LithologyTopBedrockId).Optional();
@@ -492,7 +492,7 @@ public class UploadController : ControllerBase
             Map(m => m.ChronostratigraphyId).Optional();
             Map(m => m.SpudDate).Optional();
             Map(m => m.TopBedrockTvd).Optional();
-            Map(m => m.QtTopBedrockTvdId).Optional();
+            Map(m => m.QtTopBedrockTvd).Optional();
             Map(m => m.ReferenceElevation).Optional();
             Map(m => m.QtReferenceElevationId).Optional();
             Map(m => m.ReferenceElevationTypeId).Optional();

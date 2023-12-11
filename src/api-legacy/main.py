@@ -123,7 +123,6 @@ if __name__ == "__main__":
 
         # Exceptions
         BmsDatabaseException,
-        DatabaseVersionMissmatch,
 
         # user handlers
         SettingHandler,
@@ -142,7 +141,6 @@ if __name__ == "__main__":
         IdentifierViewerHandler,
 
         # Stratigraphy handlers
-        StratigraphyViewerHandler,
         StratigraphyProducerHandler,
 
         # Layer handlers
@@ -171,9 +169,7 @@ if __name__ == "__main__":
         FeedbackHandler,
 
         # Other handlers
-        ProjectHandler,
         CodeListHandler,
-        Wmts,
         Wms,
     )
 
@@ -223,7 +219,6 @@ if __name__ == "__main__":
         (r'/api/v1/feedback', FeedbackHandler),
 
         # Stratigraphy handlers (will be deprecated)
-        (r'/api/v1/borehole/stratigraphy', StratigraphyViewerHandler),
         (r'/api/v1/borehole/stratigraphy/edit', StratigraphyProducerHandler),
 
         # Layer handlers (will be deprecated)
@@ -240,7 +235,6 @@ if __name__ == "__main__":
 
         # Other handlers
         (r'/api/v1/borehole/codes', CodeListHandler),
-        (r"/api/v1/geoapi/wmts", Wmts),
         (r"/api/v1/geoapi/wms/swisstopo", Wms),
 
     ], **settings)

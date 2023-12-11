@@ -42,11 +42,11 @@ class DetailsComponent extends React.Component {
                       return null;
                     }
 
-                    const kind = this.props.domains.data["kind"].find(function (
-                      element,
-                    ) {
-                      return element.id === detail.borehole.kind;
-                    });
+                    const kind = this.props.domains.data["kind"].find(
+                      function (element) {
+                        return element.id === detail.borehole.kind;
+                      },
+                    );
 
                     const restriction = this.props.domains.data[
                       "restriction"
@@ -239,10 +239,7 @@ class DetailsComponent extends React.Component {
                 paddingBottom: "1em",
                 overflowY: "hidden",
               }}>
-              <StratigraphiesComponent
-                data={detail}
-                stratigraphies={detail.stratigraphies}
-              />
+              <StratigraphiesComponent data={detail} />
             </div>,
           ]
         ) : detail.isFetching === true ? (

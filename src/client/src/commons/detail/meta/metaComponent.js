@@ -411,15 +411,17 @@ class MetaComponent extends React.Component {
               data.qt_total_depth_tvd,
               "total_depth_tvd_qt",
             )}
-            {this.getDomainRow(
-              "custom.qt_top_bedrock",
-              data.custom.qt_top_bedrock,
+            {this.getNumericTextRow(
               "qt_top_bedrock",
+              data.custom.qt_top_bedrock !== null
+                ? data.custom.qt_top_bedrock
+                : null,
             )}
-            {this.getDomainRow(
-              "custom.qt_top_bedrock",
-              data.custom.qt_top_bedrock_tvd,
+            {this.getNumericTextRow(
               "top_bedrock_tvd_qt",
+              data.custom.qt_top_bedrock_tvd !== null
+                ? data.custom.qt_top_bedrock_tvd
+                : null,
             )}
             {this.getDomainRow(
               "custom.lithology_top_bedrock",

@@ -4,6 +4,13 @@
 
 ### Changed
 
+- Use numeric input instead of dropdown for top bedrock quality fields.
+- Proxy requests to legacy api through .NET API with authentication.
+
+## v2.0.476 - 2023-12-08
+
+### Changed
+
 - Upgraded to OpenLayers 8.
 - Upgraded to .NET 8.
 - Upgraded to Node 20.

@@ -17,13 +17,6 @@ export function loadBoreholes(
   });
 }
 
-export function loadBoreholeIds(filter = undefined) {
-  return fetch("/borehole/edit", {
-    type: "IDS",
-    filter: filter,
-  });
-}
-
 export function getdBoreholeIds(filter = undefined) {
   return fetch("/borehole/edit", {
     action: "IDS",
@@ -52,14 +45,6 @@ export function createBorehole(id = null) {
   return fetch("/borehole/edit", {
     action: "CREATE",
     id: id, // workgroup id
-  });
-}
-
-export function copyBorehole(boreholeId, workgroupId) {
-  return fetch("/borehole/edit", {
-    action: "COPY",
-    borehole: boreholeId,
-    workgroup: workgroupId, // workgroup id
   });
 }
 

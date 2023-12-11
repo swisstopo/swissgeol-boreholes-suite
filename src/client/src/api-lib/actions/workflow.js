@@ -1,12 +1,5 @@
 import { fetch } from "./index";
 
-export function getWorkflows(id) {
-  return fetch("/workflow/edit", {
-    action: "LIST",
-    id: id,
-  });
-}
-
 export function loadWorkflows(id) {
   return fetch("/workflow/edit", {
     type: "LIST",

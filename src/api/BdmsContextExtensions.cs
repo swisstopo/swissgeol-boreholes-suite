@@ -71,7 +71,6 @@ public static class BdmsContextExtensions
         List<int> layerKindIds = codelists.Where(c => c.Schema == "layer_kind").Select(s => s.Id).ToList();
         List<int> purposeIds = codelists.Where(c => c.Schema == "extended.purpose").Select(s => s.Id).ToList();
         List<int> statusIds = codelists.Where(c => c.Schema == "extended.status").Select(s => s.Id).ToList();
-        List<int> qtTopBedrockIds = codelists.Where(c => c.Schema == "custom.qt_top_bedrock").Select(s => s.Id).ToList();
         List<int> lithologyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithology_top_bedrock").Select(s => s.Id).ToList();
         List<int> qtInclinationDirectionIds = codelists.Where(c => c.Schema == "custom.qt_bore_inc_dir").Select(s => s.Id).ToList();
         List<int> chronostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.chronostratigraphy_top_bedrock").Select(s => s.Id).ToList();
@@ -162,8 +161,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.QtDepthId, f => f.PickRandom(qtDepthIds).OrNull(f, .05f))
            .RuleFor(o => o.QtDepth, _ => default!)
            .RuleFor(o => o.TopBedrock, f => f.Random.Double(0, 1000).OrNull(f, .05f))
-           .RuleFor(o => o.QtTopBedrockId, f => f.PickRandom(qtTopBedrockIds).OrNull(f, .05f))
-           .RuleFor(o => o.QtTopBedrock, _ => default!)
+           .RuleFor(o => o.QtTopBedrock, f => f.Random.Double(0, 2).OrNull(f, .05f))
            .RuleFor(o => o.HasGroundwater, f => f.Random.Bool().OrNull(f, .2f))
            .RuleFor(o => o.Remarks, f => f.Rant.Review().OrNull(f, .05f))
            .RuleFor(o => o.LithologyTopBedrockId, f => f.PickRandom(lithologyTopBedrockIds).OrNull(f, .05f))
@@ -174,8 +172,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Chronostratigraphy, _ => default!)
            .RuleFor(o => o.SpudDate, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
            .RuleFor(o => o.TopBedrockTvd, f => f.Random.Double(0, 1000).OrNull(f, .05f))
-           .RuleFor(o => o.QtTopBedrockTvdId, f => f.PickRandom(qtTopBedrockIds).OrNull(f, .05f))
-           .RuleFor(o => o.QtTopBedrockTvd, _ => default!)
+           .RuleFor(o => o.QtTopBedrockTvd, f => f.Random.Double(0, 2).OrNull(f, .05f))
            .RuleFor(o => o.ReferenceElevation, f => f.Random.Double(0, 4500).OrNull(f, .05f))
            .RuleFor(o => o.QtReferenceElevationId, f => f.PickRandom(qtElevationIds).OrNull(f, .05f))
            .RuleFor(o => o.QtReferenceElevation, _ => default!)

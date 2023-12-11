@@ -283,8 +283,8 @@ const Stratigraphy = props => {
                   state?.selected.id === layer[mapping.id]
                     ? selectedLayerStyle
                     : state?.selected !== null
-                    ? unselectedLayerStyle
-                    : null),
+                      ? unselectedLayerStyle
+                      : null),
                   ...(state?.over !== null &&
                   state?.over[mapping.id] === layer[mapping.id]
                     ? overLayerStyle

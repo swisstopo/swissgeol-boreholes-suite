@@ -303,13 +303,8 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s QtTopBedrock id.
     /// </summary>
-    [Column("qt_top_bedrock_id_cli")]
-    public int? QtTopBedrockId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s QtTopBedrock.
-    /// </summary>
-    public Codelist? QtTopBedrock { get; set; }
+    [Column("qt_top_bedrock")]
+    public double? QtTopBedrock { get; set; }
 
     /// <summary>
     /// Gets or sets whether the <see cref="Borehole"/> has groundwater.
@@ -377,13 +372,8 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s Qt top bedrock tvd id.
     /// </summary>
-    [Column("qt_top_bedrock_tvd_id_cli")]
-    public int? QtTopBedrockTvdId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s Qt top bedrock tvd.
-    /// </summary>
-    public Codelist? QtTopBedrockTvd { get; set; }
+    [Column("qt_top_bedrock_tvd")]
+    public double? QtTopBedrockTvd { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s reference elevation.

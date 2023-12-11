@@ -36,15 +36,6 @@ export function getProfileLayers(id, withValidation = false) {
   });
 }
 
-// Fetches the list of all layers of all primary profiles
-// of a specific borehole
-export function getProfileLayersGroups(borehole) {
-  return fetch("/borehole/profile/layer", {
-    action: "LISTGROUPED",
-    borehole: borehole,
-  });
-}
-
 // Fetch the attributes of a single layer by its id
 export function getLayerAttributes(id) {
   return fetch("/borehole/profile/layer", {
