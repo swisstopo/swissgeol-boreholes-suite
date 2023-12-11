@@ -353,7 +353,6 @@ class PatchBorehole(Action):
                     row_to_json(t2)
                 FROM (
                     SELECT
-                        percentage,
                         (
                             SELECT row_to_json(t)
                             FROM (
