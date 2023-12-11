@@ -3,8 +3,7 @@ from bms.v1.handlers import Producer
 from bms.v1.borehole.stratigraphy import (
     AddBedrock,
     CreateStratigraphy,
-    DeleteStratigraphy,
-    CloneStratigraphy
+    DeleteStratigraphy
 )
 
 
