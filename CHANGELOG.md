@@ -6,6 +6,7 @@
 
 - Use numeric input instead of dropdown for top bedrock quality fields.
 - Proxy requests to legacy api through .NET API with authentication.
+- Disable spatial reference inputs when editing mode is not active or borehole status does not allow editing.
 - Remove obsolete database view `completness`.
 
 ## v2.0.476 - 2023-12-08
