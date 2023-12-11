@@ -107,7 +107,8 @@ class DomainDropdown extends React.Component {
   }
 
   render() {
-    const { domains, schema, search, multiple, additionalValues } = this.props,
+    const { domains, schema, search, multiple, additionalValues, readOnly } =
+        this.props,
       { selected } = this.state;
     if (!domains.data.hasOwnProperty(schema)) {
       if (domains.isFetching === true) {
@@ -222,6 +223,10 @@ class DomainDropdown extends React.Component {
         ),
       })),
     );
+    if (readOnly) {
+      let selectedOption = options.find(option => option.value === selected);
+      return <Form.Input fluid readOnly value={selectedOption.text} />;
+    }
     return (
       <Form.Select
         data-cy="domain-dropdown"
@@ -252,6 +257,7 @@ DomainDropdown.propTypes = {
     PropTypes.number,
     PropTypes.arrayOf(PropTypes.number),
   ]),
+  readOnly: PropTypes.bool,
 };
 
 DomainDropdown.defaultProps = {
