@@ -386,8 +386,6 @@ class PatchBorehole(Action):
                         bdms.borehole
                     INNER JOIN bdms.users as locker
                         ON locked_by_bho = locker.id_usr
-                    INNER JOIN bdms.completness
-                        ON completness.id_bho = borehole.id_bho
                     INNER JOIN bdms.users as updater
                         ON updated_by_bho = updater.id_usr
                     WHERE

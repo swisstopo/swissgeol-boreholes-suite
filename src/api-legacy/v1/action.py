@@ -90,9 +90,6 @@ class Action():
         elif orderby == 'status':
             _orderby = 'status_id_cli'
 
-        elif orderby == 'completness':
-            _orderby = 'percentage'
-
         elif orderby == 'creator':
             _orderby = 'created_by_bho'
 
