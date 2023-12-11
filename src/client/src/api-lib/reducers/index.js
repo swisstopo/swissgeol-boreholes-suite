@@ -326,7 +326,6 @@ export function borehole() {
         id: null,
         visible: false,
         lock: null,
-        percentage: 0,
         kind: null,
         restriction: null,
         restriction_until: null,
