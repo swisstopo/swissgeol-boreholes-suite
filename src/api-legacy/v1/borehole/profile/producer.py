@@ -4,8 +4,7 @@ from bms.v1.handlers import Producer
 from bms.v1.borehole.stratigraphy import (
     AddBedrock,
     CreateStratigraphy,
-    DeleteStratigraphy,
-    CloneStratigraphy
+    DeleteStratigraphy
 )
 
 
@@ -16,7 +15,6 @@ class ProfileProducerHandler(Producer):
         if action in [
             'ADDBEDROCK',
             'CHECK',
-            'CLONE',
             'CREATE',
             'DELETE',
             'PATCH'
@@ -39,7 +37,6 @@ class ProfileProducerHandler(Producer):
                 elif action in [
                     'ADDBEDROCK',
                     'CHECK',
-                    'CLONE', 
                     'DELETE',
                     'PATCH',
                 ]:
@@ -72,10 +69,6 @@ class ProfileProducerHandler(Producer):
 
                 elif action == 'PATCH':
                     exe = PatchProfile(conn)
-                    request['user_id'] = self.user['id']
-
-                elif action == 'CLONE':
-                    exe = CloneStratigraphy(conn)
                     request['user_id'] = self.user['id']
 
                 request.pop('lang', None)
