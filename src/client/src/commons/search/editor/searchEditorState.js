@@ -47,7 +47,6 @@ const initialState = {
     project: null,
     last_update: "",
     creation: "",
-    completness: "all",
 
     // Layers filter
     layer_depth_from: "",
@@ -325,15 +324,6 @@ const searchEditor = (
         ...state,
         filter: {
           ...initialState.filter,
-        },
-      };
-    }
-    case "SEARCH_EDITOR_COMPLETNESS_CHANGED": {
-      return {
-        ...state,
-        filter: {
-          ...state.filter,
-          completness: action.completness,
         },
       };
     }

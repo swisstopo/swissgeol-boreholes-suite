@@ -116,7 +116,6 @@ class ListEditingBorehole(Action):
                     ) t
                 ) as extended,
                 stratigraphy as stratigraphy,
-                completness.percentage,
                 array_to_json(status) as workflows,
                 status[array_length(status, 1)]  ->> 'role' as "role"
 
@@ -176,11 +175,6 @@ class ListEditingBorehole(Action):
             ) as v
             ON
                 v.id_bho_fk = borehole.id_bho
-
-            INNER JOIN
-                bdms.completness
-            ON
-                completness.id_bho = borehole.id_bho
 
             LEFT JOIN
                 bdms.users as locker
@@ -283,11 +277,6 @@ class ListEditingBorehole(Action):
             ) as ids
             ON
                 ids.id_bho_fk = id_bho
-
-            INNER JOIN
-                bdms.completness
-            ON
-                completness.id_bho = borehole.id_bho
 
             INNER JOIN
                 bdms.users as creator

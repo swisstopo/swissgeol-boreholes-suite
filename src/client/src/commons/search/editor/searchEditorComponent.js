@@ -366,13 +366,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         type: "SEARCH_EDITOR_FILTER_RESET_BORE_INC_DIR",
       });
     },
-
-    setCompletness: completness => {
-      dispatch({
-        type: "SEARCH_EDITOR_COMPLETNESS_CHANGED",
-        completness: completness,
-      });
-    },
     setProject: id => {
       dispatch({
         type: "SEARCH_EDITOR_PROJECT_CHANGED",
