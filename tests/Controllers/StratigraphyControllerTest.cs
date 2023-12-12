@@ -21,7 +21,7 @@ public class StratigraphyControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new StratigraphyController(context, new Mock<ILogger<StratigraphyController>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -30,19 +30,17 @@ public class StratigraphyControllerTest
     [TestMethod]
     public async Task GetAsyncReturnsAllEntities()
     {
-        var response = await controller.GetAsync();
-        Assert.IsNotNull(response);
-        var result = response.Value!;
-        Assert.AreEqual(10000, result.Count());
+        var stratigraphies = await controller.GetAsync();
+        Assert.IsNotNull(stratigraphies);
+        Assert.AreEqual(10000, stratigraphies.Count());
     }
 
     [TestMethod]
     public async Task GetEntriesByBoreholeIdForInexistentId()
     {
-        var response = await controller.GetAsync(81294572).ConfigureAwait(false);
-        var layers = response?.Value;
-        Assert.IsNotNull(layers);
-        Assert.AreEqual(0, layers.Count());
+        var stratigraphies = await controller.GetAsync(81294572).ConfigureAwait(false);
+        Assert.IsNotNull(stratigraphies);
+        Assert.AreEqual(0, stratigraphies.Count());
     }
 
     [TestMethod]
@@ -52,8 +50,7 @@ public class StratigraphyControllerTest
         context.Boreholes.Add(emptyBorehole);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var response = await controller.GetAsync(emptyBorehole.Id).ConfigureAwait(false);
-        var layers = response?.Value;
+        var layers = await controller.GetAsync(emptyBorehole.Id).ConfigureAwait(false);
         Assert.IsNotNull(layers);
         Assert.AreEqual(0, layers.Count());
     }
@@ -61,8 +58,7 @@ public class StratigraphyControllerTest
     [TestMethod]
     public async Task GetCasingsByBoreholeId()
     {
-        var response = await controller.GetAsync(1000017, 3002).ConfigureAwait(false);
-        IEnumerable<Stratigraphy>? stratigraphies = response.Value;
+        var stratigraphies = await controller.GetAsync(1000017, 3002).ConfigureAwait(false);
         Assert.IsNotNull(stratigraphies);
         Assert.AreEqual(1, stratigraphies.Count());
         var stratigraphy = stratigraphies.Single();
@@ -122,7 +118,7 @@ public class StratigraphyControllerTest
         Assert.AreEqual(originalStratigraphy.Layers.First().LayerCodelists.Count, copiedStratigraphy.Layers.First().LayerCodelists.Count);
     }
 
-    private Stratigraphy GetStratigraphy(int id)
+    private Stratigraphy? GetStratigraphy(int id)
     {
         return context.Stratigraphies
             .Include(s => s.CreatedBy)
@@ -133,7 +129,7 @@ public class StratigraphyControllerTest
             .Include(s => s.LithologicalDescriptions)
             .Include(s => s.FaciesDescriptions)
             .Include(s => s.ChronostratigraphyLayers)
-            .Single(s => s.Id == id);
+            .SingleOrDefault(s => s.Id == id);
     }
 
     [TestMethod]
@@ -172,5 +168,48 @@ public class StratigraphyControllerTest
         var copiedStratigraphyId = ((OkObjectResult?)result.Result)?.Value;
         Assert.IsNotNull(copiedStratigraphyId);
         Assert.IsInstanceOfType(copiedStratigraphyId, typeof(int));
+    }
+
+    [TestMethod]
+    public async Task Delete()
+    {
+        // Prepare stratigraphy to delete
+        var copyResult = await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
+        Assert.IsInstanceOfType(copyResult.Result, typeof(OkObjectResult));
+
+        var stratigraphyToDeleteId = ((OkObjectResult?)copyResult.Result)?.Value;
+        Assert.IsNotNull(stratigraphyToDeleteId);
+
+        // Delete and assert
+        var stratigraphyToDelete = GetStratigraphy((int)stratigraphyToDeleteId);
+        await controller.DeleteAsync(stratigraphyToDelete.Id).ConfigureAwait(false);
+        Assert.AreEqual(null, GetStratigraphy((int)stratigraphyToDeleteId));
+    }
+
+    [TestMethod]
+    public async Task DeleteMainStratigraphySetsLatestStratigraphyAsPrimary()
+    {
+        // Precondition: Find a group of three stratigraphies with one main stratigraphy
+        var stratigraphies = await controller.GetAsync();
+        var stratigraphyTestCandidates = stratigraphies
+            .Where(x => x.KindId == StratigraphyController.StratigraphyKindId)
+            .GroupBy(x => x.BoreholeId)
+            .Where(g => g.Count() > 1 && g.Count(x => x.IsPrimary.GetValueOrDefault()) == 1)
+            .ToList();
+
+        Assert.AreEqual(true, stratigraphyTestCandidates.Any(), "Precondition: There is at least one group of three stratigraphies with one main stratigraphy");
+
+        // Delete primary stratigraphy and assert that
+        // the latest stratigraphy is now the main stratigraphy
+        var stratigraphiesUnderTest = stratigraphyTestCandidates.First();
+        var latestNonPrimaryStratigraphy = stratigraphiesUnderTest.Where(x => !x.IsPrimary.GetValueOrDefault()).OrderByDescending(x => x.Created).First();
+        var stratigraphyToDelete = stratigraphiesUnderTest.Single(x => x.IsPrimary.GetValueOrDefault());
+
+        await controller.DeleteAsync(stratigraphyToDelete.Id).ConfigureAwait(false);
+        Assert.AreEqual(null, GetStratigraphy(stratigraphyToDelete.Id));
+
+        latestNonPrimaryStratigraphy = GetStratigraphy(latestNonPrimaryStratigraphy.Id);
+        Assert.AreNotEqual(null, latestNonPrimaryStratigraphy);
+        Assert.AreEqual(true, latestNonPrimaryStratigraphy.IsPrimary.GetValueOrDefault());
     }
 }
