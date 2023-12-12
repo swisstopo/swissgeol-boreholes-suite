@@ -103,6 +103,7 @@ public static class BdmsContextExtensions
         List<int> groundwaterLevelMeasurementKindIds = codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Select(s => s.Id).ToList();
         List<int> fieldMeasurementSampleTypeIds = codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Select(s => s.Id).ToList();
         List<int> fieldMeasurementParameterIds = codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Select(s => s.Id).ToList();
+        List<int> completionKindIds = codelists.Where(c => c.Schema == "completion_kind").Select(s => s.Id).ToList();
 
         // Seed Boreholes
         var borehole_ids = 1_000_000;
@@ -691,6 +692,34 @@ public static class BdmsContextExtensions
         var fieldMeasurements = observations.Where(o => o.Type == ObservationType.FieldMeasurement).Select(observation => SeededFieldMeasurements(observation)).ToList();
 
         context.BulkInsert(fieldMeasurements, bulkConfig);
+
+        context.SaveChanges();
+
+        // Seed completions
+        var completion_ids = 14_000_000;
+        var completionRange = Enumerable.Range(completion_ids, 500);
+        var fakeCompletions = new Faker<Completion>()
+            .StrictMode(true)
+            .RuleFor(c => c.BoreholeId, f => f.PickRandom(boreholeRange))
+            .RuleFor(c => c.Borehole, _ => default!)
+            .RuleFor(c => c.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(c => c.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(c => c.CreatedBy, _ => default!)
+            .RuleFor(c => c.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(c => c.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(c => c.UpdatedBy, _ => default!)
+            .RuleFor(c => c.AbandonDate, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(c => c.Name, f => f.Random.Word())
+            .RuleFor(c => c.Notes, f => f.Lorem.Sentence())
+            .RuleFor(c => c.IsPrimary, f => f.Random.Bool())
+            .RuleFor(c => c.KindId, f => f.PickRandom(completionKindIds))
+            .RuleFor(o => o.Kind, _ => default!)
+            .RuleFor(c => c.Id, f => completion_ids++);
+
+        Completion SeededCompletion(int seed) => fakeCompletions.UseSeed(seed).Generate();
+        var completions = completionRange.Select(SeededCompletion).ToList();
+
+        context.BulkInsert(completions, bulkConfig);
 
         context.SaveChanges();
 

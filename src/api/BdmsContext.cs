@@ -35,6 +35,7 @@ public class BdmsContext : DbContext
     public DbSet<HydrotestResult> HydrotestResults { get; set; }
     public DbSet<GroundwaterLevelMeasurement> GroundwaterLevelMeasurements { get; set; }
     public DbSet<FieldMeasurement> FieldMeasurements { get; set; }
+    public DbSet<Completion> Completions { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)

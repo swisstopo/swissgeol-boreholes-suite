@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Table and controller for completion.
+
 ### Changed
 
 - Use numeric input instead of dropdown for top bedrock quality fields.
