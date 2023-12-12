@@ -1,10 +1,12 @@
 import React from "react";
 import * as Styled from "./styles";
 import { Checkbox, Popup, Button, Icon } from "semantic-ui-react";
-import { deleteStratigraphy } from "../../../../../../../api-lib/index";
 import TranslationText from "../../../../../translationText";
 import { profileKind } from "../../../../constance";
-import { copyStratigraphy } from "../../../../../../../api/fetchApiV2";
+import {
+  copyStratigraphy,
+  deleteStratigraphy,
+} from "../../../../../../../api/fetchApiV2";
 
 const InfoCheckBox = props => {
   const { kind, profileInfo, updateChange, isEditable, onUpdated } = props.data;
@@ -61,7 +63,7 @@ const InfoCheckBox = props => {
             <Button
               icon
               onClick={() => {
-                deleteStratigraphy(profileInfo?.id).then(response => {
+                deleteStratigraphy(profileInfo?.id).then(_ => {
                   onUpdated("deleteStratigraphy");
                 });
               }}
