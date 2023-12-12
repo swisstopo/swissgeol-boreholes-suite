@@ -1,7 +1,6 @@
-﻿using BDMS.Controllers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class UserControllerTest
@@ -9,7 +8,7 @@ public class UserControllerTest
     private BdmsContext context;
 
     [TestInitialize]
-    public void TestInitialize() => context = ContextFactory.CreateContext();
+    public void TestInitialize() => context = ContextFactory.GetTestContext();
 
     [TestCleanup]
     public async Task TestCleanup() => await context.DisposeAsync();

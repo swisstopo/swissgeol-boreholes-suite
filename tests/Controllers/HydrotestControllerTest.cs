@@ -1,5 +1,4 @@
-﻿using BDMS.Controllers;
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -7,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Security.Claims;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class HydrotestControllerTests
@@ -18,7 +17,7 @@ public class HydrotestControllerTests
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
+        context = ContextFactory.GetTestContext();
         controller = new HydrotestController(context, new Mock<ILogger<Hydrotest>>().Object)
         {
             ControllerContext = new ControllerContext
@@ -32,10 +31,7 @@ public class HydrotestControllerTests
     }
 
     [TestCleanup]
-    public async Task TestCleanup()
-    {
-        await context.DisposeAsync();
-    }
+    public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
     public async Task GetAsyncReturnsAllEntities()
@@ -122,39 +118,30 @@ public class HydrotestControllerTests
             CodelistIds = new List<int> { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 3).Id, 15203187, 15203189 },
         };
 
-        try
-        {
-            context.Hydrotests.Add(originalHydrotest);
-            await context.SaveChangesAsync();
+        context.Hydrotests.Add(originalHydrotest);
+        await context.SaveChangesAsync();
 
-            var result = await controller.EditHydrotestAsync(updatedHydrotest) as OkObjectResult;
+        var result = await controller.EditHydrotestAsync(updatedHydrotest) as OkObjectResult;
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
-            var editedHydrotest = context.Hydrotests.Single(w => w.Id == 1);
-            Assert.AreEqual(updatedHydrotest.Id, editedHydrotest.Id);
-            Assert.AreEqual(updatedHydrotest.Type, editedHydrotest.Type);
-            Assert.AreEqual(updatedHydrotest.StartTime, editedHydrotest.StartTime);
-            Assert.AreEqual(updatedHydrotest.EndTime, editedHydrotest.EndTime);
-            Assert.AreEqual(updatedHydrotest.Duration, editedHydrotest.Duration);
-            Assert.AreEqual(updatedHydrotest.FromDepthM, editedHydrotest.FromDepthM);
-            Assert.AreEqual(updatedHydrotest.ToDepthM, editedHydrotest.ToDepthM);
-            Assert.AreEqual(updatedHydrotest.FromDepthMasl, editedHydrotest.FromDepthMasl);
-            Assert.AreEqual(updatedHydrotest.ToDepthMasl, editedHydrotest.ToDepthMasl);
-            Assert.AreEqual(updatedHydrotest.CompletionFinished, editedHydrotest.CompletionFinished);
-            Assert.AreEqual(updatedHydrotest.Comment, editedHydrotest.Comment);
-            Assert.AreEqual(updatedHydrotest.BoreholeId, editedHydrotest.BoreholeId);
-            Assert.AreEqual(updatedHydrotest.ReliabilityId, editedHydrotest.ReliabilityId);
-            CollectionAssert.AreEqual(updatedHydrotest.CodelistIds!.ToList(), editedHydrotest.Codelists!.Select(c => c.Id).ToList());
-            Assert.AreEqual("Entnahme", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).De);
-            Assert.AreEqual("stationär", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).De);
-        }
-        finally
-        {
-            var addedHydrotest = context.Hydrotests.Single(w => w.Id == 1);
-            context.Hydrotests.Remove(addedHydrotest);
-            await context.SaveChangesAsync();
-        }
+        Assert.IsNotNull(result);
+        Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+        var editedHydrotest = context.Hydrotests.Single(w => w.Id == 1);
+        Assert.AreEqual(updatedHydrotest.Id, editedHydrotest.Id);
+        Assert.AreEqual(updatedHydrotest.Type, editedHydrotest.Type);
+        Assert.AreEqual(updatedHydrotest.StartTime, editedHydrotest.StartTime);
+        Assert.AreEqual(updatedHydrotest.EndTime, editedHydrotest.EndTime);
+        Assert.AreEqual(updatedHydrotest.Duration, editedHydrotest.Duration);
+        Assert.AreEqual(updatedHydrotest.FromDepthM, editedHydrotest.FromDepthM);
+        Assert.AreEqual(updatedHydrotest.ToDepthM, editedHydrotest.ToDepthM);
+        Assert.AreEqual(updatedHydrotest.FromDepthMasl, editedHydrotest.FromDepthMasl);
+        Assert.AreEqual(updatedHydrotest.ToDepthMasl, editedHydrotest.ToDepthMasl);
+        Assert.AreEqual(updatedHydrotest.CompletionFinished, editedHydrotest.CompletionFinished);
+        Assert.AreEqual(updatedHydrotest.Comment, editedHydrotest.Comment);
+        Assert.AreEqual(updatedHydrotest.BoreholeId, editedHydrotest.BoreholeId);
+        Assert.AreEqual(updatedHydrotest.ReliabilityId, editedHydrotest.ReliabilityId);
+        CollectionAssert.AreEqual(updatedHydrotest.CodelistIds!.ToList(), editedHydrotest.Codelists!.Select(c => c.Id).ToList());
+        Assert.AreEqual("Entnahme", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).De);
+        Assert.AreEqual("stationär", editedHydrotest.Codelists!.Single(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).De);
     }
 
     [TestMethod]
@@ -189,48 +176,31 @@ public class HydrotestControllerTests
             HydrotestResults = new List<HydrotestResult>() { new HydrotestResult { ParameterId = 15203194 } },
         };
 
-        Hydrotest? addedHydrotest = null;
+        var okObjectResult = (OkObjectResult)await controller.CreateAsync(newHydrotest);
+        Assert.IsInstanceOfType(okObjectResult, typeof(OkObjectResult));
+        var addedHydrotest = (Hydrotest)okObjectResult.Value!;
 
-        try
-        {
-            var okObjectResult = (OkObjectResult)await controller.CreateAsync(newHydrotest);
-            Assert.IsInstanceOfType(okObjectResult, typeof(OkObjectResult));
-            addedHydrotest = (Hydrotest)okObjectResult.Value!;
+        newHydrotest = await context.Hydrotests.FindAsync(newHydrotest.Id);
+        Assert.IsNotNull(newHydrotest);
+        Assert.AreEqual(newHydrotest.Type, ObservationType.Hydrotest);
+        Assert.AreEqual(newHydrotest.StartTime, new DateTime(2021, 1, 31, 1, 10, 00).ToUniversalTime());
+        Assert.AreEqual(newHydrotest.EndTime, new DateTime(2020, 6, 4, 3, 4, 00).ToUniversalTime());
+        Assert.AreEqual(newHydrotest.Duration, 118);
+        Assert.AreEqual(newHydrotest.FromDepthM, 17.532);
+        Assert.AreEqual(newHydrotest.ToDepthM, 702.12);
+        Assert.AreEqual(newHydrotest.FromDepthMasl, 82.714);
+        Assert.AreEqual(newHydrotest.ToDepthMasl, 2633.2);
+        Assert.AreEqual(newHydrotest.CompletionFinished, false);
+        Assert.AreEqual(newHydrotest.Comment, "New test comment");
+        Assert.AreEqual(newHydrotest.BoreholeId, 1006493);
+        Assert.AreEqual(newHydrotest.ReliabilityId, 15203158);
+        CollectionAssert.Contains((System.Collections.ICollection)newHydrotest.CodelistIds!, 15203171); // Test kind Id
 
-            newHydrotest = await context.Hydrotests.FindAsync(newHydrotest.Id);
-            Assert.IsNotNull(newHydrotest);
-            Assert.AreEqual(newHydrotest.Type, ObservationType.Hydrotest);
-            Assert.AreEqual(newHydrotest.StartTime, new DateTime(2021, 1, 31, 1, 10, 00).ToUniversalTime());
-            Assert.AreEqual(newHydrotest.EndTime, new DateTime(2020, 6, 4, 3, 4, 00).ToUniversalTime());
-            Assert.AreEqual(newHydrotest.Duration, 118);
-            Assert.AreEqual(newHydrotest.FromDepthM, 17.532);
-            Assert.AreEqual(newHydrotest.ToDepthM, 702.12);
-            Assert.AreEqual(newHydrotest.FromDepthMasl, 82.714);
-            Assert.AreEqual(newHydrotest.ToDepthMasl, 2633.2);
-            Assert.AreEqual(newHydrotest.CompletionFinished, false);
-            Assert.AreEqual(newHydrotest.Comment, "New test comment");
-            Assert.AreEqual(newHydrotest.BoreholeId, 1006493);
-            Assert.AreEqual(newHydrotest.ReliabilityId, 15203158);
-            CollectionAssert.Contains((System.Collections.ICollection)newHydrotest.CodelistIds!, 15203171); // Test kind Id
+        var deleteResponse = await controller.DeleteAsync(newHydrotest.Id);
+        Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
 
-            var deleteResponse = await controller.DeleteAsync(newHydrotest.Id);
-            Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
-
-            deleteResponse = await controller.DeleteAsync(newHydrotest.Id);
-            Assert.IsInstanceOfType(deleteResponse, typeof(NotFoundResult));
-        }
-        finally
-        {
-            if (addedHydrotest != null)
-            {
-                var hydrotestToDelete = context.Hydrotests.SingleOrDefault(w => w.Id == addedHydrotest.Id);
-                if (hydrotestToDelete != null)
-                {
-                    context.Hydrotests.Remove(hydrotestToDelete);
-                    await context.SaveChangesAsync();
-                }
-            }
-        }
+        deleteResponse = await controller.DeleteAsync(newHydrotest.Id);
+        Assert.IsInstanceOfType(deleteResponse, typeof(NotFoundResult));
     }
 
     [TestMethod]
@@ -249,31 +219,14 @@ public class HydrotestControllerTests
             },
         };
 
-        Hydrotest? addedHydrotest = null;
+        var okObjectResult = (ObjectResult)await controller.CreateAsync(newHydrotest);
+        Assert.IsInstanceOfType(okObjectResult, typeof(OkObjectResult));
+        var addedHydrotest = (Hydrotest)okObjectResult.Value!;
 
-        try
-        {
-            var okObjectResult = (ObjectResult)await controller.CreateAsync(newHydrotest);
-            Assert.IsInstanceOfType(okObjectResult, typeof(OkObjectResult));
-            addedHydrotest = (Hydrotest)okObjectResult.Value!;
+        var savedHydrotest = context.Hydrotests.SingleOrDefault(w => w.Id == addedHydrotest.Id);
 
-            var savedHydrotest = context.Hydrotests.SingleOrDefault(w => w.Id == addedHydrotest.Id);
-
-            Assert.AreEqual(savedHydrotest.Codelists.Count, 3);
-            Assert.AreEqual(savedHydrotest.Codelists.Single(c => c.Geolcode == 2).De, context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).De);
-        }
-        finally
-        {
-            if (addedHydrotest != null)
-            {
-                var hydrotestToDelete = context.Hydrotests.SingleOrDefault(w => w.Id == addedHydrotest.Id);
-                if (hydrotestToDelete != null)
-                {
-                    context.Hydrotests.Remove(hydrotestToDelete);
-                    await context.SaveChangesAsync();
-                }
-            }
-        }
+        Assert.AreEqual(savedHydrotest.Codelists.Count, 3);
+        Assert.AreEqual(savedHydrotest.Codelists.Single(c => c.Geolcode == 2).De, context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).De);
     }
 
     [TestMethod]

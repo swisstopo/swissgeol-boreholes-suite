@@ -22,4 +22,16 @@ internal static class ContextFactory
                     options.MigrationsHistoryTable("__EFMigrationsHistory", "bdms");
                 }).Options);
     }
+
+    /// <summary>
+    /// Creates a new DbContext and starts a transaction.
+    /// When disposing the context, the transaction will be rolled back.
+    /// </summary>
+    /// <returns>A <see cref="BdmsContext"/> in transactional state.</returns>
+    internal static BdmsContext GetTestContext()
+    {
+        var context = CreateContext();
+        context.Database.BeginTransaction();
+        return context;
+    }
 }
