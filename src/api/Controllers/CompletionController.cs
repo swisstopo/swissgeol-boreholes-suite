@@ -19,9 +19,9 @@ public class CompletionController : BdmsControllerBase<Completion>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Models.Completion"/>s, optionally filtered by <paramref name="boreholeId"/>./>.
+    /// Asynchronously gets the <see cref="Completion"/>s, optionally filtered by <paramref name="boreholeId"/>.
     /// </summary>
-    /// <param name="boreholeId">The id of the borehole containing the <see cref="Models.Completion"/> to get.</param>
+    /// <param name="boreholeId">The id of the borehole containing the <see cref="Completion"/> to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<Completion>>> GetAsync([FromQuery] int? boreholeId = null)
@@ -37,7 +37,7 @@ public class CompletionController : BdmsControllerBase<Completion>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Models.Completion"/> with the specified <paramref name="id"/>.
+    /// Asynchronously gets the <see cref="Completion"/> with the specified <paramref name="id"/>.
     /// </summary>
     [HttpGet("{id}")]
     [Authorize(Policy = PolicyNames.Viewer)]
