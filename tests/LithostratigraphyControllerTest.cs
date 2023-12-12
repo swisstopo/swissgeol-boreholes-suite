@@ -14,8 +14,6 @@ public class LithostratigraphyControllerTest
     private BdmsContext context;
     private LithostratigraphyController controller;
 
-    private int lithostratigraphyCount;
-
     private LithostratigraphyLayer GetLithostratigraphy() => new LithostratigraphyLayer
         {
             StratigraphyId = 6_000_001,
@@ -32,19 +30,12 @@ public class LithostratigraphyControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
-        controller = new LithostratigraphyController(ContextFactory.CreateContext(), new Mock<ILogger<LithostratigraphyLayer>>().Object) { ControllerContext = GetControllerContextAdmin() };
-
-        lithostratigraphyCount = context.LithostratigraphyLayers.Count();
+        context = ContextFactory.GetTestContext();
+        controller = new LithostratigraphyController(context, new Mock<ILogger<LithostratigraphyLayer>>().Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
-    public async Task TestCleanup()
-    {
-        Assert.AreEqual(lithostratigraphyCount, context.LithostratigraphyLayers.Count(), "Tests need to remove lithostratigraphy entries they create.");
-
-        await context.DisposeAsync();
-    }
+    public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
     public async Task GetEntriesByStratigraphyIdForInexistentId()
@@ -89,27 +80,12 @@ public class LithostratigraphyControllerTest
     {
         var lithostratigraphy = GetLithostratigraphy();
 
-        try
-        {
-            var response = await controller.CreateAsync(lithostratigraphy);
-            Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        var response = await controller.CreateAsync(lithostratigraphy);
+        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
 
-            lithostratigraphy = await context.LithostratigraphyLayers.FindAsync(lithostratigraphy.Id);
-            Assert.IsNotNull(lithostratigraphy);
-            Assert.AreEqual(15_300_284, lithostratigraphy.LithostratigraphyId);
-        }
-        finally
-        {
-            if (lithostratigraphy != null)
-            {
-                var lithoToDelete = context.LithostratigraphyLayers.SingleOrDefault(x => x.Id == lithostratigraphy.Id);
-                if (lithoToDelete != null)
-                {
-                    context.Remove(lithoToDelete);
-                    await context.SaveChangesAsync();
-                }
-            }
-        }
+        lithostratigraphy = await context.LithostratigraphyLayers.FindAsync(lithostratigraphy.Id);
+        Assert.IsNotNull(lithostratigraphy);
+        Assert.AreEqual(15_300_284, lithostratigraphy.LithostratigraphyId);
     }
 
     [TestMethod]
@@ -117,28 +93,16 @@ public class LithostratigraphyControllerTest
     {
         var lithostratigraphy = GetLithostratigraphy();
 
-        try
-        {
-            context.Add(lithostratigraphy);
-            await context.SaveChangesAsync();
+        context.Add(lithostratigraphy);
+        await context.SaveChangesAsync();
 
-            var response = await controller.DeleteAsync(lithostratigraphy.Id);
-            Assert.IsInstanceOfType(response, typeof(OkResult));
+        var response = await controller.DeleteAsync(lithostratigraphy.Id);
+        Assert.IsInstanceOfType(response, typeof(OkResult));
 
-            response = await controller.DeleteAsync(lithostratigraphy.Id);
-            Assert.IsInstanceOfType(response, typeof(NotFoundResult));
+        response = await controller.DeleteAsync(lithostratigraphy.Id);
+        Assert.IsInstanceOfType(response, typeof(NotFoundResult));
 
-            Assert.AreEqual(null, context.LithostratigraphyLayers.SingleOrDefault(x => x.Id == lithostratigraphy.Id));
-        }
-        finally
-        {
-            var lithoToDelete = context.LithostratigraphyLayers.SingleOrDefault(x => x.Id == lithostratigraphy.Id);
-            if (lithoToDelete != null)
-            {
-                context.Remove(lithoToDelete);
-                await context.SaveChangesAsync();
-            }
-        }
+        Assert.AreEqual(null, context.LithostratigraphyLayers.SingleOrDefault(x => x.Id == lithostratigraphy.Id));
     }
 
     [TestMethod]
@@ -159,32 +123,16 @@ public class LithostratigraphyControllerTest
             LithostratigraphyId = 15_300_623,
         };
 
-        try
-        {
-            context.Add(lithostratigraphy);
-            await context.SaveChangesAsync();
+        context.Add(lithostratigraphy);
+        await context.SaveChangesAsync();
 
-            changedLithostratigraphy.Id = lithostratigraphy.Id;
-            var response = await controller.EditAsync(changedLithostratigraphy);
-            Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        changedLithostratigraphy.Id = lithostratigraphy.Id;
+        var response = await controller.EditAsync(changedLithostratigraphy);
+        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
 
-            var updatedContext = ContextFactory.CreateContext();
-            lithostratigraphy = updatedContext.LithostratigraphyLayers.SingleOrDefault(x => x.Id == lithostratigraphy.Id);
-            Assert.IsNotNull(lithostratigraphy);
-            Assert.AreEqual(15_300_623, lithostratigraphy.LithostratigraphyId);
-        }
-        finally
-        {
-            if (lithostratigraphy != null)
-            {
-                var lithoToDelete = context.LithostratigraphyLayers.SingleOrDefault(x => x.Id == lithostratigraphy.Id);
-                if (lithoToDelete != null)
-                {
-                    context.Remove(lithoToDelete);
-                    await context.SaveChangesAsync();
-                }
-            }
-        }
+        lithostratigraphy = context.LithostratigraphyLayers.SingleOrDefault(x => x.Id == lithostratigraphy.Id);
+        Assert.IsNotNull(lithostratigraphy);
+        Assert.AreEqual(15_300_623, lithostratigraphy.LithostratigraphyId);
     }
 
     [TestMethod]
@@ -215,27 +163,17 @@ public class LithostratigraphyControllerTest
         var stratigraphyId = 6_000_009;
         var createdLayerIds = new List<int>();
 
-        try
-        {
-            // create layers out of order
-            await CreateLayer(createdLayerIds, new LithostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 130, ToDepth = 140 });
-            await CreateLayer(createdLayerIds, new LithostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 100, ToDepth = 110 });
-            await CreateLayer(createdLayerIds, new LithostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 120, ToDepth = 130 });
+        // Create layers out of order
+        await CreateLayer(createdLayerIds, new LithostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 130, ToDepth = 140 });
+        await CreateLayer(createdLayerIds, new LithostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 100, ToDepth = 110 });
+        await CreateLayer(createdLayerIds, new LithostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 120, ToDepth = 130 });
 
-            var layers = await controller.GetAsync(stratigraphyId).ConfigureAwait(false);
-            Assert.IsNotNull(layers);
-            Assert.AreEqual(13, layers.Count());
-            for (int i = 1; i < layers.Count(); i++)
-            {
-                Assert.IsTrue(layers.ElementAt(i - 1).FromDepth <= layers.ElementAt(i).FromDepth, "Expected layers to be sorted by FromDepth but after {0} followed {1}", layers.ElementAt(i - 1).FromDepth, layers.ElementAt(i).FromDepth);
-            }
-        }
-        finally
+        var layers = await controller.GetAsync(stratigraphyId).ConfigureAwait(false);
+        Assert.IsNotNull(layers);
+        Assert.AreEqual(13, layers.Count());
+        for (int i = 1; i < layers.Count(); i++)
         {
-            foreach (var layerId in createdLayerIds)
-            {
-                await controller.DeleteAsync(layerId).ConfigureAwait(false);
-            }
+            Assert.IsTrue(layers.ElementAt(i - 1).FromDepth <= layers.ElementAt(i).FromDepth, "Expected layers to be sorted by FromDepth but after {0} followed {1}", layers.ElementAt(i - 1).FromDepth, layers.ElementAt(i).FromDepth);
         }
     }
 

@@ -9,7 +9,7 @@ public class UserControllerTest
     private BdmsContext context;
 
     [TestInitialize]
-    public void TestInitialize() => context = ContextFactory.CreateContext();
+    public void TestInitialize() => context = ContextFactory.GetTestContext();
 
     [TestCleanup]
     public async Task TestCleanup() => await context.DisposeAsync();

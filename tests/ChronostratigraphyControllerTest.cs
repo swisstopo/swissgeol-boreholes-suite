@@ -17,15 +17,12 @@ public class ChronostratigraphyControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
-        controller = new ChronostratigraphyController(ContextFactory.CreateContext(), new Mock<ILogger<ChronostratigraphyLayer>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        context = ContextFactory.GetTestContext();
+        controller = new ChronostratigraphyController(context, new Mock<ILogger<ChronostratigraphyLayer>>().Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
-    public async Task TestCleanup()
-    {
-        await context.DisposeAsync();
-    }
+    public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
     public async Task GetAllEntriesAsync()
@@ -111,29 +108,18 @@ public class ChronostratigraphyControllerTest
         Assert.AreEqual(originalChronostratigraphy.StratigraphyId, chronostratigraphyToEdit.StratigraphyId);
         Assert.AreEqual(originalChronostratigraphy.ChronostratigraphyId, chronostratigraphyToEdit.ChronostratigraphyId);
 
-        try
-        {
-            // Update Chronostratigraphy
-            var response = await controller.EditAsync(newChronostratigraphy);
-            var okResult = response as OkObjectResult;
-            Assert.AreEqual(200, okResult.StatusCode);
+        // Update Chronostratigraphy
+        var response = await controller.EditAsync(newChronostratigraphy);
+        var okResult = response as OkObjectResult;
+        Assert.AreEqual(200, okResult.StatusCode);
 
-            // Assert Updates and unchanged values
-            var updatedContext = ContextFactory.CreateContext();
-            var updatedChronostratigraphy = updatedContext.ChronostratigraphyLayers.Single(c => c.Id == id);
+        // Assert Updates and unchanged values
+        var updatedChronostratigraphy = context.ChronostratigraphyLayers.Single(c => c.Id == id);
 
-            Assert.AreEqual(3, updatedChronostratigraphy.CreatedById);
-            Assert.AreEqual(1, updatedChronostratigraphy.UpdatedById);
-            Assert.AreEqual(6_000_010, updatedChronostratigraphy.StratigraphyId);
-            Assert.AreEqual(15_001_057, updatedChronostratigraphy.ChronostratigraphyId);
-        }
-        finally
-        {
-            // Reset edits
-            var cleanupContext = ContextFactory.CreateContext();
-            cleanupContext.Update(originalChronostratigraphy);
-            await cleanupContext.SaveChangesAsync();
-        }
+        Assert.AreEqual(3, updatedChronostratigraphy.CreatedById);
+        Assert.AreEqual(1, updatedChronostratigraphy.UpdatedById);
+        Assert.AreEqual(6_000_010, updatedChronostratigraphy.StratigraphyId);
+        Assert.AreEqual(15_001_057, updatedChronostratigraphy.ChronostratigraphyId);
     }
 
     [TestMethod]
@@ -211,27 +197,17 @@ public class ChronostratigraphyControllerTest
         var stratigraphyId = 6_000_009;
         var createdLayerIds = new List<int>();
 
-        try
-        {
-            // create layers out of order
-            await CreateLayer(createdLayerIds, new ChronostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 130, ToDepth = 140 });
-            await CreateLayer(createdLayerIds, new ChronostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 100, ToDepth = 110 });
-            await CreateLayer(createdLayerIds, new ChronostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 120, ToDepth = 130 });
+        // Create layers out of order
+        await CreateLayer(createdLayerIds, new ChronostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 130, ToDepth = 140 });
+        await CreateLayer(createdLayerIds, new ChronostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 100, ToDepth = 110 });
+        await CreateLayer(createdLayerIds, new ChronostratigraphyLayer { StratigraphyId = stratigraphyId, FromDepth = 120, ToDepth = 130 });
 
-            var layers = await controller.GetAsync(stratigraphyId).ConfigureAwait(false);
-            Assert.IsNotNull(layers);
-            Assert.AreEqual(13, layers.Count());
-            for (int i = 1; i < layers.Count(); i++)
-            {
-                Assert.IsTrue(layers.ElementAt(i - 1).FromDepth <= layers.ElementAt(i).FromDepth, "Expected layers to be sorted by FromDepth but after {0} followed {1}", layers.ElementAt(i - 1).FromDepth, layers.ElementAt(i).FromDepth);
-            }
-        }
-        finally
+        var layers = await controller.GetAsync(stratigraphyId).ConfigureAwait(false);
+        Assert.IsNotNull(layers);
+        Assert.AreEqual(13, layers.Count());
+        for (int i = 1; i < layers.Count(); i++)
         {
-            foreach (var layerId in createdLayerIds)
-            {
-                await controller.DeleteAsync(layerId).ConfigureAwait(false);
-            }
+            Assert.IsTrue(layers.ElementAt(i - 1).FromDepth <= layers.ElementAt(i).FromDepth, "Expected layers to be sorted by FromDepth but after {0} followed {1}", layers.ElementAt(i - 1).FromDepth, layers.ElementAt(i).FromDepth);
         }
     }
 

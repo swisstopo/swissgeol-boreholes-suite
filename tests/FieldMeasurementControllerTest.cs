@@ -18,7 +18,7 @@ public class FieldMeasurementControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
+        context = ContextFactory.GetTestContext();
         controller = new FieldMeasurementController(context, new Mock<ILogger<FieldMeasurement>>().Object)
         {
             ControllerContext = new ControllerContext
@@ -32,10 +32,7 @@ public class FieldMeasurementControllerTest
     }
 
     [TestCleanup]
-    public async Task TestCleanup()
-    {
-        await context.DisposeAsync();
-    }
+    public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
     public async Task GetAsyncReturnsAllEntities()
@@ -121,39 +118,30 @@ public class FieldMeasurementControllerTest
             Value = 6.1,
         };
 
-        try
-        {
-            context.FieldMeasurements.Add(originalFieldMeasurement);
-            await context.SaveChangesAsync();
+        context.FieldMeasurements.Add(originalFieldMeasurement);
+        await context.SaveChangesAsync();
 
-            var result = await controller.EditAsync(updatedFieldMeasurement) as OkObjectResult;
+        var result = await controller.EditAsync(updatedFieldMeasurement) as OkObjectResult;
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
-            var editedFieldMeasurement = context.FieldMeasurements.Single(w => w.Id == 1);
-            Assert.AreEqual(updatedFieldMeasurement.Id, editedFieldMeasurement.Id);
-            Assert.AreEqual(updatedFieldMeasurement.Type, editedFieldMeasurement.Type);
-            Assert.AreEqual(updatedFieldMeasurement.StartTime, editedFieldMeasurement.StartTime);
-            Assert.AreEqual(updatedFieldMeasurement.EndTime, editedFieldMeasurement.EndTime);
-            Assert.AreEqual(updatedFieldMeasurement.Duration, editedFieldMeasurement.Duration);
-            Assert.AreEqual(updatedFieldMeasurement.FromDepthM, editedFieldMeasurement.FromDepthM);
-            Assert.AreEqual(updatedFieldMeasurement.ToDepthM, editedFieldMeasurement.ToDepthM);
-            Assert.AreEqual(updatedFieldMeasurement.FromDepthMasl, editedFieldMeasurement.FromDepthMasl);
-            Assert.AreEqual(updatedFieldMeasurement.ToDepthMasl, editedFieldMeasurement.ToDepthMasl);
-            Assert.AreEqual(updatedFieldMeasurement.CompletionFinished, editedFieldMeasurement.CompletionFinished);
-            Assert.AreEqual(updatedFieldMeasurement.Comment, editedFieldMeasurement.Comment);
-            Assert.AreEqual(updatedFieldMeasurement.BoreholeId, editedFieldMeasurement.BoreholeId);
-            Assert.AreEqual(updatedFieldMeasurement.ReliabilityId, editedFieldMeasurement.ReliabilityId);
-            Assert.AreEqual(updatedFieldMeasurement.SampleTypeId, editedFieldMeasurement.SampleTypeId);
-            Assert.AreEqual(updatedFieldMeasurement.ParameterId, editedFieldMeasurement.ParameterId);
-            Assert.AreEqual(updatedFieldMeasurement.Value, editedFieldMeasurement.Value);
-        }
-        finally
-        {
-            var addedFieldMeasurement = context.FieldMeasurements.Single(w => w.Id == 1);
-            context.FieldMeasurements.Remove(addedFieldMeasurement);
-            await context.SaveChangesAsync();
-        }
+        Assert.IsNotNull(result);
+        Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+        var editedFieldMeasurement = context.FieldMeasurements.Single(w => w.Id == 1);
+        Assert.AreEqual(updatedFieldMeasurement.Id, editedFieldMeasurement.Id);
+        Assert.AreEqual(updatedFieldMeasurement.Type, editedFieldMeasurement.Type);
+        Assert.AreEqual(updatedFieldMeasurement.StartTime, editedFieldMeasurement.StartTime);
+        Assert.AreEqual(updatedFieldMeasurement.EndTime, editedFieldMeasurement.EndTime);
+        Assert.AreEqual(updatedFieldMeasurement.Duration, editedFieldMeasurement.Duration);
+        Assert.AreEqual(updatedFieldMeasurement.FromDepthM, editedFieldMeasurement.FromDepthM);
+        Assert.AreEqual(updatedFieldMeasurement.ToDepthM, editedFieldMeasurement.ToDepthM);
+        Assert.AreEqual(updatedFieldMeasurement.FromDepthMasl, editedFieldMeasurement.FromDepthMasl);
+        Assert.AreEqual(updatedFieldMeasurement.ToDepthMasl, editedFieldMeasurement.ToDepthMasl);
+        Assert.AreEqual(updatedFieldMeasurement.CompletionFinished, editedFieldMeasurement.CompletionFinished);
+        Assert.AreEqual(updatedFieldMeasurement.Comment, editedFieldMeasurement.Comment);
+        Assert.AreEqual(updatedFieldMeasurement.BoreholeId, editedFieldMeasurement.BoreholeId);
+        Assert.AreEqual(updatedFieldMeasurement.ReliabilityId, editedFieldMeasurement.ReliabilityId);
+        Assert.AreEqual(updatedFieldMeasurement.SampleTypeId, editedFieldMeasurement.SampleTypeId);
+        Assert.AreEqual(updatedFieldMeasurement.ParameterId, editedFieldMeasurement.ParameterId);
+        Assert.AreEqual(updatedFieldMeasurement.Value, editedFieldMeasurement.Value);
     }
 
     [TestMethod]
@@ -189,43 +177,31 @@ public class FieldMeasurementControllerTest
             Value = 9453.456,
         };
 
-        try
-        {
-            var createResponse = await controller.CreateAsync(newFieldMeasurement);
-            Assert.IsInstanceOfType(createResponse, typeof(OkObjectResult));
+        var createResponse = await controller.CreateAsync(newFieldMeasurement);
+        Assert.IsInstanceOfType(createResponse, typeof(OkObjectResult));
 
-            newFieldMeasurement = await context.FieldMeasurements.FindAsync(newFieldMeasurement.Id);
-            Assert.IsNotNull(newFieldMeasurement);
-            Assert.AreEqual(newFieldMeasurement.Type, ObservationType.FieldMeasurement);
-            Assert.AreEqual(newFieldMeasurement.StartTime, new DateTime(2021, 1, 31, 1, 10, 00).ToUniversalTime());
-            Assert.AreEqual(newFieldMeasurement.EndTime, new DateTime(2020, 6, 4, 3, 4, 00).ToUniversalTime());
-            Assert.AreEqual(newFieldMeasurement.Duration, 118);
-            Assert.AreEqual(newFieldMeasurement.FromDepthM, 17.532);
-            Assert.AreEqual(newFieldMeasurement.ToDepthM, 702.12);
-            Assert.AreEqual(newFieldMeasurement.FromDepthMasl, 82.714);
-            Assert.AreEqual(newFieldMeasurement.ToDepthMasl, 2633.2);
-            Assert.AreEqual(newFieldMeasurement.CompletionFinished, false);
-            Assert.AreEqual(newFieldMeasurement.Comment, "New test comment");
-            Assert.AreEqual(newFieldMeasurement.BoreholeId, 1006493);
-            Assert.AreEqual(newFieldMeasurement.ReliabilityId, 15203158);
-            Assert.AreEqual(newFieldMeasurement.SampleTypeId, 15203209);
-            Assert.AreEqual(newFieldMeasurement.ParameterId, 15203214);
-            Assert.AreEqual(newFieldMeasurement.Value, 9453.456);
+        newFieldMeasurement = await context.FieldMeasurements.FindAsync(newFieldMeasurement.Id);
+        Assert.IsNotNull(newFieldMeasurement);
+        Assert.AreEqual(newFieldMeasurement.Type, ObservationType.FieldMeasurement);
+        Assert.AreEqual(newFieldMeasurement.StartTime, new DateTime(2021, 1, 31, 1, 10, 00).ToUniversalTime());
+        Assert.AreEqual(newFieldMeasurement.EndTime, new DateTime(2020, 6, 4, 3, 4, 00).ToUniversalTime());
+        Assert.AreEqual(newFieldMeasurement.Duration, 118);
+        Assert.AreEqual(newFieldMeasurement.FromDepthM, 17.532);
+        Assert.AreEqual(newFieldMeasurement.ToDepthM, 702.12);
+        Assert.AreEqual(newFieldMeasurement.FromDepthMasl, 82.714);
+        Assert.AreEqual(newFieldMeasurement.ToDepthMasl, 2633.2);
+        Assert.AreEqual(newFieldMeasurement.CompletionFinished, false);
+        Assert.AreEqual(newFieldMeasurement.Comment, "New test comment");
+        Assert.AreEqual(newFieldMeasurement.BoreholeId, 1006493);
+        Assert.AreEqual(newFieldMeasurement.ReliabilityId, 15203158);
+        Assert.AreEqual(newFieldMeasurement.SampleTypeId, 15203209);
+        Assert.AreEqual(newFieldMeasurement.ParameterId, 15203214);
+        Assert.AreEqual(newFieldMeasurement.Value, 9453.456);
 
-            var deleteResponse = await controller.DeleteAsync(newFieldMeasurement.Id);
-            Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
+        var deleteResponse = await controller.DeleteAsync(newFieldMeasurement.Id);
+        Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
 
-            deleteResponse = await controller.DeleteAsync(newFieldMeasurement.Id);
-            Assert.IsInstanceOfType(deleteResponse, typeof(NotFoundResult));
-        }
-        finally
-        {
-            var addedFieldMeasurement = context.FieldMeasurements.SingleOrDefault(w => w.Id == 3);
-            if (addedFieldMeasurement != null)
-            {
-                context.FieldMeasurements.Remove(addedFieldMeasurement);
-                await context.SaveChangesAsync();
-            }
-        }
+        deleteResponse = await controller.DeleteAsync(newFieldMeasurement.Id);
+        Assert.IsInstanceOfType(deleteResponse, typeof(NotFoundResult));
     }
 }

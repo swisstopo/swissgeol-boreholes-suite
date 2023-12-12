@@ -15,26 +15,15 @@ public class LayerControllerTest
     private BdmsContext context;
     private LayerController controller;
 
-    private int layerCount;
-    private int stratigraphyCount;
-
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
-        controller = new LayerController(ContextFactory.CreateContext(), new Mock<ILogger<Layer>>().Object) { ControllerContext = GetControllerContextAdmin() };
-        layerCount = context.Layers.Count();
-        stratigraphyCount = context.Stratigraphies.Count();
+        context = ContextFactory.GetTestContext();
+        controller = new LayerController(context, new Mock<ILogger<Layer>>().Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
-    public async Task TestCleanup()
-    {
-        Assert.AreEqual(layerCount, context.Layers.Count(), "Tests need to remove layers, they created.");
-        Assert.AreEqual(stratigraphyCount, context.Stratigraphies.Count(), "Tests need to remove stratigraphies, they created.");
-
-        await context.DisposeAsync();
-    }
+    public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
     [TestCategory("LongRunning")]
@@ -58,26 +47,15 @@ public class LayerControllerTest
     [TestMethod]
     public async Task GetEntriesByProfileIdExistingIdNoLayers()
     {
-        var emptyStratigraphy = new Stratigraphy()
-        {
-            KindId = 3000,
-        };
-        try
-        {
-            context.Stratigraphies.Add(emptyStratigraphy);
-            await context.SaveChangesAsync().ConfigureAwait(false);
+        var emptyStratigraphy = new Stratigraphy { KindId = 3000 };
 
-            var response = await controller.GetAsync(emptyStratigraphy.Id).ConfigureAwait(false);
-            var layers = response?.Value;
-            Assert.IsNotNull(layers);
-            Assert.AreEqual(0, layers.Count());
-        }
-        finally
-        {
-            var cleanupContext = ContextFactory.CreateContext();
-            cleanupContext.Remove(emptyStratigraphy);
-            await cleanupContext.SaveChangesAsync();
-        }
+        context.Stratigraphies.Add(emptyStratigraphy);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var response = await controller.GetAsync(emptyStratigraphy.Id).ConfigureAwait(false);
+        var layers = response?.Value;
+        Assert.IsNotNull(layers);
+        Assert.AreEqual(0, layers.Count());
     }
 
     [TestMethod]
@@ -200,29 +178,18 @@ public class LayerControllerTest
         Assert.AreEqual(6_000_008, layerToEdit.InstrumentCasingId);
         Assert.AreEqual("Practical Concrete Ball Fully-configurable invoice Small Rubber Car", layerToEdit.Notes);
 
-        try
-        {
-            // Update Layer
-            var response = await controller.EditAsync(newLayer);
-            var okResult = response as OkObjectResult;
-            Assert.AreEqual(200, okResult.StatusCode);
+        // Update Layer
+        var response = await controller.EditAsync(newLayer);
+        var okResult = response as OkObjectResult;
+        Assert.AreEqual(200, okResult.StatusCode);
 
-            // Assert Updates and unchanged values
-            var updatedContext = ContextFactory.CreateContext();
-            var updatedLayer = updatedContext.Layers.Single(c => c.Id == id);
+        // Assert Updates and unchanged values
+        var updatedLayer = context.Layers.Single(c => c.Id == id);
 
-            Assert.AreEqual(4, updatedLayer.CreatedById);
-            Assert.AreEqual(1, updatedLayer.UpdatedById);
-            Assert.AreEqual(0, updatedLayer.InstrumentCasingId);
-            Assert.AreEqual("Freddy ate more cake than Maria.", updatedLayer.Notes);
-        }
-        finally
-        {
-            // Reset edits
-            var cleanupContext = ContextFactory.CreateContext();
-            cleanupContext.Update(originalLayer);
-            await cleanupContext.SaveChangesAsync();
-        }
+        Assert.AreEqual(4, updatedLayer.CreatedById);
+        Assert.AreEqual(1, updatedLayer.UpdatedById);
+        Assert.AreEqual(0, updatedLayer.InstrumentCasingId);
+        Assert.AreEqual("Freddy ate more cake than Maria.", updatedLayer.Notes);
     }
 
     [TestMethod]
@@ -324,70 +291,58 @@ public class LayerControllerTest
             CodelistIds = new List<int> { firstCodeListId, secondCodeListId },
         };
 
-        Layer? addedLayer = null;
-        try
-        {
-            var response = await controller.CreateAsync(layerToAdd);
-            var okResult = response as OkObjectResult;
+        var response = await controller.CreateAsync(layerToAdd);
+        var okResult = response as OkObjectResult;
 
-            addedLayer = context.Layers.Include(l => l.Codelists).Single(c => c.Id == layerToAdd.Id);
+        var addedLayer = context.Layers.Include(l => l.Codelists).Single(c => c.Id == layerToAdd.Id);
 
-            Assert.AreEqual(layerToAdd.AlterationId, addedLayer.AlterationId);
-            Assert.AreEqual(layerToAdd.Casing, addedLayer.Casing);
-            Assert.AreEqual(layerToAdd.CasingDateFinish, addedLayer.CasingDateFinish);
-            Assert.AreEqual(layerToAdd.CasingDateSpud, addedLayer.CasingDateSpud);
-            Assert.AreEqual(layerToAdd.CasingInnerDiameter, addedLayer.CasingInnerDiameter);
-            Assert.AreEqual(layerToAdd.CasingKindId, addedLayer.CasingKindId);
-            Assert.AreEqual(layerToAdd.CasingMaterialId, addedLayer.CasingMaterialId);
-            Assert.AreEqual(layerToAdd.CasingOuterDiameter, addedLayer.CasingOuterDiameter);
-            Assert.AreEqual(layerToAdd.CohesionId, addedLayer.CohesionId);
-            Assert.AreEqual(layerToAdd.CompactnessId, addedLayer.CompactnessId);
-            Assert.AreEqual(layerToAdd.ConsistanceId, addedLayer.ConsistanceId);
-            Assert.AreEqual(layerToAdd.FillKindId, addedLayer.FillKindId);
-            Assert.AreEqual(layerToAdd.FillMaterialId, addedLayer.FillMaterialId);
-            Assert.AreEqual(layerToAdd.FromDepth, addedLayer.FromDepth);
-            Assert.AreEqual(layerToAdd.GradationId, addedLayer.GradationId);
-            Assert.AreEqual(layerToAdd.GrainSize1Id, addedLayer.GrainSize1Id);
-            Assert.AreEqual(layerToAdd.GrainSize2Id, addedLayer.GrainSize2Id);
-            Assert.AreEqual(layerToAdd.HumidityId, addedLayer.HumidityId);
-            Assert.AreEqual(layerToAdd.Id, addedLayer.Id);
-            Assert.AreEqual(layerToAdd.Instrument, addedLayer.Instrument);
-            Assert.AreEqual(layerToAdd.InstrumentKindId, addedLayer.InstrumentKindId);
-            Assert.AreEqual(layerToAdd.InstrumentStatusId, addedLayer.InstrumentStatusId);
-            Assert.AreEqual(layerToAdd.InstrumentCasingId, addedLayer.InstrumentCasingId);
-            Assert.AreEqual(layerToAdd.IsLast, addedLayer.IsLast);
-            Assert.AreEqual(layerToAdd.IsStriae, addedLayer.IsStriae);
-            Assert.AreEqual(layerToAdd.IsUndefined, addedLayer.IsUndefined);
-            Assert.AreEqual(layerToAdd.LithologyId, addedLayer.LithologyId);
-            Assert.AreEqual(layerToAdd.LithologyTopBedrockId, addedLayer.LithologyTopBedrockId);
-            Assert.AreEqual(layerToAdd.LithostratigraphyId, addedLayer.LithostratigraphyId);
-            Assert.AreEqual(layerToAdd.Notes, addedLayer.Notes);
-            Assert.AreEqual(layerToAdd.OriginalUscs, addedLayer.OriginalUscs);
-            Assert.AreEqual(layerToAdd.PlasticityId, addedLayer.PlasticityId);
-            Assert.AreEqual(layerToAdd.QtDescriptionId, addedLayer.QtDescriptionId);
-            Assert.AreEqual(layerToAdd.StratigraphyId, addedLayer.StratigraphyId);
-            Assert.AreEqual(layerToAdd.ToDepth, addedLayer.ToDepth);
-            Assert.AreEqual(layerToAdd.Uscs1Id, addedLayer.Uscs1Id);
-            Assert.AreEqual(layerToAdd.Uscs2Id, addedLayer.Uscs2Id);
+        Assert.AreEqual(layerToAdd.AlterationId, addedLayer.AlterationId);
+        Assert.AreEqual(layerToAdd.Casing, addedLayer.Casing);
+        Assert.AreEqual(layerToAdd.CasingDateFinish, addedLayer.CasingDateFinish);
+        Assert.AreEqual(layerToAdd.CasingDateSpud, addedLayer.CasingDateSpud);
+        Assert.AreEqual(layerToAdd.CasingInnerDiameter, addedLayer.CasingInnerDiameter);
+        Assert.AreEqual(layerToAdd.CasingKindId, addedLayer.CasingKindId);
+        Assert.AreEqual(layerToAdd.CasingMaterialId, addedLayer.CasingMaterialId);
+        Assert.AreEqual(layerToAdd.CasingOuterDiameter, addedLayer.CasingOuterDiameter);
+        Assert.AreEqual(layerToAdd.CohesionId, addedLayer.CohesionId);
+        Assert.AreEqual(layerToAdd.CompactnessId, addedLayer.CompactnessId);
+        Assert.AreEqual(layerToAdd.ConsistanceId, addedLayer.ConsistanceId);
+        Assert.AreEqual(layerToAdd.FillKindId, addedLayer.FillKindId);
+        Assert.AreEqual(layerToAdd.FillMaterialId, addedLayer.FillMaterialId);
+        Assert.AreEqual(layerToAdd.FromDepth, addedLayer.FromDepth);
+        Assert.AreEqual(layerToAdd.GradationId, addedLayer.GradationId);
+        Assert.AreEqual(layerToAdd.GrainSize1Id, addedLayer.GrainSize1Id);
+        Assert.AreEqual(layerToAdd.GrainSize2Id, addedLayer.GrainSize2Id);
+        Assert.AreEqual(layerToAdd.HumidityId, addedLayer.HumidityId);
+        Assert.AreEqual(layerToAdd.Id, addedLayer.Id);
+        Assert.AreEqual(layerToAdd.Instrument, addedLayer.Instrument);
+        Assert.AreEqual(layerToAdd.InstrumentKindId, addedLayer.InstrumentKindId);
+        Assert.AreEqual(layerToAdd.InstrumentStatusId, addedLayer.InstrumentStatusId);
+        Assert.AreEqual(layerToAdd.InstrumentCasingId, addedLayer.InstrumentCasingId);
+        Assert.AreEqual(layerToAdd.IsLast, addedLayer.IsLast);
+        Assert.AreEqual(layerToAdd.IsStriae, addedLayer.IsStriae);
+        Assert.AreEqual(layerToAdd.IsUndefined, addedLayer.IsUndefined);
+        Assert.AreEqual(layerToAdd.LithologyId, addedLayer.LithologyId);
+        Assert.AreEqual(layerToAdd.LithologyTopBedrockId, addedLayer.LithologyTopBedrockId);
+        Assert.AreEqual(layerToAdd.LithostratigraphyId, addedLayer.LithostratigraphyId);
+        Assert.AreEqual(layerToAdd.Notes, addedLayer.Notes);
+        Assert.AreEqual(layerToAdd.OriginalUscs, addedLayer.OriginalUscs);
+        Assert.AreEqual(layerToAdd.PlasticityId, addedLayer.PlasticityId);
+        Assert.AreEqual(layerToAdd.QtDescriptionId, addedLayer.QtDescriptionId);
+        Assert.AreEqual(layerToAdd.StratigraphyId, addedLayer.StratigraphyId);
+        Assert.AreEqual(layerToAdd.ToDepth, addedLayer.ToDepth);
+        Assert.AreEqual(layerToAdd.Uscs1Id, addedLayer.Uscs1Id);
+        Assert.AreEqual(layerToAdd.Uscs2Id, addedLayer.Uscs2Id);
 
-            Assert.AreEqual(layerToAdd.Updated.Value.Date, addedLayer.Updated?.Date);
-            Assert.AreEqual(layerToAdd.UpdatedById, addedLayer.UpdatedById);
-            Assert.AreEqual(layerToAdd.CreatedById, addedLayer.CreatedById);
-            Assert.AreEqual(layerToAdd.Created.Value.Date, addedLayer.Created?.Date);
+        Assert.AreEqual(layerToAdd.Updated.Value.Date, addedLayer.Updated?.Date);
+        Assert.AreEqual(layerToAdd.UpdatedById, addedLayer.UpdatedById);
+        Assert.AreEqual(layerToAdd.CreatedById, addedLayer.CreatedById);
+        Assert.AreEqual(layerToAdd.Created.Value.Date, addedLayer.Created?.Date);
 
-            Assert.AreEqual(layerToAdd.LayerCodelists.Count, addedLayer.LayerCodelists.Count);
-            var layerCodeList = addedLayer.LayerCodelists.Single(c => c.CodelistId == firstCodeListId);
-            Assert.IsNotNull(layerCodeList.Codelist);
-            layerCodeList = addedLayer.LayerCodelists.Single(c => c.CodelistId == secondCodeListId);
-            Assert.IsNotNull(layerCodeList.Codelist);
-        }
-        finally
-        {
-            if (addedLayer != null)
-            {
-                context.Layers.Remove(addedLayer);
-                context.SaveChanges();
-            }
-        }
+        Assert.AreEqual(layerToAdd.LayerCodelists.Count, addedLayer.LayerCodelists.Count);
+        var layerCodeList = addedLayer.LayerCodelists.Single(c => c.CodelistId == firstCodeListId);
+        Assert.IsNotNull(layerCodeList.Codelist);
+        layerCodeList = addedLayer.LayerCodelists.Single(c => c.CodelistId == secondCodeListId);
+        Assert.IsNotNull(layerCodeList.Codelist);
     }
 }

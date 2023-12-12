@@ -19,7 +19,7 @@ public class WaterIngressControllerTests
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
+        context = ContextFactory.GetTestContext();
         controller = new WaterIngressController(context, new Mock<ILogger<WaterIngress>>().Object)
         {
             ControllerContext = new ControllerContext
@@ -33,10 +33,7 @@ public class WaterIngressControllerTests
     }
 
     [TestCleanup]
-    public async Task TestCleanup()
-    {
-        await context.DisposeAsync();
-    }
+    public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
     public async Task GetAsyncReturnsAllEntities()
@@ -119,38 +116,29 @@ public class WaterIngressControllerTests
             ConditionsId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Single(c => c.Geolcode == 2).Id,
         };
 
-        try
-        {
-            context.WaterIngresses.Add(originalWaterIngress);
-            await context.SaveChangesAsync();
+        context.WaterIngresses.Add(originalWaterIngress);
+        await context.SaveChangesAsync();
 
-            var result = await controller.EditAsync(updatedWaterIngress) as OkObjectResult;
+        var result = await controller.EditAsync(updatedWaterIngress) as OkObjectResult;
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
-            var editedWaterIngress = context.WaterIngresses.Include(w => w.Quantity).Single(w => w.Id == 1);
-            Assert.AreEqual(updatedWaterIngress.Id, editedWaterIngress.Id);
-            Assert.AreEqual(updatedWaterIngress.Type, editedWaterIngress.Type);
-            Assert.AreEqual(updatedWaterIngress.StartTime, editedWaterIngress.StartTime);
-            Assert.AreEqual(updatedWaterIngress.EndTime, editedWaterIngress.EndTime);
-            Assert.AreEqual(updatedWaterIngress.Duration, editedWaterIngress.Duration);
-            Assert.AreEqual(updatedWaterIngress.FromDepthM, editedWaterIngress.FromDepthM);
-            Assert.AreEqual(updatedWaterIngress.ToDepthM, editedWaterIngress.ToDepthM);
-            Assert.AreEqual(updatedWaterIngress.FromDepthMasl, editedWaterIngress.FromDepthMasl);
-            Assert.AreEqual(updatedWaterIngress.ToDepthMasl, editedWaterIngress.ToDepthMasl);
-            Assert.AreEqual(updatedWaterIngress.CompletionFinished, editedWaterIngress.CompletionFinished);
-            Assert.AreEqual(updatedWaterIngress.Comment, editedWaterIngress.Comment);
-            Assert.AreEqual(updatedWaterIngress.BoreholeId, editedWaterIngress.BoreholeId);
-            Assert.AreEqual(updatedWaterIngress.ReliabilityId, editedWaterIngress.ReliabilityId);
-            Assert.AreEqual(updatedWaterIngress.QuantityId, editedWaterIngress.QuantityId);
-            Assert.AreEqual(updatedWaterIngress.ConditionsId, editedWaterIngress.ConditionsId);
-        }
-        finally
-        {
-            var addedWaterIngress = context.WaterIngresses.Single(w => w.Id == 1);
-            context.WaterIngresses.Remove(addedWaterIngress);
-            await context.SaveChangesAsync();
-        }
+        Assert.IsNotNull(result);
+        Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+        var editedWaterIngress = context.WaterIngresses.Include(w => w.Quantity).Single(w => w.Id == 1);
+        Assert.AreEqual(updatedWaterIngress.Id, editedWaterIngress.Id);
+        Assert.AreEqual(updatedWaterIngress.Type, editedWaterIngress.Type);
+        Assert.AreEqual(updatedWaterIngress.StartTime, editedWaterIngress.StartTime);
+        Assert.AreEqual(updatedWaterIngress.EndTime, editedWaterIngress.EndTime);
+        Assert.AreEqual(updatedWaterIngress.Duration, editedWaterIngress.Duration);
+        Assert.AreEqual(updatedWaterIngress.FromDepthM, editedWaterIngress.FromDepthM);
+        Assert.AreEqual(updatedWaterIngress.ToDepthM, editedWaterIngress.ToDepthM);
+        Assert.AreEqual(updatedWaterIngress.FromDepthMasl, editedWaterIngress.FromDepthMasl);
+        Assert.AreEqual(updatedWaterIngress.ToDepthMasl, editedWaterIngress.ToDepthMasl);
+        Assert.AreEqual(updatedWaterIngress.CompletionFinished, editedWaterIngress.CompletionFinished);
+        Assert.AreEqual(updatedWaterIngress.Comment, editedWaterIngress.Comment);
+        Assert.AreEqual(updatedWaterIngress.BoreholeId, editedWaterIngress.BoreholeId);
+        Assert.AreEqual(updatedWaterIngress.ReliabilityId, editedWaterIngress.ReliabilityId);
+        Assert.AreEqual(updatedWaterIngress.QuantityId, editedWaterIngress.QuantityId);
+        Assert.AreEqual(updatedWaterIngress.ConditionsId, editedWaterIngress.ConditionsId);
     }
 
     [TestMethod]
@@ -185,42 +173,30 @@ public class WaterIngressControllerTests
             ConditionsId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Single(c => c.Geolcode == 3).Id,
         };
 
-        try
-        {
-            var createResponse = await controller.CreateAsync(newWaterIngress);
-            Assert.IsInstanceOfType(createResponse, typeof(OkObjectResult));
+        var createResponse = await controller.CreateAsync(newWaterIngress);
+        Assert.IsInstanceOfType(createResponse, typeof(OkObjectResult));
 
-            newWaterIngress = await context.WaterIngresses.FindAsync(newWaterIngress.Id);
-            Assert.IsNotNull(newWaterIngress);
-            Assert.AreEqual(newWaterIngress.Type, ObservationType.WaterIngress);
-            Assert.AreEqual(newWaterIngress.StartTime, new DateTime(2021, 1, 31, 1, 10, 00).ToUniversalTime());
-            Assert.AreEqual(newWaterIngress.EndTime, new DateTime(2020, 6, 4, 3, 4, 00).ToUniversalTime());
-            Assert.AreEqual(newWaterIngress.Duration, 118);
-            Assert.AreEqual(newWaterIngress.FromDepthM, 17.532);
-            Assert.AreEqual(newWaterIngress.ToDepthM, 702.12);
-            Assert.AreEqual(newWaterIngress.FromDepthMasl, 82.714);
-            Assert.AreEqual(newWaterIngress.ToDepthMasl, 2633.2);
-            Assert.AreEqual(newWaterIngress.CompletionFinished, false);
-            Assert.AreEqual(newWaterIngress.Comment, "New test comment");
-            Assert.AreEqual(newWaterIngress.BoreholeId, 1006493);
-            Assert.AreEqual(newWaterIngress.ReliabilityId, 15203158);
-            Assert.AreEqual(newWaterIngress.QuantityId, 15203161);
-            Assert.AreEqual(newWaterIngress.ConditionsId, 15203167);
+        newWaterIngress = await context.WaterIngresses.FindAsync(newWaterIngress.Id);
+        Assert.IsNotNull(newWaterIngress);
+        Assert.AreEqual(newWaterIngress.Type, ObservationType.WaterIngress);
+        Assert.AreEqual(newWaterIngress.StartTime, new DateTime(2021, 1, 31, 1, 10, 00).ToUniversalTime());
+        Assert.AreEqual(newWaterIngress.EndTime, new DateTime(2020, 6, 4, 3, 4, 00).ToUniversalTime());
+        Assert.AreEqual(newWaterIngress.Duration, 118);
+        Assert.AreEqual(newWaterIngress.FromDepthM, 17.532);
+        Assert.AreEqual(newWaterIngress.ToDepthM, 702.12);
+        Assert.AreEqual(newWaterIngress.FromDepthMasl, 82.714);
+        Assert.AreEqual(newWaterIngress.ToDepthMasl, 2633.2);
+        Assert.AreEqual(newWaterIngress.CompletionFinished, false);
+        Assert.AreEqual(newWaterIngress.Comment, "New test comment");
+        Assert.AreEqual(newWaterIngress.BoreholeId, 1006493);
+        Assert.AreEqual(newWaterIngress.ReliabilityId, 15203158);
+        Assert.AreEqual(newWaterIngress.QuantityId, 15203161);
+        Assert.AreEqual(newWaterIngress.ConditionsId, 15203167);
 
-            var deleteResponse = await controller.DeleteAsync(newWaterIngress.Id);
-            Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
+        var deleteResponse = await controller.DeleteAsync(newWaterIngress.Id);
+        Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
 
-            deleteResponse = await controller.DeleteAsync(newWaterIngress.Id);
-            Assert.IsInstanceOfType(deleteResponse, typeof(NotFoundResult));
-        }
-        finally
-        {
-            var addedWaterIngress = context.WaterIngresses.SingleOrDefault(w => w.Id == 3);
-            if (addedWaterIngress != null)
-            {
-                context.WaterIngresses.Remove(addedWaterIngress);
-                await context.SaveChangesAsync();
-            }
-        }
+        deleteResponse = await controller.DeleteAsync(newWaterIngress.Id);
+        Assert.IsInstanceOfType(deleteResponse, typeof(NotFoundResult));
     }
 }

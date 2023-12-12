@@ -18,27 +18,15 @@ public class StratigraphyControllerTest
     private BdmsContext context;
     private StratigraphyController controller;
 
-    private int stratigraphyCount;
-    private int boreholeCount;
-
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
-        controller = new StratigraphyController(context, new Mock<ILogger<StratigraphyController>>().Object) { ControllerContext = GetControllerContextAdmin() };
-
-        stratigraphyCount = context.Stratigraphies.Count();
-        boreholeCount = context.Boreholes.Count();
+        context = ContextFactory.GetTestContext();
+        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
-    public async Task TestCleanup()
-    {
-        Assert.AreEqual(stratigraphyCount, context.Stratigraphies.Count(), "Tests need to remove stratigraphies, they created.");
-        Assert.AreEqual(boreholeCount, context.Boreholes.Count(), "Tests need to remove boreholes, they created.");
-
-        await context.DisposeAsync();
-    }
+    public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
     public async Task GetAsyncReturnsAllEntities()
@@ -62,22 +50,13 @@ public class StratigraphyControllerTest
     public async Task GetEntriesByProfileIdExistingIdNoLayers()
     {
         var emptyBorehole = new Borehole();
-        try
-        {
-            context.Boreholes.Add(emptyBorehole);
-            await context.SaveChangesAsync().ConfigureAwait(false);
+        context.Boreholes.Add(emptyBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
-            var response = await controller.GetAsync(emptyBorehole.Id).ConfigureAwait(false);
-            var layers = response?.Value;
-            Assert.IsNotNull(layers);
-            Assert.AreEqual(0, layers.Count());
-        }
-        finally
-        {
-            var cleanupContext = ContextFactory.CreateContext();
-            cleanupContext.Remove(emptyBorehole);
-            await cleanupContext.SaveChangesAsync();
-        }
+        var response = await controller.GetAsync(emptyBorehole.Id).ConfigureAwait(false);
+        var layers = response?.Value;
+        Assert.IsNotNull(layers);
+        Assert.AreEqual(0, layers.Count());
     }
 
     [TestMethod]
@@ -102,68 +81,46 @@ public class StratigraphyControllerTest
     [TestMethod]
     public async Task Copy()
     {
-        Stratigraphy? copiedStratigraphy = null;
+        var originalStratigraphy = GetStratigraphy(StratigraphyId);
+        Assert.IsNotNull(originalStratigraphy?.Layers, "Precondition: Stratigraphy has Layers");
+        Assert.IsTrue(originalStratigraphy?.Layers.Any(x => x.LayerCodelists?.Any() ?? false), "Precondition: Stratigraphy has layers with multiple codelist values");
+        Assert.IsNotNull(originalStratigraphy?.LithologicalDescriptions, "Precondition: Stratigraphy has LithologicalDescriptions");
+        Assert.IsNotNull(originalStratigraphy?.FaciesDescriptions, "Precondition: Stratigraphy has FaciesDescriptions");
 
-        try
-        {
-            var originalStratigraphy = GetStratigraphy(StratigraphyId);
-            Assert.IsNotNull(originalStratigraphy?.Layers, "Precondition: Stratigraphy has Layers");
-            Assert.IsTrue(originalStratigraphy?.Layers.Any(x => x.LayerCodelists?.Any() ?? false), "Precondition: Stratigraphy has layers with multiple codelist values");
-            Assert.IsNotNull(originalStratigraphy?.LithologicalDescriptions, "Precondition: Stratigraphy has LithologicalDescriptions");
-            Assert.IsNotNull(originalStratigraphy?.FaciesDescriptions, "Precondition: Stratigraphy has FaciesDescriptions");
+        var result = await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
+        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
 
-            var result = await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
-            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+        var copiedStratigraphyId = ((OkObjectResult?)result.Result)?.Value;
+        Assert.IsNotNull(copiedStratigraphyId);
+        Assert.IsInstanceOfType(copiedStratigraphyId, typeof(int));
+        var copiedStratigraphy = GetStratigraphy((int)copiedStratigraphyId);
 
-            var copiedStratigraphyId = ((OkObjectResult?)result.Result)?.Value;
-            Assert.IsNotNull(copiedStratigraphyId);
-            Assert.IsInstanceOfType(copiedStratigraphyId, typeof(int));
-            copiedStratigraphy = GetStratigraphy((int)copiedStratigraphyId);
+        Assert.AreEqual("Earnest Little (Clone)", copiedStratigraphy.Name);
+        Assert.AreEqual("admin", copiedStratigraphy.CreatedBy.Name);
+        Assert.AreEqual("controller", copiedStratigraphy.UpdatedBy.Name);
+        Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
+        Assert.AreSame(originalStratigraphy.Kind, copiedStratigraphy.Kind);
+        Assert.AreEqual(originalStratigraphy.FillCasing.Kind, copiedStratigraphy.FillCasing.Kind);
 
-            Assert.AreEqual("Earnest Little (Clone)", copiedStratigraphy.Name);
-            Assert.AreEqual("admin", copiedStratigraphy.CreatedBy.Name);
-            Assert.AreEqual("controller", copiedStratigraphy.UpdatedBy.Name);
-            Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
-            Assert.AreSame(originalStratigraphy.Kind, copiedStratigraphy.Kind);
-            Assert.AreEqual(originalStratigraphy.FillCasing.Kind, copiedStratigraphy.FillCasing.Kind);
+        Assert.AreNotEqual(originalStratigraphy.Id, copiedStratigraphy.Id);
+        Assert.AreNotSame(originalStratigraphy.Layers, copiedStratigraphy.Layers);
+        Assert.AreNotEqual(originalStratigraphy.Layers.First().Id, copiedStratigraphy.Layers.First().Id);
+        Assert.AreEqual("Drives olive", copiedStratigraphy.Layers.First().Casing);
 
-            Assert.AreNotEqual(originalStratigraphy.Id, copiedStratigraphy.Id);
-            Assert.AreNotSame(originalStratigraphy.Layers, copiedStratigraphy.Layers);
-            Assert.AreNotEqual(originalStratigraphy.Layers.First().Id, copiedStratigraphy.Layers.First().Id);
-            Assert.AreEqual("Drives olive", copiedStratigraphy.Layers.First().Casing);
+        Assert.AreNotSame(originalStratigraphy.LithologicalDescriptions, copiedStratigraphy.LithologicalDescriptions);
+        Assert.AreNotEqual(originalStratigraphy.LithologicalDescriptions.First().Id, copiedStratigraphy.LithologicalDescriptions.First().Id);
+        Assert.AreEqual("Drives olive mobile", copiedStratigraphy.LithologicalDescriptions.First().Description);
 
-            Assert.AreNotSame(originalStratigraphy.LithologicalDescriptions, copiedStratigraphy.LithologicalDescriptions);
-            Assert.AreNotEqual(originalStratigraphy.LithologicalDescriptions.First().Id, copiedStratigraphy.LithologicalDescriptions.First().Id);
-            Assert.AreEqual("Drives olive mobile", copiedStratigraphy.LithologicalDescriptions.First().Description);
+        Assert.AreNotSame(originalStratigraphy.FaciesDescriptions, copiedStratigraphy.FaciesDescriptions);
+        Assert.AreNotEqual(originalStratigraphy.FaciesDescriptions.First().Id, copiedStratigraphy.FaciesDescriptions.First().Id);
+        Assert.AreEqual("Drives olive mobile", copiedStratigraphy.FaciesDescriptions.First().Description);
 
-            Assert.AreNotSame(originalStratigraphy.FaciesDescriptions, copiedStratigraphy.FaciesDescriptions);
-            Assert.AreNotEqual(originalStratigraphy.FaciesDescriptions.First().Id, copiedStratigraphy.FaciesDescriptions.First().Id);
-            Assert.AreEqual("Drives olive mobile", copiedStratigraphy.FaciesDescriptions.First().Description);
+        Assert.AreNotSame(originalStratigraphy.ChronostratigraphyLayers, copiedStratigraphy.ChronostratigraphyLayers);
+        Assert.AreNotEqual(originalStratigraphy.ChronostratigraphyLayers.First().Id, copiedStratigraphy.ChronostratigraphyLayers.First().Id);
+        Assert.AreEqual(15001144, copiedStratigraphy.ChronostratigraphyLayers.First().ChronostratigraphyId);
 
-            Assert.AreNotSame(originalStratigraphy.ChronostratigraphyLayers, copiedStratigraphy.ChronostratigraphyLayers);
-            Assert.AreNotEqual(originalStratigraphy.ChronostratigraphyLayers.First().Id, copiedStratigraphy.ChronostratigraphyLayers.First().Id);
-            Assert.AreEqual(15001144, copiedStratigraphy.ChronostratigraphyLayers.First().ChronostratigraphyId);
-
-            Assert.AreNotSame(originalStratigraphy.Layers.First().LayerCodelists, copiedStratigraphy.Layers.First().LayerCodelists);
-            Assert.AreEqual(originalStratigraphy.Layers.First().LayerCodelists.Count, copiedStratigraphy.Layers.First().LayerCodelists.Count);
-        }
-        finally
-        {
-            RemoveStratigraphy(copiedStratigraphy);
-        }
-    }
-
-    private void RemoveStratigraphy(Stratigraphy? copiedStratigraphy)
-    {
-        if (copiedStratigraphy != null)
-        {
-            context.Layers.RemoveRange(copiedStratigraphy.Layers);
-            context.LithologicalDescriptions.RemoveRange(copiedStratigraphy.LithologicalDescriptions);
-            context.FaciesDescriptions.RemoveRange(copiedStratigraphy.FaciesDescriptions);
-            context.ChronostratigraphyLayers.RemoveRange(copiedStratigraphy.ChronostratigraphyLayers);
-            context.Stratigraphies.Remove(copiedStratigraphy);
-            context.SaveChanges();
-        }
+        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerCodelists, copiedStratigraphy.Layers.First().LayerCodelists);
+        Assert.AreEqual(originalStratigraphy.Layers.First().LayerCodelists.Count, copiedStratigraphy.Layers.First().LayerCodelists.Count);
     }
 
     private Stratigraphy GetStratigraphy(int id)
@@ -208,23 +165,13 @@ public class StratigraphyControllerTest
     [TestMethod]
     public async Task CopyWithNonAdminUser()
     {
-        Stratigraphy? copiedStratigraphy = null;
+        controller.HttpContext.SetClaimsPrincipal("editor", PolicyNames.Viewer);
+        var result = await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
+        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
 
-        try
-        {
-            controller.HttpContext.SetClaimsPrincipal("editor", PolicyNames.Viewer);
-            var result = await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
-            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
-
-            // delete stratigraphy copy
-            var copiedStratigraphyId = ((OkObjectResult?)result.Result)?.Value;
-            Assert.IsNotNull(copiedStratigraphyId);
-            Assert.IsInstanceOfType(copiedStratigraphyId, typeof(int));
-            copiedStratigraphy = context.Stratigraphies.Single(s => s.Id == (int)copiedStratigraphyId);
-        }
-        finally
-        {
-            RemoveStratigraphy(copiedStratigraphy);
-        }
+        // delete stratigraphy copy
+        var copiedStratigraphyId = ((OkObjectResult?)result.Result)?.Value;
+        Assert.IsNotNull(copiedStratigraphyId);
+        Assert.IsInstanceOfType(copiedStratigraphyId, typeof(int));
     }
 }

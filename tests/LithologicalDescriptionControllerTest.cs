@@ -17,15 +17,12 @@ public class LithologicalDescriptionControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
-        controller = new LithologicalDescriptionController(ContextFactory.CreateContext(), new Mock<ILogger<LithologicalDescription>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        context = ContextFactory.GetTestContext();
+        controller = new LithologicalDescriptionController(context, new Mock<ILogger<LithologicalDescription>>().Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
-    public async Task TestCleanup()
-    {
-        await context.DisposeAsync();
-    }
+    public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
     public async Task GetAllEntriesAsync()
@@ -114,30 +111,19 @@ public class LithologicalDescriptionControllerTest
         Assert.AreEqual(6_000_006, lithologicalDescriptionToEdit.StratigraphyId);
         Assert.AreEqual("Libyan Dinar 1080p leading edge", lithologicalDescriptionToEdit.Description);
 
-        try
-        {
-            // Update LithologicalDescription
-            var response = await controller.EditAsync(newLithologicalDescription);
-            var okResult = response as OkObjectResult;
-            Assert.AreEqual(200, okResult.StatusCode);
+        // Update LithologicalDescription
+        var response = await controller.EditAsync(newLithologicalDescription);
+        var okResult = response as OkObjectResult;
+        Assert.AreEqual(200, okResult.StatusCode);
 
-            // Assert Updates and unchanged values
-            var updatedContext = ContextFactory.CreateContext();
-            var updatedLithologicalDescription = updatedContext.LithologicalDescriptions.Single(c => c.Id == id);
+        // Assert Updates and unchanged values
+        var updatedLithologicalDescription = context.LithologicalDescriptions.Single(c => c.Id == id);
 
-            Assert.AreEqual(4, updatedLithologicalDescription.CreatedById);
-            Assert.AreEqual(1, updatedLithologicalDescription.UpdatedById);
-            Assert.AreEqual(6_000_010, updatedLithologicalDescription.StratigraphyId);
-            Assert.AreEqual("Freddy ate more cucumber than Maria.", updatedLithologicalDescription.Description);
-            Assert.AreEqual(9003, updatedLithologicalDescription.QtDescriptionId);
-        }
-        finally
-        {
-            // Reset edits
-            var cleanupContext = ContextFactory.CreateContext();
-            cleanupContext.Update(originalLithologicalDescription);
-            await cleanupContext.SaveChangesAsync();
-        }
+        Assert.AreEqual(4, updatedLithologicalDescription.CreatedById);
+        Assert.AreEqual(1, updatedLithologicalDescription.UpdatedById);
+        Assert.AreEqual(6_000_010, updatedLithologicalDescription.StratigraphyId);
+        Assert.AreEqual("Freddy ate more cucumber than Maria.", updatedLithologicalDescription.Description);
+        Assert.AreEqual(9003, updatedLithologicalDescription.QtDescriptionId);
     }
 
     [TestMethod]

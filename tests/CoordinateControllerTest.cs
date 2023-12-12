@@ -25,13 +25,10 @@ public class CoordinateControllerTest
     private Mock<HttpMessageHandler> httpMessageHandler;
     private Mock<ILogger<CoordinateController>> loggerMock;
 
-    private int boreholeCount;
-    private List<int> boreholeIds = new List<int> { LV95BoreholeWithAllCoordinatesSetId, LV95BoreholeWithMissingDestCoordinatesId, LV03BoreholeWithAllCoordinatesSetId, LV03BoreholeWithMissingSourceCoordinatesId };
-
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
+        context = ContextFactory.GetTestContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<CoordinateController>>();
         httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
@@ -40,23 +37,11 @@ public class CoordinateControllerTest
         var coordinateService = new CoordinateService(loggerCoordinateServiceMock.Object, httpClientFactoryMock.Object);
 
         controller = new CoordinateController(context, loggerMock.Object, coordinateService);
-
-        boreholeCount = context.Boreholes.Count();
     }
 
     [TestCleanup]
     public async Task TestCleanup()
     {
-        // Revert any changes in the ChangeTracker made by the coordinate migration
-        context.ResetChangesInContext();
-
-        // Remove created Boreholes
-        context.Boreholes.Where(b => boreholeIds.Contains(b.Id)).ToList().ForEach(borehole =>
-            context.Boreholes.Remove(borehole));
-        context.SaveChanges();
-
-        Assert.AreEqual(boreholeCount, context.Boreholes.Count(), "Tests need to remove boreholes, they created.");
-
         await context.DisposeAsync();
         httpClientFactoryMock.Verify();
         loggerMock.Verify();

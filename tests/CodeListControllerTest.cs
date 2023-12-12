@@ -19,19 +19,16 @@ public class CodeListControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
+        context = ContextFactory.GetTestContext();
         var configurationMock = new Mock<IConfiguration>();
         configurationMock
             .Setup(c => c.GetSection("ConnectionStrings")["BdmsContext"])
             .Returns(ContextFactory.ConnectionString);
-        controller = new CodeListController(ContextFactory.CreateContext(), configurationMock.Object, new Mock<ILogger<CodeListController>>().Object);
+        controller = new CodeListController(context, configurationMock.Object, new Mock<ILogger<CodeListController>>().Object);
     }
 
     [TestCleanup]
-    public async Task TestCleanup()
-    {
-        await context.DisposeAsync();
-    }
+    public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
     public async Task GetAllEntriesAsync()
@@ -123,37 +120,28 @@ public class CodeListControllerTest
             DescriptionEn = "",
         };
 
-        try
-        {
-            var codeListToEdit = context.Codelists.Single(c => c.Id == id);
-            Assert.AreEqual("Tuff", codeListToEdit.De);
-            Assert.AreEqual("tufa", codeListToEdit.En);
-            Assert.AreEqual("Tuf", codeListToEdit.Code);
-            Assert.AreEqual("tuf", codeListToEdit.Fr);
-            Assert.AreEqual("", codeListToEdit.DescriptionEn);
+        var codeListToEdit = context.Codelists.Single(c => c.Id == id);
+        Assert.AreEqual("Tuff", codeListToEdit.De);
+        Assert.AreEqual("tufa", codeListToEdit.En);
+        Assert.AreEqual("Tuf", codeListToEdit.Code);
+        Assert.AreEqual("tuf", codeListToEdit.Fr);
+        Assert.AreEqual("", codeListToEdit.DescriptionEn);
 
-            // Upate CodeList
-            var response = await controller.EditAsync(codeList);
-            var okResult = response as OkObjectResult;
-            Assert.AreEqual(200, okResult.StatusCode);
+        // Upate CodeList
+        var response = await controller.EditAsync(codeList);
+        var okResult = response as OkObjectResult;
+        Assert.AreEqual(200, okResult.StatusCode);
 
-            // Assert Updates
-            var updatedContext = ContextFactory.CreateContext();
-            var updatedCodelist = updatedContext.Codelists.Single(c => c.Id == id);
+        // Assert Updates
+        var updatedCodelist = context.Codelists.Single(c => c.Id == id);
 
-            Assert.AreEqual("Neuer deutscher Text", updatedCodelist.De);
-            Assert.AreEqual("New english text", updatedCodelist.En);
-            Assert.AreEqual("elevation_z", updatedCodelist.Code);
+        Assert.AreEqual("Neuer deutscher Text", updatedCodelist.De);
+        Assert.AreEqual("New english text", updatedCodelist.En);
+        Assert.AreEqual("elevation_z", updatedCodelist.Code);
 
-            // Emtpy values are deleted
-            Assert.AreEqual(null, updatedCodelist.Fr);
-            Assert.AreEqual("", updatedCodelist.DescriptionEn);
-        }
-        finally
-        {
-            // Reset edits
-            _ = await controller.EditAsync(originalCodeList);
-        }
+        // Emtpy values are deleted
+        Assert.AreEqual(null, updatedCodelist.Fr);
+        Assert.AreEqual("", updatedCodelist.DescriptionEn);
     }
 
     [TestMethod]
@@ -200,55 +188,46 @@ public class CodeListControllerTest
             Ro = null,
         };
 
-        try
-        {
-            var codeListToEdit = context.Codelists.Single(c => c.Id == id);
-            Assert.AreEqual("5", codeListToEdit.Code);
-            Assert.AreEqual(null, codeListToEdit.Conf);
-            Assert.AreEqual("", codeListToEdit.DescriptionEn);
-            Assert.AreEqual("", codeListToEdit.DescriptionFr);
-            Assert.AreEqual("", codeListToEdit.DescriptionIt);
-            Assert.AreEqual("", codeListToEdit.DescriptionDe);
-            Assert.AreEqual(null, codeListToEdit.DescriptionRo);
-            Assert.AreEqual(9004, codeListToEdit.Geolcode);
-            Assert.AreEqual(5, codeListToEdit.Order);
-            Assert.AreEqual("qt_description", codeListToEdit.Schema);
-            Assert.AreEqual("sehr gut", codeListToEdit.De);
-            Assert.AreEqual("very good", codeListToEdit.En);
-            Assert.AreEqual("très bonne", codeListToEdit.Fr);
-            Assert.AreEqual("molto buono", codeListToEdit.It);
-            Assert.AreEqual(null, codeListToEdit.Ro);
+        var codeListToEdit = context.Codelists.Single(c => c.Id == id);
+        Assert.AreEqual("5", codeListToEdit.Code);
+        Assert.AreEqual(null, codeListToEdit.Conf);
+        Assert.AreEqual("", codeListToEdit.DescriptionEn);
+        Assert.AreEqual("", codeListToEdit.DescriptionFr);
+        Assert.AreEqual("", codeListToEdit.DescriptionIt);
+        Assert.AreEqual("", codeListToEdit.DescriptionDe);
+        Assert.AreEqual(null, codeListToEdit.DescriptionRo);
+        Assert.AreEqual(9004, codeListToEdit.Geolcode);
+        Assert.AreEqual(5, codeListToEdit.Order);
+        Assert.AreEqual("qt_description", codeListToEdit.Schema);
+        Assert.AreEqual("sehr gut", codeListToEdit.De);
+        Assert.AreEqual("very good", codeListToEdit.En);
+        Assert.AreEqual("très bonne", codeListToEdit.Fr);
+        Assert.AreEqual("molto buono", codeListToEdit.It);
+        Assert.AreEqual(null, codeListToEdit.Ro);
 
-            // Upate CodeList
-            var response = await controller.EditAsync(codeList);
-            var okResult = response as OkObjectResult;
-            Assert.AreEqual(200, okResult.StatusCode);
+        // Upate CodeList
+        var response = await controller.EditAsync(codeList);
+        var okResult = response as OkObjectResult;
+        Assert.AreEqual(200, okResult.StatusCode);
 
-            // Assert Updates and unchanged values
-            var updatedContext = ContextFactory.CreateContext();
-            var updatedCodelist = updatedContext.Codelists.Single(c => c.Id == id);
+        // Assert Updates and unchanged values
+        var updatedCodelist = context.Codelists.Single(c => c.Id == id);
 
-            Assert.AreEqual("5", updatedCodelist.Code);
-            Assert.AreEqual(null, updatedCodelist.Conf);
-            Assert.AreEqual("", updatedCodelist.DescriptionEn);
-            Assert.AreEqual("", updatedCodelist.DescriptionFr);
-            Assert.AreEqual("", updatedCodelist.DescriptionIt);
-            Assert.AreEqual("", updatedCodelist.DescriptionDe);
-            Assert.AreEqual(null, updatedCodelist.DescriptionRo);
-            Assert.AreEqual(9004, updatedCodelist.Geolcode);
-            Assert.AreEqual(5, updatedCodelist.Order);
-            Assert.AreEqual("new_schema_name", updatedCodelist.Schema);
-            Assert.AreEqual("sehr gut", updatedCodelist.De);
-            Assert.AreEqual("very good", updatedCodelist.En);
-            Assert.AreEqual("très bonne", updatedCodelist.Fr);
-            Assert.AreEqual("molto buono", updatedCodelist.It);
-            Assert.AreEqual(null, updatedCodelist.Ro);
-        }
-        finally
-        {
-            // Reset edits
-            _ = await controller.EditAsync(originalCodeList);
-        }
+        Assert.AreEqual("5", updatedCodelist.Code);
+        Assert.AreEqual(null, updatedCodelist.Conf);
+        Assert.AreEqual("", updatedCodelist.DescriptionEn);
+        Assert.AreEqual("", updatedCodelist.DescriptionFr);
+        Assert.AreEqual("", updatedCodelist.DescriptionIt);
+        Assert.AreEqual("", updatedCodelist.DescriptionDe);
+        Assert.AreEqual(null, updatedCodelist.DescriptionRo);
+        Assert.AreEqual(9004, updatedCodelist.Geolcode);
+        Assert.AreEqual(5, updatedCodelist.Order);
+        Assert.AreEqual("new_schema_name", updatedCodelist.Schema);
+        Assert.AreEqual("sehr gut", updatedCodelist.De);
+        Assert.AreEqual("very good", updatedCodelist.En);
+        Assert.AreEqual("très bonne", updatedCodelist.Fr);
+        Assert.AreEqual("molto buono", updatedCodelist.It);
+        Assert.AreEqual(null, updatedCodelist.Ro);
     }
 
     [TestMethod]

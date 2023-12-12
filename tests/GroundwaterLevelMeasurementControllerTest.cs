@@ -18,7 +18,7 @@ public class GroundwaterLevelMeasurementControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
+        context = ContextFactory.GetTestContext();
         controller = new GroundwaterLevelMeasurementController(context, new Mock<ILogger<GroundwaterLevelMeasurement>>().Object)
         {
             ControllerContext = new ControllerContext
@@ -32,10 +32,7 @@ public class GroundwaterLevelMeasurementControllerTest
     }
 
     [TestCleanup]
-    public async Task TestCleanup()
-    {
-        await context.DisposeAsync();
-    }
+    public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
     public async Task GetAsyncReturnsAllEntities()
@@ -121,39 +118,30 @@ public class GroundwaterLevelMeasurementControllerTest
             LevelMasl = 1.1,
         };
 
-        try
-        {
-            context.GroundwaterLevelMeasurements.Add(originalGroundwaterLevelMeasurement);
-            await context.SaveChangesAsync();
+        context.GroundwaterLevelMeasurements.Add(originalGroundwaterLevelMeasurement);
+        await context.SaveChangesAsync();
 
-            var result = await controller.EditAsync(updatedGroundwaterLevelMeasurement) as OkObjectResult;
+        var result = await controller.EditAsync(updatedGroundwaterLevelMeasurement) as OkObjectResult;
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
-            var editedGroundwaterLevelMeasurement = context.GroundwaterLevelMeasurements.Single(w => w.Id == 1);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.Id, editedGroundwaterLevelMeasurement.Id);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.Type, editedGroundwaterLevelMeasurement.Type);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.StartTime, editedGroundwaterLevelMeasurement.StartTime);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.EndTime, editedGroundwaterLevelMeasurement.EndTime);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.Duration, editedGroundwaterLevelMeasurement.Duration);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.FromDepthM, editedGroundwaterLevelMeasurement.FromDepthM);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.ToDepthM, editedGroundwaterLevelMeasurement.ToDepthM);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.FromDepthMasl, editedGroundwaterLevelMeasurement.FromDepthMasl);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.ToDepthMasl, editedGroundwaterLevelMeasurement.ToDepthMasl);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.CompletionFinished, editedGroundwaterLevelMeasurement.CompletionFinished);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.Comment, editedGroundwaterLevelMeasurement.Comment);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.BoreholeId, editedGroundwaterLevelMeasurement.BoreholeId);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.ReliabilityId, editedGroundwaterLevelMeasurement.ReliabilityId);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.KindId, editedGroundwaterLevelMeasurement.KindId);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.LevelM, editedGroundwaterLevelMeasurement.LevelM);
-            Assert.AreEqual(updatedGroundwaterLevelMeasurement.LevelMasl, editedGroundwaterLevelMeasurement.LevelMasl);
-        }
-        finally
-        {
-            var addedGroundwaterLevelMeasurement = context.GroundwaterLevelMeasurements.Single(w => w.Id == 1);
-            context.GroundwaterLevelMeasurements.Remove(addedGroundwaterLevelMeasurement);
-            await context.SaveChangesAsync();
-        }
+        Assert.IsNotNull(result);
+        Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+        var editedGroundwaterLevelMeasurement = context.GroundwaterLevelMeasurements.Single(w => w.Id == 1);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.Id, editedGroundwaterLevelMeasurement.Id);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.Type, editedGroundwaterLevelMeasurement.Type);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.StartTime, editedGroundwaterLevelMeasurement.StartTime);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.EndTime, editedGroundwaterLevelMeasurement.EndTime);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.Duration, editedGroundwaterLevelMeasurement.Duration);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.FromDepthM, editedGroundwaterLevelMeasurement.FromDepthM);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.ToDepthM, editedGroundwaterLevelMeasurement.ToDepthM);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.FromDepthMasl, editedGroundwaterLevelMeasurement.FromDepthMasl);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.ToDepthMasl, editedGroundwaterLevelMeasurement.ToDepthMasl);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.CompletionFinished, editedGroundwaterLevelMeasurement.CompletionFinished);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.Comment, editedGroundwaterLevelMeasurement.Comment);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.BoreholeId, editedGroundwaterLevelMeasurement.BoreholeId);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.ReliabilityId, editedGroundwaterLevelMeasurement.ReliabilityId);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.KindId, editedGroundwaterLevelMeasurement.KindId);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.LevelM, editedGroundwaterLevelMeasurement.LevelM);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.LevelMasl, editedGroundwaterLevelMeasurement.LevelMasl);
     }
 
     [TestMethod]
@@ -189,43 +177,31 @@ public class GroundwaterLevelMeasurementControllerTest
             LevelMasl = 9945.15,
         };
 
-        try
-        {
-            var createResponse = await controller.CreateAsync(newGroundwaterLevelMeasurement);
-            Assert.IsInstanceOfType(createResponse, typeof(OkObjectResult));
+        var createResponse = await controller.CreateAsync(newGroundwaterLevelMeasurement);
+        Assert.IsInstanceOfType(createResponse, typeof(OkObjectResult));
 
-            newGroundwaterLevelMeasurement = await context.GroundwaterLevelMeasurements.FindAsync(newGroundwaterLevelMeasurement.Id);
-            Assert.IsNotNull(newGroundwaterLevelMeasurement);
-            Assert.AreEqual(newGroundwaterLevelMeasurement.Type, ObservationType.GroundwaterLevelMeasurement);
-            Assert.AreEqual(newGroundwaterLevelMeasurement.StartTime, new DateTime(2021, 1, 31, 1, 10, 00).ToUniversalTime());
-            Assert.AreEqual(newGroundwaterLevelMeasurement.EndTime, new DateTime(2020, 6, 4, 3, 4, 00).ToUniversalTime());
-            Assert.AreEqual(newGroundwaterLevelMeasurement.Duration, 118);
-            Assert.AreEqual(newGroundwaterLevelMeasurement.FromDepthM, 17.532);
-            Assert.AreEqual(newGroundwaterLevelMeasurement.ToDepthM, 702.12);
-            Assert.AreEqual(newGroundwaterLevelMeasurement.FromDepthMasl, 82.714);
-            Assert.AreEqual(newGroundwaterLevelMeasurement.ToDepthMasl, 2633.2);
-            Assert.AreEqual(newGroundwaterLevelMeasurement.CompletionFinished, false);
-            Assert.AreEqual(newGroundwaterLevelMeasurement.Comment, "New test comment");
-            Assert.AreEqual(newGroundwaterLevelMeasurement.BoreholeId, 1006493);
-            Assert.AreEqual(newGroundwaterLevelMeasurement.ReliabilityId, 15203158);
-            Assert.AreEqual(newGroundwaterLevelMeasurement.KindId, 15203204);
-            Assert.AreEqual(newGroundwaterLevelMeasurement.LevelM, 348.4563);
-            Assert.AreEqual(newGroundwaterLevelMeasurement.LevelMasl, 9945.15);
+        newGroundwaterLevelMeasurement = await context.GroundwaterLevelMeasurements.FindAsync(newGroundwaterLevelMeasurement.Id);
+        Assert.IsNotNull(newGroundwaterLevelMeasurement);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.Type, ObservationType.GroundwaterLevelMeasurement);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.StartTime, new DateTime(2021, 1, 31, 1, 10, 00).ToUniversalTime());
+        Assert.AreEqual(newGroundwaterLevelMeasurement.EndTime, new DateTime(2020, 6, 4, 3, 4, 00).ToUniversalTime());
+        Assert.AreEqual(newGroundwaterLevelMeasurement.Duration, 118);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.FromDepthM, 17.532);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.ToDepthM, 702.12);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.FromDepthMasl, 82.714);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.ToDepthMasl, 2633.2);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.CompletionFinished, false);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.Comment, "New test comment");
+        Assert.AreEqual(newGroundwaterLevelMeasurement.BoreholeId, 1006493);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.ReliabilityId, 15203158);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.KindId, 15203204);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.LevelM, 348.4563);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.LevelMasl, 9945.15);
 
-            var deleteResponse = await controller.DeleteAsync(newGroundwaterLevelMeasurement.Id);
-            Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
+        var deleteResponse = await controller.DeleteAsync(newGroundwaterLevelMeasurement.Id);
+        Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
 
-            deleteResponse = await controller.DeleteAsync(newGroundwaterLevelMeasurement.Id);
-            Assert.IsInstanceOfType(deleteResponse, typeof(NotFoundResult));
-        }
-        finally
-        {
-            var addedGroundwaterLevelMeasurement = context.GroundwaterLevelMeasurements.SingleOrDefault(w => w.Id == 3);
-            if (addedGroundwaterLevelMeasurement != null)
-            {
-                context.GroundwaterLevelMeasurements.Remove(addedGroundwaterLevelMeasurement);
-                await context.SaveChangesAsync();
-            }
-        }
+        deleteResponse = await controller.DeleteAsync(newGroundwaterLevelMeasurement.Id);
+        Assert.IsInstanceOfType(deleteResponse, typeof(NotFoundResult));
     }
 }
