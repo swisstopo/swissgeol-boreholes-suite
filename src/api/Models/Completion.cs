@@ -39,7 +39,7 @@ public class Completion : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Completion"/>'s type id.
     /// </summary>
-    [Column("kind_id_cli")]
+    [Column("kind_id")]
     public int KindId { get; set; }
 
     /// <summary>

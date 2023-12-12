@@ -21,7 +21,7 @@ public partial class AddCompletionTable : Migration
                 borehole_id = table.Column<int>(type: "integer", nullable: false),
                 is_primary = table.Column<bool>(type: "boolean", nullable: false),
                 name = table.Column<string>(type: "text", nullable: true),
-                kind_id_cli = table.Column<int>(type: "integer", nullable: false),
+                kind_id = table.Column<int>(type: "integer", nullable: false),
                 notes = table.Column<string>(type: "text", nullable: true),
                 abandon_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 creator = table.Column<int>(type: "integer", nullable: true),
@@ -40,8 +40,8 @@ public partial class AddCompletionTable : Migration
                     principalColumn: "id_bho",
                     onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                    name: "FK_completion_codelist_kind_id_cli",
-                    column: x => x.kind_id_cli,
+                    name: "FK_completion_codelist_kind_id",
+                    column: x => x.kind_id,
                     principalSchema: "bdms",
                     principalTable: "codelist",
                     principalColumn: "id_cli",
@@ -73,10 +73,10 @@ public partial class AddCompletionTable : Migration
             column: "creator");
 
         migrationBuilder.CreateIndex(
-            name: "IX_completion_kind_id_cli",
+            name: "IX_completion_kind_id",
             schema: "bdms",
             table: "completion",
-            column: "kind_id_cli");
+            column: "kind_id");
 
         migrationBuilder.CreateIndex(
             name: "IX_completion_updater",

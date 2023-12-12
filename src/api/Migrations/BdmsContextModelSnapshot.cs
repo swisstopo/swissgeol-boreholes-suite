@@ -554,7 +554,7 @@ namespace BDMS.Migrations
 
                     b.Property<int>("KindId")
                         .HasColumnType("integer")
-                        .HasColumnName("kind_id_cli");
+                        .HasColumnName("kind_id");
 
                     b.Property<string>("Name")
                         .HasColumnType("text")
