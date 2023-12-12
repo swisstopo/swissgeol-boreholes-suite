@@ -197,7 +197,7 @@ public class StratigraphyControllerTest
             .Where(g => g.Count() > 1 && g.Count(x => x.IsPrimary.GetValueOrDefault()) == 1)
             .ToList();
 
-        Assert.AreEqual(true, stratigraphyTestCandidates.Any(), "Precondition: There is at least one group of three stratigraphies with one main stratigraphy");
+        Assert.AreEqual(true, stratigraphyTestCandidates.Any(), "Precondition: There is at least one group of stratigraphies with one main stratigraphy");
 
         // Delete primary stratigraphy and assert that
         // the latest stratigraphy is now the main stratigraphy
