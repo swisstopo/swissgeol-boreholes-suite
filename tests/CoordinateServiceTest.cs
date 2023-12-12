@@ -16,12 +16,11 @@ public class CoordinateServiceTest
     private CoordinateService service;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
     private Mock<ILogger<CoordinateService>> loggerMock;
-    private List<int> boreholeIds = new List<int> { LV95BoreholeWithAllCoordinatesSetId, LV03BoreholeWithMissingDestCoordinatesId, LV03BoreholeWithMissingSourceCoordinatesId };
 
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
+        context = ContextFactory.GetTestContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
 
@@ -31,11 +30,6 @@ public class CoordinateServiceTest
     [TestCleanup]
     public async Task TestCleanup()
     {
-        // Remove created Boreholes
-        context.Boreholes.Where(b => boreholeIds.Contains(b.Id)).ToList().ForEach(borehole =>
-            context.Boreholes.Remove(borehole));
-        context.SaveChanges();
-
         await context.DisposeAsync();
         httpClientFactoryMock.Verify();
         loggerMock.Verify();

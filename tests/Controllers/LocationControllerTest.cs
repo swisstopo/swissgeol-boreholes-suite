@@ -1,5 +1,4 @@
-﻿using BDMS.Controllers;
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,14 +8,12 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.RegularExpressions;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class LocationControllerTest
 {
     private const int BoreholeWithAllLocationAttributesId = 2_000_000;
-    private const int BoreholeBoreholeWithMissingLocationAttributesId = 2_000_001;
-    private const int BoreholeBoreholeWithMissingSourceCoordinatesId = 2_000_002;
 
     private BdmsContext context;
     private LocationController controller;
@@ -24,36 +21,21 @@ public class LocationControllerTest
     private Mock<ILogger<LocationController>> loggerMock;
     private Mock<ILogger<LocationService>> loggerLocationServiceMock;
 
-    private int boreholeCount;
-    private List<int> boreholeIds = new List<int> { BoreholeWithAllLocationAttributesId, BoreholeBoreholeWithMissingLocationAttributesId, BoreholeBoreholeWithMissingSourceCoordinatesId };
-
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
+        context = ContextFactory.GetTestContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<LocationController>>();
         loggerLocationServiceMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
         var service = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
 
         controller = new LocationController(context, loggerMock.Object, service);
-
-        boreholeCount = context.Boreholes.Count();
     }
 
     [TestCleanup]
     public async Task TestCleanup()
     {
-        // Revert any changes in the ChangeTracker made by the coordinate migration
-        context.ResetChangesInContext();
-
-        // Remove created Boreholes
-        context.Boreholes.Where(b => boreholeIds.Contains(b.Id)).ToList().ForEach(borehole =>
-            context.Boreholes.Remove(borehole));
-        context.SaveChanges();
-
-        Assert.AreEqual(boreholeCount, context.Boreholes.Count(), "Tests need to remove boreholes, they created.");
-
         await context.DisposeAsync();
         httpClientFactoryMock.Verify();
         loggerMock.Verify();
@@ -72,8 +54,8 @@ public class LocationControllerTest
 
         // Count all boreholes with set source location
         var boreholesWithSetSourceCoordinates = context.Boreholes.Where(b =>
-            (b.OriginalReferenceSystem == ReferenceSystem.LV95 && (b.LocationX != null && b.LocationY != null)) ||
-            (b.OriginalReferenceSystem == ReferenceSystem.LV03 && (b.LocationXLV03 != null && b.LocationYLV03 != null))).Count();
+            (b.OriginalReferenceSystem == ReferenceSystem.LV95 && b.LocationX != null && b.LocationY != null) ||
+            (b.OriginalReferenceSystem == ReferenceSystem.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null)).Count();
 
         await AssertMigrateLocationAsync(onlyMissing: false, boreholesWithSetSourceCoordinates, 10003, () =>
         {
@@ -96,8 +78,8 @@ public class LocationControllerTest
 
         // Count all boreholes with set source coordinates and missing location attributes
         var boreholesWithMissingLocationAttributes = context.Boreholes.Where(b =>
-            ((b.OriginalReferenceSystem == ReferenceSystem.LV95 && (b.LocationX != null && b.LocationY != null)) ||
-            (b.OriginalReferenceSystem == ReferenceSystem.LV03 && (b.LocationXLV03 != null && b.LocationYLV03 != null)))
+            ((b.OriginalReferenceSystem == ReferenceSystem.LV95 && b.LocationX != null && b.LocationY != null) ||
+            (b.OriginalReferenceSystem == ReferenceSystem.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null))
             &&
             (string.IsNullOrWhiteSpace(b.Country) || string.IsNullOrWhiteSpace(b.Canton) || string.IsNullOrWhiteSpace(b.Municipality)))
             .Count();

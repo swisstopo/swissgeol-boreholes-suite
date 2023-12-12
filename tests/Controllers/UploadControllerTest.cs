@@ -1,5 +1,4 @@
 ﻿using Amazon.S3;
-using BDMS.Controllers;
 using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +12,7 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using static BDMS.Helpers;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [DeploymentItem("TestData")]
 [TestClass]

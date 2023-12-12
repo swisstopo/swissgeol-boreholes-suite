@@ -26,7 +26,7 @@ public class BoreholeFileUploadServiceTest
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
 
-        context = ContextFactory.CreateContext();
+        context = ContextFactory.GetTestContext();
         adminUser = context.Users.FirstOrDefault(u => u.Name == "admin") ?? throw new InvalidOperationException("No User found in database.");
 
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
@@ -53,10 +53,7 @@ public class BoreholeFileUploadServiceTest
     }
 
     [TestCleanup]
-    public async Task TestCleanup()
-    {
-        await context.DisposeAsync();
-    }
+    public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
     public async Task UploadFileAndLinkToBoreholeShouldStoreFileInCloudStorageAndLinkFile()

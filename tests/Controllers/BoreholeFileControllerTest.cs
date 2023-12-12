@@ -1,5 +1,4 @@
 ﻿using Amazon.S3;
-using BDMS.Controllers;
 using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +11,7 @@ using System.Security.Claims;
 using System.Text;
 using static BDMS.Helpers;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class BoreholeFileControllerTest
@@ -27,7 +26,7 @@ public class BoreholeFileControllerTest
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
 
-        context = ContextFactory.CreateContext();
+        context = ContextFactory.GetTestContext();
         adminUser = context.Users.FirstOrDefault(u => u.Name == "admin") ?? throw new InvalidOperationException("No User found in database.");
 
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
@@ -55,10 +54,7 @@ public class BoreholeFileControllerTest
     }
 
     [TestCleanup]
-    public async Task TestCleanup()
-    {
-        await context.DisposeAsync();
-    }
+    public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
     public async Task UploadAndDownload()
@@ -266,11 +262,6 @@ public class BoreholeFileControllerTest
 
         Assert.AreEqual(true, boreholeFile.Public);
         Assert.AreEqual("Changed Description", boreholeFile.Description);
-
-        context.Boreholes.Remove(borehole);
-        context.Files.Remove(file);
-        context.BoreholeFiles.Remove(boreholeFile);
-        context.SaveChanges();
     }
 
     [TestMethod]

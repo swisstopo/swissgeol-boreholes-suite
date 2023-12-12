@@ -1,12 +1,11 @@
-﻿using BDMS.Controllers;
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using static BDMS.Helpers;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class FaciesDescriptionControllerTest
@@ -17,15 +16,12 @@ public class FaciesDescriptionControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.CreateContext();
-        controller = new FaciesDescriptionController(ContextFactory.CreateContext(), new Mock<ILogger<FaciesDescription>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        context = ContextFactory.GetTestContext();
+        controller = new FaciesDescriptionController(context, new Mock<ILogger<FaciesDescription>>().Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
-    public async Task TestCleanup()
-    {
-        await context.DisposeAsync();
-    }
+    public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
     public async Task GetAllEntriesAsync()
@@ -114,30 +110,19 @@ public class FaciesDescriptionControllerTest
         Assert.AreEqual(6_000_003, faciesDescriptionToEdit.StratigraphyId);
         Assert.AreEqual("bandwidth impactful connecting", faciesDescriptionToEdit.Description);
 
-        try
-        {
-            // Update FaciesDescription
-            var response = await controller.EditAsync(newFaciesDescription);
-            var okResult = response as OkObjectResult;
-            Assert.AreEqual(200, okResult.StatusCode);
+        // Update FaciesDescription
+        var response = await controller.EditAsync(newFaciesDescription);
+        var okResult = response as OkObjectResult;
+        Assert.AreEqual(200, okResult.StatusCode);
 
-            // Assert Updates and unchanged values
-            var updatedContext = ContextFactory.CreateContext();
-            var updatedFaciesDescription = updatedContext.FaciesDescriptions.Single(c => c.Id == id);
+        // Assert Updates and unchanged values
+        var updatedFaciesDescription = context.FaciesDescriptions.Single(c => c.Id == id);
 
-            Assert.AreEqual(3, updatedFaciesDescription.CreatedById);
-            Assert.AreEqual(1, updatedFaciesDescription.UpdatedById);
-            Assert.AreEqual(6_000_010, updatedFaciesDescription.StratigraphyId);
-            Assert.AreEqual("solid state web-enabled Maryland", updatedFaciesDescription.Description);
-            Assert.AreEqual(9001, updatedFaciesDescription.QtDescriptionId);
-        }
-        finally
-        {
-            // Reset edits
-            var cleanupContext = ContextFactory.CreateContext();
-            cleanupContext.Update(originalFaciesDescription);
-            await cleanupContext.SaveChangesAsync();
-        }
+        Assert.AreEqual(3, updatedFaciesDescription.CreatedById);
+        Assert.AreEqual(1, updatedFaciesDescription.UpdatedById);
+        Assert.AreEqual(6_000_010, updatedFaciesDescription.StratigraphyId);
+        Assert.AreEqual("solid state web-enabled Maryland", updatedFaciesDescription.Description);
+        Assert.AreEqual(9001, updatedFaciesDescription.QtDescriptionId);
     }
 
     [TestMethod]
