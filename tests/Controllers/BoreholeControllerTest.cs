@@ -1,5 +1,4 @@
 ﻿using BDMS.Authentication;
-using BDMS.Controllers;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using static BDMS.Helpers;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class BoreholeControllerTest
@@ -126,7 +125,7 @@ public class BoreholeControllerTest
 
             // Conditions
             .Where(b =>
-                (b.Stratigraphies.First().Layers != null) &&
+                b.Stratigraphies.First().Layers != null &&
                 b.Stratigraphies.First().Layers.Any(x => x.LayerCodelists != null && x.LayerCodelists.Any()) &&
                 b.Stratigraphies.First().LithologicalDescriptions != null &&
                 b.Stratigraphies.First().FaciesDescriptions != null &&

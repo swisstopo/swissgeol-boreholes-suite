@@ -1,5 +1,4 @@
-﻿using BDMS.Controllers;
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,7 +8,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.RegularExpressions;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class LocationControllerTest
@@ -57,8 +56,8 @@ public class LocationControllerTest
 
         // Count all boreholes with set source location
         var boreholesWithSetSourceCoordinates = context.Boreholes.Where(b =>
-            (b.OriginalReferenceSystem == ReferenceSystem.LV95 && (b.LocationX != null && b.LocationY != null)) ||
-            (b.OriginalReferenceSystem == ReferenceSystem.LV03 && (b.LocationXLV03 != null && b.LocationYLV03 != null))).Count();
+            b.OriginalReferenceSystem == ReferenceSystem.LV95 && b.LocationX != null && b.LocationY != null ||
+            b.OriginalReferenceSystem == ReferenceSystem.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null).Count();
 
         await AssertMigrateLocationAsync(onlyMissing: false, boreholesWithSetSourceCoordinates, 10003, () =>
         {
@@ -81,8 +80,8 @@ public class LocationControllerTest
 
         // Count all boreholes with set source coordinates and missing location attributes
         var boreholesWithMissingLocationAttributes = context.Boreholes.Where(b =>
-            ((b.OriginalReferenceSystem == ReferenceSystem.LV95 && (b.LocationX != null && b.LocationY != null)) ||
-            (b.OriginalReferenceSystem == ReferenceSystem.LV03 && (b.LocationXLV03 != null && b.LocationYLV03 != null)))
+            (b.OriginalReferenceSystem == ReferenceSystem.LV95 && b.LocationX != null && b.LocationY != null ||
+            b.OriginalReferenceSystem == ReferenceSystem.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null)
             &&
             (string.IsNullOrWhiteSpace(b.Country) || string.IsNullOrWhiteSpace(b.Canton) || string.IsNullOrWhiteSpace(b.Municipality)))
             .Count();

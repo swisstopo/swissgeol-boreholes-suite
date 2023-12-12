@@ -1,12 +1,11 @@
-﻿using BDMS.Controllers;
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using static BDMS.Helpers;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class LithostratigraphyControllerTest
@@ -15,17 +14,17 @@ public class LithostratigraphyControllerTest
     private LithostratigraphyController controller;
 
     private LithostratigraphyLayer GetLithostratigraphy() => new LithostratigraphyLayer
-        {
-            StratigraphyId = 6_000_001,
-            CreatedById = 2,
-            Created = new DateTime(2023, 5, 30, 12, 9, 42).ToUniversalTime(),
-            UpdatedById = 5,
-            Updated = new DateTime(2023, 5, 31, 13, 10, 44).ToUniversalTime(),
-            FromDepth = 10,
-            ToDepth = 20,
-            IsLast = true,
-            LithostratigraphyId = 15_300_284,
-        };
+    {
+        StratigraphyId = 6_000_001,
+        CreatedById = 2,
+        Created = new DateTime(2023, 5, 30, 12, 9, 42).ToUniversalTime(),
+        UpdatedById = 5,
+        Updated = new DateTime(2023, 5, 31, 13, 10, 44).ToUniversalTime(),
+        FromDepth = 10,
+        ToDepth = 20,
+        IsLast = true,
+        LithostratigraphyId = 15_300_284,
+    };
 
     [TestInitialize]
     public void TestInitialize()

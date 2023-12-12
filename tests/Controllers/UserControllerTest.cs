@@ -1,7 +1,6 @@
-﻿using BDMS.Controllers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class UserControllerTest

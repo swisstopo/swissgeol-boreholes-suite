@@ -1,5 +1,4 @@
-﻿using BDMS.Controllers;
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -7,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Security.Claims;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class FieldMeasurementControllerTest

@@ -1,9 +1,8 @@
-﻿using BDMS.Controllers;
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class CantonControllerTest

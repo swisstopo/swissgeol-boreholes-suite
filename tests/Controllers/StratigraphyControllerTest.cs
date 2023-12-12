@@ -1,5 +1,4 @@
 ﻿using BDMS.Authentication;
-using BDMS.Controllers;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using static BDMS.Helpers;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class StratigraphyControllerTest

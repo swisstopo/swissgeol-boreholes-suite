@@ -1,5 +1,4 @@
-﻿using BDMS.Controllers;
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,7 +8,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.RegularExpressions;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class CoordinateControllerTest
@@ -62,8 +61,8 @@ public class CoordinateControllerTest
 
         // Count all boreholes with set source location
         var boreholesWithSetSourceCoordinates = context.Boreholes.Where(b =>
-            (b.OriginalReferenceSystem == ReferenceSystem.LV95 && (b.LocationX != null && b.LocationY != null)) ||
-            (b.OriginalReferenceSystem == ReferenceSystem.LV03 && (b.LocationXLV03 != null && b.LocationYLV03 != null))).Count();
+            b.OriginalReferenceSystem == ReferenceSystem.LV95 && b.LocationX != null && b.LocationY != null ||
+            b.OriginalReferenceSystem == ReferenceSystem.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null).Count();
 
         await AssertMigrateCoordinatesAsync(onlyMissing: false, boreholesWithSetSourceCoordinates, 10004, () =>
         {
@@ -89,13 +88,13 @@ public class CoordinateControllerTest
 
         // Count all boreholes with set source location and missing destination location
         var boreholesWithMissingSourceCoordinates = context.Boreholes.Where(b =>
-            (b.OriginalReferenceSystem == ReferenceSystem.LV95 &&
-                (b.LocationX != null && b.LocationY != null) &&
-                (b.LocationXLV03 == null || b.LocationYLV03 == null))
+            b.OriginalReferenceSystem == ReferenceSystem.LV95 &&
+                b.LocationX != null && b.LocationY != null &&
+                (b.LocationXLV03 == null || b.LocationYLV03 == null)
                 ||
-            (b.OriginalReferenceSystem == ReferenceSystem.LV03 &&
-                (b.LocationXLV03 != null && b.LocationYLV03 != null) &&
-                (b.LocationX == null || b.LocationY == null)))
+            b.OriginalReferenceSystem == ReferenceSystem.LV03 &&
+                b.LocationXLV03 != null && b.LocationYLV03 != null &&
+                (b.LocationX == null || b.LocationY == null))
             .Count();
 
         await AssertMigrateCoordinatesAsync(onlyMissing: true, boreholesWithMissingSourceCoordinates, 10004, () =>

@@ -1,12 +1,11 @@
-﻿using BDMS.Controllers;
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using static BDMS.Helpers;
 
-namespace BDMS;
+namespace BDMS.Controllers;
 
 [TestClass]
 public class ChronostratigraphyControllerTest
@@ -86,7 +85,7 @@ public class ChronostratigraphyControllerTest
             IsLast = true,
             Chronostratigraphy = null,
             ChronostratigraphyId = 15_001_088,
-            Updated = new DateTime(2021, 6, 27, 4, 22,  39).ToUniversalTime(),
+            Updated = new DateTime(2021, 6, 27, 4, 22, 39).ToUniversalTime(),
             UpdatedBy = null,
             UpdatedById = 5,
             StratigraphyId = 6_000_003,
