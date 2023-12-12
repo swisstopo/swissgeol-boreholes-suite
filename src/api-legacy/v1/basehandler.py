@@ -28,17 +28,14 @@ class BaseHandler(web.RequestHandler):
     async def prepare(self):
 
         auth_header = self.request.headers.get('Authorization')
-        auth_type = self.request.headers.get('bdms-authorization', False)
-
-        if auth_header is None or not auth_header.startswith('Basic '):
-
+        
+        if auth_header is None:
             self.set_header('WWW-Authenticate', 'Basic realm=BDMS')
             self.set_status(401)
             self.finish()
             return
 
-        auth_decoded = base64.decodestring(auth_header[6:].encode('utf-8'))
-        username, password = auth_decoded.decode('utf-8').split(':', 1)
+        username = auth_header
 
         async with self.pool.acquire() as conn: 
 
@@ -172,28 +169,12 @@ class BaseHandler(web.RequestHandler):
                     WHERE
                         username = $1
                     AND
-                        password = crypt($2, password)
-                    AND
                         disabled_usr IS NULL
                 ) as t
-            """, username, password)
+            """, username)
 
             if val is None:
-
-                if auth_type == 'bdms-v1':
-                    self.write({
-                        "success": False,
-                        "message": "Authentication error",
-                        "error": "E-102"
-                    })
-
-                else:
-                    self.set_header(
-                        'WWW-Authenticate',
-                        'Basic realm=BDMS'
-                    )
-                    self.set_status(401)
-
+                self.set_status(401)
                 self.finish()
                 return
 

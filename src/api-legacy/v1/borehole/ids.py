@@ -8,6 +8,7 @@ class BoreholeIds(Action):
     async def execute(self, filter={}, user=None):
 
         permissions = None
+
         if user is not None:
             # Exclude VIEW role to filter out published boreholes
             permissions = self.filterPermission(user, ['VIEW'])
@@ -62,11 +63,6 @@ class BoreholeIds(Action):
                 bdms.users as creator
             ON
                 created_by_bho = creator.id_usr
-
-            INNER JOIN
-                bdms.completness
-            ON
-                completness.id_bho = borehole.id_bho
         """
 
         if len(where) > 0:

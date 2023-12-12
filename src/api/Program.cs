@@ -119,16 +119,23 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
     return new AmazonS3Client(accessKey, secretKey, clientConfig);
 });
 
+builder.Services.AddScoped<LegacyApiAuthenticationMiddleware>();
+builder.Services
+    .AddReverseProxy()
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+
 var app = builder.Build();
 
 // Migrate db changes on startup
 using var scope = app.Services.CreateScope();
 using var context = scope.ServiceProvider.GetRequiredService<BdmsContext>();
-context.Database.Migrate();
-
-if (app.Environment.IsDevelopment())
 {
-    context.EnsureSeeded();
+    context.Database.Migrate();
+
+    if (app.Environment.IsDevelopment())
+    {
+        context.EnsureSeeded();
+    }
 }
 
 app.UseSwagger();
@@ -140,7 +147,9 @@ app.UseSwaggerUI(options =>
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<LegacyApiAuthenticationMiddleware>();
 
 app.MapControllers();
+app.MapReverseProxy();
 
 app.Run();

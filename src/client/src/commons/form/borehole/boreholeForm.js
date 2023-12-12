@@ -206,7 +206,6 @@ class BoreholeForm extends React.Component {
                   patchFetch: false,
                 },
                 () => {
-                  borehole.percentage = response.data.percentage;
                   borehole.lock = response.data.lock;
                   borehole.updater = response.data.updater;
                   if (response.data.location) {

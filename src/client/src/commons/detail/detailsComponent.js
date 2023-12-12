@@ -239,10 +239,7 @@ class DetailsComponent extends React.Component {
                 paddingBottom: "1em",
                 overflowY: "hidden",
               }}>
-              <StratigraphiesComponent
-                data={detail}
-                stratigraphies={detail.stratigraphies}
-              />
+              <StratigraphiesComponent data={detail} />
             </div>,
           ]
         ) : detail.isFetching === true ? (

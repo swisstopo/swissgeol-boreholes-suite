@@ -113,7 +113,6 @@ class GetBorehole(Action):
                     ) t
                 ) as custom,
                 stratigraphy as stratigraphy,
-                completness.percentage,
                 (
                     SELECT row_to_json(t)
                     FROM (
@@ -245,9 +244,6 @@ class GetBorehole(Action):
             ) as p
             ON
                 p.id_bho_fk = id_bho
-
-            INNER JOIN bdms.completness
-                ON completness.id_bho = borehole.id_bho
 
             INNER JOIN bdms.users as updater
                 ON updated_by_bho = updater.id_usr
