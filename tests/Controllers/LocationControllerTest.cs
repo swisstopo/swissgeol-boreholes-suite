@@ -14,8 +14,6 @@ namespace BDMS.Controllers;
 public class LocationControllerTest
 {
     private const int BoreholeWithAllLocationAttributesId = 2_000_000;
-    private const int BoreholeBoreholeWithMissingLocationAttributesId = 2_000_001;
-    private const int BoreholeBoreholeWithMissingSourceCoordinatesId = 2_000_002;
 
     private BdmsContext context;
     private LocationController controller;
