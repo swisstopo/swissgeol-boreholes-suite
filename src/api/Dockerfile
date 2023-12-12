@@ -34,7 +34,6 @@ RUN dotnet publish \
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS deploy
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ASPNETCORE_HTTP_PORTS=80
 WORKDIR /app
 
 # Install missing packages
@@ -44,7 +43,7 @@ RUN \
   apt-get install -y curl && \
   rm -rf /var/lib/apt/lists/*
 
-EXPOSE 80
+EXPOSE 8080
 
 # Set default locale
 ENV LANG=C.UTF-8
@@ -52,7 +51,7 @@ ENV LC_ALL=C.UTF-8
 
 COPY --from=build /app/publish .
 
-HEALTHCHECK CMD curl --fail http://localhost/ || exit 1
+HEALTHCHECK CMD curl --fail http://localhost:8080/ || exit 1
 
 # Switch to the non-root user 'app' defined in the base image
 USER $APP_UID
