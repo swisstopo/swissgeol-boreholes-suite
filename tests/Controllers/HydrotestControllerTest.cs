@@ -121,10 +121,11 @@ public class HydrotestControllerTests
         context.Hydrotests.Add(originalHydrotest);
         await context.SaveChangesAsync();
 
-        var result = await controller.EditHydrotestAsync(updatedHydrotest) as OkObjectResult;
+        var result = await controller.EditHydrotestAsync(updatedHydrotest);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+        ActionResultAssert.IsOk(result);
+
         var editedHydrotest = context.Hydrotests.Single(w => w.Id == 1);
         Assert.AreEqual(updatedHydrotest.Id, editedHydrotest.Id);
         Assert.AreEqual(updatedHydrotest.Type, editedHydrotest.Type);
@@ -149,10 +150,8 @@ public class HydrotestControllerTests
     {
         var nonExistentHydrotest = new Hydrotest { Id = 678135 };
 
-        var result = await controller.EditHydrotestAsync(nonExistentHydrotest) as NotFoundResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(StatusCodes.Status404NotFound, result.StatusCode);
+        var result = await controller.EditHydrotestAsync(nonExistentHydrotest);
+        ActionResultAssert.IsNotFound(result);
     }
 
     [TestMethod]

@@ -109,8 +109,7 @@ public class ChronostratigraphyControllerTest
 
         // Update Chronostratigraphy
         var response = await controller.EditAsync(newChronostratigraphy);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        ActionResultAssert.IsOk(response);
 
         // Assert Updates and unchanged values
         var updatedChronostratigraphy = context.ChronostratigraphyLayers.Single(c => c.Id == id);
@@ -132,16 +131,14 @@ public class ChronostratigraphyControllerTest
 
         // Upate FaciesDescription
         var response = await controller.EditAsync(chronostratigraphy);
-        var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(404, notFoundResult.StatusCode);
+        ActionResultAssert.IsNotFound(response);
     }
 
     [TestMethod]
     public async Task EditWithoutChronostratigraphyReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        ActionResultAssert.IsBadRequest(response);
     }
 
     [TestMethod]
@@ -185,9 +182,7 @@ public class ChronostratigraphyControllerTest
         Assert.IsInstanceOfType(getResponse.Result, typeof(OkObjectResult));
 
         var response = await controller.CreateAsync(chronostratigraphy);
-        var result = response as ObjectResult;
-        Assert.IsInstanceOfType(result.Value, typeof(ProblemDetails));
-        Assert.AreEqual(500, result.StatusCode);
+        ActionResultAssert.IsInternalServerError(response);
     }
 
     [TestMethod]

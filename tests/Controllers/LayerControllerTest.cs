@@ -179,8 +179,7 @@ public class LayerControllerTest
 
         // Update Layer
         var response = await controller.EditAsync(newLayer);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        ActionResultAssert.IsOk(response);
 
         // Assert Updates and unchanged values
         var updatedLayer = context.Layers.Single(c => c.Id == id);
@@ -202,16 +201,14 @@ public class LayerControllerTest
 
         // Upate Layer
         var response = await controller.EditAsync(layer);
-        var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(404, notFoundResult.StatusCode);
+        ActionResultAssert.IsNotFound(response);
     }
 
     [TestMethod]
     public async Task EditWithoutLayerReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        ActionResultAssert.IsBadRequest(response);
     }
 
     [TestMethod]
