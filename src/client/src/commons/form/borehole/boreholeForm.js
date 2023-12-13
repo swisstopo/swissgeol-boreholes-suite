@@ -307,7 +307,8 @@ class BoreholeForm extends React.Component {
                 <NameSegment
                   size={size}
                   borehole={borehole}
-                  updateChange={this.updateChange}></NameSegment>
+                  updateChange={this.updateChange}
+                  user={user}></NameSegment>
                 <RestrictionSegment
                   size={size}
                   borehole={borehole}
