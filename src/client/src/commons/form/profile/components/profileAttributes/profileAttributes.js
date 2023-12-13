@@ -10,106 +10,70 @@ import { Checkbox } from "semantic-ui-react";
 import TranslationText from "../../../translationText";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
-import { getData, sendAttribute } from "./api";
+import { fetchLayerById, updateLayer } from "../../../../../api/fetchApiV2";
 import ProfileAttributeList from "./components/profileAttributeList/profileAttributeList";
 import { useSelector } from "react-redux";
-import { useQueryClient } from "react-query";
 import { AlertContext } from "../../../../alert/alertContext";
-import { layerQueryKey } from "../../../../../api/fetchApiV2";
 
 const ProfileAttributes = props => {
-  const {
-    id,
-    isEditable,
-    onUpdated,
-    attribute,
-    reloadAttribute,
-    selectedStratigraphyID,
-  } = props.data;
+  const { id, isEditable, attribute, reloadAttribute } = props.data;
 
   const { codes, geocode } = useSelector(state => ({
     codes: state.core_domain_list,
     geocode: "Geol",
   }));
   const [showAll, setShowAll] = useState(false);
-  const [state, setState] = useState({
-    isFetching: false,
-    isPatching: false,
-    allfields: false,
-    updateAttributeDelay: {},
-    layer: {
-      id: id?.hasOwnProperty("id") ? id : null,
-      kind: null,
-      depth_from: null,
-      depth_to: null,
-      last: null,
-      qt_description: null,
-      lithology: null,
-      color: [],
-      plasticity: null,
-      humidity: null,
-      consistance: null,
-      alteration: null,
-      compactness: null,
-      jointing: [],
-      organic_component: [],
-      striae: null,
-      grain_size_1: null,
-      grain_size_2: null,
-      grain_shape: [],
-      grain_granularity: [],
-      cohesion: null,
-      uscs_1: null,
-      uscs_2: null,
-      uscs_3: [],
-      uscs_original: "",
-      original_lithology: "",
-      uscs_determination: [],
-      debris: [],
-      layer_lithology_top_bedrock: [],
-      gradation: null,
-      notes: "",
-      fill_material: null,
-      casing_id: null,
-      casing_kind: null,
-      casing_material: null,
-      casing_date_spud: null,
-      casing_date_finish: null,
-      casing_innder_diameter: null,
-      casing_outer_diameter: null,
-      fill_kind: null,
-    },
-  });
+  const [layer, setLayer] = useState([]);
+
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
   const alertContext = useContext(AlertContext);
 
   const mounted = useRef(false);
 
-  const load = useCallback(id => {
-    getData(id).then(data => {
-      if (mounted.current) {
-        setState({
-          isFetching: false,
-          layer: data,
-        });
-      }
-    });
+  const mapCodelistToAttribute = (codelists, schema) => {
+    return codelists.filter(x => x.schema === schema).map(x => x.id);
+  };
+
+  const mapResponseToLayer = useCallback(response => {
+    if (response?.codelists?.length > 0) {
+      response["uscs_3"] = mapCodelistToAttribute(
+        response.codelists,
+        "mcla101",
+      );
+      response["grain_shape"] = mapCodelistToAttribute(
+        response.codelists,
+        "mlpr110",
+      );
+      response["grain_granularity"] = mapCodelistToAttribute(
+        response.codelists,
+        "mlpr115",
+      );
+      response["organic_component"] = mapCodelistToAttribute(
+        response.codelists,
+        "mlpr108",
+      );
+      response["debris"] = mapCodelistToAttribute(
+        response.codelists,
+        "mcla107",
+      );
+      response["color"] = mapCodelistToAttribute(response.codelists, "mlpr112");
+    }
+    setLayer(response);
   }, []);
 
   useEffect(() => {
     mounted.current = true;
 
     if (id && mounted.current) {
-      load(id);
+      fetchLayerById(id).then(mapResponseToLayer);
       setShowAll(false);
     } else if (id === null) {
-      setState({ state: null });
+      setLayer([]);
     }
     return () => {
       mounted.current = false;
     };
-  }, [id, reloadAttribute, load]);
+  }, [id, reloadAttribute, mapResponseToLayer]);
 
   const updateChange = (attribute, value, to = true, isNumber = false) => {
     if (!isEditable) {
@@ -117,41 +81,36 @@ const ProfileAttributes = props => {
       return;
     }
 
-    setState(prevState => ({ ...prevState, isPatching: true }));
-    _.set(state.layer, attribute, value);
-
-    if (isNumber) {
-      if (value === null) {
-        patch(attribute, value);
-      } else if (/^-?\d*[.,]?\d*$/.test(value)) {
-        patch(attribute, _.toNumber(value));
-      }
-    } else {
-      patch(attribute, value);
+    if (isNumber && /^-?\d*[.,]?\d*$/.test(value)) {
+      value = _.toNumber(value);
     }
-  };
+    var updatedLayer = {
+      ...layer,
+      [attribute]: value,
+    };
 
-  const patch = (attribute, value) => {
-    clearTimeout(state.updateAttributeDelay?.[attribute]);
+    var codelistIds = [];
+    if (updatedLayer["uscs_3"]) {
+      codelistIds = codelistIds.concat(updatedLayer["uscs_3"]);
+    }
+    if (updatedLayer["grain_shape"]) {
+      codelistIds = codelistIds.concat(updatedLayer["grain_shape"]);
+    }
+    if (updatedLayer["grain_granularity"]) {
+      codelistIds = codelistIds.concat(updatedLayer["grain_granularity"]);
+    }
+    if (updatedLayer["organic_component"]) {
+      codelistIds = codelistIds.concat(updatedLayer["organic_component"]);
+    }
+    if (updatedLayer["debris"]) {
+      codelistIds = codelistIds.concat(updatedLayer["debris"]);
+    }
+    if (updatedLayer["color"]) {
+      codelistIds = codelistIds.concat(updatedLayer["color"]);
+    }
+    updatedLayer["codelistIds"] = codelistIds;
 
-    let setDelay = setTimeout(() => {
-      sendAttribute(state?.layer?.id, attribute, value).then(response => {
-        if (response) {
-          onUpdated(attribute);
-          queryClient.invalidateQueries({
-            queryKey: [layerQueryKey, selectedStratigraphyID],
-          });
-        }
-      });
-    }, 500);
-
-    Promise.resolve().then(() => {
-      setState(prevState => ({
-        ...prevState,
-        isPatching: false,
-        updateAttributeDelay: { [attribute]: setDelay },
-      }));
-    });
+    updateLayer(updatedLayer).then(mapResponseToLayer);
   };
 
   const isVisibleFunction = field => {
@@ -207,7 +166,7 @@ const ProfileAttributes = props => {
             attribute,
             showAll,
             updateChange,
-            layer: state.layer,
+            layer: layer,
             isVisibleFunction,
           }}
         />

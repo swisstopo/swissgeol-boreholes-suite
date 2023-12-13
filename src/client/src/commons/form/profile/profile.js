@@ -221,9 +221,7 @@ const Profile = props => {
                 <ProfileAttributes
                   data={{
                     id: selectedLayer ? selectedLayer.id : null,
-                    selectedStratigraphyID: selectedStratigraphy?.id,
                     isEditable,
-                    onUpdated,
                     reloadAttribute,
                     attribute: attributesBasedKind?.profileAttribute,
                   }}

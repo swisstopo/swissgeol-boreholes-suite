@@ -58,8 +58,46 @@ public class LayerController : BdmsControllerBase<Layer>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> EditAsync(Layer entity)
-        => base.EditAsync(entity);
+    public async override Task<IActionResult> EditAsync(Layer entity)
+    {
+        var existingLayer = context.Layers.Include(l => l.LayerCodelists).Include(c => c.Codelists).SingleOrDefault(l => l.Id == entity.Id);
+        var codelistIds = entity.CodelistIds?.ToList();
+        if (existingLayer != default)
+        {
+            context.Entry(existingLayer).CurrentValues.SetValues(entity);
+        }
+        else
+        {
+            existingLayer = context.Attach(entity).Entity;
+        }
+
+        if (codelistIds?.Count > 0)
+        {
+            foreach (var layerCodelist in existingLayer.LayerCodelists)
+            {
+                if (!entity.CodelistIds.Contains(layerCodelist.CodelistId))
+                {
+                    context.Remove(layerCodelist);
+                }
+            }
+
+            foreach (var id in entity.CodelistIds)
+            {
+                if (!existingLayer.LayerCodelists.Any(lc => lc.CodelistId == id))
+                {
+                    var codelist = await context.Codelists.FindAsync(id).ConfigureAwait(false);
+                    if (codelist != null)
+                    {
+                        existingLayer.LayerCodelists ??= new List<LayerCodelist>();
+
+                        existingLayer.LayerCodelists.Add(new LayerCodelist { Codelist = codelist, CodelistId = codelist.Id, SchemaName = codelist.Schema! });
+                    }
+                }
+            }
+        }
+
+        return await base.EditAsync(entity).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
