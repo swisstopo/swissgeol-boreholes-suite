@@ -302,9 +302,8 @@ class BoreholeForm extends React.Component {
                   identifier={this.state.identifier}
                   identifierValue={this.state.identifierValue}
                   setState={this.setState.bind(this)}
-                  updateBorehole={
-                    this.props.updateBorehole
-                  }></IdentifierSegment>
+                  updateBorehole={this.props.updateBorehole}
+                  user={user}></IdentifierSegment>
                 <NameSegment
                   size={size}
                   borehole={borehole}
