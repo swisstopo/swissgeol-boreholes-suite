@@ -75,8 +75,8 @@ public static class BdmsContextExtensions
         List<int> qtInclinationDirectionIds = codelists.Where(c => c.Schema == "custom.qt_bore_inc_dir").Select(s => s.Id).ToList();
         List<int> chronostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.chronostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> lithostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithostratigraphy_top_bedrock").Select(s => s.Id).ToList();
-        List<int> instrumentKindIds = codelists.Where(c => c.Schema == "inst100").Select(s => s.Id).ToList();
-        List<int> instrumentMaterialIds = codelists.Where(c => c.Schema == "inst101").Select(s => s.Id).ToList();
+        List<int> instrumentKindIds = codelists.Where(c => c.Schema == CompletionSchemas.InstrumentationKindSchema).Select(s => s.Id).ToList();
+        List<int> instrumentStatusIds = codelists.Where(c => c.Schema == CompletionSchemas.InstrumentationStatusSchema).Select(s => s.Id).ToList();
         List<int> casingKindIds = codelists.Where(c => c.Schema == "casi200").Select(s => s.Id).ToList();
         List<int> casingMaterialIds = codelists.Where(c => c.Schema == "casi201").Select(s => s.Id).ToList();
         List<int> plasticityIds = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList();
@@ -103,7 +103,7 @@ public static class BdmsContextExtensions
         List<int> groundwaterLevelMeasurementKindIds = codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Select(s => s.Id).ToList();
         List<int> fieldMeasurementSampleTypeIds = codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Select(s => s.Id).ToList();
         List<int> fieldMeasurementParameterIds = codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Select(s => s.Id).ToList();
-        List<int> completionKindIds = codelists.Where(c => c.Schema == "completion_kind").Select(s => s.Id).ToList();
+        List<int> completionKindIds = codelists.Where(c => c.Schema == CompletionSchemas.CompletionKindSchema).Select(s => s.Id).ToList();
 
         // Seed Boreholes
         var borehole_ids = 1_000_000;
@@ -354,7 +354,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Humidity, _ => default!)
             .RuleFor(o => o.InstrumentKindId, f => f.PickRandom(instrumentKindIds).OrNull(f, .05f))
             .RuleFor(o => o.InstrumentKind, _ => default!)
-            .RuleFor(o => o.InstrumentStatusId, f => f.PickRandom(instrumentMaterialIds).OrNull(f, .05f))
+            .RuleFor(o => o.InstrumentStatusId, f => f.PickRandom(instrumentStatusIds).OrNull(f, .05f))
             .RuleFor(o => o.InstrumentStatus, _ => default!)
             .RuleFor(o => o.InstrumentCasingId, f => GetStratigraphyOrCasingId(layer_ids, 7_000_000))
             .RuleFor(o => o.InstrumentCasing, _ => default!)
@@ -720,6 +720,40 @@ public static class BdmsContextExtensions
         var completions = completionRange.Select(SeededCompletion).ToList();
 
         context.BulkInsert(completions, bulkConfig);
+
+        context.SaveChanges();
+
+        // Seed Instrumentation
+        var instrumentation_ids = 15_000_000;
+        var fakeInstrumentation = new Faker<Instrumentation>()
+            .RuleFor(i => i.CompletionId, f => f.PickRandom(completions.Select(c => c.Id)))
+            .RuleFor(i => i.Completion, _ => default!)
+            .RuleFor(i => i.FromDepth, f => (instrumentation_ids % 10) * 10)
+            .RuleFor(i => i.ToDepth, f => ((instrumentation_ids % 10) + 1) * 10)
+            .RuleFor(i => i.InstrumentationId, f => f.Vehicle.Model())
+            .RuleFor(i => i.KindId, f => f.PickRandom(instrumentKindIds))
+            .RuleFor(i => i.Kind, _ => default!)
+            .RuleFor(i => i.StatusId, f => f.PickRandom(instrumentStatusIds))
+            .RuleFor(i => i.Status, _ => default!)
+            .RuleFor(i => i.Notes, f => f.Random.Words(4))
+            .RuleFor(i => i.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(i => i.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(i => i.CreatedBy, _ => default!)
+            .RuleFor(i => i.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(i => i.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(i => i.UpdatedBy, _ => default!)
+            .RuleFor(i => i.Id, f => instrumentation_ids++);
+
+        Instrumentation SeedeInstrumentation(Completion completion)
+        {
+            return fakeInstrumentation
+                .UseSeed(completion.Id)
+                .Generate();
+        }
+
+        var instrumentations = completions.Select(c => SeedeInstrumentation(c)).ToList();
+
+        context.BulkInsert(instrumentations, bulkConfig);
 
         context.SaveChanges();
 

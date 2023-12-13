@@ -47,13 +47,13 @@ public class CompletionControllerTest
         {
             BoreholeId = borehole.Id,
             Name = "AUTOTHUNDER",
-            KindId = context.Codelists.First(c => c.Schema == "completion_kind").Id,
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
         };
         var completion2 = new Completion
         {
             BoreholeId = borehole.Id,
             Name = "EINSTEINVIEW",
-            KindId = context.Codelists.First(c => c.Schema == "completion_kind").Id,
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
         };
 
         context.Completions.Add(completion1);
@@ -78,7 +78,7 @@ public class CompletionControllerTest
         {
             BoreholeId = borehole.Id,
             Name = "AUTOTHUNDER",
-            KindId = context.Codelists.First(c => c.Schema == "completion_kind").Id,
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
         };
 
         context.Completions.Add(completion);
@@ -104,7 +104,7 @@ public class CompletionControllerTest
         {
             BoreholeId = borehole.Id,
             Name = "AUTOTHUNDER",
-            KindId = context.Codelists.First(c => c.Schema == "completion_kind").Id,
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
         };
 
         var response = await controller.CreateAsync(completion).ConfigureAwait(false);
@@ -127,7 +127,7 @@ public class CompletionControllerTest
         {
             BoreholeId = borehole.Id,
             Name = "AUTOTHUNDER",
-            KindId = context.Codelists.First(c => c.Schema == "completion_kind").Id,
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
         };
 
         context.Completions.Add(completion);
@@ -156,7 +156,7 @@ public class CompletionControllerTest
         {
             BoreholeId = borehole.Id,
             Name = "AUTOTHUNDER",
-            KindId = context.Codelists.First(c => c.Schema == "completion_kind").Id,
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
         };
 
         context.Completions.Add(completion);
