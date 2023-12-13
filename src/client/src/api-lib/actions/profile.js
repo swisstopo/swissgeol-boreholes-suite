@@ -36,14 +36,6 @@ export function getProfileLayers(id, withValidation = false) {
   });
 }
 
-// Fetch the attributes of a single layer by its id
-export function getLayerAttributes(id) {
-  return fetch("/borehole/profile/layer", {
-    action: "GET",
-    id: id,
-  });
-}
-
 // Update the attributes of a single layer by its id, field name and value
 export function patchProfile(id, field, value) {
   return fetch("/borehole/profile/edit", {
