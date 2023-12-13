@@ -69,7 +69,11 @@ public class BdmsControllerBase<TEntity> : ControllerBase
         return await SaveChangesAsync(Ok).ConfigureAwait(false);
     }
 
-    private async Task<IActionResult> SaveChangesAsync(Func<IActionResult> successResult)
+    /// <summary>
+    /// Asynchronously saves the changes to the database and returns the specified <paramref name="successResult"/>.
+    /// </summary>
+    /// <param name="successResult"></param>
+    public async Task<IActionResult> SaveChangesAsync(Func<IActionResult> successResult)
     {
         try
         {

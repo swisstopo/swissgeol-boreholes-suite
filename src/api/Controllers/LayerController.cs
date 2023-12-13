@@ -60,6 +60,11 @@ public class LayerController : BdmsControllerBase<Layer>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async override Task<IActionResult> EditAsync(Layer entity)
     {
+        if (entity == null)
+        {
+            return BadRequest(ModelState);
+        }
+
         var existingLayer = context.Layers.Include(l => l.LayerCodelists).Include(c => c.Codelists).SingleOrDefault(l => l.Id == entity.Id);
         var codelistIds = entity.CodelistIds?.ToList();
         if (existingLayer != default)
@@ -68,7 +73,7 @@ public class LayerController : BdmsControllerBase<Layer>
         }
         else
         {
-            existingLayer = context.Attach(entity).Entity;
+            return NotFound();
         }
 
         if (codelistIds?.Count > 0)
@@ -96,7 +101,7 @@ public class LayerController : BdmsControllerBase<Layer>
             }
         }
 
-        return await base.EditAsync(entity).ConfigureAwait(false);
+        return await SaveChangesAsync(() => Ok(entity)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
