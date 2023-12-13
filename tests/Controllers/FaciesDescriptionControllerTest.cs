@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Net;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -114,8 +113,7 @@ public class FaciesDescriptionControllerTest
 
         // Update FaciesDescription
         var response = await controller.EditAsync(newFaciesDescription);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+        ActionResultAssert.IsOk(response);
 
         // Assert Updates and unchanged values
         var updatedFaciesDescription = context.FaciesDescriptions.Single(c => c.Id == id);
@@ -146,8 +144,7 @@ public class FaciesDescriptionControllerTest
     public async Task EditWithoutFaciesDescriptionReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+        ActionResultAssert.IsBadRequest(response);
     }
 
     [TestMethod]
@@ -192,8 +189,6 @@ public class FaciesDescriptionControllerTest
         Assert.IsInstanceOfType(getResponse.Result, typeof(OkObjectResult));
 
         var response = await controller.CreateAsync(faciesDescription);
-        var result = response as ObjectResult;
-        Assert.IsInstanceOfType(result.Value, typeof(ProblemDetails));
-        Assert.AreEqual(StatusCodes.Status500InternalServerError, result.StatusCode);
+        ActionResultAssert.IsInternalServerError(response);
     }
 }

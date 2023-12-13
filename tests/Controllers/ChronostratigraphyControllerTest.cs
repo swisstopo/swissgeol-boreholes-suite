@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Net;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -111,8 +110,7 @@ public class ChronostratigraphyControllerTest
 
         // Update Chronostratigraphy
         var response = await controller.EditAsync(newChronostratigraphy);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+        ActionResultAssert.IsOk(response);
 
         // Assert Updates and unchanged values
         var updatedChronostratigraphy = context.ChronostratigraphyLayers.Single(c => c.Id == id);
@@ -142,8 +140,7 @@ public class ChronostratigraphyControllerTest
     public async Task EditWithoutChronostratigraphyReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+        ActionResultAssert.IsBadRequest(response);
     }
 
     [TestMethod]
@@ -187,9 +184,7 @@ public class ChronostratigraphyControllerTest
         Assert.IsInstanceOfType(getResponse.Result, typeof(OkObjectResult));
 
         var response = await controller.CreateAsync(chronostratigraphy);
-        var result = response as ObjectResult;
-        Assert.IsInstanceOfType(result.Value, typeof(ProblemDetails));
-        Assert.AreEqual(StatusCodes.Status500InternalServerError, result.StatusCode);
+        ActionResultAssert.IsInternalServerError(response);
     }
 
     [TestMethod]

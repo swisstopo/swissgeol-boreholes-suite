@@ -120,10 +120,11 @@ public class GroundwaterLevelMeasurementControllerTest
         context.GroundwaterLevelMeasurements.Add(originalGroundwaterLevelMeasurement);
         await context.SaveChangesAsync();
 
-        var result = await controller.EditAsync(updatedGroundwaterLevelMeasurement) as OkObjectResult;
+        var result = await controller.EditAsync(updatedGroundwaterLevelMeasurement);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+        ActionResultAssert.IsOk(result);
+
         var editedGroundwaterLevelMeasurement = context.GroundwaterLevelMeasurements.Single(w => w.Id == 1);
         Assert.AreEqual(updatedGroundwaterLevelMeasurement.Id, editedGroundwaterLevelMeasurement.Id);
         Assert.AreEqual(updatedGroundwaterLevelMeasurement.Type, editedGroundwaterLevelMeasurement.Type);

@@ -153,8 +153,7 @@ public class LithostratigraphyControllerTest
     public async Task EditWithoutContentReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+        ActionResultAssert.IsBadRequest(response);
     }
 
     [TestMethod]

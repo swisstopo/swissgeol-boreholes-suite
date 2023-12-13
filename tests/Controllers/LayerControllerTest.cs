@@ -180,8 +180,7 @@ public class LayerControllerTest
 
         // Update Layer
         var response = await controller.EditAsync(newLayer);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+        ActionResultAssert.IsOk(response);
 
         // Assert Updates and unchanged values
         var updatedLayer = context.Layers.Single(c => c.Id == id);
@@ -211,8 +210,7 @@ public class LayerControllerTest
     public async Task EditWithoutLayerReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+        ActionResultAssert.IsBadRequest(response);
     }
 
     [TestMethod]

@@ -118,10 +118,11 @@ public class WaterIngressControllerTests
         context.WaterIngresses.Add(originalWaterIngress);
         await context.SaveChangesAsync();
 
-        var result = await controller.EditAsync(updatedWaterIngress) as OkObjectResult;
+        var result = await controller.EditAsync(updatedWaterIngress);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+        ActionResultAssert.IsOk(result);
+
         var editedWaterIngress = context.WaterIngresses.Include(w => w.Quantity).Single(w => w.Id == 1);
         Assert.AreEqual(updatedWaterIngress.Id, editedWaterIngress.Id);
         Assert.AreEqual(updatedWaterIngress.Type, editedWaterIngress.Type);
