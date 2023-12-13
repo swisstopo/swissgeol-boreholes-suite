@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Net;
 
 namespace BDMS.Controllers;
 
@@ -129,7 +130,7 @@ public class CodeListControllerTest
         // Upate CodeList
         var response = await controller.EditAsync(codeList);
         var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
 
         // Assert Updates
         var updatedCodelist = context.Codelists.Single(c => c.Id == id);
@@ -207,7 +208,7 @@ public class CodeListControllerTest
         // Upate CodeList
         var response = await controller.EditAsync(codeList);
         var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
 
         // Assert Updates and unchanged values
         var updatedCodelist = context.Codelists.Single(c => c.Id == id);
@@ -245,7 +246,7 @@ public class CodeListControllerTest
         // Upate CodeList
         var response = await controller.EditAsync(codeList);
         var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(404, notFoundResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
     }
 
     [TestMethod]
@@ -253,7 +254,7 @@ public class CodeListControllerTest
     {
         var response = await controller.EditAsync(null);
         var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
     }
 
     [TestMethod]

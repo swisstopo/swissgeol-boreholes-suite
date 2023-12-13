@@ -369,7 +369,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
@@ -554,7 +554,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
@@ -624,7 +624,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(2, problemDetails.Errors.Count);
@@ -649,7 +649,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(3, problemDetails.Errors.Count);
@@ -668,7 +668,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
 
         ProblemDetails problemDetails = (ProblemDetails)result.Value!;
         Assert.AreEqual(4, Regex.Matches(problemDetails.Detail!, "Header with name ").Count);
@@ -688,7 +688,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
 
         ProblemDetails problemDetails = (ProblemDetails)result.Value!;
         StringAssert.Contains(problemDetails.Detail, "Header with name 'ImportId'[0] was not found.");
@@ -707,7 +707,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
@@ -730,7 +730,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
@@ -751,7 +751,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(2, problemDetails.Errors.Count);
@@ -770,7 +770,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(2, problemDetails.Errors.Count);
@@ -817,7 +817,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(3, problemDetails.Errors.Count);
@@ -893,7 +893,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1000, problemDetails.Errors.Count);

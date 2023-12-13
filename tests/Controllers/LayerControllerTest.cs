@@ -1,4 +1,5 @@
 ﻿using BDMS.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -180,7 +181,7 @@ public class LayerControllerTest
         // Update Layer
         var response = await controller.EditAsync(newLayer);
         var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
 
         // Assert Updates and unchanged values
         var updatedLayer = context.Layers.Single(c => c.Id == id);
@@ -203,7 +204,7 @@ public class LayerControllerTest
         // Upate Layer
         var response = await controller.EditAsync(layer);
         var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(404, notFoundResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
     }
 
     [TestMethod]
@@ -211,7 +212,7 @@ public class LayerControllerTest
     {
         var response = await controller.EditAsync(null);
         var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
     }
 
     [TestMethod]

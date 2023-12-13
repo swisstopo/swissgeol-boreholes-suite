@@ -1,4 +1,5 @@
 ﻿using BDMS.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -145,7 +146,7 @@ public class LithostratigraphyControllerTest
 
         var response = await controller.EditAsync(lithostratigraphy);
         var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(404, notFoundResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
     }
 
     [TestMethod]
@@ -153,7 +154,7 @@ public class LithostratigraphyControllerTest
     {
         var response = await controller.EditAsync(null);
         var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
     }
 
     [TestMethod]

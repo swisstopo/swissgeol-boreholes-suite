@@ -1,4 +1,5 @@
 ﻿using BDMS.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -113,7 +114,7 @@ public class LithologicalDescriptionControllerTest
         // Update LithologicalDescription
         var response = await controller.EditAsync(newLithologicalDescription);
         var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
 
         // Assert Updates and unchanged values
         var updatedLithologicalDescription = context.LithologicalDescriptions.Single(c => c.Id == id);
@@ -137,7 +138,7 @@ public class LithologicalDescriptionControllerTest
         // Upate LithologicalDescription
         var response = await controller.EditAsync(lithologicalDescription);
         var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(404, notFoundResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
     }
 
     [TestMethod]
@@ -145,7 +146,7 @@ public class LithologicalDescriptionControllerTest
     {
         var response = await controller.EditAsync(null);
         var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
     }
 
     [TestMethod]
@@ -192,6 +193,6 @@ public class LithologicalDescriptionControllerTest
         var response = await controller.CreateAsync(lithologicalDescription);
         var result = response as ObjectResult;
         Assert.IsInstanceOfType(result.Value, typeof(ProblemDetails));
-        Assert.AreEqual(500, result.StatusCode);
+        Assert.AreEqual(StatusCodes.Status500InternalServerError, result.StatusCode);
     }
 }

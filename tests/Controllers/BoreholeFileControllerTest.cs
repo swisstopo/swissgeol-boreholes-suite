@@ -67,7 +67,7 @@ public class BoreholeFileControllerTest
         // Upload
         IActionResult response = await controller.Upload(firstPdfFormFile, minBoreholeId);
         OkResult okResult = (OkResult)response;
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
 
         // Get uploaded file from db
         var file = context.Files.Single(f => f.Name == fileName);
@@ -258,7 +258,7 @@ public class BoreholeFileControllerTest
         // Update borehole file
         IActionResult response = await controller.Update(updateBoreholeFile, borehole.Id, file.Id).ConfigureAwait(false);
         OkResult okResult = (OkResult)response;
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
 
         Assert.AreEqual(true, boreholeFile.Public);
         Assert.AreEqual("Changed Description", boreholeFile.Description);
