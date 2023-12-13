@@ -212,7 +212,7 @@ public class HydrotestController : ControllerBase
         {
             var errorMessage = "An error occurred while saving the entity changes.";
             logger?.LogError(ex, errorMessage);
-            return Problem(errorMessage, statusCode: StatusCodes.Status500InternalServerError);
+            return Problem(errorMessage);
         }
     }
 }
