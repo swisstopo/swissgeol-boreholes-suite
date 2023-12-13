@@ -77,7 +77,6 @@ import {
 
 import {
   createStratigraphy,
-  deleteStratigraphy,
   addBedrock,
   createLayer,
   createInstrument,
@@ -165,7 +164,6 @@ export {
   rejectWorkflow,
   resetWorkflow,
   createStratigraphy,
-  deleteStratigraphy,
   addBedrock,
   createLayer,
   createInstrument,

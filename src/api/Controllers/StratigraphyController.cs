@@ -10,12 +10,15 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class StratigraphyController : ControllerBase
+public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 {
+    internal const int StratigraphyKindId = 3000;
+
     private readonly BdmsContext context;
     private readonly ILogger logger;
 
-    public StratigraphyController(BdmsContext context, ILogger<StratigraphyController> logger)
+    public StratigraphyController(BdmsContext context, ILogger<Stratigraphy> logger)
+        : base(context, logger)
     {
         this.context = context;
         this.logger = logger;
@@ -28,7 +31,7 @@ public class StratigraphyController : ControllerBase
     /// <param name="kindId">The kind of the stratigraphies to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<Stratigraphy>>> GetAsync([FromQuery] int? boreholeId = null, int? kindId = null)
+    public async Task<IEnumerable<Stratigraphy>> GetAsync([FromQuery] int? boreholeId = null, int? kindId = null)
     {
         var stratigraphies = context.Stratigraphies.AsNoTracking();
         if (boreholeId != null)
@@ -114,5 +117,40 @@ public class StratigraphyController : ControllerBase
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         return Ok(entityEntry.Entity.Id);
+    }
+
+    /// <inheritdoc />
+    /// <remarks>Automatically sets the remaining and latest stratigraphy as the primary stratigraphy, if possible.</remarks>
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public override async Task<IActionResult> DeleteAsync(int id)
+    {
+        var stratigraphyToDelete = await context.Stratigraphies.FindAsync(id).ConfigureAwait(false);
+        if (stratigraphyToDelete == null)
+        {
+            return NotFound();
+        }
+
+        context.Remove(stratigraphyToDelete);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        // If the stratigraphy to delete is the primary stratigraphy of a borehole,
+        // then we need to set the latest stratigraphy as the primary stratigraphy, if possible.
+        if (stratigraphyToDelete.IsPrimary.GetValueOrDefault() && stratigraphyToDelete.KindId == StratigraphyKindId)
+        {
+            var latestStratigraphy = await context.Stratigraphies
+                .Where(s => s.BoreholeId == stratigraphyToDelete.BoreholeId && s.KindId == StratigraphyKindId)
+                .OrderByDescending(s => s.Created)
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(false);
+
+            if (latestStratigraphy != null)
+            {
+                latestStratigraphy.IsPrimary = true;
+                context.Update(latestStratigraphy);
+                await context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            }
+        }
+
+        return Ok();
     }
 }

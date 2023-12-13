@@ -9,13 +9,6 @@ export function createStratigraphy(id, kind = null) {
   });
 }
 
-export function deleteStratigraphy(id) {
-  return fetch("/borehole/stratigraphy/edit", {
-    action: "DELETE",
-    id: id,
-  });
-}
-
 // Create a new stratigraphy for the given borehole id
 export function addBedrock(id) {
   return fetch("/borehole/stratigraphy/edit", {
