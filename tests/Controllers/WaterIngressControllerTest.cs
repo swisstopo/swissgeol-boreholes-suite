@@ -146,10 +146,8 @@ public class WaterIngressControllerTests
     {
         var nonExistentWaterIngress = new WaterIngress { Id = 999 };
 
-        var result = await controller.EditAsync(nonExistentWaterIngress) as NotFoundResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(StatusCodes.Status404NotFound, result.StatusCode);
+        var result = await controller.EditAsync(nonExistentWaterIngress);
+        ActionResultAssert.IsNotFound(result);
     }
 
     [TestMethod]

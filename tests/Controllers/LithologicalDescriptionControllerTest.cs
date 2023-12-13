@@ -1,5 +1,4 @@
 ﻿using BDMS.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -136,8 +135,7 @@ public class LithologicalDescriptionControllerTest
 
         // Upate LithologicalDescription
         var response = await controller.EditAsync(lithologicalDescription);
-        var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+        ActionResultAssert.IsNotFound(response);
     }
 
     [TestMethod]

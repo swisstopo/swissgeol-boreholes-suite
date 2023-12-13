@@ -666,8 +666,8 @@ public class UploadControllerTest
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual(StatusCodes.Status400BadRequest, result.StatusCode);
+        var result = (ObjectResult)response.Result!;
+        ActionResultAssert.IsBadRequest(result);
 
         ProblemDetails problemDetails = (ProblemDetails)result.Value!;
         Assert.AreEqual(4, Regex.Matches(problemDetails.Detail!, "Header with name ").Count);

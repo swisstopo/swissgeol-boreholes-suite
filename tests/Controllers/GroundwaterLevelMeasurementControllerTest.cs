@@ -149,10 +149,8 @@ public class GroundwaterLevelMeasurementControllerTest
     {
         var nonExistentGroundwaterLevelMeasurement = new GroundwaterLevelMeasurement { Id = 2964237 };
 
-        var result = await controller.EditAsync(nonExistentGroundwaterLevelMeasurement) as NotFoundResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(StatusCodes.Status404NotFound, result.StatusCode);
+        var result = await controller.EditAsync(nonExistentGroundwaterLevelMeasurement);
+        ActionResultAssert.IsNotFound(result);
     }
 
     [TestMethod]

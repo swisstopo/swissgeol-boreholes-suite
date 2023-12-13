@@ -149,10 +149,8 @@ public class FieldMeasurementControllerTest
     {
         var nonExistentFieldMeasurement = new FieldMeasurement { Id = 2964237 };
 
-        var result = await controller.EditAsync(nonExistentFieldMeasurement) as NotFoundResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(StatusCodes.Status404NotFound, result.StatusCode);
+        var result = await controller.EditAsync(nonExistentFieldMeasurement);
+        ActionResultAssert.IsNotFound(result);
     }
 
     [TestMethod]

@@ -1,5 +1,4 @@
 ﻿using BDMS.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -202,8 +201,7 @@ public class LayerControllerTest
 
         // Upate Layer
         var response = await controller.EditAsync(layer);
-        var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+        ActionResultAssert.IsNotFound(response);
     }
 
     [TestMethod]

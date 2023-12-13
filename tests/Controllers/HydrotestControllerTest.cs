@@ -150,10 +150,8 @@ public class HydrotestControllerTests
     {
         var nonExistentHydrotest = new Hydrotest { Id = 678135 };
 
-        var result = await controller.EditHydrotestAsync(nonExistentHydrotest) as NotFoundResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(StatusCodes.Status404NotFound, result.StatusCode);
+        var result = await controller.EditHydrotestAsync(nonExistentHydrotest);
+        ActionResultAssert.IsNotFound(result);
     }
 
     [TestMethod]

@@ -242,8 +242,7 @@ public class CodeListControllerTest
 
         // Upate CodeList
         var response = await controller.EditAsync(codeList);
-        var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+        ActionResultAssert.IsNotFound(response);
     }
 
     [TestMethod]
