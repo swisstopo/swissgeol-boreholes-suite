@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Net;
 using System.Security.Claims;
 using System.Text;
 using static BDMS.Helpers;
@@ -65,9 +64,8 @@ public class BoreholeFileControllerTest
         var firstPdfFormFile = GetFormFileByContent(content, fileName);
 
         // Upload
-        IActionResult response = await controller.Upload(firstPdfFormFile, minBoreholeId);
-        OkResult okResult = (OkResult)response;
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        var response = await controller.Upload(firstPdfFormFile, minBoreholeId);
+        ActionResultAssert.IsOk(response);
 
         // Get uploaded file from db
         var file = context.Files.Single(f => f.Name == fileName);
@@ -256,9 +254,8 @@ public class BoreholeFileControllerTest
         var updateBoreholeFile = new BoreholeFileUpdate() { Description = "Changed Description", Public = true };
 
         // Update borehole file
-        IActionResult response = await controller.Update(updateBoreholeFile, borehole.Id, file.Id).ConfigureAwait(false);
-        OkResult okResult = (OkResult)response;
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        var response = await controller.Update(updateBoreholeFile, borehole.Id, file.Id).ConfigureAwait(false);
+        ActionResultAssert.IsOk(response);
 
         Assert.AreEqual(true, boreholeFile.Public);
         Assert.AreEqual("Changed Description", boreholeFile.Description);

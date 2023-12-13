@@ -128,8 +128,7 @@ public class CodeListControllerTest
 
         // Upate CodeList
         var response = await controller.EditAsync(codeList);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        ActionResultAssert.IsOk(response);
 
         // Assert Updates
         var updatedCodelist = context.Codelists.Single(c => c.Id == id);
@@ -206,8 +205,7 @@ public class CodeListControllerTest
 
         // Upate CodeList
         var response = await controller.EditAsync(codeList);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        ActionResultAssert.IsOk(response);
 
         // Assert Updates and unchanged values
         var updatedCodelist = context.Codelists.Single(c => c.Id == id);
@@ -244,16 +242,14 @@ public class CodeListControllerTest
 
         // Upate CodeList
         var response = await controller.EditAsync(codeList);
-        var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(404, notFoundResult.StatusCode);
+        ActionResultAssert.IsNotFound(response);
     }
 
     [TestMethod]
     public async Task EditWithoutCodelistReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        ActionResultAssert.IsBadRequest(response);
     }
 
     [TestMethod]
