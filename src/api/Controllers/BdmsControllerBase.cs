@@ -1,4 +1,4 @@
-﻿using BDMS.Models;
+using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BDMS.Controllers;
@@ -11,14 +11,21 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     private readonly BdmsContext context;
     private readonly ILogger<TEntity> logger;
 
+    /// <summary>
+    /// Gets the <see cref="BdmsContext"/> used by the controller.
+    /// </summary>
+    protected BdmsContext Context => context;
+    /// <summary>
+ 
+    /// Gets the <see cref="ILogger{TCategoryName}"/> used by the controller.
+    /// </summary>
+    protected ILogger<TEntity> Logger => logger;
+
     protected BdmsControllerBase(BdmsContext context, ILogger<TEntity> logger)
     {
         this.context = context;
         this.logger = logger;
     }
-
-    protected BdmsContext Context => context;
-    protected ILogger<TEntity> Logger => logger;
 
     /// <summary>
     /// Asynchronously creates the <paramref name="entity"/> specified.
