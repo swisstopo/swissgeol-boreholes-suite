@@ -32,7 +32,7 @@ class DateField extends React.Component {
     }
   }
   render() {
-    const { i18n, onChange, placeholder } = this.props;
+    const { i18n, onChange, placeholder, isEditable } = this.props;
 
     let locale = i18n.language;
 
@@ -53,6 +53,7 @@ class DateField extends React.Component {
                   ? moment(this.state.date).format("DD.MM.YYYY")
                   : ""
               }
+              readOnly={!isEditable}
             />
           </div>
         }
@@ -75,6 +76,7 @@ class DateField extends React.Component {
           width: "100%",
           backgroundColor: "blue",
         }}
+        disabled={!isEditable}
       />
     );
   }
@@ -91,6 +93,7 @@ DateField.propTypes = {
 
 DateField.defaultProps = {
   placeholder: null,
+  isEditable: true,
 };
 
 export default withTranslation()(DateField);

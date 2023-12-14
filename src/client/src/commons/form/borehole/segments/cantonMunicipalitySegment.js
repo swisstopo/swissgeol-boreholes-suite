@@ -4,7 +4,7 @@ import TranslationText from "../../translationText";
 import { Form, Segment, Input, Icon } from "semantic-ui-react";
 
 const CantonMunicipalitySegment = props => {
-  const { size, country, canton, municipality } = props;
+  const { size, country, canton, municipality, isEditable } = props;
 
   return (
     <Segment>
@@ -21,7 +21,11 @@ const CantonMunicipalitySegment = props => {
               &nbsp;
               <Icon name="map marker" />
             </label>
-            <Input data-cy="country" value={country ?? ""} />
+            <Input
+              data-cy="country"
+              value={country ?? ""}
+              readOnly={!isEditable}
+            />
           </Form.Field>
           <Form.Field>
             <label>
@@ -29,7 +33,11 @@ const CantonMunicipalitySegment = props => {
               &nbsp;
               <Icon name="map marker" />
             </label>
-            <Input data-cy="canton" value={canton ?? ""} />
+            <Input
+              data-cy="canton"
+              value={canton ?? ""}
+              readOnly={!isEditable}
+            />
           </Form.Field>
           <Form.Field>
             <label>
@@ -37,7 +45,11 @@ const CantonMunicipalitySegment = props => {
               &nbsp;
               <Icon name="map marker" />
             </label>
-            <Input data-cy="municipality" value={municipality ?? ""} />
+            <Input
+              data-cy="municipality"
+              value={municipality ?? ""}
+              readOnly={!isEditable}
+            />
           </Form.Field>
         </Form.Group>
       </Form>
