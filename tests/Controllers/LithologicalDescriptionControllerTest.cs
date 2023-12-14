@@ -112,8 +112,7 @@ public class LithologicalDescriptionControllerTest
 
         // Update LithologicalDescription
         var response = await controller.EditAsync(newLithologicalDescription);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        ActionResultAssert.IsOk(response);
 
         // Assert Updates and unchanged values
         var updatedLithologicalDescription = context.LithologicalDescriptions.Single(c => c.Id == id);
@@ -136,16 +135,14 @@ public class LithologicalDescriptionControllerTest
 
         // Upate LithologicalDescription
         var response = await controller.EditAsync(lithologicalDescription);
-        var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(404, notFoundResult.StatusCode);
+        ActionResultAssert.IsNotFound(response);
     }
 
     [TestMethod]
     public async Task EditWithoutLithologicalDescriptionReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        ActionResultAssert.IsBadRequest(response);
     }
 
     [TestMethod]
@@ -190,8 +187,6 @@ public class LithologicalDescriptionControllerTest
         Assert.IsInstanceOfType(getResponse.Result, typeof(OkObjectResult));
 
         var response = await controller.CreateAsync(lithologicalDescription);
-        var result = response as ObjectResult;
-        Assert.IsInstanceOfType(result.Value, typeof(ProblemDetails));
-        Assert.AreEqual(500, result.StatusCode);
+        ActionResultAssert.IsInternalServerError(response);
     }
 }

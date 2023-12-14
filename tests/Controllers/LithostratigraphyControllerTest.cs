@@ -144,16 +144,14 @@ public class LithostratigraphyControllerTest
         };
 
         var response = await controller.EditAsync(lithostratigraphy);
-        var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(404, notFoundResult.StatusCode);
+        ActionResultAssert.IsNotFound(response);
     }
 
     [TestMethod]
     public async Task EditWithoutContentReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        ActionResultAssert.IsBadRequest(response);
     }
 
     [TestMethod]
