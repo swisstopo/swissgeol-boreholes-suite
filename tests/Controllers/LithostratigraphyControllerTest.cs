@@ -80,7 +80,7 @@ public class LithostratigraphyControllerTest
         var lithostratigraphy = GetLithostratigraphy();
 
         var response = await controller.CreateAsync(lithostratigraphy);
-        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
 
         lithostratigraphy = await context.LithostratigraphyLayers.FindAsync(lithostratigraphy.Id);
         Assert.IsNotNull(lithostratigraphy);
@@ -127,7 +127,7 @@ public class LithostratigraphyControllerTest
 
         changedLithostratigraphy.Id = lithostratigraphy.Id;
         var response = await controller.EditAsync(changedLithostratigraphy);
-        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
 
         lithostratigraphy = context.LithostratigraphyLayers.SingleOrDefault(x => x.Id == lithostratigraphy.Id);
         Assert.IsNotNull(lithostratigraphy);
@@ -144,14 +144,14 @@ public class LithostratigraphyControllerTest
         };
 
         var response = await controller.EditAsync(lithostratigraphy);
-        ActionResultAssert.IsNotFound(response);
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
     public async Task EditWithoutContentReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        ActionResultAssert.IsBadRequest(response);
+        ActionResultAssert.IsBadRequest(response.Result);
     }
 
     [TestMethod]
@@ -177,7 +177,7 @@ public class LithostratigraphyControllerTest
     private async Task CreateLayer(List<int> layerIds, LithostratigraphyLayer layer)
     {
         var response = await controller.CreateAsync(layer);
-        if (response is OkObjectResult result && result.Value is IIdentifyable responseLayer)
+        if (response.Result is OkObjectResult && response.Value is IIdentifyable responseLayer)
         {
             layerIds.Add(responseLayer.Id);
         }

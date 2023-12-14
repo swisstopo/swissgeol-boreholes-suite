@@ -10,12 +10,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class LayerController : BdmsControllerBase<Layer>
 {
-    private readonly BdmsContext context;
-
     public LayerController(BdmsContext context, ILogger<Layer> logger)
         : base(context, logger)
     {
-        this.context = context;
     }
 
     /// <summary>
@@ -58,7 +55,7 @@ public class LayerController : BdmsControllerBase<Layer>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async override Task<IActionResult> EditAsync(Layer entity)
+    public async override Task<ActionResult<Layer>> EditAsync(Layer entity)
     {
         if (entity == null)
         {
@@ -111,10 +108,10 @@ public class LayerController : BdmsControllerBase<Layer>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override async Task<IActionResult> CreateAsync(Layer entity)
+    public override async Task<ActionResult<Layer>> CreateAsync(Layer entity)
     {
         // Create a layer code list entry for each provided code list id.
-        var codeLists = await context.Codelists.Where(c => entity.CodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+        var codeLists = await Context.Codelists.Where(c => entity.CodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
         entity.LayerCodelists = codeLists.Where(c => c.Schema != null).Select(c => new LayerCodelist { Codelist = c, CodelistId = c.Id, SchemaName = c.Schema! }).ToList();
 
         return await base.CreateAsync(entity).ConfigureAwait(false);
@@ -122,7 +119,7 @@ public class LayerController : BdmsControllerBase<Layer>
 
     private IQueryable<Layer> GetLayersWithIncludes()
     {
-        return context.Layers
+        return Context.Layers
             .Include(l => l.QtDescription)
             .Include(l => l.Lithology)
             .Include(l => l.Plasticity)

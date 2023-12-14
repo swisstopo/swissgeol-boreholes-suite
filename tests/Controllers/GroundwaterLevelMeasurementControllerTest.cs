@@ -123,7 +123,7 @@ public class GroundwaterLevelMeasurementControllerTest
         var result = await controller.EditAsync(updatedGroundwaterLevelMeasurement);
 
         Assert.IsNotNull(result);
-        ActionResultAssert.IsOk(result);
+        ActionResultAssert.IsOk(result.Result);
 
         var editedGroundwaterLevelMeasurement = context.GroundwaterLevelMeasurements.Single(w => w.Id == 1);
         Assert.AreEqual(updatedGroundwaterLevelMeasurement.Id, editedGroundwaterLevelMeasurement.Id);
@@ -150,7 +150,7 @@ public class GroundwaterLevelMeasurementControllerTest
         var nonExistentGroundwaterLevelMeasurement = new GroundwaterLevelMeasurement { Id = 2964237 };
 
         var result = await controller.EditAsync(nonExistentGroundwaterLevelMeasurement);
-        ActionResultAssert.IsNotFound(result);
+        ActionResultAssert.IsNotFound(result.Result);
     }
 
     [TestMethod]
@@ -176,7 +176,7 @@ public class GroundwaterLevelMeasurementControllerTest
         };
 
         var createResponse = await controller.CreateAsync(newGroundwaterLevelMeasurement);
-        Assert.IsInstanceOfType(createResponse, typeof(OkObjectResult));
+        Assert.IsInstanceOfType(createResponse.Result, typeof(OkObjectResult));
 
         newGroundwaterLevelMeasurement = await context.GroundwaterLevelMeasurements.FindAsync(newGroundwaterLevelMeasurement.Id);
         Assert.IsNotNull(newGroundwaterLevelMeasurement);
