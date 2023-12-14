@@ -83,7 +83,7 @@ public class StratigraphyControllerTest
         Assert.IsNotNull(originalStratigraphy?.FaciesDescriptions, "Precondition: Stratigraphy has FaciesDescriptions");
 
         var result = await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(result.Result);
 
         var copiedStratigraphyId = ((OkObjectResult?)result.Result)?.Value;
         Assert.IsNotNull(copiedStratigraphyId);
@@ -136,7 +136,7 @@ public class StratigraphyControllerTest
     public async Task CopyInvalidStratigraphyId()
     {
         var result = await controller.CopyAsync(0).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(result.Result);
     }
 
     [TestMethod]
@@ -144,7 +144,7 @@ public class StratigraphyControllerTest
     {
         controller.HttpContext.SetClaimsPrincipal("NON-EXISTENT-NAME", PolicyNames.Admin);
         var result = await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+        ActionResultAssert.IsUnauthorized(result.Result);
     }
 
     [TestMethod]
@@ -162,7 +162,7 @@ public class StratigraphyControllerTest
     {
         controller.HttpContext.SetClaimsPrincipal("editor", PolicyNames.Viewer);
         var result = await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(result.Result);
 
         // delete stratigraphy copy
         var copiedStratigraphyId = ((OkObjectResult?)result.Result)?.Value;
@@ -175,7 +175,7 @@ public class StratigraphyControllerTest
     {
         // Prepare stratigraphy to delete
         var copyResult = await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(copyResult.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(copyResult.Result);
 
         var stratigraphyToDeleteId = ((OkObjectResult?)copyResult.Result)?.Value;
         Assert.IsNotNull(stratigraphyToDeleteId);

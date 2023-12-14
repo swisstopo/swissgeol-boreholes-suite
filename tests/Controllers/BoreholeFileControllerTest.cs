@@ -306,7 +306,7 @@ public class BoreholeFileControllerTest
     public async Task GetAllOfBoreholeWithMissingBoreholeId()
     {
         var result = await controller.GetAllOfBorehole(0);
-        Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        ActionResultAssert.IsBadRequest(result.Result);
     }
 
     [TestMethod]
@@ -325,12 +325,12 @@ public class BoreholeFileControllerTest
     public async Task UpdateWithBoreholeFileNotFound()
     {
         var result = await controller.Update(new BoreholeFileUpdate(), 1, 1);
-        Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+        ActionResultAssert.IsNotFound(result);
     }
 
     private async Task AssertIsBadRequestResponse(Func<Task<IActionResult>> action)
     {
         var result = await action();
-        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        ActionResultAssert.IsBadRequest(result);
     }
 }

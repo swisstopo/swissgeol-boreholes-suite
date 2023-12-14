@@ -172,7 +172,7 @@ public class WaterIngressControllerTests
         };
 
         var createResponse = await controller.CreateAsync(newWaterIngress);
-        Assert.IsInstanceOfType(createResponse.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(createResponse.Result);
 
         newWaterIngress = await context.WaterIngresses.FindAsync(newWaterIngress.Id);
         Assert.IsNotNull(newWaterIngress);
@@ -192,9 +192,9 @@ public class WaterIngressControllerTests
         Assert.AreEqual(newWaterIngress.ConditionsId, 15203167);
 
         var deleteResponse = await controller.DeleteAsync(newWaterIngress.Id);
-        Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
+        ActionResultAssert.IsOk(deleteResponse);
 
         deleteResponse = await controller.DeleteAsync(newWaterIngress.Id);
-        Assert.IsInstanceOfType(deleteResponse, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(deleteResponse);
     }
 }

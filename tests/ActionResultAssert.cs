@@ -34,6 +34,13 @@ internal static class ActionResultAssert
     internal static void IsInternalServerError(IActionResult? actionResult)
         => AssertActionResult(actionResult, StatusCodes.Status500InternalServerError);
 
+    /// <summary>
+    /// Asserts that the <see cref="IActionResult"/> is Unauthorized (401).
+    /// </summary>
+    /// <param name="actionResult"></param>
+    internal static void IsUnauthorized(IActionResult? actionResult)
+        => AssertActionResult(actionResult, StatusCodes.Status401Unauthorized);
+
     private static void AssertActionResult(IActionResult? currentActionResult, int expectedStatusCode)
     {
         var statusCodeResult = currentActionResult as IStatusCodeActionResult;

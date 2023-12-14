@@ -176,7 +176,7 @@ public class FieldMeasurementControllerTest
         };
 
         var createResponse = await controller.CreateAsync(newFieldMeasurement);
-        Assert.IsInstanceOfType(createResponse.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(createResponse.Result);
 
         newFieldMeasurement = await context.FieldMeasurements.FindAsync(newFieldMeasurement.Id);
         Assert.IsNotNull(newFieldMeasurement);
@@ -197,9 +197,9 @@ public class FieldMeasurementControllerTest
         Assert.AreEqual(newFieldMeasurement.Value, 9453.456);
 
         var deleteResponse = await controller.DeleteAsync(newFieldMeasurement.Id);
-        Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
+        ActionResultAssert.IsOk(deleteResponse);
 
         deleteResponse = await controller.DeleteAsync(newFieldMeasurement.Id);
-        Assert.IsInstanceOfType(deleteResponse, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(deleteResponse);
     }
 }
