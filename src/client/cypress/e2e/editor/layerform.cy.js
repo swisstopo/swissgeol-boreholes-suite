@@ -26,7 +26,7 @@ describe("Tests for the layer form.", () => {
           .last()
           .scrollIntoView()
           .click();
-        cy.wait("@stratigraphy_layer_edit_put");
+        cy.wait("@stratigraphy_layer_edit_PUT");
       });
 
     cy.get('[aria-multiselectable="true"]')
@@ -38,7 +38,7 @@ describe("Tests for the layer form.", () => {
           .find('[role="option"]')
           .eq(1)
           .click();
-        cy.wait("@stratigraphy_layer_edit_put");
+        cy.wait("@stratigraphy_layer_edit_PUT");
       });
 
     const multipleDropdownValues = [];
