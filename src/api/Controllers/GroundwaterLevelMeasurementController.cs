@@ -10,12 +10,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class GroundwaterLevelMeasurementController : BdmsControllerBase<GroundwaterLevelMeasurement>
 {
-    private readonly BdmsContext context;
-
     public GroundwaterLevelMeasurementController(BdmsContext context, ILogger<GroundwaterLevelMeasurement> logger)
         : base(context, logger)
     {
-        this.context = context;
     }
 
     /// <summary>
@@ -27,7 +24,7 @@ public class GroundwaterLevelMeasurementController : BdmsControllerBase<Groundwa
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<GroundwaterLevelMeasurement>> GetAsync([FromQuery] int? boreholeId = null)
     {
-        var groundwaterLevelMeasurements = context.GroundwaterLevelMeasurements
+        var groundwaterLevelMeasurements = Context.GroundwaterLevelMeasurements
             .Include(w => w.Kind)
             .Include(w => w.Reliability)
             .Include(w => w.Casing)

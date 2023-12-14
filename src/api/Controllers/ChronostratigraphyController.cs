@@ -10,12 +10,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class ChronostratigraphyController : BdmsControllerBase<ChronostratigraphyLayer>
 {
-    private readonly BdmsContext context;
-
     public ChronostratigraphyController(BdmsContext context, ILogger<ChronostratigraphyLayer> logger)
         : base(context, logger)
     {
-        this.context = context;
     }
 
     /// <summary>
@@ -26,7 +23,7 @@ public class ChronostratigraphyController : BdmsControllerBase<Chronostratigraph
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<ChronostratigraphyLayer>> GetAsync([FromQuery] int? stratigraphyId = null)
     {
-        var chronostratigraphyLayers = context.ChronostratigraphyLayers
+        var chronostratigraphyLayers = Context.ChronostratigraphyLayers
             .Include(c => c.Chronostratigraphy)
             .AsNoTracking();
 
@@ -46,7 +43,7 @@ public class ChronostratigraphyController : BdmsControllerBase<Chronostratigraph
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<ChronostratigraphyLayer>> GetByIdAsync(int id)
     {
-        var chronostratigraphyLayer = await context.ChronostratigraphyLayers
+        var chronostratigraphyLayer = await Context.ChronostratigraphyLayers
             .Include(c => c.Chronostratigraphy)
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)

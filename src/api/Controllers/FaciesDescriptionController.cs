@@ -10,12 +10,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
 {
-    private readonly BdmsContext context;
-
     public FaciesDescriptionController(BdmsContext context, ILogger<FaciesDescription> logger)
         : base(context, logger)
     {
-        this.context = context;
     }
 
     /// <summary>
@@ -26,7 +23,7 @@ public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<FaciesDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
     {
-        var faciesDescriptions = context.FaciesDescriptions
+        var faciesDescriptions = Context.FaciesDescriptions
             .Include(l => l.QtDescription)
             .AsNoTracking();
 
@@ -46,7 +43,7 @@ public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<FaciesDescription>> GetByIdAsync(int id)
     {
-        var faciesDescription = await context.FaciesDescriptions
+        var faciesDescription = await Context.FaciesDescriptions
             .Include(l => l.QtDescription)
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)

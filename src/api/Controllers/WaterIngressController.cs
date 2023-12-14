@@ -10,12 +10,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class WaterIngressController : BdmsControllerBase<WaterIngress>
 {
-    private readonly BdmsContext context;
-
     public WaterIngressController(BdmsContext context, ILogger<WaterIngress> logger)
         : base(context, logger)
     {
-        this.context = context;
     }
 
     /// <summary>
@@ -27,7 +24,7 @@ public class WaterIngressController : BdmsControllerBase<WaterIngress>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<WaterIngress>> GetAsync([FromQuery] int? boreholeId = null)
     {
-        var waterIngresses = context.WaterIngresses
+        var waterIngresses = Context.WaterIngresses
             .Include(w => w.Quantity)
             .Include(w => w.Reliability)
             .Include(w => w.Conditions)

@@ -10,12 +10,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class LithologicalDescriptionController : BdmsControllerBase<LithologicalDescription>
 {
-    private readonly BdmsContext context;
-
     public LithologicalDescriptionController(BdmsContext context, ILogger<LithologicalDescription> logger)
         : base(context, logger)
     {
-        this.context = context;
     }
 
     /// <summary>
@@ -26,7 +23,7 @@ public class LithologicalDescriptionController : BdmsControllerBase<Lithological
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<LithologicalDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
     {
-        var lithologicalDescriptions = context.LithologicalDescriptions
+        var lithologicalDescriptions = Context.LithologicalDescriptions
             .Include(l => l.QtDescription)
             .AsNoTracking();
 
@@ -46,7 +43,7 @@ public class LithologicalDescriptionController : BdmsControllerBase<Lithological
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<LithologicalDescription>> GetByIdAsync(int id)
     {
-        var lithologicalDescription = await context.LithologicalDescriptions
+        var lithologicalDescription = await Context.LithologicalDescriptions
             .Include(l => l.QtDescription)
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)

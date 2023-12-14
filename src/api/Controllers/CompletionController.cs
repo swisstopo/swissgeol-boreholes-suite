@@ -10,12 +10,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class CompletionController : BdmsControllerBase<Completion>
 {
-    private readonly BdmsContext context;
-
     public CompletionController(BdmsContext context, ILogger<Completion> logger)
         : base(context, logger)
     {
-        this.context = context;
     }
 
     /// <summary>
@@ -26,7 +23,7 @@ public class CompletionController : BdmsControllerBase<Completion>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<Completion>>> GetAsync([FromQuery] int? boreholeId = null)
     {
-        var completions = context.Completions.AsNoTracking();
+        var completions = Context.Completions.AsNoTracking();
 
         if (boreholeId != null)
         {
@@ -43,7 +40,7 @@ public class CompletionController : BdmsControllerBase<Completion>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Completion>> GetByIdAsync(int id)
     {
-        var completion = await context.Completions
+        var completion = await Context.Completions
             .AsNoTracking()
             .SingleOrDefaultAsync(i => i.Id == id)
             .ConfigureAwait(false);

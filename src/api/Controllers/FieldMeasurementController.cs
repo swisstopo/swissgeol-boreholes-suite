@@ -10,12 +10,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class FieldMeasurementController : BdmsControllerBase<FieldMeasurement>
 {
-    private readonly BdmsContext context;
-
     public FieldMeasurementController(BdmsContext context, ILogger<FieldMeasurement> logger)
         : base(context, logger)
     {
-        this.context = context;
     }
 
     /// <summary>
@@ -27,7 +24,7 @@ public class FieldMeasurementController : BdmsControllerBase<FieldMeasurement>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<FieldMeasurement>> GetAsync([FromQuery] int? boreholeId = null)
     {
-        var fieldMeasurements = context.FieldMeasurements
+        var fieldMeasurements = Context.FieldMeasurements
             .Include(f => f.SampleType)
             .Include(f => f.Parameter)
             .Include(f => f.Reliability)

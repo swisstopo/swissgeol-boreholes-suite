@@ -17,6 +17,9 @@ public class BdmsControllerBase<TEntity> : ControllerBase
         this.logger = logger;
     }
 
+    protected BdmsContext Context => context;
+    protected ILogger<TEntity> Logger => logger;
+
     /// <summary>
     /// Asynchronously creates the <paramref name="entity"/> specified.
     /// </summary>
