@@ -70,7 +70,7 @@ public class LayerControllerTest
     public async Task GetLayerByInexistentIdReturnsNotFound()
     {
         var response = await controller.GetByIdAsync(9483157).ConfigureAwait(false);
-        Assert.IsInstanceOfType(response.Result, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
