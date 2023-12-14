@@ -93,6 +93,7 @@ DateField.propTypes = {
 
 DateField.defaultProps = {
   placeholder: null,
+  isEditable: true,
 };
 
 export default withTranslation()(DateField);

@@ -58,7 +58,7 @@ const RestrictionSegment = props => {
               onChange={selected => {
                 updateChange("restriction_until", selected, false);
               }}
-              readOnly={!isEditable}
+              isEditable={isEditable}
             />
           </Form.Field>
         </Form.Group>
