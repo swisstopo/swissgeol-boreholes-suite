@@ -98,7 +98,17 @@ public class LayerController : BdmsControllerBase<Layer>
             }
         }
 
-        return await SaveChangesAsync(() => Ok(entity)).ConfigureAwait(false);
+        try
+        {
+            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            return await GetByIdAsync(entity.Id).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = "An error occurred while saving the entity changes.";
+            Logger?.LogError(ex, errorMessage);
+            return Problem(errorMessage);
+        }
     }
 
     /// <inheritdoc />
