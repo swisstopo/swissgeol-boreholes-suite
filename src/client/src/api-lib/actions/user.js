@@ -1,16 +1,10 @@
 import { fetch } from "./index";
 
-export function setAuthentication(
-  username,
-  password,
-  authentication = "basic",
-) {
+export function setAuthentication(user) {
   return {
     type: "SET_AUTHENTICATION",
     path: "/user",
-    username: username,
-    password: password,
-    authentication: authentication,
+    user: user,
   };
 }
 

@@ -1,12 +1,12 @@
-import React, { createRef } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import _ from "lodash";
 import { withTranslation } from "react-i18next";
+import { withAuth } from "react-oidc-context";
 import Markdown from "markdown-to-jsx";
 import TranslationKeys from "../../commons/translationKeys";
 
-import { Button, Input } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
 
 import {
   loadDomains,
@@ -20,7 +20,6 @@ import {
 class DataLoader extends React.Component {
   constructor(props) {
     super(props);
-    this.fieldToRef = createRef();
     this.state = {
       isFetching: true,
       title: {
@@ -41,13 +40,6 @@ class DataLoader extends React.Component {
   }
 
   componentDidMount() {
-    if (process.env.NODE_ENV === "development") {
-      this.props.setAuthentication("admin", "swissforages");
-    } else {
-      this.props.setAuthentication("", "");
-    }
-    this.fieldToRef.current.focus();
-
     getContent("login").then(r => {
       if (r.data.data !== null) {
         this.setState({
@@ -60,7 +52,12 @@ class DataLoader extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (!_.isEqual(this.props.user.data, prevProps.user.data)) {
+    if (this.props.auth.isAuthenticated && !this.props.user?.authentication) {
+      this.props.setAuthentication(this.props.auth.user);
+    }
+
+    if (!prevProps.user?.authentication && this.props.user?.authentication) {
+      this.props.loadUser();
       this.props.loadSettings();
       this.props.loadDomains();
       this.props.loadBoreholeCount();
@@ -68,6 +65,10 @@ class DataLoader extends React.Component {
   }
 
   render() {
+    const isLoading =
+      this.props.auth.isLoading ||
+      this.props.auth.isAuthenticated ||
+      this.props.user.authentication;
     return (
       <div
         style={{
@@ -155,103 +156,21 @@ class DataLoader extends React.Component {
                 }}>
                 Sign in
               </div>
-              {/** Trick to disable autofill in chrome */}
-              <input
-                name="password"
-                style={{
-                  display: "none",
-                }}
-                type="password"
-              />
-              <div
-                style={{
-                  fontSize: "0.8em",
-                  paddingBottom: "4px",
-                }}>
-                Username
-              </div>
-              <Input
-                autoComplete="off"
-                fluid
-                onChange={e => {
-                  this.props.setAuthentication(
-                    e.target.value,
-                    this.props.user.authentication !== null
-                      ? this.props.user.authentication.password
-                      : "",
-                  );
-                }}
-                onKeyPress={e => {
-                  if (e.key === "Enter") {
-                    this.props.loadUser();
-                  }
-                }}
-                placeholder="username"
-                ref={this.fieldToRef}
-                value={
-                  this.props.user.authentication !== null
-                    ? this.props.user.authentication.username
-                    : ""
-                }
-              />
-
-              <div
-                style={{
-                  fontSize: "0.8em",
-                  padding: "8px 0px 4px 0px",
-                }}>
-                Password
-              </div>
-              <Input
-                autoComplete="off"
-                fluid
-                onChange={e => {
-                  this.props.setAuthentication(
-                    this.props.user.authentication !== null
-                      ? this.props.user.authentication.username
-                      : "",
-                    e.target.value,
-                  );
-                }}
-                onKeyPress={e => {
-                  if (e.key === "Enter") {
-                    this.props.loadUser();
-                  }
-                }}
-                placeholder="password"
-                type="password"
-                value={
-                  this.props.user.authentication !== null
-                    ? this.props.user.authentication.password
-                    : ""
-                }
-              />
               <Button
-                color={this.props.user.data !== null ? "green" : null}
+                color={isLoading ? "green" : null}
                 compact
                 content="Login"
                 fluid
-                loading={this.props.user.data !== null}
+                loading={isLoading}
                 onClick={() => {
-                  this.props.loadUser();
+                  this.props.auth.signinRedirect();
                 }}
-                primary={this.props.user.data === null}
+                primary={!isLoading}
                 size="small"
                 style={{
                   marginTop: "1.5em",
                 }}
               />
-              <div
-                style={{
-                  color: "red",
-                  fontSize: "0.8em",
-                }}>
-                {this.props.user.error === false ? (
-                  <span>&nbsp;</span>
-                ) : (
-                  "User or password wrong"
-                )}
-              </div>
             </div>
           </div>
 
@@ -270,13 +189,12 @@ class DataLoader extends React.Component {
 }
 
 DataLoader.propTypes = {
-  anonymousLogin: PropTypes.func,
   i18n: PropTypes.object,
   loadDomains: PropTypes.func,
   loadBoreholeCount: PropTypes.func,
   loadSettings: PropTypes.func,
   loadUser: PropTypes.func,
-  setAuthentication: PropTypes.func,
+  setUser: PropTypes.func,
   user: PropTypes.object,
 };
 
@@ -303,15 +221,8 @@ const mapDispatchToProps = dispatch => {
     loadUser: () => {
       dispatch(loadUser());
     },
-    setAuthentication: (username, password) => {
-      return dispatch(setAuthentication(username, password));
-    },
-    anonymousLogin: async (username, password) => {
-      await Promise.all([
-        dispatch(setAuthentication(username, password)),
-        dispatch(loadUser()),
-      ]);
-      return "ciao";
+    setAuthentication: user => {
+      dispatch(setAuthentication(user));
     },
   };
 };
@@ -319,4 +230,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation("common")(DataLoader));
+)(withAuth(withTranslation("common")(DataLoader)));
