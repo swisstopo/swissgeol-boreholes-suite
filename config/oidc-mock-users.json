@@ -1,0 +1,39 @@
+[
+  {
+    "SubjectId":"admin",
+    "Username":"admin",
+    "Password":"swissforages",
+    "Claims": [
+      {
+        "Type": "name",
+        "Value": "Sam Jackson",
+        "ValueType": "string"
+      },
+      {
+        "Type": "family_name",
+        "Value": "Jackson",
+        "ValueType": "string"
+      },
+      {
+        "Type": "given_name",
+        "Value": "Sam",
+        "ValueType": "string"
+      },
+      {
+        "Type": "middle_name",
+        "Value": "L.",
+        "ValueType": "string"
+      },
+      {
+        "Type": "email",
+        "Value": "sam.tailor@gmail.com",
+        "ValueType": "string"
+      },
+      {
+        "Type": "email_verified",
+        "Value": "true",
+        "ValueType": "boolean"
+      }
+    ]
+  }
+]

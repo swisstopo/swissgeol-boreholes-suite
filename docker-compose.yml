@@ -120,3 +120,24 @@ services:
       ReverseProxy__Clusters__pythonApi__Destinations__legacyApi__Address: "http://api-legacy:8888/"
       S3__ENDPOINT: http://minio:9000
       S3__SECURE: 1
+  oidc-server:
+    image: soluto/oidc-server-mock
+    ports:
+      - "4011:80"
+    environment:
+      CLIENTS_CONFIGURATION_PATH: /tmp/config/clients-config.json
+      USERS_CONFIGURATION_PATH: /tmp/config/users-config.json
+      SERVER_OPTIONS_INLINE: |
+        {
+          "AccessTokenJwtType": "JWT",
+          "Discovery": {
+            "ShowKeySet": true
+          },
+          "Authentication": {
+            "CookieSameSiteMode": "Lax",
+            "CheckSessionCookieSameSiteMode": "Lax"
+          }
+        }
+    volumes:
+      - ./config/oidc-mock-clients.json:/tmp/config/clients-config.json:ro
+      - ./config/oidc-mock-users.json:/tmp/config/users-config.json:ro
