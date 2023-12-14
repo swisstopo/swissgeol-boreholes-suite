@@ -23,8 +23,8 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v1/workflow/edit", req => {
     return (req.alias = `workflow_edit_${req.body.action.toLowerCase()}`);
   });
-  cy.intercept("/api/v1/borehole/stratigraphy/layer/edit", req => {
-    return (req.alias = `stratigraphy_layer_edit_${req.body.action.toLowerCase()}`);
+  cy.intercept("/api/v2/layer", req => {
+    return (req.alias = `stratigraphy_layer_edit_${req.method}`);
   });
   cy.intercept("/api/v1/borehole/stratigraphy/edit", req => {
     return (req.alias = `stratigraphy_edit_${req.body.action.toLowerCase()}`);

@@ -17,8 +17,8 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@layer");
     cy.contains("Show all fields").children(".checkbox").click();
-    cy.get('[data-cy="depth_to"]').click().clear().type(50);
-    cy.wait("@stratigraphy_layer_edit_patch");
+    cy.get('[data-cy="toDepth"]').click().clear().type(50);
+    cy.wait("@stratigraphy_layer_edit_put");
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
 
@@ -27,8 +27,8 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="styled-layer-1"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@layer");
     cy.contains("Show all fields").children(".checkbox").click();
-    cy.get('[data-cy="depth_to"]').click().clear().type(62.5);
-    cy.wait("@stratigraphy_layer_edit_patch");
+    cy.get('[data-cy="toDepth"]').click().clear().type(62.5);
+    cy.wait("@stratigraphy_layer_edit_put");
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-1"] [data-testid="ClearIcon"]').click();
 
@@ -37,8 +37,8 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="styled-layer-2"] [data-testid="ModeEditIcon"]').click();
     cy.wait("@layer");
     cy.contains("Show all fields").children(".checkbox").click();
-    cy.get('[data-cy="depth_to"]').click().clear().type(120);
-    cy.wait("@stratigraphy_layer_edit_patch");
+    cy.get('[data-cy="toDepth"]').click().clear().type(120);
+    cy.wait("@stratigraphy_layer_edit_put");
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-2"] [data-testid="ClearIcon"]').click();
 
