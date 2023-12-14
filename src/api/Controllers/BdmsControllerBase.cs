@@ -15,8 +15,8 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     /// Gets the <see cref="BdmsContext"/> used by the controller.
     /// </summary>
     protected BdmsContext Context => context;
+
     /// <summary>
- 
     /// Gets the <see cref="ILogger{TCategoryName}"/> used by the controller.
     /// </summary>
     protected ILogger<TEntity> Logger => logger;
