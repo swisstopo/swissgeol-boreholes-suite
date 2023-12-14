@@ -176,7 +176,7 @@ public class HydrotestControllerTests
         };
 
         var okObjectResult = (OkObjectResult)await controller.CreateAsync(newHydrotest);
-        Assert.IsInstanceOfType(okObjectResult, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(okObjectResult);
         var addedHydrotest = (Hydrotest)okObjectResult.Value!;
 
         newHydrotest = await context.Hydrotests.FindAsync(newHydrotest.Id);
@@ -196,10 +196,10 @@ public class HydrotestControllerTests
         CollectionAssert.Contains((System.Collections.ICollection)newHydrotest.CodelistIds!, 15203171); // Test kind Id
 
         var deleteResponse = await controller.DeleteAsync(newHydrotest.Id);
-        Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
+        ActionResultAssert.IsOk(deleteResponse);
 
         deleteResponse = await controller.DeleteAsync(newHydrotest.Id);
-        Assert.IsInstanceOfType(deleteResponse, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(deleteResponse);
     }
 
     [TestMethod]
@@ -219,7 +219,7 @@ public class HydrotestControllerTests
         };
 
         var okObjectResult = (ObjectResult)await controller.CreateAsync(newHydrotest);
-        Assert.IsInstanceOfType(okObjectResult, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(okObjectResult);
         var addedHydrotest = (Hydrotest)okObjectResult.Value!;
 
         var savedHydrotest = context.Hydrotests.SingleOrDefault(w => w.Id == addedHydrotest.Id);
@@ -238,7 +238,7 @@ public class HydrotestControllerTests
         };
 
         var createResponse = await controller.CreateAsync(newHydrotest);
-        Assert.IsInstanceOfType(createResponse, typeof(BadRequestObjectResult));
+        ActionResultAssert.IsBadRequest(createResponse);
     }
 
     [TestMethod]
@@ -253,6 +253,6 @@ public class HydrotestControllerTests
         };
 
         var createResponse = await controller.CreateAsync(newHydrotest);
-        Assert.IsInstanceOfType(createResponse, typeof(BadRequestObjectResult));
+        ActionResultAssert.IsBadRequest(createResponse);
     }
 }
