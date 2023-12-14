@@ -3,8 +3,8 @@ using Amazon.S3;
 using BDMS;
 using BDMS.Authentication;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.HttpSys;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -21,6 +21,11 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options => builder.Configuration.Bind("Auth", options));
+
+builder.Services.AddTransient<IClaimsTransformation, DatabaseAuthenticationClaimsTranfomration>();
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(PolicyNames.Admin, options => options.RequireRole(PolicyNames.Admin));
@@ -34,9 +39,6 @@ builder.Services.AddAuthorization(options =>
     options.DefaultPolicy = options.GetPolicy(PolicyNames.Admin)!;
     options.FallbackPolicy = options.DefaultPolicy;
 });
-
-builder.Services.AddAuthentication("BasicAuthentication")
-    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
@@ -62,11 +64,10 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v2",
         Title = "BDMS REST API v2",
     });
-    options.AddSecurityDefinition("Basic", new OpenApiSecurityScheme
+    options.AddSecurityDefinition("OpenIdConnect", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Type = SecuritySchemeType.Http,
-        Scheme = nameof(AuthenticationSchemes.Basic),
+        Type = SecuritySchemeType.OpenIdConnect,
     });
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -76,7 +77,7 @@ builder.Services.AddSwaggerGen(options =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = nameof(AuthenticationSchemes.Basic),
+                    Id = nameof(SecuritySchemeType.OpenIdConnect),
                 },
             },
             Array.Empty<string>()
