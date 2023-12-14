@@ -108,7 +108,7 @@ public class CompletionControllerTest
         };
 
         var response = await controller.CreateAsync(completion).ConfigureAwait(false);
-        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
 
         completion = await context.Completions.FindAsync(completion.Id);
         Assert.IsNotNull(completion);
@@ -136,7 +136,7 @@ public class CompletionControllerTest
         completion.Name = "ENDUETRUCK";
         completion.AbandonDate = new DateTime(2023, 01, 01).ToUniversalTime();
         var response = await controller.EditAsync(completion).ConfigureAwait(false);
-        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
 
         completion = await context.Completions.FindAsync(completion.Id);
         Assert.IsNotNull(completion);

@@ -1,4 +1,4 @@
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BDMS.Controllers;
@@ -32,7 +32,7 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     /// </summary>
     /// <param name="entity">The entity to create.</param>
     [HttpPost]
-    public virtual async Task<IActionResult> CreateAsync(TEntity entity)
+    public virtual async Task<ActionResult<TEntity>> CreateAsync(TEntity entity)
     {
         await context.AddAsync(entity).ConfigureAwait(false);
         return await SaveChangesAsync(() => Ok(entity)).ConfigureAwait(false);
@@ -43,7 +43,7 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     /// </summary>
     /// <param name="entity">The entity to update.</param>
     [HttpPut]
-    public virtual async Task<IActionResult> EditAsync(TEntity entity)
+    public virtual async Task<ActionResult<TEntity>> EditAsync(TEntity entity)
     {
         if (entity == null)
         {
@@ -76,10 +76,11 @@ public class BdmsControllerBase<TEntity> : ControllerBase
         }
 
         context.Remove(entityToDelete);
-        return await SaveChangesAsync(Ok).ConfigureAwait(false);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        return Ok();
     }
 
-    private async Task<IActionResult> SaveChangesAsync(Func<IActionResult> successResult)
+    private async Task<ActionResult<TEntity>> SaveChangesAsync(Func<ActionResult<TEntity>> successResult)
     {
         try
         {

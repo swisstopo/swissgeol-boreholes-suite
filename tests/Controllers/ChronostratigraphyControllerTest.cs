@@ -109,7 +109,7 @@ public class ChronostratigraphyControllerTest
 
         // Update Chronostratigraphy
         var response = await controller.EditAsync(newChronostratigraphy);
-        ActionResultAssert.IsOk(response);
+        ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
         var updatedChronostratigraphy = context.ChronostratigraphyLayers.Single(c => c.Id == id);
@@ -131,14 +131,14 @@ public class ChronostratigraphyControllerTest
 
         // Upate FaciesDescription
         var response = await controller.EditAsync(chronostratigraphy);
-        ActionResultAssert.IsNotFound(response);
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
     public async Task EditWithoutChronostratigraphyReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        ActionResultAssert.IsBadRequest(response);
+        ActionResultAssert.IsBadRequest(response.Result);
     }
 
     [TestMethod]
@@ -154,16 +154,16 @@ public class ChronostratigraphyControllerTest
         };
 
         var response = await controller.CreateAsync(chronostratigraphy);
-        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
         chronostratigraphy = await context.ChronostratigraphyLayers.FindAsync(chronostratigraphy.Id);
         Assert.IsNotNull(chronostratigraphy);
         Assert.AreEqual(15001036, chronostratigraphy.ChronostratigraphyId);
 
-        response = await controller.DeleteAsync(chronostratigraphy.Id);
-        Assert.IsInstanceOfType(response, typeof(OkResult));
+        var deleteResponse = await controller.DeleteAsync(chronostratigraphy.Id);
+        Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
 
-        response = await controller.DeleteAsync(chronostratigraphy.Id);
-        Assert.IsInstanceOfType(response, typeof(NotFoundResult));
+        deleteResponse = await controller.DeleteAsync(chronostratigraphy.Id);
+        Assert.IsInstanceOfType(deleteResponse, typeof(NotFoundResult));
 
         var getResponse = await controller.GetByIdAsync(chronostratigraphy.Id);
         Assert.IsInstanceOfType(getResponse.Result, typeof(NotFoundResult));
@@ -182,7 +182,7 @@ public class ChronostratigraphyControllerTest
         Assert.IsInstanceOfType(getResponse.Result, typeof(OkObjectResult));
 
         var response = await controller.CreateAsync(chronostratigraphy);
-        ActionResultAssert.IsInternalServerError(response);
+        ActionResultAssert.IsInternalServerError(response.Result);
     }
 
     [TestMethod]
@@ -208,7 +208,7 @@ public class ChronostratigraphyControllerTest
     private async Task CreateLayer(List<int> layerIds, ChronostratigraphyLayer layer)
     {
         var response = await controller.CreateAsync(layer);
-        if (response is OkObjectResult result && result.Value is IIdentifyable responseLayer)
+        if (response.Result is OkObjectResult && response.Value is IIdentifyable responseLayer)
         {
             layerIds.Add(responseLayer.Id);
         }

@@ -56,7 +56,7 @@ public class LithostratigraphyController : BdmsControllerBase<LithostratigraphyL
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> EditAsync(LithostratigraphyLayer entity)
+    public override Task<ActionResult<LithostratigraphyLayer>> EditAsync(LithostratigraphyLayer entity)
         => base.EditAsync(entity);
 
     /// <inheritdoc />
@@ -66,6 +66,6 @@ public class LithostratigraphyController : BdmsControllerBase<LithostratigraphyL
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> CreateAsync(LithostratigraphyLayer entity)
+    public override Task<ActionResult<LithostratigraphyLayer>> CreateAsync(LithostratigraphyLayer entity)
         => base.CreateAsync(entity);
 }

@@ -59,7 +59,7 @@ public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> EditAsync(FaciesDescription entity)
+    public override Task<ActionResult<FaciesDescription>> EditAsync(FaciesDescription entity)
         => base.EditAsync(entity);
 
     /// <inheritdoc />
@@ -69,6 +69,6 @@ public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> CreateAsync(FaciesDescription entity)
+    public override Task<ActionResult<FaciesDescription>> CreateAsync(FaciesDescription entity)
         => base.CreateAsync(entity);
 }

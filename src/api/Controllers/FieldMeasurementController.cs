@@ -41,7 +41,7 @@ public class FieldMeasurementController : BdmsControllerBase<FieldMeasurement>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> EditAsync(FieldMeasurement entity)
+    public override Task<ActionResult<FieldMeasurement>> EditAsync(FieldMeasurement entity)
         => base.EditAsync(entity);
 
     /// <inheritdoc />
@@ -51,6 +51,6 @@ public class FieldMeasurementController : BdmsControllerBase<FieldMeasurement>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> CreateAsync(FieldMeasurement entity)
+    public override Task<ActionResult<FieldMeasurement>> CreateAsync(FieldMeasurement entity)
         => base.CreateAsync(entity);
 }

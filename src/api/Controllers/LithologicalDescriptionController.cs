@@ -59,7 +59,7 @@ public class LithologicalDescriptionController : BdmsControllerBase<Lithological
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> EditAsync(LithologicalDescription entity)
+    public override Task<ActionResult<LithologicalDescription>> EditAsync(LithologicalDescription entity)
         => base.EditAsync(entity);
 
     /// <inheritdoc />
@@ -69,6 +69,6 @@ public class LithologicalDescriptionController : BdmsControllerBase<Lithological
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> CreateAsync(LithologicalDescription entity)
+    public override Task<ActionResult<LithologicalDescription>> CreateAsync(LithologicalDescription entity)
         => base.CreateAsync(entity);
 }

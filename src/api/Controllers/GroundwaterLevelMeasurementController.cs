@@ -40,7 +40,7 @@ public class GroundwaterLevelMeasurementController : BdmsControllerBase<Groundwa
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> EditAsync(GroundwaterLevelMeasurement entity)
+    public override Task<ActionResult<GroundwaterLevelMeasurement>> EditAsync(GroundwaterLevelMeasurement entity)
         => base.EditAsync(entity);
 
     /// <inheritdoc />
@@ -50,6 +50,6 @@ public class GroundwaterLevelMeasurementController : BdmsControllerBase<Groundwa
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> CreateAsync(GroundwaterLevelMeasurement entity)
+    public override Task<ActionResult<GroundwaterLevelMeasurement>> CreateAsync(GroundwaterLevelMeasurement entity)
         => base.CreateAsync(entity);
 }

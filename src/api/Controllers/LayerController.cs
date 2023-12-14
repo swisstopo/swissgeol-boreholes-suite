@@ -55,7 +55,7 @@ public class LayerController : BdmsControllerBase<Layer>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> EditAsync(Layer entity)
+    public override Task<ActionResult<Layer>> EditAsync(Layer entity)
         => base.EditAsync(entity);
 
     /// <inheritdoc />
@@ -65,7 +65,7 @@ public class LayerController : BdmsControllerBase<Layer>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override async Task<IActionResult> CreateAsync(Layer entity)
+    public override async Task<ActionResult<Layer>> CreateAsync(Layer entity)
     {
         // Create a layer code list entry for each provided code list id.
         var codeLists = await Context.Codelists.Where(c => entity.CodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);

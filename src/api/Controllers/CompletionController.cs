@@ -55,12 +55,12 @@ public class CompletionController : BdmsControllerBase<Completion>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> CreateAsync(Completion entity)
+    public override Task<ActionResult<Completion>> CreateAsync(Completion entity)
         => base.CreateAsync(entity);
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> EditAsync(Completion entity)
+    public override Task<ActionResult<Completion>> EditAsync(Completion entity)
         => base.EditAsync(entity);
 
     /// <inheritdoc />

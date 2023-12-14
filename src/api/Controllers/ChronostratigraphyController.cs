@@ -59,7 +59,7 @@ public class ChronostratigraphyController : BdmsControllerBase<Chronostratigraph
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> EditAsync(ChronostratigraphyLayer entity)
+    public override Task<ActionResult<ChronostratigraphyLayer>> EditAsync(ChronostratigraphyLayer entity)
         => base.EditAsync(entity);
 
     /// <inheritdoc />
@@ -69,6 +69,6 @@ public class ChronostratigraphyController : BdmsControllerBase<Chronostratigraph
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> CreateAsync(ChronostratigraphyLayer entity)
+    public override Task<ActionResult<ChronostratigraphyLayer>> CreateAsync(ChronostratigraphyLayer entity)
         => base.CreateAsync(entity);
 }
