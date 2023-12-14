@@ -112,12 +112,50 @@ public class LayerControllerTest
         ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
-        var updatedLayer = context.Layers.Single(c => c.Id == id);
+        var updatedLayer = (response.Result as OkObjectResult).Value as Layer;
 
         Assert.AreEqual(4, updatedLayer.CreatedById);
         Assert.AreEqual(1, updatedLayer.UpdatedById);
         Assert.AreEqual(0, updatedLayer.InstrumentCasingId);
         Assert.AreEqual("Freddy ate more cake than Maria.", updatedLayer.Notes);
+    }
+
+    [TestMethod]
+    public async Task EditLayerCodelists()
+    {
+        var id = 7_000_089;
+
+        var newLayer = new Layer
+        {
+            Id = id,
+            CreatedById = 4,
+            UpdatedById = 4,
+            Created = new DateTime(2021, 2, 14, 8, 55, 34).ToUniversalTime(),
+            InstrumentCasingId = 0,
+            Notes = "Freddy ate more cake than Maria.",
+            StratigraphyId = 6_000_010,
+            CodelistIds = new List<int> { 23101017, 23101018, 23101001 },
+        };
+
+        var layerToEdit = context.Layers.Include(l => l.LayerCodelists).Include(c => c.Codelists).Single(c => c.Id == id);
+        Assert.AreEqual(3, layerToEdit.Codelists.Count);
+        var codelistIds = layerToEdit.Codelists.Select(c => c.Id).ToList();
+        Assert.AreEqual(true, codelistIds.Contains(23101017));
+        Assert.AreEqual(true, codelistIds.Contains(23101018));
+        Assert.AreEqual(true, codelistIds.Contains(23101019));
+
+        // Update Layer
+        var response = await controller.EditAsync(newLayer);
+        ActionResultAssert.IsOk(response.Result);
+
+        // Assert Updates and unchanged values
+        var updatedLayer = (response.Result as OkObjectResult).Value as Layer;
+
+        Assert.AreEqual(3, updatedLayer.Codelists.Count);
+        codelistIds = updatedLayer.Codelists.Select(c => c.Id).ToList();
+        Assert.AreEqual(true, codelistIds.Contains(23101017));
+        Assert.AreEqual(true, codelistIds.Contains(23101018));
+        Assert.AreEqual(true, codelistIds.Contains(23101001));
     }
 
     [TestMethod]
