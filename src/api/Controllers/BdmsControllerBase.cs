@@ -80,7 +80,7 @@ public class BdmsControllerBase<TEntity> : ControllerBase
         return Ok();
     }
 
-    private async Task<ActionResult<TEntity>> SaveChangesAsync(Func<ActionResult<TEntity>> successResult)
+    protected async Task<ActionResult<TEntity>> SaveChangesAsync(Func<ActionResult<TEntity>> successResult)
     {
         try
         {

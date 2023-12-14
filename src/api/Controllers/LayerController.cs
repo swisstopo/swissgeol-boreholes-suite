@@ -62,11 +62,11 @@ public class LayerController : BdmsControllerBase<Layer>
             return BadRequest(ModelState);
         }
 
-        var existingLayer = context.Layers.Include(l => l.LayerCodelists).Include(c => c.Codelists).SingleOrDefault(l => l.Id == entity.Id);
+        var existingLayer = Context.Layers.Include(l => l.LayerCodelists).Include(c => c.Codelists).SingleOrDefault(l => l.Id == entity.Id);
         var codelistIds = entity.CodelistIds?.ToList();
         if (existingLayer != default)
         {
-            context.Entry(existingLayer).CurrentValues.SetValues(entity);
+            Context.Entry(existingLayer).CurrentValues.SetValues(entity);
         }
         else
         {
@@ -79,7 +79,7 @@ public class LayerController : BdmsControllerBase<Layer>
             {
                 if (!entity.CodelistIds.Contains(layerCodelist.CodelistId))
                 {
-                    context.Remove(layerCodelist);
+                    Context.Remove(layerCodelist);
                 }
             }
 
@@ -87,7 +87,7 @@ public class LayerController : BdmsControllerBase<Layer>
             {
                 if (!existingLayer.LayerCodelists.Any(lc => lc.CodelistId == id))
                 {
-                    var codelist = await context.Codelists.FindAsync(id).ConfigureAwait(false);
+                    var codelist = await Context.Codelists.FindAsync(id).ConfigureAwait(false);
                     if (codelist != null)
                     {
                         existingLayer.LayerCodelists ??= new List<LayerCodelist>();
