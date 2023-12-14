@@ -3,7 +3,13 @@ import TranslationText from "../../translationText";
 import { Form, Input, Segment } from "semantic-ui-react";
 
 const NameSegment = props => {
-  const { size, borehole, updateChange } = props;
+  const { size, borehole, updateChange, user } = props;
+
+  const isEditable =
+    borehole?.data.role === "EDIT" &&
+    borehole?.data.lock !== null &&
+    borehole?.data.lock?.username === user?.data.username;
+
   return (
     <Segment>
       <Form autoComplete="off" error size={size}>
@@ -23,6 +29,7 @@ const NameSegment = props => {
               }}
               spellCheck="false"
               value={borehole.data.extended.original_name ?? ""}
+              readOnly={!isEditable}
             />
           </Form.Field>
           <Form.Field>
@@ -38,6 +45,7 @@ const NameSegment = props => {
               }}
               spellCheck="false"
               value={borehole.data.custom.project_name ?? ""}
+              readOnly={!isEditable}
             />
           </Form.Field>
         </Form.Group>
@@ -55,6 +63,7 @@ const NameSegment = props => {
               }}
               spellCheck="false"
               value={borehole.data.custom.alternate_name ?? ""}
+              readOnly={!isEditable}
             />
           </Form.Field>
         </Form.Group>

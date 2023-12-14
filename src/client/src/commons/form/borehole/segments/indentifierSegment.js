@@ -10,10 +10,22 @@ import { removeIdentifier, addIdentifier } from "../../../../api-lib";
 import { useTranslation } from "react-i18next";
 
 const IdentifierSegment = props => {
-  const { borehole, identifier, identifierValue, updateBorehole, setState } =
-    props;
+  const {
+    borehole,
+    identifier,
+    identifierValue,
+    updateBorehole,
+    setState,
+    user,
+  } = props;
   const { t } = useTranslation();
   const alertContext = useContext(AlertContext);
+
+  const isEditable =
+    borehole?.data.role === "EDIT" &&
+    borehole?.data.lock !== null &&
+    borehole?.data.lock?.username === user?.data.username;
+
   return (
     <Segment>
       <div
@@ -112,6 +124,7 @@ const IdentifierSegment = props => {
                 }}
                 schema="borehole_identifier"
                 selected={identifier}
+                readOnly={!isEditable}
               />
             </Form.Field>
             <Form.Field
@@ -133,6 +146,7 @@ const IdentifierSegment = props => {
                 }}
                 spellCheck="false"
                 value={identifierValue ?? ""}
+                readOnly={!isEditable}
               />
             </Form.Field>
             <div

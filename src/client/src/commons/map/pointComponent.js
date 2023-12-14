@@ -372,6 +372,7 @@ class PointComponent extends React.Component {
 
   render() {
     const { satellite } = this.state;
+    const { isEditable } = this.props;
     return (
       <Segment
         style={{
@@ -456,7 +457,11 @@ class PointComponent extends React.Component {
             <Button.Group size="mini">
               <Button
                 data-cy="apply-button"
-                disabled={!_.isArray(this.state.point) || this.state.address}
+                disabled={
+                  !_.isArray(this.state.point) ||
+                  this.state.address ||
+                  !isEditable
+                }
                 loading={this.state.address}
                 onClick={e => {
                   if (_.isFunction(this.props.applyChange)) {
