@@ -13,14 +13,13 @@ namespace BDMS.Controllers;
 public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 {
     internal const int StratigraphyKindId = 3000;
-    internal const int LockTimeoutInMinutes = 10;
 
-    private readonly TimeProvider timeProvider;
+    private readonly IBoreholeLockService boreholeLockService;
 
-    public StratigraphyController(BdmsContext context, ILogger<Stratigraphy> logger, TimeProvider timeProvider)
+    public StratigraphyController(BdmsContext context, ILogger<Stratigraphy> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger)
     {
-        this.timeProvider = timeProvider;
+        this.boreholeLockService = boreholeLockService;
     }
 
     /// <summary>
@@ -163,53 +162,29 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         {
             // Check if associated borehole is locked
             var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
-            if (userName == null) throw new InvalidOperationException("Could not retrieve current user name from HttpContext.");
-
-            var user = await Context.Users
-                .Include(u => u.WorkgroupRoles)
-                .AsNoTracking()
-                .SingleOrDefaultAsync(u => u.Name == userName)
-                .ConfigureAwait(false);
-            if (user == null) throw new InvalidOperationException($"Current user with name <{userName}> does not exist.");
-
-            var borehole = await Context.Boreholes
-                .Include(b => b.Workflows)
-                .AsNoTracking()
-                .SingleOrDefaultAsync(b => b.Id == entity.BoreholeId)
-                .ConfigureAwait(false);
-            if (borehole == null) throw new InvalidOperationException($"Associated borehole with id <{entity.BoreholeId}> does not exist.");
-
-            var userWorkflowRoles = borehole.Workflows
-                .Where(w => w.UserId == user.Id)
-                .Select(w => w.Role)
-                .ToHashSet();
-            if (!user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId && userWorkflowRoles.Contains(x.Role)))
+            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, userName).ConfigureAwait(false))
             {
-                Logger.LogWarning("Current user with name <{UserName}> does not have the required role to create a stratigraphy for borehole with id <{BoreholeId}>.", userName, entity.BoreholeId);
-                return Unauthorized();
+                return Problem("The borehole is locked by another user.");
             }
 
-            if (borehole.Locked.HasValue && borehole.Locked.Value.AddMinutes(LockTimeoutInMinutes) > timeProvider.GetUtcNow() && borehole.LockedById != user.Id)
-            {
-                var lockedUserFullName = $"{borehole.LockedBy?.FirstName} {borehole.LockedBy?.LastName}";
-                Logger.LogWarning("Current user with name <{UserName}> tried to create a stratigraphy for borehole with id <{BoreholeId}>, but the borehole is locked by user <{LockedByUserName}>.", userName, entity.BoreholeId, lockedUserFullName);
-                return Problem($"The borehole is locked by user {lockedUserFullName}.");
-            }
+            // If the stratigraphy to create is the first stratigraphy of a borehole,
+            // then we need to set it as the primary stratigraphy.
+            var hasBoreholeExistingStratigraphy = await Context.Stratigraphies
+                .AnyAsync(s => s.BoreholeId == entity.BoreholeId)
+                .ConfigureAwait(false);
+
+            entity.IsPrimary = !hasBoreholeExistingStratigraphy;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized();
         }
         catch (Exception ex)
         {
-            var message = "An error ocurred while checking if the associated borehole is locked.";
+            var message = "An error ocurred while creating the stratigraphy.";
             Logger.LogError(ex, message);
             return Problem(message);
         }
-
-        // If the stratigraphy to create is the first stratigraphy of a borehole,
-        // then we need to set it as the primary stratigraphy.
-        var hasBoreholeExistingStratigraphy = await Context.Stratigraphies
-            .AnyAsync(s => s.BoreholeId == entity.BoreholeId)
-            .ConfigureAwait(false);
-
-        entity.IsPrimary = !hasBoreholeExistingStratigraphy;
 
         return await base.CreateAsync(entity).ConfigureAwait(false);
     }

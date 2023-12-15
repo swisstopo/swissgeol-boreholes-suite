@@ -124,6 +124,7 @@ builder.Services
     .AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
+builder.Services.AddScoped<IBoreholeLockService, BoreholeLockService>();
 builder.Services.AddSingleton(TimeProvider.System);
 
 var app = builder.Build();

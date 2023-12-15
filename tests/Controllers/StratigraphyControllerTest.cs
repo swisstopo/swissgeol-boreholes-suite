@@ -12,7 +12,6 @@ namespace BDMS.Controllers;
 [TestClass]
 public class StratigraphyControllerTest
 {
-    private const int AdminUserId = 1;
     private const int StratigraphyId = 6_000_003;
 
     private BdmsContext context;
@@ -22,7 +21,13 @@ public class StratigraphyControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, TimeProvider.System) { ControllerContext = GetControllerContextAdmin() };
+
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+
+        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -220,8 +225,7 @@ public class StratigraphyControllerTest
         var boreholeWithoutStratigraphy = await context
             .Boreholes
             .Include(b => b.Stratigraphies)
-            .Include(b => b.Workflows)
-            .FirstAsync(b => !b.Stratigraphies.Any() && b.Workflows.Any(w => w.UserId == AdminUserId));
+            .FirstAsync(b => !b.Stratigraphies.Any());
 
         var stratigraphyToAdd = new Stratigraphy
         {
@@ -251,8 +255,7 @@ public class StratigraphyControllerTest
         var boreholeWithExistingStratigraphy = await context
             .Boreholes
             .Include(b => b.Stratigraphies)
-            .Include(b => b.Workflows)
-            .FirstAsync(b => b.Stratigraphies.Any() && b.Workflows.Any(w => w.UserId == AdminUserId));
+            .FirstAsync(b => b.Stratigraphies.Any());
 
         var stratigraphyToAdd = new Stratigraphy
         {
@@ -301,109 +304,16 @@ public class StratigraphyControllerTest
     }
 
     [TestMethod]
-    public async Task CreateWithUnknownUser()
+    public async Task CreateForLockedBorehole()
     {
-        controller.HttpContext.SetClaimsPrincipal("NON-EXISTENT-NAME", PolicyNames.Admin);
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(true);
+
+        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+
         var createResult = await controller.CreateAsync(new());
         ActionResultAssert.IsInternalServerError(createResult.Result);
-    }
-
-    [TestMethod]
-    public async Task CreateWithUnknownBorehole()
-    {
-        controller.HttpContext.SetClaimsPrincipal("editor", PolicyNames.Viewer);
-        var createResult = await controller.CreateAsync(new());
-        ActionResultAssert.IsInternalServerError(createResult.Result);
-    }
-
-    [TestMethod]
-    public async Task CreateWithUnauthorizedUser()
-    {
-        controller.HttpContext.SetClaimsPrincipal("deletableUser", PolicyNames.Viewer);
-
-        var stratigraphy = GetStratigraphy(StratigraphyId);
-        var createResult = await controller.CreateAsync(stratigraphy!);
-        ActionResultAssert.IsUnauthorized(createResult.Result);
-    }
-
-    [TestMethod]
-    public async Task CreateForLockedBoreholeByOtherUser()
-    {
-        var stratigraphy = GetStratigraphyWithLockedBorehole(lockedByAdmin: false);
-
-        var timeProviderMock = CreateTimeProviderMock(stratigraphy.Borehole.Locked.Value.AddMinutes(1));
-        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, timeProviderMock.Object) { ControllerContext = GetControllerContextAdmin() };
-
-        var createResult = await controller.CreateAsync(stratigraphy);
-        ActionResultAssert.IsInternalServerError(createResult.Result);
-    }
-
-    [TestMethod]
-    public async Task CreateForLockedBoreholeBySameUser()
-    {
-        var existingStratigraphy = GetStratigraphyWithLockedBorehole(lockedByAdmin: true);
-        var stratigraphyToAdd = new Stratigraphy
-        {
-            BoreholeId = existingStratigraphy.BoreholeId,
-            KindId = existingStratigraphy.KindId,
-            Name = "DYNAMO-XVIII",
-            Notes = "SCREAMINGSHADOW",
-        };
-
-        // Fake a date which is within the lock timeout
-        var fakeUtcDate = existingStratigraphy.Borehole.Locked.Value.AddMinutes(StratigraphyController.LockTimeoutInMinutes - 1);
-        var timeProviderMock = CreateTimeProviderMock(fakeUtcDate);
-        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, timeProviderMock.Object) { ControllerContext = GetControllerContextAdmin() };
-
-        var createResult = await controller.CreateAsync(stratigraphyToAdd);
-        ActionResultAssert.IsOk(createResult.Result);
-    }
-
-    [TestMethod]
-    public async Task CreateForLockedBoreholeWithElapsedLockTimeout()
-    {
-        var existingStratigraphy = GetStratigraphyWithLockedBorehole(lockedByAdmin: false);
-        var stratigraphyToAdd = new Stratigraphy
-        {
-            BoreholeId = existingStratigraphy.BoreholeId,
-            KindId = existingStratigraphy.KindId,
-        };
-
-        // Fake a date which is after the lock timeout
-        var fakeUtcDate = existingStratigraphy.Borehole.Locked.Value.AddMinutes(StratigraphyController.LockTimeoutInMinutes + 1);
-        var timeProviderMock = CreateTimeProviderMock(fakeUtcDate);
-        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, timeProviderMock.Object) { ControllerContext = GetControllerContextAdmin() };
-
-        var createResult = await controller.CreateAsync(stratigraphyToAdd);
-        ActionResultAssert.IsOk(createResult.Result);
-    }
-
-    private Stratigraphy GetStratigraphyWithLockedBorehole(bool lockedByAdmin)
-    {
-        bool LockedCondition(Borehole borehole) => lockedByAdmin ? borehole.LockedById == AdminUserId : borehole.LockedById != AdminUserId;
-
-        var boreholeWithUserWorkflows = context
-            .Boreholes
-            .Include(b => b.Workflows)
-            .Where(b => b.Workflows.Any(w => w.UserId == AdminUserId))
-            .AsEnumerable()
-            .Where(b => b.Locked.HasValue && LockedCondition(b))
-            .ToList();
-
-        return context
-            .Stratigraphies
-            .Include(s => s.Borehole)
-            .AsEnumerable()
-            .First(s => boreholeWithUserWorkflows.Any(b => s.BoreholeId == b.Id));
-    }
-
-    private static Mock<TimeProvider> CreateTimeProviderMock(DateTime fakeUtcDate)
-    {
-        var timeProviderMock = new Mock<TimeProvider>();
-        timeProviderMock
-            .Setup(x => x.GetUtcNow())
-            .Returns(fakeUtcDate);
-
-        return timeProviderMock;
     }
 }
