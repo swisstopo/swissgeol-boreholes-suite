@@ -77,9 +77,7 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="description-1"] [data-testid="ModeEditIcon"] ').click();
 
     // fill to depth dropdown
-    cy.get('[data-cy="to-depth-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
+    cy.get('[data-cy="to-depth-select"]').click({ force: true });
 
     cy.get('.MuiPaper-elevation [role="listbox"]')
       .find('[role="option"]')
