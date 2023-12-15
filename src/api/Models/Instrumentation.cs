@@ -14,13 +14,13 @@ public class Instrumentation : IChangeTracking, IIdentifyable
     public int Id { get; set; }
 
     /// <summary>
-    /// Gets or sets foreign key for the <see cref="Models.Completion"/> of this <see cref="Instrumentation"/>.
+    /// Gets or sets foreign key for the <see cref="Completion"/> of this <see cref="Instrumentation"/>.
     /// </summary>
     [Column("completion_id")]
     public int CompletionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Models.Completion"/> of this <see cref="Instrumentation"/>.
+    /// Gets or sets the <see cref="Completion"/> of this <see cref="Instrumentation"/>.
     /// </summary>
     public Completion? Completion { get; set; }
 
@@ -39,8 +39,8 @@ public class Instrumentation : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Instrumentation"/>'s instrumentation id.
     /// </summary>
-    [Column("instrumentation_id")]
-    public string? InstrumentationId { get; set; }
+    [Column("instrumentation_name")]
+    public string? InstrumentationName { get; set; }
 
     /// <summary>
     /// Gets or sets the id <see cref="Instrumentation"/>'s kind.

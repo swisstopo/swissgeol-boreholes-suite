@@ -21,7 +21,7 @@ public partial class AddInstrumentationTable : Migration
                 completion_id = table.Column<int>(type: "integer", nullable: false),
                 from_depth = table.Column<double>(type: "double precision", nullable: true),
                 to_depth = table.Column<double>(type: "double precision", nullable: true),
-                instrumentation_id = table.Column<string>(type: "text", nullable: true),
+                instrumentation_name = table.Column<string>(type: "text", nullable: true),
                 kind_id = table.Column<int>(type: "integer", nullable: true),
                 status_id = table.Column<int>(type: "integer", nullable: true),
                 notes = table.Column<string>(type: "text", nullable: true),

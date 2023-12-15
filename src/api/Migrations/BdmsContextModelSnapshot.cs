@@ -921,9 +921,9 @@ namespace BDMS.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("from_depth");
 
-                    b.Property<string>("InstrumentationId")
+                    b.Property<string>("InstrumentationName")
                         .HasColumnType("text")
-                        .HasColumnName("instrumentation_id");
+                        .HasColumnName("instrumentation_name");
 
                     b.Property<int?>("KindId")
                         .HasColumnType("integer")

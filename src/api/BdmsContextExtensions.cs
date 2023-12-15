@@ -730,7 +730,7 @@ public static class BdmsContextExtensions
             .RuleFor(i => i.Completion, _ => default!)
             .RuleFor(i => i.FromDepth, f => (instrumentation_ids % 10) * 10)
             .RuleFor(i => i.ToDepth, f => ((instrumentation_ids % 10) + 1) * 10)
-            .RuleFor(i => i.InstrumentationId, f => f.Vehicle.Model())
+            .RuleFor(i => i.InstrumentationName, f => f.Vehicle.Model())
             .RuleFor(i => i.KindId, f => f.PickRandom(instrumentKindIds))
             .RuleFor(i => i.Kind, _ => default!)
             .RuleFor(i => i.StatusId, f => f.PickRandom(instrumentStatusIds))

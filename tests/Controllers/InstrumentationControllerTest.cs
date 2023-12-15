@@ -72,7 +72,7 @@ public class InstrumentationControllerTest
         var completionId = context.Completions.First().Id;
         var instrumentation = new Instrumentation()
         {
-            InstrumentationId = "REDWALK",
+            InstrumentationName = "REDWALK",
             CompletionId = completionId,
             StatusId = context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationStatusSchema).Id,
             KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationKindSchema).Id,
@@ -88,7 +88,7 @@ public class InstrumentationControllerTest
         instrumentation = await context.Instrumentations.FindAsync(instrumentation.Id);
         Assert.IsNotNull(instrumentation);
         Assert.AreEqual(completionId, instrumentation.CompletionId);
-        Assert.AreEqual("REDWALK", instrumentation.InstrumentationId);
+        Assert.AreEqual("REDWALK", instrumentation.InstrumentationName);
         Assert.AreEqual("ARGONSHIP", instrumentation.Notes);
         Assert.AreEqual(0, instrumentation.FromDepth);
         Assert.AreEqual(100, instrumentation.ToDepth);
@@ -102,7 +102,7 @@ public class InstrumentationControllerTest
         var instrumentation = context.Instrumentations.First();
         var completionId = instrumentation.CompletionId;
 
-        instrumentation.InstrumentationId = "OCTAVEBOOK";
+        instrumentation.InstrumentationName = "OCTAVEBOOK";
         instrumentation.StatusId = context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationStatusSchema).Id;
         instrumentation.KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationKindSchema).Id;
         instrumentation.Notes = "COLLAR";
@@ -115,7 +115,7 @@ public class InstrumentationControllerTest
         instrumentation = await context.Instrumentations.FindAsync(instrumentation.Id);
         Assert.IsNotNull(instrumentation);
         Assert.AreEqual(completionId, instrumentation.CompletionId);
-        Assert.AreEqual("OCTAVEBOOK", instrumentation.InstrumentationId);
+        Assert.AreEqual("OCTAVEBOOK", instrumentation.InstrumentationName);
         Assert.AreEqual("COLLAR", instrumentation.Notes);
         Assert.AreEqual(50, instrumentation.FromDepth);
         Assert.AreEqual(200, instrumentation.ToDepth);
