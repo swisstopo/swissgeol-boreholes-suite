@@ -63,7 +63,7 @@ public class LayerController : BdmsControllerBase<Layer>
         }
 
         var existingLayer = Context.Layers.Include(l => l.LayerCodelists).Include(c => c.Codelists).SingleOrDefault(l => l.Id == entity.Id);
-        var codelistIds = entity.CodelistIds?.ToList();
+        var codelistIds = entity.CodelistIds?.ToList() ?? new List<int>();
         if (existingLayer != default)
         {
             Context.Entry(existingLayer).CurrentValues.SetValues(entity);
@@ -73,27 +73,24 @@ public class LayerController : BdmsControllerBase<Layer>
             return NotFound();
         }
 
-        if (codelistIds?.Count > 0)
+        foreach (var layerCodelist in existingLayer.LayerCodelists)
         {
-            foreach (var layerCodelist in existingLayer.LayerCodelists)
+            if (!codelistIds.Contains(layerCodelist.CodelistId))
             {
-                if (!entity.CodelistIds.Contains(layerCodelist.CodelistId))
-                {
-                    Context.Remove(layerCodelist);
-                }
+                Context.Remove(layerCodelist);
             }
+        }
 
-            foreach (var id in entity.CodelistIds)
+        foreach (var id in codelistIds)
+        {
+            if (!existingLayer.LayerCodelists.Any(lc => lc.CodelistId == id))
             {
-                if (!existingLayer.LayerCodelists.Any(lc => lc.CodelistId == id))
+                var codelist = await Context.Codelists.FindAsync(id).ConfigureAwait(false);
+                if (codelist != null)
                 {
-                    var codelist = await Context.Codelists.FindAsync(id).ConfigureAwait(false);
-                    if (codelist != null)
-                    {
-                        existingLayer.LayerCodelists ??= new List<LayerCodelist>();
+                    existingLayer.LayerCodelists ??= new List<LayerCodelist>();
 
-                        existingLayer.LayerCodelists.Add(new LayerCodelist { Codelist = codelist, CodelistId = codelist.Id, SchemaName = codelist.Schema! });
-                    }
+                    existingLayer.LayerCodelists.Add(new LayerCodelist { Codelist = codelist, CodelistId = codelist.Id, SchemaName = codelist.Schema! });
                 }
             }
         }

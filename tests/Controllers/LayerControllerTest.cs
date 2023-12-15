@@ -150,12 +150,32 @@ public class LayerControllerTest
 
         // Assert Updates and unchanged values
         var updatedLayer = (response.Result as OkObjectResult).Value as Layer;
-
         Assert.AreEqual(3, updatedLayer.Codelists.Count);
         codelistIds = updatedLayer.Codelists.Select(c => c.Id).ToList();
         Assert.AreEqual(true, codelistIds.Contains(23101017));
         Assert.AreEqual(true, codelistIds.Contains(23101018));
         Assert.AreEqual(true, codelistIds.Contains(23101001));
+
+        newLayer.CodelistIds = null;
+
+        // Update Layer
+        response = await controller.EditAsync(newLayer);
+        ActionResultAssert.IsOk(response.Result);
+
+        // Assert Updates and unchanged values
+        updatedLayer = (response.Result as OkObjectResult).Value as Layer;
+        Assert.AreEqual(0, updatedLayer.Codelists.Count);
+
+        newLayer.CodelistIds = new List<int> { 23101002 };
+
+        // Update Layer
+        response = await controller.EditAsync(newLayer);
+        ActionResultAssert.IsOk(response.Result);
+
+        // Assert Updates and unchanged values
+        updatedLayer = (response.Result as OkObjectResult).Value as Layer;
+        Assert.AreEqual(1, updatedLayer.Codelists.Count);
+        Assert.AreEqual(23101002, updatedLayer.Codelists.First().Id);
     }
 
     [TestMethod]
