@@ -12,6 +12,7 @@ namespace BDMS.Controllers;
 [TestClass]
 public class StratigraphyControllerTest
 {
+    private const int AdminUserId = 1;
     private const int StratigraphyId = 6_000_003;
 
     private BdmsContext context;
@@ -21,7 +22,7 @@ public class StratigraphyControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, TimeProvider.System) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -211,5 +212,198 @@ public class StratigraphyControllerTest
         latestNonPrimaryStratigraphy = GetStratigraphy(latestNonPrimaryStratigraphy.Id);
         Assert.AreNotEqual(null, latestNonPrimaryStratigraphy);
         Assert.AreEqual(true, latestNonPrimaryStratigraphy.IsPrimary.GetValueOrDefault());
+    }
+
+    [TestMethod]
+    public async Task Create()
+    {
+        var boreholeWithoutStratigraphy = await context
+            .Boreholes
+            .Include(b => b.Stratigraphies)
+            .Include(b => b.Workflows)
+            .FirstAsync(b => !b.Stratigraphies.Any() && b.Workflows.Any(w => w.UserId == AdminUserId));
+
+        var stratigraphyToAdd = new Stratigraphy
+        {
+            KindId = StratigraphyController.StratigraphyKindId,
+            BoreholeId = boreholeWithoutStratigraphy.Id,
+            Name = "KODACLUSTER",
+            Notes = "ARGONTITAN",
+        };
+
+        var createResult = await controller.CreateAsync(stratigraphyToAdd);
+        ActionResultAssert.IsOk(createResult.Result);
+
+        var createdStratigraphy = (Stratigraphy?)((OkObjectResult)createResult.Result!).Value;
+        createdStratigraphy = GetStratigraphy(createdStratigraphy.Id);
+        Assert.AreEqual(StratigraphyController.StratigraphyKindId, createdStratigraphy.KindId);
+        Assert.AreEqual(boreholeWithoutStratigraphy.Id, createdStratigraphy.BoreholeId);
+        Assert.AreEqual("KODACLUSTER", createdStratigraphy.Name);
+        Assert.AreEqual("ARGONTITAN", createdStratigraphy.Notes);
+
+        // Because the stratigraphy is the first one for the borehole, it is automatically the primary stratigraphy.
+        Assert.AreEqual(true, createdStratigraphy.IsPrimary);
+    }
+
+    [TestMethod]
+    public async Task CreateAdditionalStratigraphyForExistingBorehole()
+    {
+        var boreholeWithExistingStratigraphy = await context
+            .Boreholes
+            .Include(b => b.Stratigraphies)
+            .Include(b => b.Workflows)
+            .FirstAsync(b => b.Stratigraphies.Any() && b.Workflows.Any(w => w.UserId == AdminUserId));
+
+        var stratigraphyToAdd = new Stratigraphy
+        {
+            KindId = StratigraphyController.StratigraphyKindId,
+            BoreholeId = boreholeWithExistingStratigraphy.Id,
+            Name = "STORMSTEED",
+            Notes = "GALAXYJEEP",
+        };
+
+        var createResult = await controller.CreateAsync(stratigraphyToAdd);
+        ActionResultAssert.IsOk(createResult.Result);
+
+        var createdStratigraphy = (Stratigraphy?)((OkObjectResult)createResult.Result!).Value;
+        createdStratigraphy = GetStratigraphy(createdStratigraphy.Id);
+        Assert.AreEqual(StratigraphyController.StratigraphyKindId, createdStratigraphy.KindId);
+        Assert.AreEqual(boreholeWithExistingStratigraphy.Id, createdStratigraphy.BoreholeId);
+        Assert.AreEqual("STORMSTEED", createdStratigraphy.Name);
+        Assert.AreEqual("GALAXYJEEP", createdStratigraphy.Notes);
+
+        // Because the stratigraphy is the second one for the borehole, it is not automatically the primary stratigraphy.
+        Assert.AreEqual(false, createdStratigraphy.IsPrimary);
+    }
+
+    [TestMethod]
+    public async Task CreateWithNullStratigraphy()
+    {
+        var createResult = await controller.CreateAsync(null);
+        ActionResultAssert.IsBadRequest(createResult.Result);
+    }
+
+    [TestMethod]
+    public async Task CreateWithInvalidStratigraphy()
+    {
+        var inexistentBoreholeId = int.MinValue;
+        var invalidStratigraphy = new Stratigraphy { BoreholeId = inexistentBoreholeId };
+        var createResult = await controller.CreateAsync(invalidStratigraphy);
+        ActionResultAssert.IsInternalServerError(createResult.Result);
+    }
+
+    [TestMethod]
+    public async Task CreateWithUserNotSet()
+    {
+        controller.ControllerContext.HttpContext.User = null;
+        var createResult = await controller.CreateAsync(new());
+        ActionResultAssert.IsInternalServerError(createResult.Result);
+    }
+
+    [TestMethod]
+    public async Task CreateWithUnknownUser()
+    {
+        controller.HttpContext.SetClaimsPrincipal("NON-EXISTENT-NAME", PolicyNames.Admin);
+        var createResult = await controller.CreateAsync(new());
+        ActionResultAssert.IsInternalServerError(createResult.Result);
+    }
+
+    [TestMethod]
+    public async Task CreateWithUnknownBorehole()
+    {
+        controller.HttpContext.SetClaimsPrincipal("editor", PolicyNames.Viewer);
+        var createResult = await controller.CreateAsync(new());
+        ActionResultAssert.IsInternalServerError(createResult.Result);
+    }
+
+    [TestMethod]
+    public async Task CreateWithUnauthorizedUser()
+    {
+        controller.HttpContext.SetClaimsPrincipal("deletableUser", PolicyNames.Viewer);
+
+        var stratigraphy = GetStratigraphy(StratigraphyId);
+        var createResult = await controller.CreateAsync(stratigraphy!);
+        ActionResultAssert.IsUnauthorized(createResult.Result);
+    }
+
+    [TestMethod]
+    public async Task CreateForLockedBoreholeByOtherUser()
+    {
+        var stratigraphy = GetStratigraphyWithLockedBorehole(lockedByAdmin: false);
+
+        var timeProviderMock = CreateTimeProviderMock(stratigraphy.Borehole.Locked.Value.AddMinutes(1));
+        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, timeProviderMock.Object) { ControllerContext = GetControllerContextAdmin() };
+
+        var createResult = await controller.CreateAsync(stratigraphy);
+        ActionResultAssert.IsInternalServerError(createResult.Result);
+    }
+
+    [TestMethod]
+    public async Task CreateForLockedBoreholeBySameUser()
+    {
+        var existingStratigraphy = GetStratigraphyWithLockedBorehole(lockedByAdmin: true);
+        var stratigraphyToAdd = new Stratigraphy
+        {
+            BoreholeId = existingStratigraphy.BoreholeId,
+            KindId = existingStratigraphy.KindId,
+            Name = "DYNAMO-XVIII",
+            Notes = "SCREAMINGSHADOW",
+        };
+
+        // Fake a date which is within the lock timeout
+        var fakeUtcDate = existingStratigraphy.Borehole.Locked.Value.AddMinutes(StratigraphyController.LockTimeoutInMinutes - 1);
+        var timeProviderMock = CreateTimeProviderMock(fakeUtcDate);
+        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, timeProviderMock.Object) { ControllerContext = GetControllerContextAdmin() };
+
+        var createResult = await controller.CreateAsync(stratigraphyToAdd);
+        ActionResultAssert.IsOk(createResult.Result);
+    }
+
+    [TestMethod]
+    public async Task CreateForLockedBoreholeWithElapsedLockTimeout()
+    {
+        var existingStratigraphy = GetStratigraphyWithLockedBorehole(lockedByAdmin: false);
+        var stratigraphyToAdd = new Stratigraphy
+        {
+            BoreholeId = existingStratigraphy.BoreholeId,
+            KindId = existingStratigraphy.KindId,
+        };
+
+        // Fake a date which is after the lock timeout
+        var fakeUtcDate = existingStratigraphy.Borehole.Locked.Value.AddMinutes(StratigraphyController.LockTimeoutInMinutes + 1);
+        var timeProviderMock = CreateTimeProviderMock(fakeUtcDate);
+        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, timeProviderMock.Object) { ControllerContext = GetControllerContextAdmin() };
+
+        var createResult = await controller.CreateAsync(stratigraphyToAdd);
+        ActionResultAssert.IsOk(createResult.Result);
+    }
+
+    private Stratigraphy GetStratigraphyWithLockedBorehole(bool lockedByAdmin)
+    {
+        bool LockedCondition(Borehole borehole) => lockedByAdmin ? borehole.LockedById == AdminUserId : borehole.LockedById != AdminUserId;
+
+        var boreholeWithUserWorkflows = context
+            .Boreholes
+            .Include(b => b.Workflows)
+            .Where(b => b.Workflows.Any(w => w.UserId == AdminUserId))
+            .AsEnumerable()
+            .Where(b => b.Locked.HasValue && LockedCondition(b))
+            .ToList();
+
+        return context
+            .Stratigraphies
+            .Include(s => s.Borehole)
+            .AsEnumerable()
+            .First(s => boreholeWithUserWorkflows.Any(b => s.BoreholeId == b.Id));
+    }
+
+    private static Mock<TimeProvider> CreateTimeProviderMock(DateTime fakeUtcDate)
+    {
+        var timeProviderMock = new Mock<TimeProvider>();
+        timeProviderMock
+            .Setup(x => x.GetUtcNow())
+            .Returns(fakeUtcDate);
+
+        return timeProviderMock;
     }
 }
