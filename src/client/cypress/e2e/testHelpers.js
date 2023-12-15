@@ -23,9 +23,6 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v1/workflow/edit", req => {
     return (req.alias = `workflow_edit_${req.body.action.toLowerCase()}`);
   });
-  cy.intercept("/api/v2/layer", req => {
-    return (req.alias = `stratigraphy_layer_edit_${req.method}`);
-  });
   cy.intercept("/api/v1/borehole/stratigraphy/edit", req => {
     return (req.alias = `stratigraphy_edit_${req.body.action.toLowerCase()}`);
   });
@@ -34,6 +31,9 @@ export const interceptApiCalls = () => {
 
   // Api V2
   cy.intercept("/api/v2/layer?profileId=**").as("layer-by-profileId");
+  cy.intercept("/api/v2/layer", req => {
+    return (req.alias = `stratigraphy_layer_edit_${req.method}`);
+  });
   cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
   cy.intercept("/api/v2/lithologicaldescription*").as(
