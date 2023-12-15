@@ -54,7 +54,7 @@ public class ChronostratigraphyControllerTest
     public async Task GetChronostratigraphyByInexistentId()
     {
         var response = await controller.GetByIdAsync(9263667).ConfigureAwait(false);
-        Assert.IsInstanceOfType(response.Result, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
@@ -109,8 +109,7 @@ public class ChronostratigraphyControllerTest
 
         // Update Chronostratigraphy
         var response = await controller.EditAsync(newChronostratigraphy);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
         var updatedChronostratigraphy = context.ChronostratigraphyLayers.Single(c => c.Id == id);
@@ -132,16 +131,14 @@ public class ChronostratigraphyControllerTest
 
         // Upate FaciesDescription
         var response = await controller.EditAsync(chronostratigraphy);
-        var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(404, notFoundResult.StatusCode);
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
     public async Task EditWithoutChronostratigraphyReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        ActionResultAssert.IsBadRequest(response.Result);
     }
 
     [TestMethod]
@@ -157,19 +154,19 @@ public class ChronostratigraphyControllerTest
         };
 
         var response = await controller.CreateAsync(chronostratigraphy);
-        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         chronostratigraphy = await context.ChronostratigraphyLayers.FindAsync(chronostratigraphy.Id);
         Assert.IsNotNull(chronostratigraphy);
         Assert.AreEqual(15001036, chronostratigraphy.ChronostratigraphyId);
 
-        response = await controller.DeleteAsync(chronostratigraphy.Id);
-        Assert.IsInstanceOfType(response, typeof(OkResult));
+        var deleteResponse = await controller.DeleteAsync(chronostratigraphy.Id);
+        ActionResultAssert.IsOk(deleteResponse);
 
-        response = await controller.DeleteAsync(chronostratigraphy.Id);
-        Assert.IsInstanceOfType(response, typeof(NotFoundResult));
+        deleteResponse = await controller.DeleteAsync(chronostratigraphy.Id);
+        ActionResultAssert.IsNotFound(deleteResponse);
 
         var getResponse = await controller.GetByIdAsync(chronostratigraphy.Id);
-        Assert.IsInstanceOfType(getResponse.Result, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(getResponse.Result);
     }
 
     [TestMethod]
@@ -182,12 +179,10 @@ public class ChronostratigraphyControllerTest
         };
 
         var getResponse = await controller.GetByIdAsync(chronostratigraphy.Id);
-        Assert.IsInstanceOfType(getResponse.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(getResponse.Result);
 
         var response = await controller.CreateAsync(chronostratigraphy);
-        var result = response as ObjectResult;
-        Assert.IsInstanceOfType(result.Value, typeof(ProblemDetails));
-        Assert.AreEqual(500, result.StatusCode);
+        ActionResultAssert.IsInternalServerError(response.Result);
     }
 
     [TestMethod]
@@ -213,7 +208,7 @@ public class ChronostratigraphyControllerTest
     private async Task CreateLayer(List<int> layerIds, ChronostratigraphyLayer layer)
     {
         var response = await controller.CreateAsync(layer);
-        if (response is OkObjectResult result && result.Value is IIdentifyable responseLayer)
+        if (response.Result is OkObjectResult && response.Value is IIdentifyable responseLayer)
         {
             layerIds.Add(responseLayer.Id);
         }

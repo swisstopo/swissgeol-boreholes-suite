@@ -11,6 +11,16 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     private readonly BdmsContext context;
     private readonly ILogger<TEntity> logger;
 
+    /// <summary>
+    /// Gets the <see cref="BdmsContext"/> used by the controller.
+    /// </summary>
+    protected BdmsContext Context => context;
+
+    /// <summary>
+    /// Gets the <see cref="ILogger{TEntity}"/> used by the controller.
+    /// </summary>
+    protected ILogger<TEntity> Logger => logger;
+
     protected BdmsControllerBase(BdmsContext context, ILogger<TEntity> logger)
     {
         this.context = context;
@@ -22,7 +32,7 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     /// </summary>
     /// <param name="entity">The entity to create.</param>
     [HttpPost]
-    public virtual async Task<IActionResult> CreateAsync(TEntity entity)
+    public virtual async Task<ActionResult<TEntity>> CreateAsync(TEntity entity)
     {
         await context.AddAsync(entity).ConfigureAwait(false);
         return await SaveChangesAsync(() => Ok(entity)).ConfigureAwait(false);
@@ -33,7 +43,7 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     /// </summary>
     /// <param name="entity">The entity to update.</param>
     [HttpPut]
-    public virtual async Task<IActionResult> EditAsync(TEntity entity)
+    public virtual async Task<ActionResult<TEntity>> EditAsync(TEntity entity)
     {
         if (entity == null)
         {
@@ -66,10 +76,11 @@ public class BdmsControllerBase<TEntity> : ControllerBase
         }
 
         context.Remove(entityToDelete);
-        return await SaveChangesAsync(Ok).ConfigureAwait(false);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        return Ok();
     }
 
-    private async Task<IActionResult> SaveChangesAsync(Func<IActionResult> successResult)
+    private async Task<ActionResult<TEntity>> SaveChangesAsync(Func<ActionResult<TEntity>> successResult)
     {
         try
         {
@@ -80,7 +91,7 @@ public class BdmsControllerBase<TEntity> : ControllerBase
         {
             var errorMessage = "An error occurred while saving the entity changes.";
             logger?.LogError(ex, errorMessage);
-            return Problem(errorMessage, statusCode: StatusCodes.Status500InternalServerError);
+            return Problem(errorMessage);
         }
     }
 }

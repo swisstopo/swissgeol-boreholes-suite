@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Net;
 using System.Security.Claims;
 using System.Text;
 using static BDMS.Helpers;
@@ -65,9 +64,8 @@ public class BoreholeFileControllerTest
         var firstPdfFormFile = GetFormFileByContent(content, fileName);
 
         // Upload
-        IActionResult response = await controller.Upload(firstPdfFormFile, minBoreholeId);
-        OkResult okResult = (OkResult)response;
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        var response = await controller.Upload(firstPdfFormFile, minBoreholeId);
+        ActionResultAssert.IsOk(response);
 
         // Get uploaded file from db
         var file = context.Files.Single(f => f.Name == fileName);
@@ -256,9 +254,8 @@ public class BoreholeFileControllerTest
         var updateBoreholeFile = new BoreholeFileUpdate() { Description = "Changed Description", Public = true };
 
         // Update borehole file
-        IActionResult response = await controller.Update(updateBoreholeFile, borehole.Id, file.Id).ConfigureAwait(false);
-        OkResult okResult = (OkResult)response;
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        var response = await controller.Update(updateBoreholeFile, borehole.Id, file.Id).ConfigureAwait(false);
+        ActionResultAssert.IsOk(response);
 
         Assert.AreEqual(true, boreholeFile.Public);
         Assert.AreEqual("Changed Description", boreholeFile.Description);
@@ -309,7 +306,7 @@ public class BoreholeFileControllerTest
     public async Task GetAllOfBoreholeWithMissingBoreholeId()
     {
         var result = await controller.GetAllOfBorehole(0);
-        Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        ActionResultAssert.IsBadRequest(result.Result);
     }
 
     [TestMethod]
@@ -328,12 +325,12 @@ public class BoreholeFileControllerTest
     public async Task UpdateWithBoreholeFileNotFound()
     {
         var result = await controller.Update(new BoreholeFileUpdate(), 1, 1);
-        Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+        ActionResultAssert.IsNotFound(result);
     }
 
     private async Task AssertIsBadRequestResponse(Func<Task<IActionResult>> action)
     {
         var result = await action();
-        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        ActionResultAssert.IsBadRequest(result);
     }
 }

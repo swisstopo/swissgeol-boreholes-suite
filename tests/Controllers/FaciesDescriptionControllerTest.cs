@@ -54,7 +54,7 @@ public class FaciesDescriptionControllerTest
     public async Task GetFaciesDescriptionByInexistentId()
     {
         var response = await controller.GetByIdAsync(9263667).ConfigureAwait(false);
-        Assert.IsInstanceOfType(response.Result, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
@@ -112,8 +112,7 @@ public class FaciesDescriptionControllerTest
 
         // Update FaciesDescription
         var response = await controller.EditAsync(newFaciesDescription);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
         var updatedFaciesDescription = context.FaciesDescriptions.Single(c => c.Id == id);
@@ -136,16 +135,14 @@ public class FaciesDescriptionControllerTest
 
         // Upate FaciesDescription
         var response = await controller.EditAsync(faciesDescription);
-        var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(404, notFoundResult.StatusCode);
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
     public async Task EditWithoutFaciesDescriptionReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        ActionResultAssert.IsBadRequest(response.Result);
     }
 
     [TestMethod]
@@ -162,19 +159,19 @@ public class FaciesDescriptionControllerTest
         };
 
         var response = await controller.CreateAsync(faciesDescription);
-        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         faciesDescription = await context.FaciesDescriptions.FindAsync(faciesDescription.Id);
         Assert.IsNotNull(faciesDescription);
         Assert.AreEqual("SILDOV", faciesDescription.Description);
 
-        response = await controller.DeleteAsync(faciesDescription.Id);
-        Assert.IsInstanceOfType(response, typeof(OkResult));
+        var deleteResponse = await controller.DeleteAsync(faciesDescription.Id);
+        ActionResultAssert.IsOk(deleteResponse);
 
-        response = await controller.DeleteAsync(faciesDescription.Id);
-        Assert.IsInstanceOfType(response, typeof(NotFoundResult));
+        deleteResponse = await controller.DeleteAsync(faciesDescription.Id);
+        ActionResultAssert.IsNotFound(deleteResponse);
 
         var getResponse = await controller.GetByIdAsync(faciesDescription.Id);
-        Assert.IsInstanceOfType(getResponse.Result, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(getResponse.Result);
     }
 
     [TestMethod]
@@ -187,11 +184,9 @@ public class FaciesDescriptionControllerTest
         };
 
         var getResponse = await controller.GetByIdAsync(faciesDescription.Id);
-        Assert.IsInstanceOfType(getResponse.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(getResponse.Result);
 
         var response = await controller.CreateAsync(faciesDescription);
-        var result = response as ObjectResult;
-        Assert.IsInstanceOfType(result.Value, typeof(ProblemDetails));
-        Assert.AreEqual(500, result.StatusCode);
+        ActionResultAssert.IsInternalServerError(response.Result);
     }
 }

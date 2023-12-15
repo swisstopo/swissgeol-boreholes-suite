@@ -10,7 +10,7 @@
 
 - Use numeric input instead of dropdown for top bedrock quality fields.
 - Proxy requests to legacy api through .NET API with authentication.
-- Disable spatial reference inputs when editing mode is not active or borehole status does not allow editing.
+- Disable inputs of the editor view's borehole _location_ tab, when editing mode is not active or borehole status does not allow editing.
 - Remove obsolete database view `completness`.
 - Use a non-root user in the .NET Docker image.
 

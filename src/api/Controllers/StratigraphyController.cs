@@ -14,14 +14,9 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 {
     internal const int StratigraphyKindId = 3000;
 
-    private readonly BdmsContext context;
-    private readonly ILogger logger;
-
     public StratigraphyController(BdmsContext context, ILogger<Stratigraphy> logger)
         : base(context, logger)
     {
-        this.context = context;
-        this.logger = logger;
     }
 
     /// <summary>
@@ -33,7 +28,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Stratigraphy>> GetAsync([FromQuery] int? boreholeId = null, int? kindId = null)
     {
-        var stratigraphies = context.Stratigraphies.AsNoTracking();
+        var stratigraphies = Context.Stratigraphies.AsNoTracking();
         if (boreholeId != null)
         {
             stratigraphies = stratigraphies.Where(l => l.BoreholeId == boreholeId);
@@ -56,9 +51,9 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<int>> CopyAsync([Required] int id)
     {
-        logger.LogInformation("Copy stratigraphy with id <{StratigraphyId}>", id);
+        Logger.LogInformation("Copy stratigraphy with id <{StratigraphyId}>", id);
 
-        var user = await context.Users
+        var user = await Context.Users
             .Include(u => u.WorkgroupRoles)
             .AsNoTracking()
             .SingleOrDefaultAsync(u => u.Name == HttpContext.User.FindFirst(ClaimTypes.Name).Value)
@@ -69,7 +64,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             return Unauthorized();
         }
 
-        var stratigraphy = await context.Stratigraphies
+        var stratigraphy = await Context.Stratigraphies
             .Include(s => s.Layers).ThenInclude(l => l.LayerCodelists)
             .Include(s => s.LithologicalDescriptions)
             .Include(s => s.FaciesDescriptions)
@@ -113,8 +108,8 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         stratigraphy.Name += " (Clone)";
         stratigraphy.IsPrimary = false;
 
-        var entityEntry = await context.AddAsync(stratigraphy).ConfigureAwait(false);
-        await context.SaveChangesAsync().ConfigureAwait(false);
+        var entityEntry = await Context.AddAsync(stratigraphy).ConfigureAwait(false);
+        await Context.SaveChangesAsync().ConfigureAwait(false);
 
         return Ok(entityEntry.Entity.Id);
     }
@@ -124,20 +119,20 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
     [Authorize(Policy = PolicyNames.Viewer)]
     public override async Task<IActionResult> DeleteAsync(int id)
     {
-        var stratigraphyToDelete = await context.Stratigraphies.FindAsync(id).ConfigureAwait(false);
+        var stratigraphyToDelete = await Context.Stratigraphies.FindAsync(id).ConfigureAwait(false);
         if (stratigraphyToDelete == null)
         {
             return NotFound();
         }
 
-        context.Remove(stratigraphyToDelete);
-        await context.SaveChangesAsync().ConfigureAwait(false);
+        Context.Remove(stratigraphyToDelete);
+        await Context.SaveChangesAsync().ConfigureAwait(false);
 
         // If the stratigraphy to delete is the primary stratigraphy of a borehole,
         // then we need to set the latest stratigraphy as the primary stratigraphy, if possible.
         if (stratigraphyToDelete.IsPrimary.GetValueOrDefault() && stratigraphyToDelete.KindId == StratigraphyKindId)
         {
-            var latestStratigraphy = await context.Stratigraphies
+            var latestStratigraphy = await Context.Stratigraphies
                 .Where(s => s.BoreholeId == stratigraphyToDelete.BoreholeId && s.KindId == StratigraphyKindId)
                 .OrderByDescending(s => s.Created)
                 .FirstOrDefaultAsync()
@@ -146,8 +141,8 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             if (latestStratigraphy != null)
             {
                 latestStratigraphy.IsPrimary = true;
-                context.Update(latestStratigraphy);
-                await context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+                Context.Update(latestStratigraphy);
+                await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
             }
         }
 

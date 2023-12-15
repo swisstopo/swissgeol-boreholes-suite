@@ -70,7 +70,7 @@ public class LayerControllerTest
     public async Task GetLayerByInexistentIdReturnsNotFound()
     {
         var response = await controller.GetByIdAsync(9483157).ConfigureAwait(false);
-        Assert.IsInstanceOfType(response.Result, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
@@ -179,8 +179,7 @@ public class LayerControllerTest
 
         // Update Layer
         var response = await controller.EditAsync(newLayer);
-        var okResult = response as OkObjectResult;
-        Assert.AreEqual(200, okResult.StatusCode);
+        ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
         var updatedLayer = context.Layers.Single(c => c.Id == id);
@@ -202,16 +201,14 @@ public class LayerControllerTest
 
         // Upate Layer
         var response = await controller.EditAsync(layer);
-        var notFoundResult = response as NotFoundResult;
-        Assert.AreEqual(404, notFoundResult.StatusCode);
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
     public async Task EditWithoutLayerReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        var badRequestResult = response as BadRequestObjectResult;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        ActionResultAssert.IsBadRequest(response.Result);
     }
 
     [TestMethod]
@@ -291,7 +288,7 @@ public class LayerControllerTest
         };
 
         var response = await controller.CreateAsync(layerToAdd);
-        var okResult = response as OkObjectResult;
+        var okResult = response.Result as OkObjectResult;
 
         var addedLayer = context.Layers.Include(l => l.Codelists).Single(c => c.Id == layerToAdd.Id);
 

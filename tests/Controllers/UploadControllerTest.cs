@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Net;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using static BDMS.Helpers;
@@ -91,7 +90,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: lithoCsvFile, attachments: null);
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
 
@@ -157,7 +156,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: lithoCsvFile, attachments: null);
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
 
@@ -200,7 +199,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(6, okResult.Value);
 
@@ -241,7 +240,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, attachments: null);
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(6, okResult.Value);
 
@@ -290,7 +289,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstAttachmentFile, secondAttachmentFile, thirdAttachmentFile, fourthAttachmentFile, fifthAttachmentFile, sixthAttachmentFile, seventhAttachmentFile, eighthAttachmentFile, ninthAttachmentFile, tenthAttachmentFile });
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
 
@@ -312,7 +311,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstAttachmentFile, secondAttachmentFile });
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(3, okResult.Value);
     }
@@ -331,7 +330,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFormFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
     }
@@ -348,7 +347,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
 
@@ -369,7 +368,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        ActionResultAssert.IsBadRequest(result);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
@@ -389,7 +388,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
 
@@ -418,7 +417,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
 
@@ -447,7 +446,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
 
@@ -471,7 +470,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, null);
 
-        Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
+        ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
         Assert.AreEqual("No borehole csv file uploaded.", badRequestResult.Value);
     }
@@ -483,7 +482,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, invalidFileTypeBoreholeFile, lithologyFile: null, null);
 
-        Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
+        ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
         Assert.AreEqual("Invalid file type for borehole csv.", badRequestResult.Value);
     }
@@ -502,7 +501,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
     }
@@ -526,7 +525,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, secondPdfFormFile });
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
 
@@ -554,7 +553,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        ActionResultAssert.IsBadRequest(result);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
@@ -575,7 +574,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, new List<IFormFile>() { firstPdfFormFile, whiteSpacePdf });
 
-        Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
+        ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
         Assert.AreEqual("One or more file name(s) contain a whitespace.", badRequestResult.Value);
     }
@@ -598,7 +597,7 @@ public class UploadControllerTest
     {
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, null, null);
 
-        Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
+        ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
         Assert.AreEqual("No borehole csv file uploaded.", badRequestResult.Value);
     }
@@ -610,7 +609,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(0, okResult.Value);
     }
@@ -624,7 +623,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        ActionResultAssert.IsBadRequest(result);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(2, problemDetails.Errors.Count);
@@ -649,7 +648,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        ActionResultAssert.IsBadRequest(result);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(3, problemDetails.Errors.Count);
@@ -667,8 +666,8 @@ public class UploadControllerTest
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        var result = (ObjectResult)response.Result!;
+        ActionResultAssert.IsBadRequest(result);
 
         ProblemDetails problemDetails = (ProblemDetails)result.Value!;
         Assert.AreEqual(4, Regex.Matches(problemDetails.Detail!, "Header with name ").Count);
@@ -688,7 +687,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        ActionResultAssert.IsBadRequest(result);
 
         ProblemDetails problemDetails = (ProblemDetails)result.Value!;
         StringAssert.Contains(problemDetails.Detail, "Header with name 'ImportId'[0] was not found.");
@@ -707,7 +706,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        ActionResultAssert.IsBadRequest(result);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
@@ -730,7 +729,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        ActionResultAssert.IsBadRequest(result);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1, problemDetails.Errors.Count);
@@ -751,7 +750,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        ActionResultAssert.IsBadRequest(result);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(2, problemDetails.Errors.Count);
@@ -770,7 +769,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        ActionResultAssert.IsBadRequest(result);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(2, problemDetails.Errors.Count);
@@ -817,7 +816,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        ActionResultAssert.IsBadRequest(result);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(3, problemDetails.Errors.Count);
@@ -860,7 +859,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: minWorkgroudId, boreholeCsvFile);
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(2, okResult.Value);
     }
@@ -879,7 +878,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null, new[] { attachment });
 
-        Assert.IsInstanceOfType(response.Result, typeof(BadRequestObjectResult));
+        ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
         Assert.AreEqual($"One or more attachment exceed maximum file size of 200 Mb.", badRequestResult.Value);
     }
@@ -893,7 +892,7 @@ public class UploadControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
-        Assert.AreEqual((int)HttpStatusCode.BadRequest, result.StatusCode);
+        ActionResultAssert.IsBadRequest(result);
 
         ValidationProblemDetails problemDetails = (ValidationProblemDetails)result.Value!;
         Assert.AreEqual(1000, problemDetails.Errors.Count);
@@ -923,7 +922,7 @@ public class UploadControllerTest
 
         ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, null);
 
-        Assert.IsInstanceOfType(response.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
 

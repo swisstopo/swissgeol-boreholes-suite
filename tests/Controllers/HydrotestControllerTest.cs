@@ -121,10 +121,11 @@ public class HydrotestControllerTests
         context.Hydrotests.Add(originalHydrotest);
         await context.SaveChangesAsync();
 
-        var result = await controller.EditHydrotestAsync(updatedHydrotest) as OkObjectResult;
+        var result = await controller.EditHydrotestAsync(updatedHydrotest);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+        ActionResultAssert.IsOk(result);
+
         var editedHydrotest = context.Hydrotests.Single(w => w.Id == 1);
         Assert.AreEqual(updatedHydrotest.Id, editedHydrotest.Id);
         Assert.AreEqual(updatedHydrotest.Type, editedHydrotest.Type);
@@ -149,10 +150,8 @@ public class HydrotestControllerTests
     {
         var nonExistentHydrotest = new Hydrotest { Id = 678135 };
 
-        var result = await controller.EditHydrotestAsync(nonExistentHydrotest) as NotFoundResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(StatusCodes.Status404NotFound, result.StatusCode);
+        var result = await controller.EditHydrotestAsync(nonExistentHydrotest);
+        ActionResultAssert.IsNotFound(result);
     }
 
     [TestMethod]
@@ -177,7 +176,7 @@ public class HydrotestControllerTests
         };
 
         var okObjectResult = (OkObjectResult)await controller.CreateAsync(newHydrotest);
-        Assert.IsInstanceOfType(okObjectResult, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(okObjectResult);
         var addedHydrotest = (Hydrotest)okObjectResult.Value!;
 
         newHydrotest = await context.Hydrotests.FindAsync(newHydrotest.Id);
@@ -197,10 +196,10 @@ public class HydrotestControllerTests
         CollectionAssert.Contains((System.Collections.ICollection)newHydrotest.CodelistIds!, 15203171); // Test kind Id
 
         var deleteResponse = await controller.DeleteAsync(newHydrotest.Id);
-        Assert.IsInstanceOfType(deleteResponse, typeof(OkResult));
+        ActionResultAssert.IsOk(deleteResponse);
 
         deleteResponse = await controller.DeleteAsync(newHydrotest.Id);
-        Assert.IsInstanceOfType(deleteResponse, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(deleteResponse);
     }
 
     [TestMethod]
@@ -220,7 +219,7 @@ public class HydrotestControllerTests
         };
 
         var okObjectResult = (ObjectResult)await controller.CreateAsync(newHydrotest);
-        Assert.IsInstanceOfType(okObjectResult, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(okObjectResult);
         var addedHydrotest = (Hydrotest)okObjectResult.Value!;
 
         var savedHydrotest = context.Hydrotests.SingleOrDefault(w => w.Id == addedHydrotest.Id);
@@ -239,7 +238,7 @@ public class HydrotestControllerTests
         };
 
         var createResponse = await controller.CreateAsync(newHydrotest);
-        Assert.IsInstanceOfType(createResponse, typeof(BadRequestObjectResult));
+        ActionResultAssert.IsBadRequest(createResponse);
     }
 
     [TestMethod]
@@ -254,6 +253,6 @@ public class HydrotestControllerTests
         };
 
         var createResponse = await controller.CreateAsync(newHydrotest);
-        Assert.IsInstanceOfType(createResponse, typeof(BadRequestObjectResult));
+        ActionResultAssert.IsBadRequest(createResponse);
     }
 }
