@@ -5,7 +5,6 @@
 ### Added
 
 - Table and controller for completion.
-- Table and controller for instrumentation.
 
 ### Changed
 
