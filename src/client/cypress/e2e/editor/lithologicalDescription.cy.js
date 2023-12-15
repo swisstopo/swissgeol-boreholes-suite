@@ -9,7 +9,7 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="lithology-menu-item"]').click();
     cy.get('[data-cy="add-stratigraphy-button"]').click();
-    cy.wait("@stratigraphy_edit_create");
+    cy.wait("@stratigraphy_POST");
 
     // add three layers
     cy.get('[data-cy="add-layer-icon"]').click();
