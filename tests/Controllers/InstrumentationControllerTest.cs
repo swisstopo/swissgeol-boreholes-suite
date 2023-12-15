@@ -29,16 +29,15 @@ public class InstrumentationControllerTest
     }
 
     [TestMethod]
-    public async Task GetAllAsync()
+    public async Task GetAsync()
     {
-        var response = await controller.GetAsync().ConfigureAwait(false);
-        IEnumerable<Instrumentation>? instrumentations = response?.Value;
+        IEnumerable<Instrumentation>? instrumentations = await controller.GetAsync().ConfigureAwait(false);
         Assert.IsNotNull(instrumentations);
         Assert.AreEqual(500, instrumentations.Count());
     }
 
     [TestMethod]
-    public async Task GetAllAsyncFilterByCompletionId()
+    public async Task GetAsyncFilterByCompletionId()
     {
         // Precondition: Find a group of two instrumentations with the same completion id.
         var completions = await context.Instrumentations.ToListAsync();
@@ -47,9 +46,7 @@ public class InstrumentationControllerTest
             .Where(g => g.Count() == 2)
             .First().Key;
 
-        var response = await controller.GetAsync(completionId).ConfigureAwait(false);
-
-        IEnumerable<Instrumentation>? instrumentations = response?.Value;
+        IEnumerable<Instrumentation>? instrumentations = await controller.GetAsync(completionId).ConfigureAwait(false);
         Assert.IsNotNull(instrumentations);
         Assert.AreEqual(2, instrumentations.Count());
     }

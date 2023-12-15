@@ -24,7 +24,7 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
     /// <param name="completionId">The id of the completion containing the <see cref="Instrumentation"/> to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<Instrumentation>>> GetAsync([FromQuery] int? completionId = null)
+    public async Task<IEnumerable<Instrumentation>> GetAsync([FromQuery] int? completionId = null)
     {
         var instrumentations = context.Instrumentations.AsNoTracking();
         if (completionId != null)
