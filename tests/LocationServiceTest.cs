@@ -5,7 +5,7 @@ using Moq;
 namespace BDMS;
 
 [TestClass]
-public class LocationServiceTests
+public class LocationServiceTest
 {
     private BdmsContext context;
     private LocationService service;
