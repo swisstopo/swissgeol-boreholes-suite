@@ -79,8 +79,9 @@ public class InstrumentationControllerTest
         };
 
         var response = await controller.CreateAsync(instrumentation);
-        var okObjectResult = (OkObjectResult)response;
-        Assert.IsNotNull((Instrumentation)okObjectResult.Value!);
+        var okResult = response.Result as OkObjectResult;
+        instrumentation = okResult.Value as Instrumentation;
+        Assert.IsNotNull(instrumentation);
 
         instrumentation = await context.Instrumentations.FindAsync(instrumentation.Id);
         Assert.IsNotNull(instrumentation);
@@ -107,7 +108,9 @@ public class InstrumentationControllerTest
         instrumentation.ToDepth = 200;
 
         var response = await controller.EditAsync(instrumentation);
-        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        var okResult = response.Result as OkObjectResult;
+        instrumentation = okResult.Value as Instrumentation;
+        Assert.IsNotNull(instrumentation);
 
         instrumentation = await context.Instrumentations.FindAsync(instrumentation.Id);
         Assert.IsNotNull(instrumentation);

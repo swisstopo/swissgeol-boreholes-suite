@@ -57,12 +57,12 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> CreateAsync(Instrumentation entity)
+    public override Task<ActionResult<Instrumentation>> CreateAsync(Instrumentation entity)
         => base.CreateAsync(entity);
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> EditAsync(Instrumentation entity)
+    public override Task<ActionResult<Instrumentation>> EditAsync(Instrumentation entity)
         => base.EditAsync(entity);
 
     /// <inheritdoc />
