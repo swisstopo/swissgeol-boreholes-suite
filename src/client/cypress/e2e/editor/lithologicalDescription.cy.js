@@ -33,14 +33,12 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-2"] [data-testid="ModeEditIcon"]').click();
-    cy.wait("@layer");
     cy.contains("Show all fields").children(".checkbox").click();
     cy.get('[data-cy="toDepth"]').click().clear().type(120);
     cy.wait("@stratigraphy_layer_edit_PUT");
     cy.get('[data-cy="styled-layer-2"] [data-testid="ClearIcon"]').click();
 
     // add lithological description
-    cy.wait("@layer");
     cy.get('[data-cy="add-litho-desc-icon"]').click();
     cy.wait("@lithological_description");
     cy.get('[data-cy="description-0"]').contains("0 m");
