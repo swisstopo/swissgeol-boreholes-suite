@@ -3,6 +3,7 @@ using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static Amazon.S3.Util.S3EventNotification;
 
 namespace BDMS.Controllers;
 
@@ -10,12 +11,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class WaterIngressController : BdmsControllerBase<WaterIngress>
 {
-    private readonly BdmsContext context;
-
     public WaterIngressController(BdmsContext context, ILogger<WaterIngress> logger)
         : base(context, logger)
     {
-        this.context = context;
     }
 
     /// <summary>
@@ -27,7 +25,7 @@ public class WaterIngressController : BdmsControllerBase<WaterIngress>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<WaterIngress>> GetAsync([FromQuery] int? boreholeId = null)
     {
-        var waterIngresses = context.WaterIngresses
+        var waterIngresses = Context.WaterIngresses
             .Include(w => w.Quantity)
             .Include(w => w.Reliability)
             .Include(w => w.Conditions)
@@ -44,7 +42,7 @@ public class WaterIngressController : BdmsControllerBase<WaterIngress>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> EditAsync(WaterIngress entity)
+    public override Task<ActionResult<WaterIngress>> EditAsync(WaterIngress entity)
         => base.EditAsync(entity);
 
     /// <inheritdoc />
@@ -54,6 +52,6 @@ public class WaterIngressController : BdmsControllerBase<WaterIngress>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> CreateAsync(WaterIngress entity)
+    public override Task<ActionResult<WaterIngress>> CreateAsync(WaterIngress entity)
         => base.CreateAsync(entity);
 }

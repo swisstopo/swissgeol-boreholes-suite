@@ -9,6 +9,11 @@ const LocationSegment = props => {
 
   const [mapPointChange, setMapPointChange] = useState(false);
 
+  const isEditable =
+    borehole?.data.role === "EDIT" &&
+    borehole?.data.lock !== null &&
+    borehole?.data.lock?.username === user?.data.username;
+
   return (
     <div
       style={{
@@ -33,6 +38,7 @@ const LocationSegment = props => {
           country={borehole.data.custom.country}
           canton={borehole.data.custom.canton}
           municipality={borehole.data.custom.municipality}
+          isEditable={isEditable}
         />
       </div>
       <div
@@ -50,7 +56,7 @@ const LocationSegment = props => {
             );
           }}
           id={borehole.data.id}
-          isEditable={borehole.data.lock?.username === user.data.username}
+          isEditable={isEditable}
           x={
             _.isNil(borehole.data.location_x)
               ? null

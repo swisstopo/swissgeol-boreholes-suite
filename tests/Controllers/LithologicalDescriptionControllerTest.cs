@@ -54,7 +54,7 @@ public class LithologicalDescriptionControllerTest
     public async Task GetLithologicalDescriptionByInexistentId()
     {
         var response = await controller.GetByIdAsync(9483157).ConfigureAwait(false);
-        Assert.IsInstanceOfType(response.Result, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
@@ -112,7 +112,7 @@ public class LithologicalDescriptionControllerTest
 
         // Update LithologicalDescription
         var response = await controller.EditAsync(newLithologicalDescription);
-        ActionResultAssert.IsOk(response);
+        ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
         var updatedLithologicalDescription = context.LithologicalDescriptions.Single(c => c.Id == id);
@@ -135,14 +135,14 @@ public class LithologicalDescriptionControllerTest
 
         // Upate LithologicalDescription
         var response = await controller.EditAsync(lithologicalDescription);
-        ActionResultAssert.IsNotFound(response);
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
     public async Task EditWithoutLithologicalDescriptionReturnsBadRequest()
     {
         var response = await controller.EditAsync(null);
-        ActionResultAssert.IsBadRequest(response);
+        ActionResultAssert.IsBadRequest(response.Result);
     }
 
     [TestMethod]
@@ -159,19 +159,19 @@ public class LithologicalDescriptionControllerTest
         };
 
         var response = await controller.CreateAsync(lithologicalDescription);
-        Assert.IsInstanceOfType(response, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(response.Result);
         lithologicalDescription = await context.LithologicalDescriptions.FindAsync(lithologicalDescription.Id);
         Assert.IsNotNull(lithologicalDescription);
         Assert.AreEqual("SPOLYP", lithologicalDescription.Description);
 
-        response = await controller.DeleteAsync(lithologicalDescription.Id);
-        Assert.IsInstanceOfType(response, typeof(OkResult));
+        var deleteResponse = await controller.DeleteAsync(lithologicalDescription.Id);
+        ActionResultAssert.IsOk(deleteResponse);
 
-        response = await controller.DeleteAsync(lithologicalDescription.Id);
-        Assert.IsInstanceOfType(response, typeof(NotFoundResult));
+        deleteResponse = await controller.DeleteAsync(lithologicalDescription.Id);
+        ActionResultAssert.IsNotFound(deleteResponse);
 
         var getResponse = await controller.GetByIdAsync(lithologicalDescription.Id);
-        Assert.IsInstanceOfType(getResponse.Result, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(getResponse.Result);
     }
 
     [TestMethod]
@@ -184,9 +184,9 @@ public class LithologicalDescriptionControllerTest
         };
 
         var getResponse = await controller.GetByIdAsync(lithologicalDescription.Id);
-        Assert.IsInstanceOfType(getResponse.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(getResponse.Result);
 
         var response = await controller.CreateAsync(lithologicalDescription);
-        ActionResultAssert.IsInternalServerError(response);
+        ActionResultAssert.IsInternalServerError(response.Result);
     }
 }

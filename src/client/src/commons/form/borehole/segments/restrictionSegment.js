@@ -16,7 +16,12 @@ import DomainDropdown from "../../domain/dropdown/domainDropdown";
 import DateField from "../../dateField";
 
 const RestrictionSegment = props => {
-  const { size, borehole, updateChange } = props;
+  const { size, borehole, updateChange, user } = props;
+
+  const isEditable =
+    borehole?.data.role === "EDIT" &&
+    borehole?.data.lock !== null &&
+    borehole?.data.lock?.username === user?.data.username;
 
   return (
     <Segment>
@@ -32,6 +37,7 @@ const RestrictionSegment = props => {
               }}
               schema="restriction"
               selected={borehole.data.restriction}
+              readOnly={!isEditable}
             />
           </Form.Field>
           <Form.Field
@@ -52,6 +58,7 @@ const RestrictionSegment = props => {
               onChange={selected => {
                 updateChange("restriction_until", selected, false);
               }}
+              isEditable={isEditable}
             />
           </Form.Field>
         </Form.Group>
@@ -81,17 +88,17 @@ const RestrictionSegment = props => {
                 }}>
                 <FormControlLabel
                   value="TRUE"
-                  control={<Radio />}
+                  control={<Radio disabled={!isEditable} />}
                   label={<TranslationText id={"yes"} />}
                 />
                 <FormControlLabel
                   value="FALSE"
-                  control={<Radio />}
+                  control={<Radio disabled={!isEditable} />}
                   label={<TranslationText id={"no"} />}
                 />
                 <FormControlLabel
                   value="NULL"
-                  control={<Radio />}
+                  control={<Radio disabled={!isEditable} />}
                   label={<TranslationText id={"np"} />}
                 />
               </RadioGroup>

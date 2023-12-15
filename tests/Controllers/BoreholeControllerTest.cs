@@ -35,7 +35,7 @@ public class BoreholeControllerTest
         var originalBorehole = GetBorehole(boreholeId);
 
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(result.Result);
 
         var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
         Assert.IsNotNull(copiedBoreholeId);
@@ -144,21 +144,21 @@ public class BoreholeControllerTest
     public async Task CopyInvalidBoreholeId()
     {
         var result = await controller.CopyAsync(0, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        ActionResultAssert.IsNotFound(result.Result);
     }
 
     [TestMethod]
     public async Task CopyInvalidWorkgroupId()
     {
         var result = await controller.CopyAsync(boreholeId, workgroupId: 0).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+        ActionResultAssert.IsUnauthorized(result.Result);
     }
 
     [TestMethod]
     public async Task CopyMissingWorkgroupPermission()
     {
         var result = await controller.CopyAsync(boreholeId, workgroupId: 2).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+        ActionResultAssert.IsUnauthorized(result.Result);
     }
 
     [TestMethod]
@@ -166,7 +166,7 @@ public class BoreholeControllerTest
     {
         controller.HttpContext.SetClaimsPrincipal("NON-EXISTENT-NAME", PolicyNames.Admin);
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+        ActionResultAssert.IsUnauthorized(result.Result);
     }
 
     [TestMethod]
@@ -184,7 +184,7 @@ public class BoreholeControllerTest
     {
         controller.HttpContext.SetClaimsPrincipal("editor", PolicyNames.Viewer);
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+        ActionResultAssert.IsOk(result.Result);
         var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
         Assert.IsNotNull(copiedBoreholeId);
         Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));

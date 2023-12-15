@@ -10,12 +10,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class LithostratigraphyController : BdmsControllerBase<LithostratigraphyLayer>
 {
-    private readonly BdmsContext context;
-
     public LithostratigraphyController(BdmsContext context, ILogger<LithostratigraphyLayer> logger)
         : base(context, logger)
     {
-        this.context = context;
     }
 
     /// <summary>
@@ -26,7 +23,7 @@ public class LithostratigraphyController : BdmsControllerBase<LithostratigraphyL
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<LithostratigraphyLayer>> GetAsync([FromQuery] int stratigraphyId)
     {
-        return await context.LithostratigraphyLayers
+        return await Context.LithostratigraphyLayers
             .Include(c => c.Lithostratigraphy)
             .AsNoTracking()
             .Where(l => l.StratigraphyId == stratigraphyId)
@@ -43,7 +40,7 @@ public class LithostratigraphyController : BdmsControllerBase<LithostratigraphyL
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<LithostratigraphyLayer>> GetByIdAsync(int id)
     {
-        var lithostratigraphyLayer = await context.LithostratigraphyLayers
+        var lithostratigraphyLayer = await Context.LithostratigraphyLayers
             .Include(c => c.Lithostratigraphy)
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)
@@ -59,7 +56,7 @@ public class LithostratigraphyController : BdmsControllerBase<LithostratigraphyL
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> EditAsync(LithostratigraphyLayer entity)
+    public override Task<ActionResult<LithostratigraphyLayer>> EditAsync(LithostratigraphyLayer entity)
         => base.EditAsync(entity);
 
     /// <inheritdoc />
@@ -69,6 +66,6 @@ public class LithostratigraphyController : BdmsControllerBase<LithostratigraphyL
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> CreateAsync(LithostratigraphyLayer entity)
+    public override Task<ActionResult<LithostratigraphyLayer>> CreateAsync(LithostratigraphyLayer entity)
         => base.CreateAsync(entity);
 }
