@@ -41,6 +41,7 @@ describe("Tests for the layer form.", () => {
         cy.wait("@stratigraphy_layer_edit_PUT");
       });
 
+    cy.wait(5000);
     const multipleDropdownValues = [];
     cy.get(".ui.fluid.multiple.selection.dropdown").each((el, index, list) => {
       const firstValue = el[0].children[0].text;
