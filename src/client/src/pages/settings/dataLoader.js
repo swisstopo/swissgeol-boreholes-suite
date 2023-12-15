@@ -13,7 +13,6 @@ import {
   loadBoreholes,
   loadSettings,
   loadUser,
-  setAuthentication,
   getContent,
 } from "../../api-lib/index";
 
@@ -52,10 +51,6 @@ class DataLoader extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.auth.isAuthenticated && !this.props.user?.authentication) {
-      this.props.setAuthentication(this.props.auth.user);
-    }
-
     if (!prevProps.user?.authentication && this.props.user?.authentication) {
       this.props.loadUser();
       this.props.loadSettings();
@@ -66,9 +61,7 @@ class DataLoader extends React.Component {
 
   render() {
     const isLoading =
-      this.props.auth.isLoading ||
-      this.props.auth.isAuthenticated ||
-      this.props.user.authentication;
+      this.props.auth?.isLoading || this.props.user?.authentication;
     return (
       <div
         style={{
@@ -156,21 +149,34 @@ class DataLoader extends React.Component {
                 }}>
                 Sign in
               </div>
-              <Button
-                color={isLoading ? "green" : null}
-                compact
-                content="Login"
-                fluid
-                loading={isLoading}
-                onClick={() => {
-                  this.props.auth.signinRedirect();
-                }}
-                primary={!isLoading}
-                size="small"
-                style={{
-                  marginTop: "1.5em",
-                }}
-              />
+              {isLoading ? (
+                <Button
+                  disabled
+                  color={"green"}
+                  compact
+                  loading
+                  content="Login"
+                  fluid
+                  size="small"
+                  style={{
+                    marginTop: "1.5em",
+                  }}
+                />
+              ) : (
+                <Button
+                  compact
+                  primary
+                  content="Login"
+                  fluid
+                  onClick={() => {
+                    this.props.auth.signinRedirect();
+                  }}
+                  size="small"
+                  style={{
+                    marginTop: "1.5em",
+                  }}
+                />
+              )}
             </div>
           </div>
 
@@ -220,9 +226,6 @@ const mapDispatchToProps = dispatch => {
     },
     loadUser: () => {
       dispatch(loadUser());
-    },
-    setAuthentication: user => {
-      dispatch(setAuthentication(user));
     },
   };
 };
