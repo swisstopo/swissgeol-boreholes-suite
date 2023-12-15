@@ -1,26 +1,15 @@
-﻿using BDMS.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace BDMS;
 
 /// <inheritdoc />
-public class BoreholeLockService : IBoreholeLockService
+public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockService> logger, TimeProvider timeProvider) : IBoreholeLockService
 {
     internal const int LockTimeoutInMinutes = 10;
 
-    private readonly BdmsContext context;
-    private readonly ILogger<BoreholeLockService> logger;
-    private readonly TimeProvider timeProvider;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BoreholeLockService"/> class.
-    /// </summary>
-    public BoreholeLockService(BdmsContext context, ILogger<BoreholeLockService> logger, TimeProvider timeProvider)
-    {
-        this.context = context;
-        this.logger = logger;
-        this.timeProvider = timeProvider;
-    }
+    private readonly BdmsContext context = context;
+    private readonly ILogger<BoreholeLockService> logger = logger;
+    private readonly TimeProvider timeProvider = timeProvider;
 
     /// <inheritdoc />
     public async Task<bool> IsBoreholeLockedAsync(int? boreholeId, string? userName)
