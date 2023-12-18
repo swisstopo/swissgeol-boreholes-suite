@@ -56,10 +56,7 @@ public class InstrumentationControllerTest
         var instrumentationId = context.Instrumentations.First().Id;
 
         var response = await controller.GetByIdAsync(instrumentationId).ConfigureAwait(false);
-        ActionResultAssert.IsOk(response.Result);
-
-        var instrumentation = response.Value;
-        Assert.IsNotNull(instrumentation);
+        var instrumentation = ActionResultAssert.IsOkObjectResult<Instrumentation>(response.Result);
         Assert.AreEqual(instrumentationId, instrumentation.Id);
     }
 
@@ -79,8 +76,7 @@ public class InstrumentationControllerTest
         };
 
         var response = await controller.CreateAsync(instrumentation);
-        ActionResultAssert.IsOk(response.Result);
-        Assert.IsNotNull(response.Value);
+        ActionResultAssert.IsOkObjectResult<Instrumentation>(response.Result);
 
         instrumentation = await context.Instrumentations.FindAsync(instrumentation.Id);
         Assert.IsNotNull(instrumentation);
@@ -107,8 +103,7 @@ public class InstrumentationControllerTest
         instrumentation.ToDepth = 200;
 
         var response = await controller.EditAsync(instrumentation);
-        ActionResultAssert.IsOk(response.Result);
-        Assert.IsNotNull(response.Value);
+        ActionResultAssert.IsOkObjectResult<Instrumentation>(response.Result);
 
         instrumentation = await context.Instrumentations.FindAsync(instrumentation.Id);
         Assert.IsNotNull(instrumentation);
