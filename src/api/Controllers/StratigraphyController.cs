@@ -177,7 +177,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         }
         catch (UnauthorizedAccessException)
         {
-            return Unauthorized();
+            return Unauthorized("You are not authorized to create a stratigraphy for this borehole.");
         }
         catch (Exception ex)
         {
