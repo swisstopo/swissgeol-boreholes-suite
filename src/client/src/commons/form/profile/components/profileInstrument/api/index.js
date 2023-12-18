@@ -3,23 +3,21 @@ import {
   createLayer,
   deleteLayer,
   getProfiles,
-  createStratigraphy,
   createInstrument,
 } from "../../../../../../api-lib/index";
 
+import { createStratigraphy } from "../../../../../../api/fetchApiV2";
+
 let stratigraphyId = null;
-export const createNewStratigraphy = async (id, kind) => {
-  await createStratigraphy(id, kind)
-    .then(response => {
-      if (response.data.success) {
-        stratigraphyId = response.data.id;
-      } else {
-        alert(response.data.message);
-      }
-    })
-    .catch(error => {
-      console.error(error);
-    });
+export const createNewStratigraphy = async (boreholeId, kindId) => {
+  await createStratigraphy(boreholeId, kindId).then(response => {
+    if (response) {
+      stratigraphyId = response.data.id;
+    } else {
+      alert(response.statusText);
+    }
+  });
+
   return stratigraphyId;
 };
 

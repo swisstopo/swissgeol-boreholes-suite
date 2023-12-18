@@ -14,9 +14,12 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 {
     internal const int StratigraphyKindId = 3000;
 
-    public StratigraphyController(BdmsContext context, ILogger<Stratigraphy> logger)
+    private readonly IBoreholeLockService boreholeLockService;
+
+    public StratigraphyController(BdmsContext context, ILogger<Stratigraphy> logger, IBoreholeLockService boreholeLockService)
         : base(context, logger)
     {
+        this.boreholeLockService = boreholeLockService;
     }
 
     /// <summary>
@@ -147,5 +150,42 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         }
 
         return Ok();
+    }
+
+    /// <inheritdoc />
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public override async Task<ActionResult<Stratigraphy>> CreateAsync(Stratigraphy entity)
+    {
+        if (entity == null) return BadRequest(ModelState);
+
+        try
+        {
+            // Check if associated borehole is locked
+            var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, userName).ConfigureAwait(false))
+            {
+                return Problem("The borehole is locked by another user.");
+            }
+
+            // If the stratigraphy to create is the first stratigraphy of a borehole,
+            // then we need to set it as the primary stratigraphy.
+            var hasBoreholeExistingStratigraphy = await Context.Stratigraphies
+                .AnyAsync(s => s.BoreholeId == entity.BoreholeId)
+                .ConfigureAwait(false);
+
+            entity.IsPrimary = !hasBoreholeExistingStratigraphy;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized();
+        }
+        catch (Exception ex)
+        {
+            var message = "An error ocurred while creating the stratigraphy.";
+            Logger.LogError(ex, message);
+            return Problem(message);
+        }
+
+        return await base.CreateAsync(entity).ConfigureAwait(false);
     }
 }

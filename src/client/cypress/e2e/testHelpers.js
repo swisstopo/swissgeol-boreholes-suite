@@ -23,9 +23,6 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v1/workflow/edit", req => {
     return (req.alias = `workflow_edit_${req.body.action.toLowerCase()}`);
   });
-  cy.intercept("/api/v1/borehole/stratigraphy/edit", req => {
-    return (req.alias = `stratigraphy_edit_${req.body.action.toLowerCase()}`);
-  });
   cy.intercept("/api/v1/setting").as("setting");
   cy.intercept("api/v1/borehole/codes").as("codes");
 
@@ -65,6 +62,10 @@ export const interceptApiCalls = () => {
 
   cy.intercept("/api/v2/codelist*", req => {
     return (req.alias = `codelist_${req.method}`);
+  });
+
+  cy.intercept("/api/v2/stratigraphy*", req => {
+    return (req.alias = `stratigraphy_${req.method}`);
   });
 };
 
@@ -287,4 +288,18 @@ export const getImportFileFromFixtures = (fileName, encoding, dataSet) => {
   }
 
   return cy.fixture(filePath, { encoding: encoding });
+};
+
+export const createStratigraphy = (boreholeId, kindId) => {
+  return cy.request({
+    method: "POST",
+    url: "/api/v2/stratigraphy",
+    body: {
+      boreholeId: boreholeId,
+      kindId: kindId,
+    },
+    cache: "no-cache",
+    credentials: "same-origin",
+    auth: adminUserAuth,
+  });
 };
