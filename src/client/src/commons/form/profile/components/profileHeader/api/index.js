@@ -23,8 +23,6 @@ export const createNewStratigraphy = async (boreholeId, kindId) => {
   await createStratigraphy(boreholeId, kindId).then(response => {
     if (response) {
       createdNewStratigraphy = true;
-    } else {
-      alert(response.statusText);
     }
   });
 

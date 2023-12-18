@@ -60,6 +60,7 @@ export async function fetchApiV2(
     link.click();
     return response;
   }
+
   if (response.ok) {
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -67,6 +68,8 @@ export async function fetchApiV2(
     } else {
       return await response.text();
     }
+  } else {
+    return response.text().then(text => alert(text));
   }
 }
 
