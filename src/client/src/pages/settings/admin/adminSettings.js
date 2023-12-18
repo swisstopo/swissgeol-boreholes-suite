@@ -18,7 +18,6 @@ import {
 } from "semantic-ui-react";
 
 import {
-  createUser,
   createWorkgroup,
   enableWorkgroup,
   disableWorkgroup,
@@ -166,24 +165,6 @@ class AdminSettings extends React.Component {
             flex: "1 1 100%",
             marginRight: "0.5em",
           }}>
-          <div
-            style={{
-              marginBottom: "0.5em",
-            }}>
-            {this.state.user !== null ? (
-              <span
-                className="linker link"
-                onClick={() => {
-                  this.reset();
-                }}>
-                {t("new", {
-                  what: t("user"),
-                })}
-              </span>
-            ) : (
-              <span>&nbsp;</span>
-            )}
-          </div>
           <Form>
             <Form.Group widths="equal">
               <Form.Input
@@ -285,44 +266,23 @@ class AdminSettings extends React.Component {
                   data-cy="add-user-button"
                   label="&nbsp;"
                   onClick={() => {
-                    if (this.state.uId === null) {
-                      createUser(
-                        this.state.uUsername,
-                        this.state.uPassword,
-                        this.state.uFirstname,
-                        "",
-                        this.state.uLastname,
-                        this.state.uAdmin,
-                      ).then(response => {
-                        if (response.data.success === false) {
-                          this.context.error(response.data.message);
-                        } else {
-                          this.listUsers();
-                        }
-                      });
-                    } else {
-                      updateUser(
-                        this.state.uId,
-                        this.state.uUsername,
-                        this.state.uPassword,
-                        this.state.uFirstname,
-                        "",
-                        this.state.uLastname,
-                        this.state.uAdmin,
-                      ).then(response => {
-                        if (response.data.success === false) {
-                          this.context.error(response.data.message);
-                        } else {
-                          this.listUsers();
-                        }
-                      });
-                    }
+                    updateUser(
+                      this.state.uId,
+                      this.state.uUsername,
+                      this.state.uPassword,
+                      this.state.uFirstname,
+                      "",
+                      this.state.uLastname,
+                      this.state.uAdmin,
+                    ).then(response => {
+                      if (response.data.success === false) {
+                        this.context.error(response.data.message);
+                      } else {
+                        this.listUsers();
+                      }
+                    });
                   }}>
-                  {this.state.uId !== null ? (
-                    <Icon name="save" />
-                  ) : (
-                    <Icon name="plus" />
-                  )}
+                  <Icon name="save" />
                 </Form.Button>
               </div>
             </Form.Group>
@@ -794,11 +754,7 @@ class AdminSettings extends React.Component {
                           });
                         }
                       }}>
-                      {this.state.wId !== null ? (
-                        <Icon name="save" />
-                      ) : (
-                        <Icon name="plus" />
-                      )}
+                      <Icon name="save" />
                     </Form.Button>
                   </div>
                 </Form.Group>

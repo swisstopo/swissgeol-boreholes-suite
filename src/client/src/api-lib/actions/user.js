@@ -27,25 +27,6 @@ export function reloadUser() {
   });
 }
 
-export function createUser(
-  username,
-  password,
-  firstname = "",
-  middlename = "",
-  lastname = "",
-  admin = false,
-) {
-  return fetch("/user/edit", {
-    action: "CREATE",
-    username: username,
-    password: password,
-    firstname: firstname,
-    middlename: middlename,
-    lastname: lastname,
-    admin: admin,
-  });
-}
-
 export function updateUser(
   id,
   username,
