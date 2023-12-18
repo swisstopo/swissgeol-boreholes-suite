@@ -1,4 +1,4 @@
-import { createBorehole, adminUserAuth, login } from "../testHelpers";
+import { createBorehole, createStratigraphy, login } from "../testHelpers";
 
 const openDropdown = dataCy => {
   cy.get(`[data-cy="${dataCy}"]`)
@@ -28,20 +28,9 @@ describe("Tests for the hydrotest editor.", () => {
     // add new borehole
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id => {
-        cy.request({
-          method: "POST",
-          url: "/api/v1/borehole/stratigraphy/edit",
-          body: {
-            action: "CREATE",
-            id: id,
-            kind: 3000,
-          },
-          auth: adminUserAuth,
-        });
-      })
+      .then(id => createStratigraphy(id, 3000))
       .then(response => {
-        expect(response.body).to.have.property("success", true);
+        expect(response).to.have.property("status", 200);
       });
 
     // open hydrotest editor

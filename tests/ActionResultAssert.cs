@@ -41,6 +41,12 @@ internal static class ActionResultAssert
         => AssertActionResult(actionResult, StatusCodes.Status400BadRequest);
 
     /// <summary>
+    /// Asserts that the <see cref="IActionResult"/> is Unauthorized (400).
+    /// </summary>
+    internal static void IsUnauthorized(IActionResult? actionResult)
+        => AssertActionResult(actionResult, StatusCodes.Status401Unauthorized);
+
+    /// <summary>
     /// Asserts that the <see cref="IActionResult"/> is NotFound (404).
     /// </summary>
     internal static void IsNotFound(IActionResult? actionResult)
@@ -52,16 +58,9 @@ internal static class ActionResultAssert
     internal static void IsInternalServerError(IActionResult? actionResult)
         => AssertActionResult(actionResult, StatusCodes.Status500InternalServerError);
 
-    /// <summary>
-    /// Asserts that the <see cref="IActionResult"/> is Unauthorized (401).
-    /// </summary>
-    /// <param name="actionResult"></param>
-    internal static void IsUnauthorized(IActionResult? actionResult)
-        => AssertActionResult(actionResult, StatusCodes.Status401Unauthorized);
-
     private static void AssertActionResult(IActionResult? currentActionResult, int expectedStatusCode)
     {
         var statusCodeResult = currentActionResult as IStatusCodeActionResult;
-        Assert.AreEqual(expectedStatusCode, statusCodeResult.StatusCode);
+        Assert.AreEqual(expectedStatusCode, statusCodeResult.StatusCode, "Unexpected StatusCode of action result.");
     }
 }

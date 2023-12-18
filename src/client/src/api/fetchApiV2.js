@@ -176,6 +176,13 @@ export const deleteStratigraphy = async id => {
   return await fetchApiV2(`stratigraphy?id=${id}`, "DELETE");
 };
 
+export const createStratigraphy = async (boreholeId, kindId) => {
+  return await fetchApiV2("stratigraphy", "POST", {
+    boreholeId: boreholeId,
+    kindId: kindId,
+  });
+};
+
 // Enable using react-query outputs across the application.
 
 // eslint-disable-next-line react-hooks/rules-of-hooks

@@ -1,24 +1,18 @@
-import { createBorehole, adminUserAuth, login } from "../testHelpers";
+import {
+  createBorehole,
+  createStratigraphy,
+  adminUserAuth,
+  login,
+} from "../testHelpers";
 
 describe("Tests for the chronostratigraphy editor.", () => {
   beforeEach(function () {
     // Add new borehole with some lithology layers
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id => {
-        cy.request({
-          method: "POST",
-          url: "/api/v1/borehole/stratigraphy/edit",
-          body: {
-            action: "CREATE",
-            id: id,
-            kind: 3000,
-          },
-          auth: adminUserAuth,
-        });
-      })
+      .then(id => createStratigraphy(id, 3000))
       .then(response => {
-        expect(response.body).to.have.property("success", true);
+        expect(response).to.have.property("status", 200);
 
         const layers = {
           layer: [

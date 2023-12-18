@@ -1,15 +1,6 @@
 import { fetch } from "./index";
 
 // Create a new stratigraphy for the given borehole id
-export function createStratigraphy(id, kind = null) {
-  return fetch("/borehole/stratigraphy/edit", {
-    action: "CREATE",
-    id: id,
-    kind: kind,
-  });
-}
-
-// Create a new stratigraphy for the given borehole id
 export function addBedrock(id) {
   return fetch("/borehole/stratigraphy/edit", {
     action: "ADDBEDROCK",
