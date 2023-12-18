@@ -39,8 +39,8 @@ public class Instrumentation : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Instrumentation"/>'s instrumentation id.
     /// </summary>
-    [Column("instrumentation_name")]
-    public string? InstrumentationName { get; set; }
+    [Column("name")]
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the id <see cref="Instrumentation"/>'s kind.
