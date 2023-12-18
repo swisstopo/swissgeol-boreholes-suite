@@ -1,4 +1,4 @@
-import { newEditableBorehole } from "../testHelpers";
+﻿import { newEditableBorehole } from "../testHelpers";
 
 describe("Tests for the layer form.", () => {
   it("Creates a layer and fills all dropdowns with multiple selection.", () => {
@@ -60,21 +60,20 @@ describe("Tests for the layer form.", () => {
       const secondValue = el[0].children[1].text;
       multipleDropdownValues.push(firstValue, secondValue);
       if (multipleDropdownValues.length === 12) {
-        cy.log(multipleDropdownValues.toString());
-        // expect(multipleDropdownValues).to.deep.eq([
-        //   "fat clay",
-        //   "elastic silt",
-        //   "cubic",
-        //   "not specified",
-        //   "sharp",
-        //   "not specified",
-        //   "earth",
-        //   "not specified",
-        //   "erratic block",
-        //   "not specified",
-        //   "beige",
-        //   "not specified",
-        // ]);
+        expect(multipleDropdownValues).to.deep.eq([
+          "fat clay",
+          "elastic silt",
+          "cubic",
+          "not specified",
+          "sharp",
+          "not specified",
+          "earth",
+          "not specified",
+          "erratic block",
+          "not specified",
+          "beige",
+          "not specified",
+        ]);
       }
     });
     cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
