@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 import { AlertContext } from "../../../../alert/alertContext";
 
 const ProfileAttributes = props => {
-  const { id, isEditable, attribute, reloadAttribute } = props.data;
+  const { id, isEditable, onUpdated, attribute, reloadAttribute } = props.data;
 
   const { codes, geocode } = useSelector(state => ({
     codes: state.core_domain_list,
@@ -110,7 +110,10 @@ const ProfileAttributes = props => {
     }
     updatedLayer["codelistIds"] = codelistIds;
 
-    updateLayer(updatedLayer).then(mapResponseToLayer);
+    updateLayer(updatedLayer).then(response => {
+      mapResponseToLayer(response);
+      onUpdated(attribute);
+    });
   };
 
   const isVisibleFunction = field => {
