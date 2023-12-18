@@ -11,15 +11,21 @@ import { useTranslation } from "react-i18next";
 import { parseIfString } from "../../../../../formUtils";
 
 const ProfileAttributeList = props => {
-  const { attribute, showAll, updateChange, layer, isVisibleFunction } =
-    props.data;
+  const {
+    attribute,
+    showAll,
+    updateChange,
+    layer,
+    isVisibleFunction,
+    isLoading,
+  } = props.data;
   const { t } = useTranslation();
 
   return (
     <Styled.Container>
-      {attribute.map((item, key) => (
-        <Form autoComplete="false" error key={key}>
-          <Styled.AttributesContainer required={item.require}>
+      <Form autoComplete="false" error loading={isLoading}>
+        {attribute.map((item, key) => (
+          <Styled.AttributesContainer key={key} required={item.require}>
             {(item.isVisible ||
               isVisibleFunction(item.isVisibleValue) ||
               showAll) && (
@@ -180,8 +186,8 @@ const ProfileAttributeList = props => {
                 </Styled.AttributesItem>
               )}
           </Styled.AttributesContainer>
-        </Form>
-      ))}
+        ))}
+      </Form>
     </Styled.Container>
   );
 };

@@ -23,7 +23,8 @@ const ProfileAttributes = props => {
     geocode: "Geol",
   }));
   const [showAll, setShowAll] = useState(false);
-  const [layer, setLayer] = useState([]);
+  const [layer, setLayer] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { t } = useTranslation();
   const alertContext = useContext(AlertContext);
@@ -65,7 +66,11 @@ const ProfileAttributes = props => {
     mounted.current = true;
 
     if (id && mounted.current) {
-      fetchLayerById(id).then(mapResponseToLayer);
+      setIsLoading(true);
+      fetchLayerById(id).then(response => {
+        mapResponseToLayer(response);
+        setIsLoading(false);
+      });
       setShowAll(false);
     } else if (id === null) {
       setLayer([]);
@@ -81,6 +86,7 @@ const ProfileAttributes = props => {
       return;
     }
 
+    setIsLoading(true);
     if (isNumber && /^-?\d*[.,]?\d*$/.test(value)) {
       value = _.toNumber(value);
     }
@@ -112,6 +118,7 @@ const ProfileAttributes = props => {
 
     updateLayer(updatedLayer).then(response => {
       mapResponseToLayer(response);
+      setIsLoading(false);
       onUpdated(attribute);
     });
   };
@@ -171,6 +178,7 @@ const ProfileAttributes = props => {
             updateChange,
             layer: layer,
             isVisibleFunction,
+            isLoading: isLoading,
           }}
         />
       )}
