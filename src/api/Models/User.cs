@@ -77,10 +77,6 @@ public class User : IIdentifyable
     [NotMapped]
     public bool? Deletable { get; set; }
 
-    // TODO: Remove with #911
-    [Column("password")]
-    public string Password { get; set; }
-
     /// <inheritdoc/>
     public override string ToString() => Name;
 }
