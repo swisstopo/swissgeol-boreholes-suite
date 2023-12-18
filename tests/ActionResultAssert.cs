@@ -17,6 +17,24 @@ internal static class ActionResultAssert
         => AssertActionResult(actionResult, StatusCodes.Status200OK);
 
     /// <summary>
+    /// Asserts that the <see cref="IActionResult"/> is OkObjectResult.
+    /// </summary>
+    /// <typeparam name="T">The expected type of the result object.</typeparam>
+    /// <param name="actionResult">The <see cref="IActionResult"/> to be asserted.</param>
+    /// <returns>The result object if the action result.</returns>
+    /// <exception cref="AssertFailedException">Thrown if the action result is not an OkObjectResult or if the result object is not of type T.</exception>
+    internal static T IsOkObjectResult<T>(IActionResult? actionResult)
+        where T : class
+    {
+        IsOk(actionResult);
+        var okResult = actionResult as OkObjectResult;
+        Assert.IsNotNull(okResult, $"The action result is not an {nameof(OkObjectResult)}.");
+        var resultObject = okResult.Value as T;
+        Assert.IsNotNull(resultObject, $"The result object is not of the expected type {typeof(T)}.");
+        return resultObject;
+    }
+
+    /// <summary>
     /// Asserts that the <see cref="IActionResult"/> is BadRequest (400).
     /// </summary>
     internal static void IsBadRequest(IActionResult? actionResult)
