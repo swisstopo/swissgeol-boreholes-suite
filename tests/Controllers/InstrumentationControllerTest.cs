@@ -1,6 +1,5 @@
 ﻿using BDMS.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -57,8 +56,9 @@ public class InstrumentationControllerTest
         var instrumentationId = context.Instrumentations.First().Id;
 
         var response = await controller.GetByIdAsync(instrumentationId).ConfigureAwait(false);
-        var okResult = response.Result as OkObjectResult;
-        var instrumentation = okResult.Value as Instrumentation;
+        ActionResultAssert.IsOk(response.Result);
+
+        var instrumentation = response.Value;
         Assert.IsNotNull(instrumentation);
         Assert.AreEqual(instrumentationId, instrumentation.Id);
     }
@@ -79,9 +79,8 @@ public class InstrumentationControllerTest
         };
 
         var response = await controller.CreateAsync(instrumentation);
-        var okResult = response.Result as OkObjectResult;
-        instrumentation = okResult.Value as Instrumentation;
-        Assert.IsNotNull(instrumentation);
+        ActionResultAssert.IsOk(response.Result);
+        Assert.IsNotNull(response.Value);
 
         instrumentation = await context.Instrumentations.FindAsync(instrumentation.Id);
         Assert.IsNotNull(instrumentation);
@@ -108,9 +107,8 @@ public class InstrumentationControllerTest
         instrumentation.ToDepth = 200;
 
         var response = await controller.EditAsync(instrumentation);
-        var okResult = response.Result as OkObjectResult;
-        instrumentation = okResult.Value as Instrumentation;
-        Assert.IsNotNull(instrumentation);
+        ActionResultAssert.IsOk(response.Result);
+        Assert.IsNotNull(response.Value);
 
         instrumentation = await context.Instrumentations.FindAsync(instrumentation.Id);
         Assert.IsNotNull(instrumentation);
@@ -132,7 +130,7 @@ public class InstrumentationControllerTest
         var instrumentationCount = context.Instrumentations.Count();
 
         var response = await controller.DeleteAsync(instrumentation.Id);
-        Assert.IsInstanceOfType(response, typeof(OkResult));
+        ActionResultAssert.IsOk(response);
 
         instrumentation = await context.Instrumentations.FindAsync(instrumentation.Id);
         Assert.IsNull(instrumentation);
