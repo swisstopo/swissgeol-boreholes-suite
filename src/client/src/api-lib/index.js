@@ -90,7 +90,6 @@ import {
   getProfiles,
   getProfileLayers,
   patchProfile,
-  getLayerAttributes,
 } from "./actions/profile";
 
 import { loadDomains, patchCodeConfig } from "./actions/domains";
@@ -173,7 +172,6 @@ export {
   getProfiles,
   getProfileLayers,
   patchProfile,
-  getLayerAttributes,
   loadDomains,
   patchCodeConfig,
   getWms,
