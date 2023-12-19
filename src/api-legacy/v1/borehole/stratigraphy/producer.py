@@ -8,8 +8,7 @@ class StratigraphyProducerHandler(Producer):
         action = request.pop('action', None)
 
         if action in [
-            'ADDBEDROCK',
-            'CREATE'
+            'ADDBEDROCK'
         ]:
 
             async with self.pool.acquire() as conn:
@@ -19,8 +18,7 @@ class StratigraphyProducerHandler(Producer):
                 id_bho = None
 
                 if action in [
-                    'ADDBEDROCK',
-                    'CHECK'
+                    'ADDBEDROCK'
                 ]:
                     # Get Borehole id
                     id_bho = await conn.fetchval("""
