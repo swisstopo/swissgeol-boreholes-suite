@@ -35,7 +35,6 @@ const ProfileAttributes = props => {
   const [state, setState] = useState({
     isFetching: false,
     isPatching: false,
-    allfields: false,
     updateAttributeDelay: {},
     layer: {
       id: id?.hasOwnProperty("id") ? id : null,
