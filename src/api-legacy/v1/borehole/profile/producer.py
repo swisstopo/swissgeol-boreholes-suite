@@ -10,7 +10,6 @@ class ProfileProducerHandler(Producer):
 
         if action in [
             'ADDBEDROCK',
-            'CHECK',
             'PATCH'
         ]:
 
@@ -22,7 +21,6 @@ class ProfileProducerHandler(Producer):
 
                 if action in [
                     'ADDBEDROCK',
-                    'CHECK',
                     'PATCH',
                 ]:
                     # Get Borehole id
