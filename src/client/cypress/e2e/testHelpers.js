@@ -30,6 +30,7 @@ export const interceptApiCalls = () => {
   cy.intercept("api/v1/borehole/codes").as("codes");
 
   // Api V2
+  cy.intercept("GET", "/api/v2/layer/**").as("layer-by-id");
   cy.intercept("/api/v2/layer?profileId=**").as("layer-by-profileId");
   cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
