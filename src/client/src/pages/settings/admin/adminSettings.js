@@ -57,7 +57,6 @@ class AdminSettings extends React.Component {
       uId: null,
       uAdmin: false,
       uUsername: "",
-      uPassword: "",
       uFirstname: "",
       uLastname: "",
       uDisabled: null,
@@ -82,7 +81,6 @@ class AdminSettings extends React.Component {
         user: null,
         uId: null,
         uUsername: "",
-        uPassword: "",
         uFirstname: "",
         uLastname: "",
         uDisabled: null,
@@ -183,19 +181,6 @@ class AdminSettings extends React.Component {
                 value={this.state.uUsername}
               />
               <Form.Input
-                autoComplete="new-password"
-                fluid
-                label={<TranslationText id="password" />}
-                onChange={e => {
-                  this.setState({
-                    uPassword: e.target.value,
-                  });
-                }}
-                placeholder={t("password")}
-                type="password"
-                value={this.state.uPassword}
-              />
-              <Form.Input
                 fluid
                 label={<TranslationText id="firstname" />}
                 onChange={e => {
@@ -269,7 +254,6 @@ class AdminSettings extends React.Component {
                     updateUser(
                       this.state.uId,
                       this.state.uUsername,
-                      this.state.uPassword,
                       this.state.uFirstname,
                       "",
                       this.state.uLastname,
@@ -620,7 +604,6 @@ class AdminSettings extends React.Component {
                                 uId: currentUser.id,
                                 uAdmin: currentUser.isAdmin,
                                 uUsername: currentUser.name,
-                                uPassword: "",
                                 uFirstname: currentUser.firstName,
                                 uLastname: currentUser.lastName,
                                 uDisabled: currentUser.disabledAt,

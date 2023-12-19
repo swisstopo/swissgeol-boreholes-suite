@@ -85,17 +85,6 @@ class LoginPreview extends React.Component {
               marginTop: "1.5em",
             }}
           />
-          <div
-            style={{
-              color: "red",
-              fontSize: "0.8em",
-            }}>
-            {this.props.user.error === false ? (
-              <span>&nbsp;</span>
-            ) : (
-              "User or password wrong"
-            )}
-          </div>
         </div>
       </div>
     );
@@ -105,14 +94,6 @@ class LoginPreview extends React.Component {
 LoginPreview.propTypes = {
   body: PropTypes.string,
   title: PropTypes.string,
-  user: PropTypes.shape({
-    authentication: PropTypes.shape({
-      password: PropTypes.string,
-      username: PropTypes.string,
-    }),
-    data: PropTypes.object,
-    error: PropTypes.bool,
-  }),
 };
 
 LoginPreview.defaultProps = {

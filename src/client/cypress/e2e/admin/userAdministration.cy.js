@@ -13,7 +13,6 @@ describe("Admin settings test", () => {
   it.skip("displays correct message when enabling user.", () => {
     // add user
     cy.get('[placeholder="Username"]').type("Testuser");
-    cy.get('[placeholder="Password"]').type("123456");
     cy.get('[placeholder="First name"]').type("Cinnabuns");
     cy.get('[placeholder="Surname"]').type("Moonshine");
     cy.get('[data-cy="add-user-button"]').click();

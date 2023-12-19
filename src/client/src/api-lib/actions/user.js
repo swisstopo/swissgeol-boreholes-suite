@@ -30,7 +30,6 @@ export function reloadUser() {
 export function updateUser(
   id,
   username,
-  password,
   firstname = "",
   middlename = "",
   lastname = "",
@@ -40,7 +39,6 @@ export function updateUser(
     action: "UPDATE",
     user_id: id,
     username: username,
-    password: password,
     firstname: firstname,
     middlename: middlename,
     lastname: lastname,
