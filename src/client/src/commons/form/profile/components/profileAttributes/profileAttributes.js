@@ -33,6 +33,7 @@ const ProfileAttributes = props => {
   }));
   const [showAll, setShowAll] = useState(false);
   const [state, setState] = useState({
+    isFetching: false,
     isPatching: false,
     updateAttributeDelay: {},
     layer: {
@@ -141,6 +142,7 @@ const ProfileAttributes = props => {
         }
 
         setState({
+          isFetching: false,
           layer: data,
         });
       }
