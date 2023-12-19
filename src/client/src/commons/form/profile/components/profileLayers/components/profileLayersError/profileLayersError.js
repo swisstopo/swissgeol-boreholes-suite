@@ -2,12 +2,11 @@ import React, { useState, useEffect, useContext } from "react";
 import * as Styled from "./styles";
 import { Icon, Radio } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
+import { gapLayer, deleteLayer } from "../../../../../../../api-lib/index";
 import {
-  gapLayer,
+  fetchLayerById,
   addBedrock,
-  deleteLayer,
-} from "../../../../../../../api-lib/index";
-import { fetchLayerById } from "../../../../../../../api/fetchApiV2";
+} from "../../../../../../../api/fetchApiV2";
 import ErrorTypes from "./errorTypes";
 import { AlertContext } from "../../../../../../alert/alertContext";
 
@@ -109,10 +108,8 @@ const ProfileLayersError = props => {
     } else if (title === "missingBedrock") {
       addBedrock(id)
         .then(response => {
-          if (response.data.success) {
+          if (response) {
             onUpdated("fixErrors");
-          } else {
-            alertContext.error(response.data.message);
           }
         })
         .catch(error => {
