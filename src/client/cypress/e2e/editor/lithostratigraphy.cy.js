@@ -57,7 +57,7 @@ describe("Tests for the lithostratigraphy editor.", () => {
     cy.get("@borehole_id").then(id =>
       login(`editor/${id}/stratigraphy/lithostratigraphy`),
     );
-    cy.wait("@layer-by-profileId");
+    cy.wait("@get-layers-by-profileId");
 
     // start editing session
     cy.contains("a", "Start editing").click();

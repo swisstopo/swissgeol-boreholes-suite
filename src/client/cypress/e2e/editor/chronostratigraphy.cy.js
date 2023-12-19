@@ -74,7 +74,7 @@ describe("Tests for the chronostratigraphy editor.", () => {
     cy.get("@borehole_id").then(id =>
       login(`editor/${id}/stratigraphy/chronostratigraphy`),
     );
-    cy.wait("@layer-by-profileId");
+    cy.wait("@get-layers-by-profileId");
 
     // start editing session
     cy.contains("a", "Start editing").click();
