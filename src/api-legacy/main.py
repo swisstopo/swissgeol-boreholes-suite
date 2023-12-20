@@ -140,9 +140,6 @@ if __name__ == "__main__":
         IdentifierProducerHandler,
         IdentifierViewerHandler,
 
-        # Stratigraphy handlers
-        StratigraphyProducerHandler,
-
         # Layer handlers
         LayerViewerHandler,
         LayerProducerHandler,
@@ -217,9 +214,6 @@ if __name__ == "__main__":
 
         # FEEDBACK handlers
         (r'/api/v1/feedback', FeedbackHandler),
-
-        # Stratigraphy handlers (will be deprecated)
-        (r'/api/v1/borehole/stratigraphy/edit', StratigraphyProducerHandler),
 
         # Layer handlers (will be deprecated)
         (r'/api/v1/borehole/stratigraphy/layer', LayerViewerHandler),

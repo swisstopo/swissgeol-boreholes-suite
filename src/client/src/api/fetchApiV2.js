@@ -57,6 +57,7 @@ export async function fetchApiV2(
     link.click();
     return response;
   }
+
   if (response.ok) {
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -64,6 +65,8 @@ export async function fetchApiV2(
     } else {
       return await response.text();
     }
+  } else {
+    return response.text().then(text => alert(text));
   }
 }
 
@@ -171,6 +174,17 @@ export const copyStratigraphy = async id => {
 
 export const deleteStratigraphy = async id => {
   return await fetchApiV2(`stratigraphy?id=${id}`, "DELETE");
+};
+
+export const createStratigraphy = async (boreholeId, kindId) => {
+  return await fetchApiV2("stratigraphy", "POST", {
+    boreholeId: boreholeId,
+    kindId: kindId,
+  });
+};
+
+export const addBedrock = async id => {
+  return await fetchApiV2(`stratigraphy/addbedrock?id=${id}`, "POST");
 };
 
 // Enable using react-query outputs across the application.

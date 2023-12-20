@@ -7,7 +7,7 @@
     <IsPackable>false</IsPackable>
     <RootNamespace>BDMS</RootNamespace>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <NoWarn>CS1591,CS8618,CS8620,CA1001,CA1014,CS8625,CA2000,CA2007</NoWarn>
+    <NoWarn>CS1591,CS8604,CS8618,CS8620,CS8629,CA1001,CA1014,CS8625,CA2000,CA2007</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.7.304.1" />

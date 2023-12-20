@@ -8,15 +8,6 @@ export function getProfile(id) {
   });
 }
 
-// Create a new stratigraphy for the given borehole id
-export function createProfile(id, kind = null) {
-  return fetch("/borehole/profile/edit", {
-    action: "CREATE",
-    id: id,
-    kind: kind,
-  });
-}
-
 // Fetch all the profiles of a borehole filtered by kind.
 // If the kind is not specified, all profiles are fetched.
 export function getProfiles(borehole, kind = undefined) {

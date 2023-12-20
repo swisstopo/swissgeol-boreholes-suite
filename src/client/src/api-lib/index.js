@@ -76,8 +76,6 @@ import {
 } from "./actions/workflow";
 
 import {
-  createStratigraphy,
-  addBedrock,
   createLayer,
   createInstrument,
   deleteLayer,
@@ -163,8 +161,6 @@ export {
   submitWorkflow,
   rejectWorkflow,
   resetWorkflow,
-  createStratigraphy,
-  addBedrock,
   createLayer,
   createInstrument,
   deleteLayer,

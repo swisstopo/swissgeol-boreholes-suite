@@ -1,7 +1,5 @@
-import {
-  getProfiles,
-  createStratigraphy,
-} from "../../../../../../api-lib/index";
+import { createStratigraphy } from "../../../../../../api/fetchApiV2";
+import { getProfiles } from "../../../../../../api-lib/index";
 
 let data = [];
 export const getData = async (id, kind) => {
@@ -21,17 +19,12 @@ export const getData = async (id, kind) => {
 };
 
 let createdNewStratigraphy = false;
-export const createNewStratigraphy = async (id, kind) => {
-  await createStratigraphy(id, kind)
-    .then(response => {
-      if (response.data.success) {
-        createdNewStratigraphy = true;
-      } else {
-        alert(response.data.message);
-      }
-    })
-    .catch(function (error) {
-      console.error(error);
-    });
+export const createNewStratigraphy = async (boreholeId, kindId) => {
+  await createStratigraphy(boreholeId, kindId).then(response => {
+    if (response) {
+      createdNewStratigraphy = true;
+    }
+  });
+
   return createdNewStratigraphy;
 };

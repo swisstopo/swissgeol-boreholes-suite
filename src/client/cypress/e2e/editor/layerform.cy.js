@@ -9,7 +9,7 @@ describe("Tests for the layer form.", () => {
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="lithology-menu-item"]').click();
     cy.get('[data-cy="add-stratigraphy-button"]').click();
-    cy.wait("@stratigraphy_edit_create");
+    cy.wait("@stratigraphy_POST");
     cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
 

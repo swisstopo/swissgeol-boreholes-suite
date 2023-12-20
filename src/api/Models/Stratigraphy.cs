@@ -72,7 +72,7 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s kind.
     /// </summary>
-    public Codelist Kind { get; set; }
+    public Codelist? Kind { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s casing.
@@ -101,30 +101,30 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s fill casing, which is also a <see cref="Stratigraphy"/>.
     /// </summary>
-    public Stratigraphy FillCasing { get; set; }
+    public Stratigraphy? FillCasing { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Layer"/>s associated with the <see cref="Stratigraphy"/>.
     /// </summary>
-    public ICollection<Layer> Layers { get; }
+    public ICollection<Layer>? Layers { get; }
 
     /// <summary>
     /// Gets the <see cref="LithologicalDescription"/>s associated with the <see cref="Stratigraphy"/>.
     /// </summary>
-    public ICollection<LithologicalDescription> LithologicalDescriptions { get; }
+    public ICollection<LithologicalDescription>? LithologicalDescriptions { get; }
 
     /// <summary>
     /// Gets the <see cref="FaciesDescription"/>s associated with the <see cref="Stratigraphy"/>.
     /// </summary>
-    public ICollection<FaciesDescription> FaciesDescriptions { get; }
+    public ICollection<FaciesDescription>? FaciesDescriptions { get; }
 
     /// <summary>
     /// Gets the <see cref="ChronostratigraphyLayer"/>s associated with the <see cref="Stratigraphy"/>.
     /// </summary>
-    public ICollection<ChronostratigraphyLayer> ChronostratigraphyLayers { get; }
+    public ICollection<ChronostratigraphyLayer>? ChronostratigraphyLayers { get; }
 
     /// <summary>
     /// Gets the <see cref="LithostratigraphyLayer"/>s associated with the <see cref="Stratigraphy"/>.
     /// </summary>
-    public ICollection<LithostratigraphyLayer> LithostratigraphyLayers { get; }
+    public ICollection<LithostratigraphyLayer>? LithostratigraphyLayers { get; }
 }
