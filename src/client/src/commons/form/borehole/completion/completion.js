@@ -1,11 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Button, Stack, Tabs, Tab } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import { useTranslation } from "react-i18next";
-import {
-  useCompletionMutations,
-  useCompletions,
-} from "../../../../api/fetchApiV2";
+import React, { useState, useEffect } from "react";
+import { Stack } from "@mui/material";
+import { useCompletions } from "../../../../api/fetchApiV2";
 import CompletionContent from "./completionContent";
 
 const Completion = props => {
@@ -26,7 +21,10 @@ const Completion = props => {
       </Stack>
       <>Completion Header</>
 
-      <CompletionContent completion={selectedCompletion} />
+      <CompletionContent
+        completion={selectedCompletion}
+        isEditable={isEditable}
+      />
     </Stack>
   );
 };
