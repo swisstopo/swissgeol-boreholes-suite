@@ -37,7 +37,7 @@ const ProfileAttributes = props => {
     isPatching: false,
     updateAttributeDelay: {},
     layer: {
-      id: id?.hasOwnProperty("id") ? id : null,
+      id: id,
       kind: null,
       depth_from: null,
       depth_to: null,
@@ -145,6 +145,7 @@ const ProfileAttributes = props => {
           isFetching: false,
           layer: data,
         });
+        console.log(state.layer.id);
       }
     });
   }, []);
