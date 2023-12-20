@@ -28,6 +28,7 @@ import { AlertContext } from "../../alert/alertContext";
 import FieldMeasurement from "./hydrogeology/fieldMeasurement";
 import ChronostratigraphyPanel from "./stratigraphy/chronostratigraphyPanel";
 import LithostratigraphyPanel from "./stratigraphy/lithostratigraphyPanel";
+import Completion from "./completion/completion";
 
 class BoreholeForm extends React.Component {
   static contextType = AlertContext;
@@ -488,6 +489,18 @@ class BoreholeForm extends React.Component {
                 id={parseInt(this.props.match.params.id, 10)}
                 kind="filling"
                 unlocked={isEditable}
+              />
+            )}
+          />
+
+          {/*Temp route for completion v2*/}
+          <Route
+            exact
+            path={process.env.PUBLIC_URL + "/editor/:id/completion/v2"}
+            render={() => (
+              <Completion
+                boreholeId={parseInt(this.props.match.params.id, 10)}
+                isEditable={isEditable}
               />
             )}
           />
