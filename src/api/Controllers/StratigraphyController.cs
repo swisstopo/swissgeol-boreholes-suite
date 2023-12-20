@@ -188,4 +188,62 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 
         return await base.CreateAsync(entity).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Asynchronously adds a bedrock <see cref="Layer"/> to a <see cref="Stratigraphy"/>.
+    /// </summary>
+    /// <param name="id">The <see cref="Stratigraphy"/> id.</param>
+    /// <returns>The id of the created bedrock <see cref="Layer"/>.</returns>
+    [HttpPost("addbedrock")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult<int>> AddBedrockLayerAsync([Required] int id)
+    {
+        var stratigraphy = await Context.Stratigraphies.FindAsync(id).ConfigureAwait(false);
+        if (stratigraphy == null)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            // Check if associated borehole is locked
+            var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+            if (await boreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, userName).ConfigureAwait(false))
+            {
+                return Problem("The borehole is locked by another user.");
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized("You are not authorized to add a bedrock layer to this stratigraphy.");
+        }
+        catch (Exception ex)
+        {
+            var message = "An error ocurred while adding a bedrock layer to the stratigraphy.";
+            Logger.LogError(ex, message);
+            return Problem(message);
+        }
+
+        // Check if associated borehole has a TopBedrock value
+        var borehole = await Context.Boreholes.FindAsync(stratigraphy.BoreholeId).ConfigureAwait(false);
+        if (!borehole.TopBedrock.HasValue)
+        {
+            return Problem("Bedrock not yet defined.");
+        }
+
+        // Add bedrock layer
+        var bedrockLayer = new Layer
+        {
+            StratigraphyId = stratigraphy.Id,
+            FromDepth = borehole.TopBedrock.Value,
+            LithologyTopBedrockId = borehole.LithologyTopBedrockId,
+            LithostratigraphyId = borehole.LithostratigraphyId,
+            IsLast = false,
+        };
+
+        await Context.Layers.AddAsync(bedrockLayer).ConfigureAwait(false);
+        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+
+        return Ok(bedrockLayer.Id);
+    }
 }
