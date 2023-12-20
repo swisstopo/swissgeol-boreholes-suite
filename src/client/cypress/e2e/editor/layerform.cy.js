@@ -14,6 +14,7 @@ describe("Tests for the layer form.", () => {
     cy.wait("@layer");
 
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
+    cy.wait("@get-layer-by-id");
 
     // fill all dropdowns with two values
     cy.get('[aria-multiselectable="true"]')
