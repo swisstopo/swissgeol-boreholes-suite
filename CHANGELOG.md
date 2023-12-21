@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.0.506 - 2023-12-21
+
 ### Added
 
 - Table and controller for completion.
