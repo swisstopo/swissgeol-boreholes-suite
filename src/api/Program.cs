@@ -24,7 +24,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => builder.Configuration.Bind("Auth", options));
 
-builder.Services.AddTransient<IClaimsTransformation, DatabaseAuthenticationClaimsTranfomration>();
+builder.Services.AddTransient<IClaimsTransformation, DatabaseAuthenticationClaimsTransformation>();
 
 builder.Services.AddAuthorization(options =>
 {

@@ -3,16 +3,16 @@ using System.Security.Claims;
 
 namespace BDMS.Authentication;
 
-public class DatabaseAuthenticationClaimsTranfomration : IClaimsTransformation
+public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
 {
     private readonly BdmsContext dbContext;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DatabaseAuthenticationClaimsTranfomration"/> class.
+    /// Initializes a new instance of the <see cref="DatabaseAuthenticationClaimsTransformation"/> class.
     /// </summary>
     /// <param name="dbContext">The EF database context containing data for the BDMS application.</param>
     /// <exception cref="ArgumentNullException">If <paramref name="dbContext"/> is <c>null</c>.</exception>
-    public DatabaseAuthenticationClaimsTranfomration(BdmsContext dbContext)
+    public DatabaseAuthenticationClaimsTransformation(BdmsContext dbContext)
     {
         this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
