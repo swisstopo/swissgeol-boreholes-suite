@@ -240,10 +240,7 @@ public class StratigraphyControllerTest
 
         var createdStratigraphy = (Stratigraphy?)((OkObjectResult)createResult.Result!).Value;
         createdStratigraphy = GetStratigraphy(createdStratigraphy.Id);
-        Assert.AreEqual(StratigraphyController.StratigraphyKindId, createdStratigraphy.KindId);
-        Assert.AreEqual(boreholeWithoutStratigraphy.Id, createdStratigraphy.BoreholeId);
-        Assert.AreEqual("KODACLUSTER", createdStratigraphy.Name);
-        Assert.AreEqual("ARGONTITAN", createdStratigraphy.Notes);
+        AssertStratigraphy(createdStratigraphy, boreholeWithoutStratigraphy.Id, "KODACLUSTER", "ARGONTITAN");
 
         // Because the stratigraphy is the first one for the borehole, it is automatically the primary stratigraphy.
         Assert.AreEqual(true, createdStratigraphy.IsPrimary);
@@ -270,10 +267,7 @@ public class StratigraphyControllerTest
 
         var createdStratigraphy = (Stratigraphy?)((OkObjectResult)createResult.Result!).Value;
         createdStratigraphy = GetStratigraphy(createdStratigraphy.Id);
-        Assert.AreEqual(StratigraphyController.StratigraphyKindId, createdStratigraphy.KindId);
-        Assert.AreEqual(boreholeWithExistingStratigraphy.Id, createdStratigraphy.BoreholeId);
-        Assert.AreEqual("STORMSTEED", createdStratigraphy.Name);
-        Assert.AreEqual("GALAXYJEEP", createdStratigraphy.Notes);
+        AssertStratigraphy(createdStratigraphy, boreholeWithExistingStratigraphy.Id, "STORMSTEED", "GALAXYJEEP");
 
         // Because the stratigraphy is the second one for the borehole, it is not automatically the primary stratigraphy.
         Assert.AreEqual(false, createdStratigraphy.IsPrimary);
@@ -315,5 +309,79 @@ public class StratigraphyControllerTest
 
         var createResult = await controller.CreateAsync(new());
         ActionResultAssert.IsInternalServerError(createResult.Result);
+    }
+
+    [TestMethod]
+    public async Task AddBedrockLayer()
+    {
+        // Prepare stratigraphy to add the bedrock layer for.
+        var boreholeWithBedrock = await context.Boreholes.FirstAsync(x => x.TopBedrock.HasValue);
+        var stratigraphyWithoutBedrockLayer = new Stratigraphy
+        {
+            KindId = StratigraphyController.StratigraphyKindId,
+            BoreholeId = boreholeWithBedrock.Id,
+            Name = "MAESTROHEART",
+            Notes = "BATONTOPPER",
+        };
+
+        var createResult = await controller.CreateAsync(stratigraphyWithoutBedrockLayer);
+        stratigraphyWithoutBedrockLayer = ActionResultAssert.IsOkObjectResult<Stratigraphy>(createResult.Result);
+        AssertStratigraphy(stratigraphyWithoutBedrockLayer, boreholeWithBedrock.Id, "MAESTROHEART", "BATONTOPPER");
+
+        // Add bedrock and assert
+        var addBedrockResult = await controller.AddBedrockLayerAsync(stratigraphyWithoutBedrockLayer.Id);
+        ActionResultAssert.IsOk(addBedrockResult.Result);
+
+        var bedrockLayerId = (int)((OkObjectResult?)addBedrockResult.Result)?.Value!;
+        var bedrockLayer = await context.Layers.FindAsync(bedrockLayerId);
+        Assert.AreEqual(stratigraphyWithoutBedrockLayer.Id, bedrockLayer.StratigraphyId);
+        Assert.AreEqual(boreholeWithBedrock.TopBedrock.Value, bedrockLayer.FromDepth);
+        Assert.AreEqual(boreholeWithBedrock.LithologyTopBedrockId, bedrockLayer.LithologyTopBedrockId);
+        Assert.AreEqual(boreholeWithBedrock.LithostratigraphyId, bedrockLayer.LithostratigraphyId);
+        Assert.AreEqual(false, bedrockLayer.IsLast);
+    }
+
+    [TestMethod]
+    public async Task AddBedrockLayerForBoreholeWithoutTopBedrockValue()
+    {
+        // Prepare stratigraphy to add the bedrock layer for.
+        var boreholeWithoutBedrock = await context.Boreholes.FirstAsync(x => !x.TopBedrock.HasValue);
+        var stratigraphyWithoutBedrockLayer = new Stratigraphy
+        {
+            KindId = StratigraphyController.StratigraphyKindId,
+            BoreholeId = boreholeWithoutBedrock.Id,
+            Name = "CHIPPEWARECORD",
+            Notes = "FIREFALCON",
+        };
+
+        var createResult = await controller.CreateAsync(stratigraphyWithoutBedrockLayer);
+        stratigraphyWithoutBedrockLayer = ActionResultAssert.IsOkObjectResult<Stratigraphy>(createResult.Result);
+        AssertStratigraphy(stratigraphyWithoutBedrockLayer, boreholeWithoutBedrock.Id, "CHIPPEWARECORD", "FIREFALCON");
+
+        var addBedrockResult = await controller.AddBedrockLayerAsync(stratigraphyWithoutBedrockLayer.Id);
+        ActionResultAssert.IsInternalServerError(addBedrockResult.Result, "bedrock");
+    }
+
+    [TestMethod]
+    public async Task AddBedrockLayerForLockedBorehole()
+    {
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(true);
+
+        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+
+        var existingStratigraphy = await context.Stratigraphies.FirstAsync();
+        var addBedrockResult = await controller.AddBedrockLayerAsync(existingStratigraphy.Id);
+        ActionResultAssert.IsInternalServerError(addBedrockResult.Result, "locked");
+    }
+
+    private void AssertStratigraphy(Stratigraphy actual, int expectedBoreholeId, string exptectedName, string expectedNotes)
+    {
+        Assert.AreEqual(StratigraphyController.StratigraphyKindId, actual.KindId);
+        Assert.AreEqual(expectedBoreholeId, actual.BoreholeId);
+        Assert.AreEqual(exptectedName, actual.Name);
+        Assert.AreEqual(expectedNotes, actual.Notes);
     }
 }

@@ -186,6 +186,10 @@ export const createStratigraphy = async (boreholeId, kindId) => {
   });
 };
 
+export const addBedrock = async id => {
+  return await fetchApiV2(`stratigraphy/addbedrock?id=${id}`, "POST");
+};
+
 // Enable using react-query outputs across the application.
 
 // eslint-disable-next-line react-hooks/rules-of-hooks

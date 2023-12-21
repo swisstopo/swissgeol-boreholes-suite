@@ -58,6 +58,21 @@ internal static class ActionResultAssert
     internal static void IsInternalServerError(IActionResult? actionResult)
         => AssertActionResult(actionResult, StatusCodes.Status500InternalServerError);
 
+    /// <summary>
+    /// Asserts that the <see cref="IActionResult"/> is InternalServerError (500).
+    /// </summary>
+    internal static void IsInternalServerError(IActionResult? actionResult, string expectedErrorMessageSubstring)
+    {
+        AssertActionResult(actionResult, StatusCodes.Status500InternalServerError);
+
+        var problemDetails = (ProblemDetails)((ObjectResult)actionResult!).Value!;
+        StringAssert.Contains(
+            problemDetails.Detail,
+            expectedErrorMessageSubstring,
+            $"The error message does not contain the expected message '{expectedErrorMessageSubstring}'.",
+            StringComparison.OrdinalIgnoreCase);
+    }
+
     private static void AssertActionResult(IActionResult? currentActionResult, int expectedStatusCode)
     {
         var statusCodeResult = currentActionResult as IStatusCodeActionResult;
