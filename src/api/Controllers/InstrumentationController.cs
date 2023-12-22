@@ -26,7 +26,11 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Instrumentation>> GetAsync([FromQuery] int? completionId = null)
     {
-        var instrumentations = context.Instrumentations.AsNoTracking();
+        var instrumentations = context.Instrumentations
+            .Include(i => i.Status)
+            .Include(i => i.Kind)
+            .AsNoTracking();
+
         if (completionId != null)
         {
             instrumentations = instrumentations.Where(i => i.CompletionId == completionId);
@@ -43,6 +47,8 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
     public async Task<ActionResult<Instrumentation>> GetByIdAsync(int id)
     {
         var instrumentation = await context.Instrumentations
+            .Include(i => i.Status)
+            .Include(i => i.Kind)
             .AsNoTracking()
             .SingleOrDefaultAsync(i => i.Id == id)
             .ConfigureAwait(false);
