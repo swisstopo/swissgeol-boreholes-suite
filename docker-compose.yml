@@ -120,6 +120,7 @@ services:
       DOTNET_USE_POLLING_FILE_WATCHER: 1
       CONNECTIONSTRINGS__BdmsContext: Host=db;Username=SPAWNPLOW;Password=YELLOWSPATULA;Database=bdms;CommandTimeout=300
       ReverseProxy__Clusters__pythonApi__Destinations__legacyApi__Address: "http://api-legacy:8888/"
+      Auth__Authority: http://oidc-server
       S3__ENDPOINT: http://minio:9000
       S3__SECURE: 1
   oidc-server:
@@ -131,6 +132,7 @@ services:
       USERS_CONFIGURATION_PATH: /tmp/config/users-config.json
       SERVER_OPTIONS_INLINE: |
         {
+          "IssuerUri": "http://localhost:4011",
           "AccessTokenJwtType": "JWT",
           "Discovery": {
             "ShowKeySet": true
