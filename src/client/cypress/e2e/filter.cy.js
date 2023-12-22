@@ -1,13 +1,15 @@
-import { login, loginAsViewer } from "../e2e/testHelpers";
+import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/testHelpers";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
-    login();
+    loginAsAdmin();
+    cy.visit("/");
     cy.contains("Search filters:");
   });
 
   it("shows the correct dropdowns", () => {
-    login();
+    loginAsAdmin();
+    cy.visit("/");
     cy.contains("span", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
     let indentifierDropdown = cy.contains("label", "ID type").next();
@@ -40,7 +42,8 @@ describe("Search filter tests", () => {
   });
 
   it("shows 'fiter by map' in editor on 'Large Map' appearance", () => {
-    loginAsViewer("/setting/editor");
+    loginAsEditorInViewerMode();
+    cy.visit("/setting/editor");
 
     // Check if Editor mode settings are apparant
     cy.contains("Location filters");
@@ -67,7 +70,8 @@ describe("Search filter tests", () => {
 
   it("checks that the registration filter settings control the filter visibility.", () => {
     // precondition filters not visible
-    login("/editor");
+    loginAsAdmin();
+    cy.visit("/editor");
     cy.contains("Registration").click();
     cy.contains("Show all fields")
       .next()
@@ -101,7 +105,8 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes by creator name", () => {
-    login("/editor");
+    loginAsAdmin();
+    cy.visit("/editor");
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -119,7 +124,8 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes by original lithology", () => {
-    login("/editor");
+    loginAsAdmin();
+    cy.visit("/editor");
     cy.contains("Lithology").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -134,7 +140,8 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes by creation date", () => {
-    login("/editor");
+    loginAsAdmin();
+    cy.visit("/editor");
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -172,7 +179,8 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes by workgroup in viewer", () => {
-    login();
+    loginAsAdmin();
+    cy.visit("/");
     cy.contains("Workgroup").click();
     cy.contains("Default").click();
     cy.wait("@borehole");

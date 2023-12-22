@@ -2,7 +2,8 @@ import { loginAsAdmin } from "../testHelpers";
 
 describe("Admin settings test", () => {
   beforeEach(() => {
-    loginAsAdmin("/setting/admin");
+    loginAsAdmin();
+    cy.visit("/setting/admin");
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()

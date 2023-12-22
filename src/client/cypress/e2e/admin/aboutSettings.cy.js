@@ -1,9 +1,10 @@
-import { login } from "../testHelpers";
+import { loginAsAdmin } from "../testHelpers";
 import license from "../../fixtures/license.json";
 
 describe("Admin about page tests", () => {
   it("shows version information linking the corresponding release on GitHub.", () => {
-    login("/setting/about");
+    loginAsAdmin();
+    cy.visit("/setting/about");
 
     cy.get('[data-cy="version"]')
       .should("contain", "0.0.99+dev")
@@ -16,7 +17,8 @@ describe("Admin about page tests", () => {
 
   it("shows license information (with fixtures)", () => {
     cy.intercept("/license.json", license);
-    login("/setting/about");
+    loginAsAdmin();
+    cy.visit("/setting/about");
 
     cy.get('[data-cy^="credits-"]').should("have.length", 2);
     cy.get('[data-cy="credits-example-js@0.0.999"]').should(
@@ -30,7 +32,8 @@ describe("Admin about page tests", () => {
   });
 
   it("shows license information (without fixtures)", () => {
-    login("/setting/about");
+    loginAsAdmin();
+    cy.visit("/setting/about");
     cy.get('[data-cy^="credits-"]').should("have.length.above", 0);
   });
 });

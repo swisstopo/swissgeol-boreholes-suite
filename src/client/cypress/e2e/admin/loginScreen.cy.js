@@ -1,8 +1,9 @@
-import { login } from "../testHelpers";
+import { loginAsAdmin } from "../testHelpers";
 
 describe("Admin login preview tests", () => {
   it("displays correct message when publishing a new welcome message.", () => {
-    login("/setting/login");
+    loginAsAdmin();
+    cy.visit("/setting/login");
 
     // Initial button state
     cy.get('[data-cy="save-welcome-message-button"]').should("not.be.visible");

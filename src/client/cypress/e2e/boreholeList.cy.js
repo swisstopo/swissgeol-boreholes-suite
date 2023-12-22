@@ -4,6 +4,7 @@ describe("Borehole list tests", () => {
   it("Boreholes are displayed in correct order with editor login", () => {
     cy.intercept("/api/v1/borehole").as("borehole");
     loginAsEditorInViewerMode();
+    cy.visit("/");
 
     cy.get("div[id=map]").should("be.visible");
 
@@ -80,7 +81,8 @@ describe("Borehole list tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {
     cy.intercept("/api/v1/borehole").as("borehole");
     cy.intercept("/api/v1/borehole/edit").as("editorBorehole");
-    loginAsAdmin("/editor");
+    loginAsAdmin();
+    cy.visit("/editor");
 
     cy.wait("@editorBorehole");
     cy.get("div[id=map]").should("be.visible");
@@ -173,6 +175,7 @@ describe("Borehole list tests", () => {
 
   it("preserves column sorting and active page when navigating", () => {
     loginAsEditorInViewerMode();
+    cy.visit("/");
 
     // sort by name ascending
     cy.contains("div", "Original name")

@@ -175,6 +175,7 @@ class DataLoader extends React.Component {
                   style={{
                     marginTop: "1.5em",
                   }}
+                  data-cy="login-button"
                 />
               )}
             </div>
@@ -200,7 +201,6 @@ DataLoader.propTypes = {
   loadBoreholeCount: PropTypes.func,
   loadSettings: PropTypes.func,
   loadUser: PropTypes.func,
-  setUser: PropTypes.func,
   user: PropTypes.object,
 };
 
