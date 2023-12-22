@@ -7,8 +7,6 @@ import _ from "lodash";
 
 import { List, Icon, Popup } from "semantic-ui-react";
 
-import { unsetAuthentication } from "../../api-lib/index";
-
 import Feedback from "../feedback/feedbackComponent";
 import TranslationText from "../form/translationText";
 import TranslationKeys from "../translationKeys";
@@ -166,7 +164,6 @@ class MenuComponent extends React.Component {
                       className="link linker"
                       onClick={() => {
                         this.props.auth.removeUser();
-                        this.props.unsetAuthentication();
                         if (_.isFunction(handleModeChange)) {
                           handleModeChange("viewer");
                         }
@@ -332,16 +329,12 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
-    unsetAuthentication: (username, password) => {
-      dispatch(unsetAuthentication(username, password));
-    },
   };
 };
 
 MenuComponent.propTypes = {
   handleModeChange: PropTypes.func,
   mode: PropTypes.string,
-  unsetAuthentication: PropTypes.func,
   user: PropTypes.object,
 };
 
