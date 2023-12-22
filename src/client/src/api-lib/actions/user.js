@@ -31,7 +31,6 @@ export function updateUser(
   id,
   username,
   firstname = "",
-  middlename = "",
   lastname = "",
   admin = false,
 ) {
@@ -40,7 +39,6 @@ export function updateUser(
     user_id: id,
     username: username,
     firstname: firstname,
-    middlename: middlename,
     lastname: lastname,
     admin: admin,
   });

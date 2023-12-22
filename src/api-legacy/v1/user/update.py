@@ -8,7 +8,7 @@ class UpdateUser(Action):
 
     async def execute(
         self, user_id, username,
-        firstname = '', middlename = '', lastname = '',
+        firstname = '', lastname = '',
         admin = False
     ):
 
@@ -36,16 +36,14 @@ class UpdateUser(Action):
                         admin_usr = $1,
                         username = $2,
                         firstname = $3,
-                        middlename = $4,
-                        lastname = $5
+                        lastname = $4
 
                     WHERE
-                        id_usr = $6
+                        id_usr = $5
                     """,
                     admin,
                     username,
                     firstname if firstname != '' else username,
-                    middlename,
                     lastname,
                     user_id
                 )

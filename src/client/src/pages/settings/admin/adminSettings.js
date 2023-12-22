@@ -255,7 +255,6 @@ class AdminSettings extends React.Component {
                       this.state.uId,
                       this.state.uUsername,
                       this.state.uFirstname,
-                      "",
                       this.state.uLastname,
                       this.state.uAdmin,
                     ).then(response => {
