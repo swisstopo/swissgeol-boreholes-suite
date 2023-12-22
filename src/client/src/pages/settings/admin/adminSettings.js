@@ -168,40 +168,24 @@ class AdminSettings extends React.Component {
               <Form.Input
                 fluid
                 label={<TranslationText id="username" />}
-                onChange={e => {
-                  const filteredValue = e.target.value.replace(
-                    /[^A-Za-z0-9@.+_-]/g,
-                    "",
-                  ); // Limit to alphabetic characters
-                  this.setState({
-                    uUsername: filteredValue,
-                  });
-                }}
                 placeholder={t("username")}
                 value={this.state.uUsername}
+                readonly
               />
               <Form.Input
                 fluid
                 label={<TranslationText id="firstname" />}
-                onChange={e => {
-                  this.setState({
-                    uFirstname: e.target.value,
-                  });
-                }}
                 placeholder={t("firstname")}
                 value={this.state.uFirstname}
+                readonly
               />
               <Form.Input
                 autoComplete="off"
                 fluid
                 label={<TranslationText id="lastname" />}
-                onChange={e => {
-                  this.setState({
-                    uLastname: e.target.value,
-                  });
-                }}
                 placeholder={t("lastname")}
                 value={this.state.uLastname}
+                readonly
               />
               <Form.Field>
                 <label>
@@ -251,19 +235,15 @@ class AdminSettings extends React.Component {
                   data-cy="add-user-button"
                   label="&nbsp;"
                   onClick={() => {
-                    updateUser(
-                      this.state.uId,
-                      this.state.uUsername,
-                      this.state.uFirstname,
-                      this.state.uLastname,
-                      this.state.uAdmin,
-                    ).then(response => {
-                      if (response.data.success === false) {
-                        this.context.error(response.data.message);
-                      } else {
-                        this.listUsers();
-                      }
-                    });
+                    updateUser(this.state.uId, this.state.uAdmin).then(
+                      response => {
+                        if (response.data.success === false) {
+                          this.context.error(response.data.message);
+                        } else {
+                          this.listUsers();
+                        }
+                      },
+                    );
                   }}>
                   <Icon name="save" />
                 </Form.Button>

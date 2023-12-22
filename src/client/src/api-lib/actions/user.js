@@ -27,19 +27,10 @@ export function reloadUser() {
   });
 }
 
-export function updateUser(
-  id,
-  username,
-  firstname = "",
-  lastname = "",
-  admin = false,
-) {
+export function updateUser(id, admin = false) {
   return fetch("/user/edit", {
     action: "UPDATE",
     user_id: id,
-    username: username,
-    firstname: firstname,
-    lastname: lastname,
     admin: admin,
   });
 }
