@@ -56,7 +56,7 @@ describe("Test for the borehole form.", () => {
           .find('[role="option"]')
           .eq(1)
           .click();
-        cy.wait("@stratigraphy_layer_edit_patch");
+        cy.wait("@update-layer");
       });
 
     // fill text fields
