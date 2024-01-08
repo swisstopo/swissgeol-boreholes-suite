@@ -14,6 +14,7 @@ describe("Tests for the layer form.", () => {
     cy.wait("@layer");
 
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
+    cy.wait("@get-layer-by-id");
 
     // fill all dropdowns with two values
     cy.get('[aria-multiselectable="true"]')
@@ -26,7 +27,7 @@ describe("Tests for the layer form.", () => {
           .last()
           .scrollIntoView()
           .click();
-        cy.wait("@stratigraphy_layer_edit_patch");
+        cy.wait("@update-layer");
       });
 
     cy.get('[aria-multiselectable="true"]')
@@ -38,7 +39,7 @@ describe("Tests for the layer form.", () => {
           .find('[role="option"]')
           .eq(1)
           .click();
-        cy.wait("@stratigraphy_layer_edit_patch");
+        cy.wait("@update-layer");
       });
 
     const multipleDropdownValues = [];
