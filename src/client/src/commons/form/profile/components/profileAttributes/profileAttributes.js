@@ -145,7 +145,6 @@ const ProfileAttributes = props => {
           isFetching: false,
           layer: data,
         });
-        console.log(state.layer.id);
       }
     });
   }, []);
