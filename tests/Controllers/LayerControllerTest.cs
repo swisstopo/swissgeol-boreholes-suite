@@ -112,7 +112,7 @@ public class LayerControllerTest
         ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
-        var updatedLayer = (response.Result as OkObjectResult).Value as Layer;
+        var updatedLayer = ActionResultAssert.IsOkObjectResult<Layer>(response.Result);
 
         Assert.AreEqual(4, updatedLayer.CreatedById);
         Assert.AreEqual(1, updatedLayer.UpdatedById);
@@ -125,7 +125,7 @@ public class LayerControllerTest
     {
         var id = 7_000_089;
 
-        var newLayer = new Layer
+        var layerWithChanges = new Layer
         {
             Id = id,
             CreatedById = 4,
@@ -145,31 +145,31 @@ public class LayerControllerTest
         Assert.AreEqual(true, codelistIds.Contains(23101019));
 
         // Update Layer
-        var response = await controller.EditAsync(newLayer);
+        var response = await controller.EditAsync(layerWithChanges);
         ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
-        var updatedLayer = (response.Result as OkObjectResult).Value as Layer;
+        var updatedLayer = ActionResultAssert.IsOkObjectResult<Layer>(response.Result);
         Assert.AreEqual(3, updatedLayer.Codelists.Count);
         codelistIds = updatedLayer.Codelists.Select(c => c.Id).ToList();
         Assert.AreEqual(true, codelistIds.Contains(23101017));
         Assert.AreEqual(true, codelistIds.Contains(23101018));
         Assert.AreEqual(true, codelistIds.Contains(23101001));
 
-        newLayer.CodelistIds = null;
+        layerWithChanges.CodelistIds = null;
 
         // Update Layer
-        response = await controller.EditAsync(newLayer);
+        response = await controller.EditAsync(layerWithChanges);
         ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
         updatedLayer = (response.Result as OkObjectResult).Value as Layer;
         Assert.AreEqual(0, updatedLayer.Codelists.Count);
 
-        newLayer.CodelistIds = new List<int> { 23101002 };
+        layerWithChanges.CodelistIds = new List<int> { 23101002 };
 
         // Update Layer
-        response = await controller.EditAsync(newLayer);
+        response = await controller.EditAsync(layerWithChanges);
         ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
