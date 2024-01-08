@@ -140,9 +140,9 @@ public class LayerControllerTest
         var layerToEdit = context.Layers.Include(l => l.LayerCodelists).Include(c => c.Codelists).Single(c => c.Id == id);
         Assert.AreEqual(3, layerToEdit.Codelists.Count);
         var codelistIds = layerToEdit.Codelists.Select(c => c.Id).ToList();
-        Assert.AreEqual(true, codelistIds.Contains(23101017));
-        Assert.AreEqual(true, codelistIds.Contains(23101018));
-        Assert.AreEqual(true, codelistIds.Contains(23101019));
+        CollectionAssert.Contains(codelistIds, 23101017);
+        CollectionAssert.Contains(codelistIds, 23101018);
+        CollectionAssert.Contains(codelistIds, 23101019);
 
         // Update Layer
         var response = await controller.EditAsync(layerWithChanges);
@@ -152,9 +152,9 @@ public class LayerControllerTest
         var updatedLayer = ActionResultAssert.IsOkObjectResult<Layer>(response.Result);
         Assert.AreEqual(3, updatedLayer.Codelists.Count);
         codelistIds = updatedLayer.Codelists.Select(c => c.Id).ToList();
-        Assert.AreEqual(true, codelistIds.Contains(23101017));
-        Assert.AreEqual(true, codelistIds.Contains(23101018));
-        Assert.AreEqual(true, codelistIds.Contains(23101001));
+        CollectionAssert.Contains(codelistIds, 23101017);
+        CollectionAssert.Contains(codelistIds, 23101018);
+        CollectionAssert.Contains(codelistIds, 23101001);
 
         layerWithChanges.CodelistIds = null;
 
@@ -163,7 +163,7 @@ public class LayerControllerTest
         ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
-        updatedLayer = (response.Result as OkObjectResult).Value as Layer;
+        updatedLayer = ActionResultAssert.IsOkObjectResult<Layer>(response.Result);
         Assert.AreEqual(0, updatedLayer.Codelists.Count);
 
         layerWithChanges.CodelistIds = new List<int> { 23101002 };
@@ -173,7 +173,7 @@ public class LayerControllerTest
         ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
-        updatedLayer = (response.Result as OkObjectResult).Value as Layer;
+        updatedLayer = ActionResultAssert.IsOkObjectResult<Layer>(response.Result);
         Assert.AreEqual(1, updatedLayer.Codelists.Count);
         Assert.AreEqual(23101002, updatedLayer.Codelists.First().Id);
     }
