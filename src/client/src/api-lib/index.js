@@ -81,7 +81,6 @@ import {
   deleteLayer,
   gapLayer,
   getLayers,
-  patchLayer,
 } from "./actions/stratigraphy";
 
 import {
@@ -165,7 +164,6 @@ export {
   deleteLayer,
   gapLayer,
   getLayers,
-  patchLayer,
   getProfile,
   getProfiles,
   getProfileLayers,
