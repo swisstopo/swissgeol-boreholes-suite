@@ -120,22 +120,11 @@ const ProfileAttributes = props => {
     });
   }, []);
 
-  const load = useCallback(
-    id => {
-      fetchLayerById(id).then(data => {
-        if (mounted.current) {
-          mapResponseToLayer(data);
-        }
-      });
-    },
-    [mapResponseToLayer],
-  );
-
   useEffect(() => {
     mounted.current = true;
 
     if (id && mounted.current) {
-      load(id);
+      fetchLayerById(id).then(mapResponseToLayer);
       setShowAll(false);
     } else if (id === null) {
       setState({ state: null });
@@ -143,7 +132,7 @@ const ProfileAttributes = props => {
     return () => {
       mounted.current = false;
     };
-  }, [id, reloadAttribute, load]);
+  }, [id, reloadAttribute, mapResponseToLayer]);
 
   const updateChange = (attribute, value, to = true, isNumber = false) => {
     if (!isEditable) {
