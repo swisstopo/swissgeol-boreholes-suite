@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from bms.v1.borehole.profile.patch import PatchProfile
 from bms.v1.handlers import Producer
-from bms.v1.borehole.stratigraphy import AddBedrock
 
 
 class ProfileProducerHandler(Producer):
@@ -9,7 +8,6 @@ class ProfileProducerHandler(Producer):
         action = request.pop('action', None)
 
         if action in [
-            'ADDBEDROCK',
             'PATCH'
         ]:
 
@@ -20,7 +18,6 @@ class ProfileProducerHandler(Producer):
                 id_bho = None
 
                 if action in [
-                    'ADDBEDROCK',
                     'PATCH',
                 ]:
                     # Get Borehole id
@@ -38,11 +35,7 @@ class ProfileProducerHandler(Producer):
                         id_bho, self.user, conn
                     )
 
-                if action == 'ADDBEDROCK':
-                    exe = AddBedrock(conn)
-                    request['user_id'] = self.user['id']
-
-                elif action == 'PATCH':
+                if action == 'PATCH':
                     exe = PatchProfile(conn)
                     request['user_id'] = self.user['id']
 

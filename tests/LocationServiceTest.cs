@@ -32,7 +32,7 @@ public class LocationServiceTest
 
     [TestMethod]
     [DataRow(646355.97, 249020.14, "Schweiz", "Aargau", "Aarau")]
-    [DataRow(585183.81, 220181.50, "Schweiz", "Bern", "Biel/Bienne")]
+    [DataRow(585183.81, 220181.50, "Schweiz", "Bern", "Biel (BE)")]
     [DataRow(758089.38, 223290.24, "Liechtenstein", null, "Vaduz")]
     [DataRow(685479.15, 240780.15, "Schweiz", "Zürich", "Zürichsee (ZH)")]
     [DataRow(655739.04, 297103.97, null, null, null)] // Schluchsee DE
@@ -50,7 +50,7 @@ public class LocationServiceTest
 
     [TestMethod]
     [DataRow(2646356.69, 1249020.29, "Schweiz", "Aargau", "Aarau")]
-    [DataRow(2585184.00, 1220182.00, "Schweiz", "Bern", "Biel/Bienne")]
+    [DataRow(2585184.00, 1220182.00, "Schweiz", "Bern", "Biel (BE)")]
     [DataRow(2758089.99, 1223289.99, "Liechtenstein", null, "Vaduz")]
     [DataRow(2685480.00, 1240779.99, "Schweiz", "Zürich", "Zürichsee (ZH)")]
     [DataRow(2655740.00, 1297103.99, null, null, null)] // Schluchsee DE

@@ -186,6 +186,10 @@ export const createStratigraphy = async (boreholeId, kindId) => {
   });
 };
 
+export const addBedrock = async id => {
+  return await fetchApiV2(`stratigraphy/addbedrock?id=${id}`, "POST");
+};
+
 // Enable using react-query outputs across the application.
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -638,6 +642,62 @@ export const updateBoreholeAttachment = async (
     },
     false,
   );
+};
+
+export const completionQueryKey = "completions";
+
+export const useCompletions = boreholeId =>
+  useQuery({
+    queryKey: [completionQueryKey, boreholeId],
+    queryFn: async () => {
+      return await fetchApiV2(`completion?boreholeId=${boreholeId}`, "GET");
+    },
+  });
+
+export const useCompletionMutations = () => {
+  const queryClient = useQueryClient();
+  const useAddCompletions = useMutation(
+    async completion => {
+      return await fetchApiV2("completion", "POST", completion);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [completionQueryKey],
+        });
+      },
+    },
+  );
+  const useUpdateCompletions = useMutation(
+    async completion => {
+      return await fetchApiV2("completion", "PUT", completion);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [completionQueryKey],
+        });
+      },
+    },
+  );
+  const useDeleteCompletions = useMutation(
+    async completionId => {
+      return await fetchApiV2(`completion?id=${completionId}`, "DELETE");
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [completionQueryKey],
+        });
+      },
+    },
+  );
+
+  return {
+    add: useAddCompletions,
+    update: useUpdateCompletions,
+    delete: useDeleteCompletions,
+  };
 };
 
 export const hydrotestQueryKey = "hydrotests";
