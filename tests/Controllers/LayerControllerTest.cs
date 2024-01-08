@@ -146,7 +146,6 @@ public class LayerControllerTest
 
         // Update Layer
         var response = await controller.EditAsync(layerWithChanges);
-        ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
         var updatedLayer = ActionResultAssert.IsOkObjectResult<Layer>(response.Result);
@@ -160,7 +159,6 @@ public class LayerControllerTest
 
         // Update Layer
         response = await controller.EditAsync(layerWithChanges);
-        ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
         updatedLayer = ActionResultAssert.IsOkObjectResult<Layer>(response.Result);
@@ -170,7 +168,6 @@ public class LayerControllerTest
 
         // Update Layer
         response = await controller.EditAsync(layerWithChanges);
-        ActionResultAssert.IsOk(response.Result);
 
         // Assert Updates and unchanged values
         updatedLayer = ActionResultAssert.IsOkObjectResult<Layer>(response.Result);
