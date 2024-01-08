@@ -36,7 +36,6 @@ const ProfileAttributes = props => {
   }));
   const [showAll, setShowAll] = useState(false);
   const [state, setState] = useState({
-    isFetching: false,
     isPatching: false,
     updateAttributeDelay: {},
     layer: {
@@ -117,7 +116,6 @@ const ProfileAttributes = props => {
       response["color"] = mapCodelistToAttribute(response.codelists, "mlpr112");
     }
     setState({
-      isFetching: false,
       isPatching: false,
       layer: response,
     });
