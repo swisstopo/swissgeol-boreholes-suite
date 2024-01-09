@@ -77,7 +77,7 @@ describe("Tests for the chronostratigraphy editor.", () => {
       loginAsAdmin();
       cy.visit(`editor/${id}/stratigraphy/chronostratigraphy`);
     });
-    cy.wait("@layer-by-profileId");
+    cy.wait("@get-layers-by-profileId");
 
     // start editing session
     cy.contains("a", "Start editing").click();

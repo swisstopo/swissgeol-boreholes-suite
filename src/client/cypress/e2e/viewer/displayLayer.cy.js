@@ -57,13 +57,13 @@ describe("Test for the borehole form.", () => {
           .find('[role="option"]')
           .eq(1)
           .click();
-        cy.wait("@stratigraphy_layer_edit_patch");
+        cy.wait("@update-layer");
       });
 
     // fill text fields
-    cy.get('[data-cy="depth_from"]').click().clear().type(0);
-    cy.get('[data-cy="depth_to"]').click().clear().type(50);
-    cy.get('[data-cy="uscs_original"]')
+    cy.get('[data-cy="fromDepth"]').click().clear().type(0);
+    cy.get('[data-cy="toDepth"]').click().clear().type(50);
+    cy.get('[data-cy="originalUscs"]')
       .find("input")
       .click()
       .clear()
@@ -81,7 +81,7 @@ describe("Test for the borehole form.", () => {
         );
       })
       .type("S");
-    cy.get('[data-cy="original_lithology"]')
+    cy.get('[data-cy="originalLithology"]')
       .find("input")
       .click()
       .clear()

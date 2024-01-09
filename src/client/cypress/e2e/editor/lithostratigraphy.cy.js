@@ -62,7 +62,7 @@ describe("Tests for the lithostratigraphy editor.", () => {
       loginAsAdmin();
       cy.visit(`editor/${id}/stratigraphy/lithostratigraphy`);
     });
-    cy.wait("@layer-by-profileId");
+    cy.wait("@get-layers-by-profileId");
 
     // start editing session
     cy.contains("a", "Start editing").click();

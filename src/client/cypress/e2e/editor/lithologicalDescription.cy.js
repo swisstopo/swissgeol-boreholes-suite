@@ -15,32 +15,36 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-0"] [data-testid="ModeEditIcon"]').click();
-    cy.wait("@layer");
+    cy.wait("@get-layer-by-id");
     cy.contains("Show all fields").children(".checkbox").click();
-    cy.get('[data-cy="depth_to"]').click().clear().type(50);
-    cy.wait("@stratigraphy_layer_edit_patch");
+    cy.get('[data-cy="toDepth"]').click().clear().type(50);
+    cy.wait("@update-layer");
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
 
     cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-1"] [data-testid="ModeEditIcon"]').click();
-    cy.wait("@layer");
+    cy.wait("@get-layer-by-id");
     cy.contains("Show all fields").children(".checkbox").click();
-    cy.get('[data-cy="depth_to"]').click().clear().type(62.5);
-    cy.wait("@stratigraphy_layer_edit_patch");
+    cy.get('[data-cy="toDepth"]').click().clear().type(62.5);
+    cy.wait("@update-layer");
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-1"] [data-testid="ClearIcon"]').click();
 
     cy.get('[data-cy="add-layer-icon"]').click();
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-2"] [data-testid="ModeEditIcon"]').click();
-    cy.wait("@layer");
+    cy.wait("@get-layer-by-id");
     cy.contains("Show all fields").children(".checkbox").click();
-    cy.get('[data-cy="depth_to"]').click().clear().type(120);
-    cy.wait("@stratigraphy_layer_edit_patch");
+    cy.get('[data-cy="toDepth"]').click().clear().type(120);
+    cy.wait("@update-layer");
     cy.wait("@layer");
     cy.get('[data-cy="styled-layer-2"] [data-testid="ClearIcon"]').click();
+
+    // workaround because close button of profile attributes is sometimes not clickable
+    cy.get('[data-cy="borehole-menu-item"]').click();
+    cy.get('[data-cy="lithology-menu-item"]').click();
 
     // add lithological description
     cy.wait("@layer");

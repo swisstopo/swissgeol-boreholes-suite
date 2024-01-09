@@ -55,8 +55,58 @@ public class LayerController : BdmsControllerBase<Layer>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<ActionResult<Layer>> EditAsync(Layer entity)
-        => base.EditAsync(entity);
+    public async override Task<ActionResult<Layer>> EditAsync(Layer entity)
+    {
+        if (entity == null)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var existingLayer = Context.Layers.Include(l => l.LayerCodelists).Include(c => c.Codelists).SingleOrDefault(l => l.Id == entity.Id);
+        var codelistIds = entity.CodelistIds?.ToList() ?? new List<int>();
+        if (existingLayer != default)
+        {
+            Context.Entry(existingLayer).CurrentValues.SetValues(entity);
+        }
+        else
+        {
+            return NotFound();
+        }
+
+        foreach (var layerCodelist in existingLayer.LayerCodelists)
+        {
+            if (!codelistIds.Contains(layerCodelist.CodelistId))
+            {
+                Context.Remove(layerCodelist);
+            }
+        }
+
+        foreach (var id in codelistIds)
+        {
+            if (!existingLayer.LayerCodelists.Any(lc => lc.CodelistId == id))
+            {
+                var codelist = await Context.Codelists.FindAsync(id).ConfigureAwait(false);
+                if (codelist != null)
+                {
+                    existingLayer.LayerCodelists ??= new List<LayerCodelist>();
+
+                    existingLayer.LayerCodelists.Add(new LayerCodelist { Codelist = codelist, CodelistId = codelist.Id, SchemaName = codelist.Schema! });
+                }
+            }
+        }
+
+        try
+        {
+            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            return await GetByIdAsync(entity.Id).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = "An error occurred while saving the entity changes.";
+            Logger?.LogError(ex, errorMessage);
+            return Problem(errorMessage);
+        }
+    }
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]

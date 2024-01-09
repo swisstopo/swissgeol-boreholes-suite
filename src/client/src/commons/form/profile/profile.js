@@ -34,15 +34,15 @@ const Profile = props => {
 
   const onUpdated = attribute => {
     if (
-      attribute === "depth_to" ||
-      attribute === "depth_from" ||
+      attribute === "toDepth" ||
+      attribute === "fromDepth" ||
       attribute === "lithology" ||
       attribute === "newLayer" ||
-      attribute === "casing_kind" ||
-      attribute === "casing_material" ||
-      attribute === "casing_drilling" ||
-      attribute === "fill_material" ||
-      attribute === "fill_kind"
+      attribute === "casingKind" ||
+      attribute === "casingMaterial" ||
+      attribute === "casingDrilling" ||
+      attribute === "fillMaterial" ||
+      attribute === "fillKind"
     ) {
       setReloadLayer(reloadLayer => reloadLayer + 1);
     }
