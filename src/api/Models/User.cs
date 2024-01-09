@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
@@ -19,6 +19,12 @@ public class User : IIdentifyable
     /// </summary>
     [Column("username")]
     public string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="User"/>s subject id provided by oidc.
+    /// </summary>
+    [Column("subject_id")]
+    public string SubjectId { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="User"/>s firstname.

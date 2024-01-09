@@ -1,6 +1,6 @@
 [
   {
-    "SubjectId":"admin",
+    "SubjectId":"sub_admin",
     "Username":"admin",
     "Password":"swissforages",
     "Claims": [
@@ -32,7 +32,7 @@
     ]
   },
   {
-    "SubjectId":"editor",
+    "SubjectId":"sub_editor",
     "Username":"editor",
     "Password":"swissforages",
     "Claims": [
