@@ -161,8 +161,8 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         try
         {
             // Check if associated borehole is locked
-            var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
-            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, userName).ConfigureAwait(false))
+            var subjectId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId,  subjectId).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user.");
             }
@@ -207,8 +207,8 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         try
         {
             // Check if associated borehole is locked
-            var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
-            if (await boreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, userName).ConfigureAwait(false))
+            var subjectId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (await boreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, subjectId).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user.");
             }
