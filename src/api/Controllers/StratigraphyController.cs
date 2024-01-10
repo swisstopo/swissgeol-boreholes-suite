@@ -78,7 +78,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         var user = await Context.Users
             .Include(u => u.WorkgroupRoles)
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.Name == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
             .ConfigureAwait(false);
 
         if (user == null || !user.WorkgroupRoles.Any(w => w.Role == Role.Editor))
