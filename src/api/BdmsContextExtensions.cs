@@ -403,13 +403,13 @@ public static class BdmsContextExtensions
 
         context.BulkInsert(layersToInsert, bulkConfig);
 
-        // Seed workflows
+        // Seed workflows for admin user
         var workflow_ids = 8_000_000;
         var workflowRange = Enumerable.Range(workflow_ids, boreholeRange.Count);
         var fakeWorkflows = new Faker<Workflow>()
                .StrictMode(true)
                .RuleFor(o => o.Id, f => workflow_ids++)
-               .RuleFor(o => o.UserId, f => f.PickRandom(userRange))
+               .RuleFor(o => o.UserId, userRange.First())
                .RuleFor(o => o.User, _ => default!)
                .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
                .RuleFor(o => o.Borehole, _ => default!)
