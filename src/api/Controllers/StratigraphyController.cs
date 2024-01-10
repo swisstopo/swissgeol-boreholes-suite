@@ -246,4 +246,52 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 
         return Ok(bedrockLayer.Id);
     }
+
+    /// <inheritdoc />
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public override async Task<ActionResult<Stratigraphy>> EditAsync(Stratigraphy entity)
+    {
+        try
+        {
+            // Check if associated borehole is locked
+            var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, userName).ConfigureAwait(false))
+            {
+                return Problem("The borehole is locked by another user.");
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized("You are not authorized to add a bedrock layer to this stratigraphy.");
+        }
+        catch (Exception ex)
+        {
+            var message = "An error ocurred while adding a bedrock layer to the stratigraphy.";
+            Logger.LogError(ex, message);
+            return Problem(message);
+        }
+
+        var editResult = await base.EditAsync(entity).ConfigureAwait(false);
+        if (editResult.Result is not OkObjectResult) return editResult;
+
+        // If the stratigraphy to edit is the primary stratigraphy,
+        // then reset any other primary stratigraphies of the borehole.
+        if (entity.IsPrimary.GetValueOrDefault())
+        {
+            var otherPrimaryStratigraphies = await Context.Stratigraphies
+                .Where(s => s.BoreholeId == entity.BoreholeId && s.IsPrimary == true && s.Id != entity.Id)
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            foreach (var stratigraphy in otherPrimaryStratigraphies)
+            {
+                stratigraphy.IsPrimary = false;
+                Context.Update(stratigraphy);
+            }
+
+            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+        }
+
+        return editResult;
+    }
 }
