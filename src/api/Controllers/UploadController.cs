@@ -92,7 +92,7 @@ public class UploadController : ControllerBase
                 return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
             }
 
-            var subjectId = HttpContext.GetUserName();
+            var subjectId = HttpContext.GetUserSubjectId();
 
             var user = await context.Users
                 .AsNoTracking()

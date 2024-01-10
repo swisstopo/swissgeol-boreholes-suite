@@ -51,7 +51,7 @@ public class BoreholeFileUploadService
         using var transaction = context.Database.CurrentTransaction == null ? await context.Database.BeginTransactionAsync().ConfigureAwait(false) : null;
         try
         {
-            var subjectId = httpContextAccessor.HttpContext?.GetUserName();
+            var subjectId = httpContextAccessor.HttpContext?.GetUserSubjectId();
 
             var user = await context.Users
                 .AsNoTracking()
