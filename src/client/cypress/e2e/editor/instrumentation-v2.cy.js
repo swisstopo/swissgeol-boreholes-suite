@@ -50,9 +50,10 @@ describe("Instrumentation crud tests", () => {
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");
 
-    // create instrumentation
-    cy.get('[data-cy="add-instrumentation-button"]');
+    // Necessary to wait for the instrumentation data to be loaded.
+    cy.wait(1000);
 
+    // create instrumentation
     cy.get('[data-cy="add-instrumentation-button"]').click({ force: true });
     cy.wait("@instrumentation_GET");
 
