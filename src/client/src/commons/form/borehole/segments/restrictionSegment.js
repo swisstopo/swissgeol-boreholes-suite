@@ -88,17 +88,44 @@ const RestrictionSegment = props => {
                 }}>
                 <FormControlLabel
                   value="TRUE"
-                  control={<Radio disabled={!isEditable} />}
+                  control={
+                    <Radio
+                      disabled={!isEditable}
+                      sx={{
+                        "&.Mui-disabled input": {
+                          zIndex: -1,
+                        },
+                      }}
+                    />
+                  }
                   label={<TranslationText id={"yes"} />}
                 />
                 <FormControlLabel
                   value="FALSE"
-                  control={<Radio disabled={!isEditable} />}
+                  control={
+                    <Radio
+                      disabled={!isEditable}
+                      sx={{
+                        "&.Mui-disabled input": {
+                          zIndex: -1,
+                        },
+                      }}
+                    />
+                  }
                   label={<TranslationText id={"no"} />}
                 />
                 <FormControlLabel
                   value="NULL"
-                  control={<Radio disabled={!isEditable} />}
+                  control={
+                    <Radio
+                      disabled={!isEditable}
+                      sx={{
+                        "&.Mui-disabled input": {
+                          zIndex: -1,
+                        },
+                      }}
+                    />
+                  }
                   label={<TranslationText id={"np"} />}
                 />
               </RadioGroup>
