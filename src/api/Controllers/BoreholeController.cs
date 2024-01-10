@@ -36,7 +36,7 @@ public class BoreholeController : ControllerBase
         var user = await context.Users
             .Include(u => u.WorkgroupRoles)
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.Name == HttpContext.User.FindFirst(ClaimTypes.Name).Value)
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value)
             .ConfigureAwait(false);
 
         if (user == null || !user.WorkgroupRoles.Any(w => w.WorkgroupId == workgroupId && w.Role == Role.Editor))

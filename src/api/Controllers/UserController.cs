@@ -29,7 +29,7 @@ public class UserController : ControllerBase
     [HttpGet("self")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<User?>> GetUserInformationAsync() =>
-        await context.Users.SingleOrDefaultAsync(u => u.Name == HttpContext.User.FindFirst(ClaimTypes.Name).Value).ConfigureAwait(false);
+        await context.Users.SingleOrDefaultAsync(u => u.SubjectId == HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value).ConfigureAwait(false);
 
     /// <summary>
     /// Gets the user list.
