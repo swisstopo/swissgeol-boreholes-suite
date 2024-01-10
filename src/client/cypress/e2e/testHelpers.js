@@ -59,6 +59,10 @@ export const interceptApiCalls = () => {
     return (req.alias = `hydrotest_${req.method}`);
   });
 
+  cy.intercept("/api/v2/instrumentation*", req => {
+    return (req.alias = `instrumentation_${req.method}`);
+  });
+
   cy.intercept("/api/v2/codelist*", req => {
     return (req.alias = `codelist_${req.method}`);
   });
