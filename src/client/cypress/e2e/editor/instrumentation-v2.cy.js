@@ -130,5 +130,9 @@ describe("Instrumentation crud tests", () => {
     cy.get('[data-cy="save-icon"]').click({ force: true });
     cy.contains("123456222");
     cy.contains("inactive");
+
+    // delete instrumentation
+    cy.get('[data-cy="delete-icon"]').click({ force: true });
+    cy.contains("From depth").should("not.exist");
   });
 });
