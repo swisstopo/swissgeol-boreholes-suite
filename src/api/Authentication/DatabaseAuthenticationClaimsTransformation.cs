@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using BDMS.Models;
+using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 
 namespace BDMS.Authentication;
@@ -21,15 +22,20 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
     public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
     {
         var userId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        var authenticatedUser = userId is not null ? dbContext.Users.FirstOrDefault(u => u.Name == userId.Value) : null;
+        if (userId is null) return principal;
 
-        if (authenticatedUser == null || authenticatedUser.IsDisabled)
+        var authenticatedUser = dbContext.Users.FirstOrDefault(u => u.SubjectId == userId.Value)
+        ?? new User
         {
-            return principal;
-        }
+            SubjectId = userId.Value,
+            Password = "Undefined", // TODO: Remove with #911
+        };
+        if (authenticatedUser.IsDisabled) return principal;
 
         authenticatedUser.FirstName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? authenticatedUser.FirstName;
         authenticatedUser.LastName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? authenticatedUser.LastName;
+        authenticatedUser.Name = $"{authenticatedUser.FirstName[0]}. {authenticatedUser.LastName}";
+        dbContext.Update(authenticatedUser);
         await dbContext.SaveChangesAsync().ConfigureAwait(false);
 
         var claimsIdentity = new ClaimsIdentity();

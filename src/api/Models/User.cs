@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
@@ -76,6 +76,10 @@ public class User : IIdentifyable
     /// </summary>
     [NotMapped]
     public bool? Deletable { get; set; }
+
+    // TODO: Remove with #911
+    [Column("password")]
+    public string Password { get; set; }
 
     /// <inheritdoc/>
     public override string ToString() => Name;
