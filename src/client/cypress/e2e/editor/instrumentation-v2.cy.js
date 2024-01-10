@@ -50,9 +50,10 @@ describe("Instrumentation crud tests", () => {
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");
 
-    // create instrumentation
-    cy.get('[data-cy="add-instrumentation-button"]');
+    // Necessary to wait for the instrumentation data to be loaded.
+    cy.wait(1000);
 
+    // create instrumentation
     cy.get('[data-cy="add-instrumentation-button"]').click({ force: true });
     cy.wait("@instrumentation_GET");
 
@@ -130,5 +131,9 @@ describe("Instrumentation crud tests", () => {
     cy.get('[data-cy="save-icon"]').click({ force: true });
     cy.contains("123456222");
     cy.contains("inactive");
+
+    // delete instrumentation
+    cy.get('[data-cy="delete-icon"]').click({ force: true });
+    cy.contains("From depth").should("not.exist");
   });
 });

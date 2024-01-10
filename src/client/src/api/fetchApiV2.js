@@ -171,6 +171,10 @@ export const deleteFaciesDescription = async id => {
 export const fetchUsers = async () => await fetchApiV2("user", "GET");
 
 // stratigraphy
+export const fetchStratigraphy = async id => {
+  return await fetchApiV2(`stratigraphy/${id}`, "GET");
+};
+
 export const copyStratigraphy = async id => {
   return await fetchApiV2(`stratigraphy/copy?id=${id}`, "POST");
 };
@@ -188,6 +192,14 @@ export const createStratigraphy = async (boreholeId, kindId) => {
 
 export const addBedrock = async id => {
   return await fetchApiV2(`stratigraphy/addbedrock?id=${id}`, "POST");
+};
+
+export const updateStratigraphy = async stratigraphy => {
+  // remove derived objects
+  delete stratigraphy.createdBy;
+  delete stratigraphy.updatedBy;
+
+  return await fetchApiV2("stratigraphy", "PUT", stratigraphy);
 };
 
 // Enable using react-query outputs across the application.

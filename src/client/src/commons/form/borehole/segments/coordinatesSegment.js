@@ -388,7 +388,16 @@ const CoordinatesSegment = props => {
                     <FormControlLabel
                       value={referenceSystems.LV95.code}
                       sx={{ flexGrow: 1 }}
-                      control={<Radio disabled={!isEditable} />}
+                      control={
+                        <Radio
+                          disabled={!isEditable}
+                          sx={{
+                            "&.Mui-disabled input": {
+                              zIndex: -1,
+                            },
+                          }}
+                        />
+                      }
                       label={
                         <DomainText
                           id={referenceSystems.LV95.code}
@@ -399,7 +408,16 @@ const CoordinatesSegment = props => {
                     <FormControlLabel
                       value={referenceSystems.LV03.code}
                       sx={{ flexGrow: 1 }}
-                      control={<Radio disabled={!isEditable} />}
+                      control={
+                        <Radio
+                          disabled={!isEditable}
+                          sx={{
+                            "&.Mui-disabled input": {
+                              zIndex: -1,
+                            },
+                          }}
+                        />
+                      }
                       label={
                         <DomainText
                           id={referenceSystems.LV03.code}

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Net;
-using System.Security.Claims;
 
 namespace BDMS.Controllers;
 
@@ -93,7 +92,7 @@ public class UploadController : ControllerBase
                 return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
             }
 
-            var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+            var userName = HttpContext.GetUserName();
 
             var user = await context.Users
                 .AsNoTracking()
