@@ -146,7 +146,6 @@ if __name__ == "__main__":
 
         # Profile handlers
         ProfileViewerHandler,
-        ProfileProducerHandler,
 
         # Layer handlers
         ProfileLayerViewerHandler,
@@ -221,11 +220,9 @@ if __name__ == "__main__":
 
         # Profile handlers
         (r'/api/v1/borehole/profile', ProfileViewerHandler),
-        (r'/api/v1/borehole/profile/edit', ProfileProducerHandler),
 
         # Profile Layer handlers
         (r'/api/v1/borehole/profile/layer', ProfileLayerViewerHandler),
-        (r'/api/v1/borehole/profile/layer/edit', ProfileProducerHandler),
 
         # Other handlers
         (r'/api/v1/borehole/codes', CodeListHandler),

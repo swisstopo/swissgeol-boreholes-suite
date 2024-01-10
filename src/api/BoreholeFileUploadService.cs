@@ -2,7 +2,6 @@
 using Amazon.S3.Model;
 using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using System.Security.Cryptography;
 
 namespace BDMS;
@@ -52,7 +51,7 @@ public class BoreholeFileUploadService
         using var transaction = context.Database.CurrentTransaction == null ? await context.Database.BeginTransactionAsync().ConfigureAwait(false) : null;
         try
         {
-            var userName = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+            var userName = httpContextAccessor.HttpContext?.GetUserName();
 
             var user = await context.Users
                 .AsNoTracking()
@@ -70,7 +69,7 @@ public class BoreholeFileUploadService
                 var bdmsFile = new Models.File { Name = file.FileName, NameUuid = fileNameGuid, Hash = base64Hash, Type = file.ContentType };
 
                 await context.Files.AddAsync(bdmsFile).ConfigureAwait(false);
-                await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext).ConfigureAwait(false);
+                await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
 
                 fileId = bdmsFile.Id;
 
@@ -85,7 +84,7 @@ public class BoreholeFileUploadService
             var boreholeFile = new BoreholeFile { FileId = (int)fileId, BoreholeId = boreholeId, UserId = user.Id, Attached = DateTime.UtcNow };
 
             await context.BoreholeFiles.AddAsync(boreholeFile).ConfigureAwait(false);
-            await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext).ConfigureAwait(false);
+            await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
 
             if (transaction != null) await transaction.CommitAsync().ConfigureAwait(false);
         }
