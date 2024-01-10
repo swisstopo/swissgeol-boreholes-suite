@@ -20,11 +20,12 @@ const Completion = props => {
         <>Tabs & Buttons</>
       </Stack>
       <>Completion Header</>
-
-      <CompletionContent
-        completion={selectedCompletion}
-        isEditable={isEditable}
-      />
+      {selectedCompletion ? (
+        <CompletionContent
+          completion={selectedCompletion}
+          isEditable={isEditable}
+        />
+      ) : null}
     </Stack>
   );
 };

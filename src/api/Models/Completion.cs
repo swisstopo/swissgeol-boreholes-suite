@@ -45,7 +45,7 @@ public class Completion : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Completion"/>'s type.
     /// </summary>
-    public Codelist Kind { get; set; }
+    public Codelist? Kind { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Completion"/>'s notes.
