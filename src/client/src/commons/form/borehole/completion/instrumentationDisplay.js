@@ -127,7 +127,6 @@ const InstrumentationDisplay = props => {
           </Tooltip>
         </Stack>
       </StackFullWidth>
-      <Stack direction="column"></Stack>
     </Card>
   );
 };
