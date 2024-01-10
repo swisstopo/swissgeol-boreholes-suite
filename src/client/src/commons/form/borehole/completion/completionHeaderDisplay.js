@@ -60,7 +60,9 @@ const CompletionHeaderDisplay = props => {
         </StackFullWidth>
         {expanded && (
           <>
-            <Typography variant="subtitle2"> {t("abandonDate")}</Typography>
+            <Typography variant="subtitle2">
+              {t("dateAbandonmentCasing")}
+            </Typography>
             <TypographyWithBottomMargin variant="subtitle1">
               {completion.abandonDate
                 ? formattedDateTime(completion.abandonDate)

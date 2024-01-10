@@ -159,7 +159,7 @@ const CompletionHeaderInput = props => {
         <TextField
           type="datetime-local"
           data-cy="abandon-date-textfield"
-          label={t("abandonDate")}
+          label={t("dateAbandonmentCasing")}
           variant="outlined"
           size="small"
           error={Boolean(formState.errors.abandonDate)}
