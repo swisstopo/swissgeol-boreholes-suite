@@ -756,5 +756,67 @@ export const useHydrotestMutations = () => {
   };
 };
 
+export const instrumentationQueryKey = "instrumentations";
+
+export const useInstrumentations = completionId =>
+  useQuery({
+    queryKey: [instrumentationQueryKey, completionId],
+    queryFn: async () => {
+      return await fetchApiV2(
+        `instrumentation?completionId=${completionId}`,
+        "GET",
+      );
+    },
+  });
+
+export const useInstrumentationMutations = () => {
+  const queryClient = useQueryClient();
+  const useAddInstrumentations = useMutation(
+    async instrumentation => {
+      return await fetchApiV2("instrumentation", "POST", instrumentation);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [instrumentationQueryKey],
+        });
+      },
+    },
+  );
+  const useUpdateInstrumentations = useMutation(
+    async instrumentation => {
+      return await fetchApiV2("instrumentation", "PUT", instrumentation);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [instrumentationQueryKey],
+        });
+      },
+    },
+  );
+  const useDeleteInstrumentations = useMutation(
+    async instrumentationId => {
+      return await fetchApiV2(
+        `instrumentation?id=${instrumentationId}`,
+        "DELETE",
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [instrumentationQueryKey],
+        });
+      },
+    },
+  );
+
+  return {
+    add: useAddInstrumentations,
+    update: useUpdateInstrumentations,
+    delete: useDeleteInstrumentations,
+  };
+};
+
 export const downloadCodelistCsv = () =>
   fetchApiV2(`codelist/csv`, "GET", null, false, true);
