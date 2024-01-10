@@ -5,6 +5,7 @@
 ### Changed
 
 - Updated layer management to use the .NET API.
+- Update stratigraphy management to use the .NET API.
 
 ## v2.0.506 - 2023-12-21
 

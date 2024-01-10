@@ -1,4 +1,8 @@
-import { getProfile, patchProfile } from "../../../../../../api-lib/index";
+import { getProfile } from "../../../../../../api-lib/index";
+import {
+  fetchStratigraphy,
+  updateStratigraphy,
+} from "../../../../../../api/fetchApiV2";
 
 let data = [];
 export const getData = async id => {
@@ -17,19 +21,20 @@ export const getData = async id => {
   return data;
 };
 
-let isSendProfile = false;
 export const sendProfile = async (id, attribute, value) => {
-  await patchProfile(id, attribute, value)
-    .then(response => {
-      if (response.data.success) {
-        isSendProfile = true;
-      } else {
-        alert(response.data.message);
-      }
-    })
-    .catch(function (error) {
-      console.error(error);
-    });
+  let success = false;
+  await fetchStratigraphy(id).then(async stratigraphy => {
+    if (stratigraphy) {
+      stratigraphy[attribute] = value;
+      await updateStratigraphy(stratigraphy).then(response => {
+        if (response) {
+          success = true;
+        }
+      });
+    } else {
+      alert("Failed to get stratigraphy data for update.");
+    }
+  });
 
-  return isSendProfile;
+  return success;
 };
