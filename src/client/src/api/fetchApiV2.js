@@ -168,6 +168,10 @@ export const deleteFaciesDescription = async id => {
 export const fetchUsers = async () => await fetchApiV2("user", "GET");
 
 // stratigraphy
+export const fetchStratigraphy = async id => {
+  return await fetchApiV2(`stratigraphy/${id}`, "GET");
+};
+
 export const copyStratigraphy = async id => {
   return await fetchApiV2(`stratigraphy/copy?id=${id}`, "POST");
 };
@@ -185,6 +189,14 @@ export const createStratigraphy = async (boreholeId, kindId) => {
 
 export const addBedrock = async id => {
   return await fetchApiV2(`stratigraphy/addbedrock?id=${id}`, "POST");
+};
+
+export const updateStratigraphy = async stratigraphy => {
+  // remove derived objects
+  delete stratigraphy.createdBy;
+  delete stratigraphy.updatedBy;
+
+  return await fetchApiV2("stratigraphy", "PUT", stratigraphy);
 };
 
 // Enable using react-query outputs across the application.
@@ -750,6 +762,68 @@ export const useHydrotestMutations = () => {
     add: useAddHydrotests,
     update: useUpdateHydrotests,
     delete: useDeleteHydrotests,
+  };
+};
+
+export const instrumentationQueryKey = "instrumentations";
+
+export const useInstrumentations = completionId =>
+  useQuery({
+    queryKey: [instrumentationQueryKey, completionId],
+    queryFn: async () => {
+      return await fetchApiV2(
+        `instrumentation?completionId=${completionId}`,
+        "GET",
+      );
+    },
+  });
+
+export const useInstrumentationMutations = () => {
+  const queryClient = useQueryClient();
+  const useAddInstrumentations = useMutation(
+    async instrumentation => {
+      return await fetchApiV2("instrumentation", "POST", instrumentation);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [instrumentationQueryKey],
+        });
+      },
+    },
+  );
+  const useUpdateInstrumentations = useMutation(
+    async instrumentation => {
+      return await fetchApiV2("instrumentation", "PUT", instrumentation);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [instrumentationQueryKey],
+        });
+      },
+    },
+  );
+  const useDeleteInstrumentations = useMutation(
+    async instrumentationId => {
+      return await fetchApiV2(
+        `instrumentation?id=${instrumentationId}`,
+        "DELETE",
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [instrumentationQueryKey],
+        });
+      },
+    },
+  );
+
+  return {
+    add: useAddInstrumentations,
+    update: useUpdateInstrumentations,
+    delete: useDeleteInstrumentations,
   };
 };
 

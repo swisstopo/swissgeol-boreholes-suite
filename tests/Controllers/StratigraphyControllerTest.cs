@@ -80,6 +80,24 @@ public class StratigraphyControllerTest
     }
 
     [TestMethod]
+    public async Task GetById()
+    {
+        var stratigraphyResult = await controller.GetByIdAsync(StratigraphyId);
+
+        var stratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>(stratigraphyResult.Result);
+        Assert.AreEqual(stratigraphy.BoreholeId, 1008078);
+        Assert.AreEqual(stratigraphy.Name, "Earnest Little");
+        Assert.AreEqual(stratigraphy.Notes, "My co-worker Tyron has one of these. He says it looks stout.");
+    }
+
+    [TestMethod]
+    public async Task GetByUnknownId()
+    {
+        var stratigraphyResult = await controller.GetByIdAsync(int.MinValue);
+        ActionResultAssert.IsNotFound(stratigraphyResult.Result);
+    }
+
+    [TestMethod]
     public async Task Copy()
     {
         var originalStratigraphy = GetStratigraphy(StratigraphyId);
@@ -300,12 +318,7 @@ public class StratigraphyControllerTest
     [TestMethod]
     public async Task CreateForLockedBorehole()
     {
-        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
-        boreholeLockServiceMock
-            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
-            .ReturnsAsync(true);
-
-        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        SetupControllerWithAlwaysLockedBorehole();
 
         var createResult = await controller.CreateAsync(new());
         ActionResultAssert.IsInternalServerError(createResult.Result);
@@ -365,16 +378,84 @@ public class StratigraphyControllerTest
     [TestMethod]
     public async Task AddBedrockLayerForLockedBorehole()
     {
-        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
-        boreholeLockServiceMock
-            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
-            .ReturnsAsync(true);
-
-        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        SetupControllerWithAlwaysLockedBorehole();
 
         var existingStratigraphy = await context.Stratigraphies.FirstAsync();
         var addBedrockResult = await controller.AddBedrockLayerAsync(existingStratigraphy.Id);
         ActionResultAssert.IsInternalServerError(addBedrockResult.Result, "locked");
+    }
+
+    [TestMethod]
+    public async Task Edit()
+    {
+        var borehole = await context.Boreholes.OrderBy(x => x.CreatedById).LastAsync();
+        var stratigraphyToEdit = await context.Stratigraphies.FirstAsync();
+        stratigraphyToEdit.BoreholeId = borehole.Id;
+        stratigraphyToEdit.KindId = StratigraphyController.StratigraphyKindId;
+        stratigraphyToEdit.IsPrimary = false;
+        stratigraphyToEdit.Date = new DateTime(1999, 9, 9).ToUniversalTime();
+        stratigraphyToEdit.Name = "ERRONEOUS";
+        stratigraphyToEdit.Notes = "REDPOINT";
+
+        var editResult = await controller.EditAsync(stratigraphyToEdit);
+        var editedStratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>(editResult.Result);
+        Assert.AreEqual(borehole.Id, editedStratigraphy.BoreholeId);
+        Assert.AreEqual(StratigraphyController.StratigraphyKindId, editedStratigraphy.KindId);
+        Assert.AreEqual(false, editedStratigraphy.IsPrimary);
+        Assert.AreEqual(new DateTime(1999, 9, 9).ToUniversalTime(), editedStratigraphy.Date);
+        Assert.AreEqual("ERRONEOUS", editedStratigraphy.Name);
+        Assert.AreEqual("REDPOINT", editedStratigraphy.Notes);
+    }
+
+    [TestMethod]
+    public async Task EditSetMainStratigraphy()
+    {
+        // Precondition: Create two stratigraphies for the same borehole,
+        // one of which is the main stratigraphy.
+        var boreholeWithoutStratigraphy = await context
+            .Boreholes
+            .Include(b => b.Stratigraphies)
+            .FirstAsync(b => !b.Stratigraphies.Any());
+
+        var firstStratigraphy = new Stratigraphy
+        {
+            IsPrimary = true,
+            KindId = StratigraphyController.StratigraphyKindId,
+            BoreholeId = boreholeWithoutStratigraphy.Id,
+            Name = "FALLOUT-VII",
+        };
+
+        var secondStratigraphy = new Stratigraphy
+        {
+            IsPrimary = false,
+            KindId = StratigraphyController.StratigraphyKindId,
+            BoreholeId = boreholeWithoutStratigraphy.Id,
+            Name = "KARMACANDID",
+        };
+
+        firstStratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>((await controller.CreateAsync(firstStratigraphy)).Result);
+        secondStratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>((await controller.CreateAsync(secondStratigraphy)).Result);
+
+        // Setting the second stratigraphy as the main stratigraphy
+        // should set the first stratigraphy as non-main.
+        secondStratigraphy.IsPrimary = true;
+        secondStratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>((await controller.EditAsync(secondStratigraphy)).Result);
+        Assert.AreEqual(true, secondStratigraphy.IsPrimary);
+        Assert.AreEqual("KARMACANDID", secondStratigraphy.Name);
+
+        firstStratigraphy = GetStratigraphy(firstStratigraphy.Id);
+        Assert.AreEqual(false, firstStratigraphy.IsPrimary);
+        Assert.AreEqual("FALLOUT-VII", firstStratigraphy.Name);
+    }
+
+    [TestMethod]
+    public async Task EditForLockedBorehole()
+    {
+        SetupControllerWithAlwaysLockedBorehole();
+
+        var existingStratigraphy = await context.Stratigraphies.FirstAsync();
+        var editResult = await controller.EditAsync(existingStratigraphy);
+        ActionResultAssert.IsInternalServerError(editResult.Result, "locked");
     }
 
     private void AssertStratigraphy(Stratigraphy actual, int expectedBoreholeId, string exptectedName, string expectedNotes)
@@ -383,5 +464,15 @@ public class StratigraphyControllerTest
         Assert.AreEqual(expectedBoreholeId, actual.BoreholeId);
         Assert.AreEqual(exptectedName, actual.Name);
         Assert.AreEqual(expectedNotes, actual.Notes);
+    }
+
+    private void SetupControllerWithAlwaysLockedBorehole()
+    {
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(true);
+
+        controller = new StratigraphyController(context, new Mock<ILogger<Stratigraphy>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 }

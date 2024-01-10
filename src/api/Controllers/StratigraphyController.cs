@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 
 namespace BDMS.Controllers;
 
@@ -20,6 +19,26 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         : base(context, logger)
     {
         this.boreholeLockService = boreholeLockService;
+    }
+
+    /// <summary>
+    /// Asynchronously gets the <see cref="Stratigraphy"/> with the specified <paramref name="id"/>.
+    /// </summary>
+    /// <param name="id">The id of the  <see cref="Stratigraphy"/> to get.</param>
+    [HttpGet("{id}")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult<Stratigraphy>> GetByIdAsync([Required] int id)
+    {
+        var stratigraphy = await Context.Stratigraphies
+            .SingleOrDefaultAsync(x => x.Id == id)
+            .ConfigureAwait(false);
+
+        if (stratigraphy == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(stratigraphy);
     }
 
     /// <summary>
@@ -59,7 +78,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         var user = await Context.Users
             .Include(u => u.WorkgroupRoles)
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value)
+            .SingleOrDefaultAsync(u => u.Name == HttpContext.GetUserName())
             .ConfigureAwait(false);
 
         if (user == null || !user.WorkgroupRoles.Any(w => w.Role == Role.Editor))
@@ -161,7 +180,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         try
         {
             // Check if associated borehole is locked
-            var subjectId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var subjectId = HttpContext.GetUserName();
             if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId,  subjectId).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user.");
@@ -207,7 +226,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         try
         {
             // Check if associated borehole is locked
-            var subjectId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var subjectId = HttpContext.GetUserName();
             if (await boreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, subjectId).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user.");
@@ -245,5 +264,53 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
 
         return Ok(bedrockLayer.Id);
+    }
+
+    /// <inheritdoc />
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public override async Task<ActionResult<Stratigraphy>> EditAsync(Stratigraphy entity)
+    {
+        try
+        {
+            // Check if associated borehole is locked
+            var userName = HttpContext.GetUserName();
+            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, userName).ConfigureAwait(false))
+            {
+                return Problem("The borehole is locked by another user.");
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized("You are not authorized to edit to this stratigraphy.");
+        }
+        catch (Exception ex)
+        {
+            var message = "An error ocurred while editing the stratigraphy.";
+            Logger.LogError(ex, message);
+            return Problem(message);
+        }
+
+        var editResult = await base.EditAsync(entity).ConfigureAwait(false);
+        if (editResult.Result is not OkObjectResult) return editResult;
+
+        // If the stratigraphy to edit is the primary stratigraphy,
+        // then reset any other primary stratigraphies of the borehole.
+        if (entity.IsPrimary.GetValueOrDefault())
+        {
+            var otherPrimaryStratigraphies = await Context.Stratigraphies
+                .Where(s => s.BoreholeId == entity.BoreholeId && s.IsPrimary == true && s.Id != entity.Id)
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            foreach (var other in otherPrimaryStratigraphies)
+            {
+                other.IsPrimary = false;
+                Context.Update(other);
+            }
+
+            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+        }
+
+        return editResult;
     }
 }
