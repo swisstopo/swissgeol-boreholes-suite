@@ -17,7 +17,11 @@ public class CompletionControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new CompletionController(context, new Mock<ILogger<Completion>>().Object);
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+        controller = new CompletionController(context, new Mock<ILogger<Completion>>().Object, boreholeLockServiceMock.Object);
         controller.ControllerContext.HttpContext = new DefaultHttpContext();
     }
 

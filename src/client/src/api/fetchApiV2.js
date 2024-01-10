@@ -680,6 +680,18 @@ export const useCompletionMutations = () => {
       },
     },
   );
+  const useCopyCompletions = useMutation(
+    async completionId => {
+      return await fetchApiV2(`completion/copy?id=${completionId}`, "POST");
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [completionQueryKey],
+        });
+      },
+    },
+  );
   const useDeleteCompletions = useMutation(
     async completionId => {
       return await fetchApiV2(`completion?id=${completionId}`, "DELETE");
@@ -696,6 +708,7 @@ export const useCompletionMutations = () => {
   return {
     add: useAddCompletions,
     update: useUpdateCompletions,
+    copy: useCopyCompletions,
     delete: useDeleteCompletions,
   };
 };
