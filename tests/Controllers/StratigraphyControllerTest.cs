@@ -80,6 +80,24 @@ public class StratigraphyControllerTest
     }
 
     [TestMethod]
+    public async Task GetById()
+    {
+        var stratigraphyResult = await controller.GetByIdAsync(StratigraphyId);
+
+        var stratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>(stratigraphyResult.Result);
+        Assert.AreEqual(stratigraphy.BoreholeId, 1008078);
+        Assert.AreEqual(stratigraphy.Name, "Earnest Little");
+        Assert.AreEqual(stratigraphy.Notes, "My co-worker Tyron has one of these. He says it looks stout.");
+    }
+
+    [TestMethod]
+    public async Task GetByUnknownId()
+    {
+        var stratigraphyResult = await controller.GetByIdAsync(int.MinValue);
+        ActionResultAssert.IsNotFound(stratigraphyResult.Result);
+    }
+
+    [TestMethod]
     public async Task Copy()
     {
         var originalStratigraphy = GetStratigraphy(StratigraphyId);

@@ -22,6 +22,26 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
     }
 
     /// <summary>
+    /// Asynchronously gets the <see cref="Stratigraphy"/> with the specified <paramref name="id"/>.
+    /// </summary>
+    /// <param name="id">The id of the  <see cref="Stratigraphy"/> to get.</param>
+    [HttpGet("{id}")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult<Stratigraphy>> GetByIdAsync([Required] int id)
+    {
+        var stratigraphy = await Context.Stratigraphies
+            .SingleOrDefaultAsync(x => x.Id == id)
+            .ConfigureAwait(false);
+
+        if (stratigraphy == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(stratigraphy);
+    }
+
+    /// <summary>
     /// Asynchronously gets the <see cref="Stratigraphy"/>s, optionally filtered by <paramref name="boreholeId"/> and <paramref name="kindId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole containing the stratigraphies to get.</param>
@@ -261,11 +281,11 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         }
         catch (UnauthorizedAccessException)
         {
-            return Unauthorized("You are not authorized to add a bedrock layer to this stratigraphy.");
+            return Unauthorized("You are not authorized to edit to this stratigraphy.");
         }
         catch (Exception ex)
         {
-            var message = "An error ocurred while adding a bedrock layer to the stratigraphy.";
+            var message = "An error ocurred while editing the stratigraphy.";
             Logger.LogError(ex, message);
             return Problem(message);
         }
@@ -282,10 +302,10 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
                 .ToListAsync()
                 .ConfigureAwait(false);
 
-            foreach (var stratigraphy in otherPrimaryStratigraphies)
+            foreach (var other in otherPrimaryStratigraphies)
             {
-                stratigraphy.IsPrimary = false;
-                Context.Update(stratigraphy);
+                other.IsPrimary = false;
+                Context.Update(other);
             }
 
             await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
