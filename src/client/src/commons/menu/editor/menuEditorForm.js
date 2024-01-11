@@ -775,8 +775,7 @@ class MenuEditorForm extends React.Component {
                   fontWeight: "bold",
                 }}>
                 {borehole.data.creator !== undefined
-                  ? borehole.data.creator.username ===
-                    this.props.user.data.username
+                  ? borehole.data.creator.id === this.props.user.data.id
                     ? borehole.data.creator.fullname +
                       " (" +
                       t("common:you") +
@@ -839,15 +838,13 @@ class MenuEditorForm extends React.Component {
                   fontWeight: "bold",
                 }}>
                 {borehole.data.lock !== null
-                  ? borehole.data.lock.username ===
-                    this.props.user.data.username
+                  ? borehole.data.lock.id === this.props.user.data.id
                     ? borehole.data.updater.fullname +
                       " (" +
                       t("common:you") +
                       ")"
                     : borehole.data.lock.fullname
-                  : borehole.data.updater.username ===
-                      this.props.user.data.username
+                  : borehole.data.updater.id === this.props.user.data.id
                     ? borehole.data.updater.fullname +
                       " (" +
                       t("common:you") +
@@ -981,7 +978,7 @@ class MenuEditorForm extends React.Component {
               <Menu.Item
                 disabled={
                   borehole.data.lock === null ||
-                  borehole.data.lock.username !== user.data.username
+                  borehole.data.lock.id !== user.data.id
                 }
                 onClick={() => {
                   this.setState({
@@ -1038,12 +1035,12 @@ class MenuEditorForm extends React.Component {
           <Menu.Item
             disabled={
               borehole.data.lock !== null &&
-              borehole.data.lock.username !== user.data.username
+              borehole.data.lock.id !== user.data.id
             }
             onClick={() => {
               if (
                 borehole.data.lock !== null &&
-                borehole.data.lock.username === user.data.username
+                borehole.data.lock.id === user.data.id
               ) {
                 this.props.unlock(borehole.data.id);
               } else if (borehole.data.lock === null) {
