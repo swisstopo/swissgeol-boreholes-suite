@@ -200,7 +200,7 @@ const CompletionHeaderInput = props => {
           control={
             <Checkbox
               {...register("isPrimary")}
-              checked={completion.isPrimary}
+              defaultChecked={completion.isPrimary}
               onChange={() => {
                 trigger("isPrimary");
               }}

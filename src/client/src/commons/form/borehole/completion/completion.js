@@ -113,8 +113,9 @@ const Completion = props => {
         loadData(state.completions.length - 1);
       });
     } else {
+      var newTabIndex = completion.isPrimary ? 0 : state.index;
       updateCompletion(completion).then(() => {
-        loadData(state.index);
+        loadData(newTabIndex);
       });
     }
   };
