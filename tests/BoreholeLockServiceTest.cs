@@ -9,7 +9,7 @@ namespace BDMS;
 [TestClass]
 public class BoreholeLockServiceTest
 {
-    private const string AdminsUserName = "admin";
+    private const string AdminUserName = "admin";
     private const int AdminsUserId = 1;
 
     private BoreholeLockService boreholeLockService;
