@@ -113,7 +113,7 @@ export const login = user => {
  * Login into the application as admin.
  */
 export const loginAsAdmin = () => {
-  login(adminUser.data.username);
+  login("admin");
   cy.intercept("/api/v1/user", {
     statusCode: 200,
     body: JSON.stringify(adminUser),
@@ -124,7 +124,7 @@ export const loginAsAdmin = () => {
  * Login into the application as editor.
  */
 export const loginAsEditor = () => {
-  login(editorUser.data.username);
+  login("editor");
   cy.intercept("/api/v1/user", {
     statusCode: 200,
     body: JSON.stringify(editorUser),
@@ -135,7 +135,7 @@ export const loginAsEditor = () => {
  * Login into the application as viewer.
  */
 export const loginAsEditorInViewerMode = () => {
-  login(editorUser.data.username);
+  login("editor");
   cy.intercept("/api/v1/user", {
     statusCode: 200,
     body: JSON.stringify(viewerUser),
