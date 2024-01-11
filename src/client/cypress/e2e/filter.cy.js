@@ -111,7 +111,7 @@ describe("Search filter tests", () => {
     cy.contains("Show all fields").children(".checkbox").click();
 
     // input value
-    cy.contains("Created by").next().find("input").type("val_da%r");
+    cy.contains("Created by").next().find("input").type("v_ U%r");
     cy.wait("@edit_list");
 
     // check content of table
@@ -119,7 +119,7 @@ describe("Search filter tests", () => {
       .children()
       .should("have.length", 100)
       .each((el, index, list) => {
-        cy.wrap(el).contains("validator");
+        cy.wrap(el).contains("v. user");
       });
   });
 
