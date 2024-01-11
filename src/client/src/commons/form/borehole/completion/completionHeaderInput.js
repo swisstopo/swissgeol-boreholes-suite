@@ -80,7 +80,6 @@ const CompletionHeaderInput = props => {
           alignItems="center">
           <TextField
             name="name"
-            required
             sx={{
               flex: "1",
               marginTop: "10px",
@@ -118,7 +117,6 @@ const CompletionHeaderInput = props => {
                   {...field}
                   select
                   size="small"
-                  required
                   label={t("completionKind")}
                   variant="outlined"
                   value={field.value || ""}
