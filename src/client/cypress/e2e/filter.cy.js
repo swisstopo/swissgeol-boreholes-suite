@@ -130,7 +130,7 @@ describe("Search filter tests", () => {
     // check content of table
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .should("have.length", 8);
+      .should("have.length", 17);
   });
 
   it("filters boreholes by creation date", () => {
@@ -166,7 +166,7 @@ describe("Search filter tests", () => {
     // check content of table
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .should("have.length", 12);
+      .should("have.length", 22);
 
     cy.contains("td", "09.11.2021");
   });
