@@ -33,14 +33,14 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
 
         if (!user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId && userWorkflowRoles.Contains(x.Role)))
         {
-            logger.LogWarning("Current user with name <{UserName}> does not have the required role to create a stratigraphy for borehole with id <{BoreholeId}>.", subjectId, boreholeId);
+            logger.LogWarning("Current user with subject_id <{SubjectId}> does not have the required role to create a stratigraphy for borehole with id <{BoreholeId}>.", subjectId, boreholeId);
             throw new UnauthorizedAccessException();
         }
 
         if (borehole.Locked.HasValue && borehole.Locked.Value.AddMinutes(LockTimeoutInMinutes) > timeProvider.GetUtcNow() && borehole.LockedById != user.Id)
         {
             var lockedUserFullName = $"{borehole.LockedBy?.FirstName} {borehole.LockedBy?.LastName}";
-            logger.LogWarning("Current user with name <{UserName}> tried to create a stratigraphy for borehole with id <{BoreholeId}>, but the borehole is locked by user <{LockedByUserName}>.", subjectId, boreholeId, lockedUserFullName);
+            logger.LogWarning("Current user with subject_id <{SubjectId}> tried to create a stratigraphy for borehole with id <{BoreholeId}>, but the borehole is locked by user <{LockedByUserName}>.", subjectId, boreholeId, lockedUserFullName);
             return true;
         }
 
