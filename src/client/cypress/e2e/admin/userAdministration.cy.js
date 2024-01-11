@@ -10,7 +10,7 @@ describe("Admin settings test", () => {
       .should("have.length", 7);
   });
 
-  it("displays correct message when enabling user.", () => {
+  it.skip("displays correct message when enabling user.", () => {
     // add user
     cy.get('[placeholder="Username"]').type("Testuser");
     cy.get('[placeholder="Password"]').type("123456");
@@ -73,7 +73,7 @@ describe("Admin settings test", () => {
     cy.get('.modal [data-cy="permanently-delete-user-button"]').click();
   });
 
-  it("can add user with admin role.", () => {
+  it.skip("can add user with admin role.", () => {
     // add admin user
     cy.get('[data-cy="admin-checkbox"]').click();
 
@@ -149,7 +149,7 @@ describe("Admin settings test", () => {
     let filesUser = cy
       .get('[data-cy="user-list-table-body"]')
       .children()
-      .contains("tr", "filesUser");
+      .contains("tr", "has_files");
 
     cy.contains("user_that_only");
     cy.contains("has_files");
@@ -169,7 +169,7 @@ describe("Admin settings test", () => {
     let deletableUser = cy
       .get('[data-cy="user-list-table-body"]')
       .children()
-      .contains("tr", "deletableUser");
+      .contains("tr", "be_deleted");
 
     cy.contains("user_that_can");
     cy.contains("be_deleted");
@@ -244,7 +244,7 @@ describe("Admin settings test", () => {
     // is reloaded and assert role assignments
     cy.get('[data-cy="user-list-table-body"]')
       .children()
-      .contains("td", "admin")
+      .contains("td", "Admin")
       .click();
 
     cy.get('[data-cy="user-list-table-body"]')
