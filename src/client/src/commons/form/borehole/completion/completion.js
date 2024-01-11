@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -12,8 +12,11 @@ import {
 import { styled } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
 import {
-  useCompletions,
-  useCompletionMutations,
+  getCompletions,
+  addCompletion,
+  updateCompletion,
+  copyCompletion,
+  deleteCompletion,
 } from "../../../../api/fetchApiV2";
 import CompletionContent from "./completionContent";
 import CompletionHeaderInput from "./completionHeaderInput";
@@ -43,19 +46,39 @@ const CompletionTab = styled(props => <Tab disableRipple {...props} />)(() => ({
 const Completion = props => {
   const { isEditable, boreholeId } = props;
   const { t } = useTranslation();
-  const {
-    add: { mutate: addCompletion },
-    update: { mutate: updateCompletion },
-    copy: { mutate: copyCompletion },
-    delete: { mutate: deleteCompletion },
-  } = useCompletionMutations();
-  const { data, isSuccess } = useCompletions(boreholeId);
   const [state, setState] = useState({
     index: 0,
     selected: null,
     completions: [],
   });
+  const mounted = useRef(false);
   const [editing, setEditing] = useState(false);
+
+  const loadData = index => {
+    if (boreholeId && mounted.current) {
+      getCompletions(boreholeId).then(response => {
+        if (response?.length > 0) {
+          setState({
+            index: index,
+            selected: response[index],
+            completions: response,
+          });
+        } else {
+          setState({
+            index: 0,
+            selected: null,
+            completions: [],
+          });
+        }
+      });
+    } else if (boreholeId === null) {
+      setState({
+        index: 0,
+        selected: null,
+        completions: [],
+      });
+    }
+  };
 
   const handleCompletionChanged = (event, index) => {
     setState({
@@ -81,25 +104,43 @@ const Completion = props => {
       completions: [...state.completions, tempCompletion],
     });
     setEditing(true);
-    // TODO: Select tab with new completion
+  };
+
+  const saveCompletion = completion => {
+    setEditing(false);
+    if (completion.id === 0) {
+      addCompletion(completion).then(() => {
+        loadData(state.completions.length - 1);
+      });
+    } else {
+      updateCompletion(completion).then(() => {
+        loadData(state.index);
+      });
+    }
   };
 
   const copySelectedCompletion = () => {
-    copyCompletion(state.selected.id);
-    // TODO: Select tab with copied completion
+    copyCompletion(state.selected.id).then(() => {
+      loadData(state.completions.length);
+    });
   };
 
   const deleteSelectedCompletion = () => {
     // TODO: Show dialog
-    deleteCompletion(state.selected.id);
-    // TODO: Select tab next to deleted completion
+    var newTabIndex = state.index > 0 ? state.index - 1 : 0;
+    deleteCompletion(state.selected.id).then(() => {
+      loadData(newTabIndex);
+    });
   };
 
   useEffect(() => {
-    if (isSuccess && data && data.length > 0) {
-      setState({ index: 0, selected: data[0], completions: data });
-    }
-  }, [isSuccess, data]);
+    mounted.current = true;
+    loadData(0);
+    return () => {
+      mounted.current = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [boreholeId]);
 
   return (
     <>
@@ -169,8 +210,7 @@ const Completion = props => {
                     <CompletionHeaderInput
                       completion={state.selected}
                       setEditing={setEditing}
-                      addCompletion={addCompletion}
-                      updateCompletion={updateCompletion}
+                      saveCompletion={saveCompletion}
                     />
                   ) : (
                     <CompletionHeaderDisplay

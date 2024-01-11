@@ -656,73 +656,24 @@ export const updateBoreholeAttachment = async (
   );
 };
 
-export const completionQueryKey = "completions";
+export const getCompletions = async boreholeId => {
+  return await fetchApiV2(`completion?boreholeId=${boreholeId}`, "GET");
+};
 
-export const useCompletions = boreholeId =>
-  useQuery({
-    queryKey: [completionQueryKey, boreholeId],
-    queryFn: async () => {
-      return await fetchApiV2(`completion?boreholeId=${boreholeId}`, "GET");
-    },
-  });
+export const addCompletion = async completion => {
+  return await fetchApiV2("completion", "POST", completion);
+};
 
-export const useCompletionMutations = () => {
-  const queryClient = useQueryClient();
-  const useAddCompletions = useMutation(
-    async completion => {
-      return await fetchApiV2("completion", "POST", completion);
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [completionQueryKey],
-        });
-      },
-    },
-  );
-  const useUpdateCompletions = useMutation(
-    async completion => {
-      return await fetchApiV2("completion", "PUT", completion);
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [completionQueryKey],
-        });
-      },
-    },
-  );
-  const useCopyCompletions = useMutation(
-    async completionId => {
-      return await fetchApiV2(`completion/copy?id=${completionId}`, "POST");
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [completionQueryKey],
-        });
-      },
-    },
-  );
-  const useDeleteCompletions = useMutation(
-    async completionId => {
-      return await fetchApiV2(`completion?id=${completionId}`, "DELETE");
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [completionQueryKey],
-        });
-      },
-    },
-  );
+export const updateCompletion = async completion => {
+  return await fetchApiV2("completion", "PUT", completion);
+};
 
-  return {
-    add: useAddCompletions,
-    update: useUpdateCompletions,
-    copy: useCopyCompletions,
-    delete: useDeleteCompletions,
-  };
+export const copyCompletion = async completionId => {
+  return await fetchApiV2(`completion/copy?id=${completionId}`, "POST");
+};
+
+export const deleteCompletion = async id => {
+  return await fetchApiV2(`completion?id=${id}`, "DELETE");
 };
 
 export const hydrotestQueryKey = "hydrotests";

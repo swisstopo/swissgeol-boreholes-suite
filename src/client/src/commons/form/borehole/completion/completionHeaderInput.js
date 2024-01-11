@@ -16,7 +16,7 @@ import { useDomains } from "../../../../api/fetchApiV2";
 import { IconButtonWithMargin } from "./styledComponents";
 
 const CompletionHeaderInput = props => {
-  const { completion, setEditing, addCompletion, updateCompletion } = props;
+  const { completion, setEditing, saveCompletion } = props;
   const domains = useDomains();
   const { register, handleSubmit, control, formState, trigger, reset } =
     useForm();
@@ -48,13 +48,7 @@ const CompletionHeaderInput = props => {
     data?.abandonDate
       ? (data.abandonDate += ":00.000Z")
       : (data.abandonDate = null);
-    var updatedCompletion = { ...completion, ...data };
-    if (completion.id === 0) {
-      addCompletion(updatedCompletion);
-    } else {
-      updateCompletion(updatedCompletion);
-    }
-    setEditing(false);
+    saveCompletion({ ...completion, ...data });
   };
 
   const cancelChanges = () => {
