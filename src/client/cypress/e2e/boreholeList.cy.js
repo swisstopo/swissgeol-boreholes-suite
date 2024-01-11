@@ -125,14 +125,14 @@ describe("Borehole list tests", () => {
         }
       });
 
-    cy.get("tbody").children().eq(0).contains("td", "publisher");
-    cy.get("tbody").children().eq(1).contains("td", "publisher");
-    cy.get("tbody").children().eq(2).contains("td", "publisher");
+    cy.get("tbody").children().eq(0).contains("td", "p. user");
+    cy.get("tbody").children().eq(1).contains("td", "p. user");
+    cy.get("tbody").children().eq(2).contains("td", "p. user");
 
     cy.contains("th", "Created by").click();
-    cy.get("tbody").children().eq(0).contains("td", "admin");
-    cy.get("tbody").children().eq(1).contains("td", "admin");
-    cy.get("tbody").children().eq(2).contains("td", "admin");
+    cy.get("tbody").children().eq(0).contains("td", "A. User");
+    cy.get("tbody").children().eq(1).contains("td", "A. User");
+    cy.get("tbody").children().eq(2).contains("td", "A. User");
 
     // sort by name ascending
     cy.contains("th", "Original name").click();
