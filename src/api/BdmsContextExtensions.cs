@@ -744,14 +744,14 @@ public static class BdmsContextExtensions
             .RuleFor(i => i.UpdatedBy, _ => default!)
             .RuleFor(i => i.Id, f => instrumentation_ids++);
 
-        Instrumentation SeedeInstrumentation(Completion completion)
+        Instrumentation SeededInstrumentation(Completion completion)
         {
             return fakeInstrumentation
                 .UseSeed(completion.Id)
                 .Generate();
         }
 
-        var instrumentations = completions.Select(c => SeedeInstrumentation(c)).ToList();
+        var instrumentations = completions.Select(c => SeededInstrumentation(c)).ToList();
 
         context.BulkInsert(instrumentations, bulkConfig);
 
@@ -777,14 +777,14 @@ public static class BdmsContextExtensions
             .RuleFor(i => i.UpdatedBy, _ => default!)
             .RuleFor(i => i.Id, f => backfill_ids++);
 
-        Backfill SeedeBackfill(Completion completion)
+        Backfill SeededBackfill(Completion completion)
         {
             return fakeBackfill
                 .UseSeed(completion.Id)
                 .Generate();
         }
 
-        var backfills = completions.Select(c => SeedeBackfill(c)).ToList();
+        var backfills = completions.Select(c => SeededBackfill(c)).ToList();
 
         context.BulkInsert(backfills, bulkConfig);
 
