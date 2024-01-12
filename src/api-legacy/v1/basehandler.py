@@ -28,16 +28,16 @@ class BaseHandler(web.RequestHandler):
     async def prepare(self):
 
         auth_header = self.request.headers.get('Authorization')
-        
+
         if auth_header is None:
             self.set_header('WWW-Authenticate', 'Basic realm=BDMS')
             self.set_status(401)
             self.finish()
             return
 
-        username = auth_header
+        subject_id = auth_header
 
-        async with self.pool.acquire() as conn: 
+        async with self.pool.acquire() as conn:
 
             val = await conn.fetchval("""
                 SELECT row_to_json(t)
@@ -167,11 +167,11 @@ class BaseHandler(web.RequestHandler):
                     ON w.id_usr_fk = id_usr
 
                     WHERE
-                        username = $1
+                        subject_id = $1
                     AND
                         disabled_usr IS NULL
                 ) as t
-            """, username)
+            """, subject_id)
 
             if val is None:
                 self.set_status(401)

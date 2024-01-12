@@ -92,11 +92,11 @@ public class UploadController : ControllerBase
                 return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest);
             }
 
-            var userName = HttpContext.GetUserName();
+            var subjectId = HttpContext.GetUserSubjectId();
 
             var user = await context.Users
                 .AsNoTracking()
-                .SingleOrDefaultAsync(u => u.Name == userName)
+                .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
                 .ConfigureAwait(false);
 
             // Map to Borehole type

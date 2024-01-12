@@ -27,7 +27,7 @@ public class UserController : ControllerBase
     [HttpGet("self")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<User?>> GetUserInformationAsync() =>
-        await context.Users.SingleOrDefaultAsync(u => u.Name == HttpContext.GetUserName()).ConfigureAwait(false);
+        await context.Users.SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId()).ConfigureAwait(false);
 
     /// <summary>
     /// Gets the user list.

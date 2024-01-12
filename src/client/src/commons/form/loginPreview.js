@@ -1,18 +1,9 @@
-import React, { createRef } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import { Button, Input } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
 import Markdown from "markdown-to-jsx";
 
 class LoginPreview extends React.Component {
-  constructor(props) {
-    super(props);
-    this.fieldToRef = createRef();
-  }
-
-  componentDidMount() {
-    this.fieldToRef.current.focus();
-  }
-
   render() {
     return (
       <div
@@ -84,58 +75,11 @@ class LoginPreview extends React.Component {
             }}>
             Sign in
           </div>
-          {/** Trick to disable autofill in chrome */}
-          <input
-            name="password"
-            style={{
-              display: "none",
-            }}
-            type="password"
-          />
-          <div
-            style={{
-              fontSize: "0.8em",
-              paddingBottom: "4px",
-            }}>
-            Username
-          </div>
-          <Input
-            autoComplete="off"
-            fluid
-            placeholder="username"
-            ref={this.fieldToRef}
-            value={
-              this.props.user.authentication !== null
-                ? this.props.user.authentication.username
-                : ""
-            }
-          />
-
-          <div
-            style={{
-              fontSize: "0.8em",
-              padding: "8px 0px 4px 0px",
-            }}>
-            Password
-          </div>
-          <Input
-            autoComplete="off"
-            fluid
-            placeholder="password"
-            type="password"
-            value={
-              this.props.user.authentication !== null
-                ? this.props.user.authentication.password
-                : ""
-            }
-          />
           <Button
-            color={this.props.user.data !== null ? "green" : null}
             compact
             content="Login"
             fluid
-            loading={this.props.user.data !== null}
-            primary={this.props.user.data === null}
+            primary
             size="small"
             style={{
               marginTop: "1.5em",

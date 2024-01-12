@@ -9,7 +9,7 @@ namespace BDMS;
 [TestClass]
 public class BoreholeLockServiceTest
 {
-    private const string EditorUserName = "editor";
+    private const string EditorSubjectId = "sub_editor";
     private const int EditorUserId = 2;
 
     private BoreholeLockService boreholeLockService;
@@ -38,13 +38,13 @@ public class BoreholeLockServiceTest
 
     [TestMethod]
     public async Task IsBoreholeLockedWithUnknownBorehole()
-        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholeLockService.IsBoreholeLockedAsync(null, EditorUserName));
+        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholeLockService.IsBoreholeLockedAsync(null, EditorSubjectId));
 
     [TestMethod]
     public async Task IsBoreholeLockedWithUnauthorizedUser()
     {
         var borehole = await context.Boreholes.FirstAsync();
-        await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(async () => await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, "deletableUser"));
+        await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(async () => await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, "sub_deletableUser"));
     }
 
     [TestMethod]
@@ -56,7 +56,7 @@ public class BoreholeLockServiceTest
         var timeProviderMock = CreateTimeProviderMock(borehole.Locked.Value.AddMinutes(1));
         boreholeLockService = new BoreholeLockService(context, new Mock<ILogger<BoreholeLockService>>().Object, timeProviderMock.Object);
 
-        Assert.AreEqual(true, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, EditorUserName));
+        Assert.AreEqual(true, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, EditorSubjectId));
     }
 
     [TestMethod]
@@ -69,7 +69,7 @@ public class BoreholeLockServiceTest
         var timeProviderMock = CreateTimeProviderMock(fakeUtcDate);
         boreholeLockService = new BoreholeLockService(context, new Mock<ILogger<BoreholeLockService>>().Object, timeProviderMock.Object);
 
-        Assert.AreEqual(false, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, EditorUserName));
+        Assert.AreEqual(false, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, EditorSubjectId));
     }
 
     [TestMethod]
@@ -82,7 +82,7 @@ public class BoreholeLockServiceTest
         var timeProviderMock = CreateTimeProviderMock(fakeUtcDate);
         boreholeLockService = new BoreholeLockService(context, new Mock<ILogger<BoreholeLockService>>().Object, timeProviderMock.Object);
 
-        Assert.AreEqual(false, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, EditorUserName));
+        Assert.AreEqual(false, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, EditorSubjectId));
     }
 
     private Borehole GetLockedBorehole(bool lockedByEditor)

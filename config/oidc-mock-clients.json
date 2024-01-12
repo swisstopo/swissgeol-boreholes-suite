@@ -1,0 +1,26 @@
+[{
+  "ClientId": "bdms-client",
+  "Description": "Client for Authorization Code flow with PKCE",
+  "RequireClientSecret": false,
+  "AlwaysIncludeUserClaimsInIdToken": true,
+  "AllowedGrantTypes": [
+    "authorization_code"
+  ],
+  "AllowedResponseTypes": [
+    "code",
+    "id_token"
+  ],
+  "AllowAccessTokensViaBrowser": true,
+  "RedirectUris": [
+      "http://localhost:3000"
+  ],
+  "AllowedScopes": [
+      "openid",
+      "profile",
+      "email"
+  ],
+  "AccessTokenType": "JWT",
+  "IdentityTokenLifetime": 3600,
+  "AccessTokenLifetime": 3600
+}
+]

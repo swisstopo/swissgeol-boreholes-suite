@@ -1,0 +1,66 @@
+[
+  {
+    "SubjectId":"sub_admin",
+    "Username":"admin",
+    "Password":"swissforages",
+    "Claims": [
+      {
+        "Type": "name",
+        "Value": "Admin User",
+        "ValueType": "string"
+      },
+      {
+        "Type": "family_name",
+        "Value": "User",
+        "ValueType": "string"
+      },
+      {
+        "Type": "given_name",
+        "Value": "Admin",
+        "ValueType": "string"
+      },
+      {
+        "Type": "email",
+        "Value": "admin.user@local.dev",
+        "ValueType": "string"
+      },
+      {
+        "Type": "email_verified",
+        "Value": "true",
+        "ValueType": "boolean"
+      }
+    ]
+  },
+  {
+    "SubjectId":"sub_editor",
+    "Username":"editor",
+    "Password":"swissforages",
+    "Claims": [
+      {
+        "Type": "name",
+        "Value": "Editor User",
+        "ValueType": "string"
+      },
+      {
+        "Type": "family_name",
+        "Value": "User",
+        "ValueType": "string"
+      },
+      {
+        "Type": "given_name",
+        "Value": "Editor",
+        "ValueType": "string"
+      },
+      {
+        "Type": "email",
+        "Value": "editor.user@local.dev",
+        "ValueType": "string"
+      },
+      {
+        "Type": "email_verified",
+        "Value": "true",
+        "ValueType": "boolean"
+      }
+    ]
+  }
+]

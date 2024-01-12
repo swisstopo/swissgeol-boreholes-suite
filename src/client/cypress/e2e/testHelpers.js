@@ -2,10 +2,7 @@ import adminUser from "../fixtures/adminUser.json";
 import editorUser from "../fixtures/editorUser.json";
 import viewerUser from "../fixtures/viewerUser.json";
 
-export const adminUserAuth = {
-  user: "admin",
-  password: "swissforages",
-};
+export const bearerAuth = token => ({ bearer: token });
 
 export const interceptApiCalls = () => {
   // Api V1
@@ -73,43 +70,76 @@ export const interceptApiCalls = () => {
 };
 
 /**
- * Login into the application with the pre-filled user for the development environment.
- * @param {string} visitUrl The url to visit after logging in. Default is the root path.
+ * Login into the application with the user for the development environment.
  */
-export const login = (visitUrl = "/") => {
-  cy.intercept("api/v1/content").as("content");
-  cy.intercept("/api/v1/borehole/codes").as("code");
-  cy.visit(visitUrl);
-  cy.wait("@content");
-  cy.contains("button", "Login").click({ force: true });
-  cy.wait("@code");
+export const login = user => {
+  cy.session(
+    ["login", user],
+    () => {
+      cy.intercept("http://localhost:4011/connect/token").as("token");
+      cy.visit("/");
+      cy.get('[data-cy="login-button"]').click({ force: true });
+      cy.origin("http://localhost:4011", { args: { user } }, ({ user }) => {
+        cy.get("#Username").type(user);
+        cy.get("#Password").type("swissforages");
+        cy.contains("button", "Login").click({ force: true });
+      });
+      cy.wait("@token")
+        .then(interception => interception.response.body.id_token)
+        .then(token => window.localStorage.setItem("id_token", token));
+    },
+    {
+      validate() {
+        cy.window()
+          .then(win => win.localStorage.getItem("id_token"))
+          .as("id_token");
+        cy.get("@id_token").then(token =>
+          cy.request({
+            method: "POST",
+            url: "/api/v1/user",
+            body: {
+              action: "GET",
+            },
+            auth: bearerAuth(token),
+          }),
+        );
+      },
+      cacheAcrossSpecs: true,
+    },
+  );
 };
 
 /**
  * Login into the application as admin.
- * @param {string} visitUrl The url to visit after logging in. Default is the root path.
  */
-export const loginAsAdmin = (visitUrl = "/") => {
-  cy.intercept("/api/v1/user", adminUser);
-  login(visitUrl);
+export const loginAsAdmin = () => {
+  login("admin");
+  cy.intercept("/api/v1/user", {
+    statusCode: 200,
+    body: JSON.stringify(adminUser),
+  }).as("stubAdminUser");
 };
 
 /**
  * Login into the application as editor.
- * @param {string} visitUrl The url to visit after logging in. Default is the root path.
  */
-export const loginAsEditorInViewerMode = (visitUrl = "/") => {
-  cy.intercept("/api/v1/user", editorUser);
-  login(visitUrl);
+export const loginAsEditor = () => {
+  login("editor");
+  cy.intercept("/api/v1/user", {
+    statusCode: 200,
+    body: JSON.stringify(editorUser),
+  }).as("stubEditorUser");
 };
 
 /**
  * Login into the application as viewer.
- * @param {string} visitUrl The url to visit after logging in. Default is the root path.
  */
-export const loginAsViewer = (visitUrl = "/") => {
-  cy.intercept("/api/v1/user", viewerUser);
-  login(visitUrl);
+export const loginAsEditorInViewerMode = () => {
+  login("editor");
+  cy.intercept("/api/v1/user", {
+    statusCode: 200,
+    body: JSON.stringify(viewerUser),
+  }).as("stubViewerUser");
 };
 
 export const newEditableBorehole = () => {
@@ -120,7 +150,8 @@ export const newEditableBorehole = () => {
 };
 
 export const newUneditableBorehole = () => {
-  login("/editor");
+  loginAsAdmin();
+  cy.visit("/editor");
   cy.contains("a", "New").click();
   cy.contains("button", "Create").click();
   const id = waitForCreation();
@@ -139,83 +170,93 @@ const waitForCreation = () => {
 };
 
 export const createBorehole = values => {
-  return cy
-    .request({
-      method: "POST",
-      url: "/api/v1/borehole/edit",
-      body: {
-        action: "CREATE",
-        id: 1,
-      },
-      auth: adminUserAuth,
-    })
-    .then(res => {
-      expect(res.body).to.have.property("success", true);
-      let boreholeId = res.body.id;
-      let fields = Object.entries(values).map(([key, value]) => [key, value]);
-      if (fields.length > 0) {
-        cy.request({
-          method: "POST",
-          url: "/api/v1/borehole/edit",
-          body: {
-            action: "MULTIPATCH",
-            fields: fields,
-            ids: [boreholeId],
-          },
-          auth: adminUserAuth,
-        }).then(res => expect(res.body).to.have.property("success", true));
-      }
-      return cy.wrap(boreholeId);
-    });
+  loginAsAdmin();
+  return cy.get("@id_token").then(token =>
+    cy
+      .request({
+        method: "POST",
+        url: "/api/v1/borehole/edit",
+        body: {
+          action: "CREATE",
+          id: 1,
+        },
+        auth: bearerAuth(token),
+      })
+      .then(res => {
+        expect(res.body).to.have.property("success", true);
+        let boreholeId = res.body.id;
+        let fields = Object.entries(values).map(([key, value]) => [key, value]);
+        if (fields.length > 0) {
+          cy.request({
+            method: "POST",
+            url: "/api/v1/borehole/edit",
+            body: {
+              action: "MULTIPATCH",
+              fields: fields,
+              ids: [boreholeId],
+            },
+            auth: bearerAuth(token),
+          }).then(res => expect(res.body).to.have.property("success", true));
+        }
+        return cy.wrap(boreholeId);
+      }),
+  );
 };
 
 export const createAndEditBoreholeAsAdmin = values => {
-  return createBorehole(values).then(value => loginAsAdmin(`/editor/${value}`));
+  return createBorehole(values).then(value => {
+    loginAsAdmin();
+    cy.visit(`/editor/${value}`);
+  });
 };
 
 export const deleteBorehole = id => {
-  cy.request({
-    method: "POST",
-    url: "/api/v1/borehole/edit",
-    body: {
-      action: "DELETE",
-      id: id,
-    },
-    auth: adminUserAuth,
-  })
-    .its("body.success")
-    .should("eq", true);
+  loginAsAdmin();
+  cy.get("@id_token").then(token => {
+    cy.request({
+      method: "POST",
+      url: "/api/v1/borehole/edit",
+      body: {
+        action: "DELETE",
+        id: id,
+      },
+      auth: bearerAuth(token),
+    })
+      .its("body.success")
+      .should("eq", true);
+  });
 };
 
 export const loginAndResetState = () => {
-  // Reset boreholes
-  cy.request({
-    method: "POST",
-    url: "/api/v1/borehole/edit",
-    body: {
-      action: "IDS",
-    },
-    auth: adminUserAuth,
-  }).then(response => {
-    response.body.data
-      .filter(id => id > 1009999) // max id in seed data.
-      .forEach(id => {
-        deleteBorehole(id);
-      });
-  });
+  loginAsAdmin();
+  cy.get("@id_token").then(token => {
+    // Reset boreholes
+    cy.request({
+      method: "POST",
+      url: "/api/v1/borehole/edit",
+      body: {
+        action: "IDS",
+      },
+      auth: bearerAuth(token),
+    }).then(response => {
+      response.body.data
+        .filter(id => id > 1009999) // max id in seed data.
+        .forEach(id => {
+          deleteBorehole(id);
+        });
+    });
 
-  // Reset user settings (i.e. table ordering)
-  cy.request({
-    method: "POST",
-    url: "/api/v2/user/resetAllSettings",
-    cache: "no-cache",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Basic ${btoa(
-        `${adminUserAuth.user}:${adminUserAuth.password}`,
-      )}`,
-    },
+    // Reset user settings (i.e. table ordering)
+    cy.request({
+      method: "POST",
+      url: "/api/v2/user/resetAllSettings",
+      cache: "no-cache",
+      credentials: "same-origin",
+      auth: bearerAuth(token),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   });
 };
 
@@ -294,15 +335,17 @@ export const getImportFileFromFixtures = (fileName, encoding, dataSet) => {
 };
 
 export const createStratigraphy = (boreholeId, kindId) => {
-  return cy.request({
-    method: "POST",
-    url: "/api/v2/stratigraphy",
-    body: {
-      boreholeId: boreholeId,
-      kindId: kindId,
-    },
-    cache: "no-cache",
-    credentials: "same-origin",
-    auth: adminUserAuth,
+  cy.get("@id_token").then(token => {
+    return cy.request({
+      method: "POST",
+      url: "/api/v2/stratigraphy",
+      body: {
+        boreholeId: boreholeId,
+        kindId: kindId,
+      },
+      cache: "no-cache",
+      credentials: "same-origin",
+      auth: bearerAuth(token),
+    });
   });
 };

@@ -7,7 +7,7 @@ RUN apt-get -y install git vim curl htop python3 python3-pip
 RUN mkdir -p /app/src/client
 WORKDIR /app/src/client
 
-COPY ./package.json ./package-lock.json ./server.js ./
+COPY ./package.json ./package-lock.json ./
 RUN npm install
 
 # Build docs
@@ -30,7 +30,6 @@ WORKDIR /app
 
 COPY --from=development /app/src/client/node_modules /app/node_modules
 COPY --from=development /app/src/client/public/help /app/public/help
-COPY --from=development /app/src/client/server.js /app/server.js
 
 COPY . .
 
