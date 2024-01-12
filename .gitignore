@@ -412,6 +412,9 @@ src/client/cypress/screenshots
 # Dependencies
 /src/client/node_modules
 
+# Generated debug files
+src/client/public/env.js
+
 # Testing
 src/client/coverage
 

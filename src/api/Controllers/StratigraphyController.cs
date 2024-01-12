@@ -78,7 +78,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         var user = await Context.Users
             .Include(u => u.WorkgroupRoles)
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.Name == HttpContext.GetUserName())
+            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
             .ConfigureAwait(false);
 
         if (user == null || !user.WorkgroupRoles.Any(w => w.Role == Role.Editor))
@@ -180,8 +180,8 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         try
         {
             // Check if associated borehole is locked
-            var userName = HttpContext.GetUserName();
-            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, userName).ConfigureAwait(false))
+            var subjectId = HttpContext.GetUserSubjectId();
+            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId,  subjectId).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user.");
             }
@@ -226,8 +226,8 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         try
         {
             // Check if associated borehole is locked
-            var userName = HttpContext.GetUserName();
-            if (await boreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, userName).ConfigureAwait(false))
+            var subjectId = HttpContext.GetUserSubjectId();
+            if (await boreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, subjectId).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user.");
             }
@@ -273,7 +273,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         try
         {
             // Check if associated borehole is locked
-            var userName = HttpContext.GetUserName();
+            var userName = HttpContext.GetUserSubjectId();
             if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, userName).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user.");

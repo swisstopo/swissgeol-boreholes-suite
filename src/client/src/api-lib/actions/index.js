@@ -1,6 +1,6 @@
 import axios from "axios";
 import store from "../reducers";
-import { getBasicAuthHeaderValue } from "../../api/authentication";
+import { getAuthorizationHeader } from "../../api/authentication";
 
 function getAuthorizationHeaders(headers = {}) {
   if (
@@ -8,11 +8,8 @@ function getAuthorizationHeaders(headers = {}) {
     store.getState().hasOwnProperty("core_user") &&
     store.getState().core_user.authentication !== null
   ) {
-    const credentials = store.getState().core_user.authentication;
-    headers.Authorization = getBasicAuthHeaderValue(
-      credentials.username,
-      credentials.password,
-    );
+    const authentication = store.getState().core_user.authentication;
+    headers.Authorization = getAuthorizationHeader(authentication);
     headers["bdms-authorization"] = "bdms-v1";
   }
   return headers;
@@ -173,7 +170,6 @@ export function fetch(path, action, method = "post", auth = null) {
             resolve(response.data, dispatch);
           })
           .catch(function (error) {
-            debugger;
             dispatch({
               type: action.type + "_CONNECTION_ERROR",
               path: path,

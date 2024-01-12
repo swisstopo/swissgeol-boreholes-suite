@@ -1,12 +1,11 @@
 import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { withAuth } from "react-oidc-context";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
 
 import { List, Icon, Popup } from "semantic-ui-react";
-
-import { unsetAuthentication } from "../../api-lib/index";
 
 import Feedback from "../feedback/feedbackComponent";
 import TranslationText from "../form/translationText";
@@ -164,12 +163,10 @@ class MenuComponent extends React.Component {
                     <span
                       className="link linker"
                       onClick={() => {
-                        this.props.unsetAuthentication();
+                        this.props.auth.removeUser();
                         if (_.isFunction(handleModeChange)) {
                           handleModeChange("viewer");
                         }
-                        // Clear cache
-                        // window.location.reload(true);
                       }}>
                       Logout
                     </span>
@@ -332,20 +329,16 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
-    unsetAuthentication: (username, password) => {
-      dispatch(unsetAuthentication(username, password));
-    },
   };
 };
 
 MenuComponent.propTypes = {
   handleModeChange: PropTypes.func,
   mode: PropTypes.string,
-  unsetAuthentication: PropTypes.func,
   user: PropTypes.object,
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation(["common"])(MenuComponent));
+)(withAuth(withTranslation(["common"])(MenuComponent)));

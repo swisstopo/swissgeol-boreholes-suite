@@ -1,6 +1,6 @@
 import {
   newEditableBorehole,
-  login,
+  loginAsAdmin,
   createBorehole,
   setValueOfInputElement,
 } from "../testHelpers";
@@ -8,7 +8,8 @@ import {
 describe("Test for the borehole form.", () => {
   it("Adds complete layer and displays it in viewer mode, checks if fields can be optionally hidden.", () => {
     // Assert map number of boreholes
-    login("/editor");
+    loginAsAdmin();
+    cy.visit("/editor");
     cy.get("div[id=map]").should("be.visible");
     cy.get("tbody").children().should("have.length", 100);
 
@@ -155,7 +156,8 @@ describe("Test for the borehole form.", () => {
 
   it("Checks if null values are displayed as dash.", () => {
     createBorehole({ "extended.original_name": "A1_Borehole" });
-    login();
+    loginAsAdmin();
+    cy.visit("/");
 
     // Select borehole A1_Borehole
     cy.get("tbody").children().contains("td", "A1_Borehole").click();

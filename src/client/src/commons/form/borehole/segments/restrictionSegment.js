@@ -21,7 +21,7 @@ const RestrictionSegment = props => {
   const isEditable =
     borehole?.data.role === "EDIT" &&
     borehole?.data.lock !== null &&
-    borehole?.data.lock?.username === user?.data.username;
+    borehole?.data.lock?.id === user?.data.id;
 
   return (
     <Segment>

@@ -125,7 +125,7 @@ class BoreholeForm extends React.Component {
     }
     if (
       this.props.borehole.data.lock === null ||
-      this.props.borehole.data.lock.username !== this.props.user.data.username
+      this.props.borehole.data.lock.id !== this.props.user.data.id
     ) {
       this.context.error(t("common:errorStartEditing"));
       return false;
@@ -249,7 +249,7 @@ class BoreholeForm extends React.Component {
     const isEditable =
       borehole?.data.role === "EDIT" &&
       borehole?.data.lock !== null &&
-      borehole?.data.lock?.username === user?.data.username;
+      borehole?.data.lock?.id === user?.data.id;
     if (borehole.error !== null) {
       return <div>{t(borehole.error, borehole.data)}</div>;
     }

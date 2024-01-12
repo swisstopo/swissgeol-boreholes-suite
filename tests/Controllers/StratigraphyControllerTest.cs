@@ -115,8 +115,8 @@ public class StratigraphyControllerTest
         var copiedStratigraphy = GetStratigraphy((int)copiedStratigraphyId);
 
         Assert.AreEqual("Earnest Little (Clone)", copiedStratigraphy.Name);
-        Assert.AreEqual("admin", copiedStratigraphy.CreatedBy.Name);
-        Assert.AreEqual("controller", copiedStratigraphy.UpdatedBy.Name);
+        Assert.AreEqual("sub_admin", copiedStratigraphy.CreatedBy.SubjectId);
+        Assert.AreEqual("sub_controller", copiedStratigraphy.UpdatedBy.SubjectId);
         Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
         Assert.AreSame(originalStratigraphy.Kind, copiedStratigraphy.Kind);
         Assert.AreEqual(originalStratigraphy.FillCasing.Kind, copiedStratigraphy.FillCasing.Kind);
@@ -184,7 +184,7 @@ public class StratigraphyControllerTest
     [TestMethod]
     public async Task CopyWithNonAdminUser()
     {
-        controller.HttpContext.SetClaimsPrincipal("editor", PolicyNames.Viewer);
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
         var result = await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
         ActionResultAssert.IsOk(result.Result);
 
