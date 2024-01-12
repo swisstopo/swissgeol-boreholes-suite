@@ -1,4 +1,8 @@
-import { createBorehole, createStratigraphy, login } from "../testHelpers";
+import {
+  createBorehole,
+  createStratigraphy,
+  loginAsAdmin,
+} from "../testHelpers";
 
 describe("Tests for the wateringress editor.", () => {
   beforeEach(function () {
@@ -11,9 +15,10 @@ describe("Tests for the wateringress editor.", () => {
       });
 
     // open wateringress editor
-    cy.get("@borehole_id").then(id =>
-      login(`editor/${id}/hydrogeology/wateringress`),
-    );
+    cy.get("@borehole_id").then(id => {
+      loginAsAdmin();
+      cy.visit(`editor/${id}/hydrogeology/wateringress`);
+    });
 
     // start editing session
     cy.contains("a", "Start editing").click();

@@ -1,5 +1,5 @@
 import {
-  loginAsViewer,
+  loginAsEditorInViewerMode,
   createBorehole,
   createAndEditBoreholeAsAdmin,
 } from "../testHelpers";
@@ -7,7 +7,8 @@ import {
 describe("Instrumentation tests", () => {
   it("Displays correct 'No Instumentation' message when logged in as viewer and no stratigraphies are defined", () => {
     createBorehole({ "extended.original_name": "A1_Borehole" });
-    loginAsViewer("/editor");
+    loginAsEditorInViewerMode();
+    cy.visit("/editor");
 
     // Select borehole A1_Borehole
     cy.get("tbody").children().first().click();

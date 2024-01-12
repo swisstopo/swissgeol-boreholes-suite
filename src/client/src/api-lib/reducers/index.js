@@ -19,11 +19,7 @@ export function user() {
       case "SET_AUTHENTICATION": {
         return {
           ...state,
-          authentication: {
-            username: action.username,
-            password: action.password,
-            type: action.authentication,
-          },
+          authentication: action.user,
         };
       }
       case "UNSET_AUTHENTICATION": {

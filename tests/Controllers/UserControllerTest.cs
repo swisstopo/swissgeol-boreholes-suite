@@ -21,7 +21,7 @@ public class UserControllerTest
 
         foreach (var user in users)
         {
-            Assert.AreEqual(user.Name == "deletableUser", user.Deletable);
+            Assert.AreEqual(user.SubjectId == "sub_deletableUser", user.Deletable);
         }
     }
 }

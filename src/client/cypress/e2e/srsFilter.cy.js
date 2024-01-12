@@ -1,4 +1,4 @@
-import { newEditableBorehole, login } from "./testHelpers";
+import { newEditableBorehole, loginAsAdmin } from "./testHelpers";
 
 describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {
@@ -16,7 +16,8 @@ describe("Tests for filtering data by reference system.", () => {
   }
 
   it("can set filters as viewer", () => {
-    login();
+    loginAsAdmin();
+    cy.visit("/");
     goToViewerLocationFilter();
 
     cy.contains("div", "Spatial reference system")
@@ -44,7 +45,8 @@ describe("Tests for filtering data by reference system.", () => {
   });
 
   it("can set filters as editor", () => {
-    login("/editor");
+    loginAsAdmin();
+    cy.visit("/editor");
     goToEditorLocationFilter();
 
     cy.contains("div", "Spatial reference system")

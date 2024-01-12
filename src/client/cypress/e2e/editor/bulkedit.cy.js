@@ -1,55 +1,18 @@
-import { createBorehole, login, adminUserAuth } from "../testHelpers";
-
-export const changeWorkgroupRoleForUser = (
-  workgroupId,
-  userId,
-  role,
-  action,
-) => {
-  return cy
-    .request({
-      method: "POST",
-      url: "/api/v1/user/workgroup/edit",
-      body: {
-        action: action,
-        id: workgroupId,
-      },
-      auth: adminUserAuth,
-    })
-    .then(res => {
-      expect(res.body).to.have.property("success", true);
-      cy.request({
-        method: "POST",
-        url: "/api/v1/user/workgroup/edit",
-        body: {
-          action: "SET",
-          user_id: userId,
-          workgroup_id: workgroupId,
-          role_name: role,
-          active: action === "ENABLE" ? true : false,
-        },
-        auth: adminUserAuth,
-      }).then(res => {
-        expect(res.body).to.have.property("success", true);
-        cy.request({
-          method: "GET",
-          url: "/api/v2/user",
-          auth: adminUserAuth,
-        });
-      });
-    });
-};
+import { createBorehole, loginAsAdmin } from "../testHelpers";
+import adminUser from "../../fixtures/adminUser.json";
 
 describe("Test the borehole bulk edit feature.", () => {
   it("opens the bulk edit dialog with all boreholes selected", () => {
-    login("/editor");
+    loginAsAdmin();
+    cy.visit("/editor");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.wait("@edit_ids");
   });
 
   it("checks if all toggle buttons do something", () => {
-    login("/editor");
+    loginAsAdmin();
+    cy.visit("/editor");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 
@@ -64,13 +27,26 @@ describe("Test the borehole bulk edit feature.", () => {
   });
 
   it("displays workgroup toggle only if user has permission for more than one workgroup", () => {
-    login("/editor");
+    loginAsAdmin();
+    cy.visit("/editor");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
-
     cy.get(".modal .toggle").should("have.length", 30);
-    changeWorkgroupRoleForUser(6, 1, "EDIT", "ENABLE");
-    login("/editor");
+
+    loginAsAdmin("admin");
+    const adminUser2Workgroups = Object.assign({}, adminUser);
+    adminUser2Workgroups.data.workgroups.push({
+      id: 6,
+      workgroup: "Blue",
+      roles: ["EDIT"],
+      disabled: null,
+      supplier: false,
+    });
+    cy.intercept("/api/v1/user", {
+      statusCode: 200,
+      body: JSON.stringify(adminUser2Workgroups),
+    }).as("adminUser2Workgroups");
+    cy.visit("/editor");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 
@@ -83,16 +59,15 @@ describe("Test the borehole bulk edit feature.", () => {
         cy.wrap(el).scrollIntoView().click();
         cy.get('.modal [role="option"]').eq(0).click({ force: true });
       });
-    changeWorkgroupRoleForUser(6, 1, "EDIT", "DISABLE");
   });
 
   it("fills all bulkedit fields and saves.", () => {
-    login("/editor");
-
     // create boreholes
     createBorehole({ "extended.original_name": "NINTIC" }).as("borehole_id_1");
     createBorehole({ "extended.original_name": "LOMONE" }).as("borehole_id_2");
-    cy.contains("a", "Refresh").click();
+
+    loginAsAdmin();
+    cy.visit("/editor");
     cy.wait("@borehole");
 
     // select the boreholes for bulk edit

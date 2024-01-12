@@ -13,13 +13,13 @@ internal static class Helpers
         => new() { HttpContext = new DefaultHttpContext().SetAdminClaimsPrincipal() };
 
     internal static HttpContext SetAdminClaimsPrincipal(this HttpContext httpContext)
-        => httpContext.SetClaimsPrincipal("admin", PolicyNames.Admin);
+        => httpContext.SetClaimsPrincipal("sub_admin", PolicyNames.Admin);
 
-    internal static HttpContext SetClaimsPrincipal(this HttpContext httpContext, string name, string role)
+    internal static HttpContext SetClaimsPrincipal(this HttpContext httpContext, string subjectId, string role)
     {
         var adminClaims = new List<Claim>()
         {
-           new Claim(ClaimTypes.Name, name),
+           new Claim(ClaimTypes.NameIdentifier, subjectId),
            new Claim(ClaimTypes.Role, role),
         };
 

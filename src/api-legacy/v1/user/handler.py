@@ -20,9 +20,9 @@ class UserHandler(Viewer):
             for workgroup in self.user['workgroups']:
                 if workgroup['disabled'] is not None:
                     workgroup['roles'] = ['VIEW']
-                
+
                 workgroups.append(workgroup)
-            
+
                 for role in workgroup['roles']:
                     if role not in roles:
                         roles.append(role)
@@ -33,6 +33,7 @@ class UserHandler(Viewer):
                     "name": self.user['name'],
                     "roles": roles,
                     "terms": self.user['terms'],
+                    "id": self.user['id'],
                     "username": self.user['username'],
                     "viewer": self.user['viewer'],
                     "workgroups": workgroups

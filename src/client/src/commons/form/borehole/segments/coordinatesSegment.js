@@ -69,7 +69,7 @@ const CoordinatesSegment = props => {
   const isEditable =
     borehole?.data.role === "EDIT" &&
     borehole?.data.lock !== null &&
-    borehole?.data.lock?.username === user?.data.username;
+    borehole?.data.lock?.id === user?.data.id;
 
   //initially validate the form to display errors.
   useEffect(() => {

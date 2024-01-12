@@ -43,8 +43,8 @@ public class BoreholeControllerTest
         var copiedBorehole = GetBorehole((int)copiedBoreholeId);
 
         Assert.AreEqual($"{originalBorehole.OriginalName} (Copy)", copiedBorehole.OriginalName);
-        Assert.AreEqual(originalBorehole.CreatedBy.Name, copiedBorehole.CreatedBy.Name);
-        Assert.AreEqual(originalBorehole.UpdatedBy.Name, copiedBorehole.UpdatedBy.Name);
+        Assert.AreEqual(originalBorehole.CreatedBy.SubjectId, copiedBorehole.CreatedBy.SubjectId);
+        Assert.AreEqual(originalBorehole.UpdatedBy.SubjectId, copiedBorehole.UpdatedBy.SubjectId);
         Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
         Assert.AreEqual(1, copiedBorehole.Workflows.Count);
         Assert.AreEqual(Role.Editor, copiedBorehole.Workflows.First().Role);
@@ -182,7 +182,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task CopyWithNonAdminUser()
     {
-        controller.HttpContext.SetClaimsPrincipal("editor", PolicyNames.Viewer);
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsOk(result.Result);
         var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;

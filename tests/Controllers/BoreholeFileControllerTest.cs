@@ -26,11 +26,11 @@ public class BoreholeFileControllerTest
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
 
         context = ContextFactory.GetTestContext();
-        adminUser = context.Users.FirstOrDefault(u => u.Name == "admin") ?? throw new InvalidOperationException("No User found in database.");
+        adminUser = context.Users.FirstOrDefault(u => u.SubjectId == "sub_admin") ?? throw new InvalidOperationException("No User found in database.");
 
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
-        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, adminUser.Name) }));
+        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId) }));
 
         var s3ClientMock = new AmazonS3Client(
             configuration["S3:ACCESS_KEY"],
@@ -80,15 +80,15 @@ public class BoreholeFileControllerTest
         // Get file
         Assert.AreNotEqual(null, file.Hash);
         Assert.AreEqual(DateTime.UtcNow.Date, file.Created?.Date);
-        Assert.AreEqual(adminUser.Name, file.CreatedBy.Name);
+        Assert.AreEqual(adminUser.SubjectId, file.CreatedBy.SubjectId);
         Assert.AreEqual(adminUser.Id, file.CreatedById);
 
         var boreholefile = context.BoreholeFiles.Single(bf => bf.FileId == file.Id);
         Assert.AreEqual(DateTime.UtcNow.Date, boreholefile.Created?.Date);
-        Assert.AreEqual(adminUser.Name, boreholefile.CreatedBy.Name);
+        Assert.AreEqual(adminUser.SubjectId, boreholefile.CreatedBy.SubjectId);
         Assert.AreEqual(adminUser.Id, boreholefile.CreatedById);
         Assert.AreEqual(DateTime.UtcNow.Date, boreholefile.Updated?.Date);
-        Assert.AreEqual(adminUser.Name, boreholefile.UpdatedBy.Name);
+        Assert.AreEqual(adminUser.SubjectId, boreholefile.UpdatedBy.SubjectId);
         Assert.AreEqual(adminUser.Id, boreholefile.UpdatedById);
         Assert.AreEqual(DateTime.UtcNow.Date, boreholefile.Attached?.Date);
     }
@@ -142,9 +142,9 @@ public class BoreholeFileControllerTest
         var secondBoreholeFile = boreholeFilesOfBorehole.Value?.FirstOrDefault(bf => bf.File.Name == secondFileName);
 
         Assert.AreEqual(firstFileName, firstBoreholeFile.File.Name);
-        Assert.AreEqual(adminUser.Name, firstBoreholeFile.User.Name);
+        Assert.AreEqual(adminUser.SubjectId, firstBoreholeFile.User.SubjectId);
         Assert.AreEqual(secondFileName, secondBoreholeFile.File.Name);
-        Assert.AreEqual(adminUser.Name, secondBoreholeFile.User.Name);
+        Assert.AreEqual(adminUser.SubjectId, secondBoreholeFile.User.SubjectId);
         Assert.AreEqual(boreholeFilesBeforeUpload + 2, boreholeFilesOfBorehole.Value?.Count());
     }
 

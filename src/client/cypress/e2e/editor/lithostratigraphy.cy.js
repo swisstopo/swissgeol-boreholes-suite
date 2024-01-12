@@ -1,8 +1,8 @@
 import {
   createBorehole,
   createStratigraphy,
-  adminUserAuth,
-  login,
+  bearerAuth,
+  loginAsAdmin,
 } from "../testHelpers";
 
 describe("Tests for the lithostratigraphy editor.", () => {
@@ -34,29 +34,34 @@ describe("Tests for the lithostratigraphy editor.", () => {
             toDepth: 43,
           },
         ].forEach(layer => {
-          cy.request({
-            method: "POST",
-            url: "/api/v2/layer",
-            cache: "no-cache",
-            credentials: "same-origin",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: {
-              stratigraphyId: response.body.id,
-              ...layer,
-            },
-            auth: adminUserAuth,
-          }).then(response => {
-            expect(response).to.have.property("status", 200);
-          });
+          cy.get("@id_token").then(token =>
+            cy
+              .request({
+                method: "POST",
+                url: "/api/v2/layer",
+                cache: "no-cache",
+                credentials: "same-origin",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: {
+                  stratigraphyId: response.body.id,
+                  ...layer,
+                },
+                auth: bearerAuth(token),
+              })
+              .then(response => {
+                expect(response).to.have.property("status", 200);
+              }),
+          );
         });
       });
 
     // open lithostratigraphy editor
-    cy.get("@borehole_id").then(id =>
-      login(`editor/${id}/stratigraphy/lithostratigraphy`),
-    );
+    cy.get("@borehole_id").then(id => {
+      loginAsAdmin();
+      cy.visit(`editor/${id}/stratigraphy/lithostratigraphy`);
+    });
     cy.wait("@get-layers-by-profileId");
 
     // start editing session
