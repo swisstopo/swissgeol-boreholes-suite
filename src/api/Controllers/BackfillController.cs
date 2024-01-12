@@ -10,12 +10,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class BackfillController : BdmsControllerBase<Backfill>
 {
-    private readonly BdmsContext context;
-
     public BackfillController(BdmsContext context, ILogger<Backfill> logger)
         : base(context, logger)
     {
-        this.context = context;
     }
 
     /// <summary>
@@ -26,7 +23,7 @@ public class BackfillController : BdmsControllerBase<Backfill>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Backfill>> GetAsync([FromQuery] int? completionId = null)
     {
-        var backfills = context.Backfills
+        var backfills = Context.Backfills
             .Include(i => i.Material)
             .Include(i => i.Kind)
             .AsNoTracking();
@@ -46,7 +43,7 @@ public class BackfillController : BdmsControllerBase<Backfill>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Backfill>> GetByIdAsync(int id)
     {
-        var backfill = await context.Backfills
+        var backfill = await Context.Backfills
             .Include(i => i.Material)
             .Include(i => i.Kind)
             .AsNoTracking()

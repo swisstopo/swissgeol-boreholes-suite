@@ -10,12 +10,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class InstrumentationController : BdmsControllerBase<Instrumentation>
 {
-    private readonly BdmsContext context;
-
     public InstrumentationController(BdmsContext context, ILogger<Instrumentation> logger)
         : base(context, logger)
     {
-        this.context = context;
     }
 
     /// <summary>
@@ -26,7 +23,7 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Instrumentation>> GetAsync([FromQuery] int? completionId = null)
     {
-        var instrumentations = context.Instrumentations
+        var instrumentations = Context.Instrumentations
             .Include(i => i.Status)
             .Include(i => i.Kind)
             .AsNoTracking();
@@ -46,7 +43,7 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Instrumentation>> GetByIdAsync(int id)
     {
-        var instrumentation = await context.Instrumentations
+        var instrumentation = await Context.Instrumentations
             .Include(i => i.Status)
             .Include(i => i.Kind)
             .AsNoTracking()
