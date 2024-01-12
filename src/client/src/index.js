@@ -7,6 +7,7 @@ import i18n from "./i18n";
 import "./index.css";
 import "ol/ol.css";
 import App from "./App";
+import { BdmsAuthProvider } from "./BdmsAuthProvider";
 
 import "semantic-ui-css/semantic.css";
 
@@ -18,7 +19,9 @@ const root = createRoot(container);
 root.render(
   <I18nextProvider i18n={i18n}>
     <Provider store={store}>
-      <App />
+      <BdmsAuthProvider>
+        <App />
+      </BdmsAuthProvider>
     </Provider>
   </I18nextProvider>,
 );

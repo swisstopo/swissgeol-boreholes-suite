@@ -15,14 +15,14 @@ public class LegacyApiAuthenticationMiddleware(ILogger<LegacyApiAuthenticationMi
     {
         if (context.Request.Path.StartsWithSegments(new PathString("/api/v1"), StringComparison.OrdinalIgnoreCase))
         {
-            var userName = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-            if (userName is not null)
+            var subjectId = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            if (subjectId is not null)
             {
-                context.Request.Headers.Authorization = userName.Value;
+                context.Request.Headers.Authorization = subjectId.Value;
 
                 await next.Invoke(context).ConfigureAwait(false);
 
-                logger.LogInformation("Authorized user <{UserName}> for legacy api accessing route <{Route}>", userName.Value, context.Request.Path);
+                logger.LogInformation("Authorized user with subject_id <{SubjectId}> for legacy api accessing route <{Route}>", subjectId.Value, context.Request.Path);
                 return;
             }
         }

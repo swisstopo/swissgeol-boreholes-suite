@@ -83,7 +83,7 @@ class WorkflowForm extends React.Component {
     const { t } = this.props;
     if (
       this.props.borehole.data.lock === null ||
-      this.props.borehole.data.lock.username !== this.props.user.data.username
+      this.props.borehole.data.lock.id !== this.props.user.data.id
     ) {
       this.context.error(t("common:errorStartEditing"));
     } else {
@@ -108,8 +108,7 @@ class WorkflowForm extends React.Component {
     const filtered = workflows.data.filter(flow => flow.finished !== null);
 
     const readOnly =
-      borehole.data.lock === null ||
-      borehole.data.lock.username !== user.data.username;
+      borehole.data.lock === null || borehole.data.lock.id !== user.data.id;
 
     const supplier =
       borehole.data.workgroup && borehole.data.workgroup.supplier;
@@ -181,7 +180,7 @@ class WorkflowForm extends React.Component {
                     color: "#2185d0",
                   }}>
                   {flow.creator.name}{" "}
-                  {flow.creator.username === user.data.username ? (
+                  {flow.creator.id === user.data.id ? (
                     <span
                       style={{
                         color: "#787878",
@@ -601,8 +600,8 @@ class WorkflowForm extends React.Component {
                   onChange={(e, data) => {
                     if (
                       this.props.borehole.data.lock === null ||
-                      this.props.borehole.data.lock.username !==
-                        this.props.user.data.username
+                      this.props.borehole.data.lock.id !==
+                        this.props.user.data.id
                     ) {
                       this.context.error(t("common:errorStartEditing"));
                     } else {
@@ -640,8 +639,7 @@ class WorkflowForm extends React.Component {
                 <Button
                   disabled={
                     this.props.borehole.data.lock === null ||
-                    this.props.borehole.data.lock.username !==
-                      this.props.user.data.username
+                    this.props.borehole.data.lock.id !== this.props.user.data.id
                   }
                   fluid
                   loading={workflows.isRejecting === true}

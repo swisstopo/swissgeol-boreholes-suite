@@ -105,7 +105,7 @@ const Profile = props => {
     if (
       !(
         borehole?.data?.lock === null ||
-        borehole?.data?.lock.username !== user?.data?.username ||
+        borehole?.data?.lock.id !== user?.data?.id ||
         borehole?.data?.role !== "EDIT"
       )
     ) {

@@ -51,14 +51,14 @@ public class BoreholeFileUploadService
         using var transaction = context.Database.CurrentTransaction == null ? await context.Database.BeginTransactionAsync().ConfigureAwait(false) : null;
         try
         {
-            var userName = httpContextAccessor.HttpContext?.GetUserName();
+            var subjectId = httpContextAccessor.HttpContext?.GetUserSubjectId();
 
             var user = await context.Users
                 .AsNoTracking()
-                .SingleOrDefaultAsync(u => u.Name == userName)
+                .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
                 .ConfigureAwait(false);
 
-            if (user == null || userName == null) throw new InvalidOperationException($"No user with username <{userName}> found.");
+            if (user == null || subjectId == null) throw new InvalidOperationException($"No user with subject_id <{subjectId}> found.");
 
             // If file does not exist on storage, upload it and create file in database.
             if (fileId == null)

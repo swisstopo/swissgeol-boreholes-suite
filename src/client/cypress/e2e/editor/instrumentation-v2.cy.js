@@ -1,4 +1,4 @@
-import { loginAsAdmin, adminUserAuth, createBorehole } from "../testHelpers";
+import { loginAsAdmin, bearerAuth, createBorehole } from "../testHelpers";
 
 const openDropdown = dataCy => {
   cy.get(`[data-cy="${dataCy}"]`)
@@ -18,8 +18,8 @@ describe("Instrumentation crud tests", () => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
       .then(id =>
-        cy
-          .request({
+        cy.get("@id_token").then(token => {
+          cy.request({
             method: "POST",
             url: "/api/v2/completion",
             cache: "no-cache",
@@ -32,17 +32,18 @@ describe("Instrumentation crud tests", () => {
               isPrimary: true,
               kindId: 16000002,
             },
-            auth: adminUserAuth,
-          })
-          .then(response => {
+            auth: bearerAuth(token),
+          }).then(response => {
             expect(response).to.have.property("status", 200);
-          }),
+          });
+        }),
       );
 
     // open completion editor
-    cy.get("@borehole_id").then(id =>
-      loginAsAdmin(`/editor/${id}/completion/v2`),
-    );
+    cy.get("@borehole_id").then(id => {
+      loginAsAdmin();
+      cy.visit(`/editor/${id}/completion/v2`);
+    });
 
     cy.contains("Tabs");
 

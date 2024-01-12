@@ -21,6 +21,12 @@ public class User : IIdentifyable
     public string Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the <see cref="User"/>s subject id provided by oidc.
+    /// </summary>
+    [Column("subject_id")]
+    public string SubjectId { get; set; }
+
+    /// <summary>
     /// Gets or sets the <see cref="User"/>s firstname.
     /// </summary>
     [Column("firstname")]
@@ -70,6 +76,10 @@ public class User : IIdentifyable
     /// </summary>
     [NotMapped]
     public bool? Deletable { get; set; }
+
+    // TODO: Remove with #911
+    [Column("password")]
+    public string Password { get; set; }
 
     /// <inheritdoc/>
     public override string ToString() => Name;

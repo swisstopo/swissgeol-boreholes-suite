@@ -1,3 +1,4 @@
+const { getEnvJsContent } = require("./react-environment.js");
 const express = require("express");
 const path = require("path");
 
@@ -18,6 +19,10 @@ app.use(express.static(path.join(__dirname, "build")));
 
 app.get("/help/*", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "help", "index.html"));
+});
+
+app.get("/env.js", (req, res) => {
+  res.send(getEnvJsContent(process.env));
 });
 
 app.get("*", (req, res) => {

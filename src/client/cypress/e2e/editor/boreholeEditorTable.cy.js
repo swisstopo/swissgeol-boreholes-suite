@@ -1,8 +1,9 @@
-import { login } from "../../e2e/testHelpers";
+import { loginAsAdmin } from "../../e2e/testHelpers";
 
 describe("Borehole editor table tests", () => {
   it("preserves column sorting and active page when navigating", () => {
-    login("/editor");
+    loginAsAdmin();
+    cy.visit("/editor");
 
     // sort by name ascending
     cy.contains("th", "Original name").click();
