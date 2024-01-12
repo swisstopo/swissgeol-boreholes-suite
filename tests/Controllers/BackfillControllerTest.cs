@@ -1,0 +1,131 @@
+﻿using BDMS.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+
+namespace BDMS.Controllers;
+
+[TestClass]
+public class BackfillControllerTest
+{
+    private BdmsContext context;
+    private BackfillController controller;
+
+    [TestInitialize]
+    public void TestInitialize()
+    {
+        context = ContextFactory.GetTestContext();
+        controller = new BackfillController(context, new Mock<ILogger<Backfill>>().Object);
+        controller.ControllerContext.HttpContext = new DefaultHttpContext();
+    }
+
+    [TestCleanup]
+    public async Task TestCleanup()
+    {
+        await context.DisposeAsync();
+    }
+
+    [TestMethod]
+    public async Task GetAsync()
+    {
+        IEnumerable<Backfill>? backfills = await controller.GetAsync().ConfigureAwait(false);
+        Assert.IsNotNull(backfills);
+        Assert.AreEqual(500, backfills.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAsyncFilterByCompletionId()
+    {
+        // Precondition: Find a group of two backfills with the same completion id.
+        var completions = await context.Backfills.ToListAsync();
+        var completionId = completions
+            .GroupBy(i => i.CompletionId)
+            .Where(g => g.Count() == 2)
+            .First().Key;
+
+        IEnumerable<Backfill>? backfills = await controller.GetAsync(completionId).ConfigureAwait(false);
+        Assert.IsNotNull(backfills);
+        Assert.AreEqual(2, backfills.Count());
+    }
+
+    [TestMethod]
+    public async Task GetByIdAsync()
+    {
+        var backfillId = context.Backfills.First().Id;
+
+        var response = await controller.GetByIdAsync(backfillId).ConfigureAwait(false);
+        var backfill = ActionResultAssert.IsOkObjectResult<Backfill>(response.Result);
+        Assert.AreEqual(backfillId, backfill.Id);
+    }
+
+    [TestMethod]
+    public async Task CreateAsync()
+    {
+        var completionId = context.Completions.First().Id;
+        var backfill = new Backfill()
+        {
+            CompletionId = completionId,
+            MaterialId = context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Id,
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillKindSchema).Id,
+            Notes = "ARGONSHIP",
+            FromDepth = 0,
+            ToDepth = 100,
+        };
+
+        var response = await controller.CreateAsync(backfill);
+        ActionResultAssert.IsOkObjectResult<Backfill>(response.Result);
+
+        backfill = await context.Backfills.FindAsync(backfill.Id);
+        Assert.IsNotNull(backfill);
+        Assert.AreEqual(completionId, backfill.CompletionId);
+        Assert.AreEqual("ARGONSHIP", backfill.Notes);
+        Assert.AreEqual(0, backfill.FromDepth);
+        Assert.AreEqual(100, backfill.ToDepth);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Id, backfill.MaterialId);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillKindSchema).Id, backfill.KindId);
+    }
+
+    [TestMethod]
+    public async Task EditAsync()
+    {
+        var backfill = context.Backfills.First();
+        var completionId = backfill.CompletionId;
+
+        backfill.MaterialId = context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Id;
+        backfill.KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillKindSchema).Id;
+        backfill.Notes = "COLLAR";
+        backfill.FromDepth = 50;
+        backfill.ToDepth = 200;
+
+        var response = await controller.EditAsync(backfill);
+        ActionResultAssert.IsOkObjectResult<Backfill>(response.Result);
+
+        backfill = await context.Backfills.FindAsync(backfill.Id);
+        Assert.IsNotNull(backfill);
+        Assert.AreEqual(completionId, backfill.CompletionId);
+        Assert.AreEqual("COLLAR", backfill.Notes);
+        Assert.AreEqual(50, backfill.FromDepth);
+        Assert.AreEqual(200, backfill.ToDepth);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Id, backfill.MaterialId);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillKindSchema).Id, backfill.KindId);
+    }
+
+    [TestMethod]
+    public async Task DeleteBackfill()
+    {
+        var backfill = context.Backfills.First();
+
+        var completionCount = context.Completions.Count();
+        var backfillCount = context.Backfills.Count();
+
+        var response = await controller.DeleteAsync(backfill.Id);
+        ActionResultAssert.IsOk(response);
+
+        backfill = await context.Backfills.FindAsync(backfill.Id);
+        Assert.IsNull(backfill);
+        Assert.AreEqual(completionCount, context.Completions.Count());
+        Assert.AreEqual(backfillCount - 1, context.Backfills.Count());
+    }
+}
