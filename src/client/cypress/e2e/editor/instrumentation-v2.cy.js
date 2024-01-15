@@ -45,7 +45,7 @@ describe("Instrumentation crud tests", () => {
       cy.visit(`/editor/${id}/completion/v2`);
     });
 
-    cy.contains("Tabs");
+    cy.wait("@get-completions-by-boreholeId");
 
     // start editing session
     cy.contains("a", "Start editing").click();
