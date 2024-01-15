@@ -61,7 +61,9 @@ class DataLoader extends React.Component {
 
   render() {
     const isLoading =
-      this.props.auth?.isLoading || this.props.user?.authentication;
+      !this.props.auth ||
+      this.props.auth.isLoading ||
+      this.props.user?.authentication;
     return (
       <div
         style={{

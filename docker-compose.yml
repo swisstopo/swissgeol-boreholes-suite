@@ -70,8 +70,6 @@ services:
         condition: service_healthy
     environment:
       REACT_APP_PROXY_HOST_API: http://localhost:5000/
-      REACT_APP_CLIENT_AUTHORITY: http://localhost:4011/
-      REACT_APP_CLIENT_CLIENT_ID: bdms-client
       WATCHPACK_POLLING: 'true'
     extra_hosts:
       - "localhost:host-gateway"
