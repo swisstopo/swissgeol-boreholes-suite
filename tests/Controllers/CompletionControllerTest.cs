@@ -125,6 +125,7 @@ public class CompletionControllerTest
             BoreholeId = borehole.Id,
             Name = "AUTOTHUNDER",
             KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
+            IsPrimary = false,
         };
 
         var response = await controller.CreateAsync(completion).ConfigureAwait(false);
@@ -144,6 +145,7 @@ public class CompletionControllerTest
             BoreholeId = borehole.Id,
             Name = "STORMSTEED",
             Notes = "GALAXYJEEP",
+            IsPrimary = false,
         };
 
         response = await controller.CreateAsync(completionToAdd);
@@ -426,7 +428,7 @@ public class CompletionControllerTest
 
         completionThree = GetCompletion(completionThree.Id);
         Assert.AreNotEqual(null, completionThree);
-        Assert.AreEqual(true, completionThree.IsPrimary.GetValueOrDefault());
+        Assert.AreEqual(true, completionThree.IsPrimary);
     }
 
     private Completion? GetCompletion(int id)

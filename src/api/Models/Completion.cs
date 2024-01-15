@@ -28,7 +28,7 @@ public class Completion : IChangeTracking, IIdentifyable
     /// Gets or sets whether this <see cref="Completion"/> is the primary <see cref="Completion"/>.
     /// </summary>
     [Column("is_primary")]
-    public bool? IsPrimary { get; set; }
+    public bool IsPrimary { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Completion"/>'s name.

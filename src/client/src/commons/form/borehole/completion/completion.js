@@ -60,6 +60,9 @@ const Completion = props => {
     if (boreholeId && mounted.current) {
       getCompletions(boreholeId).then(response => {
         if (response?.length > 0) {
+          if (index === null) {
+            index = response.findIndex(c => c.isPrimary);
+          }
           setState({
             index: index,
             selected: response[index],
@@ -115,9 +118,8 @@ const Completion = props => {
         loadData(state.completions.length - 1);
       });
     } else {
-      var newTabIndex = completion.isPrimary ? 0 : state.index;
       updateCompletion(completion).then(() => {
-        loadData(newTabIndex);
+        loadData(state.index);
       });
     }
   };
@@ -141,7 +143,7 @@ const Completion = props => {
 
   useEffect(() => {
     mounted.current = true;
-    loadData(0);
+    loadData(null);
     return () => {
       mounted.current = false;
     };

@@ -32,10 +32,7 @@ public class CompletionController : BdmsControllerBase<Completion>
 
         if (boreholeId != null)
         {
-            completions = completions
-                .Where(c => c.BoreholeId == boreholeId)
-                .OrderByDescending(c => c.IsPrimary)
-                .ThenBy(c => c.Created);
+            completions = completions.Where(c => c.BoreholeId == boreholeId);
         }
 
         return await completions.ToListAsync().ConfigureAwait(false);
@@ -83,13 +80,17 @@ public class CompletionController : BdmsControllerBase<Completion>
                 .AnyAsync(s => s.BoreholeId == entity.BoreholeId)
                 .ConfigureAwait(false);
 
-            if (entity.IsPrimary == true)
-            {
-                var otherPrimaryCompletions = await Context.Completions
+            var otherPrimaryCompletions = await Context.Completions
                     .Where(c => c.BoreholeId == entity.BoreholeId && c.IsPrimary == true && c.Id != entity.Id)
                     .ToListAsync()
                     .ConfigureAwait(false);
 
+            if (entity.IsPrimary == false && otherPrimaryCompletions.Count == 0)
+            {
+                entity.IsPrimary = true;
+            }
+            else if (entity.IsPrimary == true && otherPrimaryCompletions.Count > 0)
+            {
                 foreach (var other in otherPrimaryCompletions)
                 {
                     other.IsPrimary = false;
@@ -97,10 +98,6 @@ public class CompletionController : BdmsControllerBase<Completion>
                 }
 
                 await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
-            }
-            else
-            {
-                entity.IsPrimary = !hasBoreholeExistingCompletion;
             }
 
             return await base.CreateAsync(entity).ConfigureAwait(false);
@@ -135,7 +132,7 @@ public class CompletionController : BdmsControllerBase<Completion>
 
             // If the completion to edit is the primary completion,
             // then reset any other primary completions of the borehole.
-            if (entity.IsPrimary.GetValueOrDefault())
+            if (entity.IsPrimary)
             {
                 var otherPrimaryCompletions = await Context.Completions
                     .Where(c => c.BoreholeId == entity.BoreholeId && c.IsPrimary == true && c.Id != entity.Id)
@@ -253,7 +250,7 @@ public class CompletionController : BdmsControllerBase<Completion>
 
             // If the completion to delete is the primary completion of a borehole,
             // then we need to set the latest completion as the primary completion, if possible.
-            if (completionToDelete.IsPrimary.GetValueOrDefault())
+            if (completionToDelete.IsPrimary)
             {
                 var latestCompletion = await Context.Completions
                     .Where(c => c.BoreholeId == completionToDelete.BoreholeId)

@@ -612,7 +612,7 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("creator");
 
-                    b.Property<bool?>("IsPrimary")
+                    b.Property<bool>("IsPrimary")
                         .HasColumnType("boolean")
                         .HasColumnName("is_primary");
 
