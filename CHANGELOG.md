@@ -8,6 +8,7 @@
 - Update stratigraphy management to use the .NET API.
 - Hide outer ring for disabled radio buttons.
 - Handle Authentication with a OpenID Connect.
+- Improved input behavior for various input fields. E.g. borehole name.
 
 ## v2.0.506 - 2023-12-21
 
