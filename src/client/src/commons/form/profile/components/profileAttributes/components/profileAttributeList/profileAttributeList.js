@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import * as Styled from "./styles";
 import { Input, TextArea, Form } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
@@ -14,6 +14,28 @@ const ProfileAttributeList = props => {
   const { attribute, showAll, updateChange, layer, isVisibleFunction } =
     props.data;
   const { t } = useTranslation();
+
+  const [inputDisplayValues, setInputDisplayValues] = useState({});
+
+  // This adds a delay to each keystroke before calling the updateChange method in the parent component.
+  // It prevents the API from being called too often.
+  const debouncedUpdateChange = useMemo(
+    () =>
+      _.debounce((value, newValue, to, isNumber) => {
+        updateChange(value, newValue, to, isNumber);
+      }, 2000),
+    [updateChange],
+  );
+
+  const updateInputDisplayValue = useCallback(
+    (value, inputValue) => {
+      setInputDisplayValues(prevInputDisplayValues => ({
+        ...prevInputDisplayValues,
+        [value]: inputValue,
+      }));
+    },
+    [setInputDisplayValues],
+  );
 
   return (
     <Styled.Container>
@@ -38,20 +60,25 @@ const ProfileAttributeList = props => {
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
-                      onChange={e =>
-                        updateChange(
+                      onChange={e => {
+                        updateInputDisplayValue(item.value, e.target.value);
+                        debouncedUpdateChange(
                           item.value,
                           e.target.value === ""
                             ? null
                             : parseIfString(e.target.value),
                           item?.to,
                           item?.isNumber,
-                        )
-                      }
+                        );
+                      }}
                       spellCheck="false"
                       style={{ width: "100%" }}
                       value={
-                        _.isNil(layer?.[item.value]) ? "" : layer[item.value]
+                        _.isNil(inputDisplayValues[item.value])
+                          ? _.isNil(layer?.[item.value])
+                            ? ""
+                            : layer[item.value]
+                          : inputDisplayValues[item.value]
                       }
                       thousandSeparator="'"
                     />
@@ -61,18 +88,23 @@ const ProfileAttributeList = props => {
                       autoCapitalize="off"
                       autoComplete="off"
                       autoCorrect="off"
-                      onChange={e =>
-                        updateChange(
+                      onChange={e => {
+                        updateInputDisplayValue(item.value, e.target.value);
+                        debouncedUpdateChange(
                           item.value,
                           e.target.value === "" ? null : e.target.value,
                           item?.to,
                           item?.isNumber,
-                        )
-                      }
+                        );
+                      }}
                       spellCheck="false"
                       style={{ width: "100%" }}
                       value={
-                        _.isNil(layer?.[item.value]) ? "" : layer[item.value]
+                        _.isNil(inputDisplayValues[item.value])
+                          ? _.isNil(layer?.[item.value])
+                            ? ""
+                            : layer[item.value]
+                          : inputDisplayValues[item.value]
                       }
                     />
                   )}
@@ -86,10 +118,17 @@ const ProfileAttributeList = props => {
                 <Styled.AttributesItem>
                   <TextArea
                     data-cy={item.value}
-                    onChange={e => updateChange(item.value, e.target.value)}
+                    onChange={e => {
+                      updateInputDisplayValue(item.value, e.target.value);
+                      debouncedUpdateChange(item.value, e.target.value);
+                    }}
                     style={{ width: "100%" }}
                     value={
-                      _.isNil(layer?.[item.value]) ? "" : layer[item.value]
+                      _.isNil(inputDisplayValues[item.value])
+                        ? _.isNil(layer?.[item.value])
+                          ? ""
+                          : layer[item.value]
+                        : inputDisplayValues[item.value]
                     }
                   />
                 </Styled.AttributesItem>
