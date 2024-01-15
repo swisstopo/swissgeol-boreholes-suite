@@ -21,6 +21,7 @@ import {
 import CompletionContent from "./completionContent";
 import CompletionHeaderInput from "./completionHeaderInput";
 import CompletionHeaderDisplay from "./completionHeaderDisplay";
+import Prompt from "../../../prompt/prompt";
 
 const CompletionTabs = styled(Tabs)({
   "& .MuiTabs-indicator": {
@@ -53,6 +54,7 @@ const Completion = props => {
   });
   const mounted = useRef(false);
   const [editing, setEditing] = useState(false);
+  const [showDeletePrompt, setShowDeletePrompt] = useState(false);
 
   const loadData = index => {
     if (boreholeId && mounted.current) {
@@ -127,7 +129,10 @@ const Completion = props => {
   };
 
   const deleteSelectedCompletion = () => {
-    // TODO: Show dialog
+    setShowDeletePrompt(true);
+  };
+
+  const onDeleteConfirmed = () => {
     var newTabIndex = state.index > 0 ? state.index - 1 : 0;
     deleteCompletion(state.selected.id).then(() => {
       loadData(newTabIndex);
@@ -235,6 +240,22 @@ const Completion = props => {
           </>
         )}
       </Stack>
+      <Prompt
+        open={showDeletePrompt}
+        setOpen={setShowDeletePrompt}
+        titleLabel="deleteCompletionTitle"
+        messageLabel="deleteCompletionMessage"
+        actions={[
+          {
+            label: "cancel",
+            action: null,
+          },
+          {
+            label: "delete",
+            action: onDeleteConfirmed,
+          },
+        ]}
+      />
     </>
   );
 };
