@@ -387,26 +387,46 @@ public class CompletionControllerTest
     public async Task DeleteMainCompletionSetsLatestCompletionAsPrimary()
     {
         // Precondition: Find a group of three completions with one main completion
-        var completions = await controller.GetAsync();
-        var completionTestCandidates = completions
-            .GroupBy(x => x.BoreholeId)
-            .Where(g => g.Count() > 1 && g.Count(x => x.IsPrimary.GetValueOrDefault()) == 1)
-            .ToList();
+        var borehole = new Borehole();
+        context.Boreholes.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
-        Assert.AreEqual(true, completionTestCandidates.Any(), "Precondition: There is at least one group of completions with one main completion");
+        var completionOne = new Completion
+        {
+            BoreholeId = borehole.Id,
+            Name = "AUTOTHUNDER",
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
+            IsPrimary = false,
+        };
+        await controller.CreateAsync(completionOne).ConfigureAwait(false);
+
+        var completionTwo = new Completion
+        {
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
+            BoreholeId = borehole.Id,
+            Name = "STORMSTEED",
+            Notes = "GALAXYJEEP",
+            IsPrimary = true,
+        };
+        await controller.CreateAsync(completionTwo).ConfigureAwait(false);
+
+        var completionThree = new Completion
+        {
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
+            BoreholeId = borehole.Id,
+            Name = "ENDUETRUCK",
+            IsPrimary = false,
+        };
+        await controller.CreateAsync(completionThree).ConfigureAwait(false);
 
         // Delete primary completion and assert that
         // the latest completion is now the main completion
-        var completionsUnderTest = completionTestCandidates.First();
-        var latestNonPrimaryCompletion = completionsUnderTest.Where(x => !x.IsPrimary.GetValueOrDefault()).OrderByDescending(x => x.Created).First();
-        var completionToDelete = completionsUnderTest.Single(x => x.IsPrimary.GetValueOrDefault());
+        await controller.DeleteAsync(completionTwo.Id).ConfigureAwait(false);
+        Assert.AreEqual(null, GetCompletion(completionTwo.Id));
 
-        await controller.DeleteAsync(completionToDelete.Id).ConfigureAwait(false);
-        Assert.AreEqual(null, GetCompletion(completionToDelete.Id));
-
-        latestNonPrimaryCompletion = GetCompletion(latestNonPrimaryCompletion.Id);
-        Assert.AreNotEqual(null, latestNonPrimaryCompletion);
-        Assert.AreEqual(true, latestNonPrimaryCompletion.IsPrimary.GetValueOrDefault());
+        completionThree = GetCompletion(completionThree.Id);
+        Assert.AreNotEqual(null, completionThree);
+        Assert.AreEqual(true, completionThree.IsPrimary.GetValueOrDefault());
     }
 
     private Completion? GetCompletion(int id)
