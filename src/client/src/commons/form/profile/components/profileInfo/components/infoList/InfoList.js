@@ -6,9 +6,32 @@ import DomainDropdown from "../../../../../domain/dropdown/domainDropdown";
 import DateField from "../../../../../dateField";
 import _ from "lodash";
 import CasingList from "../../../casingList";
+import { useCallback, useMemo, useState } from "react";
 
 const InfoList = props => {
   const { attribute, profileInfo, updateChange, casing } = props.data;
+
+  const [inputDisplayValues, setInputDisplayValues] = useState({});
+
+  // This adds a delay to each keystroke before calling the updateChange method in the parent component.
+  // It prevents the API from being called too often.
+  const debouncedUpdateChange = useMemo(
+    () =>
+      _.debounce((value, newValue, to, isNumber) => {
+        updateChange(value, newValue, to, isNumber);
+      }, 2000),
+    [updateChange],
+  );
+
+  const updateInputDisplayValue = useCallback(
+    (value, inputValue) => {
+      setInputDisplayValues(prevInputDisplayValues => ({
+        ...prevInputDisplayValues,
+        [value]: inputValue,
+      }));
+    },
+    [setInputDisplayValues],
+  );
 
   return (
     <>
@@ -27,20 +50,23 @@ const InfoList = props => {
                     autoCapitalize="off"
                     autoComplete="off"
                     autoCorrect="off"
-                    onChange={e =>
-                      updateChange(
+                    onChange={e => {
+                      updateInputDisplayValue(item.value, e.target.value);
+                      debouncedUpdateChange(
                         item.value,
                         e.target.value === "" ? null : e.target.value,
                         item?.to,
                         item?.isNumber,
-                      )
-                    }
+                      );
+                    }}
                     spellCheck="false"
                     style={{ width: "100%" }}
                     value={
-                      _.isNil(profileInfo?.[item.value])
-                        ? ""
-                        : profileInfo[item.value]
+                      _.isNil(inputDisplayValues[item.value])
+                        ? _.isNil(profileInfo?.[item.value])
+                          ? ""
+                          : profileInfo[item.value]
+                        : inputDisplayValues[item.value]
                     }
                   />
                 </Styled.AttributesItem>
