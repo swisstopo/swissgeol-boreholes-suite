@@ -138,6 +138,7 @@ describe("Test for the borehole form.", () => {
 
     cy.wait("@borehole");
     cy.wait("@get-layers-by-profileId");
+    cy.wait(5000);
 
     // Click on layer
     cy.get('[data-cy="stratigraphy-layer-0"]').scrollIntoView().click();
