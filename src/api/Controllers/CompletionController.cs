@@ -2,9 +2,9 @@
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 
 namespace BDMS.Controllers;
 
@@ -26,19 +26,16 @@ public class CompletionController : BdmsControllerBase<Completion>
     /// <param name="boreholeId">The id of the borehole containing the <see cref="Completion"/> to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<Completion>>> GetAsync([FromQuery] int? boreholeId = null)
+    public async Task<IEnumerable<Completion>> GetAsync([FromQuery] int? boreholeId = null)
     {
-        var completions = Context.Completions.AsNoTracking();
+        var completions = Context.Completions.Include(c => c.Kind).AsNoTracking();
 
         if (boreholeId != null)
         {
             completions = completions
                 .Where(c => c.BoreholeId == boreholeId)
-                .Include(c => c.Kind)
-                .AsNoTracking();
-            completions = completions
-            .OrderByDescending(c => c.IsPrimary)
-            .ThenBy(c => c.Created);
+                .OrderByDescending(c => c.IsPrimary)
+                .ThenBy(c => c.Created);
         }
 
         return await completions.ToListAsync().ConfigureAwait(false);
@@ -67,17 +64,17 @@ public class CompletionController : BdmsControllerBase<Completion>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override async Task<ActionResult<Completion>> CreateAsync(Completion entity)
+    public override async Task<ActionResult<Completion>> CreateAsync([Required] Completion entity)
     {
         if (entity == null) return BadRequest();
 
         try
         {
             // Check if associated borehole is locked
-            var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
-            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, userName).ConfigureAwait(false))
+            var subjectId = HttpContext.GetUserSubjectId();
+            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, subjectId).ConfigureAwait(false))
             {
-              return Problem("The borehole is locked by another user.");
+                return Problem("The borehole is locked by another user.");
             }
 
             // If the completion to create is the first completion of a borehole,
@@ -104,8 +101,51 @@ public class CompletionController : BdmsControllerBase<Completion>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<ActionResult<Completion>> EditAsync(Completion entity)
-        => base.EditAsync(entity);
+    public override async Task<ActionResult<Completion>> EditAsync([Required] Completion entity)
+    {
+        try
+        {
+            // Check if associated borehole is locked
+            var subjectId = HttpContext.GetUserSubjectId();
+            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, subjectId).ConfigureAwait(false))
+            {
+                return Problem("The borehole is locked by another user.");
+            }
+
+            var editResult = await base.EditAsync(entity).ConfigureAwait(false);
+            if (editResult.Result is not OkObjectResult) return editResult;
+
+            // If the completion to edit is the primary completion,
+            // then reset any other primary completions of the borehole.
+            if (entity.IsPrimary.GetValueOrDefault())
+            {
+                var otherPrimaryCompletions = await Context.Completions
+                    .Where(c => c.BoreholeId == entity.BoreholeId && c.IsPrimary == true && c.Id != entity.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+
+                foreach (var other in otherPrimaryCompletions)
+                {
+                    other.IsPrimary = false;
+                    Context.Update(other);
+                }
+
+                await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            }
+
+            return editResult;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized("You are not authorized to edit to this completion.");
+        }
+        catch (Exception ex)
+        {
+            var message = "An error ocurred while editing the completion.";
+            Logger.LogError(ex, message);
+            return Problem(message);
+        }
+    }
 
     /// <summary>
     /// Asynchronously copies a <see cref="Completion"/>.
@@ -116,75 +156,112 @@ public class CompletionController : BdmsControllerBase<Completion>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<int>> CopyAsync([Required] int id)
     {
-        Logger.LogInformation("Copy completion with id <{CompletionId}>", id);
-
-        var user = await Context.Users
-            .Include(u => u.WorkgroupRoles)
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.Name == HttpContext.User.FindFirst(ClaimTypes.Name).Value)
-            .ConfigureAwait(false);
-
-        if (user == null || !user.WorkgroupRoles.Any(w => w.Role == Role.Editor))
+        try
         {
-            return Unauthorized();
+            var completion = await Context.Completions
+                .Include(c => c.Instrumentations)
+                .Include(c => c.Backfills)
+                .AsNoTracking()
+                .SingleOrDefaultAsync(b => b.Id == id)
+                .ConfigureAwait(false);
+
+            if (completion == null)
+            {
+                return NotFound();
+            }
+
+            // Check if associated borehole is locked
+            var subjectId = HttpContext.GetUserSubjectId();
+            if (await boreholeLockService.IsBoreholeLockedAsync(completion.BoreholeId, subjectId).ConfigureAwait(false))
+            {
+                return Problem("The borehole is locked by another user.");
+            }
+
+            // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
+            completion.Id = 0;
+
+            foreach (var instrumentation in completion.Instrumentations)
+            {
+                instrumentation.Id = 0;
+            }
+
+            foreach (var backfill in completion.Backfills)
+            {
+                backfill.Id = 0;
+            }
+
+            completion.Name += " (Clone)";
+            completion.IsPrimary = false;
+
+            var entityEntry = await Context.AddAsync(completion).ConfigureAwait(false);
+            await Context.SaveChangesAsync().ConfigureAwait(false);
+
+            return Ok(entityEntry.Entity.Id);
         }
-
-        // TODO: Add relevant includes
-        var completion = await Context.Completions
-            .Include(c => c.Kind)
-            .AsNoTracking()
-            .SingleOrDefaultAsync(b => b.Id == id)
-            .ConfigureAwait(false);
-
-        if (completion == null)
+        catch (UnauthorizedAccessException)
         {
-            return NotFound();
+            return Unauthorized("You are not authorized to copy this completion.");
         }
-
-        // TODO: Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
-        completion.Id = 0;
-
-        completion.Name += " (Clone)";
-        completion.IsPrimary = false;
-
-        var entityEntry = await Context.AddAsync(completion).ConfigureAwait(false);
-        await Context.SaveChangesAsync().ConfigureAwait(false);
-
-        return Ok(entityEntry.Entity.Id);
+        catch (Exception ex)
+        {
+            var message = "An error ocurred while copying the completion.";
+            Logger.LogError(ex, message);
+            return Problem(message);
+        }
     }
 
     /// <inheritdoc />
     /// <remarks>Automatically sets the remaining and latest completion as the primary completion, if possible.</remarks>
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override async Task<IActionResult> DeleteAsync(int id)
+    public override async Task<IActionResult> DeleteAsync([Required] int id)
     {
-        var completionToDelete = await Context.Completions.FindAsync(id).ConfigureAwait(false);
-        if (completionToDelete == null)
+        try
         {
-            return NotFound();
-        }
-
-        Context.Remove(completionToDelete);
-        await Context.SaveChangesAsync().ConfigureAwait(false);
-
-        // If the completion to delete is the primary completion of a borehole,
-        // then we need to set the latest completion as the primary completion, if possible.
-        if (completionToDelete.IsPrimary.GetValueOrDefault())
-        {
-            var latestCompletion = await Context.Stratigraphies
-                .Where(s => s.BoreholeId == completionToDelete.BoreholeId)
-                .OrderByDescending(s => s.Created)
-                .FirstOrDefaultAsync()
-                .ConfigureAwait(false);
-
-            if (latestCompletion != null)
+            var completionToDelete = await Context.Completions.FindAsync(id).ConfigureAwait(false);
+            if (completionToDelete == null)
             {
-                latestCompletion.IsPrimary = true;
-                Context.Update(latestCompletion);
-                await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+                return NotFound();
             }
-        }
 
-        return Ok();
+            // Check if associated borehole is locked
+            var subjectId = HttpContext.GetUserSubjectId();
+            if (await boreholeLockService.IsBoreholeLockedAsync(completionToDelete.BoreholeId, subjectId).ConfigureAwait(false))
+            {
+                return Problem("The borehole is locked by another user.");
+            }
+
+            Context.Remove(completionToDelete);
+            await Context.SaveChangesAsync().ConfigureAwait(false);
+
+            // If the completion to delete is the primary completion of a borehole,
+            // then we need to set the latest completion as the primary completion, if possible.
+            if (completionToDelete.IsPrimary.GetValueOrDefault())
+            {
+                var latestCompletion = await Context.Completions
+                    .Where(c => c.BoreholeId == completionToDelete.BoreholeId)
+                    .OrderByDescending(c => c.Created)
+                    .FirstOrDefaultAsync()
+                    .ConfigureAwait(false);
+
+                if (latestCompletion != null)
+                {
+                    latestCompletion.IsPrimary = true;
+                    Context.Update(latestCompletion);
+                    await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+                }
+            }
+
+            return Ok();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized("You are not authorized to delete this completion.");
+        }
+        catch (Exception ex)
+        {
+            var message = "An error ocurred while deleting the completion.";
+            Logger.LogError(ex, message);
+            return Problem(message);
+        }
     }
 }
