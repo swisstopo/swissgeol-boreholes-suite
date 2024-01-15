@@ -29,8 +29,8 @@ const ProfileAttributeList = props => {
 
   const updateInputDisplayValue = useCallback(
     (value, inputValue) => {
-      setInputDisplayValues(previnputDisplayValues => ({
-        ...previnputDisplayValues,
+      setInputDisplayValues(prevInputDisplayValues => ({
+        ...prevInputDisplayValues,
         [value]: inputValue,
       }));
     },
