@@ -163,7 +163,7 @@ class MenuComponent extends React.Component {
                     <span
                       className="link linker"
                       onClick={() => {
-                        this.props.auth.removeUser();
+                        this.props.auth.signoutRedirect();
                         if (_.isFunction(handleModeChange)) {
                           handleModeChange("viewer");
                         }

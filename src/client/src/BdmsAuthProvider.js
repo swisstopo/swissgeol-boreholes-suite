@@ -54,6 +54,7 @@ export const BdmsAuthProvider = props => {
       client_id: serverConfig.audience,
       scope: "openid profile email",
       redirect_uri: window.location.origin + window.location.pathname,
+      post_logout_redirect_uri: window.location.origin,
       userStore: new WebStorageStateStore({ store: window.localStorage }),
       onSigninCallback,
     });
