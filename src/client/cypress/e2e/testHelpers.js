@@ -56,7 +56,7 @@ export const interceptApiCalls = () => {
     return (req.alias = `hydrotest_${req.method}`);
   });
 
-  cy.intercept("/api/v2/completion/boreholeId=**").as(
+  cy.intercept("/api/v2/completion?boreholeId=**").as(
     "get-completions-by-boreholeId",
   );
   cy.intercept("/api/v2/instrumentation*", req => {
