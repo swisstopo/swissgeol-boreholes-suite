@@ -4,11 +4,8 @@ describe("Codelist translations tests", () => {
   it("Admin can open codelist translation section", () => {
     // Login and navigate to editor settings
     loginAsAdmin();
-    cy.get("div[id=map]").should("be.visible");
+    cy.visit("/setting/editor");
 
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Settings").click();
-    cy.contains("h3", "Editor").click();
     cy.get("button").should("not.contain", "Collapse");
 
     cy.contains("div", "Codelist translations")
@@ -22,11 +19,7 @@ describe("Codelist translations tests", () => {
 
   it("Admin can edit translations", () => {
     loginAsAdmin();
-    cy.get("div[id=map]").should("be.visible");
-
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Settings").click();
-    cy.contains("h3", "Editor").click();
+    cy.visit("/setting/editor");
     cy.contains("div", "Codelist translations")
       .parent("div")
       .children("div")
@@ -88,22 +81,14 @@ describe("Codelist translations tests", () => {
 
   it("Editor cannot open codelist translation section", () => {
     loginAsEditorInViewerMode();
-    cy.get("div[id=map]").should("be.visible");
-
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Settings").click();
-    cy.contains("h3", "Editor").click();
+    cy.visit("/setting/editor");
     // Codelist translation section is not available
     cy.get("div").should("not.contain", "Codelist translations");
   });
 
   it("Admin can edit order", () => {
     loginAsAdmin();
-    cy.get("div[id=map]").should("be.visible");
-
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Settings").click();
-    cy.contains("h3", "Editor").click();
+    cy.visit("/setting/editor");
     cy.contains("div", "Codelist translations")
       .parent("div")
       .children("div")

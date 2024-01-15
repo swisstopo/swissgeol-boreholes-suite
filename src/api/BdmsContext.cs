@@ -37,6 +37,7 @@ public class BdmsContext : DbContext
     public DbSet<FieldMeasurement> FieldMeasurements { get; set; }
     public DbSet<Completion> Completions { get; set; }
     public DbSet<Instrumentation> Instrumentations { get; set; }
+    public DbSet<Backfill> Backfills { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)
@@ -52,12 +53,12 @@ public class BdmsContext : DbContext
     /// </summary>
     public async Task<int> UpdateChangeInformationAndSaveChangesAsync(HttpContext httpContext)
     {
-        var userName = httpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
+        var subjectId = httpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         var entities = ChangeTracker.Entries<IChangeTracking>();
         var user = await Users
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.Name == userName)
+            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
             .ConfigureAwait(false);
 
         foreach (var entity in entities)

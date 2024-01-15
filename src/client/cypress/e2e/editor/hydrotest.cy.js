@@ -1,4 +1,8 @@
-import { createBorehole, createStratigraphy, login } from "../testHelpers";
+import {
+  createBorehole,
+  createStratigraphy,
+  loginAsAdmin,
+} from "../testHelpers";
 
 const openDropdown = dataCy => {
   cy.get(`[data-cy="${dataCy}"]`)
@@ -34,9 +38,10 @@ describe("Tests for the hydrotest editor.", () => {
       });
 
     // open hydrotest editor
-    cy.get("@borehole_id").then(id =>
-      login(`editor/${id}/hydrogeology/hydrotest`),
-    );
+    cy.get("@borehole_id").then(id => {
+      loginAsAdmin();
+      cy.visit(`editor/${id}/hydrogeology/hydrotest`);
+    });
 
     // start editing session
     cy.contains("a", "Start editing").click();

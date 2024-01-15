@@ -1,4 +1,8 @@
-import { createBorehole, createStratigraphy, login } from "../testHelpers";
+import {
+  createBorehole,
+  createStratigraphy,
+  loginAsAdmin,
+} from "../testHelpers";
 
 describe("Tests for the groundwater level measurement editor.", () => {
   beforeEach(function () {
@@ -11,9 +15,10 @@ describe("Tests for the groundwater level measurement editor.", () => {
       });
 
     // open groundwater level measurement editor
-    cy.get("@borehole_id").then(id =>
-      login(`editor/${id}/hydrogeology/groundwaterlevelmeasurement`),
-    );
+    cy.get("@borehole_id").then(id => {
+      loginAsAdmin();
+      cy.visit(`editor/${id}/hydrogeology/groundwaterlevelmeasurement`);
+    });
 
     // start editing session
     cy.contains("a", "Start editing").click();
