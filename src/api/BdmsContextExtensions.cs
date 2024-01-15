@@ -85,8 +85,8 @@ public static class BdmsContextExtensions
         List<int> humidityIds = codelists.Where(c => c.Schema == "mlpr105").Select(s => s.Id).ToList();
         List<int> alterationIds = codelists.Where(c => c.Schema == "mlpr106").Select(s => s.Id).ToList();
         List<int> cohesionIds = codelists.Where(c => c.Schema == "mlpr116").Select(s => s.Id).ToList();
-        List<int> fillKindIds = codelists.Where(c => c.Schema == "fill100").Select(s => s.Id).ToList();
-        List<int> fillMaterialIds = codelists.Where(c => c.Schema == "fill200").Select(s => s.Id).ToList();
+        List<int> backfillKindIds = codelists.Where(c => c.Schema == CompletionSchemas.BackfillKindSchema).Select(s => s.Id).ToList();
+        List<int> backfillMaterialIds = codelists.Where(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Select(s => s.Id).ToList();
         List<int> uscsIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();
         List<int> uscsDeterminationIds = codelists.Where(c => c.Schema == "mcla104").Select(s => s.Id).ToList();
         List<int> gradationIds = codelists.Where(c => c.Schema == "gradation").Select(s => s.Id).ToList();
@@ -340,9 +340,9 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.CreatedBy, _ => default!)
             .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
             .RuleFor(o => o.UpdatedBy, _ => default!)
-            .RuleFor(o => o.FillKindId, f => f.PickRandom(fillKindIds).OrNull(f, .05f))
+            .RuleFor(o => o.FillKindId, f => f.PickRandom(backfillKindIds).OrNull(f, .05f))
             .RuleFor(o => o.FillKind, _ => default!)
-            .RuleFor(o => o.FillMaterialId, f => f.PickRandom(fillMaterialIds).OrNull(f, .05f))
+            .RuleFor(o => o.FillMaterialId, f => f.PickRandom(backfillMaterialIds).OrNull(f, .05f))
             .RuleFor(o => o.FillMaterial, _ => default!)
             .RuleFor(o => o.GradationId, f => f.PickRandom(gradationIds).OrNull(f, .05f))
             .RuleFor(o => o.Gradation, f => default!)
@@ -403,13 +403,13 @@ public static class BdmsContextExtensions
 
         context.BulkInsert(layersToInsert, bulkConfig);
 
-        // Seed workflows
+        // Seed workflows for admin user
         var workflow_ids = 8_000_000;
         var workflowRange = Enumerable.Range(workflow_ids, boreholeRange.Count);
         var fakeWorkflows = new Faker<Workflow>()
                .StrictMode(true)
                .RuleFor(o => o.Id, f => workflow_ids++)
-               .RuleFor(o => o.UserId, f => f.PickRandom(userRange))
+               .RuleFor(o => o.UserId, userRange.First())
                .RuleFor(o => o.User, _ => default!)
                .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
                .RuleFor(o => o.Borehole, _ => default!)
@@ -744,16 +744,49 @@ public static class BdmsContextExtensions
             .RuleFor(i => i.UpdatedBy, _ => default!)
             .RuleFor(i => i.Id, f => instrumentation_ids++);
 
-        Instrumentation SeedeInstrumentation(Completion completion)
+        Instrumentation SeededInstrumentation(Completion completion)
         {
             return fakeInstrumentation
                 .UseSeed(completion.Id)
                 .Generate();
         }
 
-        var instrumentations = completions.Select(c => SeedeInstrumentation(c)).ToList();
+        var instrumentations = completions.Select(c => SeededInstrumentation(c)).ToList();
 
         context.BulkInsert(instrumentations, bulkConfig);
+
+        context.SaveChanges();
+
+        // Seed Backfill
+        var backfill_ids = 16_000_000;
+        var fakeBackfill = new Faker<Backfill>()
+            .RuleFor(b => b.CompletionId, f => f.PickRandom(completions.Select(c => c.Id)))
+            .RuleFor(b => b.Completion, _ => default!)
+            .RuleFor(b => b.FromDepth, f => (backfill_ids % 10) * 10)
+            .RuleFor(b => b.ToDepth, f => ((backfill_ids % 10) + 1) * 10)
+            .RuleFor(b => b.KindId, f => f.PickRandom(backfillKindIds))
+            .RuleFor(b => b.Kind, _ => default!)
+            .RuleFor(b => b.MaterialId, f => f.PickRandom(backfillMaterialIds))
+            .RuleFor(b => b.Material, _ => default!)
+            .RuleFor(i => i.Notes, f => f.Random.Words(4))
+            .RuleFor(i => i.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(i => i.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(i => i.CreatedBy, _ => default!)
+            .RuleFor(i => i.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(i => i.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(i => i.UpdatedBy, _ => default!)
+            .RuleFor(i => i.Id, f => backfill_ids++);
+
+        Backfill SeededBackfill(Completion completion)
+        {
+            return fakeBackfill
+                .UseSeed(completion.Id)
+                .Generate();
+        }
+
+        var backfills = completions.Select(c => SeededBackfill(c)).ToList();
+
+        context.BulkInsert(backfills, bulkConfig);
 
         context.SaveChanges();
 

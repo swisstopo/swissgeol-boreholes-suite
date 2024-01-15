@@ -9,8 +9,8 @@ namespace BDMS;
 [TestClass]
 public class BoreholeLockServiceTest
 {
-    private const string EditorSubjectId = "sub_editor";
-    private const int EditorUserId = 2;
+    private const string AdminSubjectId = "sub_admin";
+    private const int AdminUserId = 1;
 
     private BoreholeLockService boreholeLockService;
     private BdmsContext context;
@@ -38,7 +38,7 @@ public class BoreholeLockServiceTest
 
     [TestMethod]
     public async Task IsBoreholeLockedWithUnknownBorehole()
-        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholeLockService.IsBoreholeLockedAsync(null, EditorSubjectId));
+        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholeLockService.IsBoreholeLockedAsync(null, AdminSubjectId));
 
     [TestMethod]
     public async Task IsBoreholeLockedWithUnauthorizedUser()
@@ -50,49 +50,49 @@ public class BoreholeLockServiceTest
     [TestMethod]
     public async Task IsBoreholeLockedByOtherUser()
     {
-        var borehole = GetLockedBorehole(lockedByEditor: false);
+        var borehole = GetLockedBorehole(lockedByAdmin: false);
 
         // Fake a date which is within the lock timeout
         var timeProviderMock = CreateTimeProviderMock(borehole.Locked.Value.AddMinutes(1));
         boreholeLockService = new BoreholeLockService(context, new Mock<ILogger<BoreholeLockService>>().Object, timeProviderMock.Object);
 
-        Assert.AreEqual(true, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, EditorSubjectId));
+        Assert.AreEqual(true, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, AdminSubjectId));
     }
 
     [TestMethod]
     public async Task CreateForLockedBoreholeBySameUser()
     {
-        var borehole = GetLockedBorehole(lockedByEditor: true);
+        var borehole = GetLockedBorehole(lockedByAdmin: true);
 
         // Fake a date which is within the lock timeout
         var fakeUtcDate = borehole.Locked.Value.AddMinutes(BoreholeLockService.LockTimeoutInMinutes - 1);
         var timeProviderMock = CreateTimeProviderMock(fakeUtcDate);
         boreholeLockService = new BoreholeLockService(context, new Mock<ILogger<BoreholeLockService>>().Object, timeProviderMock.Object);
 
-        Assert.AreEqual(false, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, EditorSubjectId));
+        Assert.AreEqual(false, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, AdminSubjectId));
     }
 
     [TestMethod]
     public async Task CreateForLockedBoreholeWithElapsedLockTimeout()
     {
-        var borehole = GetLockedBorehole(lockedByEditor: false);
+        var borehole = GetLockedBorehole(lockedByAdmin: false);
 
         // Fake a date which is after the lock timeout
         var fakeUtcDate = borehole.Locked.Value.AddMinutes(BoreholeLockService.LockTimeoutInMinutes + 1);
         var timeProviderMock = CreateTimeProviderMock(fakeUtcDate);
         boreholeLockService = new BoreholeLockService(context, new Mock<ILogger<BoreholeLockService>>().Object, timeProviderMock.Object);
 
-        Assert.AreEqual(false, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, EditorSubjectId));
+        Assert.AreEqual(false, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, AdminSubjectId));
     }
 
-    private Borehole GetLockedBorehole(bool lockedByEditor)
+    private Borehole GetLockedBorehole(bool lockedByAdmin)
     {
-        bool LockedCondition(Borehole borehole) => lockedByEditor ? borehole.LockedById == EditorUserId : borehole.LockedById != EditorUserId;
+        bool LockedCondition(Borehole borehole) => lockedByAdmin ? borehole.LockedById == AdminUserId : borehole.LockedById != AdminUserId;
 
         return context
             .Boreholes
             .Include(b => b.Workflows)
-            .Where(b => b.Workflows.Any(w => w.UserId == EditorUserId))
+            .Where(b => b.Workflows.Any(w => w.UserId == AdminUserId))
             .AsEnumerable()
             .First(b => b.Locked.HasValue && LockedCondition(b));
     }
