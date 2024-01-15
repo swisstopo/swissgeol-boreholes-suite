@@ -536,7 +536,7 @@ class MapComponent extends React.Component {
         console.error("Feature not found.");
       }
     }
-    if (refresh) {
+    if (refresh && this.selectClick && this.points) {
       this.selectClick.getFeatures().clear();
       this.points.changed();
     }

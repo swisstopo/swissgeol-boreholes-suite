@@ -37,6 +37,7 @@ public class BdmsContext : DbContext
     public DbSet<FieldMeasurement> FieldMeasurements { get; set; }
     public DbSet<Completion> Completions { get; set; }
     public DbSet<Instrumentation> Instrumentations { get; set; }
+    public DbSet<Backfill> Backfills { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)
