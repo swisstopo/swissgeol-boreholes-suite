@@ -34,6 +34,8 @@ describe("Test for the borehole form.", () => {
 
     cy.contains("Show all fields").children(".checkbox").click();
 
+    cy.get('[data-cy="toDepth"]').click().clear().type(50);
+
     // fill all dropdowns in layer
     cy.get('[data-cy="domain-dropdown"]')
       .should("have.length", 20)
@@ -135,6 +137,7 @@ describe("Test for the borehole form.", () => {
     cy.get(".table tbody").children().first().scrollIntoView().click();
 
     cy.wait("@borehole");
+    cy.wait("@get-layers-by-profileId");
     cy.wait(5000);
 
     // Click on layer
