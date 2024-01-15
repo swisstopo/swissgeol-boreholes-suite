@@ -3,6 +3,7 @@ version: '3'
 services:
   minio:
     image: minio/minio
+    restart: unless-stopped
     environment:
       MINIO_ROOT_USER: REDSQUIRREL
       MINIO_ROOT_PASSWORD: YELLOWMONKEY
@@ -14,6 +15,7 @@ services:
       - 9000:9000
   db:
     image: postgis/postgis:14-3.3-alpine
+    restart: unless-stopped
     volumes:
       - ./db:/docker-entrypoint-initdb.d
     ports:
@@ -30,6 +32,7 @@ services:
       start_period: 25s
   pgadmin:
     image: dpage/pgadmin4
+    restart: unless-stopped
     ports:
       - 3001:80
     environment:
@@ -56,7 +59,6 @@ services:
       args:
         - VERSION=0.0.99
         - REVISION=dev
-    restart: unless-stopped
     volumes:
       - .:/app
       - /app/src/client/node_modules
@@ -101,7 +103,6 @@ services:
     build:
       context: ./src/api
       target: development
-    restart: unless-stopped
     ports:
       - 5000:5000
     volumes:
@@ -130,6 +131,7 @@ services:
       - "localhost:host-gateway"
   oidc-server:
     image: soluto/oidc-server-mock
+    restart: unless-stopped
     ports:
       - "4011:80"
     environment:
