@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Box,
@@ -13,7 +13,6 @@ import {
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
 import { useDomains } from "../../../../api/fetchApiV2";
-import { AlertContext } from "../../../alert/alertContext";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import {
   TextfieldWithMarginRight,
@@ -29,9 +28,7 @@ const InstrumentationInput = ({
 }) => {
   const domains = useDomains();
   const { t, i18n } = useTranslation();
-  const { handleSubmit, register, control, formState, getValues, trigger } =
-    useForm();
-  const alertContext = useContext(AlertContext);
+  const { handleSubmit, register, control, formState, trigger } = useForm();
 
   // trigger form validation on mount
   useEffect(() => {
@@ -39,16 +36,7 @@ const InstrumentationInput = ({
   }, [trigger]);
 
   const closeFormIfCompleted = () => {
-    const formValues = getValues();
-    if (
-      !formValues.fromDepth ||
-      !formValues.toDepth ||
-      !formValues.kindId ||
-      !formValues.statusId ||
-      !formValues.name
-    ) {
-      alertContext.error(t("instrumentationRequiredFieldsAlert"));
-    } else {
+    if (formState.isValid) {
       handleSubmit(submitForm)();
       setSelectedInstrumentation(null);
     }
