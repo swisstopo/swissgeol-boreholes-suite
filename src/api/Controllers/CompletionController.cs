@@ -83,7 +83,25 @@ public class CompletionController : BdmsControllerBase<Completion>
                 .AnyAsync(s => s.BoreholeId == entity.BoreholeId)
                 .ConfigureAwait(false);
 
-            entity.IsPrimary = !hasBoreholeExistingCompletion;
+            if (entity.IsPrimary == true)
+            {
+                var otherPrimaryCompletions = await Context.Completions
+                    .Where(c => c.BoreholeId == entity.BoreholeId && c.IsPrimary == true && c.Id != entity.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+
+                foreach (var other in otherPrimaryCompletions)
+                {
+                    other.IsPrimary = false;
+                    Context.Update(other);
+                }
+
+                await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            }
+            else
+            {
+                entity.IsPrimary = !hasBoreholeExistingCompletion;
+            }
 
             return await base.CreateAsync(entity).ConfigureAwait(false);
         }

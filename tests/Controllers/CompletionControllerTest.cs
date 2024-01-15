@@ -137,32 +137,43 @@ public class CompletionControllerTest
 
         // Because the completion is the first one for the borehole, it is automatically the primary completion.
         Assert.AreEqual(true, completion.IsPrimary);
-    }
-
-    [TestMethod]
-    public async Task CreateAdditionalCompletionForExistingBorehole()
-    {
-        var boreholeWithExistingCompletion = await context
-            .Boreholes
-            .Include(b => b.Completions)
-            .FirstAsync(b => b.Completions.Any());
 
         var completionToAdd = new Completion
         {
             KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
-            BoreholeId = boreholeWithExistingCompletion.Id,
+            BoreholeId = borehole.Id,
             Name = "STORMSTEED",
             Notes = "GALAXYJEEP",
         };
 
-        var createResult = await controller.CreateAsync(completionToAdd);
-        ActionResultAssert.IsOk(createResult.Result);
+        response = await controller.CreateAsync(completionToAdd);
+        ActionResultAssert.IsOk(response.Result);
 
-        var createdCompletion = (Completion?)((OkObjectResult)createResult.Result!).Value;
-        createdCompletion = GetCompletion(createdCompletion.Id);
+        var secondCompletion = (Completion?)((OkObjectResult)response.Result!).Value;
+        secondCompletion = GetCompletion(secondCompletion.Id);
 
         // Because the completion is the second one for the borehole, it is not automatically the primary completion.
-        Assert.AreEqual(false, createdCompletion.IsPrimary);
+        Assert.AreEqual(false, secondCompletion.IsPrimary);
+
+        var primaryCompletionToAdd = new Completion
+        {
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CompletionKindSchema).Id,
+            BoreholeId = borehole.Id,
+            Name = "ENDUETRUCK",
+            IsPrimary = true,
+        };
+
+        response = await controller.CreateAsync(primaryCompletionToAdd);
+        ActionResultAssert.IsOk(response.Result);
+
+        var thirdCompletion = (Completion?)((OkObjectResult)response.Result!).Value;
+        thirdCompletion = GetCompletion(thirdCompletion.Id);
+
+        // Because the completion was marked as primary, the first completion is no longer primary.
+        Assert.AreEqual(true, thirdCompletion.IsPrimary);
+
+        completion = GetCompletion(completion.Id);
+        Assert.AreEqual(false, completion.IsPrimary);
     }
 
     [TestMethod]
@@ -398,7 +409,8 @@ public class CompletionControllerTest
         Assert.AreEqual(true, latestNonPrimaryCompletion.IsPrimary.GetValueOrDefault());
     }
 
-    private Completion? GetCompletion(int id) {
+    private Completion? GetCompletion(int id)
+    {
         return context.Completions
         .Include(s => s.CreatedBy)
         .Include(s => s.UpdatedBy)
