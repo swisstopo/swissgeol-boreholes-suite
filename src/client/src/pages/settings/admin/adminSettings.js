@@ -170,6 +170,7 @@ class AdminSettings extends React.Component {
                   <TranslationText id="username" />
                 </label>
                 <div
+                  data-cy="administration-username-label"
                   className="ui fluid input"
                   style={{
                     alignItems: "center",
@@ -185,6 +186,7 @@ class AdminSettings extends React.Component {
                   <TranslationText id="firstname" />
                 </label>
                 <div
+                  data-cy="administration-firstname-label"
                   className="ui fluid input"
                   style={{
                     alignItems: "center",
@@ -200,6 +202,7 @@ class AdminSettings extends React.Component {
                   <TranslationText id="lastname" />
                 </label>
                 <div
+                  data-cy="administration-lastname-label"
                   className="ui fluid input"
                   style={{
                     alignItems: "center",
@@ -233,7 +236,7 @@ class AdminSettings extends React.Component {
                         : null
                     }>
                     <Checkbox
-                      data-cy="admin-checkbox"
+                      data-cy="administration-admin-checkbox"
                       checked={this.state.uAdmin}
                       disabled={this.state.uId == null}
                       onChange={() => {
@@ -252,7 +255,7 @@ class AdminSettings extends React.Component {
                 }}>
                 <Form.Button
                   icon
-                  data-cy="add-user-button"
+                  data-cy="administration-save-user-button"
                   label="&nbsp;"
                   disabled={this.state.uId == null}
                   onClick={() => {
