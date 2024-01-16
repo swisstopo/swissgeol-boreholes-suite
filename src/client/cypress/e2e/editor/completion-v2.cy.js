@@ -195,7 +195,11 @@ describe("completion crud tests", () => {
     setTab(1);
     handlePrompt("Unsaved changes", "cancel");
     isTabSelected(0);
-    cy.contains("Compl-1 updated");
+    cy.get("input")
+      .filter((k, input) => {
+        return input.value.includes("Compl-1 updated");
+      })
+      .should("have.length", 1);
     setTab(1);
     handlePrompt("Unsaved changes", "reset");
     isTabSelected(1);
