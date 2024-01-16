@@ -165,28 +165,51 @@ class AdminSettings extends React.Component {
           }}>
           <Form>
             <Form.Group widths="equal">
-              <Form.Input
-                fluid
-                label={<TranslationText id="username" />}
-                placeholder={t("username")}
-                value={this.state.uUsername}
-                readonly
-              />
-              <Form.Input
-                fluid
-                label={<TranslationText id="firstname" />}
-                placeholder={t("firstname")}
-                value={this.state.uFirstname}
-                readonly
-              />
-              <Form.Input
-                autoComplete="off"
-                fluid
-                label={<TranslationText id="lastname" />}
-                placeholder={t("lastname")}
-                value={this.state.uLastname}
-                readonly
-              />
+              <Form.Field>
+                <label>
+                  <TranslationText id="username" />
+                </label>
+                <div
+                  className="ui fluid input"
+                  style={{
+                    alignItems: "center",
+                    display: "flex",
+                    flexDirection: "row",
+                    height: "35px",
+                  }}>
+                  {this.state.uUsername || "N/A"}
+                </div>
+              </Form.Field>
+              <Form.Field>
+                <label>
+                  <TranslationText id="firstname" />
+                </label>
+                <div
+                  className="ui fluid input"
+                  style={{
+                    alignItems: "center",
+                    display: "flex",
+                    flexDirection: "row",
+                    height: "35px",
+                  }}>
+                  {this.state.uFirstname || "N/A"}
+                </div>
+              </Form.Field>
+              <Form.Field>
+                <label>
+                  <TranslationText id="lastname" />
+                </label>
+                <div
+                  className="ui fluid input"
+                  style={{
+                    alignItems: "center",
+                    display: "flex",
+                    flexDirection: "row",
+                    height: "35px",
+                  }}>
+                  {this.state.uLastname || "N/A"}
+                </div>
+              </Form.Field>
               <Form.Field>
                 <label>
                   <TranslationText id="admin" />
@@ -212,10 +235,7 @@ class AdminSettings extends React.Component {
                     <Checkbox
                       data-cy="admin-checkbox"
                       checked={this.state.uAdmin}
-                      disabled={
-                        this.state.uId !== null &&
-                        this.props.user.data.name === this.state.uUsername
-                      }
+                      disabled={this.state.uId == null}
                       onChange={() => {
                         this.setState({
                           uAdmin: !this.state.uAdmin,
@@ -234,6 +254,7 @@ class AdminSettings extends React.Component {
                   icon
                   data-cy="add-user-button"
                   label="&nbsp;"
+                  disabled={this.state.uId == null}
                   onClick={() => {
                     updateUser(this.state.uId, this.state.uAdmin).then(
                       response => {
