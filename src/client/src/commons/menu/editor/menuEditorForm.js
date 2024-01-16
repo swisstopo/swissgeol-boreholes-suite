@@ -27,7 +27,7 @@ import {
 
 import Scroller from "../../scroller";
 
-const timeout = 10;
+const timeout = 60;
 
 class MenuEditorForm extends React.Component {
   constructor(props) {
