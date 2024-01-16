@@ -141,6 +141,18 @@ const Completion = props => {
     });
   };
 
+  const cancelChanges = () => {
+    setEditing(false);
+    if (state.selected.id === 0) {
+      var newCompletionList = state.completions.slice(0, -1);
+      setState({
+        index: newCompletionList.length - 1,
+        selected: newCompletionList[newCompletionList.length - 1],
+        completions: newCompletionList,
+      });
+    }
+  };
+
   useEffect(() => {
     mounted.current = true;
     loadData(null);
@@ -217,7 +229,7 @@ const Completion = props => {
                   {editing ? (
                     <CompletionHeaderInput
                       completion={state.selected}
-                      setEditing={setEditing}
+                      cancelChanges={cancelChanges}
                       saveCompletion={saveCompletion}
                     />
                   ) : (

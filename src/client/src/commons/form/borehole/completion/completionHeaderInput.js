@@ -16,7 +16,7 @@ import { useDomains } from "../../../../api/fetchApiV2";
 import { IconButtonWithMargin } from "./styledComponents";
 
 const CompletionHeaderInput = props => {
-  const { completion, setEditing, saveCompletion } = props;
+  const { completion, cancelChanges, saveCompletion } = props;
   const domains = useDomains();
   const { register, handleSubmit, control, formState, trigger, reset } =
     useForm();
@@ -49,11 +49,6 @@ const CompletionHeaderInput = props => {
       ? (data.abandonDate += ":00.000Z")
       : (data.abandonDate = null);
     saveCompletion({ ...completion, ...data });
-  };
-
-  const cancelChanges = () => {
-    reset(selectedCompletion);
-    setEditing(false);
   };
 
   const getInputFieldBackgroundColor = errorFieldName =>
@@ -214,6 +209,7 @@ const CompletionHeaderInput = props => {
               data-cy="cancel-button"
               onClick={e => {
                 e.stopPropagation();
+                reset(selectedCompletion);
                 cancelChanges();
               }}>
               <CloseIcon />
