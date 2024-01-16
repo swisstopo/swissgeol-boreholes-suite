@@ -5,7 +5,7 @@ namespace BDMS;
 /// <inheritdoc />
 public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockService> logger, TimeProvider timeProvider) : IBoreholeLockService
 {
-    internal const int LockTimeoutInMinutes = 10;
+    internal const int LockTimeoutInMinutes = 60;
 
     private readonly BdmsContext context = context;
     private readonly ILogger<BoreholeLockService> logger = logger;
