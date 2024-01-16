@@ -8,14 +8,9 @@ namespace BDMS.Controllers;
 [ApiController]
 [AllowAnonymous]
 [Route("api/v{version:apiVersion}/[controller]")]
-public partial class SettingsController : ControllerBase
+public class SettingsController(IConfiguration serverConfiguration) : ControllerBase
 {
-    private readonly IConfiguration configuration;
-
-    public SettingsController(IConfiguration serverConfiguration)
-    {
-        configuration = serverConfiguration;
-    }
+    private readonly IConfiguration configuration = serverConfiguration;
 
     [HttpGet("auth")]
     [SwaggerResponse(StatusCodes.Status200OK, "The current AuthSettings of the application.")]
