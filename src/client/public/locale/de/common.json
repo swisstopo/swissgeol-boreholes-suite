@@ -368,6 +368,8 @@
   "upload": "Hochladen",
   "uploaded": "Hochgeladen",
   "uploadNewFile": "Hochladen einer neuen Datei",
+  "unsavedChangesTitle": "Ungespeicherte Änderungen",
+  "unsavedChangesMessage": "Sie haben ungespeicherte Änderungen. Wollen Sie sie speichern?",
   "unselectAll": "Alle abwählen",
   "user": "Benutzer",
   "username": "Benutzername",

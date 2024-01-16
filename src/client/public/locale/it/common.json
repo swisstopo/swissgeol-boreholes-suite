@@ -368,6 +368,8 @@
   "upload": "Caricare",
   "uploaded": "Caricamento",
   "uploadNewFile": "Caricare un nuovo file",
+  "unsavedChangesTitle": "Modifiche non salvate",
+  "unsavedChangesMessage": "Le modifiche non sono state salvate. Volete salvarle?",
   "unselectAll": "Deseleziona tutto",
   "user": "Utente",
   "username": "Nome utente",

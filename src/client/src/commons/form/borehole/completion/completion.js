@@ -55,6 +55,7 @@ const Completion = props => {
   const mounted = useRef(false);
   const [editing, setEditing] = useState(false);
   const [showDeletePrompt, setShowDeletePrompt] = useState(false);
+  const [newlySelectedTab, setNewlySelectedTab] = useState(null);
 
   const loadData = index => {
     if (boreholeId && mounted.current) {
@@ -86,11 +87,29 @@ const Completion = props => {
   };
 
   const handleCompletionChanged = (event, index) => {
-    setState({
-      index: index,
-      selected: state.completions[index],
-      completions: state.completions,
-    });
+    if (editing) {
+      setNewlySelectedTab(index);
+    } else {
+      setState({
+        index: index,
+        selected: state.completions[index],
+        completions: state.completions,
+      });
+    }
+  };
+
+  const switchTabs = continueSwitching => {
+    if (continueSwitching) {
+      setEditing(false);
+      setState({
+        index: newlySelectedTab,
+        selected: state.completions[newlySelectedTab],
+        completions: state.completions,
+      });
+    }
+    if (newlySelectedTab !== null) {
+      setNewlySelectedTab(null);
+    }
   };
 
   const addNewCompletion = () => {
@@ -112,14 +131,20 @@ const Completion = props => {
   };
 
   const saveCompletion = completion => {
+    var index =
+      completion.id === 0 ? state.completions.length - 1 : state.index;
+    if (newlySelectedTab !== null) {
+      index = newlySelectedTab;
+      setNewlySelectedTab(null);
+    }
     setEditing(false);
     if (completion.id === 0) {
       addCompletion(completion).then(() => {
-        loadData(state.completions.length - 1);
+        loadData(index);
       });
     } else {
       updateCompletion(completion).then(() => {
-        loadData(state.index);
+        loadData(index);
       });
     }
   };
@@ -141,6 +166,20 @@ const Completion = props => {
     });
   };
 
+  const cancelChanges = () => {
+    setEditing(false);
+    if (state.selected.id === 0) {
+      var newCompletionList = state.completions.slice(0, -1);
+      setState({
+        index: newCompletionList.length - 1,
+        selected: newCompletionList[newCompletionList.length - 1],
+        completions: newCompletionList,
+      });
+    } else if (newlySelectedTab !== null) {
+      switchTabs(true);
+    }
+  };
+
   useEffect(() => {
     mounted.current = true;
     loadData(null);
@@ -149,6 +188,13 @@ const Completion = props => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boreholeId]);
+
+  useEffect(() => {
+    if (!isEditable) {
+      setEditing(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditable]);
 
   return (
     <>
@@ -217,8 +263,13 @@ const Completion = props => {
                   {editing ? (
                     <CompletionHeaderInput
                       completion={state.selected}
-                      setEditing={setEditing}
+                      editing={editing}
+                      cancelChanges={cancelChanges}
                       saveCompletion={saveCompletion}
+                      newlySelectedTab={newlySelectedTab}
+                      switchTabs={continueSwitching => {
+                        switchTabs(continueSwitching);
+                      }}
                     />
                   ) : (
                     <CompletionHeaderDisplay

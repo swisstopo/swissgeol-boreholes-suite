@@ -3,6 +3,7 @@ version: '3'
 services:
   minio:
     image: minio/minio
+    restart: unless-stopped
     environment:
       MINIO_ROOT_USER: REDSQUIRREL
       MINIO_ROOT_PASSWORD: YELLOWMONKEY
@@ -14,6 +15,7 @@ services:
       - 9000:9000
   db:
     image: postgis/postgis:14-3.3-alpine
+    restart: unless-stopped
     volumes:
       - ./db:/docker-entrypoint-initdb.d
     ports:
@@ -30,6 +32,7 @@ services:
       start_period: 25s
   pgadmin:
     image: dpage/pgadmin4
+    restart: unless-stopped
     ports:
       - 3001:80
     environment:
@@ -56,7 +59,6 @@ services:
       args:
         - VERSION=0.0.99
         - REVISION=dev
-    restart: unless-stopped
     volumes:
       - .:/app
       - /app/src/client/node_modules
@@ -67,10 +69,10 @@ services:
       db:
         condition: service_healthy
     environment:
-      REACT_APP_PROXY_HOST_API: http://api:5000/
-      REACT_APP_CLIENT_AUTHORITY: http://localhost:4011/
-      REACT_APP_CLIENT_CLIENT_ID: bdms-client
+      REACT_APP_PROXY_HOST_API: http://localhost:5000/
       WATCHPACK_POLLING: 'true'
+    extra_hosts:
+      - "localhost:host-gateway"
   api-legacy:
     build:
       context: ./src/api-legacy
@@ -99,7 +101,6 @@ services:
     build:
       context: ./src/api
       target: development
-    restart: unless-stopped
     ports:
       - 5000:5000
     volumes:
@@ -118,13 +119,17 @@ services:
     environment:
       ASPNETCORE_HTTP_PORTS: 5000
       DOTNET_USE_POLLING_FILE_WATCHER: 1
-      CONNECTIONSTRINGS__BdmsContext: Host=db;Username=SPAWNPLOW;Password=YELLOWSPATULA;Database=bdms;CommandTimeout=300
-      ReverseProxy__Clusters__pythonApi__Destinations__legacyApi__Address: "http://api-legacy:8888/"
-      Auth__Authority: http://oidc-server
+      CONNECTIONSTRINGS__BdmsContext: Host=localhost;Username=SPAWNPLOW;Password=YELLOWSPATULA;Database=bdms;CommandTimeout=300
+      ReverseProxy__Clusters__pythonApi__Destinations__legacyApi__Address: "http://localhost:8888/"
+      Auth__Authority: http://localhost:4011
+      Auth__Audience: "bdms-client"
       S3__ENDPOINT: http://minio:9000
       S3__SECURE: 1
+    extra_hosts:
+      - "localhost:host-gateway"
   oidc-server:
     image: soluto/oidc-server-mock
+    restart: unless-stopped
     ports:
       - "4011:80"
     environment:

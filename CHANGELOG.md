@@ -9,6 +9,8 @@
 - Hide outer ring for disabled radio buttons.
 - Handle Authentication with a OpenID Connect.
 - Improved input behavior for various input fields. E.g. stratigraphy name.
+- Increased editing lock timeout to 60 minutes.
+- Administrators are always allowed to edit all boreholes.
 - Removed the functionality to add new users since they are now managed by the IAM.
 - Removed the functionality to edit user details (first name, surname and password) since they are now managed by the IAM.
 - Removed middle name from user details because it was not used until now.
