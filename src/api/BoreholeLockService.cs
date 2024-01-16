@@ -20,6 +20,9 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
             .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
             .ConfigureAwait(false) ?? throw new InvalidOperationException($"Current user with subjectId <{subjectId}> does not exist.");
 
+        // Admins can always edit boreholes
+        if (user.IsAdmin) return false;
+
         var borehole = await context.Boreholes
             .Include(b => b.Workflows)
             .AsNoTracking()
