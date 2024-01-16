@@ -426,6 +426,11 @@ public class Borehole : IChangeTracking, IIdentifyable
     public ICollection<Stratigraphy> Stratigraphies { get; }
 
     /// <summary>
+    /// Gets the <see cref="Borehole"/>'s completions.
+    /// </summary>
+    public ICollection<Completion> Completions { get; }
+
+    /// <summary>
     /// Gets the <see cref="Borehole"/>'s workflows.
     /// </summary>
     public ICollection<Workflow> Workflows { get; } = new List<Workflow>();

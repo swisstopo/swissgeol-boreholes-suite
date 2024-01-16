@@ -1,5 +1,5 @@
 import React, { forwardRef } from "react";
-import { Stack, Typography, TextField } from "@mui/material";
+import { IconButton, Stack, Typography, TextField } from "@mui/material";
 import { styled } from "@mui/system";
 
 export const TypographyWithBottomMargin = styled(Typography)(() => ({
@@ -40,4 +40,15 @@ export const TextfieldNoMargin = forwardRef((props, ref) => {
       {props.children}
     </StyledTextField>
   );
+});
+
+export const IconButtonWithMargin = styled(IconButton)({
+  color: "rgba(0, 0, 0, 0.8)",
+  marginRight: "5px",
+  "&:hover, &.Mui-focusVisible, &:active, &:focus, &:focus-visible": {
+    backgroundColor: "rgba(0, 0, 0, 0.0)",
+  },
+  "& .MuiTouchRipple-root": {
+    display: "none",
+  },
 });

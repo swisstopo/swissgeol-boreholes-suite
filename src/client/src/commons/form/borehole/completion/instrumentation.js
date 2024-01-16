@@ -96,7 +96,7 @@ const Instrumentation = ({ isEditable, completionId }) => {
       {displayedInstrumentations?.length === 0 && (
         <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
           <Typography variant="fullPageMessage">
-            {t("msgInstrumentationEmpty")}
+            {t("msgInstrumentsEmpty")}
           </Typography>
         </Stack>
       )}
