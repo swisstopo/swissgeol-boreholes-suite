@@ -60,7 +60,7 @@ const CompletionHeaderInput = props => {
     Boolean(errorFieldName) ? "#fff6f6" : "transparent";
 
   const formatDateForDatetimeLocal = date => {
-    if (!date) return "";
+    if (!date) return null;
     // use slice to get from the returned format 'YYYY-MM-DDTHH:mm:ss.sssZ' to the required format for the input 'YYYY-MM-DDTHH:mm'.
     return date.slice(0, 16);
   };
@@ -87,7 +87,7 @@ const CompletionHeaderInput = props => {
             size="small"
             label={t("name")}
             variant="outlined"
-            error={Boolean(formState.errors.notes)}
+            error={Boolean(formState.errors.name)}
             {...register("name", {
               required: true,
             })}
@@ -130,7 +130,7 @@ const CompletionHeaderInput = props => {
                   onChange={e => {
                     e.stopPropagation();
                     field.onChange(e.target.value);
-                    trigger();
+                    trigger("kindId");
                   }}>
                   <MenuItem key="0" value={null}>
                     <em>{t("reset")}</em>
