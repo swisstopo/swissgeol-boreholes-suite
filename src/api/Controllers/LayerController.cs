@@ -66,6 +66,8 @@ public class LayerController : BdmsControllerBase<Layer>
         var codelistIds = entity.CodelistIds?.ToList() ?? new List<int>();
         if (existingLayer != default)
         {
+            entity.CasingDateSpud = entity.CasingDateSpud?.ToUniversalTime();
+            entity.CasingDateFinish = entity.CasingDateFinish?.ToUniversalTime();
             Context.Entry(existingLayer).CurrentValues.SetValues(entity);
         }
         else
