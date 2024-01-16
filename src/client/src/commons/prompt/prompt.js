@@ -8,6 +8,16 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
+import { styled } from "@mui/system";
+
+export const PromptButton = styled(Button)({
+  fontFamily: "Lato",
+  textTransform: "none",
+  color: "rgba(0, 0, 0, 0.8)",
+  "&:hover": {
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
+  },
+});
 
 const Prompt = props => {
   const { open, setOpen, titleLabel, messageLabel, actions } = props;
@@ -22,7 +32,7 @@ const Prompt = props => {
       </DialogContent>
       <DialogActions>
         {actions?.map((action, index) => (
-          <Button
+          <PromptButton
             key={index}
             onClick={() => {
               if (action.action != null) {
@@ -31,7 +41,7 @@ const Prompt = props => {
               setOpen(false);
             }}>
             {t(action.label)}
-          </Button>
+          </PromptButton>
         ))}
       </DialogActions>
     </Dialog>
