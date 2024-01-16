@@ -80,4 +80,14 @@ public class Completion : IChangeTracking, IIdentifyable
     /// <inheritdoc />
     [Column("update")]
     public DateTime? Updated { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="Instrumentation"/>s associated with the <see cref="Completion"/>.
+    /// </summary>
+    public ICollection<Instrumentation>? Instrumentations { get; }
+
+    /// <summary>
+    /// Gets the <see cref="Backfill"/>s associated with the <see cref="Completion"/>.
+    /// </summary>
+    public ICollection<Backfill>? Backfills { get; }
 }
