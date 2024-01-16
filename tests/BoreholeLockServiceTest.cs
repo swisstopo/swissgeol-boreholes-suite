@@ -10,6 +10,7 @@ namespace BDMS;
 public class BoreholeLockServiceTest
 {
     private const string AdminSubjectId = "sub_admin";
+    private const string EditorSubjectId = "sub_editor";
     private const int AdminUserId = 1;
 
     private BoreholeLockService boreholeLockService;
@@ -38,7 +39,7 @@ public class BoreholeLockServiceTest
 
     [TestMethod]
     public async Task IsBoreholeLockedWithUnknownBorehole()
-        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholeLockService.IsBoreholeLockedAsync(null, AdminSubjectId));
+        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholeLockService.IsBoreholeLockedAsync(null, EditorSubjectId));
 
     [TestMethod]
     public async Task IsBoreholeLockedWithUnauthorizedUser()
@@ -50,13 +51,25 @@ public class BoreholeLockServiceTest
     [TestMethod]
     public async Task IsBoreholeLockedByOtherUser()
     {
+        var borehole = GetLockedBorehole(lockedByAdmin: true);
+
+        // Fake a date which is within the lock timeout
+        var timeProviderMock = CreateTimeProviderMock(borehole.Locked.Value.AddMinutes(1));
+        boreholeLockService = new BoreholeLockService(context, new Mock<ILogger<BoreholeLockService>>().Object, timeProviderMock.Object);
+
+        await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(async () => await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, EditorSubjectId));
+    }
+
+    [TestMethod]
+    public async Task IsBoreholeLockedForAdminUser()
+    {
         var borehole = GetLockedBorehole(lockedByAdmin: false);
 
         // Fake a date which is within the lock timeout
         var timeProviderMock = CreateTimeProviderMock(borehole.Locked.Value.AddMinutes(1));
         boreholeLockService = new BoreholeLockService(context, new Mock<ILogger<BoreholeLockService>>().Object, timeProviderMock.Object);
 
-        Assert.AreEqual(true, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, AdminSubjectId));
+        Assert.AreEqual(false, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, AdminSubjectId));
     }
 
     [TestMethod]
