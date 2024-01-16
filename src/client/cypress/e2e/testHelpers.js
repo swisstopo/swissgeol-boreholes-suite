@@ -213,6 +213,11 @@ export const createAndEditBoreholeAsAdmin = values => {
   });
 };
 
+export const startBoreholeEditing = () => {
+  cy.contains("a", "Start editing").click();
+  cy.wait("@edit_lock");
+};
+
 export const deleteBorehole = id => {
   loginAsAdmin();
   cy.get("@id_token").then(token => {

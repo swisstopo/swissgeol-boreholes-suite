@@ -178,7 +178,7 @@ const CompletionHeaderInput = props => {
           </Stack>
           <TextField
             type="datetime-local"
-            data-cy="abandon-date-textfield"
+            data-cy="completion-abandon-date-textfield"
             label={t("dateAbandonmentCasing")}
             variant="outlined"
             size="small"
@@ -227,6 +227,7 @@ const CompletionHeaderInput = props => {
           <FormControlLabel
             control={
               <Checkbox
+                data-cy="completion-is-primary-checkbox"
                 {...register("isPrimary")}
                 disabled={completion.isPrimary}
                 defaultChecked={completion.isPrimary}
