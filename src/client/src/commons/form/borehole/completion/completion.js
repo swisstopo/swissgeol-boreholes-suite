@@ -55,6 +55,7 @@ const Completion = props => {
   const mounted = useRef(false);
   const [editing, setEditing] = useState(false);
   const [showDeletePrompt, setShowDeletePrompt] = useState(false);
+  const [newlySelectedTab, setNewlySelectedTab] = useState(null);
 
   const loadData = index => {
     if (boreholeId && mounted.current) {
@@ -86,11 +87,29 @@ const Completion = props => {
   };
 
   const handleCompletionChanged = (event, index) => {
-    setState({
-      index: index,
-      selected: state.completions[index],
-      completions: state.completions,
-    });
+    if (editing) {
+      setNewlySelectedTab(index);
+    } else {
+      setState({
+        index: index,
+        selected: state.completions[index],
+        completions: state.completions,
+      });
+    }
+  };
+
+  const switchTabs = continueSwitching => {
+    if (continueSwitching) {
+      setEditing(false);
+      setState({
+        index: newlySelectedTab,
+        selected: state.completions[newlySelectedTab],
+        completions: state.completions,
+      });
+    }
+    if (newlySelectedTab !== null) {
+      setNewlySelectedTab(null);
+    }
   };
 
   const addNewCompletion = () => {
@@ -112,14 +131,20 @@ const Completion = props => {
   };
 
   const saveCompletion = completion => {
+    var index =
+      completion.id === 0 ? state.completions.length - 1 : state.index;
+    if (newlySelectedTab !== null) {
+      index = newlySelectedTab;
+      setNewlySelectedTab(null);
+    }
     setEditing(false);
     if (completion.id === 0) {
       addCompletion(completion).then(() => {
-        loadData(state.completions.length - 1);
+        loadData(index);
       });
     } else {
       updateCompletion(completion).then(() => {
-        loadData(state.index);
+        loadData(index);
       });
     }
   };
@@ -150,6 +175,8 @@ const Completion = props => {
         selected: newCompletionList[newCompletionList.length - 1],
         completions: newCompletionList,
       });
+    } else if (newlySelectedTab !== null) {
+      switchTabs(true);
     }
   };
 
@@ -229,8 +256,13 @@ const Completion = props => {
                   {editing ? (
                     <CompletionHeaderInput
                       completion={state.selected}
+                      editing={editing}
                       cancelChanges={cancelChanges}
                       saveCompletion={saveCompletion}
+                      newlySelectedTab={newlySelectedTab}
+                      switchTabs={continueSwitching => {
+                        switchTabs(continueSwitching);
+                      }}
                     />
                   ) : (
                     <CompletionHeaderDisplay

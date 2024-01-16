@@ -369,6 +369,8 @@
   "upload": "Télécharger",
   "uploaded": "Téléchargé",
   "uploadNewFile": "Télécharger un nouveau fichier",
+  "unsavedChangesTitle": "Changements non enregistrés",
+  "unsavedChangesMessage": "Vous avez des modifications non enregistrés. Voulez-vous les enregistrer?",
   "unselectAll": "Tout désélectionner",
   "user": "Utilisateur",
   "username": "Nom d'utilisateur",
