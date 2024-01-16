@@ -51,7 +51,7 @@ const CompletionHeaderInput = props => {
   }, [completion]);
 
   useEffect(() => {
-    if (newlySelectedTab) {
+    if (newlySelectedTab !== null) {
       if (isDirty()) {
         setShowSavePrompt(true);
       } else {
