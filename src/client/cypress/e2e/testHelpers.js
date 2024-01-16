@@ -352,3 +352,16 @@ export const createStratigraphy = (boreholeId, kindId) => {
     });
   });
 };
+
+export const openDropdown = dataCy => {
+  cy.get(`[data-cy="${dataCy}"]`)
+    .find('[role="combobox"]')
+    .click({ force: true });
+};
+
+export const selectDropdownOption = index => {
+  cy.get('.MuiPaper-elevation [role="listbox"]')
+    .find('[role="option"]')
+    .eq(index)
+    .click();
+};
