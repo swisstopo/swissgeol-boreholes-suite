@@ -189,6 +189,13 @@ const Completion = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boreholeId]);
 
+  useEffect(() => {
+    if (!isEditable) {
+      setEditing(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditable]);
+
   return (
     <>
       <Stack direction="column">
