@@ -71,9 +71,8 @@ const CompletionHeaderInput = props => {
       values.kindId === completion.kindId &&
       values.abandonDate === completion.abandonDate &&
       values.notes === completion.notes &&
-      values.isPrimary === completion.isPrimary
+      (completion.isPrimary || values.isPrimary === completion.isPrimary)
     );
-    console.log("isDirty: " + dirty);
     return dirty;
   };
 
