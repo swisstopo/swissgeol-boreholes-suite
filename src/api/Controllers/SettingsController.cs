@@ -17,7 +17,7 @@ public partial class SettingsController : ControllerBase
         configuration = serverConfiguration;
     }
 
-    [HttpGet("Auth")]
+    [HttpGet("auth")]
     [SwaggerResponse(StatusCodes.Status200OK, "The current AuthSettings of the application.")]
     public AuthSettings? GetAuth()
         => configuration.GetRequiredSection("Auth").Get<AuthSettings>();
