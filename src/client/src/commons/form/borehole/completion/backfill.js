@@ -7,8 +7,9 @@ import {
   Stack,
   Tooltip,
   Typography,
+  Button,
 } from "@mui/material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+import AddIcon from "@mui/icons-material/Add";
 import {
   getBackfills,
   addBackfill,
@@ -27,9 +28,11 @@ const Backfill = ({ isEditable, completionId }) => {
     index: 0,
     selected: null,
     backfills: [],
+    isLoadingData: true,
   });
 
   const loadData = index => {
+    setState({ isLoadingData: true });
     if (completionId && mounted.current) {
       getBackfills(completionId).then(response => {
         if (response?.length > 0) {
@@ -37,12 +40,14 @@ const Backfill = ({ isEditable, completionId }) => {
             index: index,
             selected: response[index],
             backfills: response,
+            isLoadingData: false,
           });
         } else {
           setState({
             index: 0,
             selected: null,
             backfills: [],
+            isLoadingData: false,
           });
         }
       });
@@ -93,103 +98,126 @@ const Backfill = ({ isEditable, completionId }) => {
   }, [displayedBackfills, backfillRefs]);
 
   return (
-    <Stack sx={{ flexGrow: 1 }}>
-      <Box sx={{ mb: 2 }}>
-        <Stack
-          direction="row"
-          sx={{ visibility: isEditable ? "visible" : "hidden" }}>
-          <Typography sx={{ mr: 1 }}>{t("filling")}</Typography>
-          <Tooltip title={t("add")}>
-            <AddCircleIcon
-              data-cy="add-backfill-button"
-              color={selectedBackfill === null ? "black" : "disabled"}
-              onClick={e => {
-                e.stopPropagation();
-                if (!selectedBackfill) {
-                  const tempBackfill = { id: 0 };
-                  // Check if backfills is iterable
-                  if (
-                    state.backfills &&
-                    Symbol.iterator in Object(state.backfills)
-                  ) {
-                    setDisplayedBackfills([...state.backfills, tempBackfill]);
-                  } else {
-                    setDisplayedBackfills([tempBackfill]);
-                  }
-                  setSelectedBackfill(tempBackfill);
-                }
-              }}
-            />
-          </Tooltip>
-        </Stack>
-      </Box>
-      {displayedBackfills?.length === 0 && (
-        <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
-          <Typography variant="fullPageMessage">
-            {t("msgBackfillEmpty")}
-          </Typography>
-        </Stack>
-      )}
-      <Grid
-        container
-        alignItems="stretch"
-        columnSpacing={{ xs: 2 }}
-        rowSpacing={{ xs: 2 }}
-        sx={{ overflow: "auto", maxHeight: "85vh" }}>
-        {displayedBackfills?.length > 0 &&
-          displayedBackfills
-            ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
-            .map((backfill, index) => {
-              const isSelected = selectedBackfill?.id === backfill.id;
-              const isTempBackfill = backfill.id === 0;
-              return (
-                <Grid
-                  item
-                  md={12}
-                  lg={12}
-                  xl={6}
-                  key={backfill.id}
-                  ref={backfillRefs[index]}>
-                  {state.backfills ? (
-                    isEditable && isSelected ? (
-                      <BackfillInput
-                        backfill={backfill}
-                        setSelectedBackfill={setSelectedBackfill}
-                        completionId={completionId}
-                        updateBackfill={(backfill, data) => {
-                          updateBackfill(backfill, data).then(() => {
-                            handleDataChange();
-                          });
-                        }}
-                        addBackfill={data => {
-                          addBackfill(data).then(() => {
-                            handleDataChange();
-                          });
-                        }}
-                      />
-                    ) : (
-                      !isTempBackfill && (
-                        <BackfillDisplay
+    !state.isLoadingData && (
+      <Stack sx={{ flexGrow: 1 }}>
+        <Box sx={{ mb: 2 }}>
+          <Stack direction="row" justifyContent="flex-end" alignItems="center">
+            {isEditable && (
+              <Tooltip title={t("add")}>
+                <Button
+                  data-cy="add-backfill-button"
+                  variant="outlined"
+                  startIcon={<AddIcon />}
+                  onClick={e => {
+                    e.stopPropagation();
+                    if (!selectedBackfill) {
+                      const tempBackfill = { id: 0 };
+                      // Check if backfills is iterable
+                      if (
+                        state.backfills &&
+                        Symbol.iterator in Object(state.backfills)
+                      ) {
+                        setDisplayedBackfills([
+                          ...state.backfills,
+                          tempBackfill,
+                        ]);
+                      } else {
+                        setDisplayedBackfills([tempBackfill]);
+                      }
+                      setSelectedBackfill(tempBackfill);
+                    }
+                  }}
+                  sx={{
+                    fontFamily: "Lato",
+                    textTransform: "none",
+                    color: "rgba(0, 0, 0, 0.8)",
+                    borderColor: "rgba(0, 0, 0, 0.8)",
+                  }}>
+                  {t("addBackfill")}
+                </Button>
+              </Tooltip>
+            )}
+          </Stack>
+        </Box>
+        <Grid
+          container
+          alignItems="stretch"
+          columnSpacing={{ xs: 2 }}
+          rowSpacing={{ xs: 2 }}
+          sx={{
+            width: "100%",
+            borderWidth: "1px",
+            borderColor: "black",
+            padding: "10px 10px 5px 10px",
+            marginBottom: "10px",
+            overflow: "auto",
+            maxHeight: "85vh",
+          }}>
+          {displayedBackfills?.length > 0 ? (
+            displayedBackfills
+              ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
+              .map((backfill, index) => {
+                const isSelected = selectedBackfill?.id === backfill.id;
+                const isTempBackfill = backfill.id === 0;
+                return (
+                  <Grid
+                    item
+                    md={12}
+                    lg={12}
+                    xl={6}
+                    key={backfill.id}
+                    ref={backfillRefs[index]}>
+                    {state.backfills ? (
+                      isEditable && isSelected ? (
+                        <BackfillInput
                           backfill={backfill}
-                          selectedBackfill={selectedBackfill}
                           setSelectedBackfill={setSelectedBackfill}
-                          isEditable={isEditable}
-                          deleteBackfill={backfillId => {
-                            deleteBackfill(backfillId).then(() => {
+                          completionId={completionId}
+                          updateBackfill={(backfill, data) => {
+                            updateBackfill(backfill, data).then(() => {
+                              handleDataChange();
+                            });
+                          }}
+                          addBackfill={data => {
+                            addBackfill(data).then(() => {
                               handleDataChange();
                             });
                           }}
                         />
+                      ) : (
+                        !isTempBackfill && (
+                          <BackfillDisplay
+                            backfill={backfill}
+                            selectedBackfill={selectedBackfill}
+                            setSelectedBackfill={setSelectedBackfill}
+                            isEditable={isEditable}
+                            deleteBackfill={backfillId => {
+                              deleteBackfill(backfillId).then(() => {
+                                handleDataChange();
+                              });
+                            }}
+                          />
+                        )
                       )
-                    )
-                  ) : (
-                    <CircularProgress />
-                  )}
-                </Grid>
-              );
-            })}
-      </Grid>
-    </Stack>
+                    ) : (
+                      <CircularProgress />
+                    )}
+                  </Grid>
+                );
+              })
+          ) : (
+            <Stack
+              alignItems="center"
+              justifyContent="center"
+              sx={{ flexGrow: 1 }}>
+              <Typography variant="fullPageMessage">
+                {t("msgBackfillEmpty")}
+              </Typography>
+            </Stack>
+          )}
+        </Grid>
+      </Stack>
+    )
   );
 };
 export default React.memo(Backfill);

@@ -7,9 +7,9 @@ import {
   Stack,
   Tooltip,
   Typography,
+  Button,
 } from "@mui/material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-
+import AddIcon from "@mui/icons-material/Add";
 import {
   useInstrumentationMutations,
   useInstrumentations,
@@ -62,51 +62,59 @@ const Instrumentation = ({ isEditable, completionId }) => {
   return (
     <Stack sx={{ flexGrow: 1 }}>
       <Box sx={{ mb: 2 }}>
-        <Stack
-          direction="row"
-          sx={{ visibility: isEditable ? "visible" : "hidden" }}>
-          <Typography sx={{ mr: 1 }}>{t("instrument")}</Typography>
-          <Tooltip title={t("add")}>
-            <AddCircleIcon
-              data-cy="add-instrumentation-button"
-              color={selectedInstrumentation === null ? "black" : "disabled"}
-              onClick={e => {
-                e.stopPropagation();
-                if (!selectedInstrumentation) {
-                  const tempInstrumentation = { id: 0 };
-                  // Check if instrumentations is iterable
-                  if (
-                    instrumentations &&
-                    Symbol.iterator in Object(instrumentations)
-                  ) {
-                    setDisplayedInstrumentations([
-                      ...instrumentations,
-                      tempInstrumentation,
-                    ]);
-                  } else {
-                    setDisplayedInstrumentations([tempInstrumentation]);
+        <Stack direction="row" justifyContent="flex-end" alignItems="center">
+          {isEditable && (
+            <Tooltip title={t("add")}>
+              <Button
+                data-cy="add-instrumentation-button"
+                variant="outlined"
+                startIcon={<AddIcon />}
+                onClick={e => {
+                  e.stopPropagation();
+                  if (!selectedInstrumentation) {
+                    const tempInstrumentation = { id: 0 };
+                    // Check if instrumentations is iterable
+                    if (
+                      instrumentations &&
+                      Symbol.iterator in Object(instrumentations)
+                    ) {
+                      setDisplayedInstrumentations([
+                        ...instrumentations,
+                        tempInstrumentation,
+                      ]);
+                    } else {
+                      setDisplayedInstrumentations([tempInstrumentation]);
+                    }
+                    setSelectedInstrumentation(tempInstrumentation);
                   }
-                  setSelectedInstrumentation(tempInstrumentation);
-                }
-              }}
-            />
-          </Tooltip>
+                }}
+                sx={{
+                  fontFamily: "Lato",
+                  textTransform: "none",
+                  color: "rgba(0, 0, 0, 0.8)",
+                  borderColor: "rgba(0, 0, 0, 0.8)",
+                }}>
+                {t("addInstrument")}
+              </Button>
+            </Tooltip>
+          )}
         </Stack>
       </Box>
-      {displayedInstrumentations?.length === 0 && (
-        <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
-          <Typography variant="fullPageMessage">
-            {t("msgInstrumentsEmpty")}
-          </Typography>
-        </Stack>
-      )}
       <Grid
         container
         alignItems="stretch"
         columnSpacing={{ xs: 2 }}
         rowSpacing={{ xs: 2 }}
-        sx={{ overflow: "auto", maxHeight: "85vh" }}>
-        {displayedInstrumentations?.length > 0 &&
+        sx={{
+          width: "100%",
+          borderWidth: "1px",
+          borderColor: "black",
+          padding: "10px 10px 5px 10px",
+          marginBottom: "10px",
+          overflow: "auto",
+          maxHeight: "85vh",
+        }}>
+        {displayedInstrumentations?.length > 0 ? (
           displayedInstrumentations
             ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
             .map((instrumentation, index) => {
@@ -148,7 +156,17 @@ const Instrumentation = ({ isEditable, completionId }) => {
                   )}
                 </Grid>
               );
-            })}
+            })
+        ) : (
+          <Stack
+            alignItems="center"
+            justifyContent="center"
+            sx={{ flexGrow: 1 }}>
+            <Typography variant="fullPageMessage">
+              {t("msgInstrumentsEmpty")}
+            </Typography>
+          </Stack>
+        )}
       </Grid>
     </Stack>
   );
