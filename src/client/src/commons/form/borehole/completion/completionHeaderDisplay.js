@@ -32,9 +32,6 @@ const CompletionHeaderDisplay = props => {
       year: "numeric",
       month: "short",
       day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZone: "UTC",
     });
 
     return dateTimeFormat.format(date);

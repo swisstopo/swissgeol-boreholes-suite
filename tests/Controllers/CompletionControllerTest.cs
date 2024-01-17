@@ -229,7 +229,7 @@ public class CompletionControllerTest
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         completion.Name = "ENDUETRUCK";
-        completion.AbandonDate = new DateTime(2023, 01, 01).ToUniversalTime();
+        completion.AbandonDate = new DateOnly(2023, 01, 01);
         var response = await controller.EditAsync(completion).ConfigureAwait(false);
         ActionResultAssert.IsOk(response.Result);
 
@@ -237,7 +237,7 @@ public class CompletionControllerTest
         Assert.IsNotNull(completion);
         Assert.AreEqual("ENDUETRUCK", completion.Name);
         Assert.AreEqual(borehole.Id, completion.BoreholeId);
-        Assert.AreEqual(new DateTime(2023, 01, 01).ToUniversalTime(), completion.AbandonDate);
+        Assert.AreEqual(new DateOnly(2023, 01, 01), completion.AbandonDate);
     }
 
     [TestMethod]

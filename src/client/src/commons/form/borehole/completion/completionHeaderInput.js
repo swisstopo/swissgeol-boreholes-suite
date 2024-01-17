@@ -77,20 +77,17 @@ const CompletionHeaderInput = props => {
   };
 
   const submitForm = data => {
-    data?.abandonDate
-      ? (data.abandonDate += ":00.000Z")
-      : (data.abandonDate = null);
+    if (data?.abandonDate === "") {
+      data.abandonDate = null;
+    }
+    if (data?.isPrimary === undefined) {
+      data.isPrimary = completion.isPrimary;
+    }
     saveCompletion({ ...completion, ...data });
   };
 
   const getInputFieldBackgroundColor = errorFieldName =>
     Boolean(errorFieldName) ? "#fff6f6" : "transparent";
-
-  const formatDateForDatetimeLocal = date => {
-    if (!date) return null;
-    // use slice to get from the returned format 'YYYY-MM-DDTHH:mm:ss.sssZ' to the required format for the input 'YYYY-MM-DDTHH:mm'.
-    return date.slice(0, 16);
-  };
 
   return (
     <>
@@ -225,16 +222,14 @@ const CompletionHeaderInput = props => {
               }}
             />
             <TextField
-              type="datetime-local"
+              type="date"
               data-cy="completion-abandon-date-textfield"
               label={t("dateAbandonmentCasing")}
               variant="outlined"
               size="small"
               error={Boolean(formState.errors.abandonDate)}
               {...register("abandonDate")}
-              defaultValue={formatDateForDatetimeLocal(
-                selectedCompletion?.abandonDate,
-              )}
+              defaultValue={selectedCompletion?.abandonDate || ""}
               InputLabelProps={{ shrink: true }}
               sx={{
                 backgroundColor: getInputFieldBackgroundColor(

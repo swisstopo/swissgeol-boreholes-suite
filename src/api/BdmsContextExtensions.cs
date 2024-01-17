@@ -708,7 +708,11 @@ public static class BdmsContextExtensions
             .RuleFor(c => c.Updated, f => f.Date.Past().ToUniversalTime())
             .RuleFor(c => c.UpdatedById, f => f.PickRandom(userRange))
             .RuleFor(c => c.UpdatedBy, _ => default!)
-            .RuleFor(c => c.AbandonDate, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(c => c.AbandonDate, f =>
+            {
+                var datetime = f.Date.Past();
+                return new DateOnly(datetime.Year, datetime.Month, datetime.Day);
+            })
             .RuleFor(c => c.Name, f => f.Random.Word())
             .RuleFor(c => c.Notes, f => f.Lorem.Sentence())
             .RuleFor(c => c.IsPrimary, f => f.Random.Bool())
