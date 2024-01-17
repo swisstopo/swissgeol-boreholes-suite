@@ -708,11 +708,7 @@ public static class BdmsContextExtensions
             .RuleFor(c => c.Updated, f => f.Date.Past().ToUniversalTime())
             .RuleFor(c => c.UpdatedById, f => f.PickRandom(userRange))
             .RuleFor(c => c.UpdatedBy, _ => default!)
-            .RuleFor(c => c.AbandonDate, f =>
-            {
-                var datetime = f.Date.Past();
-                return new DateOnly(datetime.Year, datetime.Month, datetime.Day);
-            })
+            .RuleFor(c => c.AbandonDate, f => DateOnly.FromDateTime(f.Date.Past()))
             .RuleFor(c => c.Name, f => f.Random.Word())
             .RuleFor(c => c.Notes, f => f.Lorem.Sentence())
             .RuleFor(c => c.IsPrimary, f => f.Random.Bool())
@@ -728,13 +724,6 @@ public static class BdmsContextExtensions
         context.SaveChanges();
 
         // Seed Casing
-        DateOnly? RandomDate(Faker f)
-        {
-            var datetime = f.Date.Past().OrNull(f, .05f);
-            if (datetime == null) return null;
-            return new DateOnly(datetime.Value.Year, datetime.Value.Month, datetime.Value.Day);
-        }
-
         var casing_ids = 17_000_000;
         var fakeCasing = new Faker<Casing>()
             .RuleFor(c => c.CompletionId, f => f.PickRandom(completions.Select(c => c.Id)))
@@ -748,10 +737,9 @@ public static class BdmsContextExtensions
             .RuleFor(c => c.Material, _ => default!)
             .RuleFor(c => c.InnerDiameter, f => f.Random.Double(0, 15))
             .RuleFor(c => c.OuterDiameter, f => f.Random.Double(0, 20))
-            .RuleFor(c => c.DateFinish, f => RandomDate(f))
-            .RuleFor(c => c.DateStart, f => RandomDate(f))
+            .RuleFor(c => c.DateFinish, f => DateOnly.FromDateTime(f.Date.Past()))
+            .RuleFor(c => c.DateStart, f => DateOnly.FromDateTime(f.Date.Past()))
             .RuleFor(c => c.Notes, f => f.Random.Words(4))
-            .RuleFor(c => c.Instrumentations, f => new List<Instrumentation>())
             .RuleFor(c => c.Created, f => f.Date.Past().ToUniversalTime())
             .RuleFor(c => c.CreatedById, f => f.PickRandom(userRange))
             .RuleFor(c => c.CreatedBy, _ => default!)
