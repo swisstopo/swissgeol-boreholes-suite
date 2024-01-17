@@ -124,7 +124,7 @@ describe("completion crud tests", () => {
     setKindId(2);
     cy.get('[data-cy="save-button"]').should("be.enabled");
 
-    setAbandonDate("2012-11-14T12:06");
+    setAbandonDate("2012-11-14");
     setNotes("Lorem.");
     saveChanges();
     cy.contains("Compl-1");

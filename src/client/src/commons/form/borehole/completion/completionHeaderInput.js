@@ -77,20 +77,17 @@ const CompletionHeaderInput = props => {
   };
 
   const submitForm = data => {
-    data?.abandonDate
-      ? (data.abandonDate += ":00.000Z")
-      : (data.abandonDate = null);
+    if (data?.abandonDate === "") {
+      data.abandonDate = null;
+    }
+    if (data?.isPrimary === undefined) {
+      data.isPrimary = completion.isPrimary;
+    }
     saveCompletion({ ...completion, ...data });
   };
 
   const getInputFieldBackgroundColor = errorFieldName =>
     Boolean(errorFieldName) ? "#fff6f6" : "transparent";
-
-  const formatDateForDatetimeLocal = date => {
-    if (!date) return null;
-    // use slice to get from the returned format 'YYYY-MM-DDTHH:mm:ss.sssZ' to the required format for the input 'YYYY-MM-DDTHH:mm'.
-    return date.slice(0, 16);
-  };
 
   return (
     <>
@@ -99,11 +96,12 @@ const CompletionHeaderInput = props => {
           <Stack
             direction="row"
             justifyContent="space-between"
-            alignItems="center">
+            alignItems="center"
+            flexWrap="wrap">
             <TextField
               name="name"
               sx={{
-                flex: "1",
+                flex: "1 1 180px",
                 marginTop: "10px",
                 marginRight: "10px",
                 backgroundColor: getInputFieldBackgroundColor(
@@ -126,118 +124,126 @@ const CompletionHeaderInput = props => {
                 trigger("name");
               }}
             />
-            <FormControl
-              variant="outlined"
-              sx={{ flex: "1", marginRight: "10px" }}
-              required>
-              <Controller
-                name="kindId"
-                control={control}
-                defaultValue={selectedCompletion?.kindId}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    select
-                    size="small"
-                    label={t("completionKind")}
-                    variant="outlined"
-                    value={field.value || ""}
-                    data-cy="completion-kind-id-select"
-                    error={Boolean(formState.errors.kindId)}
-                    {...register("kindId", {
-                      required: true,
-                    })}
-                    InputLabelProps={{ shrink: true }}
-                    sx={{
-                      backgroundColor: getInputFieldBackgroundColor(
-                        formState.errors.kindId,
-                      ),
-                      borderRadius: "4px",
-                      marginTop: "10px",
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              flex={"0 0 400px"}>
+              <FormControl
+                variant="outlined"
+                sx={{ marginRight: "10px", flex: "1" }}
+                required>
+                <Controller
+                  name="kindId"
+                  control={control}
+                  defaultValue={selectedCompletion?.kindId}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      select
+                      size="small"
+                      label={t("completionKind")}
+                      variant="outlined"
+                      value={field.value || ""}
+                      data-cy="completion-kind-id-select"
+                      error={Boolean(formState.errors.kindId)}
+                      {...register("kindId", {
+                        required: true,
+                      })}
+                      InputLabelProps={{ shrink: true }}
+                      sx={{
+                        backgroundColor: getInputFieldBackgroundColor(
+                          formState.errors.kindId,
+                        ),
+                        borderRadius: "4px",
+                        marginTop: "10px",
+                        flex: "1 1 auto",
+                      }}
+                      onChange={e => {
+                        e.stopPropagation();
+                        field.onChange(e.target.value);
+                        trigger("kindId");
+                      }}>
+                      <MenuItem key="0" value={null}>
+                        <em>{t("reset")}</em>
+                      </MenuItem>
+                      {domains?.data
+                        ?.filter(d => d.schema === "completion_kind")
+                        .sort((a, b) => a.order - b.order)
+                        .map(d => (
+                          <MenuItem key={d.id} value={d.id}>
+                            {d[i18n.language]}
+                          </MenuItem>
+                        ))}
+                    </TextField>
+                  )}
+                />
+              </FormControl>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    data-cy="completion-is-primary-checkbox"
+                    {...register("isPrimary")}
+                    disabled={completion.isPrimary}
+                    defaultChecked={completion.isPrimary}
+                    onChange={() => {
+                      trigger("isPrimary");
                     }}
-                    onChange={e => {
-                      e.stopPropagation();
-                      field.onChange(e.target.value);
-                      trigger("kindId");
-                    }}>
-                    <MenuItem key="0" value={null}>
-                      <em>{t("reset")}</em>
-                    </MenuItem>
-                    {domains?.data
-                      ?.filter(d => d.schema === "completion_kind")
-                      .sort((a, b) => a.order - b.order)
-                      .map(d => (
-                        <MenuItem key={d.id} value={d.id}>
-                          {d[i18n.language]}
-                        </MenuItem>
-                      ))}
-                  </TextField>
-                )}
+                  />
+                }
+                label={t("mainCompletion")}
+                sx={{ marginRight: "0" }}
               />
-            </FormControl>
+            </Stack>
           </Stack>
-          <TextField
-            type="datetime-local"
-            data-cy="completion-abandon-date-textfield"
-            label={t("dateAbandonmentCasing")}
-            variant="outlined"
-            size="small"
-            error={Boolean(formState.errors.abandonDate)}
-            {...register("abandonDate")}
-            defaultValue={formatDateForDatetimeLocal(
-              selectedCompletion?.abandonDate,
-            )}
-            InputLabelProps={{ shrink: true }}
-            sx={{
-              backgroundColor: getInputFieldBackgroundColor(
-                formState.errors.abandonDate,
-              ),
-              borderRadius: "4px",
-              marginTop: "10px",
-              marginRight: "10px",
-            }}
-            onChange={() => {
-              trigger("abandonDate");
-            }}
-          />
-          <TextField
-            sx={{
-              flex: "1",
-              marginTop: "10px",
-              marginRight: "10px",
-              backgroundColor: getInputFieldBackgroundColor(
-                formState.errors.notes,
-              ),
-              borderRadius: "4px",
-            }}
-            error={Boolean(formState.errors.notes)}
-            {...register("notes")}
-            type="text"
-            size="small"
-            label={t("notes")}
-            variant="outlined"
-            multiline
-            defaultValue={selectedCompletion?.notes || ""}
-            data-cy="completion-notes-textfield"
-            InputLabelProps={{ shrink: true }}
-            onChange={() => {
-              trigger("notes");
-            }}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                data-cy="completion-is-primary-checkbox"
-                {...register("isPrimary")}
-                disabled={completion.isPrimary}
-                defaultChecked={completion.isPrimary}
-                onChange={() => {
-                  trigger("isPrimary");
-                }}
-              />
-            }
-            label={t("mainCompletion")}
-          />
+          <Stack direction="row" justifyContent="space-between" flexWrap="wrap">
+            <TextField
+              sx={{
+                flex: "1 1 180px",
+                marginTop: "10px",
+                marginRight: "10px",
+                backgroundColor: getInputFieldBackgroundColor(
+                  formState.errors.notes,
+                ),
+                borderRadius: "4px",
+              }}
+              error={Boolean(formState.errors.notes)}
+              {...register("notes")}
+              type="text"
+              size="small"
+              label={t("notes")}
+              variant="outlined"
+              multiline
+              defaultValue={selectedCompletion?.notes || ""}
+              data-cy="completion-notes-textfield"
+              InputLabelProps={{ shrink: true }}
+              onChange={() => {
+                trigger("notes");
+              }}
+            />
+            <TextField
+              type="date"
+              data-cy="completion-abandon-date-textfield"
+              label={t("dateAbandonmentCasing")}
+              variant="outlined"
+              size="small"
+              error={Boolean(formState.errors.abandonDate)}
+              {...register("abandonDate")}
+              defaultValue={selectedCompletion?.abandonDate || ""}
+              InputLabelProps={{ shrink: true }}
+              sx={{
+                backgroundColor: getInputFieldBackgroundColor(
+                  formState.errors.abandonDate,
+                ),
+                borderRadius: "4px",
+                marginTop: "10px",
+                flex: "0 0 400px",
+              }}
+              onChange={() => {
+                trigger("abandonDate");
+              }}
+            />
+          </Stack>
           <Stack direction="row" sx={{ marginLeft: "auto", paddingTop: "5px" }}>
             <Tooltip title={t("cancel")}>
               <IconButtonWithMargin

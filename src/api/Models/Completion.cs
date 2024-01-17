@@ -57,7 +57,7 @@ public class Completion : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Completion"/>'s abandon date.
     /// </summary>
     [Column("abandon_date")]
-    public DateTime? AbandonDate { get; set; }
+    public DateOnly? AbandonDate { get; set; }
 
     /// <inheritdoc />
     [Column("creator")]
