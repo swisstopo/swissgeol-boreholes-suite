@@ -134,7 +134,7 @@ const CompletionHeaderInput = props => {
               flex={"0 0 400px"}>
               <FormControl
                 variant="outlined"
-                sx={{ marginRight: "10px" }}
+                sx={{ marginRight: "10px", flex: "1" }}
                 required>
                 <Controller
                   name="kindId"
@@ -202,7 +202,7 @@ const CompletionHeaderInput = props => {
           <Stack direction="row" justifyContent="space-between" flexWrap="wrap">
             <TextField
               sx={{
-                flex: "1",
+                flex: "1 1 180px",
                 marginTop: "10px",
                 marginRight: "10px",
                 backgroundColor: getInputFieldBackgroundColor(

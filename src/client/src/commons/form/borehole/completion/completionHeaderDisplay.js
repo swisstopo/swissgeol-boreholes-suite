@@ -90,7 +90,7 @@ const CompletionHeaderDisplay = props => {
               direction="row"
               justifyContent="space-between"
               flexWrap="wrap">
-              <StackHalfWidth direction="column">
+              <StackHalfWidth direction="column" flex={"1 1 180px"}>
                 <Typography variant="subtitle2">{t("notes")}</Typography>
                 <TypographyWithBottomMargin
                   variant="subtitle1"
