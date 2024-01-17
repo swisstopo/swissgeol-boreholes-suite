@@ -47,6 +47,9 @@ describe("Instrumentation crud tests", () => {
     // Necessary to wait for the instrumentation data to be loaded.
     cy.wait(1000);
 
+    // Ensure instrumentation tab is selected
+    cy.wait("@instrumentation_GET");
+
     // create instrumentation
     cy.get('[data-cy="add-instrumentation-button"]').click({ force: true });
     cy.wait("@instrumentation_GET");

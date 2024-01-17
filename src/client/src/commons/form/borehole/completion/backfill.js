@@ -98,63 +98,59 @@ const Backfill = ({ isEditable, completionId }) => {
   }, [displayedBackfills, backfillRefs]);
 
   return (
-    !state.isLoadingData && (
-      <Stack sx={{ flexGrow: 1 }}>
-        <Box sx={{ mb: 2 }}>
-          <Stack direction="row" justifyContent="flex-end" alignItems="center">
-            {isEditable && (
-              <Tooltip title={t("add")}>
-                <Button
-                  data-cy="add-backfill-button"
-                  variant="outlined"
-                  startIcon={<AddIcon />}
-                  onClick={e => {
-                    e.stopPropagation();
-                    if (!selectedBackfill) {
-                      const tempBackfill = { id: 0 };
-                      // Check if backfills is iterable
-                      if (
-                        state.backfills &&
-                        Symbol.iterator in Object(state.backfills)
-                      ) {
-                        setDisplayedBackfills([
-                          ...state.backfills,
-                          tempBackfill,
-                        ]);
-                      } else {
-                        setDisplayedBackfills([tempBackfill]);
-                      }
-                      setSelectedBackfill(tempBackfill);
+    <Stack sx={{ flexGrow: 1 }}>
+      <Box sx={{ mb: 2 }}>
+        <Stack direction="row" justifyContent="flex-end" alignItems="center">
+          {isEditable && (
+            <Tooltip title={t("add")}>
+              <Button
+                data-cy="add-backfill-button"
+                variant="outlined"
+                startIcon={<AddIcon />}
+                onClick={e => {
+                  e.stopPropagation();
+                  if (!selectedBackfill) {
+                    const tempBackfill = { id: 0 };
+                    // Check if backfills is iterable
+                    if (
+                      state.backfills &&
+                      Symbol.iterator in Object(state.backfills)
+                    ) {
+                      setDisplayedBackfills([...state.backfills, tempBackfill]);
+                    } else {
+                      setDisplayedBackfills([tempBackfill]);
                     }
-                  }}
-                  sx={{
-                    fontFamily: "Lato",
-                    textTransform: "none",
-                    color: "rgba(0, 0, 0, 0.8)",
-                    borderColor: "rgba(0, 0, 0, 0.8)",
-                  }}>
-                  {t("addBackfill")}
-                </Button>
-              </Tooltip>
-            )}
-          </Stack>
-        </Box>
-        <Grid
-          container
-          alignItems="stretch"
-          columnSpacing={{ xs: 2 }}
-          rowSpacing={{ xs: 2 }}
-          sx={{
-            width: "100%",
-            borderWidth: "1px",
-            borderColor: "black",
-            padding: "10px 10px 5px 10px",
-            marginBottom: "10px",
-            overflow: "auto",
-            maxHeight: "85vh",
-          }}>
-          {displayedBackfills?.length > 0 ? (
-            displayedBackfills
+                    setSelectedBackfill(tempBackfill);
+                  }
+                }}
+                sx={{
+                  fontFamily: "Lato",
+                  textTransform: "none",
+                  color: "rgba(0, 0, 0, 0.8)",
+                  borderColor: "rgba(0, 0, 0, 0.8)",
+                }}>
+                {t("addBackfill")}
+              </Button>
+            </Tooltip>
+          )}
+        </Stack>
+      </Box>
+      <Grid
+        container
+        alignItems="stretch"
+        columnSpacing={{ xs: 2 }}
+        rowSpacing={{ xs: 2 }}
+        sx={{
+          width: "100%",
+          borderWidth: "1px",
+          borderColor: "black",
+          padding: "10px 10px 5px 10px",
+          marginBottom: "10px",
+          overflow: "auto",
+          maxHeight: "85vh",
+        }}>
+        {displayedBackfills?.length > 0
+          ? displayedBackfills
               ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
               .map((backfill, index) => {
                 const isSelected = selectedBackfill?.id === backfill.id;
@@ -205,19 +201,18 @@ const Backfill = ({ isEditable, completionId }) => {
                   </Grid>
                 );
               })
-          ) : (
-            <Stack
-              alignItems="center"
-              justifyContent="center"
-              sx={{ flexGrow: 1 }}>
-              <Typography variant="fullPageMessage">
-                {t("msgBackfillEmpty")}
-              </Typography>
-            </Stack>
-          )}
-        </Grid>
-      </Stack>
-    )
+          : !state.isLoadingData && (
+              <Stack
+                alignItems="center"
+                justifyContent="center"
+                sx={{ flexGrow: 1 }}>
+                <Typography variant="fullPageMessage">
+                  {t("msgBackfillEmpty")}
+                </Typography>
+              </Stack>
+            )}
+      </Grid>
+    </Stack>
   );
 };
 export default React.memo(Backfill);

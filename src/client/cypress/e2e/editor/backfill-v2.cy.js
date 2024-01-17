@@ -54,9 +54,12 @@ describe("Backfill crud tests", () => {
     // Necessary to wait for the backfill data to be loaded.
     cy.wait(1000);
 
-    // create backfill
-    cy.get('[data-cy="add-backfill-button"]').click({ force: true });
+    // select backfill tab
+    cy.get("[data-cy=completion-content-header-tab-Backfill]").click();
     cy.wait("@backfill_GET");
+
+    // add new backfill card
+    cy.get('[data-cy="add-backfill-button"]').click({ force: true });
 
     // Necessary to wait for the backfill form to be loaded.
     cy.wait(1000);
