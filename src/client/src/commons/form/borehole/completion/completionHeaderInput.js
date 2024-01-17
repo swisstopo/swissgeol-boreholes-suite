@@ -51,7 +51,7 @@ const CompletionHeaderInput = props => {
   }, [completion]);
 
   useEffect(() => {
-    if (newlySelectedTab) {
+    if (newlySelectedTab !== null) {
       if (isDirty()) {
         setShowSavePrompt(true);
       } else {
@@ -71,9 +71,8 @@ const CompletionHeaderInput = props => {
       values.kindId === completion.kindId &&
       values.abandonDate === completion.abandonDate &&
       values.notes === completion.notes &&
-      values.isPrimary === completion.isPrimary
+      (completion.isPrimary || values.isPrimary === completion.isPrimary)
     );
-    console.log("isDirty: " + dirty);
     return dirty;
   };
 
@@ -179,7 +178,7 @@ const CompletionHeaderInput = props => {
           </Stack>
           <TextField
             type="datetime-local"
-            data-cy="abandon-date-textfield"
+            data-cy="completion-abandon-date-textfield"
             label={t("dateAbandonmentCasing")}
             variant="outlined"
             size="small"
@@ -228,6 +227,7 @@ const CompletionHeaderInput = props => {
           <FormControlLabel
             control={
               <Checkbox
+                data-cy="completion-is-primary-checkbox"
                 {...register("isPrimary")}
                 disabled={completion.isPrimary}
                 defaultChecked={completion.isPrimary}

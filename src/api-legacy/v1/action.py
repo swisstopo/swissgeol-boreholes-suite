@@ -9,7 +9,7 @@ from bms import (
 
 class Action():
 
-    lock_timeout = 10
+    lock_timeout = 60
 
     def __init__(self, conn=None, pool=None):
         self.conn = conn

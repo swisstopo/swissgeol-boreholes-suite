@@ -9,6 +9,8 @@
 - Hide outer ring for disabled radio buttons.
 - Handle Authentication with a OpenID Connect.
 - Improved input behavior for various input fields. E.g. stratigraphy name.
+- Increased editing lock timeout to 60 minutes.
+- Administrators are always allowed to edit all boreholes.
 
 ## v2.0.506 - 2023-12-21
 

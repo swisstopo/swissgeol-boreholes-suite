@@ -76,7 +76,6 @@
     "prettier": "^3.1.0"
   },
   "scripts": {
-    "prestart": "node -e \"require('\\.\\/react-environment.js').writeEnvJs()\"",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "cypress run",

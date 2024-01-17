@@ -27,23 +27,45 @@ const AuthenticationStoreSync = () => {
 };
 
 export const BdmsAuthProvider = props => {
-  const onSigninCallback = user => {
-    window.history.replaceState({}, document.title, window.location.pathname);
-  };
+  const [serverConfig, setServerConfig] = useState(undefined);
+  const [oidcConfig, setOidcConfig] = useState(undefined);
 
-  const oidcConfig = {
-    authority: window.env.AUTHORITY,
-    client_id: window.env.CLIENT_ID,
-    scope: "openid profile email",
-    redirect_uri: window.location.origin + window.location.pathname,
-    userStore: new WebStorageStateStore({ store: window.localStorage }),
-    onSigninCallback,
-  };
+  useEffect(() => {
+    fetch("/api/v2/settings/auth")
+      .then(res =>
+        res.ok
+          ? res.json()
+          : Promise.reject(Error("Failed to get auth settings from API")),
+      )
+      .then(setServerConfig)
+      .catch(setServerConfig(undefined));
+  }, []);
 
-  return (
+  useEffect(() => {
+    if (!serverConfig) return;
+
+    const onSigninCallback = user => {
+      // remove response code form url.
+      window.history.replaceState({}, document.title, window.location.pathname);
+    };
+
+    setOidcConfig({
+      authority: serverConfig.authority,
+      client_id: serverConfig.audience,
+      scope: serverConfig.scopes,
+      redirect_uri: window.location.origin + window.location.pathname,
+      post_logout_redirect_uri: window.location.origin,
+      userStore: new WebStorageStateStore({ store: window.localStorage }),
+      onSigninCallback,
+    });
+  }, [serverConfig]);
+
+  return oidcConfig ? (
     <AuthProvider {...oidcConfig}>
       <AuthenticationStoreSync />
       {props.children}
     </AuthProvider>
+  ) : (
+    props.children
   );
 };
