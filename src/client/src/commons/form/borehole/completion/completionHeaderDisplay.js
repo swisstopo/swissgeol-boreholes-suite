@@ -4,7 +4,6 @@ import { Stack, Tooltip, Typography } from "@mui/material";
 import {
   IconButtonWithMargin,
   TypographyWithBottomMargin,
-  StackFullWidth,
   StackHalfWidth,
 } from "./styledComponents";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -43,58 +42,78 @@ const CompletionHeaderDisplay = props => {
 
   return (
     <>
-      <StackFullWidth
+      <Stack
         data-cy="completion-header-display"
         direction="column"
-        justifyContent="space-between"
         aria-expanded={expanded}>
-        <StackFullWidth direction="row" spacing={1}>
-          <StackHalfWidth direction="column">
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          flexWrap="wrap">
+          <StackHalfWidth direction="column" flex={"1 1 180px"}>
             <Typography variant="subtitle2">{t("name")}</Typography>
             <TypographyWithBottomMargin variant="subtitle1">
               {completion?.name || "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("completionKind")}</Typography>
-            <TypographyWithBottomMargin variant="subtitle1">
-              {completion.kind?.[i18n.language] || "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
-        </StackFullWidth>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            flex={"0 0 400px"}>
+            <StackHalfWidth direction="column" flex={"1 1 auto"}>
+              <Typography variant="subtitle2">{t("completionKind")}</Typography>
+              <TypographyWithBottomMargin variant="subtitle1">
+                {completion.kind?.[i18n.language] || "-"}
+              </TypographyWithBottomMargin>
+            </StackHalfWidth>
+            <StackHalfWidth direction="column">
+              <Typography variant="subtitle2">{t("mainCompletion")}</Typography>
+              <TypographyWithBottomMargin
+                data-cy="completion-is-primary-value"
+                variant="subtitle1"
+                sx={{
+                  display: "-webkit-box",
+                  overflow: "auto",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: 3,
+                }}>
+                {completion?.isPrimary ? t("yes") : t("no")}
+              </TypographyWithBottomMargin>
+            </StackHalfWidth>
+          </Stack>
+        </Stack>
         {expanded && (
           <>
-            <Typography variant="subtitle2">
-              {t("dateAbandonmentCasing")}
-            </Typography>
-            <TypographyWithBottomMargin variant="subtitle1">
-              {completion.abandonDate
-                ? formattedDateTime(completion.abandonDate)
-                : "-"}
-            </TypographyWithBottomMargin>
-            <Typography variant="subtitle2">{t("notes")}</Typography>
-            <TypographyWithBottomMargin
-              variant="subtitle1"
-              sx={{
-                display: "-webkit-box",
-                overflow: "auto",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 3,
-              }}>
-              {completion?.notes || "-"}
-            </TypographyWithBottomMargin>
-            <Typography variant="subtitle2">{t("mainCompletion")}</Typography>
-            <TypographyWithBottomMargin
-              data-cy="completion-is-primary-value"
-              variant="subtitle1"
-              sx={{
-                display: "-webkit-box",
-                overflow: "auto",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 3,
-              }}>
-              {completion?.isPrimary ? t("yes") : t("no")}
-            </TypographyWithBottomMargin>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              flexWrap="wrap">
+              <StackHalfWidth direction="column">
+                <Typography variant="subtitle2">{t("notes")}</Typography>
+                <TypographyWithBottomMargin
+                  variant="subtitle1"
+                  sx={{
+                    display: "-webkit-box",
+                    overflow: "auto",
+                    WebkitBoxOrient: "vertical",
+                    WebkitLineClamp: 3,
+                  }}>
+                  {completion?.notes || "-"}
+                </TypographyWithBottomMargin>
+              </StackHalfWidth>
+              <StackHalfWidth direction="column" flex={"0 0 400px"}>
+                <Typography variant="subtitle2">
+                  {t("dateAbandonmentCasing")}
+                </Typography>
+                <TypographyWithBottomMargin variant="subtitle1">
+                  {completion.abandonDate
+                    ? formattedDateTime(completion.abandonDate)
+                    : "-"}
+                </TypographyWithBottomMargin>
+              </StackHalfWidth>
+            </Stack>
             <Stack
               direction="row"
               sx={{
@@ -141,7 +160,7 @@ const CompletionHeaderDisplay = props => {
           data-cy="completion-toggle-header">
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButtonWithMargin>
-      </StackFullWidth>
+      </Stack>
     </>
   );
 };
