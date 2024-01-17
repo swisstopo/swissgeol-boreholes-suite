@@ -1663,7 +1663,8 @@ namespace BDMS.Migrations
 
                     b.Property<string>("SubjectId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("subject_id");
 
                     b.HasKey("Id");
 
