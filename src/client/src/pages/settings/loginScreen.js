@@ -285,14 +285,6 @@ class LoginScreen extends React.Component {
               <LoginPreview
                 body={this.state.body[this.state.lang]}
                 title={this.state.title[this.state.lang]}
-                user={{
-                  data: null,
-                  authentication: {
-                    password: "",
-                    username: "",
-                  },
-                  error: false,
-                }}
               />
             </div>
           </div>

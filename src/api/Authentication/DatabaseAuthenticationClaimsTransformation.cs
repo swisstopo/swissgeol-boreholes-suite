@@ -24,12 +24,9 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
         var userId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
         if (userId is null) return principal;
 
-        var authenticatedUser = dbContext.Users.FirstOrDefault(u => u.SubjectId == userId.Value)
-        ?? new User
-        {
-            SubjectId = userId.Value,
-            Password = "Undefined", // TODO: Remove with #911
-        };
+        var authenticatedUser =
+            dbContext.Users.FirstOrDefault(u => u.SubjectId == userId.Value) ?? new User { SubjectId = userId.Value };
+
         if (authenticatedUser.IsDisabled) return principal;
 
         authenticatedUser.FirstName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? authenticatedUser.FirstName;

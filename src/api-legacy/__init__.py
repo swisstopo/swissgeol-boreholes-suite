@@ -28,8 +28,8 @@ from bms.v1.borehole.viewer import BoreholeViewerHandler
 from bms.v1.borehole.identifier import CreateIdentifier
 from bms.v1.borehole.identifier import CreateIdentifier
 from bms.v1.borehole.identifier import DeleteIdentifier
-from bms.v1.borehole.identifier import PatchIdentifier 
-from bms.v1.borehole.identifier import ListIdentifiers 
+from bms.v1.borehole.identifier import PatchIdentifier
+from bms.v1.borehole.identifier import ListIdentifiers
 from bms.v1.borehole.identifier import IdentifierProducerHandler
 from bms.v1.borehole.identifier import IdentifierAdminHandler
 from bms.v1.borehole.identifier import IdentifierViewerHandler
@@ -81,7 +81,6 @@ from bms.v1.geoapi import Wms
 from bms.v1.user.handler import UserHandler
 from bms.v1.user.admin import AdminHandler
 from bms.v1.user import CheckUsername
-from bms.v1.user import CreateUser
 
 # Workgroup actions
 from bms.v1.user.workgrpup.admin import WorkgroupAdminHandler

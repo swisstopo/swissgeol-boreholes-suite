@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20231218075054_RemoveObsoleteUserFields")]
+    partial class RemoveObsoleteUserFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,70 +28,6 @@ namespace BDMS.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "ltree");
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("BDMS.Models.Backfill", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CompletionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("completion_id");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("creator");
-
-                    b.Property<double?>("FromDepth")
-                        .HasColumnType("double precision")
-                        .HasColumnName("from_depth");
-
-                    b.Property<int?>("KindId")
-                        .HasColumnType("integer")
-                        .HasColumnName("kind_id");
-
-                    b.Property<int?>("MaterialId")
-                        .HasColumnType("integer")
-                        .HasColumnName("material_id");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text")
-                        .HasColumnName("notes");
-
-                    b.Property<double?>("ToDepth")
-                        .HasColumnType("double precision")
-                        .HasColumnName("to_depth");
-
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("update");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("updater");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompletionId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("KindId");
-
-                    b.HasIndex("MaterialId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("backfill", "bdms");
-                });
 
             modelBuilder.Entity("BDMS.Models.Borehole", b =>
                 {
@@ -960,74 +899,6 @@ namespace BDMS.Migrations
                     b.ToTable("hydrotest_result", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.Instrumentation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CompletionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("completion_id");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("creator");
-
-                    b.Property<double?>("FromDepth")
-                        .HasColumnType("double precision")
-                        .HasColumnName("from_depth");
-
-                    b.Property<int?>("KindId")
-                        .HasColumnType("integer")
-                        .HasColumnName("kind_id");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text")
-                        .HasColumnName("notes");
-
-                    b.Property<int?>("StatusId")
-                        .HasColumnType("integer")
-                        .HasColumnName("status_id");
-
-                    b.Property<double?>("ToDepth")
-                        .HasColumnType("double precision")
-                        .HasColumnName("to_depth");
-
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("update");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("updater");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompletionId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("KindId");
-
-                    b.HasIndex("StatusId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("instrumentation", "bdms");
-                });
-
             modelBuilder.Entity("BDMS.Models.Layer", b =>
                 {
                     b.Property<int>("Id")
@@ -1661,10 +1532,6 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("username");
 
-                    b.Property<string>("SubjectId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.ToTable("users", "bdms");
@@ -1867,41 +1734,6 @@ namespace BDMS.Migrations
                     b.HasIndex("QuantityId");
 
                     b.ToTable("water_ingress", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.Backfill", b =>
-                {
-                    b.HasOne("BDMS.Models.Completion", "Completion")
-                        .WithMany()
-                        .HasForeignKey("CompletionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BDMS.Models.Codelist", "Kind")
-                        .WithMany()
-                        .HasForeignKey("KindId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Material")
-                        .WithMany()
-                        .HasForeignKey("MaterialId");
-
-                    b.HasOne("BDMS.Models.User", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.Navigation("Completion");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("Kind");
-
-                    b.Navigation("Material");
-
-                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("BDMS.Models.Borehole", b =>
@@ -2239,41 +2071,6 @@ namespace BDMS.Migrations
                     b.Navigation("Hydrotest");
 
                     b.Navigation("Parameter");
-
-                    b.Navigation("UpdatedBy");
-                });
-
-            modelBuilder.Entity("BDMS.Models.Instrumentation", b =>
-                {
-                    b.HasOne("BDMS.Models.Completion", "Completion")
-                        .WithMany()
-                        .HasForeignKey("CompletionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BDMS.Models.Codelist", "Kind")
-                        .WithMany()
-                        .HasForeignKey("KindId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Status")
-                        .WithMany()
-                        .HasForeignKey("StatusId");
-
-                    b.HasOne("BDMS.Models.User", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.Navigation("Completion");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("Kind");
-
-                    b.Navigation("Status");
 
                     b.Navigation("UpdatedBy");
                 });

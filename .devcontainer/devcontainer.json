@@ -6,10 +6,17 @@
   ],
   "service": "client",
   "workspaceFolder": "/app",
-  "extensions": [
-    "ms-azuretools.vscode-docker",
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "ms-dotnettools.csharp"
-  ]
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-dotnettools.csharp",
+        "github.vscode-github-actions",
+        "github.copilot-chat",
+        "github.copilot"
+      ]
+    }
+  }
 }

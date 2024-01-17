@@ -18,7 +18,6 @@ import {
 } from "semantic-ui-react";
 
 import {
-  createUser,
   createWorkgroup,
   enableWorkgroup,
   disableWorkgroup,
@@ -58,7 +57,6 @@ class AdminSettings extends React.Component {
       uId: null,
       uAdmin: false,
       uUsername: "",
-      uPassword: "",
       uFirstname: "",
       uLastname: "",
       uDisabled: null,
@@ -83,7 +81,6 @@ class AdminSettings extends React.Component {
         user: null,
         uId: null,
         uUsername: "",
-        uPassword: "",
         uFirstname: "",
         uLastname: "",
         uDisabled: null,
@@ -166,77 +163,56 @@ class AdminSettings extends React.Component {
             flex: "1 1 100%",
             marginRight: "0.5em",
           }}>
-          <div
-            style={{
-              marginBottom: "0.5em",
-            }}>
-            {this.state.user !== null ? (
-              <span
-                className="linker link"
-                onClick={() => {
-                  this.reset();
-                }}>
-                {t("new", {
-                  what: t("user"),
-                })}
-              </span>
-            ) : (
-              <span>&nbsp;</span>
-            )}
-          </div>
           <Form>
             <Form.Group widths="equal">
-              <Form.Input
-                fluid
-                label={<TranslationText id="username" />}
-                onChange={e => {
-                  const filteredValue = e.target.value.replace(
-                    /[^A-Za-z0-9@.+_-]/g,
-                    "",
-                  ); // Limit to alphabetic characters
-                  this.setState({
-                    uUsername: filteredValue,
-                  });
-                }}
-                placeholder={t("username")}
-                value={this.state.uUsername}
-              />
-              <Form.Input
-                autoComplete="new-password"
-                fluid
-                label={<TranslationText id="password" />}
-                onChange={e => {
-                  this.setState({
-                    uPassword: e.target.value,
-                  });
-                }}
-                placeholder={t("password")}
-                type="password"
-                value={this.state.uPassword}
-              />
-              <Form.Input
-                fluid
-                label={<TranslationText id="firstname" />}
-                onChange={e => {
-                  this.setState({
-                    uFirstname: e.target.value,
-                  });
-                }}
-                placeholder={t("firstname")}
-                value={this.state.uFirstname}
-              />
-              <Form.Input
-                autoComplete="off"
-                fluid
-                label={<TranslationText id="lastname" />}
-                onChange={e => {
-                  this.setState({
-                    uLastname: e.target.value,
-                  });
-                }}
-                placeholder={t("lastname")}
-                value={this.state.uLastname}
-              />
+              <Form.Field>
+                <label>
+                  <TranslationText id="username" />
+                </label>
+                <div
+                  data-cy="administration-username-label"
+                  className="ui fluid input"
+                  style={{
+                    alignItems: "center",
+                    display: "flex",
+                    flexDirection: "row",
+                    height: "35px",
+                  }}>
+                  {this.state.uUsername || "N/A"}
+                </div>
+              </Form.Field>
+              <Form.Field>
+                <label>
+                  <TranslationText id="firstname" />
+                </label>
+                <div
+                  data-cy="administration-firstname-label"
+                  className="ui fluid input"
+                  style={{
+                    alignItems: "center",
+                    display: "flex",
+                    flexDirection: "row",
+                    height: "35px",
+                  }}>
+                  {this.state.uFirstname || "N/A"}
+                </div>
+              </Form.Field>
+              <Form.Field>
+                <label>
+                  <TranslationText id="lastname" />
+                </label>
+                <div
+                  data-cy="administration-lastname-label"
+                  className="ui fluid input"
+                  style={{
+                    alignItems: "center",
+                    display: "flex",
+                    flexDirection: "row",
+                    height: "35px",
+                  }}>
+                  {this.state.uLastname || "N/A"}
+                </div>
+              </Form.Field>
               <Form.Field>
                 <label>
                   <TranslationText id="admin" />
@@ -260,12 +236,9 @@ class AdminSettings extends React.Component {
                         : null
                     }>
                     <Checkbox
-                      data-cy="admin-checkbox"
+                      data-cy="administration-admin-checkbox"
                       checked={this.state.uAdmin}
-                      disabled={
-                        this.state.uId !== null &&
-                        this.props.user.data.name === this.state.uUsername
-                      }
+                      disabled={this.state.uId == null}
                       onChange={() => {
                         this.setState({
                           uAdmin: !this.state.uAdmin,
@@ -282,47 +255,21 @@ class AdminSettings extends React.Component {
                 }}>
                 <Form.Button
                   icon
-                  data-cy="add-user-button"
+                  data-cy="administration-save-user-button"
                   label="&nbsp;"
+                  disabled={this.state.uId == null}
                   onClick={() => {
-                    if (this.state.uId === null) {
-                      createUser(
-                        this.state.uUsername,
-                        this.state.uPassword,
-                        this.state.uFirstname,
-                        "",
-                        this.state.uLastname,
-                        this.state.uAdmin,
-                      ).then(response => {
+                    updateUser(this.state.uId, this.state.uAdmin).then(
+                      response => {
                         if (response.data.success === false) {
                           this.context.error(response.data.message);
                         } else {
                           this.listUsers();
                         }
-                      });
-                    } else {
-                      updateUser(
-                        this.state.uId,
-                        this.state.uUsername,
-                        this.state.uPassword,
-                        this.state.uFirstname,
-                        "",
-                        this.state.uLastname,
-                        this.state.uAdmin,
-                      ).then(response => {
-                        if (response.data.success === false) {
-                          this.context.error(response.data.message);
-                        } else {
-                          this.listUsers();
-                        }
-                      });
-                    }
+                      },
+                    );
                   }}>
-                  {this.state.uId !== null ? (
-                    <Icon name="save" />
-                  ) : (
-                    <Icon name="plus" />
-                  )}
+                  <Icon name="save" />
                 </Form.Button>
               </div>
             </Form.Group>
@@ -660,7 +607,6 @@ class AdminSettings extends React.Component {
                                 uId: currentUser.id,
                                 uAdmin: currentUser.isAdmin,
                                 uUsername: currentUser.name,
-                                uPassword: "",
                                 uFirstname: currentUser.firstName,
                                 uLastname: currentUser.lastName,
                                 uDisabled: currentUser.disabledAt,
@@ -794,11 +740,7 @@ class AdminSettings extends React.Component {
                           });
                         }
                       }}>
-                      {this.state.wId !== null ? (
-                        <Icon name="save" />
-                      ) : (
-                        <Icon name="plus" />
-                      )}
+                      <Icon name="save" />
                     </Form.Button>
                   </div>
                 </Form.Group>

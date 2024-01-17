@@ -4,7 +4,6 @@ from bms import (
 )
 from bms.v1.handlers.admin import Admin
 from bms.v1.user import (
-    CreateUser,
     DeleteUser,
     DisableUser,
     EnableUser,
@@ -36,8 +35,8 @@ class AdminHandler(Admin):
                     'ENABLE',
                     'UPDATE'
                 ]:
-                    if self.user['admin'] is False: 
-                        raise AuthorizationException() 
+                    if self.user['admin'] is False:
+                        raise AuthorizationException()
 
                     # Admin user cannot remove his own admin flag
                     if (
@@ -55,10 +54,7 @@ class AdminHandler(Admin):
                         if was_admin and request['admin'] is False:
                             request['admin'] = True
 
-                if action == 'CREATE':
-                    exe = CreateUser(conn)
-
-                elif action == 'UPDATE':
+                if action == 'UPDATE':
                     exe = UpdateUser(conn)
 
                 elif action == 'DISABLE':

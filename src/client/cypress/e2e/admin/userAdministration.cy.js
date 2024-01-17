@@ -10,33 +10,19 @@ describe("Admin settings test", () => {
       .should("have.length", 7);
   });
 
-  it.skip("displays correct message when enabling user.", () => {
-    // add user
-    cy.get('[placeholder="Username"]').type("Testuser");
-    cy.get('[placeholder="Password"]').type("123456");
-    cy.get('[placeholder="First name"]').type("Cinnabuns");
-    cy.get('[placeholder="Surname"]').type("Moonshine");
-    cy.get('[data-cy="add-user-button"]').click();
-
-    cy.get('[data-cy="user-list-table-body"]')
-      .children()
-      .should("have.length", 8);
-
+  it("displays correct message when enabling user.", () => {
     // disable user
-    let newUserRow = cy
+    let userToEdit = cy
       .get('[data-cy="user-list-table-body"]')
       .children()
-      .contains("tr", "Testuser");
-    cy.contains("Testuser");
-    cy.contains("Cinnabuns");
-    cy.contains("Moonshine");
-    newUserRow.contains("td", "Disable").click();
+      .contains("tr", "p. user");
+    userToEdit.contains("td", "Disable").click();
 
     cy.get('.modal [data-cy="disable-user-button"]').click();
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
-      .should("have.length", 7);
+      .should("have.length", 6);
 
     // show disabled users
     cy.contains("Show Disabled").click();
@@ -46,12 +32,12 @@ describe("Admin settings test", () => {
       .should("have.length", 1);
 
     // enable user
-    newUserRow = cy.get('[data-cy="user-list-table-body"]').children().first();
-    newUserRow.contains("td", "Enable").click();
+    userToEdit = cy.get('[data-cy="user-list-table-body"]').children().first();
+    userToEdit.contains("td", "Enable").click();
 
     cy.get(".modal p").should(
       "contain",
-      'You are going to re-enable the user "Testuser". This user will be able to login and apply modifications based on its roles.',
+      'You are going to re-enable the user "p. user". This user will be able to login and apply modifications based on its roles.',
     );
 
     cy.get('.modal [data-cy="enable-user-button"]').click();
@@ -61,87 +47,55 @@ describe("Admin settings test", () => {
 
     cy.get('[data-cy="user-list-table-body"]')
       .children()
-      .should("have.length", 8);
-
-    // permanently delete test user
-    newUserRow = cy
-      .get('[data-cy="user-list-table-body"]')
-      .children()
-      .contains("tr", "Testuser");
-    newUserRow.contains("td", "Disable").click();
-
-    cy.get('.modal [data-cy="permanently-delete-user-button"]').click();
+      .should("have.length", 7);
   });
 
-  it.skip("can add user with admin role.", () => {
-    // add admin user
-    cy.get('[data-cy="admin-checkbox"]').click();
+  it("can toggle administrator privileges.", () => {
+    // Verify initial state
+    cy.get('[data-cy="administration-username-label"]').contains("N/A");
+    cy.get('[data-cy="administration-firstname-label"]').contains("N/A");
+    cy.get('[data-cy="administration-lastname-label"]').contains("N/A");
+    cy.get('[data-cy="administration-save-user-button"]').should("be.disabled");
+    cy.get('[data-cy="administration-admin-checkbox"]').should(
+      "not.be.checked",
+      "be.disabled",
+    );
 
-    cy.get('[placeholder="Username"]').type("Bugby");
-    cy.get('[placeholder="Password"]').type("Pea%a-boo3Moanihill");
-    cy.get('[placeholder="First name"]').type("Doodoohill");
-    cy.get('[placeholder="Surname"]').type("Gummoo");
-    cy.get('[data-cy="add-user-button"]').click();
-
-    cy.get('[data-cy="user-list-table-body"]')
-      .children()
-      .should("have.length", 8);
-
-    // contains "Yes" in administrator column
-    cy.get('[data-cy="user-list-table-body"]')
-      .children()
-      .contains("td", "Bugby")
-      .siblings()
-      .contains("td", "Yes")
-      .click();
-
-    // click of "New user" resets admin checkbox
-    cy.get('[data-cy="admin-checkbox"]')
-      .children()
-      .first()
-      .should("be.checked");
-    cy.contains("New User").click();
-    cy.get('[data-cy="admin-checkbox"]')
-      .children()
-      .first()
-      .should("not.be.checked");
-
-    // add non admin user
-    cy.get('[placeholder="Username"]').type("Wiggleton");
-    cy.get('[placeholder="Password"]').type("Trashbug");
-    cy.get('[placeholder="First name"]').type("Chewbrain");
-    cy.get('[placeholder="Surname"]').type("Pimplehill");
-    cy.get('[data-cy="add-user-button"]').click();
-
-    cy.get('[data-cy="user-list-table-body"]')
-      .children()
-      .should("have.length", 9);
-
-    // contains "No" in administrator column
-    const newViewerUserRow = cy
+    // Select and verify user to edit
+    let userToEdit = cy
       .get('[data-cy="user-list-table-body"]')
       .children()
-      .eq(1);
-    newViewerUserRow.contains("td", "No");
+      .contains("tr", "p. user");
+    userToEdit.contains("td", "No").click();
 
-    // permanently delete test users
-    cy.get('[data-cy="user-list-table-body"]')
-      .children()
-      .contains("td", "Bugby")
-      .siblings()
-      .contains("td", "Disable")
-      .click();
-    cy.get('.modal [data-cy="permanently-delete-user-button"]').click();
+    cy.get('[data-cy="administration-username-label"]').contains("p. user");
+    cy.get('[data-cy="administration-firstname-label"]').contains("publisher");
+    cy.get('[data-cy="administration-lastname-label"]').contains("user");
+    cy.get('[data-cy="administration-save-user-button"]').should("be.enabled");
+    cy.get('[data-cy="administration-admin-checkbox"]').should(
+      "not.be.checked",
+      "be.endabled",
+    );
 
-    cy.wait(2000);
+    // edit and save changes
+    cy.get('[data-cy="administration-admin-checkbox"]').click();
+    cy.get('[data-cy="administration-save-user-button"]').click();
 
-    cy.get('[data-cy="user-list-table-body"]')
-      .children()
-      .contains("td", "Wiggleton")
-      .siblings()
-      .contains("td", "Disable")
-      .click();
-    cy.get('.modal [data-cy="permanently-delete-user-button"]').click();
+    // Verify changes
+    userToEdit.contains("td", "Yes");
+
+    // Revert changes
+    cy.get('[data-cy="administration-admin-checkbox"]').click();
+    cy.get('[data-cy="administration-save-user-button"]').click();
+
+    cy.get('[data-cy="administration-username-label"]').contains("p. user");
+    cy.get('[data-cy="administration-firstname-label"]').contains("publisher");
+    cy.get('[data-cy="administration-lastname-label"]').contains("user");
+    cy.get('[data-cy="administration-save-user-button"]').should("be.enabled");
+    cy.get('[data-cy="administration-admin-checkbox"]').should(
+      "not.be.checked",
+      "be.endabled",
+    );
   });
 
   it("cannot delete users with associated files.", () => {
