@@ -224,6 +224,7 @@ const Completion = props => {
           {isEditable && (
             <Tooltip title={t("add")}>
               <Button
+                data-cy="add-completion-button"
                 variant="outlined"
                 startIcon={<AddIcon />}
                 onClick={addNewCompletion}

@@ -1,17 +1,10 @@
-import { loginAsAdmin, bearerAuth, createBorehole } from "../testHelpers";
-
-const openDropdown = dataCy => {
-  cy.get(`[data-cy="${dataCy}"]`)
-    .find('[role="combobox"]')
-    .click({ force: true });
-};
-
-const selectDropdownOption = index => {
-  cy.get('.MuiPaper-elevation [role="listbox"]')
-    .find('[role="option"]')
-    .eq(index)
-    .click();
-};
+import {
+  loginAsAdmin,
+  bearerAuth,
+  createBorehole,
+  openDropdown,
+  selectDropdownOption,
+} from "../testHelpers";
 
 describe("Instrumentation crud tests", () => {
   it("add, edit and delete instrumentations", () => {
