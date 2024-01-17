@@ -63,6 +63,10 @@ export const interceptApiCalls = () => {
     return (req.alias = `instrumentation_${req.method}`);
   });
 
+  cy.intercept("/api/v2/backfill*", req => {
+    return (req.alias = `backfill_${req.method}`);
+  });
+
   cy.intercept("/api/v2/codelist*", req => {
     return (req.alias = `codelist_${req.method}`);
   });
