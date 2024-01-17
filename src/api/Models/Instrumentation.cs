@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
@@ -63,6 +63,17 @@ public class Instrumentation : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Instrumentation"/>'s status.
     /// </summary>
     public Codelist? Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets id of the <see cref="Instrumentation"/>'s casing.
+    /// </summary>
+    [Column("casing_id")]
+    public int? CasingId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Instrumentation"/>'s casing.
+    /// </summary>
+    public Casing? Casing { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Instrumentation"/>'s notes.
