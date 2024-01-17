@@ -1532,6 +1532,11 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("username");
 
+                    b.Property<string>("SubjectId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("subject_id");
+
                     b.HasKey("Id");
 
                     b.ToTable("users", "bdms");
