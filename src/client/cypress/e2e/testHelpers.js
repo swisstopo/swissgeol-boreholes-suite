@@ -213,6 +213,11 @@ export const createAndEditBoreholeAsAdmin = values => {
   });
 };
 
+export const startBoreholeEditing = () => {
+  cy.contains("a", "Start editing").click();
+  cy.wait("@edit_lock");
+};
+
 export const deleteBorehole = id => {
   loginAsAdmin();
   cy.get("@id_token").then(token => {
@@ -351,4 +356,17 @@ export const createStratigraphy = (boreholeId, kindId) => {
       auth: bearerAuth(token),
     });
   });
+};
+
+export const openDropdown = dataCy => {
+  cy.get(`[data-cy="${dataCy}"]`)
+    .find('[role="combobox"]')
+    .click({ force: true });
+};
+
+export const selectDropdownOption = index => {
+  cy.get('.MuiPaper-elevation [role="listbox"]')
+    .find('[role="option"]')
+    .eq(index)
+    .click();
 };

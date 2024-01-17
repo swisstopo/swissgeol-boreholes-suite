@@ -23,12 +23,10 @@ const Prompt = props => {
   const { open, setOpen, titleLabel, messageLabel, actions } = props;
   const { t } = useTranslation();
   return (
-    <Dialog open={open}>
-      <DialogTitle id="alert-dialog-title">{t(titleLabel)}</DialogTitle>
+    <Dialog open={open} data-cy="prompt">
+      <DialogTitle>{t(titleLabel)}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          {t(messageLabel)}
-        </DialogContentText>
+        <DialogContentText>{t(messageLabel)}</DialogContentText>
       </DialogContent>
       <DialogActions>
         {actions?.map((action, index) => (
@@ -39,7 +37,8 @@ const Prompt = props => {
                 action.action();
               }
               setOpen(false);
-            }}>
+            }}
+            data-cy={"prompt-button-" + action.label}>
             {t(action.label)}
           </PromptButton>
         ))}

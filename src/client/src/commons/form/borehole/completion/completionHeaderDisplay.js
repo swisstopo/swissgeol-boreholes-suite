@@ -43,7 +43,11 @@ const CompletionHeaderDisplay = props => {
 
   return (
     <>
-      <StackFullWidth direction="column" justifyContent="space-between">
+      <StackFullWidth
+        data-cy="completion-header-display"
+        direction="column"
+        justifyContent="space-between"
+        aria-expanded={expanded}>
         <StackFullWidth direction="row" spacing={1}>
           <StackHalfWidth direction="column">
             <Typography variant="subtitle2">{t("name")}</Typography>
@@ -81,6 +85,7 @@ const CompletionHeaderDisplay = props => {
             </TypographyWithBottomMargin>
             <Typography variant="subtitle2">{t("mainCompletion")}</Typography>
             <TypographyWithBottomMargin
+              data-cy="completion-is-primary-value"
               variant="subtitle1"
               sx={{
                 display: "-webkit-box",
@@ -132,7 +137,8 @@ const CompletionHeaderDisplay = props => {
         )}
         <IconButtonWithMargin
           onClick={toggleHeader}
-          sx={{ paddingBottom: "0" }}>
+          sx={{ paddingBottom: "0" }}
+          data-cy="completion-toggle-header">
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButtonWithMargin>
       </StackFullWidth>
