@@ -119,7 +119,7 @@ const Backfill = ({ isEditable, completionId }) => {
                     setSelectedBackfill(tempBackfill);
                   }
                 }}>
-                {t("addBackfill")}
+                {t("addFilling")}
               </BdmsButton>
             </Tooltip>
           )}
