@@ -35,7 +35,7 @@
   "casing": "Tubage",
   "casing_inner_diameter": "Diamètre intérieur du tubage [mm]",
   "casing_outer_diameter": "Diamètre extérieur du tubage [mm]",
-  "casingId": "Tubage ID",
+  "casingId": "Nom tubage",
   "casingName": "Nom de l'aménagement",
   "centerselected": "Centrer sur la sélection",
   "chronostratigraphy_top_bedrock": "Chronostratigraphie du toit du rocher",

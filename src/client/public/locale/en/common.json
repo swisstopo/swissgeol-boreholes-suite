@@ -35,7 +35,7 @@
   "casing": "Casing",
   "casing_inner_diameter": "Casing inner diameter [mm]",
   "casing_outer_diameter": "Casing outer diameter [mm]",
-  "casingId": "Casing ID",
+  "casingId": "Casing name",
   "casingName": "Name of completion",
   "centerselected": "Centre to selected",
   "chronostratigraphy_top_bedrock": "Chronostratigraphy top bedrock",
