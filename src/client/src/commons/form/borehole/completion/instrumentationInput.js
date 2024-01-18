@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Box,
@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
-import { useDomains } from "../../../../api/fetchApiV2";
+import { useDomains, getCasings } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import {
   TextfieldWithMarginRight,
@@ -29,6 +29,7 @@ const InstrumentationInput = ({
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const { handleSubmit, register, control, formState, trigger } = useForm();
+  const [casings, setCasings] = useState([]);
 
   // trigger form validation on mount
   useEffect(() => {
@@ -60,6 +61,17 @@ const InstrumentationInput = ({
       });
     }
   };
+
+  useEffect(() => {
+    if (completionId) {
+      getCasings(completionId).then(casings => {
+        setCasings(casings);
+      });
+    }
+  }, [completionId]);
+
+  const getInputFieldBackgroundColor = errorFieldName =>
+    Boolean(errorFieldName) ? "#fff6f6" : "transparent";
 
   return (
     <Card
@@ -146,18 +158,53 @@ const InstrumentationInput = ({
                   trigger("name");
                 }}
               />
-              <TextfieldWithMarginRight
-                {...register("casingId", {
-                  valueAsNumber: true,
-                })}
-                type="text"
-                size="small"
-                data-cy="casingId-textfield"
-                label={t("casingId")}
-                defaultValue={instrumentation.casingId}
+              <FormControl
                 variant="outlined"
+                sx={{ marginRight: "10px", flex: "1" }}
+                required>
+                <Controller
+                  name="casingId"
+                  control={control}
+                  defaultValue={instrumentation?.casingId}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      select
+                      size="small"
+                      label={t("casingId")}
+                      variant="outlined"
+                      value={field.value || ""}
+                      data-cy="completion-casing-id-select"
+                      error={Boolean(formState.errors.casingId)}
+                      {...register("casingId", {
+                        required: true,
+                      })}
                 InputLabelProps={{ shrink: true }}
-              />
+                      sx={{
+                        backgroundColor: getInputFieldBackgroundColor(
+                          formState.errors.casingId,
+                        ),
+                        borderRadius: "4px",
+                        marginTop: "10px",
+                        flex: "1 1 auto",
+                      }}
+                      onChange={e => {
+                        e.stopPropagation();
+                        field.onChange(e.target.value);
+                        trigger("casingId");
+                      }}>
+                      <MenuItem key="0" value={null}>
+                        <em>{t("reset")}</em>
+                      </MenuItem>
+                      {casings?.map(casing => (
+                        <MenuItem key={casing.id} value={casing.id}>
+                          {casing.name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  )}
+                />
+              </FormControl>
             </Stack>
             <Stack direction="row" sx={{ paddingTop: "10px" }}>
               <FormControl
