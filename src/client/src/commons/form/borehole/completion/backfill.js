@@ -125,7 +125,7 @@ const Backfill = ({ isEditable, completionId }) => {
                   color: "rgba(0, 0, 0, 0.8)",
                   borderColor: "rgba(0, 0, 0, 0.8)",
                 }}>
-                {t("addBackfill")}
+                {t("addFilling")}
               </Button>
             </Tooltip>
           )}
