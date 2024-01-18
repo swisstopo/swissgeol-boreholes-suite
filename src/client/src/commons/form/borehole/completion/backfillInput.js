@@ -8,7 +8,6 @@ import {
   Stack,
   TextField,
   Tooltip,
-  Typography,
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
@@ -73,9 +72,6 @@ const BackfillInput = ({
       <form onSubmit={handleSubmit(submitForm)}>
         <Stack direction="row" sx={{ width: "100%" }}>
           <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-            <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
-              {t("instrument")}
-            </Typography>
             <Stack direction="row">
               <TextfieldWithMarginRight
                 {...register("fromDepth", {

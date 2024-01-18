@@ -31,9 +31,6 @@ const InstrumentationDisplay = props => {
       }}>
       <StackFullWidth direction="row" justifyContent="space-between">
         <StackFullWidth direction="column" justifyContent="space-between">
-          <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
-            {t("instrument")}
-          </Typography>
           <StackFullWidth direction="row" spacing={1}>
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("fromdepth")}</Typography>
