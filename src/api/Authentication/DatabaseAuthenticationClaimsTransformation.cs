@@ -22,7 +22,7 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
     /// <inheritdoc/>
     public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
     {
-        var authenticatedUser = await GetOrInsertUser(principal).ConfigureAwait(false);
+        var authenticatedUser = await CreateOrUpdateUser(principal).ConfigureAwait(false);
         if (authenticatedUser is null)
             return principal;
 
@@ -37,7 +37,7 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
         return principal;
     }
 
-    private async Task<User?> GetOrInsertUser(ClaimsPrincipal principal)
+    private async Task<User?> CreateOrUpdateUser(ClaimsPrincipal principal)
     {
         var subjectId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         if (subjectId is null)
