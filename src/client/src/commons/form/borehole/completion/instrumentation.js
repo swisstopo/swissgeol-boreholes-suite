@@ -93,6 +93,7 @@ const Instrumentation = ({ isEditable, completionId }) => {
                   textTransform: "none",
                   color: "rgba(0, 0, 0, 0.8)",
                   borderColor: "rgba(0, 0, 0, 0.8)",
+                  marginBottom: "10px",
                 }}>
                 {t("addInstrument")}
               </Button>
@@ -112,7 +113,7 @@ const Instrumentation = ({ isEditable, completionId }) => {
           padding: "10px 10px 5px 10px",
           marginBottom: "10px",
           overflow: "auto",
-          maxHeight: "85vh",
+          maxHeight: "65vh",
         }}>
         {displayedInstrumentations?.length > 0 ? (
           displayedInstrumentations

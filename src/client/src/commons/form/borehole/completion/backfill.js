@@ -124,6 +124,7 @@ const Backfill = ({ isEditable, completionId }) => {
                   textTransform: "none",
                   color: "rgba(0, 0, 0, 0.8)",
                   borderColor: "rgba(0, 0, 0, 0.8)",
+                  marginBottom: "10px",
                 }}>
                 {t("addFilling")}
               </Button>
@@ -143,7 +144,7 @@ const Backfill = ({ isEditable, completionId }) => {
           padding: "10px 10px 5px 10px",
           marginBottom: "10px",
           overflow: "auto",
-          maxHeight: "85vh",
+          maxHeight: "65vh",
         }}>
         {displayedBackfills?.length > 0
           ? displayedBackfills
