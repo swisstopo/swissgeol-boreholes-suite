@@ -4,6 +4,7 @@ import {
   loginAsAdmin,
   openDropdown,
   selectDropdownOption,
+  setTextfield,
 } from "../testHelpers";
 
 const toggleHeaderOpen = () => {
@@ -44,19 +45,8 @@ const deleteCompletion = () => {
   cy.get('[data-cy="delete-button"]').click();
 };
 
-const setTextfield = (selector, text) => {
-  cy.get(selector)
-    .click()
-    .then(() => {
-      cy.focused().clear();
-      cy.get(selector).type(text, {
-        delay: 10,
-      });
-    });
-};
-
-const setName = name => {
-  setTextfield('[data-cy="completion-name-textfield"]', name);
+const setName = (name, clear = false) => {
+  setTextfield('[data-cy="completion-name-textfield"]', name, clear);
 };
 
 const setAbandonDate = date => {
@@ -141,7 +131,7 @@ describe("completion crud tests", () => {
     cancelEditing();
     cy.contains("telescopic");
     startEditing();
-    setName("Compl-2");
+    setName("Compl-2", true);
     setIsPrimary();
     saveChanges();
     cy.contains("Compl-2");
