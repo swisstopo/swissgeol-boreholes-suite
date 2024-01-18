@@ -698,7 +698,6 @@ class MenuEditorForm extends React.Component {
             <Icon name="angle up" />
           )}
           more Info
-          {/* +<Icon name="info" /> */}
         </div>
         <div>
           <div
@@ -736,7 +735,7 @@ class MenuEditorForm extends React.Component {
             <TranslationText id="importedData" />
           </div>
         ) : null}
-        {/* start */}
+
         {this.state.detailsIsVisible && (
           <div>
             <div
@@ -875,7 +874,7 @@ class MenuEditorForm extends React.Component {
               </div>
             </div>
           )}
-          {/* end */}
+
           <div
             style={{
               fontSize: "0.8em",
@@ -928,7 +927,6 @@ class MenuEditorForm extends React.Component {
           {borehole.data.lock !== null && editableByCurrentUser === false ? (
             <div
               style={{
-                // textAlign: 'right'
                 display: "flex",
                 flexDirection: "row",
                 fontSize: "0.8em",
@@ -937,7 +935,7 @@ class MenuEditorForm extends React.Component {
                 {(() => {
                   let d = moment.duration(
                     moment(borehole.data.lock.date)
-                      .add(10, "minutes")
+                      .add(60, "minutes")
                       .diff(moment()),
                   );
                   return (
@@ -984,13 +982,6 @@ class MenuEditorForm extends React.Component {
                   this.setState({
                     confirmDelete: true,
                   });
-                  // deleteBorehole(borehole.data.id).then(
-                  //   function () {
-                  //     history.push(
-                  //       process.env.PUBLIC_URL + "/editor"
-                  //     );
-                  //   }
-                  // );
                 }}
                 style={{
                   flex: 1,
@@ -999,10 +990,7 @@ class MenuEditorForm extends React.Component {
                 <TranslationText id="delete" />
               </Menu.Item>
             }>
-            <Header
-              content={<TranslationText id="deleteForever" />}
-              // icon='archive'
-            />
+            <Header content={<TranslationText id="deleteForever" />} />
             <Modal.Content>
               <p>
                 <TranslationText id="sure" />
@@ -1130,11 +1118,6 @@ const mapDispatchToProps = dispatch => {
     lock: id => {
       dispatch(lockBorehole(id));
     },
-    // refresh: () => {
-    //   dispatch({
-    //     type: 'FSEARCH_EDITOR_FILTER_REFRESH'
-    //   });
-    // },
     reset: () => {
       dispatch({
         type: "SEARCH_EDITOR_FILTER_RESET",
