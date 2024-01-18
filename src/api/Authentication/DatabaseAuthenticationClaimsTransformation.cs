@@ -52,7 +52,7 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
         if (subjectId is null)
             return null;
 
-        var user = dbContext.Users.FirstOrDefault(u => u.SubjectId == subjectId) ?? new User { SubjectId = subjectId };
+        var user = dbContext.Users.SingleOrDefault(u => u.SubjectId == subjectId) ?? new User { SubjectId = subjectId };
         user.FirstName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? user.FirstName;
         user.LastName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? user.LastName;
         user.Name = $"{user.FirstName[0]}. {user.LastName}";
@@ -67,7 +67,7 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
             if (!ex.InnerException.Message.Contains("users_subject_id_unique", StringComparison.OrdinalIgnoreCase))
                 throw;
 
-            user = dbContext.Users.First(u => u.SubjectId == subjectId);
+            user = dbContext.Users.Single(u => u.SubjectId == subjectId);
         }
 
         return user;
