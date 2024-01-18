@@ -49,15 +49,13 @@ public partial class AddCasingTable : Migration
                     column: x => x.kind_id,
                     principalSchema: "bdms",
                     principalTable: "codelist",
-                    principalColumn: "id_cli",
-                    onDelete: ReferentialAction.Cascade);
+                    principalColumn: "id_cli");
                 table.ForeignKey(
                     name: "FK_casing_codelist_material_id",
                     column: x => x.material_id,
                     principalSchema: "bdms",
                     principalTable: "codelist",
-                    principalColumn: "id_cli",
-                    onDelete: ReferentialAction.Cascade);
+                    principalColumn: "id_cli");
                 table.ForeignKey(
                     name: "FK_casing_completion_completion_id",
                     column: x => x.completion_id,
@@ -122,7 +120,8 @@ public partial class AddCasingTable : Migration
             column: "casing_id",
             principalSchema: "bdms",
             principalTable: "casing",
-            principalColumn: "id");
+            principalColumn: "id",
+            onDelete: ReferentialAction.Restrict);
     }
 
     /// <inheritdoc />
