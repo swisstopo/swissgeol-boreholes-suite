@@ -4,6 +4,7 @@ import {
   loginAsAdmin,
   openDropdown,
   selectDropdownOption,
+  setTextfield,
 } from "../testHelpers";
 
 const toggleHeaderOpen = () => {
