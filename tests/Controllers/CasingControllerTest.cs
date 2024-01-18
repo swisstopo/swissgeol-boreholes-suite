@@ -125,17 +125,33 @@ public class CasingControllerTest
     [TestMethod]
     public async Task DeleteCasing()
     {
-        var casing = context.Casings.First();
+        var casingWithInstrumentation = context.Casings
+            .Include(c => c.Instrumentations)
+            .AsNoTracking()
+            .First(c => c.Instrumentations.Count > 0);
 
         var completionCount = context.Completions.Count();
         var casingCount = context.Casings.Count();
+        var instrumentationCount = context.Instrumentations.Count();
 
-        var response = await controller.DeleteAsync(casing.Id);
-        ActionResultAssert.IsOk(response);
+        var conflictResponse = await controller.DeleteAsync(casingWithInstrumentation.Id);
+        ActionResultAssert.IsConflict(conflictResponse);
+        Assert.AreEqual(casingCount, context.Casings.Count());
+        casingWithInstrumentation = await context.Casings.FindAsync(casingWithInstrumentation.Id);
+        Assert.IsNotNull(casingWithInstrumentation);
 
-        casing = await context.Casings.FindAsync(casing.Id);
-        Assert.IsNull(casing);
-        Assert.AreEqual(completionCount, context.Completions.Count());
+        var casingWithoutInstrumentation = context.Casings
+            .Include(c => c.Instrumentations)
+            .AsNoTracking()
+            .First(c => c.Instrumentations.Count == 0);
+
+        var successResponse = await controller.DeleteAsync(casingWithoutInstrumentation.Id);
+        ActionResultAssert.IsOk(successResponse);
         Assert.AreEqual(casingCount - 1, context.Casings.Count());
+        casingWithoutInstrumentation = await context.Casings.FindAsync(casingWithoutInstrumentation.Id);
+        Assert.IsNull(casingWithoutInstrumentation);
+
+        Assert.AreEqual(completionCount, context.Completions.Count());
+        Assert.AreEqual(instrumentationCount, context.Instrumentations.Count());
     }
 }

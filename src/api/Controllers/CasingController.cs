@@ -3,6 +3,7 @@ using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace BDMS.Controllers;
 
@@ -74,7 +75,24 @@ public class CasingController : BdmsControllerBase<Casing>
     {
         try
         {
-            return await base.DeleteAsync(id);
+            var casing = await Context.Casings
+                .Include(i => i.Instrumentations)
+                .AsNoTracking()
+                .SingleOrDefaultAsync(i => i.Id == id)
+                .ConfigureAwait(false);
+            if (casing == null)
+            {
+                return NotFound();
+            }
+
+            if (casing.Instrumentations.Count > 0)
+            {
+                return Conflict("Cannot delete casing because it is referenced by an instrumentation.");
+            }
+
+            Context.Remove(casing);
+            await Context.SaveChangesAsync().ConfigureAwait(false);
+            return Ok();
         }
         catch (Exception ex)
         {
