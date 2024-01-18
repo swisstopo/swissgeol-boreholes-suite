@@ -1,17 +1,12 @@
-import { loginAsAdmin, bearerAuth, createBorehole } from "../testHelpers";
-
-const openDropdown = dataCy => {
-  cy.get(`[data-cy="${dataCy}"]`)
-    .find('[role="combobox"]')
-    .click({ force: true });
-};
-
-const selectDropdownOption = index => {
-  cy.get('.MuiPaper-elevation [role="listbox"]')
-    .find('[role="option"]')
-    .eq(index)
-    .click();
-};
+import {
+  loginAsAdmin,
+  bearerAuth,
+  createBorehole,
+  startBoreholeEditing,
+  setTextfield,
+  openDropdown,
+  selectDropdownOption,
+} from "../testHelpers";
 
 describe("Backfill crud tests", () => {
   it("add, edit and delete backfills", () => {
@@ -48,8 +43,7 @@ describe("Backfill crud tests", () => {
     cy.wait("@get-completions-by-boreholeId");
 
     // start editing session
-    cy.contains("a", "Start editing").click();
-    cy.wait("@edit_lock");
+    startBoreholeEditing();
 
     // Necessary to wait for the backfill data to be loaded.
     cy.wait(1000);
@@ -65,29 +59,9 @@ describe("Backfill crud tests", () => {
     cy.wait(1000);
 
     // fill out form
-    cy.get('[data-cy="notes-textfield"]')
-      .click()
-      .then(() => {
-        cy.get('[data-cy="notes-textfield"]').type("Lorem.", {
-          delay: 10,
-        });
-      });
-
-    cy.get('input[name="fromDepth"]')
-      .click()
-      .then(() => {
-        cy.get('input[name="fromDepth"]').type("123456", {
-          delay: 10,
-        });
-      });
-
-    cy.get('input[name="toDepth"]')
-      .click()
-      .then(() => {
-        cy.get('input[name="toDepth"]').type("987654", {
-          delay: 10,
-        });
-      });
+    setTextfield('[data-cy="notes-textfield"]', "Lorem.");
+    setTextfield('[data-cy="fromDepth"]', "123456");
+    setTextfield('[data-cy="toDepth"]', "987654");
 
     openDropdown("backfill-kind-select");
     selectDropdownOption(2);
