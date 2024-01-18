@@ -791,5 +791,21 @@ export const useInstrumentationMutations = () => {
   };
 };
 
+export const getBackfills = async completionId => {
+  return await fetchApiV2(`backfill?completionId=${completionId}`, "GET");
+};
+
+export const addBackfill = async backfill => {
+  return await fetchApiV2("backfill", "POST", backfill);
+};
+
+export const updateBackfill = async backfill => {
+  return await fetchApiV2("backfill", "PUT", backfill);
+};
+
+export const deleteBackfill = async id => {
+  return await fetchApiV2(`backfill?id=${id}`, "DELETE");
+};
+
 export const downloadCodelistCsv = () =>
   fetchApiV2(`codelist/csv`, "GET", null, false, true);

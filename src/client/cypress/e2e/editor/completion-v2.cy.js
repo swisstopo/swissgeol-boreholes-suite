@@ -4,6 +4,7 @@ import {
   loginAsAdmin,
   openDropdown,
   selectDropdownOption,
+  setTextfield,
 } from "../testHelpers";
 
 const toggleHeaderOpen = () => {
@@ -42,17 +43,6 @@ const copyCompletion = () => {
 const deleteCompletion = () => {
   toggleHeaderOpen();
   cy.get('[data-cy="delete-button"]').click();
-};
-
-const setTextfield = (selector, text) => {
-  cy.get(selector)
-    .click()
-    .then(() => {
-      cy.focused().clear();
-      cy.get(selector).type(text, {
-        delay: 10,
-      });
-    });
 };
 
 const setName = name => {
