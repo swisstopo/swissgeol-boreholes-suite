@@ -289,6 +289,22 @@ export const setValueOfInputElement = function (inputElement, inputValue) {
   inputElement[0].setAttribute("value", inputValue);
 };
 
+/**
+ * Sets the value for a provided input element.
+ * @param {string} selector The selector of the textfield.
+ * @param {string} text The text to type into the textfield.
+ */
+export const setTextfield = (selector, text) => {
+  cy.get(selector)
+    .click()
+    .then(() => {
+      cy.focused().clear();
+      cy.get(selector).type(text, {
+        delay: 10,
+      });
+    });
+};
+
 // Deletes a downloaded file in Cypress' downloads folder
 export const deleteDownloadedFile = fileName => {
   // Get the path to the downloaded file you want to delete

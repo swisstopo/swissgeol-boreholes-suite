@@ -44,17 +44,6 @@ const deleteCompletion = () => {
   cy.get('[data-cy="delete-button"]').click();
 };
 
-const setTextfield = (selector, text) => {
-  cy.get(selector)
-    .click()
-    .then(() => {
-      cy.focused().clear();
-      cy.get(selector).type(text, {
-        delay: 10,
-      });
-    });
-};
-
 const setName = name => {
   setTextfield('[data-cy="completion-name-textfield"]', name);
 };
