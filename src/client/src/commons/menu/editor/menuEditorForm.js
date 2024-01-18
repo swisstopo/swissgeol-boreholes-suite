@@ -937,7 +937,7 @@ class MenuEditorForm extends React.Component {
                 {(() => {
                   let d = moment.duration(
                     moment(borehole.data.lock.date)
-                      .add(10, "minutes")
+                      .add(60, "minutes")
                       .diff(moment()),
                   );
                   return (
