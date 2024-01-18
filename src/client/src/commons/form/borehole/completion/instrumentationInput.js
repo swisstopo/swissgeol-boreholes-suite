@@ -156,8 +156,7 @@ const InstrumentationInput = ({
               />
               <FormControl
                 variant="outlined"
-                sx={{ marginRight: "10px", flex: "1" }}
-                required>
+                sx={{ marginRight: "10px", flex: "1" }}>
                 <Controller
                   name="casingId"
                   control={control}
@@ -172,9 +171,7 @@ const InstrumentationInput = ({
                       value={field.value || ""}
                       data-cy="completion-casing-id-select"
                       error={Boolean(formState.errors.casingId)}
-                      {...register("casingId", {
-                        required: true,
-                      })}
+                      {...register("casingId")}
                       InputLabelProps={{ shrink: true }}
                       sx={{
                         backgroundColor: getInputFieldBackgroundColor(
