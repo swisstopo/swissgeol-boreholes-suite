@@ -43,6 +43,9 @@ const InstrumentationInput = ({
   };
 
   const prepareFormDataForSubmit = data => {
+    if (data.casingId === "") {
+      data.casingId = null;
+    }
     data.completionId = completionId;
     return data;
   };
