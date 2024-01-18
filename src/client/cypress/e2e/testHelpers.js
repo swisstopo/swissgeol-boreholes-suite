@@ -294,11 +294,13 @@ export const setValueOfInputElement = function (inputElement, inputValue) {
  * @param {string} selector The selector of the textfield.
  * @param {string} text The text to type into the textfield.
  */
-export const setTextfield = (selector, text) => {
+export const setTextfield = (selector, text, clear = false) => {
   cy.get(selector)
     .click()
     .then(() => {
-      cy.focused().clear();
+      if (clear) {
+        cy.focused().clear();
+      }
       cy.get(selector).type(text, {
         delay: 10,
       });
