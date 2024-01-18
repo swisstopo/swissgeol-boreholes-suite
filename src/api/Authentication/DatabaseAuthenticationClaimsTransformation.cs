@@ -5,6 +5,9 @@ using System.Security.Claims;
 
 namespace BDMS.Authentication;
 
+/// <summary>
+/// An <see cref="IClaimsTransformation"/> mapping OpentID Connect "sub" claim to BDMS application claims derived from <see cref="User"/>.
+/// </summary>
 public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
 {
     private readonly BdmsContext dbContext;
