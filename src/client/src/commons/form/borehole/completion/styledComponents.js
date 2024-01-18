@@ -23,8 +23,8 @@ export const StackHalfWidth = styled(Stack)(() => ({
 export const TextfieldWithMarginRight = forwardRef((props, ref) => {
   const StyledTextField = styled(TextField)(() => ({
     flex: "1",
-    marginTop: "10px",
-    marginRight: "10px",
+    marginTop: "10px !important",
+    marginRight: "10px !important",
   }));
 
   return (

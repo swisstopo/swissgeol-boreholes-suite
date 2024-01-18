@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Casing from "./casing";
 import Backfill from "./backfill";
 import Instrumentation from "./instrumentation";
 import { Box, Stack, Tabs, Tab } from "@mui/material";
@@ -30,7 +31,11 @@ const CompletionContentTab = styled(props => <Tab disableRipple {...props} />)(
 
 const CompletionContent = ({ completion, isEditable }) => {
   const { t } = useTranslation();
-  const tabTitels = [{ name: t("instrument") }, { name: t("filling") }];
+  const tabTitels = [
+    { name: t("casing") },
+    { name: t("instrument") },
+    { name: t("filling") },
+  ];
   const [state, setState] = useState({
     index: 0,
     selected: null,
@@ -78,12 +83,15 @@ const CompletionContent = ({ completion, isEditable }) => {
               marginBottom: "10px",
             }}>
             {(state.index === 0 && (
-              <Instrumentation
-                completionId={completion.id}
-                isEditable={isEditable}
-              />
+              <Casing completionId={completion.id} isEditable={isEditable} />
             )) ||
               (state.index === 1 && (
+                <Instrumentation
+                  completionId={completion.id}
+                  isEditable={isEditable}
+                />
+              )) ||
+              (state.index === 2 && (
                 <Backfill
                   completionId={completion.id}
                   isEditable={isEditable}
