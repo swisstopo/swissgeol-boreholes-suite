@@ -1,16 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Box,
-  Button,
-  Stack,
-  Tabs,
-  Tab,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, Stack, Tabs, Tab, Tooltip, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
+import { BdmsButton } from "./styledComponents";
 import {
   getCompletions,
   addCompletion,
@@ -223,19 +216,13 @@ const Completion = props => {
           </CompletionTabs>
           {isEditable && (
             <Tooltip title={t("add")}>
-              <Button
+              <BdmsButton
                 data-cy="add-completion-button"
                 variant="outlined"
                 startIcon={<AddIcon />}
-                onClick={addNewCompletion}
-                sx={{
-                  fontFamily: "Lato",
-                  textTransform: "none",
-                  color: "rgba(0, 0, 0, 0.8)",
-                  borderColor: "rgba(0, 0, 0, 0.8)",
-                }}>
+                onClick={addNewCompletion}>
                 {t("addCompletion")}
-              </Button>
+              </BdmsButton>
             </Tooltip>
           )}
         </Stack>

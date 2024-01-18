@@ -1,5 +1,11 @@
 import React, { forwardRef } from "react";
-import { IconButton, Stack, Typography, TextField } from "@mui/material";
+import {
+  Button,
+  IconButton,
+  Stack,
+  Typography,
+  TextField,
+} from "@mui/material";
 import { styled } from "@mui/system";
 
 export const TypographyWithBottomMargin = styled(Typography)(() => ({
@@ -47,6 +53,20 @@ export const IconButtonWithMargin = styled(IconButton)({
   marginRight: "5px",
   "&:hover, &.Mui-focusVisible, &:active, &:focus, &:focus-visible": {
     backgroundColor: "rgba(0, 0, 0, 0.0)",
+  },
+  "& .MuiTouchRipple-root": {
+    display: "none",
+  },
+});
+
+export const BdmsButton = styled(Button)({
+  fontFamily: "Lato",
+  textTransform: "none",
+  color: "rgba(0, 0, 0, 0.8)",
+  borderColor: "rgba(0, 0, 0, 0.8)",
+  "&:hover, &.Mui-focusVisible, &:active, &:focus, &:focus-visible": {
+    borderColor: "rgba(0, 0, 0, 0.8)",
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
   },
   "& .MuiTouchRipple-root": {
     display: "none",
