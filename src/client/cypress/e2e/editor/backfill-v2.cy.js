@@ -2,12 +2,14 @@ import {
   loginAsAdmin,
   bearerAuth,
   createBorehole,
+  startBoreholeEditing,
+  setTextfield,
   openDropdown,
   selectDropdownOption,
 } from "../testHelpers";
 
-describe("Instrumentation crud tests", () => {
-  it("add, edit and delete instrumentations", () => {
+describe("Backfill crud tests", () => {
+  it("add, edit and delete backfills", () => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
       .then(id =>
@@ -41,76 +43,46 @@ describe("Instrumentation crud tests", () => {
     cy.wait("@get-completions-by-boreholeId");
 
     // start editing session
-    cy.contains("a", "Start editing").click();
-    cy.wait("@edit_lock");
+    startBoreholeEditing();
 
-    // Necessary to wait for the instrumentation data to be loaded.
+    // Necessary to wait for the backfill data to be loaded.
     cy.wait(1000);
 
-    // Ensure instrumentation tab is selected
-    cy.wait("@instrumentation_GET");
+    // select backfill tab
+    cy.get("[data-cy=completion-content-header-tab-Backfill]").click();
+    cy.wait("@backfill_GET");
 
-    // create instrumentation
-    cy.get('[data-cy="add-instrumentation-button"]').click({ force: true });
-    cy.wait("@instrumentation_GET");
+    // add new backfill card
+    cy.get('[data-cy="add-backfill-button"]').click({ force: true });
 
-    // Necessary to wait for the instrumentation form to be loaded.
+    // Necessary to wait for the backfill form to be loaded.
     cy.wait(1000);
 
     // fill out form
-    cy.get('[data-cy="notes-textfield"]')
-      .click()
-      .then(() => {
-        cy.get('[data-cy="notes-textfield"]').type("Lorem.", {
-          delay: 10,
-        });
-      });
+    setTextfield('[data-cy="notes-textfield"]', "Lorem.");
+    setTextfield('[data-cy="from-depth-m-textfield"]', "123456");
+    setTextfield('[data-cy="to-depth-m-textfield"]', "987654");
 
-    cy.get('input[name="name"]')
-      .click()
-      .then(() => {
-        cy.get('input[name="name"]').type("Inst-1", {
-          delay: 10,
-        });
-      });
-
-    cy.get('input[name="fromDepth"]')
-      .click()
-      .then(() => {
-        cy.get('input[name="fromDepth"]').type("123456", {
-          delay: 10,
-        });
-      });
-
-    cy.get('input[name="toDepth"]')
-      .click()
-      .then(() => {
-        cy.get('input[name="toDepth"]').type("987654", {
-          delay: 10,
-        });
-      });
-
-    openDropdown("instrumentation-kind-select");
+    openDropdown("backfill-kind-select");
     selectDropdownOption(2);
 
-    openDropdown("instrumentation-status-select");
+    openDropdown("backfill-material-select");
     selectDropdownOption(1);
 
-    // save instrumentation
+    // save backfill
     cy.get('[data-cy="save-icon"]').click();
 
-    // check if instrumentation is saved
+    // check if backfill is saved
     cy.contains("123456");
     cy.contains("987654");
-    cy.contains("Inst-1");
     cy.contains("Lorem.");
-    cy.contains("suction pump");
-    cy.contains("inactive");
+    cy.contains("casing plugging");
+    cy.contains("filter gravel");
 
-    // edit instrumentation
+    // edit backfill
     cy.get('[data-cy="edit-icon"]').click({ force: true });
 
-    cy.wait("@instrumentation_GET");
+    cy.wait("@backfill_GET");
 
     cy.get('input[name="fromDepth"]')
       .click()
@@ -129,7 +101,7 @@ describe("Instrumentation crud tests", () => {
     cy.contains("123456222");
     cy.contains("inactive");
 
-    // delete instrumentation
+    // delete backfill
     cy.get('[data-cy="delete-icon"]').click({ force: true });
     cy.contains("From depth").should("not.exist");
   });
