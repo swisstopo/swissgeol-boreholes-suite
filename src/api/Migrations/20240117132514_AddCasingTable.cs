@@ -122,7 +122,8 @@ public partial class AddCasingTable : Migration
             column: "casing_id",
             principalSchema: "bdms",
             principalTable: "casing",
-            principalColumn: "id");
+            principalColumn: "id",
+            onDelete: ReferentialAction.Restrict);
     }
 
     /// <inheritdoc />
