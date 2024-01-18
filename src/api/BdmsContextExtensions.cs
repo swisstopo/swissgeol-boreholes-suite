@@ -77,8 +77,8 @@ public static class BdmsContextExtensions
         List<int> lithostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> instrumentKindIds = codelists.Where(c => c.Schema == CompletionSchemas.InstrumentationKindSchema).Select(s => s.Id).ToList();
         List<int> instrumentStatusIds = codelists.Where(c => c.Schema == CompletionSchemas.InstrumentationStatusSchema).Select(s => s.Id).ToList();
-        List<int> casingKindIds = codelists.Where(c => c.Schema == "casi200").Select(s => s.Id).ToList();
-        List<int> casingMaterialIds = codelists.Where(c => c.Schema == "casi201").Select(s => s.Id).ToList();
+        List<int> casingKindIds = codelists.Where(c => c.Schema == CompletionSchemas.CasingKindSchema).Select(s => s.Id).ToList();
+        List<int> casingMaterialIds = codelists.Where(c => c.Schema == CompletionSchemas.CasingMaterialSchema).Select(s => s.Id).ToList();
         List<int> plasticityIds = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList();
         List<int> compactnessIds = codelists.Where(c => c.Schema == "mlpr102").Select(s => s.Id).ToList();
         List<int> consistanceIds = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList();
@@ -708,11 +708,7 @@ public static class BdmsContextExtensions
             .RuleFor(c => c.Updated, f => f.Date.Past().ToUniversalTime())
             .RuleFor(c => c.UpdatedById, f => f.PickRandom(userRange))
             .RuleFor(c => c.UpdatedBy, _ => default!)
-            .RuleFor(c => c.AbandonDate, f =>
-            {
-                var datetime = f.Date.Past();
-                return new DateOnly(datetime.Year, datetime.Month, datetime.Day);
-            })
+            .RuleFor(c => c.AbandonDate, f => DateOnly.FromDateTime(f.Date.Past()))
             .RuleFor(c => c.Name, f => f.Random.Word())
             .RuleFor(c => c.Notes, f => f.Lorem.Sentence())
             .RuleFor(c => c.IsPrimary, f => f.Random.Bool())
@@ -724,6 +720,44 @@ public static class BdmsContextExtensions
         var completions = completionRange.Select(SeededCompletion).ToList();
 
         context.BulkInsert(completions, bulkConfig);
+
+        context.SaveChanges();
+
+        // Seed Casing
+        var casing_ids = 17_000_000;
+        var fakeCasing = new Faker<Casing>()
+            .RuleFor(c => c.CompletionId, f => f.PickRandom(completions.Select(c => c.Id)))
+            .RuleFor(c => c.Completion, _ => default!)
+            .RuleFor(c => c.Name, f => f.Random.Word())
+            .RuleFor(c => c.FromDepth, f => (casing_ids % 10) * 10)
+            .RuleFor(c => c.ToDepth, f => ((casing_ids % 10) + 1) * 10)
+            .RuleFor(c => c.KindId, f => f.PickRandom(casingKindIds))
+            .RuleFor(c => c.Kind, _ => default!)
+            .RuleFor(c => c.MaterialId, f => f.PickRandom(casingMaterialIds))
+            .RuleFor(c => c.Material, _ => default!)
+            .RuleFor(c => c.InnerDiameter, f => f.Random.Double(0, 15))
+            .RuleFor(c => c.OuterDiameter, f => f.Random.Double(0, 20))
+            .RuleFor(c => c.DateFinish, f => DateOnly.FromDateTime(f.Date.Past()))
+            .RuleFor(c => c.DateStart, f => DateOnly.FromDateTime(f.Date.Past()))
+            .RuleFor(c => c.Notes, f => f.Random.Words(4))
+            .RuleFor(c => c.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(c => c.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(c => c.CreatedBy, _ => default!)
+            .RuleFor(c => c.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(c => c.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(c => c.UpdatedBy, _ => default!)
+            .RuleFor(c => c.Id, f => casing_ids++);
+
+        Casing SeededCasing(Completion completion)
+        {
+            return fakeCasing
+                .UseSeed(completion.Id)
+                .Generate();
+        }
+
+        var casings = completions.Select(c => SeededCasing(c)).ToList();
+
+        context.BulkInsert(casings, bulkConfig);
 
         context.SaveChanges();
 
@@ -740,6 +774,8 @@ public static class BdmsContextExtensions
             .RuleFor(i => i.StatusId, f => f.PickRandom(instrumentStatusIds))
             .RuleFor(i => i.Status, _ => default!)
             .RuleFor(i => i.Notes, f => f.Random.Words(4))
+            .RuleFor(i => i.CasingId, f => f.PickRandom(casings.Select(c => c.Id)))
+            .RuleFor(i => i.Casing, _ => default!)
             .RuleFor(i => i.Created, f => f.Date.Past().ToUniversalTime())
             .RuleFor(i => i.CreatedById, f => f.PickRandom(userRange))
             .RuleFor(i => i.CreatedBy, _ => default!)

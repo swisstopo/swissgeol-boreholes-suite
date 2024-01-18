@@ -38,6 +38,7 @@ public class BdmsContext : DbContext
     public DbSet<Completion> Completions { get; set; }
     public DbSet<Instrumentation> Instrumentations { get; set; }
     public DbSet<Backfill> Backfills { get; set; }
+    public DbSet<Casing> Casings { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)

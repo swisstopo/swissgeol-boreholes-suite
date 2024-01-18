@@ -176,6 +176,7 @@ public class CompletionController : BdmsControllerBase<Completion>
             var completion = await Context.Completions
                 .Include(c => c.Instrumentations)
                 .Include(c => c.Backfills)
+                .Include(c => c.Casings)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(b => b.Id == id)
                 .ConfigureAwait(false);
@@ -203,6 +204,11 @@ public class CompletionController : BdmsControllerBase<Completion>
             foreach (var backfill in completion.Backfills)
             {
                 backfill.Id = 0;
+            }
+
+            foreach (var casing in completion.Casings)
+            {
+                casing.Id = 0;
             }
 
             completion.Name += " (Clone)";

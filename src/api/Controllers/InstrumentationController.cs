@@ -26,6 +26,7 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
         var instrumentations = Context.Instrumentations
             .Include(i => i.Status)
             .Include(i => i.Kind)
+            .Include(i => i.Casing)
             .AsNoTracking();
 
         if (completionId != null)
@@ -46,6 +47,7 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
         var instrumentation = await Context.Instrumentations
             .Include(i => i.Status)
             .Include(i => i.Kind)
+            .Include(i => i.Casing)
             .AsNoTracking()
             .SingleOrDefaultAsync(i => i.Id == id)
             .ConfigureAwait(false);
