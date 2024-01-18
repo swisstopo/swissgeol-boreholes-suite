@@ -60,8 +60,8 @@ describe("Backfill crud tests", () => {
 
     // fill out form
     setTextfield('[data-cy="notes-textfield"]', "Lorem.");
-    setTextfield('[data-cy="fromDepth"]', "123456");
-    setTextfield('[data-cy="toDepth"]', "987654");
+    setTextfield('[data-cy="from-depth-m-textfield"]', "123456");
+    setTextfield('[data-cy="to-depth-m-textfield"]', "987654");
 
     openDropdown("backfill-kind-select");
     selectDropdownOption(2);
