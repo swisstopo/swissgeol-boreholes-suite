@@ -38,7 +38,7 @@ public class CasingController : BdmsControllerBase<Casing>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Backfill"/> with the specified <paramref name="id"/>.
+    /// Asynchronously gets the <see cref="Casing"/> with the specified <paramref name="id"/>.
     /// </summary>
     [HttpGet("{id}")]
     [Authorize(Policy = PolicyNames.Viewer)]
@@ -80,6 +80,7 @@ public class CasingController : BdmsControllerBase<Casing>
                 .AsNoTracking()
                 .SingleOrDefaultAsync(i => i.Id == id)
                 .ConfigureAwait(false);
+
             if (casing == null)
             {
                 return NotFound();
