@@ -26,7 +26,6 @@ const Backfill = ({ isEditable, completionId }) => {
   const [displayedBackfills, setDisplayedBackfills] = useState([]);
   const [state, setState] = useState({
     index: 0,
-    selected: null,
     backfills: [],
     isLoadingData: true,
   });
@@ -38,14 +37,12 @@ const Backfill = ({ isEditable, completionId }) => {
         if (response?.length > 0) {
           setState({
             index: index,
-            selected: response[index],
             backfills: response,
             isLoadingData: false,
           });
         } else {
           setState({
             index: 0,
-            selected: null,
             backfills: [],
             isLoadingData: false,
           });
@@ -54,7 +51,6 @@ const Backfill = ({ isEditable, completionId }) => {
     } else if (completionId === null) {
       setState({
         index: 0,
-        selected: null,
         backfills: [],
       });
     }
