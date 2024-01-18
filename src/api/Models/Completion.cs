@@ -90,4 +90,9 @@ public class Completion : IChangeTracking, IIdentifyable
     /// Gets the <see cref="Backfill"/>s associated with the <see cref="Completion"/>.
     /// </summary>
     public ICollection<Backfill>? Backfills { get; }
+
+    /// <summary>
+    /// Gets the <see cref="Casing"/>s associated with the <see cref="Completion"/>.
+    /// </summary>
+    public ICollection<Casing>? Casings { get; }
 }

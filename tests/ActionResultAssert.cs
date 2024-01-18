@@ -53,6 +53,12 @@ internal static class ActionResultAssert
         => AssertActionResult(actionResult, StatusCodes.Status404NotFound);
 
     /// <summary>
+    /// Asserts that the <see cref="IActionResult"/> is Conflict (409).
+    /// </summary>
+    internal static void IsConflict(IActionResult? actionResult)
+        => AssertActionResult(actionResult, StatusCodes.Status409Conflict);
+
+    /// <summary>
     /// Asserts that the <see cref="IActionResult"/> is InternalServerError (500).
     /// </summary>
     internal static void IsInternalServerError(IActionResult? actionResult)
