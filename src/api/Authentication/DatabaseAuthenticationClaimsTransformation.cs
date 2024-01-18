@@ -31,10 +31,16 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
 
         var claimsIdentity = new ClaimsIdentity();
         claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, authenticatedUser.Name));
+
         if (authenticatedUser.IsAdmin)
+        {
             claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, PolicyNames.Admin));
+        }
         else if (authenticatedUser.IsViewer)
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, PolicyNames.Viewer));
+        {
+             claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, PolicyNames.Viewer));
+        }
+
         principal.AddIdentity(claimsIdentity);
 
         return principal;
