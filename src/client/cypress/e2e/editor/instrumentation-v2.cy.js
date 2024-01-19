@@ -47,7 +47,7 @@ describe("Instrumentation crud tests", () => {
 
     // Precondition: Create casing to later link in instrumentation
     cy.get("[data-cy=completion-content-header-tab-Casing]").click();
-    cy.wait("@get-casing-by-completionId");
+    cy.wait("@casing_GET");
 
     cy.get('[data-cy="add-casing-button"]').click({ force: true });
     cy.wait("@codelist_GET");
