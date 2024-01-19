@@ -8,8 +8,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import { BdmsButton } from "./styledComponents";
+import { AddButton } from "./styledComponents";
 import {
   getBackfills,
   addBackfill,
@@ -99,10 +98,8 @@ const Backfill = ({ isEditable, completionId }) => {
         <Stack direction="row" justifyContent="flex-end" alignItems="center">
           {isEditable && (
             <Tooltip title={t("add")}>
-              <BdmsButton
+              <AddButton
                 data-cy="add-backfill-button"
-                variant="outlined"
-                startIcon={<AddIcon />}
                 onClick={e => {
                   e.stopPropagation();
                   if (!selectedBackfill) {
@@ -120,7 +117,7 @@ const Backfill = ({ isEditable, completionId }) => {
                   }
                 }}>
                 {t("addFilling")}
-              </BdmsButton>
+              </AddButton>
             </Tooltip>
           )}
         </Stack>

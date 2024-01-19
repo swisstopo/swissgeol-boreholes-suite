@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Tooltip, Typography } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import {
-  BdmsButton,
+  AddButton,
   CompletionBox,
   CompletionTabs,
   CompletionTab,
@@ -199,13 +198,11 @@ const Completion = props => {
           </CompletionTabs>
           {isEditable && (
             <Tooltip title={t("add")}>
-              <BdmsButton
+              <AddButton
                 data-cy="add-completion-button"
-                variant="outlined"
-                startIcon={<AddIcon />}
                 onClick={addNewCompletion}>
                 {t("addCompletion")}
-              </BdmsButton>
+              </AddButton>
             </Tooltip>
           )}
         </Stack>

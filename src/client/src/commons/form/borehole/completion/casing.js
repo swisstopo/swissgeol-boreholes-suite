@@ -8,8 +8,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import { BdmsButton } from "./styledComponents";
+import { AddButton } from "./styledComponents";
 import {
   getCasings,
   addCasing,
@@ -99,10 +98,8 @@ const Casing = ({ isEditable, completionId }) => {
         <Stack direction="row" justifyContent="flex-end" alignItems="center">
           {isEditable && (
             <Tooltip title={t("add")}>
-              <BdmsButton
+              <AddButton
                 data-cy="add-casing-button"
-                variant="outlined"
-                startIcon={<AddIcon />}
                 onClick={e => {
                   e.stopPropagation();
                   if (!selectedCasing) {
@@ -120,7 +117,7 @@ const Casing = ({ isEditable, completionId }) => {
                   }
                 }}>
                 {t("addCasing")}
-              </BdmsButton>
+              </AddButton>
             </Tooltip>
           )}
         </Stack>

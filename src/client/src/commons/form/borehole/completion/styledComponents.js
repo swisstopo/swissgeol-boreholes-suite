@@ -10,6 +10,7 @@ import {
   TextField,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import AddIcon from "@mui/icons-material/Add";
 
 export const TypographyWithBottomMargin = styled(Typography)(() => ({
   marginBottom: "1em",
@@ -74,6 +75,14 @@ export const BdmsButton = styled(Button)({
   "& .MuiTouchRipple-root": {
     display: "none",
   },
+});
+
+export const AddButton = forwardRef((props, ref) => {
+  return (
+    <BdmsButton ref={ref} {...props} variant="outlined" startIcon={<AddIcon />}>
+      {props.children}
+    </BdmsButton>
+  );
 });
 
 export const CompletionBox = styled(Box)(() => ({
