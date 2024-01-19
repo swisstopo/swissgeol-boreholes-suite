@@ -121,7 +121,7 @@ const BackfillInput = ({
                 }}
               />
             </Stack>
-            <Stack direction="row" sx={{ paddingTop: "10px" }}>
+            <Stack direction="row">
               <FormControl
                 sx={{ flex: "1", marginRight: "10px", marginTop: "10px" }}
                 variant="outlined">
