@@ -3,13 +3,13 @@ import {
   bearerAuth,
   createBorehole,
   startBoreholeEditing,
+  setTextfield,
   openDropdown,
   selectDropdownOption,
-  setTextfield,
 } from "../testHelpers";
 
-describe("Instrumentation crud tests", () => {
-  it("add, edit and delete instrumentations", () => {
+describe("Casing crud tests", () => {
+  it("add, edit and delete casings", () => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
       .then(id =>
@@ -45,11 +45,12 @@ describe("Instrumentation crud tests", () => {
     // start editing session
     startBoreholeEditing();
 
-    // Precondition: Create casing to later link in instrumentation
+    // select casing tab
     cy.get("[data-cy=completion-content-header-tab-Casing]").click();
     cy.wait("@casing_GET");
 
-    cy.get('[data-cy="add-casing-button"]').click({ force: true });
+    // create casing
+    cy.get('[data-cy="add-casing-button"]').click();
     cy.wait("@codelist_GET");
 
     setTextfield('input[name="name"]', "casing-1");
@@ -63,18 +64,43 @@ describe("Instrumentation crud tests", () => {
     setTextfield('input[name="dateFinish"]', "2021-01-02");
     setTextfield('input[name="innerDiameter"]', "3");
     setTextfield('input[name="outerDiameter"]', "4");
+    setTextfield('textarea[name="notes"]', "Lorem.");
 
     cy.get('[data-cy="save-icon"]').click();
-    cy.wait("@get-casing-by-completionId");
+    cy.wait("@casing_GET");
 
+    cy.get('[data-cy="casing-name"]').contains("casing-1");
+    cy.get('[data-cy="casing-fromDepth"]').contains("0");
+    cy.get('[data-cy="casing-toDepth"]').contains("10");
+    cy.get('[data-cy="casing-kind"]').contains("conductor pipe");
+    cy.get('[data-cy="casing-material"]').contains("steel");
+    cy.get('[data-cy="casing-dateStart"]').contains("01. Jan. 2021");
+    cy.get('[data-cy="casing-dateFinish"]').contains("02. Jan. 2021");
+    cy.get('[data-cy="casing-innerDiameter"]').contains("3");
+    cy.get('[data-cy="casing-outerDiameter"]').contains("4");
+    cy.get('[data-cy="casing-notes"]').contains("Lorem.");
+
+    // update casing
+    cy.get('[data-cy="edit-icon"]').click();
+    cy.wait("@codelist_GET");
+
+    setTextfield('input[name="name"]', " updated");
+    openDropdown("casing-material-select");
+    selectDropdownOption(5);
+
+    cy.get('[data-cy="save-icon"]').click({ force: true });
+    cy.get('[data-cy="casing-name"]').contains("casing-1 updated");
+    cy.get('[data-cy="casing-material"]').contains("concrete");
+    cy.get('[data-cy="casing-innerDiameter"]').contains("3");
+
+    // delete casing
+    // Precondition: instrumentation with reference to casing
     cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
-    // create instrumentation
     cy.get('[data-cy="add-instrumentation-button"]').click({ force: true });
     cy.wait("@casing_GET");
 
-    // fill out form
     setTextfield('textarea[name="notes"]', "Lorem.");
     setTextfield('input[name="name"]', "Inst-1");
     setTextfield('input[name="fromDepth"]', "123456");
@@ -83,35 +109,36 @@ describe("Instrumentation crud tests", () => {
     selectDropdownOption(2);
     openDropdown("instrumentation-status-select");
     selectDropdownOption(1);
-
-    // save instrumentation
-    cy.get('[data-cy="save-icon"]').click();
-
-    // check if instrumentation is saved
-    cy.contains("123456");
-    cy.contains("987654");
-    cy.contains("Inst-1");
-    cy.contains("Lorem.");
-    cy.contains("suction pump");
-    cy.contains("inactive");
-
-    // edit instrumentation
-    cy.get('[data-cy="edit-icon"]').click({ force: true });
-
-    // We need the casings for the casing name dropdown
-    cy.wait("@casing_GET");
-    setTextfield('input[name="fromDepth"]', "222");
     openDropdown("instrumentation-casing-id-select");
     selectDropdownOption(1);
-
-    // close editing mask
     cy.get('[data-cy="save-icon"]').click({ force: true });
-    cy.contains("casing-1");
-    cy.contains("123456222");
-    cy.contains("inactive");
 
-    // delete instrumentation
+    cy.get("[data-cy=completion-content-header-tab-Casing]").click();
+    cy.wait("@casing_GET");
+
+    // cannot delete if connected to instrumentation
     cy.get('[data-cy="delete-icon"]').click({ force: true });
-    cy.contains("From depth").should("not.exist");
+    cy.wait("@casing_DELETE");
+    cy.on("window:alert", txt => {
+      expect(txt).to.contains(
+        "Cannot delete casing because it is referenced by an instrumentation.",
+      );
+    });
+    cy.on("window:confirm", () => true);
+
+    // can delete if not connected to instrumentation
+    cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
+    cy.wait("@instrumentation_GET");
+    cy.get('[data-cy="edit-icon"]').click();
+    openDropdown("instrumentation-casing-id-select");
+    selectDropdownOption(0);
+    cy.get('[data-cy="save-icon"]').click({ force: true });
+
+    cy.get("[data-cy=completion-content-header-tab-Casing]").click();
+    cy.wait("@casing_GET");
+
+    cy.get('[data-cy="delete-icon"]').click({ force: true });
+    cy.wait("@casing_DELETE");
+    cy.contains("casing-1 updated").should("not.exist");
   });
 });

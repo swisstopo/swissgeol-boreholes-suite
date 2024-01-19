@@ -44,14 +44,18 @@ const CasingDisplay = props => {
         <StackFullWidth direction="column" justifyContent="space-between">
           <StackFullWidth direction="column">
             <Typography variant="subtitle2">{t("name")}</Typography>
-            <TypographyWithBottomMargin variant="subtitle1">
+            <TypographyWithBottomMargin
+              variant="subtitle1"
+              data-cy="casing-name">
               {casing.name ? casing.name : "-"}
             </TypographyWithBottomMargin>
           </StackFullWidth>
           <StackFullWidth direction="row" spacing={1}>
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("fromdepth")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
+              <TypographyWithBottomMargin
+                variant="subtitle1"
+                data-cy="casing-fromDepth">
                 {casing.fromDepth || casing.fromDepth === 0
                   ? casing.fromDepth
                   : "-"}
@@ -59,7 +63,9 @@ const CasingDisplay = props => {
             </StackHalfWidth>
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("todepth")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
+              <TypographyWithBottomMargin
+                variant="subtitle1"
+                data-cy="casing-toDepth">
                 {casing.toDepth || casing.toDepth === 0 ? casing.toDepth : "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
@@ -67,7 +73,9 @@ const CasingDisplay = props => {
           <StackFullWidth direction="row" spacing={1}>
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("kindFilling")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
+              <TypographyWithBottomMargin
+                variant="subtitle1"
+                data-cy="casing-kind">
                 {casing.kind?.[i18n.language] || "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
@@ -75,7 +83,9 @@ const CasingDisplay = props => {
               <Typography variant="subtitle2">
                 {t("materialFilling")}
               </Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
+              <TypographyWithBottomMargin
+                variant="subtitle1"
+                data-cy="casing-material">
                 {casing.material?.[i18n.language] || "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
@@ -83,7 +93,9 @@ const CasingDisplay = props => {
           <StackFullWidth direction="row" spacing={1}>
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("dateSpudCasing")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
+              <TypographyWithBottomMargin
+                variant="subtitle1"
+                data-cy="casing-dateStart">
                 {casing.dateStart ? formattedDateTime(casing.dateStart) : "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
@@ -91,7 +103,9 @@ const CasingDisplay = props => {
               <Typography variant="subtitle2">
                 {t("dateFinishCasing")}
               </Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
+              <TypographyWithBottomMargin
+                variant="subtitle1"
+                data-cy="casing-dateFinish">
                 {casing.dateFinish ? formattedDateTime(casing.dateFinish) : "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
@@ -101,7 +115,9 @@ const CasingDisplay = props => {
               <Typography variant="subtitle2">
                 {t("casing_inner_diameter")}
               </Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
+              <TypographyWithBottomMargin
+                variant="subtitle1"
+                data-cy="casing-innerDiameter">
                 {casing.innerDiameter || casing.innerDiameter === 0
                   ? casing.innerDiameter
                   : "-"}
@@ -111,7 +127,9 @@ const CasingDisplay = props => {
               <Typography variant="subtitle2">
                 {t("casing_outer_diameter")}
               </Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
+              <TypographyWithBottomMargin
+                variant="subtitle1"
+                data-cy="casing-outerDiameter">
                 {casing.outerDiameter || casing.outerDiameter === 0
                   ? casing.outerDiameter
                   : "-"}
@@ -126,7 +144,8 @@ const CasingDisplay = props => {
               overflow: "auto",
               WebkitBoxOrient: "vertical",
               WebkitLineClamp: 3,
-            }}>
+            }}
+            data-cy="casing-notes">
             {casing.notes || "-"}
           </TypographyWithBottomMargin>
         </StackFullWidth>
