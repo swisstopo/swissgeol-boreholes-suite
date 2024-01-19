@@ -375,6 +375,7 @@
   "user": "Utilisateur",
   "username": "Nom d'utilisateur",
   "usersMap": "Cartes pour les utilisateurs",
+  "userUnauthorized": "Vous n'avez pas les privilèges suffisants pour utiliser l'application. Veuillez contacter l'administrateur.",
   "validationErrorHeader": "Erreurs de validation",
   "version": "Version",
   "viewas": "Aperçu en tant que",

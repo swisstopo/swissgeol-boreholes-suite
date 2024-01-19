@@ -63,6 +63,7 @@ export function user() {
       case "GET_CONNECTION_ERROR": {
         let copy = {
           ...state,
+          error: action.error.response.status === 401 ? true : state.error,
           fcnt: state.fcnt + 1,
           isFetching: false,
           rtime: new Date().getTime() - state.rtime,
