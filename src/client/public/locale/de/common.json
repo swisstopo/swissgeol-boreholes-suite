@@ -375,6 +375,7 @@
   "user": "Benutzer",
   "username": "Benutzername",
   "usersMap": "Karten für Benutzer",
+  "userUnauthorized": "Sie verfügen nicht über ausreichende Rechte, um die Applikation zu benutzen. Bitte melden Sie sich beim Administrator.",
   "validationErrorHeader": "Validierungsfehler",
   "version": "Version",
   "viewas": "Ansicht als",

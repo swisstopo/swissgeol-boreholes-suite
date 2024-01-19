@@ -375,6 +375,7 @@
   "user": "Utente",
   "username": "Nome utente",
   "usersMap": "Mappe dell'utente",
+  "userUnauthorized": "Non si dispone dei privilegi sufficienti per utilizzare l'applicazione. Si prega di contattare l'amministratore.",
   "validationErrorHeader": "Errori di convalida",
   "version": "Versione",
   "viewas": "Visualizza come",

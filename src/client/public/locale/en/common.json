@@ -375,6 +375,7 @@
   "user": "User",
   "username": "Username",
   "usersMap": "Maps for users",
+  "userUnauthorized": "You do not have sufficient privileges to use the application. Please contact the administrator.",
   "validationErrorHeader": "Validation errors",
   "version": "Version",
   "viewas": "View as",
