@@ -271,7 +271,7 @@ const CasingInput = ({
               />
               <TextfieldWithMarginRight
                 type="date"
-                data-cy="completion-dateFinish-textfield"
+                data-cy="casing-dateFinish-textfield"
                 label={t("dateFinishCasing")}
                 variant="outlined"
                 size="small"

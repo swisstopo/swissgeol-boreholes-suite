@@ -172,7 +172,7 @@ const InstrumentationInput = ({
                       label={t("casingId")}
                       variant="outlined"
                       value={field.value || ""}
-                      data-cy="completion-casing-id-select"
+                      data-cy="instrumentation-casing-id-select"
                       error={Boolean(formState.errors.casingId)}
                       {...register("casingId")}
                       InputLabelProps={{ shrink: true }}
