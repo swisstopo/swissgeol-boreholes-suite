@@ -65,7 +65,7 @@ describe("Instrumentation crud tests", () => {
     setTextfield('input[name="outerDiameter"]', "4");
 
     cy.get('[data-cy="save-icon"]').click();
-    cy.wait("@get-casing-by-completionId");
+    cy.wait("@casing_GET");
 
     cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
     cy.wait("@instrumentation_GET");
