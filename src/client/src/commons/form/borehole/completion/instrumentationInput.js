@@ -108,8 +108,7 @@ const InstrumentationInput = ({
                   borderRadius: "4px",
                 }}
                 onBlur={() => {
-                  // trigger but keep focus on the field
-                  trigger("fromDepth", { shouldFocus: true });
+                  trigger("fromDepth");
                 }}
               />
               <TextfieldWithMarginRight

@@ -94,7 +94,7 @@ const BackfillInput = ({
                 }}
                 onBlur={() => {
                   // trigger but keep focus on the field
-                  trigger("fromDepth", { shouldFocus: true });
+                  trigger("fromDepth");
                 }}
               />
               <TextfieldWithMarginRight
