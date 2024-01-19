@@ -47,7 +47,7 @@ describe("Backfill crud tests", () => {
 
     // select backfill tab
     cy.get("[data-cy=completion-content-header-tab-Backfill]").click();
-    cy.wait("@get-backfill-by-completionId");
+    cy.wait("@backfill_GET");
 
     // add new backfill card
     cy.get('[data-cy="add-backfill-button"]').click({ force: true });
