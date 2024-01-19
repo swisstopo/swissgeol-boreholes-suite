@@ -99,7 +99,10 @@ const InstrumentationDisplay = props => {
           }}>
           <Tooltip title={t("edit")}>
             <ModeEditIcon
-              color={selectedInstrumentation ? "disabled" : "black"}
+              sx={{
+                color: selectedInstrumentation ? "disabled" : "black",
+                cursor: "pointer",
+              }}
               data-cy="edit-icon"
               onClick={e => {
                 e.stopPropagation();
@@ -114,6 +117,7 @@ const InstrumentationDisplay = props => {
               sx={{
                 color: selectedInstrumentation ? "rgba(0, 0, 0, 0.26)" : "red",
                 opacity: 0.7,
+                cursor: "pointer",
               }}
               onClick={e => {
                 e.stopPropagation();

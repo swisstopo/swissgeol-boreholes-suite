@@ -317,6 +317,7 @@ const InstrumentationInput = ({
               <CheckIcon
                 sx={{
                   color: formState.isValid ? "#0080008c" : "disabled",
+                  cursor: "pointer",
                 }}
                 data-cy="save-icon"
                 onClick={() => closeFormIfCompleted()}

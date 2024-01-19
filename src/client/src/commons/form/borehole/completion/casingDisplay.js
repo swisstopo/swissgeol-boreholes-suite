@@ -138,7 +138,10 @@ const CasingDisplay = props => {
           }}>
           <Tooltip title={t("edit")}>
             <ModeEditIcon
-              color={selectedCasing ? "disabled" : "black"}
+              sx={{
+                color: selectedCasing ? "disabled" : "black",
+                cursor: "pointer",
+              }}
               data-cy="edit-icon"
               onClick={e => {
                 e.stopPropagation();
@@ -152,6 +155,7 @@ const CasingDisplay = props => {
               sx={{
                 color: selectedCasing ? "rgba(0, 0, 0, 0.26)" : "red",
                 opacity: 0.7,
+                cursor: "pointer",
               }}
               onClick={e => {
                 e.stopPropagation();
