@@ -2,8 +2,10 @@ import {
   loginAsAdmin,
   bearerAuth,
   createBorehole,
+  startBoreholeEditing,
   openDropdown,
   selectDropdownOption,
+  setTextfield,
 } from "../testHelpers";
 
 describe("Instrumentation crud tests", () => {
@@ -41,58 +43,44 @@ describe("Instrumentation crud tests", () => {
     cy.wait("@get-completions-by-boreholeId");
 
     // start editing session
-    cy.contains("a", "Start editing").click();
-    cy.wait("@edit_lock");
+    startBoreholeEditing();
 
-    // Necessary to wait for the instrumentation data to be loaded.
-    cy.wait(1000);
+    // Precondition: Create casing to later link in instrumentation
+    cy.get("[data-cy=completion-content-header-tab-Casing]").click();
+    cy.wait("@get-casing-by-completionId");
 
-    // Ensure instrumentation tab is selected
+    cy.get('[data-cy="add-casing-button"]').click({ force: true });
+    cy.wait("@codelist_GET");
+
+    setTextfield('input[name="name"]', "casing-1");
+    setTextfield('input[name="fromDepth"]', "0");
+    setTextfield('input[name="toDepth"]', "10");
+    openDropdown("casing-kind-select");
+    selectDropdownOption(2);
+    openDropdown("casing-material-select");
+    selectDropdownOption(3);
+    setTextfield('input[name="dateStart"]', "2021-01-01");
+    setTextfield('input[name="dateFinish"]', "2021-01-02");
+    setTextfield('input[name="innerDiameter"]', "3");
+    setTextfield('input[name="outerDiameter"]', "4");
+
+    cy.get('[data-cy="save-icon"]').click();
+    cy.wait("@get-casing-by-completionId");
+
+    cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
     // create instrumentation
     cy.get('[data-cy="add-instrumentation-button"]').click({ force: true });
-    cy.wait("@instrumentation_GET");
-
-    // Necessary to wait for the instrumentation form to be loaded.
-    cy.wait(1000);
+    cy.wait("@codelist_GET");
 
     // fill out form
-    cy.get('[data-cy="notes-textfield"]')
-      .click()
-      .then(() => {
-        cy.get('[data-cy="notes-textfield"]').type("Lorem.", {
-          delay: 10,
-        });
-      });
-
-    cy.get('input[name="name"]')
-      .click()
-      .then(() => {
-        cy.get('input[name="name"]').type("Inst-1", {
-          delay: 10,
-        });
-      });
-
-    cy.get('input[name="fromDepth"]')
-      .click()
-      .then(() => {
-        cy.get('input[name="fromDepth"]').type("123456", {
-          delay: 10,
-        });
-      });
-
-    cy.get('input[name="toDepth"]')
-      .click()
-      .then(() => {
-        cy.get('input[name="toDepth"]').type("987654", {
-          delay: 10,
-        });
-      });
-
+    setTextfield('textarea[name="notes"]', "Lorem.");
+    setTextfield('input[name="name"]', "Inst-1");
+    setTextfield('input[name="fromDepth"]', "123456");
+    setTextfield('input[name="toDepth"]', "987654");
     openDropdown("instrumentation-kind-select");
     selectDropdownOption(2);
-
     openDropdown("instrumentation-status-select");
     selectDropdownOption(1);
 
@@ -110,22 +98,16 @@ describe("Instrumentation crud tests", () => {
     // edit instrumentation
     cy.get('[data-cy="edit-icon"]').click({ force: true });
 
-    cy.wait("@instrumentation_GET");
+    // We need the casings for the casing name dropdown
+    cy.wait("@get-casing-by-completionId");
 
-    cy.get('input[name="fromDepth"]')
-      .click()
-      .then(() => {
-        cy.get('input[name="fromDepth"]').type("222", {
-          delay: 10,
-        });
-      });
-
-    // Necessary to wait, otherwise the type is not finished yet.
-    // It cannot be checked for the value of the input element, because the value is not updated yet.
-    cy.wait(1000);
+    setTextfield('input[name="fromDepth"]', "222");
+    openDropdown("instrumentation-casing-id-select");
+    selectDropdownOption(1);
 
     // close editing mask
     cy.get('[data-cy="save-icon"]').click({ force: true });
+    cy.contains("casing-1");
     cy.contains("123456222");
     cy.contains("inactive");
 
