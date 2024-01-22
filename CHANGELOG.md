@@ -15,6 +15,10 @@
 - Removed the functionality to edit user details (first name, surname and password) since they are now managed by the IAM.
 - Removed middle name from user details because it was not used until now.
 
+### Fixed
+
+- Ensure hydrogeology components are loaded properly when refreshed.
+
 ## v2.0.506 - 2023-12-21
 
 ### Added
