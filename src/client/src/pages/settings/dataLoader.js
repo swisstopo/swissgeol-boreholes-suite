@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
@@ -7,6 +7,7 @@ import Markdown from "markdown-to-jsx";
 import TranslationKeys from "../../commons/translationKeys";
 
 import { Button } from "semantic-ui-react";
+import Alert from "@mui/material/Alert";
 
 import {
   loadDomains,
@@ -60,10 +61,14 @@ class DataLoader extends React.Component {
   }
 
   render() {
+    const { t } = this.props;
     const isLoading =
       !this.props.auth ||
       this.props.auth.isLoading ||
       this.props.user?.authentication;
+
+    const authorizationFailed =
+      this.props.user?.authentication && this.props.user.error;
     return (
       <div
         style={{
@@ -151,20 +156,7 @@ class DataLoader extends React.Component {
                 }}>
                 Sign in
               </div>
-              {isLoading ? (
-                <Button
-                  disabled
-                  color={"green"}
-                  compact
-                  loading
-                  content="Login"
-                  fluid
-                  size="small"
-                  style={{
-                    marginTop: "1.5em",
-                  }}
-                />
-              ) : (
+              {!(isLoading || authorizationFailed) ? (
                 <Button
                   compact
                   primary
@@ -179,10 +171,38 @@ class DataLoader extends React.Component {
                   }}
                   data-cy="login-button"
                 />
-              )}
+              ) : null}
+              {isLoading && !authorizationFailed ? (
+                <Button
+                  disabled
+                  color={"green"}
+                  compact
+                  loading
+                  content="Login"
+                  fluid
+                  size="small"
+                  style={{
+                    marginTop: "1.5em",
+                  }}
+                />
+              ) : null}
+              {authorizationFailed ? (
+                <>
+                  <Alert severity="error">{t("userUnauthorized")}</Alert>
+                  <Button
+                    compact
+                    fluid
+                    color="red"
+                    content="Logout"
+                    onClick={() => this.props.auth.signoutRedirect()}
+                    style={{
+                      marginTop: "1em",
+                    }}
+                  />
+                </>
+              ) : null}
             </div>
           </div>
-
           <div
             style={{
               display: "flex",

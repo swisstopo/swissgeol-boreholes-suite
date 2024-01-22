@@ -1,16 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { Stack, Tooltip, Typography } from "@mui/material";
 import {
-  Box,
-  Button,
-  Stack,
-  Tabs,
-  Tab,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import AddIcon from "@mui/icons-material/Add";
+  AddButton,
+  CompletionBox,
+  CompletionTabs,
+  CompletionTab,
+} from "./styledComponents";
 import {
   getCompletions,
   addCompletion,
@@ -22,27 +18,6 @@ import CompletionContent from "./completionContent";
 import CompletionHeaderInput from "./completionHeaderInput";
 import CompletionHeaderDisplay from "./completionHeaderDisplay";
 import Prompt from "../../../prompt/prompt";
-
-const CompletionTabs = styled(Tabs)({
-  "& .MuiTabs-indicator": {
-    display: "none",
-  },
-});
-
-const CompletionTab = styled(props => <Tab disableRipple {...props} />)(() => ({
-  color: "rgba(0, 0, 0, 0.6)",
-  fontFamily: "Lato",
-  fontWeight: "bold",
-  textTransform: "none",
-  fontSize: "16px",
-  "&.Mui-selected": {
-    color: "rgba(0, 0, 0, 1) !important",
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
-  },
-  "&.Mui-focusVisible": {
-    backgroundColor: "rgba(100, 95, 228, 0.32)",
-  },
-}));
 
 const Completion = props => {
   const { isEditable, boreholeId } = props;
@@ -223,19 +198,11 @@ const Completion = props => {
           </CompletionTabs>
           {isEditable && (
             <Tooltip title={t("add")}>
-              <Button
+              <AddButton
                 data-cy="add-completion-button"
-                variant="outlined"
-                startIcon={<AddIcon />}
-                onClick={addNewCompletion}
-                sx={{
-                  fontFamily: "Lato",
-                  textTransform: "none",
-                  color: "rgba(0, 0, 0, 0.8)",
-                  borderColor: "rgba(0, 0, 0, 0.8)",
-                }}>
+                onClick={addNewCompletion}>
                 {t("addCompletion")}
-              </Button>
+              </AddButton>
             </Tooltip>
           )}
         </Stack>
@@ -252,15 +219,7 @@ const Completion = props => {
           <>
             {state.selected != null && (
               <>
-                <Box
-                  sx={{
-                    backgroundColor: "rgba(0, 0, 0, 0.05)",
-                    width: "100%",
-                    borderWidth: "1px",
-                    borderColor: "black",
-                    padding: "10px 10px 5px 10px",
-                    marginBottom: "10px",
-                  }}>
+                <CompletionBox>
                   {editing ? (
                     <CompletionHeaderInput
                       completion={state.selected}
@@ -281,7 +240,7 @@ const Completion = props => {
                       deleteCompletion={deleteSelectedCompletion}
                     />
                   )}
-                </Box>
+                </CompletionBox>
 
                 {state.selected.id > 0 && (
                   <CompletionContent

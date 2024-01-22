@@ -31,9 +31,6 @@ const InstrumentationDisplay = props => {
       }}>
       <StackFullWidth direction="row" justifyContent="space-between">
         <StackFullWidth direction="column" justifyContent="space-between">
-          <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
-            {t("instrument")}
-          </Typography>
           <StackFullWidth direction="row" spacing={1}>
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("fromdepth")}</Typography>
@@ -62,7 +59,7 @@ const InstrumentationDisplay = props => {
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("casingId")}</Typography>
               <TypographyWithBottomMargin variant="subtitle1">
-                {instrumentation.casingId ? instrumentation.casingId : "-"}
+                {instrumentation.casingId ? instrumentation.casing.name : "-"}
               </TypographyWithBottomMargin>
             </StackHalfWidth>
           </StackFullWidth>
@@ -102,7 +99,10 @@ const InstrumentationDisplay = props => {
           }}>
           <Tooltip title={t("edit")}>
             <ModeEditIcon
-              color={selectedInstrumentation ? "disabled" : "black"}
+              sx={{
+                color: selectedInstrumentation ? "disabled" : "black",
+                cursor: "pointer",
+              }}
               data-cy="edit-icon"
               onClick={e => {
                 e.stopPropagation();
@@ -117,6 +117,7 @@ const InstrumentationDisplay = props => {
               sx={{
                 color: selectedInstrumentation ? "rgba(0, 0, 0, 0.26)" : "red",
                 opacity: 0.7,
+                cursor: "pointer",
               }}
               onClick={e => {
                 e.stopPropagation();

@@ -31,9 +31,6 @@ const BackfillDisplay = props => {
       }}>
       <StackFullWidth direction="row" justifyContent="space-between">
         <StackFullWidth direction="column" justifyContent="space-between">
-          <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
-            {t("instrument")}
-          </Typography>
           <StackFullWidth direction="row" spacing={1}>
             <StackHalfWidth direction="column">
               <Typography variant="subtitle2">{t("fromdepth")}</Typography>
@@ -88,7 +85,10 @@ const BackfillDisplay = props => {
           }}>
           <Tooltip title={t("edit")}>
             <ModeEditIcon
-              color={selectedBackfill ? "disabled" : "black"}
+              sx={{
+                color: selectedBackfill ? "disabled" : "black",
+                cursor: "pointer",
+              }}
               data-cy="edit-icon"
               onClick={e => {
                 e.stopPropagation();
@@ -102,6 +102,7 @@ const BackfillDisplay = props => {
               sx={{
                 color: selectedBackfill ? "rgba(0, 0, 0, 0.26)" : "red",
                 opacity: 0.7,
+                cursor: "pointer",
               }}
               onClick={e => {
                 e.stopPropagation();
