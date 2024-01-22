@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Box,
@@ -8,11 +8,10 @@ import {
   Stack,
   TextField,
   Tooltip,
-  Typography,
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
-import { useDomains } from "../../../../api/fetchApiV2";
+import { useDomains, getCasings } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import {
   TextfieldWithMarginRight,
@@ -29,6 +28,7 @@ const InstrumentationInput = ({
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const { handleSubmit, register, control, formState, trigger } = useForm();
+  const [casings, setCasings] = useState([]);
 
   // trigger form validation on mount
   useEffect(() => {
@@ -43,6 +43,9 @@ const InstrumentationInput = ({
   };
 
   const prepareFormDataForSubmit = data => {
+    if (data.casingId === "") {
+      data.casingId = null;
+    }
     data.completionId = completionId;
     return data;
   };
@@ -61,6 +64,17 @@ const InstrumentationInput = ({
     }
   };
 
+  useEffect(() => {
+    if (completionId) {
+      getCasings(completionId).then(casings => {
+        setCasings(casings);
+      });
+    }
+  }, [completionId]);
+
+  const getInputFieldBackgroundColor = errorFieldName =>
+    Boolean(errorFieldName) ? "#fff6f6" : "transparent";
+
   return (
     <Card
       sx={{
@@ -73,9 +87,6 @@ const InstrumentationInput = ({
       <form onSubmit={handleSubmit(submitForm)}>
         <Stack direction="row" sx={{ width: "100%" }}>
           <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-            <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
-              {t("instrument")}
-            </Typography>
             <Stack direction="row">
               <TextfieldWithMarginRight
                 {...register("fromDepth", {
@@ -97,8 +108,7 @@ const InstrumentationInput = ({
                   borderRadius: "4px",
                 }}
                 onBlur={() => {
-                  // trigger but keep focus on the field
-                  trigger("fromDepth", { shouldFocus: true });
+                  trigger("fromDepth");
                 }}
               />
               <TextfieldWithMarginRight
@@ -146,20 +156,52 @@ const InstrumentationInput = ({
                   trigger("name");
                 }}
               />
-              <TextfieldWithMarginRight
-                {...register("casingId", {
-                  valueAsNumber: true,
-                })}
-                type="text"
-                size="small"
-                data-cy="casingId-textfield"
-                label={t("casingId")}
-                defaultValue={instrumentation.casingId}
+              <FormControl
                 variant="outlined"
-                InputLabelProps={{ shrink: true }}
-              />
+                sx={{ marginRight: "10px", flex: "1" }}>
+                <Controller
+                  name="casingId"
+                  control={control}
+                  defaultValue={instrumentation?.casingId}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      select
+                      size="small"
+                      label={t("casingId")}
+                      variant="outlined"
+                      value={field.value || ""}
+                      data-cy="instrumentation-casing-id-select"
+                      error={Boolean(formState.errors.casingId)}
+                      {...register("casingId")}
+                      InputLabelProps={{ shrink: true }}
+                      sx={{
+                        backgroundColor: getInputFieldBackgroundColor(
+                          formState.errors.casingId,
+                        ),
+                        borderRadius: "4px",
+                        marginTop: "10px",
+                        flex: "1 1 auto",
+                      }}
+                      onChange={e => {
+                        e.stopPropagation();
+                        field.onChange(e.target.value);
+                        trigger("casingId");
+                      }}>
+                      <MenuItem key="0" value={null}>
+                        <em>{t("reset")}</em>
+                      </MenuItem>
+                      {casings?.map(casing => (
+                        <MenuItem key={casing.id} value={casing.id}>
+                          {casing.name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  )}
+                />
+              </FormControl>
             </Stack>
-            <Stack direction="row" sx={{ paddingTop: "10px" }}>
+            <Stack direction="row">
               <FormControl
                 sx={{ flex: "1", marginRight: "10px", marginTop: "10px" }}
                 variant="outlined">
@@ -275,6 +317,7 @@ const InstrumentationInput = ({
               <CheckIcon
                 sx={{
                   color: formState.isValid ? "#0080008c" : "disabled",
+                  cursor: "pointer",
                 }}
                 data-cy="save-icon"
                 onClick={() => closeFormIfCompleted()}

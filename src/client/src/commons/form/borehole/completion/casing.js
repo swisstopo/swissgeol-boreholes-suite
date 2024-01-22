@@ -10,39 +10,39 @@ import {
 } from "@mui/material";
 import { AddButton } from "./styledComponents";
 import {
-  getBackfills,
-  addBackfill,
-  updateBackfill,
-  deleteBackfill,
+  getCasings,
+  addCasing,
+  updateCasing,
+  deleteCasing,
 } from "../../../../api/fetchApiV2";
-import BackfillInput from "./backfillInput";
-import BackfillDisplay from "./backfillDisplay";
+import CasingInput from "./casingInput";
+import CasingDisplay from "./casingDisplay";
 
-const Backfill = ({ isEditable, completionId }) => {
+const Casing = ({ isEditable, completionId }) => {
   const { t } = useTranslation();
   const mounted = useRef(false);
-  const [selectedBackfill, setSelectedBackfill] = useState(null);
-  const [displayedBackfills, setDisplayedBackfills] = useState([]);
+  const [selectedCasing, setSelectedCasing] = useState(null);
+  const [displayedCasings, setDisplayedCasings] = useState([]);
   const [state, setState] = useState({
     index: 0,
-    backfills: [],
+    casings: [],
     isLoadingData: true,
   });
 
   const loadData = index => {
     setState({ isLoadingData: true });
     if (completionId && mounted.current) {
-      getBackfills(completionId).then(response => {
+      getCasings(completionId).then(response => {
         if (response?.length > 0) {
           setState({
             index: index,
-            backfills: response,
+            casings: response,
             isLoadingData: false,
           });
         } else {
           setState({
             index: 0,
-            backfills: [],
+            casings: [],
             isLoadingData: false,
           });
         }
@@ -50,7 +50,7 @@ const Backfill = ({ isEditable, completionId }) => {
     } else if (completionId === null) {
       setState({
         index: 0,
-        backfills: [],
+        casings: [],
       });
     }
   };
@@ -69,28 +69,28 @@ const Backfill = ({ isEditable, completionId }) => {
   }, [completionId]);
 
   useEffect(() => {
-    setDisplayedBackfills(state.backfills);
-  }, [state.backfills]);
+    setDisplayedCasings(state.casings);
+  }, [state.casings]);
 
   // scroll to newly added item
-  const backfillRefs = useMemo(
+  const casingRefs = useMemo(
     () =>
-      Array(displayedBackfills?.length)
+      Array(displayedCasings?.length)
         .fill(null)
         .map(() => createRef(null)),
-    [displayedBackfills],
+    [displayedCasings],
   );
 
   useEffect(() => {
-    if (displayedBackfills?.length > 0) {
-      const lastBackfillRef = backfillRefs[displayedBackfills?.length - 1];
-      if (displayedBackfills[displayedBackfills?.length - 1].id === 0)
-        lastBackfillRef.current.scrollIntoView({
+    if (displayedCasings?.length > 0) {
+      const lastCasingRef = casingRefs[displayedCasings?.length - 1];
+      if (displayedCasings[displayedCasings?.length - 1].id === 0)
+        lastCasingRef.current.scrollIntoView({
           behavior: "smooth",
           block: "center",
         });
     }
-  }, [displayedBackfills, backfillRefs]);
+  }, [displayedCasings, casingRefs]);
 
   return (
     <Stack sx={{ flexGrow: 1 }}>
@@ -99,24 +99,24 @@ const Backfill = ({ isEditable, completionId }) => {
           {isEditable && (
             <Tooltip title={t("add")}>
               <AddButton
-                data-cy="add-backfill-button"
+                data-cy="add-casing-button"
                 onClick={e => {
                   e.stopPropagation();
-                  if (!selectedBackfill) {
-                    const tempBackfill = { id: 0 };
-                    // Check if backfills is iterable
+                  if (!selectedCasing) {
+                    const tempCasing = { id: 0 };
+                    // Check if casing is iterable
                     if (
-                      state.backfills &&
-                      Symbol.iterator in Object(state.backfills)
+                      state.casings &&
+                      Symbol.iterator in Object(state.casings)
                     ) {
-                      setDisplayedBackfills([...state.backfills, tempBackfill]);
+                      setDisplayedCasings([...state.casings, tempCasing]);
                     } else {
-                      setDisplayedBackfills([tempBackfill]);
+                      setDisplayedCasings([tempCasing]);
                     }
-                    setSelectedBackfill(tempBackfill);
+                    setSelectedCasing(tempCasing);
                   }
                 }}>
-                {t("addFilling")}
+                {t("addCasing")}
               </AddButton>
             </Tooltip>
           )}
@@ -136,46 +136,46 @@ const Backfill = ({ isEditable, completionId }) => {
           overflow: "auto",
           maxHeight: "85vh",
         }}>
-        {displayedBackfills?.length > 0
-          ? displayedBackfills
+        {displayedCasings?.length > 0
+          ? displayedCasings
               ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
-              .map((backfill, index) => {
-                const isSelected = selectedBackfill?.id === backfill.id;
-                const isTempBackfill = backfill.id === 0;
+              .map((casing, index) => {
+                const isSelected = selectedCasing?.id === casing.id;
+                const isTempCasing = casing.id === 0;
                 return (
                   <Grid
                     item
                     md={12}
                     lg={12}
                     xl={6}
-                    key={backfill.id}
-                    ref={backfillRefs[index]}>
-                    {state.backfills ? (
+                    key={casing.id}
+                    ref={casingRefs[index]}>
+                    {state.casings ? (
                       isEditable && isSelected ? (
-                        <BackfillInput
-                          backfill={backfill}
-                          setSelectedBackfill={setSelectedBackfill}
+                        <CasingInput
+                          casing={casing}
+                          setSelectedCasing={setSelectedCasing}
                           completionId={completionId}
-                          updateBackfill={(backfill, data) => {
-                            updateBackfill(backfill, data).then(() => {
+                          updateCasing={(casing, data) => {
+                            updateCasing(casing, data).then(() => {
                               handleDataChange();
                             });
                           }}
-                          addBackfill={data => {
-                            addBackfill(data).then(() => {
+                          addCasing={data => {
+                            addCasing(data).then(() => {
                               handleDataChange();
                             });
                           }}
                         />
                       ) : (
-                        !isTempBackfill && (
-                          <BackfillDisplay
-                            backfill={backfill}
-                            selectedBackfill={selectedBackfill}
-                            setSelectedBackfill={setSelectedBackfill}
+                        !isTempCasing && (
+                          <CasingDisplay
+                            casing={casing}
+                            selectedCasing={selectedCasing}
+                            setSelectedCasing={setSelectedCasing}
                             isEditable={isEditable}
-                            deleteBackfill={backfillId => {
-                              deleteBackfill(backfillId).then(() => {
+                            deleteCasing={casingId => {
+                              deleteCasing(casingId).then(() => {
                                 handleDataChange();
                               });
                             }}
@@ -194,7 +194,7 @@ const Backfill = ({ isEditable, completionId }) => {
                 justifyContent="center"
                 sx={{ flexGrow: 1 }}>
                 <Typography variant="fullPageMessage">
-                  {t("msgBackfillEmpty")}
+                  {t("msgCasingEmpty")}
                 </Typography>
               </Stack>
             )}
@@ -202,4 +202,4 @@ const Backfill = ({ isEditable, completionId }) => {
     </Stack>
   );
 };
-export default React.memo(Backfill);
+export default React.memo(Casing);

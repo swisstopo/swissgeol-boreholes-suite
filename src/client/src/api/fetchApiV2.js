@@ -807,5 +807,21 @@ export const deleteBackfill = async id => {
   return await fetchApiV2(`backfill?id=${id}`, "DELETE");
 };
 
+export const getCasings = async completionId => {
+  return await fetchApiV2(`casing?completionId=${completionId}`, "GET");
+};
+
+export const addCasing = async casing => {
+  return await fetchApiV2("casing", "POST", casing);
+};
+
+export const updateCasing = async casing => {
+  return await fetchApiV2("casing", "PUT", casing);
+};
+
+export const deleteCasing = async id => {
+  return await fetchApiV2(`casing?id=${id}`, "DELETE");
+};
+
 export const downloadCodelistCsv = () =>
   fetchApiV2(`codelist/csv`, "GET", null, false, true);

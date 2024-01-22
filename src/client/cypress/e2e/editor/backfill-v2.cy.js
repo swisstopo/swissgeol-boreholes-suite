@@ -45,27 +45,20 @@ describe("Backfill crud tests", () => {
     // start editing session
     startBoreholeEditing();
 
-    // Necessary to wait for the backfill data to be loaded.
-    cy.wait(1000);
-
     // select backfill tab
     cy.get("[data-cy=completion-content-header-tab-Backfill]").click();
     cy.wait("@backfill_GET");
 
     // add new backfill card
     cy.get('[data-cy="add-backfill-button"]').click({ force: true });
-
-    // Necessary to wait for the backfill form to be loaded.
-    cy.wait(1000);
+    cy.wait("@codelist_GET");
 
     // fill out form
-    setTextfield('[data-cy="notes-textfield"]', "Lorem.");
-    setTextfield('[data-cy="from-depth-m-textfield"]', "123456");
-    setTextfield('[data-cy="to-depth-m-textfield"]', "987654");
-
+    setTextfield('textarea[name="notes"]', "Lorem.");
+    setTextfield('input[name="fromDepth"]', "123456");
+    setTextfield('input[name="toDepth"]', "987654");
     openDropdown("backfill-kind-select");
     selectDropdownOption(2);
-
     openDropdown("backfill-material-select");
     selectDropdownOption(1);
 
@@ -81,20 +74,9 @@ describe("Backfill crud tests", () => {
 
     // edit backfill
     cy.get('[data-cy="edit-icon"]').click({ force: true });
+    cy.wait("@codelist_GET");
 
-    cy.wait("@backfill_GET");
-
-    cy.get('input[name="fromDepth"]')
-      .click()
-      .then(() => {
-        cy.get('input[name="fromDepth"]').type("222", {
-          delay: 10,
-        });
-      });
-
-    // Necessary to wait, otherwise the type is not finished yet.
-    // It cannot be checked for the value of the input element, because the value is not updated yet.
-    cy.wait(1000);
+    setTextfield('input[name="fromDepth"]', "222");
 
     // close editing mask
     cy.get('[data-cy="save-icon"]').click({ force: true });
