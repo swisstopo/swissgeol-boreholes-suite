@@ -347,7 +347,8 @@ class BoreholeForm extends React.Component {
                   updateChange={this.updateChange}
                   updateNumber={this.updateNumber}
                   t={t}
-                  debug={this.props.developer.debug}></BoreholeDetailSegment>
+                  debug={this.props.developer.debug}
+                  isEditable={isEditable}></BoreholeDetailSegment>
               </div>
             )}
           />
