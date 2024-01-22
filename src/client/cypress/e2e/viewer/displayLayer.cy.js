@@ -142,7 +142,7 @@ describe("Test for the borehole form.", () => {
 
     // Click on layer
     cy.get('[data-cy="stratigraphy-layer-0"]').scrollIntoView();
-    cy.get('[data-cy="stratigraphy-layer-0"]').click();
+    cy.get('[data-cy="stratigraphy-layer-0"]').click({ force: true });
 
     // Three detail rows are displayed - two by default plus one that was selected as default field.
     cy.get('[data-cy="stratigraphy-layer-details"] h6').should(

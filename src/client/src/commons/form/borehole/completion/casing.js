@@ -8,7 +8,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { AddButton } from "./styledComponents";
+import { AddButton, CompletionGrid } from "./styledComponents";
 import {
   getCasings,
   addCasing,
@@ -122,20 +122,7 @@ const Casing = ({ isEditable, completionId }) => {
           )}
         </Stack>
       </Box>
-      <Grid
-        container
-        alignItems="stretch"
-        columnSpacing={{ xs: 2 }}
-        rowSpacing={{ xs: 2 }}
-        sx={{
-          width: "100%",
-          borderWidth: "1px",
-          borderColor: "black",
-          padding: "10px 10px 5px 10px",
-          marginBottom: "10px",
-          overflow: "auto",
-          maxHeight: "85vh",
-        }}>
+      <CompletionGrid>
         {displayedCasings?.length > 0
           ? displayedCasings
               ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
@@ -198,7 +185,7 @@ const Casing = ({ isEditable, completionId }) => {
                 </Typography>
               </Stack>
             )}
-      </Grid>
+      </CompletionGrid>
     </Stack>
   );
 };

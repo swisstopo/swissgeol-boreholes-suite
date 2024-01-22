@@ -29,51 +29,39 @@ const CompletionContent = ({ completion, isEditable }) => {
   };
 
   return (
-    <>
-      <Stack direction="column">
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center">
-          <CompletionTabs
-            value={state.index}
-            onChange={handleCompletionChanged}>
-            {tabTitels.map((item, index) => {
-              return (
-                <CompletionTab
-                  data-cy={"completion-content-header-tab-" + item.name}
-                  label={
-                    item.name === null || item.name === ""
-                      ? t("common:np")
-                      : item.name
-                  }
-                  key={index}
-                />
-              );
-            })}
-          </CompletionTabs>
-        </Stack>
-        <>
-          <CompletionBox>
-            {(state.index === 0 && (
-              <Casing completionId={completion.id} isEditable={isEditable} />
-            )) ||
-              (state.index === 1 && (
-                <Instrumentation
-                  completionId={completion.id}
-                  isEditable={isEditable}
-                />
-              )) ||
-              (state.index === 2 && (
-                <Backfill
-                  completionId={completion.id}
-                  isEditable={isEditable}
-                />
-              ))}
-          </CompletionBox>
-        </>
+    <Stack direction="column">
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <CompletionTabs value={state.index} onChange={handleCompletionChanged}>
+          {tabTitels.map((item, index) => {
+            return (
+              <CompletionTab
+                data-cy={"completion-content-header-tab-" + item.name}
+                label={
+                  item.name === null || item.name === ""
+                    ? t("common:np")
+                    : item.name
+                }
+                key={index}
+              />
+            );
+          })}
+        </CompletionTabs>
       </Stack>
-    </>
+      <CompletionBox>
+        {(state.index === 0 && (
+          <Casing completionId={completion.id} isEditable={isEditable} />
+        )) ||
+          (state.index === 1 && (
+            <Instrumentation
+              completionId={completion.id}
+              isEditable={isEditable}
+            />
+          )) ||
+          (state.index === 2 && (
+            <Backfill completionId={completion.id} isEditable={isEditable} />
+          ))}
+      </CompletionBox>
+    </Stack>
   );
 };
 

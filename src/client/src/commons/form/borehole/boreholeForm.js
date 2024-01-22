@@ -408,7 +408,7 @@ class BoreholeForm extends React.Component {
             render={() => (
               <WaterIngress
                 isEditable={isEditable}
-                boreholeId={borehole.data.id}
+                boreholeId={parseInt(this.props.match.params.id, 10)}
               />
             )}
           />
@@ -421,7 +421,7 @@ class BoreholeForm extends React.Component {
             render={() => (
               <GroundwaterLevelMeasurement
                 isEditable={isEditable}
-                boreholeId={borehole.data.id}
+                boreholeId={parseInt(this.props.match.params.id, 10)}
               />
             )}
           />
@@ -434,7 +434,7 @@ class BoreholeForm extends React.Component {
             render={() => (
               <FieldMeasurement
                 isEditable={isEditable}
-                boreholeId={borehole.data.id}
+                boreholeId={parseInt(this.props.match.params.id, 10)}
               />
             )}
           />
@@ -444,7 +444,7 @@ class BoreholeForm extends React.Component {
             render={() => (
               <Hydrotest
                 isEditable={isEditable}
-                boreholeId={borehole.data.id}
+                boreholeId={parseInt(this.props.match.params.id, 10)}
               />
             )}
           />
@@ -457,7 +457,7 @@ class BoreholeForm extends React.Component {
             render={() => (
               <GroundwaterLevelMeasurement
                 isEditable={isEditable}
-                boreholeId={borehole.data.id}
+                boreholeId={parseInt(this.props.match.params.id, 10)}
               />
             )}
           />
