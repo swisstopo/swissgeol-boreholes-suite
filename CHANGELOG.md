@@ -14,6 +14,7 @@
 - Removed the functionality to add new users since they are now managed by the IAM.
 - Removed the functionality to edit user details (first name, surname and password) since they are now managed by the IAM.
 - Removed middle name from user details because it was not used until now.
+- Disable inputs of the editor view's borehole _borehole_ tab, when editing mode is not active or borehole status does not allow editing.
 
 ## v2.0.506 - 2023-12-21
 
