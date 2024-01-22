@@ -2,6 +2,7 @@ import React, { forwardRef } from "react";
 import {
   Box,
   Button,
+  Grid,
   IconButton,
   Stack,
   Tabs,
@@ -119,3 +120,27 @@ export const CompletionTab = styled(props => <Tab disableRipple {...props} />)(
     },
   }),
 );
+
+export const CompletionGrid = forwardRef((props, ref) => {
+  const StyledGrid = styled(Grid)(() => ({
+    width: "100%",
+    borderWidth: "1px",
+    borderColor: "black",
+    padding: "10px 10px 5px 10px",
+    marginBottom: "10px",
+    overflow: "auto",
+    maxHeight: "65vh",
+    alignItems: "stretch",
+  }));
+
+  return (
+    <StyledGrid
+      ref={ref}
+      {...props}
+      container
+      columnSpacing={{ xs: 2 }}
+      rowSpacing={{ xs: 2 }}>
+      {props.children}
+    </StyledGrid>
+  );
+});
