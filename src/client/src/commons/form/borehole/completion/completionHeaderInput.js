@@ -164,9 +164,6 @@ const CompletionHeaderInput = props => {
                         field.onChange(e.target.value);
                         trigger("kindId");
                       }}>
-                      <MenuItem key="0" value={null}>
-                        <em>{t("reset")}</em>
-                      </MenuItem>
                       {domains?.data
                         ?.filter(d => d.schema === "completion_kind")
                         .sort((a, b) => a.order - b.order)

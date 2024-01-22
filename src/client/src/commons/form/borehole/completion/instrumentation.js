@@ -7,9 +7,8 @@ import {
   Stack,
   Tooltip,
   Typography,
-  Button,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import { AddButton } from "./styledComponents";
 import {
   useInstrumentationMutations,
   useInstrumentations,
@@ -65,10 +64,8 @@ const Instrumentation = ({ isEditable, completionId }) => {
         <Stack direction="row" justifyContent="flex-end" alignItems="center">
           {isEditable && (
             <Tooltip title={t("add")}>
-              <Button
+              <AddButton
                 data-cy="add-instrumentation-button"
-                variant="outlined"
-                startIcon={<AddIcon />}
                 onClick={e => {
                   e.stopPropagation();
                   if (!selectedInstrumentation) {
@@ -87,15 +84,9 @@ const Instrumentation = ({ isEditable, completionId }) => {
                     }
                     setSelectedInstrumentation(tempInstrumentation);
                   }
-                }}
-                sx={{
-                  fontFamily: "Lato",
-                  textTransform: "none",
-                  color: "rgba(0, 0, 0, 0.8)",
-                  borderColor: "rgba(0, 0, 0, 0.8)",
                 }}>
                 {t("addInstrument")}
-              </Button>
+              </AddButton>
             </Tooltip>
           )}
         </Stack>

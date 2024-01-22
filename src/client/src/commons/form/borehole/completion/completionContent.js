@@ -1,36 +1,22 @@
 import React, { useState } from "react";
+import Casing from "./casing";
 import Backfill from "./backfill";
 import Instrumentation from "./instrumentation";
-import { Box, Stack, Tabs, Tab } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { Stack } from "@mui/material";
+import {
+  CompletionBox,
+  CompletionTabs,
+  CompletionTab,
+} from "./styledComponents";
 import { useTranslation } from "react-i18next";
-
-const CompletionContentTabGroup = styled(Tabs)({
-  "& .MuiTabs-indicator": {
-    display: "none",
-  },
-});
-
-const CompletionContentTab = styled(props => <Tab disableRipple {...props} />)(
-  () => ({
-    color: "rgba(0, 0, 0, 0.6)",
-    fontFamily: "Lato",
-    fontWeight: "bold",
-    textTransform: "none",
-    fontSize: "16px",
-    "&.Mui-selected": {
-      color: "rgba(0, 0, 0, 1) !important",
-      backgroundColor: "rgba(0, 0, 0, 0.05)",
-    },
-    "&.Mui-focusVisible": {
-      backgroundColor: "rgba(100, 95, 228, 0.32)",
-    },
-  }),
-);
 
 const CompletionContent = ({ completion, isEditable }) => {
   const { t } = useTranslation();
-  const tabTitels = [{ name: t("instrument") }, { name: t("filling") }];
+  const tabTitels = [
+    { name: t("casing") },
+    { name: t("instrument") },
+    { name: t("filling") },
+  ];
   const [state, setState] = useState({
     index: 0,
     selected: null,
@@ -49,12 +35,12 @@ const CompletionContent = ({ completion, isEditable }) => {
           direction="row"
           justifyContent="space-between"
           alignItems="center">
-          <CompletionContentTabGroup
+          <CompletionTabs
             value={state.index}
             onChange={handleCompletionChanged}>
             {tabTitels.map((item, index) => {
               return (
-                <CompletionContentTab
+                <CompletionTab
                   data-cy={"completion-content-header-tab-" + item.name}
                   label={
                     item.name === null || item.name === ""
@@ -65,31 +51,26 @@ const CompletionContent = ({ completion, isEditable }) => {
                 />
               );
             })}
-          </CompletionContentTabGroup>
+          </CompletionTabs>
         </Stack>
         <>
-          <Box
-            sx={{
-              backgroundColor: "rgba(0, 0, 0, 0.05)",
-              width: "100%",
-              borderWidth: "1px",
-              borderColor: "black",
-              padding: "10px 10px 5px 10px",
-              marginBottom: "10px",
-            }}>
+          <CompletionBox>
             {(state.index === 0 && (
-              <Instrumentation
-                completionId={completion.id}
-                isEditable={isEditable}
-              />
+              <Casing completionId={completion.id} isEditable={isEditable} />
             )) ||
               (state.index === 1 && (
+                <Instrumentation
+                  completionId={completion.id}
+                  isEditable={isEditable}
+                />
+              )) ||
+              (state.index === 2 && (
                 <Backfill
                   completionId={completion.id}
                   isEditable={isEditable}
                 />
               ))}
-          </Box>
+          </CompletionBox>
         </>
       </Stack>
     </>
