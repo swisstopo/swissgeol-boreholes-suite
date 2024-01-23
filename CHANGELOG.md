@@ -16,6 +16,10 @@
 - Removed middle name from user details because it was not used until now.
 - Disable inputs of the editor view's borehole _borehole_ tab, when editing mode is not active or borehole status does not allow editing.
 
+### Fixed
+
+- Ensure hydrogeology components are loaded properly when refreshed.
+
 ## v2.0.506 - 2023-12-21
 
 ### Added
