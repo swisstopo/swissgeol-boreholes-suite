@@ -3,10 +3,8 @@ import {
   bearerAuth,
   createBorehole,
   startBoreholeEditing,
-  setTextfield,
-  openDropdown,
-  selectDropdownOption,
-} from "../testHelpers";
+} from "../helpers/testHelpers";
+import { setInput, setSelect } from "../helpers/formHelpers";
 
 describe("Casing crud tests", () => {
   it("add, edit and delete casings", () => {
@@ -53,18 +51,16 @@ describe("Casing crud tests", () => {
     cy.get('[data-cy="add-casing-button"]').click();
     cy.wait("@codelist_GET");
 
-    setTextfield('input[name="name"]', "casing-1");
-    setTextfield('input[name="fromDepth"]', "0");
-    setTextfield('input[name="toDepth"]', "10");
-    openDropdown("casing-kind-select");
-    selectDropdownOption(2);
-    openDropdown("casing-material-select");
-    selectDropdownOption(3);
-    setTextfield('input[name="dateStart"]', "2021-01-01");
-    setTextfield('input[name="dateFinish"]', "2021-01-02");
-    setTextfield('input[name="innerDiameter"]', "3");
-    setTextfield('input[name="outerDiameter"]', "4");
-    setTextfield('textarea[name="notes"]', "Lorem.");
+    setInput("name", "casing-1");
+    setInput("fromDepth", "0");
+    setInput("toDepth", "10");
+    setSelect("kindId", 2);
+    setSelect("materialId", 3);
+    setInput("dateStart", "2021-01-01");
+    setInput("dateFinish", "2021-01-02");
+    setInput("innerDiameter", "3");
+    setInput("outerDiameter", "4");
+    setInput("notes", "Lorem.");
 
     cy.get('[data-cy="save-icon"]').click();
     cy.wait("@casing_GET");
@@ -84,9 +80,8 @@ describe("Casing crud tests", () => {
     cy.get('[data-cy="edit-icon"]').click();
     cy.wait("@codelist_GET");
 
-    setTextfield('input[name="name"]', " updated");
-    openDropdown("casing-material-select");
-    selectDropdownOption(5);
+    setInput("name", " updated");
+    setSelect("materialId", 5);
 
     cy.get('[data-cy="save-icon"]').click({ force: true });
     cy.get('[data-cy="casing-name"]').contains("casing-1 updated");
@@ -101,16 +96,13 @@ describe("Casing crud tests", () => {
     cy.get('[data-cy="add-instrumentation-button"]').click({ force: true });
     cy.wait("@casing_GET");
 
-    setTextfield('textarea[name="notes"]', "Lorem.");
-    setTextfield('input[name="name"]', "Inst-1");
-    setTextfield('input[name="fromDepth"]', "123456");
-    setTextfield('input[name="toDepth"]', "987654");
-    openDropdown("instrumentation-kind-select");
-    selectDropdownOption(2);
-    openDropdown("instrumentation-status-select");
-    selectDropdownOption(1);
-    openDropdown("instrumentation-casing-id-select");
-    selectDropdownOption(1);
+    setInput("notes", "Lorem.");
+    setInput("name", "Inst-1");
+    setInput("fromDepth", "123456");
+    setInput("toDepth", "987654");
+    setSelect("kindId", 2);
+    setSelect("statusId", 1);
+    setSelect("casingId", 1);
     cy.get('[data-cy="save-icon"]').click({ force: true });
 
     cy.get("[data-cy=completion-content-header-tab-Casing]").click();
@@ -130,8 +122,8 @@ describe("Casing crud tests", () => {
     cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
     cy.wait("@instrumentation_GET");
     cy.get('[data-cy="edit-icon"]').click();
-    openDropdown("instrumentation-casing-id-select");
-    selectDropdownOption(0);
+    setSelect("casingId", 0);
+
     cy.get('[data-cy="save-icon"]').click({ force: true });
 
     cy.get("[data-cy=completion-content-header-tab-Casing]").click();

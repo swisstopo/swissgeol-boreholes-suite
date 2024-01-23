@@ -1,4 +1,4 @@
-import { newEditableBorehole } from "../testHelpers";
+import { newEditableBorehole } from "../helpers/testHelpers";
 
 describe("Tests for 'Location' edit page.", () => {
   it("creates and deletes a borehole.", () => {

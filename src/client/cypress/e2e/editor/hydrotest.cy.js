@@ -2,7 +2,7 @@ import {
   createBorehole,
   createStratigraphy,
   loginAsAdmin,
-} from "../testHelpers";
+} from "../helpers/testHelpers";
 
 const openDropdown = dataCy => {
   cy.get(`[data-cy="${dataCy}"]`)

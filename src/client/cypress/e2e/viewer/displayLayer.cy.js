@@ -3,7 +3,7 @@ import {
   loginAsAdmin,
   createBorehole,
   setValueOfInputElement,
-} from "../testHelpers";
+} from "../helpers/testHelpers";
 
 describe("Test for the borehole form.", () => {
   it("Adds complete layer and displays it in viewer mode, checks if fields can be optionally hidden.", () => {

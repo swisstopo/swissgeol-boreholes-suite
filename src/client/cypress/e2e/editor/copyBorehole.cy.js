@@ -1,4 +1,4 @@
-import { createBorehole, loginAsAdmin } from "../testHelpers";
+import { createBorehole, loginAsAdmin } from "../helpers/testHelpers";
 
 describe("Test copying of boreholes", () => {
   it("copies a borehole", () => {

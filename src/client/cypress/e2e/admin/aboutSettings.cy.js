@@ -1,4 +1,4 @@
-import { loginAsAdmin } from "../testHelpers";
+import { loginAsAdmin } from "../helpers/testHelpers";
 import license from "../../fixtures/license.json";
 
 describe("Admin about page tests", () => {

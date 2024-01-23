@@ -1,4 +1,4 @@
-import { createBorehole, loginAsAdmin } from "../testHelpers";
+import { createBorehole, loginAsAdmin } from "../helpers/testHelpers";
 import adminUser from "../../fixtures/adminUser.json";
 
 describe("Test the borehole bulk edit feature.", () => {

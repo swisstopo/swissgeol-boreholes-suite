@@ -2,7 +2,7 @@ import {
   createBorehole,
   createStratigraphy,
   loginAsAdmin,
-} from "../testHelpers";
+} from "../helpers/testHelpers";
 
 describe("Tests for the field measurement editor.", () => {
   beforeEach(function () {

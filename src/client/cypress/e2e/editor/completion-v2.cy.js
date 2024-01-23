@@ -2,10 +2,13 @@ import {
   createBorehole,
   startBoreholeEditing,
   loginAsAdmin,
-  openDropdown,
-  selectDropdownOption,
-  setTextfield,
-} from "../testHelpers";
+} from "../helpers/testHelpers";
+import {
+  setInput,
+  setSelect,
+  toggleCheckbox,
+  evaluateCheckbox,
+} from "../helpers/formHelpers";
 
 const toggleHeaderOpen = () => {
   cy.get('[data-cy="completion-header-display"]')
@@ -45,34 +48,6 @@ const deleteCompletion = () => {
   cy.get('[data-cy="delete-button"]').click();
 };
 
-const setName = (name, clear = false) => {
-  setTextfield('[data-cy="completion-name-textfield"]', name, clear);
-};
-
-const setAbandonDate = date => {
-  setTextfield('[data-cy="completion-abandon-date-textfield"]', date);
-};
-
-const setNotes = notes => {
-  setTextfield('[data-cy="completion-notes-textfield"]', notes);
-};
-
-const setKindId = index => {
-  openDropdown("completion-kind-id-select");
-  selectDropdownOption(index);
-};
-
-const setIsPrimary = () => {
-  cy.get('[data-cy="completion-is-primary-checkbox"]').click();
-};
-
-const checkIsPrimary = isPrimary => {
-  var checked = isPrimary ? "true" : "false";
-  cy.get('[data-cy="completion-is-primary-checkbox"]')
-    .invoke("attr", "aria-disabled")
-    .should("eq", checked);
-};
-
 const setTab = index => {
   cy.get('[data-cy="completion-header-tab-' + index + '"]').click();
 };
@@ -110,12 +85,12 @@ describe("completion crud tests", () => {
     cy.get('[data-cy="completion-header-tab-0"]').should("not.exist");
 
     addCompletion();
-    setName("Compl-1");
-    setKindId(1);
+    setInput("name", "Compl-1");
+    setSelect("kindId", 1);
     cy.get('[data-cy="save-button"]').should("be.enabled");
 
-    setAbandonDate("2012-11-14");
-    setNotes("Lorem.");
+    setInput("abandonDate", "2012-11-14");
+    setInput("notes", "Lorem.");
     saveChanges();
     cy.contains("Compl-1");
 
@@ -127,16 +102,17 @@ describe("completion crud tests", () => {
 
     // edit completion
     startEditing();
-    setKindId(1);
+    setSelect("kindId", 1);
     cancelEditing();
     cy.contains("telescopic");
     startEditing();
-    setName("Compl-2", true);
-    setIsPrimary();
+    setInput("name", "Compl-2");
+    toggleCheckbox("isPrimary");
     saveChanges();
     cy.contains("Compl-2");
+    setTab(0);
     startEditing();
-    checkIsPrimary(true);
+    evaluateCheckbox("isPrimary", true);
     cancelEditing();
 
     // delete completion
@@ -165,12 +141,12 @@ describe("completion crud tests", () => {
 
     // add completions
     addCompletion();
-    setName("Compl-1");
-    setKindId(1);
+    setInput("name", "Compl-1");
+    setSelect("kindId", 1);
     saveChanges();
     addCompletion();
-    setName("Compl-2");
-    setKindId(1);
+    setInput("name", "Compl-2");
+    setSelect("kindId", 1);
     saveChanges();
     isTabSelected(1);
 
@@ -181,7 +157,7 @@ describe("completion crud tests", () => {
     isTabSelected(0);
 
     startEditing();
-    setName("Compl-1 updated");
+    setInput("name", "Compl-1 updated");
     setTab(1);
     handlePrompt("Unsaved changes", "cancel");
     isTabSelected(0);
@@ -196,7 +172,7 @@ describe("completion crud tests", () => {
     cy.contains("Compl-1");
 
     startEditing();
-    setName("Compl-2 updated");
+    setInput("name", "Compl-2 updated");
     setTab(0);
     handlePrompt("Unsaved changes", "save");
     cy.wait("@get-completions-by-boreholeId");

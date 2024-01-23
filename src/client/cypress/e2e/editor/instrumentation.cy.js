@@ -2,7 +2,7 @@ import {
   loginAsEditorInViewerMode,
   createBorehole,
   createAndEditBoreholeAsAdmin,
-} from "../testHelpers";
+} from "../helpers/testHelpers";
 
 describe("Instrumentation tests", () => {
   it("Displays correct 'No Instumentation' message when logged in as viewer and no stratigraphies are defined", () => {
