@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, createRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
-  Card,
   CircularProgress,
   Grid,
   Stack,
