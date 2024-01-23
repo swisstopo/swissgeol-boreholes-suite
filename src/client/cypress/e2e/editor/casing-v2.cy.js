@@ -80,7 +80,7 @@ describe("Casing crud tests", () => {
     cy.get('[data-cy="edit-icon"]').click();
     cy.wait("@codelist_GET");
 
-    setInput("name", " updated");
+    setInput("name", "casing-1 updated");
     setSelect("materialId", 5);
 
     cy.get('[data-cy="save-icon"]').click({ force: true });

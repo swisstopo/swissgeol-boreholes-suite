@@ -76,7 +76,7 @@ describe("Backfill crud tests", () => {
 
     // close editing mask
     cy.get('[data-cy="save-icon"]').click({ force: true });
-    cy.contains("123456222");
+    cy.contains("222");
     cy.contains("inactive");
 
     // delete backfill

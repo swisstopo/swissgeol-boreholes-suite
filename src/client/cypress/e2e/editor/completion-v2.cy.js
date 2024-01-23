@@ -110,7 +110,6 @@ describe("completion crud tests", () => {
     toggleCheckbox("isPrimary");
     saveChanges();
     cy.contains("Compl-2");
-    setTab(0);
     startEditing();
     evaluateCheckbox("isPrimary", true);
     cancelEditing();
