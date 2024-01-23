@@ -2,6 +2,7 @@ import React, { forwardRef } from "react";
 import {
   Box,
   Button,
+  Card,
   Grid,
   IconButton,
   Stack,
@@ -142,5 +143,21 @@ export const CompletionGrid = forwardRef((props, ref) => {
       rowSpacing={{ xs: 2 }}>
       {props.children}
     </StyledGrid>
+  );
+});
+
+export const CompletionCard = forwardRef((props, ref) => {
+  const StyledCard = styled(Card)(() => ({
+    border: "1px solid lightgrey",
+    borderRadius: "3px",
+    padding: "12px",
+    marginBottom: "16px",
+    height: "100%",
+  }));
+
+  return (
+    <StyledCard ref={ref} {...props}>
+      {props.children}
+    </StyledCard>
   );
 });

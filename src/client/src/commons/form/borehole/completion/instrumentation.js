@@ -8,7 +8,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { AddButton, CompletionGrid } from "./styledComponents";
+import { AddButton, CompletionCard, CompletionGrid } from "./styledComponents";
 import {
   useInstrumentationMutations,
   useInstrumentations,
@@ -108,27 +108,31 @@ const Instrumentation = ({ isEditable, completionId }) => {
                   key={instrumentation.id}
                   ref={instrumentationRefs[index]}>
                   {isSuccess ? (
-                    isEditable && isSelected ? (
-                      <InstrumentationInput
-                        instrumentation={instrumentation}
-                        setSelectedInstrumentation={setSelectedInstrumentation}
-                        completionId={completionId}
-                        updateInstrumentation={updateInstrumentation}
-                        addInstrumentation={addInstrumentation}
-                      />
-                    ) : (
-                      !isTempInstrumentation && (
-                        <InstrumentationDisplay
+                    <CompletionCard key={instrumentation.id}>
+                      {isEditable && isSelected ? (
+                        <InstrumentationInput
                           instrumentation={instrumentation}
-                          selectedInstrumentation={selectedInstrumentation}
                           setSelectedInstrumentation={
                             setSelectedInstrumentation
                           }
-                          isEditable={isEditable}
-                          deleteInstrumentation={deleteInstrumentation}
+                          completionId={completionId}
+                          updateInstrumentation={updateInstrumentation}
+                          addInstrumentation={addInstrumentation}
                         />
-                      )
-                    )
+                      ) : (
+                        !isTempInstrumentation && (
+                          <InstrumentationDisplay
+                            instrumentation={instrumentation}
+                            selectedInstrumentation={selectedInstrumentation}
+                            setSelectedInstrumentation={
+                              setSelectedInstrumentation
+                            }
+                            isEditable={isEditable}
+                            deleteInstrumentation={deleteInstrumentation}
+                          />
+                        )
+                      )}
+                    </CompletionCard>
                   ) : (
                     <CircularProgress />
                   )}

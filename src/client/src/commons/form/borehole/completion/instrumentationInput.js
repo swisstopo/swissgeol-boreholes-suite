@@ -1,22 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import {
-  Box,
-  Card,
-  FormControl,
-  MenuItem,
-  Stack,
-  TextField,
-  Tooltip,
-} from "@mui/material";
+import { useForm } from "react-hook-form";
+import { Box, MenuItem, Stack, Tooltip } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
 import { useDomains, getCasings } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
-import {
-  TextfieldWithMarginRight,
-  TextfieldNoMargin,
-} from "./styledComponents";
+import { FormInput, FormSelect } from "../../../../components/form";
 
 const InstrumentationInput = ({
   instrumentation,
@@ -72,261 +61,132 @@ const InstrumentationInput = ({
     }
   }, [completionId]);
 
-  const getInputFieldBackgroundColor = errorFieldName =>
-    Boolean(errorFieldName) ? "#fff6f6" : "transparent";
-
   return (
-    <Card
-      sx={{
-        border: "1px solid lightgrey",
-        borderRadius: "3px",
-        p: 1.5,
-        mb: 2,
-        height: "100%",
-      }}>
-      <form onSubmit={handleSubmit(submitForm)}>
-        <Stack direction="row" sx={{ width: "100%" }}>
-          <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-            <Stack direction="row">
-              <TextfieldWithMarginRight
-                {...register("fromDepth", {
-                  valueAsNumber: true,
-                  required: true,
-                })}
-                type="number"
-                size="small"
-                data-cy="from-depth-m-textfield"
-                label={t("fromdepth")}
-                defaultValue={instrumentation.fromDepth}
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                error={!!formState.errors.fromDepth}
-                sx={{
-                  backgroundColor: !!formState.errors.fromDepth
-                    ? "#fff6f6"
-                    : "transparent",
-                  borderRadius: "4px",
-                }}
-                onBlur={() => {
-                  trigger("fromDepth");
-                }}
-              />
-              <TextfieldWithMarginRight
-                {...register("toDepth", {
-                  valueAsNumber: true,
-                  required: true,
-                })}
-                type="number"
-                size="small"
-                data-cy="to-depth-m-textfield"
-                label={t("todepth")}
-                defaultValue={instrumentation.toDepth}
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                error={!!formState.errors.toDepth}
-                sx={{
-                  backgroundColor: !!formState.errors.toDepth
-                    ? "#fff6f6"
-                    : "transparent",
-                  borderRadius: "4px",
-                }}
-                onBlur={() => {
-                  trigger("toDepth");
-                }}
-              />
-            </Stack>
-            <Stack direction="row">
-              <TextfieldWithMarginRight
-                {...register("name", { required: true })}
-                type="text"
-                size="small"
-                data-cy="name-textfield"
-                label={t("name")}
-                defaultValue={instrumentation.name}
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                error={!!formState.errors.name}
-                sx={{
-                  backgroundColor: !!formState.errors.name
-                    ? "#fff6f6"
-                    : "transparent",
-                  borderRadius: "4px",
-                }}
-                onBlur={() => {
-                  trigger("name");
-                }}
-              />
-              <FormControl
-                variant="outlined"
-                sx={{ marginRight: "10px", flex: "1" }}>
-                <Controller
-                  name="casingId"
-                  control={control}
-                  defaultValue={instrumentation?.casingId}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      size="small"
-                      label={t("casingId")}
-                      variant="outlined"
-                      value={field.value || ""}
-                      data-cy="instrumentation-casing-id-select"
-                      error={Boolean(formState.errors.casingId)}
-                      {...register("casingId")}
-                      InputLabelProps={{ shrink: true }}
-                      sx={{
-                        backgroundColor: getInputFieldBackgroundColor(
-                          formState.errors.casingId,
-                        ),
-                        borderRadius: "4px",
-                        marginTop: "10px",
-                        flex: "1 1 auto",
-                      }}
-                      onChange={e => {
-                        e.stopPropagation();
-                        field.onChange(e.target.value);
-                        trigger("casingId");
-                      }}>
-                      <MenuItem key="0" value={null}>
-                        <em>{t("reset")}</em>
-                      </MenuItem>
-                      {casings?.map(casing => (
-                        <MenuItem key={casing.id} value={casing.id}>
-                          {casing.name}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  )}
-                />
-              </FormControl>
-            </Stack>
-            <Stack direction="row">
-              <FormControl
-                sx={{ flex: "1", marginRight: "10px", marginTop: "10px" }}
-                variant="outlined">
-                <Controller
-                  name="kindId"
-                  control={control}
-                  defaultValue={instrumentation.kindId}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      size="small"
-                      label={t("kindInstrument")}
-                      variant="outlined"
-                      value={field.value || ""}
-                      data-cy="instrumentation-kind-select"
-                      error={Boolean(formState.errors.kindId)}
-                      InputLabelProps={{ shrink: true }}
-                      sx={{
-                        backgroundColor: Boolean(formState.errors.kindId)
-                          ? "#fff6f6"
-                          : "transparent",
-                        borderRadius: "4px",
-                      }}
-                      onChange={e => {
-                        e.stopPropagation();
-                        field.onChange(e.target.value);
-                        trigger("kindId");
-                      }}>
-                      {domains?.data
-                        ?.filter(
-                          d =>
-                            d.schema ===
-                            completionSchemaConstants.instrumentationKind,
-                        )
-                        .sort((a, b) => a.order - b.order)
-                        .map(d => (
-                          <MenuItem key={d.id} value={d.id}>
-                            {d[i18n.language]}
-                          </MenuItem>
-                        ))}
-                    </TextField>
-                  )}
-                />
-              </FormControl>
-              <FormControl
-                sx={{ flex: "1", marginRight: "10px", marginTop: "10px" }}
-                variant="outlined">
-                <Controller
-                  name="statusId"
-                  control={control}
-                  defaultValue={instrumentation.statusId}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      size="small"
-                      label={t("statusInstrument")}
-                      variant="outlined"
-                      value={field.value || ""}
-                      data-cy="instrumentation-status-select"
-                      error={Boolean(formState.errors.statusId)}
-                      InputLabelProps={{ shrink: true }}
-                      sx={{
-                        backgroundColor: Boolean(formState.errors.statusId)
-                          ? "#fff6f6"
-                          : "transparent",
-                        borderRadius: "4px",
-                      }}
-                      onChange={e => {
-                        e.stopPropagation();
-                        field.onChange(e.target.value);
-                        trigger("statusId");
-                      }}>
-                      {domains?.data
-                        ?.filter(
-                          d =>
-                            d.schema ===
-                            completionSchemaConstants.instrumentationStatus,
-                        )
-                        .sort((a, b) => a.order - b.order)
-
-                        .map(d => (
-                          <MenuItem key={d.id} value={d.id}>
-                            {d[i18n.language]}
-                          </MenuItem>
-                        ))}
-                    </TextField>
-                  )}
-                />
-              </FormControl>
-            </Stack>
-            <Stack direction="row">
-              <TextfieldNoMargin
-                {...register("notes")}
-                type="text"
-                size="small"
-                data-cy="notes-textfield"
-                label={t("notes")}
-                multiline
-                rows={3}
-                defaultValue={instrumentation.notes}
-                variant="outlined"
-                sx={{ paddingRight: "10px" }}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Stack>
+    <form onSubmit={handleSubmit(submitForm)}>
+      <Stack direction="row" sx={{ width: "100%" }}>
+        <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
+          <Stack direction="row">
+            <FormInput
+              fieldName="fromDepth"
+              label="fromdepth"
+              value={instrumentation.fromDepth}
+              type="number"
+              required={true}
+              formState={formState}
+              register={register}
+              trigger={trigger}
+            />
+            <FormInput
+              fieldName="toDepth"
+              label="todepth"
+              value={instrumentation.toDepth}
+              type="number"
+              required={true}
+              formState={formState}
+              register={register}
+              trigger={trigger}
+            />
           </Stack>
-          <Box sx={{ marginLeft: "auto" }}>
-            <Tooltip title={t("save")}>
-              <CheckIcon
-                sx={{
-                  color: formState.isValid ? "#0080008c" : "disabled",
-                  cursor: "pointer",
-                }}
-                data-cy="save-icon"
-                onClick={() => closeFormIfCompleted()}
-              />
-            </Tooltip>
-          </Box>
+          <Stack direction="row">
+            <FormInput
+              fieldName="name"
+              label="name"
+              value={instrumentation.name}
+              required={true}
+              formState={formState}
+              register={register}
+              trigger={trigger}
+            />
+            <FormSelect
+              fieldName="casingId"
+              label="casingId"
+              selected={instrumentation.casingId}
+              formState={formState}
+              control={control}
+              register={register}
+              trigger={trigger}>
+              <MenuItem key="0" value={null}>
+                <em>{t("reset")}</em>
+              </MenuItem>
+              {casings?.map(casing => (
+                <MenuItem key={casing.id} value={casing.id}>
+                  {casing.name}
+                </MenuItem>
+              ))}
+            </FormSelect>
+          </Stack>
+          <Stack direction="row">
+            <FormSelect
+              fieldName="kindId"
+              label="kindInstrument"
+              selected={instrumentation.kindId}
+              required={true}
+              formState={formState}
+              control={control}
+              register={register}
+              trigger={trigger}>
+              {domains?.data
+                ?.filter(
+                  d =>
+                    d.schema === completionSchemaConstants.instrumentationKind,
+                )
+                .sort((a, b) => a.order - b.order)
+                .map(d => (
+                  <MenuItem key={d.id} value={d.id}>
+                    {d[i18n.language]}
+                  </MenuItem>
+                ))}
+            </FormSelect>
+            <FormSelect
+              fieldName="statusId"
+              label="statusInstrument"
+              selected={instrumentation.statusId}
+              required={true}
+              formState={formState}
+              control={control}
+              register={register}
+              trigger={trigger}>
+              {domains?.data
+                ?.filter(
+                  d =>
+                    d.schema ===
+                    completionSchemaConstants.instrumentationStatus,
+                )
+                .sort((a, b) => a.order - b.order)
+
+                .map(d => (
+                  <MenuItem key={d.id} value={d.id}>
+                    {d[i18n.language]}
+                  </MenuItem>
+                ))}
+            </FormSelect>
+          </Stack>
+          <Stack direction="row">
+            <FormInput
+              fieldName="notes"
+              label="notes"
+              multiline={true}
+              value={instrumentation.notes}
+              formState={formState}
+              register={register}
+              trigger={trigger}
+            />
+          </Stack>
         </Stack>
-      </form>
-    </Card>
+        <Box sx={{ marginLeft: "auto" }}>
+          <Tooltip title={t("save")}>
+            <CheckIcon
+              sx={{
+                color: formState.isValid ? "#0080008c" : "disabled",
+                cursor: "pointer",
+              }}
+              data-cy="save-icon"
+              onClick={() => closeFormIfCompleted()}
+            />
+          </Tooltip>
+        </Box>
+      </Stack>
+    </form>
   );
 };
 

@@ -2,13 +2,14 @@ import React, { useState, useEffect, useMemo, createRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
+  Card,
   CircularProgress,
   Grid,
   Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
-import { AddButton, CompletionGrid } from "./styledComponents";
+import { AddButton, CompletionCard, CompletionGrid } from "./styledComponents";
 import {
   getCasings,
   addCasing,
@@ -138,37 +139,39 @@ const Casing = ({ isEditable, completionId }) => {
                     key={casing.id}
                     ref={casingRefs[index]}>
                     {state.casings ? (
-                      isEditable && isSelected ? (
-                        <CasingInput
-                          casing={casing}
-                          setSelectedCasing={setSelectedCasing}
-                          completionId={completionId}
-                          updateCasing={(casing, data) => {
-                            updateCasing(casing, data).then(() => {
-                              handleDataChange();
-                            });
-                          }}
-                          addCasing={data => {
-                            addCasing(data).then(() => {
-                              handleDataChange();
-                            });
-                          }}
-                        />
-                      ) : (
-                        !isTempCasing && (
-                          <CasingDisplay
+                      <CompletionCard key={casing.id}>
+                        {isEditable && isSelected ? (
+                          <CasingInput
                             casing={casing}
-                            selectedCasing={selectedCasing}
                             setSelectedCasing={setSelectedCasing}
-                            isEditable={isEditable}
-                            deleteCasing={casingId => {
-                              deleteCasing(casingId).then(() => {
+                            completionId={completionId}
+                            updateCasing={(casing, data) => {
+                              updateCasing(casing, data).then(() => {
+                                handleDataChange();
+                              });
+                            }}
+                            addCasing={data => {
+                              addCasing(data).then(() => {
                                 handleDataChange();
                               });
                             }}
                           />
-                        )
-                      )
+                        ) : (
+                          !isTempCasing && (
+                            <CasingDisplay
+                              casing={casing}
+                              selectedCasing={selectedCasing}
+                              setSelectedCasing={setSelectedCasing}
+                              isEditable={isEditable}
+                              deleteCasing={casingId => {
+                                deleteCasing(casingId).then(() => {
+                                  handleDataChange();
+                                });
+                              }}
+                            />
+                          )
+                        )}
+                      </CompletionCard>
                     ) : (
                       <CircularProgress />
                     )}
