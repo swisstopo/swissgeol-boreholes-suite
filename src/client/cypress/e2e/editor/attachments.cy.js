@@ -2,7 +2,7 @@ import {
   createAndEditBoreholeAsAdmin,
   deleteDownloadedFile,
   readDownloadedFile,
-} from "../testHelpers";
+} from "../helpers/testHelpers";
 
 describe("Tests for 'Attachments' edit page.", () => {
   it("creates, downloads and deletes attachments.", () => {

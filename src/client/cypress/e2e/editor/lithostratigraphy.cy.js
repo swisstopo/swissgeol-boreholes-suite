@@ -3,7 +3,7 @@ import {
   createStratigraphy,
   bearerAuth,
   loginAsAdmin,
-} from "../testHelpers";
+} from "../helpers/testHelpers";
 
 describe("Tests for the lithostratigraphy editor.", () => {
   beforeEach(function () {

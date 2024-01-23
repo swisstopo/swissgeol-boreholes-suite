@@ -1,4 +1,4 @@
-import { newEditableBorehole } from "./testHelpers";
+import { newEditableBorehole } from "./helpers/testHelpers";
 
 describe("Tests for filtering data by identifier.", () => {
   it("can filter by identifier", () => {

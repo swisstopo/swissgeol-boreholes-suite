@@ -1,4 +1,4 @@
-import { newEditableBorehole } from "../testHelpers";
+import { newEditableBorehole } from "../helpers/testHelpers";
 
 describe("Test for the borehole form.", () => {
   it("Creates a borehole and fills dropdowns.", () => {

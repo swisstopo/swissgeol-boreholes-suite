@@ -1,4 +1,4 @@
-import { newEditableBorehole } from "../testHelpers";
+import { newEditableBorehole } from "../helpers/testHelpers";
 
 describe("Tests for the layer form.", () => {
   it("Creates a layer and fills all dropdowns with multiple selection.", () => {

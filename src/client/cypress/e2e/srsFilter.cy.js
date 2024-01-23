@@ -1,4 +1,4 @@
-import { newEditableBorehole, loginAsAdmin } from "./testHelpers";
+import { newEditableBorehole, loginAsAdmin } from "./helpers/testHelpers";
 
 describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {

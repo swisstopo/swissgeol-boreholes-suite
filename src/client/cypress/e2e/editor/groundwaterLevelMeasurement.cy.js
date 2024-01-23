@@ -2,7 +2,7 @@ import {
   createBorehole,
   createStratigraphy,
   loginAsAdmin,
-} from "../testHelpers";
+} from "../helpers/testHelpers";
 
 describe("Tests for the groundwater level measurement editor.", () => {
   beforeEach(function () {
