@@ -127,8 +127,10 @@ describe("completion crud tests", () => {
   });
 
   it("switch tabs", () => {
+    var boreholeId;
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
+      boreholeId = id;
       loginAsAdmin();
       cy.visit(`/editor/${id}/completion`);
     });
@@ -138,28 +140,84 @@ describe("completion crud tests", () => {
     // start editing session
     startBoreholeEditing();
 
+    // update url on cancel
+    addCompletion();
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/new`);
+      expect(location.hash).to.eq("");
+    });
+    cancelEditing();
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion`);
+      expect(location.hash).to.eq("");
+    });
+
     // add completions
     addCompletion();
     setInput("name", "Compl-1");
     setSelect("kindId", 1);
     saveChanges();
+    var completion1Id;
+    cy.location().should(location => {
+      completion1Id = location.pathname.split("/").pop();
+      expect(location.pathname).to.eq(
+        `/editor/${boreholeId}/completion/${completion1Id}`,
+      );
+      expect(location.hash).to.eq("#casing");
+    });
     addCompletion();
     setInput("name", "Compl-2");
     setSelect("kindId", 1);
     saveChanges();
+    var completion2Id;
+    cy.location().should(location => {
+      completion2Id = location.pathname.split("/").pop();
+      expect(completion1Id).to.not.eq(completion2Id);
+      expect(location.pathname).to.eq(
+        `/editor/${boreholeId}/completion/${completion2Id}`,
+      );
+      expect(location.hash).to.eq("#casing");
+    });
     isTabSelected(1);
+
+    cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(
+        `/editor/${boreholeId}/completion/${completion2Id}`,
+      );
+      expect(location.hash).to.eq("#instrumentation");
+    });
+    cy.get("[data-cy=completion-content-header-tab-Backfill]").click();
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(
+        `/editor/${boreholeId}/completion/${completion2Id}`,
+      );
+      expect(location.hash).to.eq("#backfill");
+    });
 
     //switch tabs
     startEditing();
     setTab(0);
     cy.get('[data-cy="prompt"]').should("not.exist");
     isTabSelected(0);
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(
+        `/editor/${boreholeId}/completion/${completion1Id}`,
+      );
+      expect(location.hash).to.eq("#casing");
+    });
 
     startEditing();
     setInput("name", "Compl-1 updated");
     setTab(1);
     handlePrompt("Unsaved changes", "cancel");
     isTabSelected(0);
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(
+        `/editor/${boreholeId}/completion/${completion1Id}`,
+      );
+      expect(location.hash).to.eq("#casing");
+    });
     cy.get("input")
       .filter((k, input) => {
         return input.value.includes("Compl-1 updated");
@@ -169,6 +227,12 @@ describe("completion crud tests", () => {
     handlePrompt("Unsaved changes", "reset");
     isTabSelected(1);
     cy.contains("Compl-1");
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(
+        `/editor/${boreholeId}/completion/${completion2Id}`,
+      );
+      expect(location.hash).to.eq("#casing");
+    });
 
     startEditing();
     setInput("name", "Compl-2 updated");
@@ -177,5 +241,19 @@ describe("completion crud tests", () => {
     cy.wait("@get-completions-by-boreholeId");
     isTabSelected(0);
     cy.contains("Compl-2 updated");
+
+    addCompletion();
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/new`);
+      expect(location.hash).to.eq("");
+    });
+    setTab(0);
+    handlePrompt("Unsaved changes", "reset");
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(
+        `/editor/${boreholeId}/completion/${completion1Id}`,
+      );
+      expect(location.hash).to.eq("#casing");
+    });
   });
 });
