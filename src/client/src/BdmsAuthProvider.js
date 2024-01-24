@@ -66,7 +66,5 @@ export const BdmsAuthProvider = props => {
       <AuthenticationStoreSync />
       {props.children}
     </AuthProvider>
-  ) : (
-    props.children
-  );
+  ) : null;
 };
