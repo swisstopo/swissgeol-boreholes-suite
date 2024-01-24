@@ -30,6 +30,7 @@ export const FormInput = props => {
   return (
     <TextField
       name={fieldName}
+      required={required || false}
       sx={{
         backgroundColor: getInputFieldBackgroundColor(
           formState.errors[fieldName],
@@ -90,6 +91,7 @@ export const FormSelect = props => {
           <TextField
             {...field}
             select
+            required={required || false}
             size="small"
             label={t(label)}
             variant="outlined"
