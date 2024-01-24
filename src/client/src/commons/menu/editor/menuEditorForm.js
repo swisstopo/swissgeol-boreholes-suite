@@ -481,29 +481,35 @@ class MenuEditorForm extends React.Component {
             </>
           )}
           <List.Item
+            active={
+              location.pathname ===
+              `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/${match.params.completionId}`
+            }
             onClick={() => {
-              this.setState({
-                completionIsVisible: !this.state.completionIsVisible,
-              });
+              history.push(
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion`,
+              );
             }}
             style={{
-              padding: "0.9em",
+              padding: "1em",
               display: "flex",
-              borderLeft: [
-                `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/casing`,
-                `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/filling`,
-                `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/instruments`,
-              ].includes(location.pathname)
-                ? "0.25em solid rgb(237, 29, 36)"
-                : null,
+              borderLeft:
+                location.pathname ===
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/${match.params.completionId}`
+                  ? "0.25em solid rgb(237, 29, 36)"
+                  : null,
             }}>
             <img
-              alt="Completion"
+              alt="casing"
               src={process.env.PUBLIC_URL + "/img/Completion.png"}
               style={{
                 height: "1.5em",
                 paddingRight: "1em",
-                opacity: this.state.completionIsVisible ? 1 : 0.5,
+                opacity:
+                  location.pathname ===
+                  `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion`
+                    ? 1
+                    : 0.5,
               }}
             />
             <List.Content>
@@ -511,140 +517,7 @@ class MenuEditorForm extends React.Component {
                 <TranslationText firstUpperCase id="completion" />
               </List.Header>
             </List.Content>
-            <div style={{ marginLeft: "2em" }}>
-              {!this.state.completionIsVisible && (
-                <List.Icon
-                  name="angle down"
-                  size="big"
-                  verticalAlign="middle"
-                />
-              )}
-              {this.state.completionIsVisible && (
-                <List.Icon name="angle up" size="big" verticalAlign="middle" />
-              )}
-            </div>
           </List.Item>
-          {this.state.completionIsVisible && (
-            <>
-              <List.Item
-                active={
-                  location.pathname ===
-                  `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/casing`
-                }
-                onClick={() => {
-                  history.push(
-                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/casing`,
-                  );
-                }}
-                style={{
-                  padding: "1em",
-                  paddingLeft: 40,
-                  display: "flex",
-                  borderLeft:
-                    location.pathname ===
-                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/casing`
-                      ? "0.25em solid rgb(237, 29, 36)"
-                      : null,
-                }}>
-                <img
-                  alt="casing"
-                  src={process.env.PUBLIC_URL + "/img/Casing.png"}
-                  style={{
-                    height: "1.5em",
-                    paddingRight: "1em",
-                    opacity:
-                      location.pathname ===
-                      `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/casing`
-                        ? 1
-                        : 0.5,
-                  }}
-                />
-                <List.Content>
-                  <List.Header as="h3" data-cy="casing-menu-item">
-                    <TranslationText firstUpperCase id="casing" />
-                  </List.Header>
-                </List.Content>
-              </List.Item>
-              <List.Item
-                active={
-                  location.pathname ===
-                  `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/instruments`
-                }
-                onClick={() => {
-                  history.push(
-                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/instruments`,
-                  );
-                }}
-                style={{
-                  padding: "1em",
-                  paddingLeft: 40,
-                  display: "flex",
-                  borderLeft:
-                    location.pathname ===
-                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/instruments`
-                      ? "0.25em solid rgb(237, 29, 36)"
-                      : null,
-                }}>
-                <img
-                  alt="Instruments"
-                  src={process.env.PUBLIC_URL + "/img/Instruments.png"}
-                  style={{
-                    height: "1.5em",
-                    paddingRight: "1em",
-                    opacity:
-                      location.pathname ===
-                      `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/instruments`
-                        ? 1
-                        : 0.5,
-                  }}
-                />
-                <List.Content>
-                  <List.Header as="h3" data-cy="instrument-menu-item">
-                    <TranslationText firstUpperCase id="instrument" />
-                  </List.Header>
-                </List.Content>
-              </List.Item>
-              <List.Item
-                active={
-                  location.pathname ===
-                  `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/filling`
-                }
-                onClick={() => {
-                  history.push(
-                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/filling`,
-                  );
-                }}
-                style={{
-                  padding: "1em",
-                  paddingLeft: 40,
-                  display: "flex",
-                  borderLeft:
-                    location.pathname ===
-                    `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/filling`
-                      ? "0.25em solid rgb(237, 29, 36)"
-                      : null,
-                }}>
-                <img
-                  alt="Filling"
-                  src={process.env.PUBLIC_URL + "/img/Filling.png"}
-                  style={{
-                    height: "1.5em",
-                    paddingRight: "1em",
-                    opacity:
-                      location.pathname ===
-                      `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/filling`
-                        ? 1
-                        : 0.5,
-                  }}
-                />
-                <List.Content>
-                  <List.Header as="h3" data-cy="filling-menu-item">
-                    <TranslationText firstUpperCase id="filling" />
-                  </List.Header>
-                </List.Content>
-              </List.Item>
-            </>
-          )}
           <List.Item
             active={
               location.pathname ===
@@ -1086,6 +959,8 @@ MenuEditorForm.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string,
+      completionId: PropTypes.string,
+      tab: PropTypes.string,
     }),
   }),
   reload: PropTypes.func,

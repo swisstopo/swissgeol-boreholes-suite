@@ -460,49 +460,15 @@ class BoreholeForm extends React.Component {
             )}
           />
           <Route
-            exact
-            path={process.env.PUBLIC_URL + "/editor/:id/completion/casing"}
-            render={() => (
-              <Profile
-                id={parseInt(this.props.match.params.id, 10)}
-                kind="casing"
-                unlocked={isEditable}
-              />
-            )}
+            path={
+              process.env.PUBLIC_URL +
+              "/editor/:boreholeId/completion/:completionId"
+            }
+            render={() => <Completion isEditable={isEditable} />}
           />
           <Route
-            exact
-            path={process.env.PUBLIC_URL + "/editor/:id/completion/instruments"}
-            render={() => (
-              <Profile
-                id={parseInt(this.props.match.params.id, 10)}
-                kind="instruments"
-                unlocked={isEditable}
-              />
-            )}
-          />
-          <Route
-            exact
-            path={process.env.PUBLIC_URL + "/editor/:id/completion/filling"}
-            render={() => (
-              <Profile
-                id={parseInt(this.props.match.params.id, 10)}
-                kind="filling"
-                unlocked={isEditable}
-              />
-            )}
-          />
-
-          {/*Temp route for completion v2*/}
-          <Route
-            exact
-            path={process.env.PUBLIC_URL + "/editor/:id/completion/v2"}
-            render={() => (
-              <Completion
-                boreholeId={parseInt(this.props.match.params.id, 10)}
-                isEditable={isEditable}
-              />
-            )}
+            path={process.env.PUBLIC_URL + "/editor/:boreholeId/completion"}
+            render={() => <Completion isEditable={isEditable} />}
           />
         </Switch>
       </Dimmer.Dimmable>
