@@ -62,47 +62,37 @@ export const FormInput = props => {
 export const FormSelect = props => {
   const { fieldName, label, required, disabled, selected, sx } = props;
   const { t } = useTranslation();
-  const { control, formState, register, trigger } = useFormContext();
+  const { formState, register, trigger } = useFormContext();
 
   return (
-    <FormControl
+    <TextField
+      select
+      name={fieldName}
+      required={required || false}
+      sx={{
+        backgroundColor: getInputFieldBackgroundColor(
+          formState.errors[fieldName],
+        ),
+        borderRadius: "4px",
+        flex: "1",
+        marginTop: "10px !important",
+        marginRight: "10px !important",
+        ...sx,
+      }}
+      size="small"
+      label={t(label)}
       variant="outlined"
-      sx={{ marginRight: "10px", flex: "1" }}
-      required>
-      <Controller
-        name={fieldName}
-        control={control}
-        defaultValue={selected || ""}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            select
-            required={required || false}
-            size="small"
-            label={t(label)}
-            variant="outlined"
-            value={field.value || ""}
-            disabled={disabled || false}
-            data-cy={fieldName + "-formSelect"}
-            error={Boolean(formState.errors[fieldName])}
-            {...register(fieldName, {
-              required: required || false,
-              onChange: e => trigger(fieldName),
-            })}
-            InputLabelProps={{ shrink: true }}
-            sx={{
-              backgroundColor: getInputFieldBackgroundColor(
-                formState.errors[fieldName],
-              ),
-              borderRadius: "4px",
-              marginTop: "10px",
-              ...sx,
-            }}>
-            {props.children}
-          </TextField>
-        )}
-      />
-    </FormControl>
+      error={!!formState.errors[fieldName]}
+      {...register(fieldName, {
+        required: required || false,
+        onChange: e => trigger(fieldName),
+      })}
+      defaultValue={selected || ""}
+      disabled={disabled || false}
+      data-cy={fieldName + "-formSelect"}
+      InputLabelProps={{ shrink: true }}>
+      {props.children}
+    </TextField>
   );
 };
 

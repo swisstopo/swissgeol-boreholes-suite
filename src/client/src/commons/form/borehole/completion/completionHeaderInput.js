@@ -102,8 +102,7 @@ const CompletionHeaderInput = props => {
                   fieldName="kindId"
                   label="completionKind"
                   selected={selectedCompletion?.kindId}
-                  required={true}
-                  sx={{ marginRight: "0" }}>
+                  required={true}>
                   {domains?.data
                     ?.filter(d => d.schema === "completion_kind")
                     .sort((a, b) => a.order - b.order)
