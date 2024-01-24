@@ -204,9 +204,17 @@ const Completion = props => {
     setEditing(false);
     if (state.selected.id === 0) {
       var newCompletionList = state.completions.slice(0, -1);
+      var index = newCompletionList.length - 1;
+      if (newCompletionList.length === 0) {
+        history.push(
+          process.env.PUBLIC_URL + "/editor/" + boreholeId + "/completion",
+        );
+      } else {
+        updateHistory(newCompletionList[index].id);
+      }
       setState({
-        index: newCompletionList.length - 1,
-        selected: newCompletionList[newCompletionList.length - 1],
+        index: index,
+        selected: newCompletionList[index],
         completions: newCompletionList,
       });
     }
