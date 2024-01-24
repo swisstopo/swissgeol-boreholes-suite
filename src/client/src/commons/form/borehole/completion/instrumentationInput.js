@@ -16,7 +16,9 @@ const InstrumentationInput = ({
 }) => {
   const domains = useDomains();
   const { t, i18n } = useTranslation();
-  const { handleSubmit, register, control, formState, trigger } = useForm();
+  const { handleSubmit, register, control, formState, trigger } = useForm({
+    mode: "all",
+  });
   const [casings, setCasings] = useState([]);
 
   // trigger form validation on mount

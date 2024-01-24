@@ -30,7 +30,7 @@ const CompletionHeaderInput = props => {
     getValues,
     trigger,
     reset,
-  } = useForm();
+  } = useForm({ mode: "all" });
   const { t, i18n } = useTranslation();
 
   const [selectedCompletion, setSelectedCompletion] = useState({
