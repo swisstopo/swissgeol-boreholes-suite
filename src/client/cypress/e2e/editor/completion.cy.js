@@ -69,7 +69,7 @@ describe("completion crud tests", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/editor/${id}/completion/v2`);
+      cy.visit(`/editor/${id}/completion`);
     });
     cy.wait("@get-completions-by-boreholeId");
     cy.contains("No completion available");
@@ -130,7 +130,7 @@ describe("completion crud tests", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/editor/${id}/completion/v2`);
+      cy.visit(`/editor/${id}/completion`);
     });
     cy.wait("@get-completions-by-boreholeId");
     cy.contains("No completion available");
