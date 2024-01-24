@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useHistory, useLocation } from "react-router-dom";
 import Casing from "./casing";
 import Backfill from "./backfill";
 import Instrumentation from "./instrumentation";
@@ -11,11 +12,16 @@ import {
 import { useTranslation } from "react-i18next";
 
 const CompletionContent = ({ completion, isEditable }) => {
+  const history = useHistory();
+  const location = useLocation();
   const { t } = useTranslation();
-  const tabTitels = [
-    { name: t("casing") },
-    { name: t("instrument") },
-    { name: t("filling") },
+  const tabs = [
+    {
+      label: t("casing"),
+      hash: "casing",
+    },
+    { label: t("instrument"), hash: "instrumentation" },
+    { label: t("filling"), hash: "backfill" },
   ];
   const [state, setState] = useState({
     index: 0,
@@ -26,20 +32,34 @@ const CompletionContent = ({ completion, isEditable }) => {
     setState({
       index: index,
     });
+    var newLocation = location.pathname + "#" + tabs[index].hash;
+    if (location.pathname + location.hash !== newLocation) {
+      history.push(location.pathname + "#" + tabs[index].hash);
+    }
   };
+
+  useEffect(() => {
+    var newTabIndex = tabs.findIndex(
+      t => t.hash === location.hash.replace("#", ""),
+    );
+    if (newTabIndex > -1 && state.index !== newTabIndex) {
+      handleCompletionChanged(null, newTabIndex);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.hash]);
 
   return (
     <Stack direction="column">
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <CompletionTabs value={state.index} onChange={handleCompletionChanged}>
-          {tabTitels.map((item, index) => {
+          {tabs.map((tab, index) => {
             return (
               <CompletionTab
-                data-cy={"completion-content-header-tab-" + item.name}
+                data-cy={"completion-content-header-tab-" + tab.label}
                 label={
-                  item.name === null || item.name === ""
+                  tab.label === null || tab.label === ""
                     ? t("common:np")
-                    : item.name
+                    : tab.label
                 }
                 key={index}
               />
