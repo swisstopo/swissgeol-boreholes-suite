@@ -1,4 +1,4 @@
-import { newEditableBorehole } from "../testHelpers";
+import { newEditableBorehole } from "../helpers/testHelpers";
 
 describe("Tests for the lithological description column.", () => {
   it("Creates, updates and deletes lithological descriptions ", () => {

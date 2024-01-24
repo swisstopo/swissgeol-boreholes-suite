@@ -8,7 +8,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { AddButton, CompletionGrid } from "./styledComponents";
+import { AddButton, CompletionCard, CompletionGrid } from "./styledComponents";
 import {
   getBackfills,
   addBackfill,
@@ -138,37 +138,39 @@ const Backfill = ({ isEditable, completionId }) => {
                     key={backfill.id}
                     ref={backfillRefs[index]}>
                     {state.backfills ? (
-                      isEditable && isSelected ? (
-                        <BackfillInput
-                          backfill={backfill}
-                          setSelectedBackfill={setSelectedBackfill}
-                          completionId={completionId}
-                          updateBackfill={(backfill, data) => {
-                            updateBackfill(backfill, data).then(() => {
-                              handleDataChange();
-                            });
-                          }}
-                          addBackfill={data => {
-                            addBackfill(data).then(() => {
-                              handleDataChange();
-                            });
-                          }}
-                        />
-                      ) : (
-                        !isTempBackfill && (
-                          <BackfillDisplay
+                      <CompletionCard key={backfill.id}>
+                        {isEditable && isSelected ? (
+                          <BackfillInput
                             backfill={backfill}
-                            selectedBackfill={selectedBackfill}
                             setSelectedBackfill={setSelectedBackfill}
-                            isEditable={isEditable}
-                            deleteBackfill={backfillId => {
-                              deleteBackfill(backfillId).then(() => {
+                            completionId={completionId}
+                            updateBackfill={(backfill, data) => {
+                              updateBackfill(backfill, data).then(() => {
+                                handleDataChange();
+                              });
+                            }}
+                            addBackfill={data => {
+                              addBackfill(data).then(() => {
                                 handleDataChange();
                               });
                             }}
                           />
-                        )
-                      )
+                        ) : (
+                          !isTempBackfill && (
+                            <BackfillDisplay
+                              backfill={backfill}
+                              selectedBackfill={selectedBackfill}
+                              setSelectedBackfill={setSelectedBackfill}
+                              isEditable={isEditable}
+                              deleteBackfill={backfillId => {
+                                deleteBackfill(backfillId).then(() => {
+                                  handleDataChange();
+                                });
+                              }}
+                            />
+                          )
+                        )}
+                      </CompletionCard>
                     ) : (
                       <CircularProgress />
                     )}

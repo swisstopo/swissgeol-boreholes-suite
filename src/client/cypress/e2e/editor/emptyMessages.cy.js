@@ -1,4 +1,4 @@
-import { newUneditableBorehole } from "../testHelpers";
+import { newUneditableBorehole } from "../helpers/testHelpers";
 
 describe("Messages for empty profiles", () => {
   beforeEach(() => {

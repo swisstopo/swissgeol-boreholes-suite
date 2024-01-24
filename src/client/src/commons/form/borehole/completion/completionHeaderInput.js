@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import {
-  Stack,
-  FormControl,
-  TextField,
-  MenuItem,
-  Checkbox,
-  Tooltip,
-  FormControlLabel,
-} from "@mui/material";
+import { Stack, MenuItem, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { IconButtonWithMargin } from "./styledComponents";
+import {
+  FormInput,
+  FormSelect,
+  FormCheckbox,
+} from "../../../../components/form";
 import Prompt from "../../../prompt/prompt";
 
 const CompletionHeaderInput = props => {
@@ -86,9 +83,6 @@ const CompletionHeaderInput = props => {
     saveCompletion({ ...completion, ...data });
   };
 
-  const getInputFieldBackgroundColor = errorFieldName =>
-    Boolean(errorFieldName) ? "#fff6f6" : "transparent";
-
   return (
     <>
       <form onSubmit={handleSubmit(submitForm)}>
@@ -98,147 +92,72 @@ const CompletionHeaderInput = props => {
             justifyContent="space-between"
             alignItems="center"
             flexWrap="wrap">
-            <TextField
-              name="name"
-              sx={{
-                flex: "1 1 180px",
-                marginTop: "10px",
-                marginRight: "10px",
-                backgroundColor: getInputFieldBackgroundColor(
-                  formState.errors.name,
-                ),
-                borderRadius: "4px",
-              }}
-              type="text"
-              size="small"
-              label={t("name")}
-              variant="outlined"
-              error={Boolean(formState.errors.name)}
-              {...register("name", {
-                required: true,
-              })}
-              defaultValue={selectedCompletion?.name || ""}
-              data-cy="completion-name-textfield"
-              InputLabelProps={{ shrink: true }}
-              onChange={() => {
-                trigger("name");
-              }}
+            <FormInput
+              fieldName="name"
+              label="name"
+              required={true}
+              value={selectedCompletion?.name}
+              formState={formState}
+              register={register}
+              trigger={trigger}
+              sx={{ flex: "1 1 180px" }}
             />
             <Stack
               direction="row"
               justifyContent="space-between"
               alignItems="center"
               flex={"0 0 400px"}>
-              <FormControl
-                variant="outlined"
-                sx={{ marginRight: "10px", flex: "1" }}
-                required>
-                <Controller
-                  name="kindId"
-                  control={control}
-                  defaultValue={selectedCompletion?.kindId}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      size="small"
-                      label={t("completionKind")}
-                      variant="outlined"
-                      value={field.value || ""}
-                      data-cy="completion-kind-id-select"
-                      error={Boolean(formState.errors.kindId)}
-                      {...register("kindId", {
-                        required: true,
-                      })}
-                      InputLabelProps={{ shrink: true }}
-                      sx={{
-                        backgroundColor: getInputFieldBackgroundColor(
-                          formState.errors.kindId,
-                        ),
-                        borderRadius: "4px",
-                        marginTop: "10px",
-                        flex: "1 1 auto",
-                      }}
-                      onChange={e => {
-                        e.stopPropagation();
-                        field.onChange(e.target.value);
-                        trigger("kindId");
-                      }}>
-                      {domains?.data
-                        ?.filter(d => d.schema === "completion_kind")
-                        .sort((a, b) => a.order - b.order)
-                        .map(d => (
-                          <MenuItem key={d.id} value={d.id}>
-                            {d[i18n.language]}
-                          </MenuItem>
-                        ))}
-                    </TextField>
-                  )}
-                />
-              </FormControl>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    data-cy="completion-is-primary-checkbox"
-                    {...register("isPrimary")}
-                    disabled={completion.isPrimary}
-                    defaultChecked={completion.isPrimary}
-                    onChange={() => {
-                      trigger("isPrimary");
-                    }}
-                  />
-                }
-                label={t("mainCompletion")}
+              <FormSelect
+                fieldName="kindId"
+                label="completionKind"
+                selected={selectedCompletion?.kindId}
+                required={true}
+                formState={formState}
+                control={control}
+                register={register}
+                trigger={trigger}
+                sx={{ marginRight: "0" }}>
+                {domains?.data
+                  ?.filter(d => d.schema === "completion_kind")
+                  .sort((a, b) => a.order - b.order)
+                  .map(d => (
+                    <MenuItem key={d.id} value={d.id}>
+                      {d[i18n.language]}
+                    </MenuItem>
+                  ))}
+              </FormSelect>
+              <FormCheckbox
+                fieldName="isPrimary"
+                label="mainCompletion"
+                checked={completion.isPrimary}
+                disabled={completion.isPrimary}
+                register={register}
+                trigger={trigger}
                 sx={{ marginRight: "0" }}
               />
             </Stack>
           </Stack>
           <Stack direction="row" justifyContent="space-between" flexWrap="wrap">
-            <TextField
-              sx={{
-                flex: "1 1 180px",
-                marginTop: "10px",
-                marginRight: "10px",
-                backgroundColor: getInputFieldBackgroundColor(
-                  formState.errors.notes,
-                ),
-                borderRadius: "4px",
-              }}
-              error={Boolean(formState.errors.notes)}
-              {...register("notes")}
-              type="text"
-              size="small"
-              label={t("notes")}
-              variant="outlined"
-              multiline
-              defaultValue={selectedCompletion?.notes || ""}
-              data-cy="completion-notes-textfield"
-              InputLabelProps={{ shrink: true }}
-              onChange={() => {
-                trigger("notes");
-              }}
+            <FormInput
+              fieldName="notes"
+              label="notes"
+              multiline={true}
+              rows={1}
+              value={selectedCompletion?.notes}
+              formState={formState}
+              register={register}
+              trigger={trigger}
+              sx={{ flex: "1 1 180px" }}
             />
-            <TextField
+            <FormInput
+              fieldName="abandonDate"
+              label="dateAbandonmentCasing"
               type="date"
-              data-cy="completion-abandon-date-textfield"
-              label={t("dateAbandonmentCasing")}
-              variant="outlined"
-              size="small"
-              error={Boolean(formState.errors.abandonDate)}
-              {...register("abandonDate")}
-              defaultValue={selectedCompletion?.abandonDate || ""}
-              InputLabelProps={{ shrink: true }}
-              sx={{
-                backgroundColor: getInputFieldBackgroundColor(
-                  formState.errors.abandonDate,
-                ),
-                borderRadius: "4px",
-                marginTop: "10px",
-                flex: "0 0 400px",
-              }}
-              onChange={() => {
-                trigger("abandonDate");
-              }}
+              value={selectedCompletion?.abandonDate}
+              formState={formState}
+              register={register}
+              trigger={trigger}
+              sx={{ marginRight: "0", flex: "0 0 400px" }}
             />
           </Stack>
           <Stack direction="row" sx={{ marginLeft: "auto", paddingTop: "5px" }}>

@@ -1,6 +1,6 @@
-import adminUser from "../fixtures/adminUser.json";
-import editorUser from "../fixtures/editorUser.json";
-import viewerUser from "../fixtures/viewerUser.json";
+import adminUser from "../../fixtures/adminUser.json";
+import editorUser from "../../fixtures/editorUser.json";
+import viewerUser from "../../fixtures/viewerUser.json";
 
 export const bearerAuth = token => ({ bearer: token });
 
@@ -294,24 +294,6 @@ export const setValueOfInputElement = function (inputElement, inputValue) {
   inputElement[0].setAttribute("value", inputValue);
 };
 
-/**
- * Sets the value for a provided input element.
- * @param {string} selector The selector of the textfield.
- * @param {string} text The text to type into the textfield.
- */
-export const setTextfield = (selector, text, clear = false) => {
-  cy.get(selector)
-    .click()
-    .then(() => {
-      if (clear) {
-        cy.focused().clear();
-      }
-      cy.get(selector).type(text, {
-        delay: 10,
-      });
-    });
-};
-
 // Deletes a downloaded file in Cypress' downloads folder
 export const deleteDownloadedFile = fileName => {
   // Get the path to the downloaded file you want to delete
@@ -383,17 +365,4 @@ export const createStratigraphy = (boreholeId, kindId) => {
       auth: bearerAuth(token),
     });
   });
-};
-
-export const openDropdown = dataCy => {
-  cy.get(`[data-cy="${dataCy}"]`)
-    .find('[role="combobox"]')
-    .click({ force: true });
-};
-
-export const selectDropdownOption = index => {
-  cy.get('.MuiPaper-elevation [role="listbox"]')
-    .find('[role="option"]')
-    .eq(index)
-    .click();
 };

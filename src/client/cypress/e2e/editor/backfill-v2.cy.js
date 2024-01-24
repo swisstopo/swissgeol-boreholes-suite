@@ -3,10 +3,8 @@ import {
   bearerAuth,
   createBorehole,
   startBoreholeEditing,
-  setTextfield,
-  openDropdown,
-  selectDropdownOption,
-} from "../testHelpers";
+} from "../helpers/testHelpers";
+import { setInput, setSelect } from "../helpers/formHelpers";
 
 describe("Backfill crud tests", () => {
   it("add, edit and delete backfills", () => {
@@ -54,13 +52,11 @@ describe("Backfill crud tests", () => {
     cy.wait("@codelist_GET");
 
     // fill out form
-    setTextfield('textarea[name="notes"]', "Lorem.");
-    setTextfield('input[name="fromDepth"]', "123456");
-    setTextfield('input[name="toDepth"]', "987654");
-    openDropdown("backfill-kind-select");
-    selectDropdownOption(2);
-    openDropdown("backfill-material-select");
-    selectDropdownOption(1);
+    setInput("notes", "Lorem.");
+    setInput("fromDepth", "123456");
+    setInput("toDepth", "987654");
+    setSelect("kindId", 2);
+    setSelect("materialId", 1);
 
     // save backfill
     cy.get('[data-cy="save-icon"]').click();
@@ -76,11 +72,11 @@ describe("Backfill crud tests", () => {
     cy.get('[data-cy="edit-icon"]').click({ force: true });
     cy.wait("@codelist_GET");
 
-    setTextfield('input[name="fromDepth"]', "222");
+    setInput("fromDepth", "222");
 
     // close editing mask
     cy.get('[data-cy="save-icon"]').click({ force: true });
-    cy.contains("123456222");
+    cy.contains("222");
     cy.contains("inactive");
 
     // delete backfill
