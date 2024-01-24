@@ -58,16 +58,17 @@ const CompletionHeaderInput = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newlySelectedTab]);
 
+  const equals = (a, b) => {
+    return a === b || (a === "" && b === null);
+  };
+
   const isDirty = () => {
     const values = getValues();
-    if (values.abandonDate === "") {
-      values.abandonDate = null;
-    }
     var dirty = !(
-      values.name === completion.name &&
-      values.kindId === completion.kindId &&
-      values.abandonDate === completion.abandonDate &&
-      values.notes === completion.notes &&
+      equals(values.name, completion.name) &&
+      equals(values.kindId, completion.kindId) &&
+      equals(values.abandonDate, completion.abandonDate) &&
+      equals(values.notes, completion.notes) &&
       (completion.isPrimary || values.isPrimary === completion.isPrimary)
     );
     return dirty;
