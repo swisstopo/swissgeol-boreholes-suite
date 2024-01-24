@@ -6,13 +6,9 @@ import DomainTree from "../../domain/tree/domainTree";
 import TranslationText from "../../translationText";
 import { NumericFormat } from "react-number-format";
 import { Form, Segment } from "semantic-ui-react";
-import {
-  FormControl,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-} from "@mui/material";
+import { FormControl, RadioGroup, FormControlLabel } from "@mui/material";
 import { parseIfString } from "../../formUtils";
+import { DisabledRadio } from "./styledComponents";
 
 const BoreholeDetailSegment = props => {
   const { size, borehole, updateChange, updateNumber, isEditable } = props;
@@ -216,44 +212,17 @@ const BoreholeDetailSegment = props => {
               }}>
               <FormControlLabel
                 value="TRUE"
-                control={
-                  <Radio
-                    disabled={!isEditable}
-                    sx={{
-                      "&.Mui-disabled input": {
-                        zIndex: -1,
-                      },
-                    }}
-                  />
-                }
+                control={<DisabledRadio isEditable={!isEditable} />}
                 label={<TranslationText id={"yes"} />}
               />
               <FormControlLabel
                 value="FALSE"
-                control={
-                  <Radio
-                    disabled={!isEditable}
-                    sx={{
-                      "&.Mui-disabled input": {
-                        zIndex: -1,
-                      },
-                    }}
-                  />
-                }
+                control={<DisabledRadio isEditable={!isEditable} />}
                 label={<TranslationText id={"no"} />}
               />
               <FormControlLabel
                 value="NULL"
-                control={
-                  <Radio
-                    disabled={!isEditable}
-                    sx={{
-                      "&.Mui-disabled input": {
-                        zIndex: -1,
-                      },
-                    }}
-                  />
-                }
+                control={<DisabledRadio isEditable={!isEditable} />}
                 label={<TranslationText id={"np"} />}
               />
             </RadioGroup>
