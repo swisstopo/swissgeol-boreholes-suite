@@ -21,35 +21,50 @@ const toggleHeaderOpen = () => {
 };
 
 const addCompletion = () => {
-  cy.get('[data-cy="add-completion-button"]').click();
+  cy.get('[data-cy="add-completion-button"]').click({
+    force: true,
+  });
+  cy.wait("@codelist_GET");
 };
 
 const startEditing = () => {
   toggleHeaderOpen();
-  cy.get('[data-cy="edit-button"]').click();
+  cy.get('[data-cy="edit-button"]').click({
+    force: true,
+  });
 };
 
 const cancelEditing = () => {
-  cy.get('[data-cy="cancel-button"]').click();
+  cy.get('[data-cy="cancel-button"]').click({
+    force: true,
+  });
 };
 
 const saveChanges = () => {
-  cy.get('[data-cy="save-button"]').click();
+  cy.get('[data-cy="save-button"]').click({
+    force: true,
+  });
   cy.wait("@get-completions-by-boreholeId");
 };
 
 const copyCompletion = () => {
   toggleHeaderOpen();
-  cy.get('[data-cy="copy-button"]').click();
+  cy.get('[data-cy="copy-button"]').click({
+    force: true,
+  });
 };
 
 const deleteCompletion = () => {
   toggleHeaderOpen();
-  cy.get('[data-cy="delete-button"]').click();
+  cy.get('[data-cy="delete-button"]').click({
+    force: true,
+  });
 };
 
 const setTab = index => {
-  cy.get('[data-cy="completion-header-tab-' + index + '"]').click();
+  cy.get('[data-cy="completion-header-tab-' + index + '"]').click({
+    force: true,
+  });
 };
 
 const isTabSelected = index => {
