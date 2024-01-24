@@ -481,10 +481,9 @@ class MenuEditorForm extends React.Component {
             </>
           )}
           <List.Item
-            active={
-              location.pathname ===
-              `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/${match.params.completionId}`
-            }
+            active={location.pathname.includes(
+              `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion`,
+            )}
             onClick={() => {
               history.push(
                 `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion`,
@@ -493,11 +492,11 @@ class MenuEditorForm extends React.Component {
             style={{
               padding: "1em",
               display: "flex",
-              borderLeft:
-                location.pathname ===
-                `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion/${match.params.completionId}`
-                  ? "0.25em solid rgb(237, 29, 36)"
-                  : null,
+              borderLeft: location.pathname.includes(
+                `${process.env.PUBLIC_URL}/editor/${match.params.id}/completion`,
+              )
+                ? "0.25em solid rgb(237, 29, 36)"
+                : null,
             }}>
             <img
               alt="casing"
@@ -959,8 +958,6 @@ MenuEditorForm.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string,
-      completionId: PropTypes.string,
-      tab: PropTypes.string,
     }),
   }),
   reload: PropTypes.func,
