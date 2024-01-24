@@ -49,14 +49,12 @@ export const FormInput = props => {
       {...register(fieldName, {
         required: required || false,
         valueAsNumber: type === "number" ? true : false,
+        onChange: e => trigger(fieldName),
       })}
       defaultValue={value != null ? value : ""}
       disabled={disabled || false}
       data-cy={fieldName + "-formInput"}
       InputLabelProps={{ shrink: true }}
-      onChange={() => {
-        trigger(fieldName);
-      }}
     />
   );
 };
@@ -89,6 +87,7 @@ export const FormSelect = props => {
             error={Boolean(formState.errors[fieldName])}
             {...register(fieldName, {
               required: required || false,
+              onChange: e => trigger(fieldName),
             })}
             InputLabelProps={{ shrink: true }}
             sx={{
@@ -98,11 +97,6 @@ export const FormSelect = props => {
               borderRadius: "4px",
               marginTop: "10px",
               ...sx,
-            }}
-            onChange={e => {
-              e.stopPropagation();
-              field.onChange(e.target.value);
-              trigger(fieldName);
             }}>
             {props.children}
           </TextField>
@@ -122,12 +116,11 @@ export const FormCheckbox = props => {
       control={
         <Checkbox
           data-cy={fieldName + "-formCheckbox"}
-          {...register(fieldName)}
+          {...register(fieldName, {
+            onChange: e => trigger(fieldName),
+          })}
           disabled={disabled || false}
           defaultChecked={checked || false}
-          onChange={() => {
-            trigger(fieldName);
-          }}
         />
       }
       label={t(label)}
