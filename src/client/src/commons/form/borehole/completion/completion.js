@@ -36,14 +36,14 @@ const Completion = props => {
   const [showDeletePrompt, setShowDeletePrompt] = useState(false);
   const [newlySelectedTab, setNewlySelectedTab] = useState(null);
 
-  const updateHistory = completionId => {
+  const updateHistory = selectedId => {
     var newLocation =
       process.env.PUBLIC_URL +
       "/editor/" +
       boreholeId +
       "/completion/" +
-      completionId;
-    if (completionId !== "new") {
+      selectedId;
+    if (selectedId !== "new") {
       newLocation += "#casing";
     }
     if (location.pathname + location.hash !== newLocation) {
@@ -59,10 +59,9 @@ const Completion = props => {
   const loadData = (index, selectedId) => {
     if (boreholeId && mounted.current) {
       getCompletions(parseInt(boreholeId, 10)).then(response => {
-        if (response?.length > 0) {
           if (selectedId === "new") {
-            addNewCompletion(null, response);
-          } else {
+          addNewCompletion(response);
+        } else if (response?.length > 0) {
             if (index === null) {
               if (selectedId != null) {
                 index = response.findIndex(
@@ -79,7 +78,6 @@ const Completion = props => {
               selected: response[index],
               completions: response,
             });
-          }
         } else {
           setState({
             index: 0,
@@ -113,19 +111,37 @@ const Completion = props => {
   const switchTabs = continueSwitching => {
     if (continueSwitching) {
       setEditing(false);
+      if (state.selected.id === 0) {
+        var newCompletionList = state.completions.slice(0, -1);
+        if (newCompletionList.length === 0) {
+          history.push(
+            process.env.PUBLIC_URL + "/editor/" + boreholeId + "/completion",
+          );
+          setState({ index: 0, selected: null, completions: [] });
+        } else {
+          updateHistory(newCompletionList[newlySelectedTab].id);
+          setState({
+            index: newlySelectedTab,
+            selected: newCompletionList[newlySelectedTab],
+            completions: newCompletionList,
+          });
+        }
+      } else {
       updateHistory(state.completions[newlySelectedTab].id);
       setState({
         index: newlySelectedTab,
         selected: state.completions[newlySelectedTab],
         completions: state.completions,
       });
+      }
     }
     if (newlySelectedTab !== null) {
       setNewlySelectedTab(null);
     }
   };
 
-  const addNewCompletion = (event, loadedCompletions = null) => {
+  const addNewCompletion = (loadedCompletions = null) => {
+    updateHistory("new");
     var tempCompletion = {
       id: 0,
       boreholeId: boreholeId,
@@ -144,7 +160,6 @@ const Completion = props => {
       completions: [...loadedCompletions, tempCompletion],
     });
     setEditing(true);
-    updateHistory("new");
   };
 
   const saveCompletion = completion => {
@@ -194,8 +209,6 @@ const Completion = props => {
         selected: newCompletionList[newCompletionList.length - 1],
         completions: newCompletionList,
       });
-    } else if (newlySelectedTab !== null) {
-      switchTabs(true);
     }
   };
 
@@ -245,7 +258,9 @@ const Completion = props => {
               <AddButton
                 sx={{ marginRight: "5px" }}
                 data-cy="add-completion-button"
-                onClick={addNewCompletion}>
+                onClick={() => {
+                  updateHistory("new");
+                }}>
                 {t("addCompletion")}
               </AddButton>
             </Tooltip>
