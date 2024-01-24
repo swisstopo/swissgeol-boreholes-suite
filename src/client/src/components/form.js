@@ -5,7 +5,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
 export const getInputFieldBackgroundColor = errorFieldName =>
   Boolean(errorFieldName) ? "#fff6f6" : "transparent";
@@ -20,12 +20,10 @@ export const FormInput = props => {
     multiline,
     rows,
     value,
-    formState,
-    register,
-    trigger,
     sx,
   } = props;
   const { t } = useTranslation();
+  const { formState, register, trigger } = useFormContext();
 
   return (
     <TextField
@@ -64,19 +62,9 @@ export const FormInput = props => {
 };
 
 export const FormSelect = props => {
-  const {
-    fieldName,
-    label,
-    required,
-    disabled,
-    selected,
-    formState,
-    control,
-    register,
-    trigger,
-    sx,
-  } = props;
+  const { fieldName, label, required, disabled, selected, sx } = props;
   const { t } = useTranslation();
+  const { control, formState, register, trigger } = useFormContext();
 
   return (
     <FormControl
@@ -125,8 +113,9 @@ export const FormSelect = props => {
 };
 
 export const FormCheckbox = props => {
-  const { fieldName, label, checked, disabled, register, trigger, sx } = props;
+  const { fieldName, label, checked, disabled, sx } = props;
   const { t } = useTranslation();
+  const { register, trigger } = useFormContext();
 
   return (
     <FormControlLabel
