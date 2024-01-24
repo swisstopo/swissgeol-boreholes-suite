@@ -177,6 +177,7 @@ class MultipleForm extends React.Component {
             schema={schema === null ? this.state.data[field].api : schema}
             selected={this.state.data[field].value}
             title={<TranslationText id={field} />}
+            isEditable={true}
           />
         </Form.Field>
       );
