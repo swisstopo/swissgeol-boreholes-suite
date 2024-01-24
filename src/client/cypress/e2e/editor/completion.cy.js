@@ -248,7 +248,6 @@ describe("completion crud tests", () => {
       expect(location.hash).to.eq("");
     });
     setTab(0);
-    handlePrompt("Unsaved changes", "reset");
     cy.location().should(location => {
       expect(location.pathname).to.eq(
         `/editor/${boreholeId}/completion/${completion1Id}`,
