@@ -1,4 +1,4 @@
-import { loginAsAdmin } from "./testHelpers";
+import { loginAsAdmin } from "./helpers/testHelpers";
 
 describe("Hierachical data filter tests", () => {
   it("check visible filters", () => {

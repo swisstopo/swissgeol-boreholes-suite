@@ -1,4 +1,4 @@
-import { loginAsAdmin, loginAsEditorInViewerMode } from "./testHelpers";
+import { loginAsAdmin, loginAsEditorInViewerMode } from "./helpers/testHelpers";
 
 describe("General app tests", () => {
   it("Displays the login page in the correct language", () => {

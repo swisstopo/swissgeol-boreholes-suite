@@ -3,7 +3,7 @@ import {
   createStratigraphy,
   loginAsAdmin,
   bearerAuth,
-} from "../testHelpers";
+} from "../helpers/testHelpers";
 
 describe("Tests for the chronostratigraphy editor.", () => {
   beforeEach(function () {

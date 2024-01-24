@@ -1,4 +1,4 @@
-import { newEditableBorehole, delayedType } from "../testHelpers";
+import { newEditableBorehole, delayedType } from "../helpers/testHelpers";
 
 describe("Tests for editing coordinates of a borehole.", () => {
   beforeEach(() => {

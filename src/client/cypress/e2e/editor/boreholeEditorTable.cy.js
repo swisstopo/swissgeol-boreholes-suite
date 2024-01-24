@@ -1,4 +1,4 @@
-import { loginAsAdmin } from "../../e2e/testHelpers";
+import { loginAsAdmin } from "../../e2e/helpers/testHelpers";
 
 describe("Borehole editor table tests", () => {
   it("preserves column sorting and active page when navigating", () => {

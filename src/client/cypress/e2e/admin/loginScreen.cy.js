@@ -1,4 +1,4 @@
-import { loginAsAdmin } from "../testHelpers";
+import { loginAsAdmin } from "../helpers/testHelpers";
 
 describe("Admin login preview tests", () => {
   it("displays correct message when publishing a new welcome message.", () => {

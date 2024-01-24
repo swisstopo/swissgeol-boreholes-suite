@@ -3,10 +3,8 @@ import {
   bearerAuth,
   createBorehole,
   startBoreholeEditing,
-  openDropdown,
-  selectDropdownOption,
-  setTextfield,
-} from "../testHelpers";
+} from "../helpers/testHelpers";
+import { setInput, setSelect } from "../helpers/formHelpers";
 
 describe("Instrumentation crud tests", () => {
   it("add, edit and delete instrumentations", () => {
@@ -52,17 +50,15 @@ describe("Instrumentation crud tests", () => {
     cy.get('[data-cy="add-casing-button"]').click({ force: true });
     cy.wait("@codelist_GET");
 
-    setTextfield('input[name="name"]', "casing-1");
-    setTextfield('input[name="fromDepth"]', "0");
-    setTextfield('input[name="toDepth"]', "10");
-    openDropdown("casing-kind-select");
-    selectDropdownOption(2);
-    openDropdown("casing-material-select");
-    selectDropdownOption(3);
-    setTextfield('input[name="dateStart"]', "2021-01-01");
-    setTextfield('input[name="dateFinish"]', "2021-01-02");
-    setTextfield('input[name="innerDiameter"]', "3");
-    setTextfield('input[name="outerDiameter"]', "4");
+    setInput("name", "casing-1");
+    setInput("fromDepth", "0");
+    setInput("toDepth", "10");
+    setSelect("kindId", 2);
+    setSelect("materialId", 3);
+    setInput("dateStart", "2021-01-01");
+    setInput("dateFinish", "2021-01-02");
+    setInput("innerDiameter", "3");
+    setInput("outerDiameter", "4");
 
     cy.get('[data-cy="save-icon"]').click();
     cy.wait("@casing_GET");
@@ -75,14 +71,12 @@ describe("Instrumentation crud tests", () => {
     cy.wait("@casing_GET");
 
     // fill out form
-    setTextfield('textarea[name="notes"]', "Lorem.");
-    setTextfield('input[name="name"]', "Inst-1");
-    setTextfield('input[name="fromDepth"]', "123456");
-    setTextfield('input[name="toDepth"]', "987654");
-    openDropdown("instrumentation-kind-select");
-    selectDropdownOption(2);
-    openDropdown("instrumentation-status-select");
-    selectDropdownOption(1);
+    setInput("notes", "Lorem.");
+    setInput("name", "Inst-1");
+    setInput("fromDepth", "123456");
+    setInput("toDepth", "987654");
+    setSelect("kindId", 2);
+    setSelect("statusId", 1);
 
     // save instrumentation
     cy.get('[data-cy="save-icon"]').click();
@@ -100,14 +94,13 @@ describe("Instrumentation crud tests", () => {
 
     // We need the casings for the casing name dropdown
     cy.wait("@casing_GET");
-    setTextfield('input[name="fromDepth"]', "222");
-    openDropdown("instrumentation-casing-id-select");
-    selectDropdownOption(1);
+    setInput("fromDepth", "222");
+    setSelect("casingId", 1);
 
     // close editing mask
     cy.get('[data-cy="save-icon"]').click({ force: true });
     cy.contains("casing-1");
-    cy.contains("123456222");
+    cy.contains("222");
     cy.contains("inactive");
 
     // delete instrumentation

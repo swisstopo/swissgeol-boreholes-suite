@@ -1,4 +1,4 @@
-import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/testHelpers";
+import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/helpers/testHelpers";
 
 describe("Codelist translations tests", () => {
   it("Admin can open codelist translation section", () => {
