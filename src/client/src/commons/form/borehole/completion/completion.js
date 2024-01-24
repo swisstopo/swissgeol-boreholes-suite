@@ -59,25 +59,25 @@ const Completion = props => {
   const loadData = (index, selectedId) => {
     if (boreholeId && mounted.current) {
       getCompletions(parseInt(boreholeId, 10)).then(response => {
-          if (selectedId === "new") {
+        if (selectedId === "new") {
           addNewCompletion(response);
         } else if (response?.length > 0) {
-            if (index === null) {
-              if (selectedId != null) {
-                index = response.findIndex(
-                  c => c.id === parseInt(selectedId, 10),
-                );
-              } else {
-                var primaryCompletion = response.find(c => c.isPrimary);
-                updateHistory(primaryCompletion.id);
-                index = primaryCompletion.id;
-              }
+          if (index === null) {
+            if (selectedId != null) {
+              index = response.findIndex(
+                c => c.id === parseInt(selectedId, 10),
+              );
+            } else {
+              var primaryCompletion = response.find(c => c.isPrimary);
+              updateHistory(primaryCompletion.id);
+              index = primaryCompletion.id;
             }
-            setState({
-              index: index,
-              selected: response[index],
-              completions: response,
-            });
+          }
+          setState({
+            index: index,
+            selected: response[index],
+            completions: response,
+          });
         } else {
           setState({
             index: 0,
@@ -127,12 +127,12 @@ const Completion = props => {
           });
         }
       } else {
-      updateHistory(state.completions[newlySelectedTab].id);
-      setState({
-        index: newlySelectedTab,
-        selected: state.completions[newlySelectedTab],
-        completions: state.completions,
-      });
+        updateHistory(state.completions[newlySelectedTab].id);
+        setState({
+          index: newlySelectedTab,
+          selected: state.completions[newlySelectedTab],
+          completions: state.completions,
+        });
       }
     }
     if (newlySelectedTab !== null) {
