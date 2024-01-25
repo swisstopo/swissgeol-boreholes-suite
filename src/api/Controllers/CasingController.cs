@@ -17,21 +17,27 @@ public class CasingController : BdmsControllerBase<Casing>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Casing"/>s, optionally filtered by <paramref name="completionId"/>.
+    /// Asynchronously gets the <see cref="Casing"/>s, optionally filtered either by <paramref name="completionId"/> or <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="completionId">The id of the completion containing the <see cref="Casing"/> to get.</param>
+    /// <param name="boreholeId">The id of the borehole containing the <see cref="Casing"/>s to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Casing>> GetAsync([FromQuery] int? completionId = null)
+    public async Task<IEnumerable<Casing>> GetAsync([FromQuery] int? completionId = null, [FromQuery] int? boreholeId = null)
     {
         var casings = Context.Casings
-            .Include(i => i.Material)
-            .Include(i => i.Kind)
+            .Include(c => c.Completion)
+            .Include(c => c.Material)
+            .Include(c => c.Kind)
             .AsNoTracking();
 
         if (completionId != null)
         {
-            casings = casings.Where(i => i.CompletionId == completionId);
+            casings = casings.Where(c => c.CompletionId == completionId);
+        }
+        else if (boreholeId != null)
+        {
+            casings = casings.Where(c => c.Completion.BoreholeId == boreholeId);
         }
 
         return await casings.ToListAsync().ConfigureAwait(false);
@@ -76,7 +82,8 @@ public class CasingController : BdmsControllerBase<Casing>
         try
         {
             var casing = await Context.Casings
-                .Include(i => i.Instrumentations)
+                .Include(c => c.Instrumentations)
+                .Include(c => c.Observations)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(i => i.Id == id)
                 .ConfigureAwait(false);
@@ -89,6 +96,11 @@ public class CasingController : BdmsControllerBase<Casing>
             if (casing.Instrumentations.Count > 0)
             {
                 return Conflict("Cannot delete casing because it is referenced by an instrumentation.");
+            }
+
+            if (casing.Observations.Count > 0)
+            {
+                return Conflict("Cannot delete casing because it is referenced by a hydrogeological observation.");
             }
 
             Context.Remove(casing);

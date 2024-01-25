@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState, useEffect } from "react";
 import { Controller } from "react-hook-form";
 import {
   Checkbox,
@@ -9,7 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { useDomains, useCasings } from "../../../../api/fetchApiV2";
+import { useDomains, getCasingsByBoreholeId } from "../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
@@ -18,7 +18,7 @@ const ObservationInput = props => {
     props;
   const { t, i18n } = useTranslation();
   const domains = useDomains();
-  const casings = useCasings(boreholeId);
+  const [casings, setCasings] = useState([]);
 
   // styled components
   const TextfieldNoMargin = forwardRef((props, ref) => {
@@ -48,6 +48,14 @@ const ObservationInput = props => {
       </StyledTextField>
     );
   });
+
+  useEffect(() => {
+    if (boreholeId) {
+      getCasingsByBoreholeId(boreholeId).then(casings => {
+        setCasings(casings);
+      });
+    }
+  }, [boreholeId]);
 
   const formatDateForDatetimeLocal = date => {
     if (!date) return "";
@@ -231,7 +239,7 @@ const ObservationInput = props => {
                 variant="outlined"
                 value={field.value || ""}
                 data-cy="casing-select"
-                disabled={!casings?.data?.length}
+                disabled={!casings?.length}
                 onChange={e => {
                   e.stopPropagation();
                   field.onChange(e.target.value);
@@ -240,9 +248,9 @@ const ObservationInput = props => {
                 <MenuItem key="0" value={null}>
                   <em>{t("reset")}</em>
                 </MenuItem>
-                {casings?.data?.map(d => (
-                  <MenuItem key={d.id} value={d.id}>
-                    {d.name || t("np")}
+                {casings?.map(casing => (
+                  <MenuItem key={casing.id} value={casing.id}>
+                    {casing.name}
                   </MenuItem>
                 ))}
               </TextField>
