@@ -163,7 +163,11 @@ class DataLoader extends React.Component {
                   content="Login"
                   fluid
                   onClick={() => {
-                    this.props.auth.signinRedirect();
+                    this.props.auth.signinRedirect({
+                      url_state: btoa(
+                        JSON.stringify({ href: window.location.href }),
+                      ),
+                    });
                   }}
                   size="small"
                   style={{

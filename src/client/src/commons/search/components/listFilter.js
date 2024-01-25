@@ -387,6 +387,7 @@ const ListFilter = props => {
                             : search.filter[item.value]
                         }
                         title={<TranslationText id={item.label} />}
+                        isEditable={true}
                       />
                     </Styled.AttributesItem>
                   )}

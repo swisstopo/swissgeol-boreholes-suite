@@ -5,7 +5,6 @@ import {
   Stack,
   RadioGroup,
   FormControlLabel,
-  Radio,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import DomainDropdown from "../../domain/dropdown/domainDropdown";
@@ -15,6 +14,7 @@ import { Form, Segment } from "semantic-ui-react";
 import { NumericFormat } from "react-number-format";
 import { parseIfString, getPrecision } from "../../formUtils";
 import { fetchApiV2 } from "../../../../api/fetchApiV2";
+import { DisabledRadio } from "./styledComponents";
 
 const webApilv95tolv03 = "https://geodesy.geo.admin.ch/reframe/lv95tolv03";
 const webApilv03tolv95 = "https://geodesy.geo.admin.ch/reframe/lv03tolv95";
@@ -388,16 +388,7 @@ const CoordinatesSegment = props => {
                     <FormControlLabel
                       value={referenceSystems.LV95.code}
                       sx={{ flexGrow: 1 }}
-                      control={
-                        <Radio
-                          disabled={!isEditable}
-                          sx={{
-                            "&.Mui-disabled input": {
-                              zIndex: -1,
-                            },
-                          }}
-                        />
-                      }
+                      control={<DisabledRadio isEditable={!isEditable} />}
                       label={
                         <DomainText
                           id={referenceSystems.LV95.code}
@@ -408,16 +399,7 @@ const CoordinatesSegment = props => {
                     <FormControlLabel
                       value={referenceSystems.LV03.code}
                       sx={{ flexGrow: 1 }}
-                      control={
-                        <Radio
-                          disabled={!isEditable}
-                          sx={{
-                            "&.Mui-disabled input": {
-                              zIndex: -1,
-                            },
-                          }}
-                        />
-                      }
+                      control={<DisabledRadio isEditable={!isEditable} />}
                       label={
                         <DomainText
                           id={referenceSystems.LV03.code}

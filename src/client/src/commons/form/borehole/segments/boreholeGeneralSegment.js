@@ -10,7 +10,7 @@ import { Form, Input, Segment, TextArea } from "semantic-ui-react";
 import { parseIfString } from "../../formUtils";
 
 const BoreholeGeneralSegment = props => {
-  const { size, borehole, updateChange, updateNumber } = props;
+  const { size, borehole, updateChange, updateNumber, isEditable } = props;
   return (
     <Segment>
       <div
@@ -36,6 +36,7 @@ const BoreholeGeneralSegment = props => {
                   }}
                   schema="kind"
                   selected={borehole.data.kind}
+                  readOnly={!isEditable}
                 />
               </Form.Field>
               <Form.Field required>
@@ -52,6 +53,7 @@ const BoreholeGeneralSegment = props => {
                   }}
                   schema="extended.drilling_method"
                   selected={borehole.data.extended.drilling_method}
+                  readOnly={!isEditable}
                 />
               </Form.Field>
               <Form.Field required>
@@ -64,6 +66,7 @@ const BoreholeGeneralSegment = props => {
                   }}
                   schema="extended.purpose"
                   selected={borehole.data.extended.purpose}
+                  readOnly={!isEditable}
                 />
               </Form.Field>
             </Form.Group>
@@ -84,6 +87,7 @@ const BoreholeGeneralSegment = props => {
                     }}
                     schema="custom.cuttings"
                     selected={borehole.data.custom.cuttings}
+                    readOnly={!isEditable}
                   />
                 </Form.Field>
               </div>
@@ -97,6 +101,7 @@ const BoreholeGeneralSegment = props => {
                     onChange={selected => {
                       updateChange("spud_date", selected, false);
                     }}
+                    isEditable={isEditable}
                   />
                 </Form.Field>
               </div>
@@ -116,6 +121,7 @@ const BoreholeGeneralSegment = props => {
                     onChange={selected => {
                       updateChange("drilling_date", selected, false);
                     }}
+                    isEditable={isEditable}
                   />
                 </Form.Field>
               </div>
@@ -138,6 +144,7 @@ const BoreholeGeneralSegment = props => {
                       ? ""
                       : borehole.data.custom.drill_diameter
                   }
+                  readOnly={!isEditable}
                 />
               </Form.Field>
               <Form.Field required>
@@ -161,6 +168,7 @@ const BoreholeGeneralSegment = props => {
                     return r;
                   })()}
                   thousandSeparator="'"
+                  readOnly={!isEditable}
                 />
               </Form.Field>
               <Form.Field required>
@@ -173,6 +181,7 @@ const BoreholeGeneralSegment = props => {
                   }}
                   schema="extended.status"
                   selected={borehole.data.extended.status}
+                  readOnly={!isEditable}
                 />
               </Form.Field>
             </Form.Group>
@@ -197,6 +206,7 @@ const BoreholeGeneralSegment = props => {
                       ? ""
                       : borehole.data.inclination
                   }
+                  readOnly={!isEditable}
                 />
               </Form.Field>
               <Form.Field required>
@@ -219,6 +229,7 @@ const BoreholeGeneralSegment = props => {
                       ? ""
                       : borehole.data.inclination_direction
                   }
+                  readOnly={!isEditable}
                 />
               </Form.Field>
               <Form.Field required>
@@ -231,6 +242,7 @@ const BoreholeGeneralSegment = props => {
                   }}
                   schema="custom.qt_bore_inc_dir"
                   selected={borehole.data.custom.qt_bore_inc_dir}
+                  readOnly={!isEditable}
                 />
               </Form.Field>
             </Form.Group>
@@ -251,6 +263,7 @@ const BoreholeGeneralSegment = props => {
                 }}
                 rows={14}
                 value={borehole.data.custom.remarks}
+                readOnly={!isEditable}
               />
             </Form.Field>
           </Form>

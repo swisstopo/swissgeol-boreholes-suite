@@ -45,15 +45,16 @@ export const BdmsAuthProvider = props => {
     if (!serverConfig) return;
 
     const onSigninCallback = user => {
-      // remove response code form url.
-      window.history.replaceState({}, document.title, window.location.pathname);
+      const preLoginState = JSON.parse(atob(user.url_state));
+      // restore location after login.
+      window.history.replaceState({}, document.title, preLoginState.href);
     };
 
     setOidcConfig({
       authority: serverConfig.authority,
       client_id: serverConfig.audience,
       scope: serverConfig.scopes,
-      redirect_uri: window.location.origin + window.location.pathname,
+      redirect_uri: window.location.origin,
       post_logout_redirect_uri: window.location.origin,
       userStore: new WebStorageStateStore({ store: window.localStorage }),
       onSigninCallback,
@@ -65,7 +66,5 @@ export const BdmsAuthProvider = props => {
       <AuthenticationStoreSync />
       {props.children}
     </AuthProvider>
-  ) : (
-    props.children
-  );
+  ) : null;
 };
