@@ -98,18 +98,24 @@ export const CompletionContentTab = props => {
   }, [displayed, dataRefs]);
 
   return (
-    <Stack sx={{ flexGrow: 1 }}>
+    <Stack sx={{ flex: "1 0 0" }}>
       <Box sx={{ mb: 2, marginBottom: 0, flex: "0 1 auto" }}>
         <Stack direction="row" justifyContent="flex-end" alignItems="center">
           {isEditable && (
             <Tooltip title={t("add")}>
               <AddButton
+                sx={{ marginRight: "8px" }}
                 data-cy={addLabel + "-button"}
                 onClick={e => {
                   e.stopPropagation();
                   if (!selected) {
                     const temp = { id: 0 };
-                    setDisplayed([...state.data, temp]);
+                    // Check if instrumentations is iterable
+                    if (state.data && Symbol.iterator in Object(state.data)) {
+                      setDisplayed([...state.data, temp]);
+                    } else {
+                      setDisplayed([temp]);
+                    }
                     setSelected(temp);
                   }
                 }}>
@@ -129,6 +135,8 @@ export const CompletionContentTab = props => {
           columnSpacing={{ xs: 2 }}
           rowSpacing={{ xs: 2 }}
           sx={{
+            flex: "1 0 0",
+            alignContent: "flex-start",
             width: "100% !important",
             borderWidth: "1px",
             borderColor: "black",
@@ -149,9 +157,9 @@ export const CompletionContentTab = props => {
                   md={12}
                   lg={12}
                   xl={6}
-                  sx={{ padding: "0 8px 8px 8px !important" }}
                   key={item.id}
-                  ref={dataRefs[index]}>
+                  ref={dataRefs[index]}
+                  sx={{ padding: "0 8px 8px 8px !important" }}>
                   <CompletionCard key={item.id}>
                     {isEditable && isSelected
                       ? renderInput({
