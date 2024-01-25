@@ -108,15 +108,7 @@ const Backfill = ({ isEditable, completionId }) => {
                   e.stopPropagation();
                   if (!selectedBackfill) {
                     const tempBackfill = { id: 0 };
-                    // Check if backfills is iterable
-                    if (
-                      state.backfills &&
-                      Symbol.iterator in Object(state.backfills)
-                    ) {
-                      setDisplayedBackfills([...state.backfills, tempBackfill]);
-                    } else {
-                      setDisplayedBackfills([tempBackfill]);
-                    }
+                    setDisplayedBackfills([...state.backfills, tempBackfill]);
                     setSelectedBackfill(tempBackfill);
                   }
                 }}>

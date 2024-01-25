@@ -108,15 +108,7 @@ const Casing = ({ isEditable, completionId }) => {
                   e.stopPropagation();
                   if (!selectedCasing) {
                     const tempCasing = { id: 0 };
-                    // Check if casing is iterable
-                    if (
-                      state.casings &&
-                      Symbol.iterator in Object(state.casings)
-                    ) {
-                      setDisplayedCasings([...state.casings, tempCasing]);
-                    } else {
-                      setDisplayedCasings([tempCasing]);
-                    }
+                    setDisplayedCasings([...state.casings, tempCasing]);
                     setSelectedCasing(tempCasing);
                   }
                 }}>

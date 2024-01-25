@@ -114,18 +114,10 @@ const Instrumentation = ({ isEditable, completionId }) => {
                   e.stopPropagation();
                   if (!selectedInstrumentation) {
                     const tempInstrumentation = { id: 0 };
-                    // Check if instrumentations is iterable
-                    if (
-                      state.instrumentations &&
-                      Symbol.iterator in Object(state.instrumentations)
-                    ) {
-                      setDisplayedInstrumentations([
-                        ...state.instrumentations,
-                        tempInstrumentation,
-                      ]);
-                    } else {
-                      setDisplayedInstrumentations([tempInstrumentation]);
-                    }
+                    setDisplayedInstrumentations([
+                      ...state.instrumentations,
+                      tempInstrumentation,
+                    ]);
                     setSelectedInstrumentation(tempInstrumentation);
                   }
                 }}>
