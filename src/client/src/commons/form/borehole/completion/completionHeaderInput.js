@@ -42,7 +42,7 @@ const CompletionHeaderInput = props => {
 
   useEffect(() => {
     if (newlySelectedTab !== null) {
-      if (isDirty()) {
+      if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
         setShowSavePrompt(true);
       } else {
         switchTabs(true);
@@ -50,21 +50,6 @@ const CompletionHeaderInput = props => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newlySelectedTab]);
-
-  const isDirty = () => {
-    const values = formMethods.getValues();
-    if (values.abandonDate === "") {
-      values.abandonDate = null;
-    }
-    var dirty = !(
-      values.name === completion.name &&
-      values.kindId === completion.kindId &&
-      values.abandonDate === completion.abandonDate &&
-      values.notes === completion.notes &&
-      (completion.isPrimary || values.isPrimary === completion.isPrimary)
-    );
-    return dirty;
-  };
 
   const submitForm = data => {
     if (data?.abandonDate === "") {
