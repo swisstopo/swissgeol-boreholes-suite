@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, createRef } from "react";
+import React, { useState, useEffect, useMemo, createRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -10,29 +10,69 @@ import {
 } from "@mui/material";
 import { AddButton, CompletionCard, CompletionGrid } from "./styledComponents";
 import {
-  useInstrumentationMutations,
-  useInstrumentations,
+  getInstrumentation,
+  addInstrumentation,
+  updateInstrumentation,
+  deleteInstrumentation,
 } from "../../../../api/fetchApiV2";
 import InstrumentationInput from "./instrumentationInput";
 import InstrumentationDisplay from "./instrumentationDisplay";
 
 const Instrumentation = ({ isEditable, completionId }) => {
-  const { data: instrumentations, isSuccess } =
-    useInstrumentations(completionId);
   const { t } = useTranslation();
-  const {
-    add: { mutate: addInstrumentation },
-    update: { mutate: updateInstrumentation },
-    delete: { mutate: deleteInstrumentation },
-  } = useInstrumentationMutations();
+  const mounted = useRef(false);
   const [selectedInstrumentation, setSelectedInstrumentation] = useState(null);
   const [displayedInstrumentations, setDisplayedInstrumentations] = useState(
     [],
   );
+  const [state, setState] = useState({
+    index: 0,
+    instrumentations: [],
+    isLoadingData: true,
+  });
+
+  const loadData = index => {
+    setState({ isLoadingData: true });
+    if (completionId && mounted.current) {
+      getInstrumentation(completionId).then(response => {
+        if (response?.length > 0) {
+          setState({
+            index: index,
+            instrumentations: response,
+            isLoadingData: false,
+          });
+        } else {
+          setState({
+            index: 0,
+            instrumentations: [],
+            isLoadingData: false,
+          });
+        }
+      });
+    } else if (completionId === null) {
+      setState({
+        index: 0,
+        instrumentations: [],
+      });
+    }
+  };
+
+  const handleDataChange = () => {
+    loadData(state.index);
+  };
 
   useEffect(() => {
-    setDisplayedInstrumentations(instrumentations);
-  }, [instrumentations]);
+    mounted.current = true;
+    loadData(0);
+    return () => {
+      mounted.current = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [completionId]);
+
+  useEffect(() => {
+    setDisplayedInstrumentations(state.instrumentations);
+  }, [state.instrumentations]);
 
   // scroll to newly added item
   const instrumentationRefs = useMemo(
@@ -45,13 +85,13 @@ const Instrumentation = ({ isEditable, completionId }) => {
 
   useEffect(() => {
     if (displayedInstrumentations?.length > 0) {
-      const lastInstrumentationRef =
+      const lastCasingRef =
         instrumentationRefs[displayedInstrumentations?.length - 1];
       if (
         displayedInstrumentations[displayedInstrumentations?.length - 1].id ===
         0
       )
-        lastInstrumentationRef.current.scrollIntoView({
+        lastCasingRef.current.scrollIntoView({
           behavior: "smooth",
           block: "center",
         });
@@ -72,11 +112,11 @@ const Instrumentation = ({ isEditable, completionId }) => {
                     const tempInstrumentation = { id: 0 };
                     // Check if instrumentations is iterable
                     if (
-                      instrumentations &&
-                      Symbol.iterator in Object(instrumentations)
+                      state.instrumentations &&
+                      Symbol.iterator in Object(state.instrumentations)
                     ) {
                       setDisplayedInstrumentations([
-                        ...instrumentations,
+                        ...state.instrumentations,
                         tempInstrumentation,
                       ]);
                     } else {
@@ -107,7 +147,7 @@ const Instrumentation = ({ isEditable, completionId }) => {
                   xl={6}
                   key={instrumentation.id}
                   ref={instrumentationRefs[index]}>
-                  {isSuccess ? (
+                  {state.instrumentations ? (
                     <CompletionCard key={instrumentation.id}>
                       {isEditable && isSelected ? (
                         <InstrumentationInput
@@ -116,8 +156,18 @@ const Instrumentation = ({ isEditable, completionId }) => {
                             setSelectedInstrumentation
                           }
                           completionId={completionId}
-                          updateInstrumentation={updateInstrumentation}
-                          addInstrumentation={addInstrumentation}
+                          updateInstrumentation={(instrumentation, data) => {
+                            updateInstrumentation(instrumentation, data).then(
+                              () => {
+                                handleDataChange();
+                              },
+                            );
+                          }}
+                          addInstrumentation={data => {
+                            addInstrumentation(data).then(() => {
+                              handleDataChange();
+                            });
+                          }}
                         />
                       ) : (
                         !isTempInstrumentation && (
@@ -128,7 +178,13 @@ const Instrumentation = ({ isEditable, completionId }) => {
                               setSelectedInstrumentation
                             }
                             isEditable={isEditable}
-                            deleteInstrumentation={deleteInstrumentation}
+                            deleteInstrumentation={instrumentationId => {
+                              deleteInstrumentation(instrumentationId).then(
+                                () => {
+                                  handleDataChange();
+                                },
+                              );
+                            }}
                           />
                         )
                       )}
