@@ -3,12 +3,16 @@ import { useTranslation } from "react-i18next";
 import {
   Box,
   CircularProgress,
-  Grid,
   Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
-import { AddButton, CompletionCard, CompletionGrid } from "./styledComponents";
+import {
+  AddButton,
+  CompletionCard,
+  CompletionGrid,
+  CompletionGridItem,
+} from "./styledComponents";
 import {
   getCasings,
   addCasing,
@@ -130,13 +134,7 @@ const Casing = ({ isEditable, completionId }) => {
                 const isSelected = selectedCasing?.id === casing.id;
                 const isTempCasing = casing.id === 0;
                 return (
-                  <Grid
-                    item
-                    md={12}
-                    lg={12}
-                    xl={6}
-                    key={casing.id}
-                    ref={casingRefs[index]}>
+                  <CompletionGridItem key={casing.id} ref={casingRefs[index]}>
                     {state.casings ? (
                       <CompletionCard key={casing.id}>
                         {isEditable && isSelected ? (
@@ -174,7 +172,7 @@ const Casing = ({ isEditable, completionId }) => {
                     ) : (
                       <CircularProgress />
                     )}
-                  </Grid>
+                  </CompletionGridItem>
                 );
               })
           : !state.isLoadingData && (

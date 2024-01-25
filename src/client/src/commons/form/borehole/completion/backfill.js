@@ -3,12 +3,16 @@ import { useTranslation } from "react-i18next";
 import {
   Box,
   CircularProgress,
-  Grid,
   Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
-import { AddButton, CompletionCard, CompletionGrid } from "./styledComponents";
+import {
+  AddButton,
+  CompletionCard,
+  CompletionGrid,
+  CompletionGridItem,
+} from "./styledComponents";
 import {
   getBackfills,
   addBackfill,
@@ -130,11 +134,7 @@ const Backfill = ({ isEditable, completionId }) => {
                 const isSelected = selectedBackfill?.id === backfill.id;
                 const isTempBackfill = backfill.id === 0;
                 return (
-                  <Grid
-                    item
-                    md={12}
-                    lg={12}
-                    xl={6}
+                  <CompletionGridItem
                     key={backfill.id}
                     ref={backfillRefs[index]}>
                     {state.backfills ? (
@@ -174,7 +174,7 @@ const Backfill = ({ isEditable, completionId }) => {
                     ) : (
                       <CircularProgress />
                     )}
-                  </Grid>
+                  </CompletionGridItem>
                 );
               })
           : !state.isLoadingData && (

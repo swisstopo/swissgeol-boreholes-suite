@@ -3,12 +3,16 @@ import { useTranslation } from "react-i18next";
 import {
   Box,
   CircularProgress,
-  Grid,
   Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
-import { AddButton, CompletionCard, CompletionGrid } from "./styledComponents";
+import {
+  AddButton,
+  CompletionCard,
+  CompletionGrid,
+  CompletionGridItem,
+} from "./styledComponents";
 import {
   getInstrumentation,
   addInstrumentation,
@@ -140,11 +144,7 @@ const Instrumentation = ({ isEditable, completionId }) => {
                 selectedInstrumentation?.id === instrumentation.id;
               const isTempInstrumentation = instrumentation.id === 0;
               return (
-                <Grid
-                  item
-                  md={12}
-                  lg={12}
-                  xl={6}
+                <CompletionGridItem
                   key={instrumentation.id}
                   ref={instrumentationRefs[index]}>
                   {state.instrumentations ? (
@@ -192,7 +192,7 @@ const Instrumentation = ({ isEditable, completionId }) => {
                   ) : (
                     <CircularProgress />
                   )}
-                </Grid>
+                </CompletionGridItem>
               );
             })
         ) : (

@@ -146,6 +146,14 @@ export const CompletionGrid = forwardRef((props, ref) => {
   );
 });
 
+export const CompletionGridItem = forwardRef((props, ref) => {
+  return (
+    <Grid item md={12} lg={12} xl={6} ref={ref} {...props}>
+      {props.children}
+    </Grid>
+  );
+});
+
 export const CompletionCard = forwardRef((props, ref) => {
   const StyledCard = styled(Card)(() => ({
     border: "1px solid lightgrey",
