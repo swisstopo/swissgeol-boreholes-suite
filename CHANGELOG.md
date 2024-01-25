@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Reusable form components.
+
 ### Changed
 
 - Updated layer management to use the .NET API.
