@@ -8,11 +8,11 @@ import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 
 const InstrumentationInput = ({
-  instrumentation,
-  setSelectedInstrumentation,
+  item,
+  setSelected,
   completionId,
-  addInstrumentation,
-  updateInstrumentation,
+  addData,
+  updateData,
 }) => {
   const domains = useDomains();
   const { t, i18n } = useTranslation();
@@ -29,7 +29,7 @@ const InstrumentationInput = ({
   const closeFormIfCompleted = () => {
     if (formMethods.formState.isValid) {
       formMethods.handleSubmit(submitForm)();
-      setSelectedInstrumentation(null);
+      setSelected(null);
     }
   };
 
@@ -43,13 +43,13 @@ const InstrumentationInput = ({
 
   const submitForm = data => {
     data = prepareFormDataForSubmit(data);
-    if (instrumentation.id === 0) {
-      addInstrumentation({
+    if (item.id === 0) {
+      addData({
         ...data,
       });
     } else {
-      updateInstrumentation({
-        ...instrumentation,
+      updateData({
+        ...item,
         ...data,
       });
     }
@@ -72,14 +72,14 @@ const InstrumentationInput = ({
               <FormInput
                 fieldName="fromDepth"
                 label="fromdepth"
-                value={instrumentation.fromDepth}
+                value={item.fromDepth}
                 type="number"
                 required={true}
               />
               <FormInput
                 fieldName="toDepth"
                 label="todepth"
-                value={instrumentation.toDepth}
+                value={item.toDepth}
                 type="number"
                 required={true}
               />
@@ -88,13 +88,13 @@ const InstrumentationInput = ({
               <FormInput
                 fieldName="name"
                 label="name"
-                value={instrumentation.name}
+                value={item.name}
                 required={true}
               />
               <FormSelect
                 fieldName="casingId"
                 label="casingId"
-                selected={instrumentation.casingId}>
+                selected={item.casingId}>
                 <MenuItem key="0" value={null}>
                   <em>{t("reset")}</em>
                 </MenuItem>
@@ -109,7 +109,7 @@ const InstrumentationInput = ({
               <FormSelect
                 fieldName="kindId"
                 label="kindInstrument"
-                selected={instrumentation.kindId}
+                selected={item.kindId}
                 required={true}>
                 {domains?.data
                   ?.filter(
@@ -127,7 +127,7 @@ const InstrumentationInput = ({
               <FormSelect
                 fieldName="statusId"
                 label="statusInstrument"
-                selected={instrumentation.statusId}
+                selected={item.statusId}
                 required={true}>
                 {domains?.data
                   ?.filter(
@@ -149,7 +149,7 @@ const InstrumentationInput = ({
                 fieldName="notes"
                 label="notes"
                 multiline={true}
-                value={instrumentation.notes}
+                value={item.notes}
               />
             </Stack>
           </Stack>

@@ -122,38 +122,6 @@ export const CompletionTab = styled(props => <Tab disableRipple {...props} />)(
   }),
 );
 
-export const CompletionGrid = forwardRef((props, ref) => {
-  const StyledGrid = styled(Grid)(() => ({
-    width: "100%",
-    borderWidth: "1px",
-    borderColor: "black",
-    padding: "10px 10px 5px 10px",
-    marginBottom: "10px",
-    overflow: "auto",
-    maxHeight: "65vh",
-    alignItems: "stretch",
-  }));
-
-  return (
-    <StyledGrid
-      ref={ref}
-      {...props}
-      container
-      columnSpacing={{ xs: 2 }}
-      rowSpacing={{ xs: 2 }}>
-      {props.children}
-    </StyledGrid>
-  );
-});
-
-export const CompletionGridItem = forwardRef((props, ref) => {
-  return (
-    <Grid item md={12} lg={12} xl={6} ref={ref} {...props}>
-      {props.children}
-    </Grid>
-  );
-});
-
 export const CompletionCard = forwardRef((props, ref) => {
   const StyledCard = styled(Card)(() => ({
     border: "1px solid lightgrey",

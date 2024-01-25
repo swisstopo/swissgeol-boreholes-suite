@@ -10,13 +10,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 
 const BackfillDisplay = props => {
-  const {
-    backfill,
-    selectedBackfill,
-    setSelectedBackfill,
-    isEditable,
-    deleteBackfill,
-  } = props;
+  const { item, selected, setSelected, isEditable, deleteData } = props;
   const { t, i18n } = useTranslation();
 
   return (
@@ -26,17 +20,13 @@ const BackfillDisplay = props => {
           <StackHalfWidth direction="column">
             <Typography variant="subtitle2">{t("fromdepth")}</Typography>
             <TypographyWithBottomMargin variant="subtitle1">
-              {backfill.fromDepth || backfill.fromDepth === 0
-                ? backfill.fromDepth
-                : "-"}
+              {item.fromDepth || item.fromDepth === 0 ? item.fromDepth : "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
           <StackHalfWidth direction="column">
             <Typography variant="subtitle2">{t("todepth")}</Typography>
             <TypographyWithBottomMargin variant="subtitle1">
-              {backfill.toDepth || backfill.toDepth === 0
-                ? backfill.toDepth
-                : "-"}
+              {item.toDepth || item.toDepth === 0 ? item.toDepth : "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
         </StackFullWidth>
@@ -44,13 +34,13 @@ const BackfillDisplay = props => {
           <StackHalfWidth direction="column">
             <Typography variant="subtitle2">{t("kindFilling")}</Typography>
             <TypographyWithBottomMargin variant="subtitle1">
-              {backfill.kind?.[i18n.language] || "-"}
+              {item.kind?.[i18n.language] || "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
           <StackHalfWidth direction="column">
             <Typography variant="subtitle2">{t("materialFilling")}</Typography>
             <TypographyWithBottomMargin variant="subtitle1">
-              {backfill.material?.[i18n.language] || "-"}
+              {item.material?.[i18n.language] || "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
         </StackFullWidth>
@@ -63,7 +53,7 @@ const BackfillDisplay = props => {
             WebkitBoxOrient: "vertical",
             WebkitLineClamp: 3,
           }}>
-          {backfill.notes || "-"}
+          {item.notes || "-"}
         </TypographyWithBottomMargin>
       </StackFullWidth>
       <Stack
@@ -75,13 +65,13 @@ const BackfillDisplay = props => {
         <Tooltip title={t("edit")}>
           <ModeEditIcon
             sx={{
-              color: selectedBackfill ? "disabled" : "black",
+              color: selected ? "disabled" : "black",
               cursor: "pointer",
             }}
             data-cy="edit-icon"
             onClick={e => {
               e.stopPropagation();
-              !selectedBackfill && setSelectedBackfill(backfill);
+              !selected && setSelected(item);
             }}
           />
         </Tooltip>
@@ -89,13 +79,13 @@ const BackfillDisplay = props => {
           <DeleteIcon
             data-cy="delete-icon"
             sx={{
-              color: selectedBackfill ? "rgba(0, 0, 0, 0.26)" : "red",
+              color: selected ? "rgba(0, 0, 0, 0.26)" : "red",
               opacity: 0.7,
               cursor: "pointer",
             }}
             onClick={e => {
               e.stopPropagation();
-              !selectedBackfill && deleteBackfill(backfill.id);
+              !selected && deleteData(item.id);
             }}
           />
         </Tooltip>

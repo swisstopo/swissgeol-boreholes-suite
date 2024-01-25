@@ -10,13 +10,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 
 const InstrumentationDisplay = props => {
-  const {
-    instrumentation,
-    selectedInstrumentation,
-    setSelectedInstrumentation,
-    isEditable,
-    deleteInstrumentation,
-  } = props;
+  const { item, selected, setSelected, isEditable, deleteData } = props;
   const { t, i18n } = useTranslation();
 
   return (
@@ -26,17 +20,13 @@ const InstrumentationDisplay = props => {
           <StackHalfWidth direction="column">
             <Typography variant="subtitle2">{t("fromdepth")}</Typography>
             <TypographyWithBottomMargin variant="subtitle1">
-              {instrumentation.fromDepth || instrumentation.fromDepth === 0
-                ? instrumentation.fromDepth
-                : "-"}
+              {item.fromDepth || item.fromDepth === 0 ? item.fromDepth : "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
           <StackHalfWidth direction="column">
             <Typography variant="subtitle2">{t("todepth")}</Typography>
             <TypographyWithBottomMargin variant="subtitle1">
-              {instrumentation.toDepth || instrumentation.toDepth === 0
-                ? instrumentation.toDepth
-                : "-"}
+              {item.toDepth || item.toDepth === 0 ? item.toDepth : "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
         </StackFullWidth>
@@ -44,13 +34,13 @@ const InstrumentationDisplay = props => {
           <StackHalfWidth direction="column">
             <Typography variant="subtitle2">{t("name")}</Typography>
             <TypographyWithBottomMargin variant="subtitle1">
-              {instrumentation.name ? instrumentation.name : "-"}
+              {item.name ? item.name : "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
           <StackHalfWidth direction="column">
             <Typography variant="subtitle2">{t("casingId")}</Typography>
             <TypographyWithBottomMargin variant="subtitle1">
-              {instrumentation.casingId ? instrumentation.casing.name : "-"}
+              {item.casingId ? item.casing.name : "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
         </StackFullWidth>
@@ -58,13 +48,13 @@ const InstrumentationDisplay = props => {
           <StackHalfWidth direction="column">
             <Typography variant="subtitle2">{t("kindInstrument")}</Typography>
             <TypographyWithBottomMargin variant="subtitle1">
-              {instrumentation.kind?.[i18n.language] || "-"}
+              {item.kind?.[i18n.language] || "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
           <StackHalfWidth direction="column">
             <Typography variant="subtitle2">{t("statusInstrument")}</Typography>
             <TypographyWithBottomMargin variant="subtitle1">
-              {instrumentation.status?.[i18n.language] || "-"}
+              {item.status?.[i18n.language] || "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
         </StackFullWidth>
@@ -77,7 +67,7 @@ const InstrumentationDisplay = props => {
             WebkitBoxOrient: "vertical",
             WebkitLineClamp: 3,
           }}>
-          {instrumentation.notes || "-"}
+          {item.notes || "-"}
         </TypographyWithBottomMargin>
       </StackFullWidth>
       <Stack
@@ -89,14 +79,13 @@ const InstrumentationDisplay = props => {
         <Tooltip title={t("edit")}>
           <ModeEditIcon
             sx={{
-              color: selectedInstrumentation ? "disabled" : "black",
+              color: selected ? "disabled" : "black",
               cursor: "pointer",
             }}
             data-cy="edit-icon"
             onClick={e => {
               e.stopPropagation();
-              !selectedInstrumentation &&
-                setSelectedInstrumentation(instrumentation);
+              !selected && setSelected(item);
             }}
           />
         </Tooltip>
@@ -104,14 +93,13 @@ const InstrumentationDisplay = props => {
           <DeleteIcon
             data-cy="delete-icon"
             sx={{
-              color: selectedInstrumentation ? "rgba(0, 0, 0, 0.26)" : "red",
+              color: selected ? "rgba(0, 0, 0, 0.26)" : "red",
               opacity: 0.7,
               cursor: "pointer",
             }}
             onClick={e => {
               e.stopPropagation();
-              !selectedInstrumentation &&
-                deleteInstrumentation(instrumentation.id);
+              !selected && deleteData(item.id);
             }}
           />
         </Tooltip>
