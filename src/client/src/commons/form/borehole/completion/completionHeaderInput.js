@@ -10,7 +10,7 @@ import {
   FormInput,
   FormSelect,
   FormCheckbox,
-} from "../../../../components/form";
+} from "../../../../components/form/form";
 import Prompt from "../../../prompt/prompt";
 
 const CompletionHeaderInput = props => {
@@ -129,7 +129,6 @@ const CompletionHeaderInput = props => {
                 fieldName="notes"
                 label="notes"
                 multiline={true}
-                rows={1}
                 value={selectedCompletion?.notes}
                 sx={{ flex: "1 1 180px" }}
               />

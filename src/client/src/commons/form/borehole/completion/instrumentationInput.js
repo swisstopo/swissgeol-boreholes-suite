@@ -5,7 +5,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
 import { useDomains, getCasings } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
-import { FormInput, FormSelect } from "../../../../components/form";
+import { FormInput, FormSelect } from "../../../../components/form/form";
 
 const InstrumentationInput = ({
   instrumentation,
