@@ -76,11 +76,24 @@ const Completion = props => {
   const switchTabs = continueSwitching => {
     if (continueSwitching) {
       setEditing(false);
-      setState({
-        index: newlySelectedTab,
-        selected: state.completions[newlySelectedTab],
-        completions: state.completions,
-      });
+      if (state.selected.id === 0) {
+        var newCompletionList = state.completions.slice(0, -1);
+        if (newCompletionList.length === 0) {
+          setState({ index: 0, selected: null, completions: [] });
+        } else {
+          setState({
+            index: newlySelectedTab,
+            selected: newCompletionList[newlySelectedTab],
+            completions: newCompletionList,
+          });
+        }
+      } else {
+        setState({
+          index: newlySelectedTab,
+          selected: state.completions[newlySelectedTab],
+          completions: state.completions,
+        });
+      }
     }
     if (newlySelectedTab !== null) {
       setNewlySelectedTab(null);
