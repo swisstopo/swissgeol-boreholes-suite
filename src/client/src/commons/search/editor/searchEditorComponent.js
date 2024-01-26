@@ -69,24 +69,24 @@ class SearchEditorComponent extends React.Component {
           translationId: "lithostratigraphy",
           isSelected: false,
         },
-        {
-          id: 7,
-          name: "casing",
-          translationId: "casing",
-          isSelected: false,
-        },
-        {
-          id: 8,
-          name: "instrument",
-          translationId: "instrument",
-          isSelected: false,
-        },
-        {
-          id: 9,
-          name: "filling",
-          translationId: "filling",
-          isSelected: false,
-        },
+        // {
+        //   id: 7,
+        //   name: "casing",
+        //   translationId: "casing",
+        //   isSelected: false,
+        // },
+        // {
+        //   id: 8,
+        //   name: "instrument",
+        //   translationId: "instrument",
+        //   isSelected: false,
+        // },
+        // {
+        //   id: 9,
+        //   name: "filling",
+        //   translationId: "filling",
+        //   isSelected: false,
+        // },
         {
           id: 10,
           name: "registration",

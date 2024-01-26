@@ -42,24 +42,24 @@ class SearchComponent extends React.Component {
           translationId: "lithology",
           isSelected: false,
         },
-        {
-          id: 3,
-          name: "casing",
-          translationId: "casing",
-          isSelected: false,
-        },
-        {
-          id: 4,
-          name: "instrument",
-          translationId: "instrument",
-          isSelected: false,
-        },
-        {
-          id: 5,
-          name: "filling",
-          translationId: "filling",
-          isSelected: false,
-        },
+        // {
+        //   id: 3,
+        //   name: "casing",
+        //   translationId: "casing",
+        //   isSelected: false,
+        // },
+        // {
+        //   id: 4,
+        //   name: "instrument",
+        //   translationId: "instrument",
+        //   isSelected: false,
+        // },
+        // {
+        //   id: 5,
+        //   name: "filling",
+        //   translationId: "filling",
+        //   isSelected: false,
+        // },
         {
           id: 6,
           name: "workgroup",
