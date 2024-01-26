@@ -34,7 +34,7 @@ export const CompletionContentTab = props => {
   });
 
   const loadData = index => {
-    setState({ isLoadingData: true });
+    setState({ ...state, isLoadingData: true });
     if (completionId && mounted.current) {
       getData(completionId).then(response => {
         if (response?.length > 0) {
@@ -110,12 +110,7 @@ export const CompletionContentTab = props => {
                   e.stopPropagation();
                   if (!selected) {
                     const temp = { id: 0 };
-                    // Check if instrumentations is iterable
-                    if (state.data && Symbol.iterator in Object(state.data)) {
-                      setDisplayed([...state.data, temp]);
-                    } else {
-                      setDisplayed([temp]);
-                    }
+                    setDisplayed([...state.data, temp]);
                     setSelected(temp);
                   }
                 }}>
