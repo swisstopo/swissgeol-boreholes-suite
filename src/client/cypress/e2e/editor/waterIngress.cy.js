@@ -7,26 +7,6 @@ import {
 import { setInput, setSelect } from "../helpers/formHelpers";
 
 describe("Tests for the wateringress editor.", () => {
-  // beforeEach(function () {
-  //   // add new borehole
-  //   createBorehole({ "extended.original_name": "INTEADAL" })
-  //     .as("borehole_id")
-  //     .then(id => createStratigraphy(id, 3000))
-  //     .then(response => {
-  //       expect(response).to.have.property("status", 200);
-  //     });
-
-  //   // open wateringress editor
-  //   cy.get("@borehole_id").then(id => {
-  //     loginAsAdmin();
-  //     cy.visit(`editor/${id}/hydrogeology/wateringress`);
-  //   });
-
-  //   // start editing session
-  //   cy.contains("a", "Start editing").click();
-  //   cy.wait("@edit_lock");
-  // });
-
   it("Creates, updates and deletes wateringresses", () => {
     // Precondition: Create casing to later link in observation
     createBorehole({ "extended.original_name": "INTEADAL" })
