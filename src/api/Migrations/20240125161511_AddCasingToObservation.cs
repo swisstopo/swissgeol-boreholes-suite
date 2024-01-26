@@ -10,22 +10,27 @@ public partial class AddCasingToObservation : Migration
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
     {
+        migrationBuilder.DropIndex(name: "IX_observation_casing", schema: "bdms", table: "observation");
+
         migrationBuilder.DropForeignKey(
             name: "FK_observation_stratigraphy_casing",
             schema: "bdms",
             table: "observation");
 
-        migrationBuilder.RenameColumn(
-            name: "casing",
-            schema: "bdms",
-            table: "observation",
-            newName: "casing_id");
+        migrationBuilder.DropColumn(name: "casing", schema: "bdms", table: "observation");
 
-        migrationBuilder.RenameIndex(
-            name: "IX_observation_casing",
+        migrationBuilder.AddColumn<int>(
+            name: "casing_id",
             schema: "bdms",
             table: "observation",
-            newName: "IX_observation_casing_id");
+            type: "integer",
+            nullable: true);
+
+        migrationBuilder.CreateIndex(
+            name: "IX_observation_casing_id",
+            schema: "bdms",
+            table: "observation",
+            column: "casing_id");
 
         migrationBuilder.AddForeignKey(
             name: "FK_observation_casing_casing_id",
