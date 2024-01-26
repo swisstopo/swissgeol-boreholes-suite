@@ -71,15 +71,15 @@ public class Observation : IChangeTracking, IIdentifyable
     public bool? CompletionFinished { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Observation"/>'s casing id.
+    /// Gets or sets id of the <see cref="Observation"/>'s casing.
     /// </summary>
-    [Column("casing")]
+    [Column("casing_id")]
     public int? CasingId { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s casing.
     /// </summary>
-    public Stratigraphy? Casing { get; set; }
+    public Casing? Casing { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s comment.

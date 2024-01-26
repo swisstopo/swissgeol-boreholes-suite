@@ -99,6 +99,11 @@ public class Casing : IChangeTracking, IIdentifyable
     /// </summary>
     public ICollection<Instrumentation>? Instrumentations { get; }
 
+    /// <summary>
+    /// Gets the <see cref="Observation"/>s associated with the <see cref="Casing"/>.
+    /// </summary>
+    public ICollection<Observation>? Observations { get; }
+
     /// <inheritdoc />
     [Column("creator")]
     public int? CreatedById { get; set; }
