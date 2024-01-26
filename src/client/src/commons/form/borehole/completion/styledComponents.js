@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Card,
-  Grid,
   IconButton,
   Stack,
   Tabs,
@@ -56,7 +55,7 @@ export const TextfieldNoMargin = forwardRef((props, ref) => {
 
 export const IconButtonWithMargin = styled(IconButton)({
   color: "rgba(0, 0, 0, 0.8)",
-  marginRight: "5px",
+  marginLeft: "5px",
   "&:hover, &.Mui-focusVisible, &:active, &:focus, &:focus-visible": {
     backgroundColor: "rgba(0, 0, 0, 0.0)",
   },
@@ -70,7 +69,7 @@ export const BdmsButton = styled(Button)({
   textTransform: "none",
   color: "rgba(0, 0, 0, 0.8)",
   borderColor: "rgba(0, 0, 0, 0.8)",
-  marginBottom: "10px",
+  marginBottom: "6px",
   "&:hover, &.Mui-focusVisible, &:active, &:focus, &:focus-visible": {
     borderColor: "rgba(0, 0, 0, 0.8)",
     backgroundColor: "rgba(0, 0, 0, 0.05)",
@@ -93,6 +92,8 @@ export const CompletionBox = styled(Box)(() => ({
   borderRadius: "3px",
   padding: "10px 10px 5px 10px",
   margin: "0 5px 10px 5px",
+  display: "flex",
+  flexDirection: "column",
   boxShadow:
     "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
 }));
@@ -122,37 +123,13 @@ export const CompletionTab = styled(props => <Tab disableRipple {...props} />)(
   }),
 );
 
-export const CompletionGrid = forwardRef((props, ref) => {
-  const StyledGrid = styled(Grid)(() => ({
-    width: "100%",
-    borderWidth: "1px",
-    borderColor: "black",
-    padding: "10px 10px 5px 10px",
-    marginBottom: "10px",
-    overflow: "auto",
-    maxHeight: "65vh",
-    alignItems: "stretch",
-  }));
-
-  return (
-    <StyledGrid
-      ref={ref}
-      {...props}
-      container
-      columnSpacing={{ xs: 2 }}
-      rowSpacing={{ xs: 2 }}>
-      {props.children}
-    </StyledGrid>
-  );
-});
-
 export const CompletionCard = forwardRef((props, ref) => {
   const StyledCard = styled(Card)(() => ({
+    width: "100%",
     border: "1px solid lightgrey",
     borderRadius: "3px",
-    padding: "12px",
-    marginBottom: "16px",
-    height: "100%",
+    padding: "12px 12px 16px 12px",
+    marginBottom: "8px",
   }));
 
   return (

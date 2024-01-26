@@ -10,13 +10,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 
 const CasingDisplay = props => {
-  const {
-    casing,
-    selectedCasing,
-    setSelectedCasing,
-    isEditable,
-    deleteCasing,
-  } = props;
+  const { item, selected, setSelected, isEditable, deleteData } = props;
   const { t, i18n } = useTranslation();
 
   const formattedDateTime = dateString => {
@@ -36,7 +30,7 @@ const CasingDisplay = props => {
         <StackFullWidth direction="column">
           <Typography variant="subtitle2">{t("name")}</Typography>
           <TypographyWithBottomMargin variant="subtitle1" data-cy="casing-name">
-            {casing.name ? casing.name : "-"}
+            {item.name ? item.name : "-"}
           </TypographyWithBottomMargin>
         </StackFullWidth>
         <StackFullWidth direction="row" spacing={1}>
@@ -45,9 +39,7 @@ const CasingDisplay = props => {
             <TypographyWithBottomMargin
               variant="subtitle1"
               data-cy="casing-fromDepth">
-              {casing.fromDepth || casing.fromDepth === 0
-                ? casing.fromDepth
-                : "-"}
+              {item.fromDepth || item.fromDepth === 0 ? item.fromDepth : "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
           <StackHalfWidth direction="column">
@@ -55,7 +47,7 @@ const CasingDisplay = props => {
             <TypographyWithBottomMargin
               variant="subtitle1"
               data-cy="casing-toDepth">
-              {casing.toDepth || casing.toDepth === 0 ? casing.toDepth : "-"}
+              {item.toDepth || item.toDepth === 0 ? item.toDepth : "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
         </StackFullWidth>
@@ -65,7 +57,7 @@ const CasingDisplay = props => {
             <TypographyWithBottomMargin
               variant="subtitle1"
               data-cy="casing-kind">
-              {casing.kind?.[i18n.language] || "-"}
+              {item.kind?.[i18n.language] || "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
           <StackHalfWidth direction="column">
@@ -73,7 +65,7 @@ const CasingDisplay = props => {
             <TypographyWithBottomMargin
               variant="subtitle1"
               data-cy="casing-material">
-              {casing.material?.[i18n.language] || "-"}
+              {item.material?.[i18n.language] || "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
         </StackFullWidth>
@@ -83,7 +75,7 @@ const CasingDisplay = props => {
             <TypographyWithBottomMargin
               variant="subtitle1"
               data-cy="casing-dateStart">
-              {casing.dateStart ? formattedDateTime(casing.dateStart) : "-"}
+              {item.dateStart ? formattedDateTime(item.dateStart) : "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
           <StackHalfWidth direction="column">
@@ -91,7 +83,7 @@ const CasingDisplay = props => {
             <TypographyWithBottomMargin
               variant="subtitle1"
               data-cy="casing-dateFinish">
-              {casing.dateFinish ? formattedDateTime(casing.dateFinish) : "-"}
+              {item.dateFinish ? formattedDateTime(item.dateFinish) : "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
         </StackFullWidth>
@@ -103,8 +95,8 @@ const CasingDisplay = props => {
             <TypographyWithBottomMargin
               variant="subtitle1"
               data-cy="casing-innerDiameter">
-              {casing.innerDiameter || casing.innerDiameter === 0
-                ? casing.innerDiameter
+              {item.innerDiameter || item.innerDiameter === 0
+                ? item.innerDiameter
                 : "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
@@ -115,8 +107,8 @@ const CasingDisplay = props => {
             <TypographyWithBottomMargin
               variant="subtitle1"
               data-cy="casing-outerDiameter">
-              {casing.outerDiameter || casing.outerDiameter === 0
-                ? casing.outerDiameter
+              {item.outerDiameter || item.outerDiameter === 0
+                ? item.outerDiameter
                 : "-"}
             </TypographyWithBottomMargin>
           </StackHalfWidth>
@@ -131,7 +123,7 @@ const CasingDisplay = props => {
             WebkitLineClamp: 3,
           }}
           data-cy="casing-notes">
-          {casing.notes || "-"}
+          {item.notes || "-"}
         </TypographyWithBottomMargin>
       </StackFullWidth>
       <Stack
@@ -143,13 +135,13 @@ const CasingDisplay = props => {
         <Tooltip title={t("edit")}>
           <ModeEditIcon
             sx={{
-              color: selectedCasing ? "disabled" : "black",
+              color: selected ? "disabled" : "black",
               cursor: "pointer",
             }}
             data-cy="edit-icon"
             onClick={e => {
               e.stopPropagation();
-              !selectedCasing && setSelectedCasing(casing);
+              !selected && setSelected(item);
             }}
           />
         </Tooltip>
@@ -157,13 +149,13 @@ const CasingDisplay = props => {
           <DeleteIcon
             data-cy="delete-icon"
             sx={{
-              color: selectedCasing ? "rgba(0, 0, 0, 0.26)" : "red",
+              color: selected ? "rgba(0, 0, 0, 0.26)" : "red",
               opacity: 0.7,
               cursor: "pointer",
             }}
             onClick={e => {
               e.stopPropagation();
-              !selectedCasing && deleteCasing(casing.id);
+              !selected && deleteData(item.id);
             }}
           />
         </Tooltip>
