@@ -114,17 +114,12 @@ const Completion = props => {
       if (state.selected.id === 0) {
         var newCompletionList = state.completions.slice(0, -1);
         if (newCompletionList.length === 0) {
-<<<<<<< HEAD
           history.push(
             process.env.PUBLIC_URL + "/editor/" + boreholeId + "/completion",
           );
           setState({ index: 0, selected: null, completions: [] });
         } else {
           updateHistory(newCompletionList[newlySelectedTab].id);
-=======
-          setState({ index: 0, selected: null, completions: [] });
-        } else {
->>>>>>> origin/migrate-observation-casing
           setState({
             index: newlySelectedTab,
             selected: newCompletionList[newlySelectedTab],
@@ -132,10 +127,7 @@ const Completion = props => {
           });
         }
       } else {
-<<<<<<< HEAD
         updateHistory(state.completions[newlySelectedTab].id);
-=======
->>>>>>> origin/migrate-observation-casing
         setState({
           index: newlySelectedTab,
           selected: state.completions[newlySelectedTab],
@@ -246,48 +238,8 @@ const Completion = props => {
 
   return (
     <>
-<<<<<<< HEAD
-      <Stack direction="column">
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center">
-          <CompletionTabs
-            value={state.index}
-            onChange={handleCompletionChanged}>
-            {state.completions?.length > 0 &&
-              state.completions.map((item, index) => {
-                return (
-                  <CompletionTab
-                    data-cy={"completion-header-tab-" + index}
-                    label={
-                      item.name === null || item.name === ""
-                        ? t("common:np")
-                        : item.name
-                    }
-                    key={index}
-                  />
-                );
-              })}
-          </CompletionTabs>
-          {isEditable && (
-            <Tooltip title={t("add")}>
-              <AddButton
-                sx={{ marginRight: "5px" }}
-                data-cy="add-completion-button"
-                onClick={() => {
-                  updateHistory("new");
-                }}>
-                {t("addCompletion")}
-              </AddButton>
-            </Tooltip>
-          )}
-        </Stack>
-        {state.completions?.length === 0 ? (
-=======
       <Stack direction="column" flex="1">
         <Stack flex="0 1 auto">
->>>>>>> origin/migrate-observation-casing
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -315,7 +267,9 @@ const Completion = props => {
                 <AddButton
                   sx={{ marginRight: "5px" }}
                   data-cy="add-completion-button"
-                  onClick={addNewCompletion}>
+                  onClick={() => {
+                    updateHistory("new");
+                  }}>
                   {t("addCompletion")}
                 </AddButton>
               </Tooltip>

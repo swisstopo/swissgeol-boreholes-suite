@@ -171,7 +171,7 @@ const CompletionHeaderInput = props => {
           {
             label: "reset",
             action: () => {
-              reset(selectedCompletion);
+              formMethods.reset(selectedCompletion);
               switchTabs(true);
             },
           },
