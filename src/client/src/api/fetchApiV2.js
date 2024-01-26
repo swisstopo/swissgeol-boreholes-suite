@@ -108,15 +108,6 @@ export const fetchAllCodeLists = async () =>
 export const updateCodeLists = async codelist =>
   await fetchApiV2("codelist", "PUT", codelist);
 
-// casings
-export const fetchCasingsByBoreholeId = async boreholeId => {
-  const kindId = 3002; // casing kind
-  return await fetchApiV2(
-    `stratigraphy?kindId=${kindId}&boreholeId=${boreholeId}`,
-    "GET",
-  );
-};
-
 // lithological descriptions
 export const fetchLithologicalDescriptionsByProfileId = async profileId => {
   return await fetchApiV2(
@@ -262,13 +253,6 @@ export const useFaciesDescription = selectedStratigraphyID =>
   useQuery({
     queryKey: [faciesDescriptionQueryKey, selectedStratigraphyID],
     queryFn: () => fetchFaciesDescriptionsByProfileId(selectedStratigraphyID),
-  });
-
-export const casingKey = "casings";
-
-export const useCasings = boreholeId =>
-  useQuery([casingKey, boreholeId], () => {
-    return fetchCasingsByBoreholeId(boreholeId);
   });
 
 export const useLithologyStratigraphies = boreholeId => {
@@ -729,66 +713,23 @@ export const useHydrotestMutations = () => {
   };
 };
 
-export const instrumentationQueryKey = "instrumentations";
-
-export const useInstrumentations = completionId =>
-  useQuery({
-    queryKey: [instrumentationQueryKey, completionId],
-    queryFn: async () => {
-      return await fetchApiV2(
-        `instrumentation?completionId=${completionId}`,
-        "GET",
-      );
-    },
-  });
-
-export const useInstrumentationMutations = () => {
-  const queryClient = useQueryClient();
-  const useAddInstrumentations = useMutation(
-    async instrumentation => {
-      return await fetchApiV2("instrumentation", "POST", instrumentation);
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [instrumentationQueryKey],
-        });
-      },
-    },
+export const getInstrumentation = async completionId => {
+  return await fetchApiV2(
+    `instrumentation?completionId=${completionId}`,
+    "GET",
   );
-  const useUpdateInstrumentations = useMutation(
-    async instrumentation => {
-      return await fetchApiV2("instrumentation", "PUT", instrumentation);
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [instrumentationQueryKey],
-        });
-      },
-    },
-  );
-  const useDeleteInstrumentations = useMutation(
-    async instrumentationId => {
-      return await fetchApiV2(
-        `instrumentation?id=${instrumentationId}`,
-        "DELETE",
-      );
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [instrumentationQueryKey],
-        });
-      },
-    },
-  );
+};
 
-  return {
-    add: useAddInstrumentations,
-    update: useUpdateInstrumentations,
-    delete: useDeleteInstrumentations,
-  };
+export const addInstrumentation = async instrumentation => {
+  return await fetchApiV2("instrumentation", "POST", instrumentation);
+};
+
+export const updateInstrumentation = async instrumentation => {
+  return await fetchApiV2("instrumentation", "PUT", instrumentation);
+};
+
+export const deleteInstrumentation = async id => {
+  return await fetchApiV2(`instrumentation?id=${id}`, "DELETE");
 };
 
 export const getBackfills = async completionId => {
@@ -809,6 +750,10 @@ export const deleteBackfill = async id => {
 
 export const getCasings = async completionId => {
   return await fetchApiV2(`casing?completionId=${completionId}`, "GET");
+};
+
+export const getCasingsByBoreholeId = async boreholeId => {
+  return await fetchApiV2(`casing?boreholeId=${boreholeId}`, "GET");
 };
 
 export const addCasing = async casing => {

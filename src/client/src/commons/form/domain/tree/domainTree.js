@@ -135,7 +135,9 @@ class DomainTree extends React.Component {
   }
 
   handleOpen() {
-    this.setState({ modalOpen: true });
+    if (this.props.isEditable === true) {
+      this.setState({ modalOpen: true });
+    }
   }
 
   handleClose() {
@@ -168,7 +170,7 @@ class DomainTree extends React.Component {
   }
 
   render() {
-    const { domains, schema } = this.props;
+    const { domains, schema, isEditable } = this.props;
     if (!domains.data.hasOwnProperty(schema)) {
       if (domains.isFetching === true) {
         return "loading translations";
@@ -415,6 +417,7 @@ class DomainTree extends React.Component {
             icon="sitemap"
             onClick={this.handleOpen}
             value={this.getDomainText(this.state.selected)}
+            readOnly={!isEditable}
           />
         }>
         <Modal.Header>
@@ -543,6 +546,7 @@ class DomainTree extends React.Component {
                           ? this.state.selectedFilters[lev].id
                           : null
                       }
+                      readOnly={!isEditable}
                     />
                   </div>
                 ) : null;
@@ -575,6 +579,7 @@ class DomainTree extends React.Component {
                       }}
                       placeholder="Search..."
                       value={this.state.search}
+                      readOnly={!isEditable}
                     />
                   </Form.Field>
                 </Form>

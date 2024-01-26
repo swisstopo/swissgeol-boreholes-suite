@@ -48,7 +48,7 @@ describe("Casing crud tests", () => {
     cy.wait("@casing_GET");
 
     // create casing
-    cy.get('[data-cy="add-casing-button"]').click();
+    cy.get('[data-cy="addCasing-button"]').click();
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1");
@@ -93,7 +93,7 @@ describe("Casing crud tests", () => {
     cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
-    cy.get('[data-cy="add-instrumentation-button"]').click({ force: true });
+    cy.get('[data-cy="addInstrument-button"]').click({ force: true });
     cy.wait("@casing_GET");
 
     setInput("notes", "Lorem.");

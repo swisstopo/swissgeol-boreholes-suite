@@ -361,7 +361,7 @@ class MenuEditorForm extends React.Component {
                   }}
                 />
                 <List.Content>
-                  <List.Header as="h3" data-cy="hydrogeology-menu-item">
+                  <List.Header as="h3" data-cy="wateringress-menu-item">
                     <TranslationText firstUpperCase id="water_ingress" />
                   </List.Header>
                 </List.Content>

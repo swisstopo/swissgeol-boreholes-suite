@@ -49,8 +49,12 @@ const CompletionContent = ({ completion, isEditable }) => {
   }, [location.hash]);
 
   return (
-    <Stack direction="column">
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
+    <Stack direction="column" flex="1 0 0">
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        flex="0 1 auto">
         <CompletionTabs value={state.index} onChange={handleCompletionChanged}>
           {tabs.map((tab, index) => {
             return (
@@ -67,7 +71,7 @@ const CompletionContent = ({ completion, isEditable }) => {
           })}
         </CompletionTabs>
       </Stack>
-      <CompletionBox>
+      <CompletionBox flex="1 0 0">
         {(state.index === 0 && (
           <Casing completionId={completion.id} isEditable={isEditable} />
         )) ||

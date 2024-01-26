@@ -6,16 +6,12 @@ import DomainTree from "../../domain/tree/domainTree";
 import TranslationText from "../../translationText";
 import { NumericFormat } from "react-number-format";
 import { Form, Segment } from "semantic-ui-react";
-import {
-  FormControl,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-} from "@mui/material";
+import { FormControl, RadioGroup, FormControlLabel } from "@mui/material";
 import { parseIfString } from "../../formUtils";
+import { DisabledRadio } from "./styledComponents";
 
 const BoreholeDetailSegment = props => {
-  const { size, borehole, updateChange, updateNumber } = props;
+  const { size, borehole, updateChange, updateNumber, isEditable } = props;
   return (
     <Segment>
       <Form autoComplete="off" error size={size}>
@@ -41,6 +37,7 @@ const BoreholeDetailSegment = props => {
                   : borehole.data.total_depth
               }
               thousandSeparator="'"
+              readOnly={!isEditable}
             />
           </Form.Field>
           <Form.Field required>
@@ -53,6 +50,7 @@ const BoreholeDetailSegment = props => {
               }}
               schema="custom.qt_top_bedrock"
               selected={borehole.data.custom.qt_depth}
+              readOnly={!isEditable}
             />
           </Form.Field>
         </Form.Group>
@@ -78,6 +76,7 @@ const BoreholeDetailSegment = props => {
                   : borehole.data.total_depth_tvd
               }
               thousandSeparator="'"
+              readOnly={!isEditable}
             />
           </Form.Field>
 
@@ -91,6 +90,7 @@ const BoreholeDetailSegment = props => {
               }}
               schema="custom.qt_top_bedrock"
               selected={borehole.data.qt_total_depth_tvd}
+              readOnly={!isEditable}
             />
           </Form.Field>
         </Form.Group>
@@ -116,6 +116,7 @@ const BoreholeDetailSegment = props => {
                   : borehole.data.extended.top_bedrock
               }
               thousandSeparator="'"
+              readOnly={!isEditable}
             />
           </Form.Field>
           <Form.Field required>
@@ -135,6 +136,7 @@ const BoreholeDetailSegment = props => {
               spellCheck="false"
               value={borehole.data.custom.qt_top_bedrock}
               thousandSeparator="'"
+              readOnly={!isEditable}
             />
           </Form.Field>
         </Form.Group>
@@ -160,6 +162,7 @@ const BoreholeDetailSegment = props => {
                   : borehole.data.extended.top_bedrock_tvd
               }
               thousandSeparator="'"
+              readOnly={!isEditable}
             />
           </Form.Field>
 
@@ -180,6 +183,7 @@ const BoreholeDetailSegment = props => {
               spellCheck="false"
               value={borehole.data.custom.qt_top_bedrock_tvd}
               thousandSeparator="'"
+              readOnly={!isEditable}
             />
           </Form.Field>
         </Form.Group>
@@ -208,17 +212,17 @@ const BoreholeDetailSegment = props => {
               }}>
               <FormControlLabel
                 value="TRUE"
-                control={<Radio />}
+                control={<DisabledRadio isEditable={!isEditable} />}
                 label={<TranslationText id={"yes"} />}
               />
               <FormControlLabel
                 value="FALSE"
-                control={<Radio />}
+                control={<DisabledRadio isEditable={!isEditable} />}
                 label={<TranslationText id={"no"} />}
               />
               <FormControlLabel
                 value="NULL"
-                control={<Radio />}
+                control={<DisabledRadio isEditable={!isEditable} />}
                 label={<TranslationText id={"np"} />}
               />
             </RadioGroup>
@@ -240,6 +244,7 @@ const BoreholeDetailSegment = props => {
             schema="custom.lithology_top_bedrock"
             selected={borehole.data.custom.lithology_top_bedrock}
             title={<TranslationText id="lithology_top_bedrock" />}
+            isEditable={isEditable}
           />
         </Form.Field>
         <Form.Field required>
@@ -264,6 +269,7 @@ const BoreholeDetailSegment = props => {
             schema="custom.lithostratigraphy_top_bedrock"
             selected={borehole.data.custom.lithostratigraphy_top_bedrock}
             title={<TranslationText id="lithostratigraphy_top_bedrock" />}
+            isEditable={isEditable}
           />
         </Form.Field>
         <Form.Field required>
@@ -289,6 +295,7 @@ const BoreholeDetailSegment = props => {
             schema="custom.chronostratigraphy_top_bedrock"
             selected={borehole.data.custom.chronostratigraphy_top_bedrock}
             title={<TranslationText id="chronostratigraphy_top_bedrock" />}
+            isEditable={isEditable}
           />
         </Form.Field>
       </Form>

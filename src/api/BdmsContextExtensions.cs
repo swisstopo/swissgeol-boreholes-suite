@@ -565,136 +565,6 @@ public static class BdmsContextExtensions
         LayerCodelist SeededLayerCodelist(int seed) => fakeLayerCodelists.UseSeed(seed).Generate();
         context.BulkInsert(layerCodelistRange.Select(SeededLayerCodelist).ToList(), bulkConfig);
 
-        // Seed observations
-        var observation_ids = 12_000_000;
-        var observationRange = Enumerable.Range(observation_ids, 500);
-        var fakeObservations = new Faker<Observation>()
-            .StrictMode(true)
-            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
-            .RuleFor(o => o.Borehole, _ => default!)
-            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
-            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
-            .RuleFor(o => o.CreatedBy, _ => default!)
-            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
-            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
-            .RuleFor(o => o.UpdatedBy, _ => default!)
-            .RuleFor(o => o.StartTime, f => f.Date.Past().ToUniversalTime())
-            .RuleFor(o => o.EndTime, f => f.Date.Past().ToUniversalTime())
-            .RuleFor(o => o.Duration, f => f.Random.Double(1, 5000))
-            .RuleFor(o => o.FromDepthM, f => f.Random.Double(1, 5000))
-            .RuleFor(o => o.ToDepthM, f => f.Random.Double(1, 5000))
-            .RuleFor(o => o.FromDepthMasl, f => f.Random.Double(1, 5000))
-            .RuleFor(o => o.ToDepthMasl, f => f.Random.Double(1, 5000))
-            .RuleFor(o => o.CompletionFinished, f => f.Random.Bool())
-            .RuleFor(o => o.Comment, f => f.Lorem.Sentence())
-            .RuleFor(o => o.ReliabilityId, f => f.PickRandom(waterIngressReliabilityIds))
-            .RuleFor(o => o.Reliability, _ => default!)
-            .RuleFor(o => o.Type, f => f.PickRandom<ObservationType>())
-            .RuleFor(o => o.CasingId, _ => GetStratigraphyOrCasingId(observation_ids, 12_000_000))
-            .RuleFor(o => o.Casing, _ => default!)
-            .RuleFor(o => o.Id, f => observation_ids++);
-
-        Observation SeededObservations(int seed) => fakeObservations.UseSeed(seed).Generate();
-        var observations = observationRange.Select(SeededObservations).ToList();
-
-        // Seed water ingresses
-        var fakeWaterIngresses = new Faker<WaterIngress>()
-            .RuleFor(o => o.QuantityId, f => f.PickRandom(waterIngressQuantityIds))
-            .RuleFor(o => o.Quantity, _ => default!)
-            .RuleFor(o => o.ConditionsId, f => f.PickRandom(waterIngressConditionsIds))
-            .RuleFor(o => o.Conditions, _ => default!);
-
-        WaterIngress SeededWaterIngresses(Observation observation)
-        {
-            return fakeWaterIngresses
-                .UseSeed(observation.Id)
-                .RuleFor(o => o.Id, _ => observation.Id)
-                .Generate();
-        }
-
-        var waterIngresses = observations.Where(o => o.Type == ObservationType.WaterIngress).Select(observation => SeededWaterIngresses(observation)).ToList();
-
-        // Seed hydrotests
-        var fakeHydrotests = new Faker<Hydrotest>();
-
-        Hydrotest SeededHydrotests(Observation observation)
-        {
-            return fakeHydrotests
-                .UseSeed(observation.Id)
-                .RuleFor(o => o.Id, _ => observation.Id)
-                .Generate();
-        }
-
-        var hydrotests = observations.Where(o => o.Type == ObservationType.Hydrotest).Select(observation => SeededHydrotests(observation)).ToList();
-
-        context.BulkInsert(observations, bulkConfig);
-        context.BulkInsert(waterIngresses, bulkConfig);
-        context.BulkInsert(hydrotests, bulkConfig);
-
-        // Seed hydrotest results
-        var hydrotestResult_ids = 13_000_000;
-        var hydrotestResultRange = Enumerable.Range(hydrotestResult_ids, 1000).ToList();
-        var fakeHydrotestResults = new Faker<HydrotestResult>()
-            .StrictMode(true)
-            .RuleFor(o => o.Id, f => hydrotestResult_ids++)
-            .RuleFor(o => o.ParameterId, f => f.PickRandom(hydrotestResultParameterIds))
-            .RuleFor(o => o.Parameter, _ => default!)
-            .RuleFor(o => o.Value, f => f.Random.Double(1, 5000))
-            .RuleFor(o => o.MinValue, f => f.Random.Double(1, 5000))
-            .RuleFor(o => o.MaxValue, f => f.Random.Double(1, 5000))
-            .RuleFor(o => o.HydrotestId, f => f.PickRandom(hydrotests.Select(h => h.Id)))
-            .RuleFor(o => o.Hydrotest, _ => default!)
-            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
-            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
-            .RuleFor(o => o.CreatedBy, _ => default!)
-            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
-            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
-            .RuleFor(o => o.UpdatedBy, _ => default!);
-
-        HydrotestResult SeededHydrotestResults(int seed) => fakeHydrotestResults.UseSeed(seed).Generate();
-        context.BulkInsert(hydrotestResultRange.Select(SeededHydrotestResults).ToList(), bulkConfig);
-
-        // Seed groundwater level measurements
-        var fakeGroundwaterLevelMeasurements = new Faker<GroundwaterLevelMeasurement>()
-            .RuleFor(o => o.KindId, f => f.PickRandom(groundwaterLevelMeasurementKindIds))
-            .RuleFor(o => o.Kind, _ => default!)
-            .RuleFor(o => o.LevelM, f => f.Random.Double(1, 5000))
-            .RuleFor(o => o.LevelMasl, f => f.Random.Double(1, 5000));
-
-        GroundwaterLevelMeasurement SeededGroundwaterLevelMeasurements(Observation observation)
-        {
-            return fakeGroundwaterLevelMeasurements
-                .UseSeed(observation.Id)
-                .RuleFor(o => o.Id, _ => observation.Id)
-                .Generate();
-        }
-
-        var groundwaterLevelMeasurements = observations.Where(o => o.Type == ObservationType.GroundwaterLevelMeasurement).Select(observation => SeededGroundwaterLevelMeasurements(observation)).ToList();
-
-        context.BulkInsert(groundwaterLevelMeasurements, bulkConfig);
-
-        // Seed field measurements
-        var fakeFieldMeasurements = new Faker<FieldMeasurement>()
-            .RuleFor(o => o.SampleTypeId, f => f.PickRandom(fieldMeasurementSampleTypeIds))
-            .RuleFor(o => o.SampleType, _ => default!)
-            .RuleFor(o => o.ParameterId, f => f.PickRandom(fieldMeasurementParameterIds))
-            .RuleFor(o => o.Parameter, _ => default!)
-            .RuleFor(o => o.Value, f => f.Random.Double(1, 5000));
-
-        FieldMeasurement SeededFieldMeasurements(Observation observation)
-        {
-            return fakeFieldMeasurements
-                .UseSeed(observation.Id)
-                .RuleFor(o => o.Id, _ => observation.Id)
-                .Generate();
-        }
-
-        var fieldMeasurements = observations.Where(o => o.Type == ObservationType.FieldMeasurement).Select(observation => SeededFieldMeasurements(observation)).ToList();
-
-        context.BulkInsert(fieldMeasurements, bulkConfig);
-
-        context.SaveChanges();
-
         // Seed completions
         var completion_ids = 14_000_000;
         var completionRange = Enumerable.Range(completion_ids, 500);
@@ -827,6 +697,136 @@ public static class BdmsContextExtensions
         var backfills = completions.Select(c => SeededBackfill(c)).ToList();
 
         context.BulkInsert(backfills, bulkConfig);
+
+        context.SaveChanges();
+
+        // Seed observations
+        var observation_ids = 12_000_000;
+        var observationRange = Enumerable.Range(observation_ids, 500);
+        var fakeObservations = new Faker<Observation>()
+            .StrictMode(true)
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
+            .RuleFor(o => o.Borehole, _ => default!)
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!)
+            .RuleFor(o => o.StartTime, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.EndTime, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.Duration, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.FromDepthM, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.ToDepthM, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.FromDepthMasl, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.ToDepthMasl, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.CompletionFinished, f => f.Random.Bool())
+            .RuleFor(o => o.Comment, f => f.Lorem.Sentence())
+            .RuleFor(o => o.ReliabilityId, f => f.PickRandom(waterIngressReliabilityIds))
+            .RuleFor(o => o.Reliability, _ => default!)
+            .RuleFor(o => o.Type, f => f.PickRandom<ObservationType>())
+            .RuleFor(i => i.CasingId, f => f.PickRandom(casings.Select(c => c.Id)))
+            .RuleFor(i => i.Casing, _ => default!)
+            .RuleFor(o => o.Id, f => observation_ids++);
+
+        Observation SeededObservations(int seed) => fakeObservations.UseSeed(seed).Generate();
+        var observations = observationRange.Select(SeededObservations).ToList();
+
+        // Seed water ingresses
+        var fakeWaterIngresses = new Faker<WaterIngress>()
+            .RuleFor(o => o.QuantityId, f => f.PickRandom(waterIngressQuantityIds))
+            .RuleFor(o => o.Quantity, _ => default!)
+            .RuleFor(o => o.ConditionsId, f => f.PickRandom(waterIngressConditionsIds))
+            .RuleFor(o => o.Conditions, _ => default!);
+
+        WaterIngress SeededWaterIngresses(Observation observation)
+        {
+            return fakeWaterIngresses
+                .UseSeed(observation.Id)
+                .RuleFor(o => o.Id, _ => observation.Id)
+                .Generate();
+        }
+
+        var waterIngresses = observations.Where(o => o.Type == ObservationType.WaterIngress).Select(observation => SeededWaterIngresses(observation)).ToList();
+
+        // Seed hydrotests
+        var fakeHydrotests = new Faker<Hydrotest>();
+
+        Hydrotest SeededHydrotests(Observation observation)
+        {
+            return fakeHydrotests
+                .UseSeed(observation.Id)
+                .RuleFor(o => o.Id, _ => observation.Id)
+                .Generate();
+        }
+
+        var hydrotests = observations.Where(o => o.Type == ObservationType.Hydrotest).Select(observation => SeededHydrotests(observation)).ToList();
+
+        context.BulkInsert(observations, bulkConfig);
+        context.BulkInsert(waterIngresses, bulkConfig);
+        context.BulkInsert(hydrotests, bulkConfig);
+
+        // Seed hydrotest results
+        var hydrotestResult_ids = 13_000_000;
+        var hydrotestResultRange = Enumerable.Range(hydrotestResult_ids, 1000).ToList();
+        var fakeHydrotestResults = new Faker<HydrotestResult>()
+            .StrictMode(true)
+            .RuleFor(o => o.Id, f => hydrotestResult_ids++)
+            .RuleFor(o => o.ParameterId, f => f.PickRandom(hydrotestResultParameterIds))
+            .RuleFor(o => o.Parameter, _ => default!)
+            .RuleFor(o => o.Value, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.MinValue, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.MaxValue, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.HydrotestId, f => f.PickRandom(hydrotests.Select(h => h.Id)))
+            .RuleFor(o => o.Hydrotest, _ => default!)
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!);
+
+        HydrotestResult SeededHydrotestResults(int seed) => fakeHydrotestResults.UseSeed(seed).Generate();
+        context.BulkInsert(hydrotestResultRange.Select(SeededHydrotestResults).ToList(), bulkConfig);
+
+        // Seed groundwater level measurements
+        var fakeGroundwaterLevelMeasurements = new Faker<GroundwaterLevelMeasurement>()
+            .RuleFor(o => o.KindId, f => f.PickRandom(groundwaterLevelMeasurementKindIds))
+            .RuleFor(o => o.Kind, _ => default!)
+            .RuleFor(o => o.LevelM, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.LevelMasl, f => f.Random.Double(1, 5000));
+
+        GroundwaterLevelMeasurement SeededGroundwaterLevelMeasurements(Observation observation)
+        {
+            return fakeGroundwaterLevelMeasurements
+                .UseSeed(observation.Id)
+                .RuleFor(o => o.Id, _ => observation.Id)
+                .Generate();
+        }
+
+        var groundwaterLevelMeasurements = observations.Where(o => o.Type == ObservationType.GroundwaterLevelMeasurement).Select(observation => SeededGroundwaterLevelMeasurements(observation)).ToList();
+
+        context.BulkInsert(groundwaterLevelMeasurements, bulkConfig);
+
+        // Seed field measurements
+        var fakeFieldMeasurements = new Faker<FieldMeasurement>()
+            .RuleFor(o => o.SampleTypeId, f => f.PickRandom(fieldMeasurementSampleTypeIds))
+            .RuleFor(o => o.SampleType, _ => default!)
+            .RuleFor(o => o.ParameterId, f => f.PickRandom(fieldMeasurementParameterIds))
+            .RuleFor(o => o.Parameter, _ => default!)
+            .RuleFor(o => o.Value, f => f.Random.Double(1, 5000));
+
+        FieldMeasurement SeededFieldMeasurements(Observation observation)
+        {
+            return fakeFieldMeasurements
+                .UseSeed(observation.Id)
+                .RuleFor(o => o.Id, _ => observation.Id)
+                .Generate();
+        }
+
+        var fieldMeasurements = observations.Where(o => o.Type == ObservationType.FieldMeasurement).Select(observation => SeededFieldMeasurements(observation)).ToList();
+
+        context.BulkInsert(fieldMeasurements, bulkConfig);
 
         context.SaveChanges();
 

@@ -114,12 +114,17 @@ const Completion = props => {
       if (state.selected.id === 0) {
         var newCompletionList = state.completions.slice(0, -1);
         if (newCompletionList.length === 0) {
+<<<<<<< HEAD
           history.push(
             process.env.PUBLIC_URL + "/editor/" + boreholeId + "/completion",
           );
           setState({ index: 0, selected: null, completions: [] });
         } else {
           updateHistory(newCompletionList[newlySelectedTab].id);
+=======
+          setState({ index: 0, selected: null, completions: [] });
+        } else {
+>>>>>>> origin/migrate-observation-casing
           setState({
             index: newlySelectedTab,
             selected: newCompletionList[newlySelectedTab],
@@ -127,7 +132,10 @@ const Completion = props => {
           });
         }
       } else {
+<<<<<<< HEAD
         updateHistory(state.completions[newlySelectedTab].id);
+=======
+>>>>>>> origin/migrate-observation-casing
         setState({
           index: newlySelectedTab,
           selected: state.completions[newlySelectedTab],
@@ -238,6 +246,7 @@ const Completion = props => {
 
   return (
     <>
+<<<<<<< HEAD
       <Stack direction="column">
         <Stack
           direction="row"
@@ -275,51 +284,87 @@ const Completion = props => {
           )}
         </Stack>
         {state.completions?.length === 0 ? (
+=======
+      <Stack direction="column" flex="1">
+        <Stack flex="0 1 auto">
+>>>>>>> origin/migrate-observation-casing
           <Stack
-            alignItems="center"
-            justifyContent="center"
-            sx={{ flexGrow: 1 }}>
-            <Typography variant="fullPageMessage">
-              {t("msgCompletionEmpty")}
-            </Typography>
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center">
+            <CompletionTabs
+              value={state.index}
+              onChange={handleCompletionChanged}>
+              {state.completions?.length > 0 &&
+                state.completions.map((item, index) => {
+                  return (
+                    <CompletionTab
+                      data-cy={"completion-header-tab-" + index}
+                      label={
+                        item.name === null || item.name === ""
+                          ? t("common:np")
+                          : item.name
+                      }
+                      key={index}
+                    />
+                  );
+                })}
+            </CompletionTabs>
+            {isEditable && (
+              <Tooltip title={t("add")}>
+                <AddButton
+                  sx={{ marginRight: "5px" }}
+                  data-cy="add-completion-button"
+                  onClick={addNewCompletion}>
+                  {t("addCompletion")}
+                </AddButton>
+              </Tooltip>
+            )}
           </Stack>
-        ) : (
-          <>
-            {state.selected != null && (
-              <>
-                <CompletionBox>
-                  {editing ? (
-                    <CompletionHeaderInput
-                      completion={state.selected}
-                      editing={editing}
-                      cancelChanges={cancelChanges}
-                      saveCompletion={saveCompletion}
-                      newlySelectedTab={newlySelectedTab}
-                      switchTabs={continueSwitching => {
-                        switchTabs(continueSwitching);
-                      }}
-                    />
-                  ) : (
-                    <CompletionHeaderDisplay
-                      completion={state.selected}
-                      isEditable={isEditable}
-                      setEditing={setEditing}
-                      copyCompletion={copySelectedCompletion}
-                      deleteCompletion={deleteSelectedCompletion}
-                    />
-                  )}
-                </CompletionBox>
-
-                {state.selected.id > 0 && (
-                  <CompletionContent
+          {state.selected != null && (
+            <>
+              <CompletionBox sx={{ padding: "18px" }}>
+                {editing ? (
+                  <CompletionHeaderInput
+                    completion={state.selected}
+                    editing={editing}
+                    cancelChanges={cancelChanges}
+                    saveCompletion={saveCompletion}
+                    newlySelectedTab={newlySelectedTab}
+                    switchTabs={continueSwitching => {
+                      switchTabs(continueSwitching);
+                    }}
+                  />
+                ) : (
+                  <CompletionHeaderDisplay
                     completion={state.selected}
                     isEditable={isEditable}
+                    setEditing={setEditing}
+                    copyCompletion={copySelectedCompletion}
+                    deleteCompletion={deleteSelectedCompletion}
                   />
                 )}
-              </>
-            )}
-          </>
-        )}
+              </CompletionBox>
+            </>
+          )}
+        </Stack>
+        <Stack flex="1 0 0" marginTop="10px">
+          {state.selected?.id > 0 ? (
+            <CompletionContent
+              completion={state.selected}
+              isEditable={isEditable}
+            />
+          ) : (
+            <Stack
+              alignItems="center"
+              justifyContent="center"
+              sx={{ flexGrow: 1 }}>
+              <Typography variant="fullPageMessage">
+                {t("msgCompletionEmpty")}
+              </Typography>
+            </Stack>
+          )}
+        </Stack>
       </Stack>
       <Prompt
         open={showDeletePrompt}

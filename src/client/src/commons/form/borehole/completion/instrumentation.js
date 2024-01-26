@@ -1,156 +1,28 @@
-import React, { useState, useEffect, useMemo, createRef } from "react";
-import { useTranslation } from "react-i18next";
+import React from "react";
 import {
-  Box,
-  CircularProgress,
-  Grid,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { AddButton, CompletionCard, CompletionGrid } from "./styledComponents";
-import {
-  useInstrumentationMutations,
-  useInstrumentations,
+  getInstrumentation,
+  addInstrumentation,
+  updateInstrumentation,
+  deleteInstrumentation,
 } from "../../../../api/fetchApiV2";
+import { CompletionContentTab } from "./completionContentTab";
 import InstrumentationInput from "./instrumentationInput";
 import InstrumentationDisplay from "./instrumentationDisplay";
 
 const Instrumentation = ({ isEditable, completionId }) => {
-  const { data: instrumentations, isSuccess } =
-    useInstrumentations(completionId);
-  const { t } = useTranslation();
-  const {
-    add: { mutate: addInstrumentation },
-    update: { mutate: updateInstrumentation },
-    delete: { mutate: deleteInstrumentation },
-  } = useInstrumentationMutations();
-  const [selectedInstrumentation, setSelectedInstrumentation] = useState(null);
-  const [displayedInstrumentations, setDisplayedInstrumentations] = useState(
-    [],
-  );
-
-  useEffect(() => {
-    setDisplayedInstrumentations(instrumentations);
-  }, [instrumentations]);
-
-  // scroll to newly added item
-  const instrumentationRefs = useMemo(
-    () =>
-      Array(displayedInstrumentations?.length)
-        .fill(null)
-        .map(() => createRef(null)),
-    [displayedInstrumentations],
-  );
-
-  useEffect(() => {
-    if (displayedInstrumentations?.length > 0) {
-      const lastInstrumentationRef =
-        instrumentationRefs[displayedInstrumentations?.length - 1];
-      if (
-        displayedInstrumentations[displayedInstrumentations?.length - 1].id ===
-        0
-      )
-        lastInstrumentationRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-    }
-  }, [displayedInstrumentations, instrumentationRefs]);
-
   return (
-    <Stack sx={{ flexGrow: 1 }}>
-      <Box sx={{ mb: 2 }}>
-        <Stack direction="row" justifyContent="flex-end" alignItems="center">
-          {isEditable && (
-            <Tooltip title={t("add")}>
-              <AddButton
-                data-cy="add-instrumentation-button"
-                onClick={e => {
-                  e.stopPropagation();
-                  if (!selectedInstrumentation) {
-                    const tempInstrumentation = { id: 0 };
-                    // Check if instrumentations is iterable
-                    if (
-                      instrumentations &&
-                      Symbol.iterator in Object(instrumentations)
-                    ) {
-                      setDisplayedInstrumentations([
-                        ...instrumentations,
-                        tempInstrumentation,
-                      ]);
-                    } else {
-                      setDisplayedInstrumentations([tempInstrumentation]);
-                    }
-                    setSelectedInstrumentation(tempInstrumentation);
-                  }
-                }}>
-                {t("addInstrument")}
-              </AddButton>
-            </Tooltip>
-          )}
-        </Stack>
-      </Box>
-      <CompletionGrid>
-        {displayedInstrumentations?.length > 0 ? (
-          displayedInstrumentations
-            ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
-            .map((instrumentation, index) => {
-              const isSelected =
-                selectedInstrumentation?.id === instrumentation.id;
-              const isTempInstrumentation = instrumentation.id === 0;
-              return (
-                <Grid
-                  item
-                  md={12}
-                  lg={12}
-                  xl={6}
-                  key={instrumentation.id}
-                  ref={instrumentationRefs[index]}>
-                  {isSuccess ? (
-                    <CompletionCard key={instrumentation.id}>
-                      {isEditable && isSelected ? (
-                        <InstrumentationInput
-                          instrumentation={instrumentation}
-                          setSelectedInstrumentation={
-                            setSelectedInstrumentation
-                          }
-                          completionId={completionId}
-                          updateInstrumentation={updateInstrumentation}
-                          addInstrumentation={addInstrumentation}
-                        />
-                      ) : (
-                        !isTempInstrumentation && (
-                          <InstrumentationDisplay
-                            instrumentation={instrumentation}
-                            selectedInstrumentation={selectedInstrumentation}
-                            setSelectedInstrumentation={
-                              setSelectedInstrumentation
-                            }
-                            isEditable={isEditable}
-                            deleteInstrumentation={deleteInstrumentation}
-                          />
-                        )
-                      )}
-                    </CompletionCard>
-                  ) : (
-                    <CircularProgress />
-                  )}
-                </Grid>
-              );
-            })
-        ) : (
-          <Stack
-            alignItems="center"
-            justifyContent="center"
-            sx={{ flexGrow: 1 }}>
-            <Typography variant="fullPageMessage">
-              {t("msgInstrumentsEmpty")}
-            </Typography>
-          </Stack>
-        )}
-      </CompletionGrid>
-    </Stack>
+    <CompletionContentTab
+      isEditable={isEditable}
+      completionId={completionId}
+      getData={getInstrumentation}
+      addData={addInstrumentation}
+      updateData={updateInstrumentation}
+      deleteData={deleteInstrumentation}
+      addLabel="addInstrument"
+      emptyLabel="msgInstrumentsEmpty"
+      renderInput={props => <InstrumentationInput {...props} />}
+      renderDisplay={props => <InstrumentationDisplay {...props} />}
+    />
   );
 };
 export default React.memo(Instrumentation);

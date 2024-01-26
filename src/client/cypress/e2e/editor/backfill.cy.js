@@ -48,7 +48,7 @@ describe("Backfill crud tests", () => {
     cy.wait("@backfill_GET");
 
     // add new backfill card
-    cy.get('[data-cy="add-backfill-button"]').click({ force: true });
+    cy.get('[data-cy="addFilling-button"]').click({ force: true });
     cy.wait("@codelist_GET");
 
     // fill out form

@@ -200,6 +200,7 @@ const ProfileAttributeList = props => {
                       _.isNil(layer?.[item.value]) ? null : layer[item.value]
                     }
                     title={<TranslationText id={item.label} />}
+                    isEditable={true}
                   />
                 </Styled.AttributesItem>
               )}

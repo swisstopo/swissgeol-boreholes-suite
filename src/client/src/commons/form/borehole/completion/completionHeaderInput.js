@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack, MenuItem, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -10,7 +10,7 @@ import {
   FormInput,
   FormSelect,
   FormCheckbox,
-} from "../../../../components/form";
+} from "../../../../components/form/form";
 import Prompt from "../../../prompt/prompt";
 
 const CompletionHeaderInput = props => {
@@ -22,15 +22,7 @@ const CompletionHeaderInput = props => {
     switchTabs,
   } = props;
   const domains = useDomains();
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState,
-    getValues,
-    trigger,
-    reset,
-  } = useForm();
+  const formMethods = useForm({ mode: "all" });
   const { t, i18n } = useTranslation();
 
   const [selectedCompletion, setSelectedCompletion] = useState({
@@ -40,8 +32,9 @@ const CompletionHeaderInput = props => {
 
   // trigger form validation on mount
   useEffect(() => {
-    trigger();
-  }, [trigger]);
+    formMethods.trigger();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formMethods.trigger]);
 
   useEffect(() => {
     setSelectedCompletion(completion);
@@ -49,7 +42,7 @@ const CompletionHeaderInput = props => {
 
   useEffect(() => {
     if (newlySelectedTab !== null) {
-      if (isDirty()) {
+      if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
         setShowSavePrompt(true);
       } else {
         switchTabs(true);
@@ -57,22 +50,6 @@ const CompletionHeaderInput = props => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newlySelectedTab]);
-
-  const equals = (a, b) => {
-    return a === b || (a === "" && b === null);
-  };
-
-  const isDirty = () => {
-    const values = getValues();
-    var dirty = !(
-      equals(values.name, completion.name) &&
-      equals(values.kindId, completion.kindId) &&
-      equals(values.abandonDate, completion.abandonDate) &&
-      equals(values.notes, completion.notes) &&
-      (completion.isPrimary || values.isPrimary === completion.isPrimary)
-    );
-    return dirty;
-  };
 
   const submitForm = data => {
     if (data?.abandonDate === "") {
@@ -86,109 +63,99 @@ const CompletionHeaderInput = props => {
 
   return (
     <>
-      <form onSubmit={handleSubmit(submitForm)}>
-        <Stack direction="column">
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            flexWrap="wrap">
-            <FormInput
-              fieldName="name"
-              label="name"
-              required={true}
-              value={selectedCompletion?.name}
-              formState={formState}
-              register={register}
-              trigger={trigger}
-              sx={{ flex: "1 1 180px" }}
-            />
+      <FormProvider {...formMethods}>
+        <form onSubmit={formMethods.handleSubmit(submitForm)}>
+          <Stack direction="column">
             <Stack
               direction="row"
               justifyContent="space-between"
               alignItems="center"
-              flex={"0 0 400px"}>
-              <FormSelect
-                fieldName="kindId"
-                label="completionKind"
-                selected={selectedCompletion?.kindId}
+              flexWrap="wrap">
+              <FormInput
+                fieldName="name"
+                label="name"
                 required={true}
-                formState={formState}
-                control={control}
-                register={register}
-                trigger={trigger}
-                sx={{ marginRight: "0" }}>
-                {domains?.data
-                  ?.filter(d => d.schema === "completion_kind")
-                  .sort((a, b) => a.order - b.order)
-                  .map(d => (
-                    <MenuItem key={d.id} value={d.id}>
-                      {d[i18n.language]}
-                    </MenuItem>
-                  ))}
-              </FormSelect>
-              <FormCheckbox
-                fieldName="isPrimary"
-                label="mainCompletion"
-                checked={completion.isPrimary}
-                disabled={completion.isPrimary}
-                register={register}
-                trigger={trigger}
-                sx={{ marginRight: "0" }}
+                value={selectedCompletion?.name}
+                sx={{ flex: "1 1 180px" }}
+              />
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                flex={"0 0 400px"}>
+                <FormSelect
+                  fieldName="kindId"
+                  label="completionKind"
+                  selected={selectedCompletion?.kindId}
+                  required={true}>
+                  {domains?.data
+                    ?.filter(d => d.schema === "completion_kind")
+                    .sort((a, b) => a.order - b.order)
+                    .map(d => (
+                      <MenuItem key={d.id} value={d.id}>
+                        {d[i18n.language]}
+                      </MenuItem>
+                    ))}
+                </FormSelect>
+                <FormCheckbox
+                  fieldName="isPrimary"
+                  label="mainCompletion"
+                  checked={completion.isPrimary}
+                  disabled={completion.isPrimary}
+                  sx={{ marginRight: "0" }}
+                />
+              </Stack>
+            </Stack>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              flexWrap="wrap">
+              <FormInput
+                fieldName="notes"
+                label="notes"
+                multiline={true}
+                value={selectedCompletion?.notes}
+                sx={{ flex: "1 1 180px" }}
+              />
+              <FormInput
+                fieldName="abandonDate"
+                label="dateAbandonmentCasing"
+                type="date"
+                value={selectedCompletion?.abandonDate}
+                sx={{ marginRight: "0", flex: "0 0 400px" }}
               />
             </Stack>
-          </Stack>
-          <Stack direction="row" justifyContent="space-between" flexWrap="wrap">
-            <FormInput
-              fieldName="notes"
-              label="notes"
-              multiline={true}
-              rows={1}
-              value={selectedCompletion?.notes}
-              formState={formState}
-              register={register}
-              trigger={trigger}
-              sx={{ flex: "1 1 180px" }}
-            />
-            <FormInput
-              fieldName="abandonDate"
-              label="dateAbandonmentCasing"
-              type="date"
-              value={selectedCompletion?.abandonDate}
-              formState={formState}
-              register={register}
-              trigger={trigger}
-              sx={{ marginRight: "0", flex: "0 0 400px" }}
-            />
-          </Stack>
-          <Stack direction="row" sx={{ marginLeft: "auto", paddingTop: "5px" }}>
-            <Tooltip title={t("cancel")}>
-              <IconButtonWithMargin
-                data-cy="cancel-button"
-                onClick={e => {
-                  e.stopPropagation();
-                  reset(selectedCompletion);
-                  cancelChanges();
-                }}>
-                <CloseIcon />
-              </IconButtonWithMargin>
-            </Tooltip>
-            <Tooltip title={t("save")}>
-              <span>
+            <Stack
+              direction="row"
+              sx={{ marginLeft: "auto", paddingTop: "5px" }}>
+              <Tooltip title={t("cancel")}>
                 <IconButtonWithMargin
-                  disabled={!formState.isValid}
-                  data-cy="save-button"
+                  data-cy="cancel-button"
                   onClick={e => {
                     e.stopPropagation();
-                    handleSubmit(submitForm)();
+                    formMethods.reset(selectedCompletion);
+                    cancelChanges();
                   }}>
-                  <SaveIcon />
+                  <CloseIcon />
                 </IconButtonWithMargin>
-              </span>
-            </Tooltip>
+              </Tooltip>
+              <Tooltip title={t("save")}>
+                <span>
+                  <IconButtonWithMargin
+                    disabled={!formMethods.formState.isValid}
+                    data-cy="save-button"
+                    onClick={e => {
+                      e.stopPropagation();
+                      formMethods.handleSubmit(submitForm)();
+                    }}>
+                    <SaveIcon />
+                  </IconButtonWithMargin>
+                </span>
+              </Tooltip>
+            </Stack>
           </Stack>
-        </Stack>
-      </form>
+        </form>
+      </FormProvider>
       <Prompt
         open={showSavePrompt}
         setOpen={setShowSavePrompt}
@@ -211,7 +178,7 @@ const CompletionHeaderInput = props => {
           {
             label: "save",
             action: () => {
-              handleSubmit(submitForm)();
+              formMethods.handleSubmit(submitForm)();
             },
           },
         ]}

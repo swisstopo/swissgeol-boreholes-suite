@@ -340,14 +340,16 @@ class BoreholeForm extends React.Component {
                   size={size}
                   borehole={borehole}
                   updateChange={this.updateChange}
-                  updateNumber={this.updateNumber}></BoreholeGeneralSegment>
+                  updateNumber={this.updateNumber}
+                  isEditable={isEditable}></BoreholeGeneralSegment>
                 <BoreholeDetailSegment
                   size={size}
                   borehole={borehole}
                   updateChange={this.updateChange}
                   updateNumber={this.updateNumber}
                   t={t}
-                  debug={this.props.developer.debug}></BoreholeDetailSegment>
+                  debug={this.props.developer.debug}
+                  isEditable={isEditable}></BoreholeDetailSegment>
               </div>
             )}
           />
