@@ -180,10 +180,9 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         try
         {
             // Check if associated borehole is locked
-            var subjectId = HttpContext.GetUserSubjectId();
-            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId,  subjectId).ConfigureAwait(false))
+            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user.");
+                return Problem("The borehole is locked by another user or you are missing permissions.");
             }
 
             // If the stratigraphy to create is the first stratigraphy of a borehole,
@@ -193,10 +192,8 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
                 .ConfigureAwait(false);
 
             entity.IsPrimary = !hasBoreholeExistingStratigraphy;
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return Unauthorized("You are not authorized to create a stratigraphy for this borehole.");
+
+            return await base.CreateAsync(entity).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -204,8 +201,6 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             Logger.LogError(ex, message);
             return Problem(message);
         }
-
-        return await base.CreateAsync(entity).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -226,15 +221,32 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         try
         {
             // Check if associated borehole is locked
-            var subjectId = HttpContext.GetUserSubjectId();
-            if (await boreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, subjectId).ConfigureAwait(false))
+            if (await boreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user.");
+                return Problem("The borehole is locked by another user or you are missing permissions.");
             }
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return Unauthorized("You are not authorized to add a bedrock layer to this stratigraphy.");
+
+            // Check if associated borehole has a TopBedrock value
+            var borehole = await Context.Boreholes.FindAsync(stratigraphy.BoreholeId).ConfigureAwait(false);
+            if (!borehole.TopBedrock.HasValue)
+            {
+                return Problem("Bedrock not yet defined.");
+            }
+
+            // Add bedrock layer
+            var bedrockLayer = new Layer
+            {
+                StratigraphyId = stratigraphy.Id,
+                FromDepth = borehole.TopBedrock.Value,
+                LithologyTopBedrockId = borehole.LithologyTopBedrockId,
+                LithostratigraphyId = borehole.LithostratigraphyId,
+                IsLast = false,
+            };
+
+            await Context.Layers.AddAsync(bedrockLayer).ConfigureAwait(false);
+            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+
+            return Ok(bedrockLayer.Id);
         }
         catch (Exception ex)
         {
@@ -242,28 +254,6 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             Logger.LogError(ex, message);
             return Problem(message);
         }
-
-        // Check if associated borehole has a TopBedrock value
-        var borehole = await Context.Boreholes.FindAsync(stratigraphy.BoreholeId).ConfigureAwait(false);
-        if (!borehole.TopBedrock.HasValue)
-        {
-            return Problem("Bedrock not yet defined.");
-        }
-
-        // Add bedrock layer
-        var bedrockLayer = new Layer
-        {
-            StratigraphyId = stratigraphy.Id,
-            FromDepth = borehole.TopBedrock.Value,
-            LithologyTopBedrockId = borehole.LithologyTopBedrockId,
-            LithostratigraphyId = borehole.LithostratigraphyId,
-            IsLast = false,
-        };
-
-        await Context.Layers.AddAsync(bedrockLayer).ConfigureAwait(false);
-        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
-
-        return Ok(bedrockLayer.Id);
     }
 
     /// <inheritdoc />
@@ -273,15 +263,33 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         try
         {
             // Check if associated borehole is locked
-            var userName = HttpContext.GetUserSubjectId();
-            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, userName).ConfigureAwait(false))
+            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user.");
+                return Problem("The borehole is locked by another user or you are missing permissions.");
             }
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return Unauthorized("You are not authorized to edit to this stratigraphy.");
+
+            var editResult = await base.EditAsync(entity).ConfigureAwait(false);
+            if (editResult.Result is not OkObjectResult) return editResult;
+
+            // If the stratigraphy to edit is the primary stratigraphy,
+            // then reset any other primary stratigraphies of the borehole.
+            if (entity.IsPrimary.GetValueOrDefault())
+            {
+                var otherPrimaryStratigraphies = await Context.Stratigraphies
+                    .Where(s => s.BoreholeId == entity.BoreholeId && s.IsPrimary == true && s.Id != entity.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+
+                foreach (var other in otherPrimaryStratigraphies)
+                {
+                    other.IsPrimary = false;
+                    Context.Update(other);
+                }
+
+                await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            }
+
+            return editResult;
         }
         catch (Exception ex)
         {
@@ -289,28 +297,5 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             Logger.LogError(ex, message);
             return Problem(message);
         }
-
-        var editResult = await base.EditAsync(entity).ConfigureAwait(false);
-        if (editResult.Result is not OkObjectResult) return editResult;
-
-        // If the stratigraphy to edit is the primary stratigraphy,
-        // then reset any other primary stratigraphies of the borehole.
-        if (entity.IsPrimary.GetValueOrDefault())
-        {
-            var otherPrimaryStratigraphies = await Context.Stratigraphies
-                .Where(s => s.BoreholeId == entity.BoreholeId && s.IsPrimary == true && s.Id != entity.Id)
-                .ToListAsync()
-                .ConfigureAwait(false);
-
-            foreach (var other in otherPrimaryStratigraphies)
-            {
-                other.IsPrimary = false;
-                Context.Update(other);
-            }
-
-            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
-        }
-
-        return editResult;
     }
 }
