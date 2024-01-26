@@ -499,7 +499,7 @@ class MenuEditorForm extends React.Component {
                 : null,
             }}>
             <img
-              alt="casing"
+              alt="completion"
               src={process.env.PUBLIC_URL + "/img/Completion.png"}
               style={{
                 height: "1.5em",

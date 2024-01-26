@@ -11,7 +11,6 @@ import InfoCheckBox from "./components/infoCheckBox";
 import { useTranslation } from "react-i18next";
 import { getData, sendProfile } from "./api";
 import _ from "lodash";
-import useCasingList from "../../hooks/useCasingList";
 import { AlertContext } from "../../../../alert/alertContext";
 
 const ProfileInfo = props => {
@@ -21,7 +20,6 @@ const ProfileInfo = props => {
     onUpdated,
     attribute,
     kind,
-    boreholeID,
   } = props.data;
 
   const mounted = useRef(false);
@@ -34,16 +32,12 @@ const ProfileInfo = props => {
       id: null,
       kind: null,
       name: null,
-      fill_casing: null,
       primary: false,
       date: null,
       date_abd: null,
       notes: null,
-      fill_name: null,
     },
   });
-  const { casing } = useCasingList(boreholeID);
-
   const setData = useCallback(id => {
     getData(id).then(data => {
       if (mounted.current) setState({ profileInfo: data });
@@ -107,7 +101,6 @@ const ProfileInfo = props => {
             attribute,
             updateChange,
             profileInfo: state.profileInfo,
-            casing,
           }}
         />
       )}
