@@ -8,11 +8,11 @@ import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 
 const BackfillInput = ({
-  backfill,
-  setSelectedBackfill,
+  item,
+  setSelected,
   completionId,
-  addBackfill,
-  updateBackfill,
+  addData,
+  updateData,
 }) => {
   const domains = useDomains();
   const { t, i18n } = useTranslation();
@@ -27,7 +27,7 @@ const BackfillInput = ({
   const closeFormIfCompleted = () => {
     if (formMethods.formState.isValid) {
       formMethods.handleSubmit(submitForm)();
-      setSelectedBackfill(null);
+      setSelected(null);
     }
   };
 
@@ -38,13 +38,13 @@ const BackfillInput = ({
 
   const submitForm = data => {
     data = prepareFormDataForSubmit(data);
-    if (backfill.id === 0) {
-      addBackfill({
+    if (item.id === 0) {
+      addData({
         ...data,
       });
     } else {
-      updateBackfill({
-        ...backfill,
+      updateData({
+        ...item,
         ...data,
       });
     }
@@ -59,14 +59,14 @@ const BackfillInput = ({
               <FormInput
                 fieldName="fromDepth"
                 label="fromdepth"
-                value={backfill.fromDepth}
+                value={item.fromDepth}
                 type="number"
                 required={true}
               />
               <FormInput
                 fieldName="toDepth"
                 label="todepth"
-                value={backfill.toDepth}
+                value={item.toDepth}
                 type="number"
                 required={true}
               />
@@ -75,7 +75,7 @@ const BackfillInput = ({
               <FormSelect
                 fieldName="kindId"
                 label="kindFilling"
-                selected={backfill.kindId}
+                selected={item.kindId}
                 required={true}>
                 {domains?.data
                   ?.filter(
@@ -91,7 +91,7 @@ const BackfillInput = ({
               <FormSelect
                 fieldName="materialId"
                 label="materialFilling"
-                selected={backfill.materialId}
+                selected={item.materialId}
                 required={true}>
                 {domains?.data
                   ?.filter(
@@ -112,7 +112,7 @@ const BackfillInput = ({
                 fieldName="notes"
                 label="notes"
                 multiline={true}
-                value={backfill.notes}
+                value={item.notes}
               />
             </Stack>
           </Stack>

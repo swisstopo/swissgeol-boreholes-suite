@@ -8,11 +8,11 @@ import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 
 const CasingInput = ({
-  casing,
-  setSelectedCasing,
+  item,
+  setSelected,
   completionId,
-  addCasing,
-  updateCasing,
+  addData,
+  updateData,
 }) => {
   const domains = useDomains();
   const { t, i18n } = useTranslation();
@@ -27,7 +27,7 @@ const CasingInput = ({
   const closeFormIfCompleted = () => {
     if (formMethods.formState.isValid) {
       formMethods.handleSubmit(submitForm)();
-      setSelectedCasing(null);
+      setSelected(null);
     }
   };
 
@@ -44,13 +44,13 @@ const CasingInput = ({
 
   const submitForm = data => {
     data = prepareFormDataForSubmit(data);
-    if (casing.id === 0) {
-      addCasing({
+    if (item.id === 0) {
+      addData({
         ...data,
       });
     } else {
-      updateCasing({
-        ...casing,
+      updateData({
+        ...item,
         ...data,
       });
     }
@@ -64,21 +64,21 @@ const CasingInput = ({
             <FormInput
               fieldName="name"
               label="casingId"
-              value={casing.name}
+              value={item.name}
               required={true}
             />
             <Stack direction="row">
               <FormInput
                 fieldName="fromDepth"
                 label="fromdepth"
-                value={casing.fromDepth}
+                value={item.fromDepth}
                 type="number"
                 required={true}
               />
               <FormInput
                 fieldName="toDepth"
                 label="todepth"
-                value={casing.toDepth}
+                value={item.toDepth}
                 type="number"
                 required={true}
               />
@@ -87,7 +87,7 @@ const CasingInput = ({
               <FormSelect
                 fieldName="kindId"
                 label="kindCasingLayer"
-                selected={casing.kindId}
+                selected={item.kindId}
                 required={true}>
                 {domains?.data
                   ?.filter(
@@ -103,7 +103,7 @@ const CasingInput = ({
               <FormSelect
                 fieldName="materialId"
                 label="materialCasingLayer"
-                selected={casing.materialId}
+                selected={item.materialId}
                 required={true}>
                 {domains?.data
                   ?.filter(
@@ -121,14 +121,14 @@ const CasingInput = ({
               <FormInput
                 fieldName="dateStart"
                 label="dateSpudCasing"
-                value={casing.dateStart}
+                value={item.dateStart}
                 type="date"
                 required={true}
               />
               <FormInput
                 fieldName="dateFinish"
                 label="dateFinishCasing"
-                value={casing.dateFinish}
+                value={item.dateFinish}
                 type="date"
                 required={true}
               />
@@ -137,14 +137,14 @@ const CasingInput = ({
               <FormInput
                 fieldName="innerDiameter"
                 label="casing_inner_diameter"
-                value={casing.innerDiameter}
+                value={item.innerDiameter}
                 type="number"
                 required={true}
               />
               <FormInput
                 fieldName="outerDiameter"
                 label="casing_outer_diameter"
-                value={casing.outerDiameter}
+                value={item.outerDiameter}
                 type="number"
                 required={true}
               />
@@ -154,7 +154,7 @@ const CasingInput = ({
                 fieldName="notes"
                 label="notes"
                 multiline={true}
-                value={casing.notes}
+                value={item.notes}
               />
             </Stack>
           </Stack>
