@@ -67,7 +67,7 @@ describe("Tests for the wateringress editor.", () => {
     cy.get("[data-cy=completion-content-header-tab-Casing]").click();
     cy.wait("@casing_GET");
 
-    cy.get('[data-cy="add-casing-button"]').click({ force: true });
+    cy.get('[data-cy="addCasing-button"]').click({ force: true });
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1");
