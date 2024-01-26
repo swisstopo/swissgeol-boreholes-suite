@@ -22,7 +22,8 @@ public class LegacyApiAuthenticationMiddleware(ILogger<LegacyApiAuthenticationMi
 
                 await next.Invoke(context).ConfigureAwait(false);
 
-                logger.LogInformation("Authorized user with subject_id <{SubjectId}> for legacy api accessing route <{Route}>", subjectId.Value, context.Request.Path);
+                var route = context.Request.Path.ToString().ReplaceLineEndings("");
+                logger.LogInformation("Authorized user with subject_id <{SubjectId}> for legacy api accessing route <{Route}>", subjectId.Value, route);
                 return;
             }
         }
