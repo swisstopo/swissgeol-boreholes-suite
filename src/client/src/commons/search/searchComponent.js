@@ -11,9 +11,6 @@ import TranslationText from "../form/translationText";
 import WorkgroupRadioGroup from "../form/workgroup/radio";
 import * as Styled from "./editor/searchEditorStyles.js";
 import ListFilter from "./components/listFilter";
-import { casingSearchData } from "./data/casingSearchData";
-import { InstrumentSearchData } from "./data/InstrumentSearchData";
-import { fillingSearchData } from "./data/fillingSearchData";
 import { LocationSearchData } from "./data/LocationSearchData";
 import { boreholeSearchData } from "./data/boreholeSearchData";
 import { lithologySearchData } from "./data/lithologySearchData";
@@ -42,26 +39,8 @@ class SearchComponent extends React.Component {
           translationId: "lithology",
           isSelected: false,
         },
-        // {
-        //   id: 3,
-        //   name: "casing",
-        //   translationId: "casing",
-        //   isSelected: false,
-        // },
-        // {
-        //   id: 4,
-        //   name: "instrument",
-        //   translationId: "instrument",
-        //   isSelected: false,
-        // },
-        // {
-        //   id: 5,
-        //   name: "filling",
-        //   translationId: "filling",
-        //   isSelected: false,
-        // },
         {
-          id: 6,
+          id: 3,
           name: "workgroup",
           translationId: "workgroup",
           isSelected: false,
@@ -108,21 +87,6 @@ class SearchComponent extends React.Component {
       this.state?.searchList?.[2]?.isSelected
     ) {
       selectedData = lithologySearchData;
-    } else if (
-      this.state?.searchList?.[3]?.name === "casing" &&
-      this.state?.searchList?.[3]?.isSelected
-    ) {
-      selectedData = casingSearchData;
-    } else if (
-      this.state?.searchList?.[4]?.name === "instrument" &&
-      this.state?.searchList?.[4]?.isSelected
-    ) {
-      selectedData = InstrumentSearchData;
-    } else if (
-      this.state?.searchList?.[5]?.name === "filling" &&
-      this.state?.searchList?.[5]?.isSelected
-    ) {
-      selectedData = fillingSearchData;
     } else {
       selectedData = null;
     }

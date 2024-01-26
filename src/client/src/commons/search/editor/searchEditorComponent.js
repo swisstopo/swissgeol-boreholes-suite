@@ -9,9 +9,6 @@ import WorkgroupRadioGroup from "../../form/workgroup/radio";
 import * as Styled from "./searchEditorStyles";
 import ListFilter from "../components/listFilter";
 import StatusFilter from "../components/statusFilter";
-import { casingSearchData } from "../data/casingSearchData";
-import { InstrumentSearchData } from "../data/InstrumentSearchData";
-import { fillingSearchData } from "../data/fillingSearchData";
 import { LocationSearchData } from "../data/LocationSearchData";
 import { boreholeSearchData } from "../data/boreholeSearchData";
 import { lithologySearchData } from "../data/lithologySearchData";
@@ -69,26 +66,8 @@ class SearchEditorComponent extends React.Component {
           translationId: "lithostratigraphy",
           isSelected: false,
         },
-        // {
-        //   id: 7,
-        //   name: "casing",
-        //   translationId: "casing",
-        //   isSelected: false,
-        // },
-        // {
-        //   id: 8,
-        //   name: "instrument",
-        //   translationId: "instrument",
-        //   isSelected: false,
-        // },
-        // {
-        //   id: 9,
-        //   name: "filling",
-        //   translationId: "filling",
-        //   isSelected: false,
-        // },
         {
-          id: 10,
+          id: 7,
           name: "registration",
           translationId: "registration",
           isSelectedd: false,
@@ -144,23 +123,8 @@ class SearchEditorComponent extends React.Component {
     ) {
       selectedData = lithostratigraphySearchData;
     } else if (
-      this.state?.searchList?.[7]?.name === "casing" &&
+      this.state?.searchList?.[7]?.name === "registration" &&
       this.state?.searchList?.[7]?.isSelected
-    ) {
-      selectedData = casingSearchData;
-    } else if (
-      this.state?.searchList?.[8]?.name === "instrument" &&
-      this.state?.searchList?.[8]?.isSelected
-    ) {
-      selectedData = InstrumentSearchData;
-    } else if (
-      this.state?.searchList?.[9]?.name === "filling" &&
-      this.state?.searchList?.[9]?.isSelected
-    ) {
-      selectedData = fillingSearchData;
-    } else if (
-      this.state?.searchList?.[10]?.name === "registration" &&
-      this.state?.searchList?.[10]?.isSelected
     ) {
       selectedData = registrationSearchData;
     } else {
