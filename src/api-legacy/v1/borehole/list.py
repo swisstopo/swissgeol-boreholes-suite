@@ -603,10 +603,7 @@ class ListBorehole(Action):
                 INNER JOIN (
                     SELECT DISTINCT
                         id_bho_fk,
-                        name_sty,
-                        casng_date_abd_sty,
-                        stratigraphy.casng_id,
-                        instr_kind_id_cli
+                        name_sty
 
                     FROM
                         bdms.stratigraphy

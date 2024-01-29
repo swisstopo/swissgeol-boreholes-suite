@@ -102,15 +102,6 @@ class GetProfile(Action):
         elif kind == 3001:
             sql = GetGeotechnicalProfile.sql
 
-        elif kind == 3002:
-            sql = GetCasingProfile.sql
-
-        elif kind == 3003:
-            sql = GetInstrumentsProfile.sql
-
-        elif kind == 3004:
-            sql = GetFillingProfile.sql
-
         rec = await self.conn.fetchrow(f"""
             SELECT
                 row_to_json(t)
@@ -205,87 +196,6 @@ class GetGeologyProfile(Action):
 class GetGeotechnicalProfile(Action):
 
     sql = GetProfile.sql
-
-class GetCasingProfile(Action):
-
-    sql = """
-        SELECT
-            (
-                select row_to_json(t)
-                FROM (
-                    SELECT
-                        id_bho as id
-                ) t
-            ) as borehole,
-            id_sty as id,
-            stratigraphy.kind_id_cli as kind,
-            COALESCE(name_sty, '') as name,
-            primary_sty as primary,
-            to_char(
-                casng_date_abd_sty,
-                'YYYY-MM-DD'
-            ) as date_abd,
-            notes_sty as notes,
-            to_char(
-                update_sty,
-                'YYYY-MM-DD'
-            ) as updated,
-            to_char(
-                creation_sty,
-                'YYYY-MM-DD'
-            ) as created
-
-        FROM
-            bdms.stratigraphy
-
-        INNER JOIN bdms.borehole
-            ON stratigraphy.id_bho_fk = id_bho
-
-        INNER JOIN (
-            SELECT
-                id_bho_fk,
-                array_agg(
-                    json_build_object(
-                        'workflow', id_wkf,
-                        'role', name_rol,
-                        'username', username,
-                        'started', started,
-                        'finished', finished
-                    )
-                ) as status
-            FROM (
-                SELECT
-                    id_bho_fk,
-                    name_rol,
-                    id_wkf,
-                    username,
-                    started_wkf as started,
-                    finished_wkf as finished
-                FROM
-                    bdms.workflow,
-                    bdms.roles,
-                    bdms.users
-                WHERE
-                    id_rol = id_rol_fk
-                AND
-                    id_usr = id_usr_fk
-                ORDER BY
-                    id_bho_fk asc, id_wkf asc
-            ) t
-            GROUP BY
-                id_bho_fk
-        ) as v
-        ON
-            v.id_bho_fk = id_bho
-    """
-
-
-class GetInstrumentsProfile(Action):
-
-    sql = GetProfile.sql
-
-
-class GetFillingProfile(Action):
 
     sql = """
         SELECT

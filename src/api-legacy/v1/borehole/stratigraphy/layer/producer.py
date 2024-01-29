@@ -2,7 +2,6 @@
 from bms.v1.handlers import Producer
 from bms.v1.borehole.stratigraphy.layer import (
     CreateLayer,
-    CreateInstrument,
     PatchLayer,
     DeleteLayer,
     GapLayer
@@ -15,7 +14,6 @@ class LayerProducerHandler(Producer):
 
         if action in [
             'CREATE',
-            'CREATE_INSTRUMENT',
             'DELETE',
             'GAP',
             'PATCH'
@@ -28,7 +26,7 @@ class LayerProducerHandler(Producer):
 
                     # Lock check
                     if action in [
-                        'CREATE', 'CREATE_INSTRUMENT'
+                        'CREATE',
                     ]:
                         sql = """
                             SELECT
@@ -63,10 +61,6 @@ class LayerProducerHandler(Producer):
 
                     if action == 'CREATE':
                         exe = CreateLayer(conn)
-                        request['user_id'] = self.user['id']
-
-                    elif action == 'CREATE_INSTRUMENT':
-                        exe = CreateInstrument(conn)
                         request['user_id'] = self.user['id']
 
                     elif action == 'DELETE':
