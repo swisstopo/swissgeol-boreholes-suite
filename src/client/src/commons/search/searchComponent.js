@@ -219,8 +219,8 @@ class SearchComponent extends React.Component {
           </Fragment>
         ))}
 
-        {this.state?.searchList?.[6]?.name === "workgroup" &&
-          this.state?.searchList?.[6]?.isSelected && (
+        {this.state?.searchList?.[3]?.name === "workgroup" &&
+          this.state?.searchList?.[3]?.isSelected && (
             <WorkgroupRadioGroup
               filter={search.filter.workgroup}
               onChange={workgroup => {
