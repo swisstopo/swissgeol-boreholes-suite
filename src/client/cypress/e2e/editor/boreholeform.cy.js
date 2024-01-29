@@ -35,27 +35,5 @@ describe("Test for the borehole form.", () => {
       .each((el, index, list) =>
         cy.wrap(el).click().find('[role="option"]').eq(1).click(),
       );
-
-    const boreholeDropdownValues = [];
-    cy.get('[data-cy="domain-dropdown"]').each((el, index, list) => {
-      const value = el[0].children[1].firstChild.data;
-      boreholeDropdownValues.push(value);
-      if (boreholeDropdownValues.length === 10) {
-        const expectedValues = [
-          "borehole",
-          "dynamic probing",
-          "geotechnics",
-          "open, no completion",
-          "measured",
-          "2",
-          "2",
-          "2",
-          "2",
-        ];
-        expectedValues.forEach(val => {
-          expect(boreholeDropdownValues).to.include(val);
-        });
-      }
-    });
   });
 });

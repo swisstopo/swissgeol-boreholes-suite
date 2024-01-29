@@ -119,9 +119,6 @@ class GetLayer(Action):
         if kind == 3000:
             sql = GetGeologyLayer.sql
 
-        elif kind == 3001:
-            sql = GetGeotechnicalLayer.sql
-
         rec = await self.conn.fetchrow(f"""
             SELECT row_to_json(t)
             FROM (
@@ -348,96 +345,4 @@ class GetGeologyLayer(Action):
         ) dbr
         ON dbr.id_lay_fk = id_lay
 
-    """
-
-class GetGeotechnicalLayer(Action):
-
-    sql = GetLayer.sql
-
-    sql = """
-        SELECT
-            id_lay AS id,
-            stratigraphy.id_sty AS stratigraphy,
-            (
-                select row_to_json(t)
-                FROM (
-                    SELECT
-                        creator.id_usr as id,
-                        creator.username as username,
-                        to_char(
-                            creation_lay,
-                            'YYYY-MM-DD"T"HH24:MI:SSOF'
-                        ) as date
-                ) t
-            ) as creator,
-            (
-                select row_to_json(t)
-                FROM (
-                    SELECT
-                        updater.id_usr as id,
-                        updater.username as username,
-                        to_char(
-                            update_lay,
-                            'YYYY-MM-DD"T"HH24:MI:SSOF'
-                        ) as date
-                ) t
-            ) as updater,
-            depth_from_lay AS depth_from,
-            depth_to_lay AS depth_to,
-            stratigraphy.kind_id_cli as kind,
-            layer.fill_material_id_cli as fill_material,
-            layer.fill_kind_id_cli as fill_kind,
-            layer.notes_lay as notes
-
-        FROM
-            bdms.layer
-
-        INNER JOIN bdms.stratigraphy as stratigraphy
-        ON layer.id_sty_fk = stratigraphy.id_sty
-
-        INNER JOIN bdms.borehole
-        ON stratigraphy.id_bho_fk = id_bho
-
-        INNER JOIN (
-            SELECT
-                id_bho_fk,
-                array_agg(
-                    json_build_object(
-                        'workflow', id_wkf,
-                        'role', name_rol,
-                        'username', username,
-                        'started', started,
-                        'finished', finished
-                    )
-                ) as status
-            FROM (
-                SELECT
-                    id_bho_fk,
-                    name_rol,
-                    id_wkf,
-                    username,
-                    started_wkf as started,
-                    finished_wkf as finished
-                FROM
-                    bdms.workflow,
-                    bdms.roles,
-                    bdms.users
-                WHERE
-                    id_rol = id_rol_fk
-                AND
-                    id_usr = id_usr_fk
-                ORDER BY
-                    id_bho_fk asc, id_wkf asc
-            ) t
-            GROUP BY
-                id_bho_fk
-        ) as v
-        ON
-            v.id_bho_fk = id_bho
-
-        INNER JOIN bdms.users as creator
-        ON creator_lay = creator.id_usr
-
-        INNER JOIN bdms.users as updater
-        ON updater_lay = updater.id_usr
     """
