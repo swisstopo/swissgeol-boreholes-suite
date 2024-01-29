@@ -75,7 +75,7 @@ const isTabSelected = index => {
 };
 
 describe("completion crud tests", () => {
-  xit("add, edit, copy and delete completions", () => {
+  it("add, edit, copy and delete completions", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
