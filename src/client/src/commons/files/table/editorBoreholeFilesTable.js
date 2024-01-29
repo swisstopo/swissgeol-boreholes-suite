@@ -11,7 +11,7 @@ import {
 import FilesTableComponent from "./filesTableComponent";
 import TranslationText from "../../form/translationText";
 import { Button } from "semantic-ui-react";
-import { AlertContext } from "../../alert/alertContext";
+import { AlertContext } from "../../../components/alert/alertContext";
 import { withTranslation } from "react-i18next";
 
 class EditorBoreholeFilesTable extends Component {

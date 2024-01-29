@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import { getData, sendProfile } from "./api";
 import _ from "lodash";
 import useCasingList from "../../hooks/useCasingList";
-import { AlertContext } from "../../../../alert/alertContext";
+import { AlertContext } from "../../../../../components/alert/alertContext";
 
 const ProfileInfo = props => {
   const {

@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import ProfileAttributeList from "./components/profileAttributeList/profileAttributeList";
 import { useSelector } from "react-redux";
 import { useQueryClient } from "react-query";
-import { AlertContext } from "../../../../alert/alertContext";
+import { AlertContext } from "../../../../../components/alert/alertContext";
 import {
   fetchLayerById,
   layerQueryKey,

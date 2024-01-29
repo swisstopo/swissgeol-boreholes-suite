@@ -11,7 +11,7 @@ import { Box, Stack, MenuItem, Select, FormControl } from "@mui/material/";
 import { Button, Header, Icon, Menu, Modal, Segment } from "semantic-ui-react";
 
 import { createBorehole } from "../../../api-lib/index";
-import { AlertContext } from "../../alert/alertContext";
+import { AlertContext } from "../../../components/alert/alertContext";
 import SearchEditorComponent from "../../search/editor/searchEditorComponent";
 import { downloadCodelistCsv, importBoreholes } from "../../../api/fetchApiV2";
 import Downloadlink from "../../files/downloadlink";

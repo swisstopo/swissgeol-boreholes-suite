@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
-import { AlertContext } from "../../../commons/alert/alertContext";
+import { AlertContext } from "../../../components/alert/alertContext";
 
 import { Button, Icon, Form, Modal, Header } from "semantic-ui-react";
 
