@@ -11,9 +11,6 @@ import proj4 from "proj4";
 import { locationEditorData } from "./data/locationEditorData";
 import { boreholeEditorData } from "./data/boreholeEditorData";
 import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData";
-import { casingEditorData } from "./data/casingEditorData";
-import { instrumentEditorData } from "./data/instrumentEditorData";
-import { fillingEditorData } from "./data/fillingEditorData";
 import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData";
 import EditorSettingList from "./components/editorSettingList/editorSettingList";
 import MapSettings from "./components/editorSettingList/mapSettings";
@@ -79,24 +76,6 @@ class ExplorerSettings extends React.Component {
         },
         {
           id: 3,
-          name: "casing",
-          translationId: "searchFilterCasing",
-          isSelected: false,
-        },
-        {
-          id: 4,
-          name: "instrument",
-          translationId: "searchFilterInstrument",
-          isSelected: false,
-        },
-        {
-          id: 5,
-          name: "filling",
-          translationId: "searchFilterFilling",
-          isSelected: false,
-        },
-        {
-          id: 6,
           name: "lithologyfields",
           translationId: "lithologyfields",
           isSelected: false,
@@ -132,12 +111,6 @@ class ExplorerSettings extends React.Component {
       selectedData = boreholeEditorData;
     } else if (name === "lithology" && isSelected) {
       selectedData = lithologyFilterEditorData;
-    } else if (name === "casing" && isSelected) {
-      selectedData = casingEditorData;
-    } else if (name === "instrument" && isSelected) {
-      selectedData = instrumentEditorData;
-    } else if (name === "filling" && isSelected) {
-      selectedData = fillingEditorData;
     } else if (name === "lithologyfields" && isSelected) {
       selectedData = lithologyFieldEditorData;
     } else {
