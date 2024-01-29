@@ -18,7 +18,7 @@ import {
 import CompletionContent from "./completionContent";
 import CompletionHeaderInput from "./completionHeaderInput";
 import CompletionHeaderDisplay from "./completionHeaderDisplay";
-import Prompt from "../../../prompt/prompt";
+import Prompt from "../../../../components/prompt/prompt";
 
 const Completion = props => {
   const { isEditable } = props;

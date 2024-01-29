@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 
 import { Form, Button } from "semantic-ui-react";
-import { AlertContext } from "../alert/alertContext";
+import { AlertContext } from "../../components/alert/alertContext";
 import { createFeedback } from "../../api-lib/index";
 
 class Feedback extends React.Component {

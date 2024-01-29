@@ -19,7 +19,7 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
 import { useHydrotestDomains, useDomains } from "../../../../api/fetchApiV2";
-import { AlertContext } from "../../../alert/alertContext";
+import { AlertContext } from "../../../../components/alert/alertContext";
 import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 

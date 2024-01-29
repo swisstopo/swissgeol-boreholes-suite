@@ -11,7 +11,7 @@ import {
   FormSelect,
   FormCheckbox,
 } from "../../../../components/form/form";
-import Prompt from "../../../prompt/prompt";
+import Prompt from "../../../../components/prompt/prompt";
 
 const CompletionHeaderInput = props => {
   const {

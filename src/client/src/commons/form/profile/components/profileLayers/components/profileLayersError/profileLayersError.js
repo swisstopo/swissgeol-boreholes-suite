@@ -8,7 +8,7 @@ import {
   addBedrock,
 } from "../../../../../../../api/fetchApiV2";
 import ErrorTypes from "./errorTypes";
-import { AlertContext } from "../../../../../../alert/alertContext";
+import { AlertContext } from "../../../../../../../components/alert/alertContext";
 
 const ProfileLayersError = props => {
   const {

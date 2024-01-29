@@ -12,6 +12,7 @@ import { styled } from "@mui/system";
 
 export const PromptButton = styled(Button)({
   fontFamily: "Lato",
+  fontSize: "16px",
   textTransform: "none",
   color: "rgba(0, 0, 0, 0.8)",
   "&:hover": {

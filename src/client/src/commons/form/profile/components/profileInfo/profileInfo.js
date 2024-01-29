@@ -11,7 +11,7 @@ import InfoCheckBox from "./components/infoCheckBox";
 import { useTranslation } from "react-i18next";
 import { getData, sendProfile } from "./api";
 import _ from "lodash";
-import { AlertContext } from "../../../../alert/alertContext";
+import { AlertContext } from "../../../../../components/alert/alertContext";
 
 const ProfileInfo = props => {
   const {

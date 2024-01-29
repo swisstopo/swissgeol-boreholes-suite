@@ -40,7 +40,7 @@ import {
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { withTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "react-query";
-import { AlertContext } from "../../../../alert/alertContext";
+import { AlertContext } from "../../../../../components/alert/alertContext";
 import { profileKind } from "../../constance";
 
 const ProfileLayers = props => {
