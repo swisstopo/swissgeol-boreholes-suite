@@ -2,6 +2,7 @@ import {
   createBorehole,
   startBoreholeEditing,
   loginAsAdmin,
+  handlePrompt,
 } from "../helpers/testHelpers";
 import {
   setInput,
@@ -56,12 +57,6 @@ const isTabSelected = index => {
   cy.get('[data-cy="completion-header-tab-' + index + '"]')
     .invoke("attr", "aria-selected")
     .should("eq", "true");
-};
-
-const handlePrompt = (title, action) => {
-  cy.get('[data-cy="prompt"]').should("exist");
-  cy.contains(title);
-  cy.get('[data-cy="prompt-button-' + action + '"]').click();
 };
 
 describe("completion crud tests", () => {
