@@ -68,10 +68,9 @@ public class CompletionController : BdmsControllerBase<Completion>
         try
         {
             // Check if associated borehole is locked
-            var subjectId = HttpContext.GetUserSubjectId();
-            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, subjectId).ConfigureAwait(false))
+            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user.");
+                return Problem("The borehole is locked by another user or you are missing permissions.");
             }
 
             // If the completion to create is the first completion of a borehole,
@@ -102,10 +101,6 @@ public class CompletionController : BdmsControllerBase<Completion>
 
             return await base.CreateAsync(entity).ConfigureAwait(false);
         }
-        catch (UnauthorizedAccessException)
-        {
-            return Unauthorized("You are not authorized to create a completion for this borehole.");
-        }
         catch (Exception ex)
         {
             var message = "An error ocurred while creating the completion.";
@@ -121,10 +116,9 @@ public class CompletionController : BdmsControllerBase<Completion>
         try
         {
             // Check if associated borehole is locked
-            var subjectId = HttpContext.GetUserSubjectId();
-            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, subjectId).ConfigureAwait(false))
+            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user.");
+                return Problem("The borehole is locked by another user or you are missing permissions.");
             }
 
             var editResult = await base.EditAsync(entity).ConfigureAwait(false);
@@ -149,10 +143,6 @@ public class CompletionController : BdmsControllerBase<Completion>
             }
 
             return editResult;
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return Unauthorized("You are not authorized to edit to this completion.");
         }
         catch (Exception ex)
         {
@@ -187,10 +177,9 @@ public class CompletionController : BdmsControllerBase<Completion>
             }
 
             // Check if associated borehole is locked
-            var subjectId = HttpContext.GetUserSubjectId();
-            if (await boreholeLockService.IsBoreholeLockedAsync(completion.BoreholeId, subjectId).ConfigureAwait(false))
+            if (await boreholeLockService.IsBoreholeLockedAsync(completion.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user.");
+                return Problem("The borehole is locked by another user or you are missing permissions.");
             }
 
             // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
@@ -219,10 +208,6 @@ public class CompletionController : BdmsControllerBase<Completion>
 
             return Ok(entityEntry.Entity.Id);
         }
-        catch (UnauthorizedAccessException)
-        {
-            return Unauthorized("You are not authorized to copy this completion.");
-        }
         catch (Exception ex)
         {
             var message = "An error ocurred while copying the completion.";
@@ -245,10 +230,9 @@ public class CompletionController : BdmsControllerBase<Completion>
             }
 
             // Check if associated borehole is locked
-            var subjectId = HttpContext.GetUserSubjectId();
-            if (await boreholeLockService.IsBoreholeLockedAsync(completionToDelete.BoreholeId, subjectId).ConfigureAwait(false))
+            if (await boreholeLockService.IsBoreholeLockedAsync(completionToDelete.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user.");
+                return Problem("The borehole is locked by another user or you are missing permissions.");
             }
 
             Context.Remove(completionToDelete);
@@ -273,10 +257,6 @@ public class CompletionController : BdmsControllerBase<Completion>
             }
 
             return Ok();
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return Unauthorized("You are not authorized to delete this completion.");
         }
         catch (Exception ex)
         {
