@@ -1,8 +1,8 @@
 import {
   loginAsAdmin,
-  bearerAuth,
   createBorehole,
   startBoreholeEditing,
+  createCompletion,
 } from "../helpers/testHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
 
@@ -10,27 +10,10 @@ describe("Instrumentation crud tests", () => {
   it("add, edit and delete instrumentations", () => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id =>
-        cy.get("@id_token").then(token => {
-          cy.request({
-            method: "POST",
-            url: "/api/v2/completion",
-            cache: "no-cache",
-            credentials: "same-origin",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: {
-              boreholeId: id,
-              isPrimary: true,
-              kindId: 16000002,
-            },
-            auth: bearerAuth(token),
-          }).then(response => {
-            expect(response).to.have.property("status", 200);
-          });
-        }),
-      );
+      .then(id => createCompletion(id, 16000002, true))
+      .then(response => {
+        expect(response).to.have.property("status", 200);
+      });
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
