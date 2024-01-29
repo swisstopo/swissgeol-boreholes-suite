@@ -15,6 +15,8 @@ public partial class MigrateCompletion : Migration
         // Delete all stratigraphy entries for casing, backfill and instrumentation layers.
         // At the time of migration no instrumentation or backfill layers had to be migrated.
         migrationBuilder.Sql(@"
+UPDATE bdms.layer SET instr_id_lay_fk = NULL;
+
 DO $$          
 DECLARE
 	currentStratigraphyRow bdms.stratigraphy%ROWTYPE;
@@ -36,7 +38,7 @@ BEGIN
 	FROM
 		bdms.stratigraphy
 	WHERE
-		kind_id_cli in (3002,3003,3004)
+		kind_id_cli in (3002,3003,3004) and id_bho_fk is not null
 	group by id_bho_fk;
 	
 	-- Create a completion for each borehole
@@ -70,13 +72,30 @@ BEGIN
 			INSERT INTO bdms.casing(completion_id, name, from_depth, to_depth, kind_id, material_id, inner_diameter, outer_diameter, date_start, date_finish, notes, creator, creation, updater, update)
 			VALUES ((Select completion_id from bho_completion_link_temp where bho_id = currentStratigraphyRow.id_bho_fk LIMIT 1),
 									COALESCE(currentLayerRow.casng_id, ''), COALESCE(currentLayerRow.depth_from_lay, 0), COALESCE(currentLayerRow.depth_to_lay, 0), COALESCE(currentLayerRow.casng_kind_id_cli, 25000107), 
-									25000115, COALESCE(currentLayerRow.casng_inner_diameter_lay, 0), COALESCE(currentLayerRow.casng_outer_diameter_lay, 0),
+									COALESCE(currentLayerRow.casng_material_id_cli, 25000115), COALESCE(currentLayerRow.casng_inner_diameter_lay, 0), COALESCE(currentLayerRow.casng_outer_diameter_lay, 0),
 									DATE '0001-01-01', DATE '0001-01-01',currentLayerRow.notes_lay,
 									1, CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
 									,NULL, NULL);
 		END IF;
-		
-		RAISE NOTICE 'delete layer %', currentLayerRow.id_lay;
+
+        IF currentStratigraphyRow.kind_id_cli = 3003 THEN
+			INSERT INTO bdms.instrumentation(completion_id, from_depth, to_depth, name, kind_id, status_id, notes, creator, creation, updater, update)
+			VALUES ((Select completion_id from bho_completion_link_temp where bho_id = currentStratigraphyRow.id_bho_fk LIMIT 1),
+									COALESCE(currentLayerRow.depth_from_lay, 0), COALESCE(currentLayerRow.depth_to_lay, 0), COALESCE(currentLayerRow.instr_id, ''), COALESCE(currentLayerRow.instr_kind_id_cli, 25000212), 
+									COALESCE(currentLayerRow.instr_status_id_cli, 25000217), currentLayerRow.notes_lay,
+									1, CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
+									,NULL, NULL);
+		END IF;
+
+        IF currentStratigraphyRow.kind_id_cli = 3004 THEN
+			INSERT INTO bdms.backfill(completion_id, from_depth, to_depth, kind_id, material_id, notes, creator, creation, updater, update)
+			VALUES ((Select completion_id from bho_completion_link_temp where bho_id = currentStratigraphyRow.id_bho_fk LIMIT 1),
+									COALESCE(currentLayerRow.depth_from_lay, 0), COALESCE(currentLayerRow.depth_to_lay, 0), COALESCE(currentLayerRow.fill_kind_id_cli, 25000304), COALESCE(currentLayerRow.fill_material_id_cli, 25000312), 
+									currentLayerRow.notes_lay,
+									1, CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
+									,NULL, NULL);
+        END IF;
+
 		Delete from bdms.layer where id_lay = currentLayerRow.id_lay;
 	END LOOP;
 	
