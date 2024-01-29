@@ -24,7 +24,7 @@ import {
   rejectWorkflow,
   resetWorkflow,
 } from "../../../api-lib/index";
-import { AlertContext } from "../../alert/alertContext";
+import { AlertContext } from "../../../components/alert/alertContext";
 import CommentArea from "./commentArea";
 import DateText from "../dateText";
 import TranslationText from "../../form/translationText";

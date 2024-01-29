@@ -15,7 +15,7 @@ import { NumericFormat } from "react-number-format";
 import { withTranslation } from "react-i18next";
 import * as Styled from "./styles";
 import { deleteLayer } from "../../../../../../../api-lib";
-import { AlertContext } from "../../../../../../alert/alertContext";
+import { AlertContext } from "../../../../../../../components/alert/alertContext";
 import { useLithostratigraphies } from "../../../../../../../api/fetchApiV2";
 
 const ProfileLayersList = props => {

@@ -366,3 +366,9 @@ export const createStratigraphy = (boreholeId, kindId) => {
     });
   });
 };
+
+export const handlePrompt = (title, action) => {
+  cy.get('[data-cy="prompt"]').should("exist");
+  cy.contains(title);
+  cy.get('[data-cy="prompt-button-' + action + '"]').click();
+};

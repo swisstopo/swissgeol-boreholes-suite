@@ -2,6 +2,7 @@ import {
   createBorehole,
   startBoreholeEditing,
   loginAsAdmin,
+  handlePrompt,
 } from "../helpers/testHelpers";
 import {
   setInput,
@@ -62,21 +63,17 @@ const deleteCompletion = () => {
 };
 
 const setTab = index => {
-  cy.get('[data-cy="completion-header-tab-' + index + '"]').click({
-    force: true,
-  });
+  cy.get('[data-cy="completion-header-tab-' + index + '"]')
+    .focus()
+    .click({
+      force: true,
+    });
 };
 
 const isTabSelected = index => {
   cy.get('[data-cy="completion-header-tab-' + index + '"]')
     .invoke("attr", "aria-selected")
     .should("eq", "true");
-};
-
-const handlePrompt = (title, action) => {
-  cy.get('[data-cy="prompt"]').should("exist");
-  cy.contains(title);
-  cy.get('[data-cy="prompt-button-' + action + '"]').click();
 };
 
 describe("completion crud tests", () => {
@@ -262,7 +259,9 @@ describe("completion crud tests", () => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/new`);
       expect(location.hash).to.eq("");
     });
+    cy.get(`[data-cy="name-formInput"]`).click();
     setTab(0);
+    cy.wait("@get-completions-by-boreholeId");
     cy.location().should(location => {
       expect(location.pathname).to.eq(
         `/editor/${boreholeId}/completion/${completion1Id}`,

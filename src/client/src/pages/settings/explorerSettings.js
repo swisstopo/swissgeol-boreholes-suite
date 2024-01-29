@@ -14,7 +14,7 @@ import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData";
 import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData";
 import EditorSettingList from "./components/editorSettingList/editorSettingList";
 import MapSettings from "./components/editorSettingList/mapSettings";
-import { AlertContext } from "../../commons/alert/alertContext";
+import { AlertContext } from "../../components/alert/alertContext";
 
 const projections = {
   "EPSG:21781":

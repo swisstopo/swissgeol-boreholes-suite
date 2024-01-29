@@ -13,7 +13,7 @@ import {
 import { useDomains } from "../../../../api/fetchApiV2";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
-import { AlertContext } from "../../../alert/alertContext";
+import { AlertContext } from "../../../../components/alert/alertContext";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
