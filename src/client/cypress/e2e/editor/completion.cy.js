@@ -63,9 +63,11 @@ const deleteCompletion = () => {
 };
 
 const setTab = index => {
-  cy.get('[data-cy="completion-header-tab-' + index + '"]').click({
-    force: true,
-  });
+  cy.get('[data-cy="completion-header-tab-' + index + '"]')
+    .focus()
+    .click({
+      force: true,
+    });
 };
 
 const isTabSelected = index => {
@@ -258,8 +260,6 @@ describe("completion crud tests", () => {
       expect(location.hash).to.eq("");
     });
     setTab(0);
-    isTabSelected(0);
-    cy.wait(5000);
     cy.wait("@get-completions-by-boreholeId");
     cy.location().should(location => {
       expect(location.pathname).to.eq(
