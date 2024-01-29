@@ -227,7 +227,7 @@ const ObservationInput = props => {
             marginBottom: "10px",
           }}>
           <Controller
-            name="casingId"
+            name="casingName"
             control={control}
             defaultValue={observation.casingId}
             render={({ field }) => (

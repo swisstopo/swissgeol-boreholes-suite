@@ -13,10 +13,7 @@ import EditorSettingList from "./components/editorSettingList/editorSettingList"
 import { boreholeEditorData } from "./data/boreholeEditorData";
 import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData";
 import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData";
-import { casingEditorData } from "./data/casingEditorData";
 import { locationEditorData } from "./data/locationEditorData";
-import { instrumentEditorData } from "./data/instrumentEditorData";
-import { fillingEditorData } from "./data/fillingEditorData";
 import { registrationEditorData } from "./data/registrationEditorData";
 
 export const fields = [];
@@ -50,30 +47,12 @@ class EditorSettings extends React.Component {
         },
         {
           id: 3,
-          name: "casing",
-          translationId: "searchFilterCasing",
-          isSelected: false,
-        },
-        {
-          id: 4,
-          name: "instrument",
-          translationId: "searchFilterInstrument",
-          isSelected: false,
-        },
-        {
-          id: 5,
-          name: "filling",
-          translationId: "searchFilterFilling",
-          isSelected: false,
-        },
-        {
-          id: 6,
           name: "lithologyfields",
           translationId: "lithologyfields",
           isSelected: false,
         },
         {
-          id: 7,
+          id: 4,
           name: "registration",
           translationId: "searchFilterRegistration",
           isSelected: false,
@@ -89,12 +68,6 @@ class EditorSettings extends React.Component {
       selectedData = boreholeEditorData;
     } else if (name === "lithology" && isSelected) {
       selectedData = lithologyFilterEditorData;
-    } else if (name === "casing" && isSelected) {
-      selectedData = casingEditorData;
-    } else if (name === "instrument" && isSelected) {
-      selectedData = instrumentEditorData;
-    } else if (name === "filling" && isSelected) {
-      selectedData = fillingEditorData;
     } else if (name === "lithologyfields" && isSelected) {
       selectedData = lithologyFieldEditorData;
     } else if (name === "registration" && isSelected) {

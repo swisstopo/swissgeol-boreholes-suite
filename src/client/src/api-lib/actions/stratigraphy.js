@@ -15,15 +15,6 @@ export function createLayer(id) {
   });
 }
 
-// Create a new instruemnt for the given profile id
-export function createInstrument(profile_id, casing_id = null) {
-  return fetch("/borehole/stratigraphy/layer/edit", {
-    action: "CREATE_INSTRUMENT",
-    id: profile_id, // stratigraphy id
-    casing: casing_id, // casing id
-  });
-}
-
 // Create a new stratigraphy for the given borehole id
 export function deleteLayer(id, process = 0, value = null) {
   /*

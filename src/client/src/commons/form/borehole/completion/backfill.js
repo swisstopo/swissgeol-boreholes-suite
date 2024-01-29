@@ -19,7 +19,7 @@ const Backfill = ({ isEditable, completionId }) => {
       updateData={updateBackfill}
       deleteData={deleteBackfill}
       addLabel="addFilling"
-      emptyLabel="msgBackfillEmpty"
+      emptyLabel="msgFillingEmpty"
       renderInput={props => <BackfillInput {...props} />}
       renderDisplay={props => <BackfillDisplay {...props} />}
     />

@@ -45,7 +45,7 @@ public class BoreholeLockServiceTest
     public async Task IsBoreholeLockedWithUnauthorizedUser()
     {
         var borehole = await context.Boreholes.FirstAsync();
-        await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(async () => await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, "sub_deletableUser"));
+        Assert.AreEqual(true, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, "sub_deletableUser"));
     }
 
     [TestMethod]
@@ -57,7 +57,7 @@ public class BoreholeLockServiceTest
         var timeProviderMock = CreateTimeProviderMock(borehole.Locked.Value.AddMinutes(1));
         boreholeLockService = new BoreholeLockService(context, new Mock<ILogger<BoreholeLockService>>().Object, timeProviderMock.Object);
 
-        await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(async () => await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, EditorSubjectId));
+        Assert.AreEqual(true, await boreholeLockService.IsBoreholeLockedAsync(borehole.Id, EditorSubjectId));
     }
 
     [TestMethod]

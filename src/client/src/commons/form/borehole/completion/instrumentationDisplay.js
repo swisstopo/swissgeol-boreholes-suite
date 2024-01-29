@@ -38,7 +38,7 @@ const InstrumentationDisplay = props => {
             </TypographyWithBottomMargin>
           </StackHalfWidth>
           <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("casingId")}</Typography>
+            <Typography variant="subtitle2">{t("casingName")}</Typography>
             <TypographyWithBottomMargin variant="subtitle1">
               {item.casingId ? item.casing.name : "-"}
             </TypographyWithBottomMargin>

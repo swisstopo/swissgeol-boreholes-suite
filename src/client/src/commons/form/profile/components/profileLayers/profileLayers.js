@@ -208,19 +208,6 @@ const ProfileLayers = props => {
     }
   };
 
-  const getColumnTitle = stratigraphyKind => {
-    switch (stratigraphyKind) {
-      case profileKind.STRATIGRAPHY:
-        return <Typography>{t("lithology")}</Typography>;
-      case profileKind.CASING:
-        return <Typography>{t("add")}</Typography>;
-      case profileKind.FILLING:
-        return <Typography>{t("add")}</Typography>;
-      default:
-        <></>;
-    }
-  };
-
   const cellStyle = {
     verticalAlign: "top",
     padding: "0",
@@ -258,7 +245,7 @@ const ProfileLayers = props => {
             <TableRow>
               <TableCell>
                 <Stack direction="row">
-                  {getColumnTitle(stratigraphyKind)}
+                  <Typography>{t("lithology")}</Typography>
                   {isEditable && selectedStratigraphyID !== null && (
                     <Tooltip title={t("add")}>
                       <AddCircleIcon

@@ -111,39 +111,6 @@ const ListFilter = props => {
     } else if (item.value === "layer_depth_to_to") {
       updateChange("layer_depth_to_from", "", false);
       updateChange("layer_depth_to_to", "", false);
-    } else if (item.value === "date_abd_to") {
-      updateChange("date_abd_from", "", false);
-      updateChange("date_abd_to", "", false);
-    } else if (item.value === "casing_depth_from_to") {
-      updateChange("casing_depth_from_from", "", false);
-      updateChange("casing_depth_from_to", "", false);
-    } else if (item.value === "casing_depth_to_to") {
-      updateChange("casing_depth_to_from", "", false);
-      updateChange("casing_depth_to_to", "", false);
-    } else if (item.value === "casing_date_spud_to") {
-      updateChange("casing_date_spud_from", "", false);
-      updateChange("casing_date_spud_to", "", false);
-    } else if (item.value === "casing_date_finish_to") {
-      updateChange("casing_date_finish_from", "", false);
-      updateChange("casing_date_finish_to", "", false);
-    } else if (item.value === "casing_inner_diameter_to") {
-      updateChange("casing_inner_diameter_from", "", false);
-      updateChange("casing_inner_diameter_to", "", false);
-    } else if (item.value === "casing_outer_diameter_to") {
-      updateChange("casing_outer_diameter_from", "", false);
-      updateChange("casing_outer_diameter_to", "", false);
-    } else if (item.value === "instrument_depth_from_to") {
-      updateChange("instrument_depth_from_from", "", false);
-      updateChange("instrument_depth_from_to", "", false);
-    } else if (item.value === "instrument_depth_to_to") {
-      updateChange("instrument_depth_to_from", "", false);
-      updateChange("instrument_depth_to_to", "", false);
-    } else if (item.value === "backfill_depth_from_to") {
-      updateChange("backfill_depth_from_from", "", false);
-      updateChange("backfill_depth_from_to", "", false);
-    } else if (item.value === "backfill_depth_to_to") {
-      updateChange("backfill_depth_to_from", "", false);
-      updateChange("backfill_depth_to_to", "", false);
     } else if (item.value === "spud_date_to") {
       updateChange("spud_date_from", "", false);
       updateChange("spud_date_to", "", false);

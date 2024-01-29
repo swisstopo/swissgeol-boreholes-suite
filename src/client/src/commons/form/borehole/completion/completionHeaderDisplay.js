@@ -102,7 +102,7 @@ const CompletionHeaderDisplay = props => {
               </StackHalfWidth>
               <StackHalfWidth direction="column" flex={"0 0 400px"}>
                 <Typography variant="subtitle2">
-                  {t("dateAbandonmentCasing")}
+                  {t("dateAbandonmentCompletion")}
                 </Typography>
                 <TypographyWithBottomMargin variant="subtitle1">
                   {completion.abandonDate
