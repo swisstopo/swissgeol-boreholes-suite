@@ -263,6 +263,7 @@ describe("completion crud tests", () => {
       expect(location.hash).to.eq("");
     });
     setTab(0);
+    cy.wait("@get-completions-by-boreholeId");
     cy.location().should(location => {
       expect(location.pathname).to.eq(
         `/editor/${boreholeId}/completion/${completion1Id}`,
