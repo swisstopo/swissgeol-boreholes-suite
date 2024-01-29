@@ -1,9 +1,11 @@
 ﻿using BDMS.Models;
+using Bogus.DataSets;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Security.Cryptography.Xml;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -80,9 +82,8 @@ public class LayerControllerTest
         var okResult = response.Result as OkObjectResult;
         var layer = okResult.Value as Layer;
         Assert.AreEqual(7_000_005, layer.Id);
-        Assert.AreEqual(2.274020571389245, layer.CasingInnerDiameter);
-        Assert.AreEqual("Handcrafted Plains hacking reboot", layer.Notes);
-        Assert.AreEqual(15104431, layer.LithologyId);
+        Assert.AreEqual("transform mesh Brand Fantastic", layer.Notes);
+        Assert.AreEqual(15104014, layer.LithologyId);
     }
 
     [TestMethod]
@@ -96,16 +97,14 @@ public class LayerControllerTest
             CreatedById = 4,
             UpdatedById = 4,
             Created = new DateTime(2021, 2, 14, 8, 55, 34).ToUniversalTime(),
-            InstrumentCasingId = 0,
             Notes = "Freddy ate more cake than Maria.",
             StratigraphyId = 6_000_010,
         };
 
         var layerToEdit = context.Layers.Single(c => c.Id == id);
         Assert.AreEqual(3, layerToEdit.CreatedById);
-        Assert.AreEqual(2, layerToEdit.UpdatedById);
-        Assert.AreEqual(6_000_008, layerToEdit.InstrumentCasingId);
-        Assert.AreEqual("Practical Concrete Ball Fully-configurable invoice Small Rubber Car", layerToEdit.Notes);
+        Assert.AreEqual(4, layerToEdit.UpdatedById);
+        Assert.AreEqual("Generic Metal Soap Island Tasty Fresh Sausages Fresh", layerToEdit.Notes);
 
         // Update Layer
         var response = await controller.EditAsync(newLayer);
@@ -116,7 +115,6 @@ public class LayerControllerTest
 
         Assert.AreEqual(4, updatedLayer.CreatedById);
         Assert.AreEqual(1, updatedLayer.UpdatedById);
-        Assert.AreEqual(0, updatedLayer.InstrumentCasingId);
         Assert.AreEqual("Freddy ate more cake than Maria.", updatedLayer.Notes);
     }
 
@@ -131,7 +129,6 @@ public class LayerControllerTest
             CreatedById = 4,
             UpdatedById = 4,
             Created = new DateTime(2021, 2, 14, 8, 55, 34).ToUniversalTime(),
-            InstrumentCasingId = 0,
             Notes = "Freddy ate more cake than Maria.",
             StratigraphyId = 6_000_010,
             CodelistIds = new List<int> { 23101017, 23101018, 23101001 },
@@ -206,15 +203,6 @@ public class LayerControllerTest
         {
             Alteration = null,
             AlterationId = null,
-            Casing = "invoice overriding",
-            CasingDateFinish = new DateTime(2021, 5, 29, 21, 00, 00).ToUniversalTime(),
-            CasingDateSpud = new DateTime(2021, 7, 16, 13, 20, 25).ToUniversalTime(),
-            CasingInnerDiameter = 10.9742215,
-            CasingKind = null,
-            CasingKindId = null,
-            CasingMaterial = null,
-            CasingMaterialId = null,
-            CasingOuterDiameter = 13.89372933,
             Cohesion = null,
             CohesionId = 21116001,
             Compactness = null,
@@ -224,10 +212,6 @@ public class LayerControllerTest
             CreatedBy = null,
             CreatedById = 3,
             Created = new DateTime(2021, 8, 3, 6, 15, 55).ToUniversalTime(),
-            FillKind = null,
-            FillKindId = 25000302,
-            FillMaterial = null,
-            FillMaterialId = 25000306,
             FromDepth = 90,
             GradationId = 30000016,
             GrainSize1 = null,
@@ -237,13 +221,6 @@ public class LayerControllerTest
             Humidity = null,
             HumidityId = 21105001,
             Id = 8_000_000,
-            Instrument = "Metal",
-            InstrumentKind = null,
-            InstrumentKindId = 25000209,
-            InstrumentStatus = null,
-            InstrumentStatusId = 25000215,
-            InstrumentCasing = null,
-            InstrumentCasingId = 6_000_008,
             IsLast = true,
             IsStriae = true,
             IsUndefined = false,
@@ -278,28 +255,15 @@ public class LayerControllerTest
         var addedLayer = context.Layers.Include(l => l.Codelists).Single(c => c.Id == layerToAdd.Id);
 
         Assert.AreEqual(layerToAdd.AlterationId, addedLayer.AlterationId);
-        Assert.AreEqual(layerToAdd.Casing, addedLayer.Casing);
-        Assert.AreEqual(layerToAdd.CasingDateFinish, addedLayer.CasingDateFinish);
-        Assert.AreEqual(layerToAdd.CasingDateSpud, addedLayer.CasingDateSpud);
-        Assert.AreEqual(layerToAdd.CasingInnerDiameter, addedLayer.CasingInnerDiameter);
-        Assert.AreEqual(layerToAdd.CasingKindId, addedLayer.CasingKindId);
-        Assert.AreEqual(layerToAdd.CasingMaterialId, addedLayer.CasingMaterialId);
-        Assert.AreEqual(layerToAdd.CasingOuterDiameter, addedLayer.CasingOuterDiameter);
         Assert.AreEqual(layerToAdd.CohesionId, addedLayer.CohesionId);
         Assert.AreEqual(layerToAdd.CompactnessId, addedLayer.CompactnessId);
         Assert.AreEqual(layerToAdd.ConsistanceId, addedLayer.ConsistanceId);
-        Assert.AreEqual(layerToAdd.FillKindId, addedLayer.FillKindId);
-        Assert.AreEqual(layerToAdd.FillMaterialId, addedLayer.FillMaterialId);
         Assert.AreEqual(layerToAdd.FromDepth, addedLayer.FromDepth);
         Assert.AreEqual(layerToAdd.GradationId, addedLayer.GradationId);
         Assert.AreEqual(layerToAdd.GrainSize1Id, addedLayer.GrainSize1Id);
         Assert.AreEqual(layerToAdd.GrainSize2Id, addedLayer.GrainSize2Id);
         Assert.AreEqual(layerToAdd.HumidityId, addedLayer.HumidityId);
         Assert.AreEqual(layerToAdd.Id, addedLayer.Id);
-        Assert.AreEqual(layerToAdd.Instrument, addedLayer.Instrument);
-        Assert.AreEqual(layerToAdd.InstrumentKindId, addedLayer.InstrumentKindId);
-        Assert.AreEqual(layerToAdd.InstrumentStatusId, addedLayer.InstrumentStatusId);
-        Assert.AreEqual(layerToAdd.InstrumentCasingId, addedLayer.InstrumentCasingId);
         Assert.AreEqual(layerToAdd.IsLast, addedLayer.IsLast);
         Assert.AreEqual(layerToAdd.IsStriae, addedLayer.IsStriae);
         Assert.AreEqual(layerToAdd.IsUndefined, addedLayer.IsUndefined);

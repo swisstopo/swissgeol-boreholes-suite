@@ -62,21 +62,20 @@ public class StratigraphyControllerTest
     }
 
     [TestMethod]
-    public async Task GetCasingsByBoreholeId()
+    public async Task GetStratigraphyByBoreholeIdAndKind()
     {
-        var stratigraphies = await controller.GetAsync(1000017, 3002).ConfigureAwait(false);
+        var stratigraphies = await controller.GetAsync(1000017, 3000).ConfigureAwait(false);
         Assert.IsNotNull(stratigraphies);
         Assert.AreEqual(1, stratigraphies.Count());
         var stratigraphy = stratigraphies.Single();
 
-        Assert.AreEqual(stratigraphy.BoreholeId, 1000017);
-        Assert.AreEqual(stratigraphy.CreatedById, 2);
-        Assert.AreEqual(stratigraphy.FillCasingId, 6000009);
-        Assert.AreEqual(stratigraphy.IsPrimary, true);
-        Assert.AreEqual(stratigraphy.KindId, 3002);
-        Assert.AreEqual(stratigraphy.Name, "Alessandro Bergstrom");
-        Assert.AreEqual(stratigraphy.Notes, "I saw one of these in Tanzania and I bought one.");
-        Assert.AreEqual(stratigraphy.UpdatedById, 2);
+        Assert.AreEqual(1000017, stratigraphy.BoreholeId);
+        Assert.AreEqual(3000, stratigraphy.KindId);
+        Assert.AreEqual("Chauncey Borer", stratigraphy.Name);
+        Assert.AreEqual("i use it from now on when i'm in my safehouse.", stratigraphy.Notes);
+        Assert.AreEqual(2, stratigraphy.CreatedById);
+        Assert.AreEqual(3, stratigraphy.UpdatedById);
+        Assert.AreEqual(true, stratigraphy.IsPrimary);
     }
 
     [TestMethod]
@@ -85,9 +84,9 @@ public class StratigraphyControllerTest
         var stratigraphyResult = await controller.GetByIdAsync(StratigraphyId);
 
         var stratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>(stratigraphyResult.Result);
-        Assert.AreEqual(stratigraphy.BoreholeId, 1008078);
-        Assert.AreEqual(stratigraphy.Name, "Earnest Little");
-        Assert.AreEqual(stratigraphy.Notes, "My co-worker Tyron has one of these. He says it looks stout.");
+        Assert.AreEqual(1008078, stratigraphy.BoreholeId);
+        Assert.AreEqual("Virginia Ortiz", stratigraphy.Name);
+        Assert.AreEqual("I saw one of these in Grenada and I bought one.", stratigraphy.Notes);
     }
 
     [TestMethod]
@@ -114,17 +113,15 @@ public class StratigraphyControllerTest
         Assert.IsInstanceOfType(copiedStratigraphyId, typeof(int));
         var copiedStratigraphy = GetStratigraphy((int)copiedStratigraphyId);
 
-        Assert.AreEqual("Earnest Little (Clone)", copiedStratigraphy.Name);
+        Assert.AreEqual("Virginia Ortiz (Clone)", copiedStratigraphy.Name);
         Assert.AreEqual("sub_admin", copiedStratigraphy.CreatedBy.SubjectId);
-        Assert.AreEqual("sub_controller", copiedStratigraphy.UpdatedBy.SubjectId);
+        Assert.AreEqual("sub_editor", copiedStratigraphy.UpdatedBy.SubjectId);
         Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
         Assert.AreSame(originalStratigraphy.Kind, copiedStratigraphy.Kind);
-        Assert.AreEqual(originalStratigraphy.FillCasing.Kind, copiedStratigraphy.FillCasing.Kind);
 
         Assert.AreNotEqual(originalStratigraphy.Id, copiedStratigraphy.Id);
         Assert.AreNotSame(originalStratigraphy.Layers, copiedStratigraphy.Layers);
         Assert.AreNotEqual(originalStratigraphy.Layers.First().Id, copiedStratigraphy.Layers.First().Id);
-        Assert.AreEqual("Drives olive", copiedStratigraphy.Layers.First().Casing);
 
         Assert.AreNotSame(originalStratigraphy.LithologicalDescriptions, copiedStratigraphy.LithologicalDescriptions);
         Assert.AreNotEqual(originalStratigraphy.LithologicalDescriptions.First().Id, copiedStratigraphy.LithologicalDescriptions.First().Id);
@@ -148,7 +145,6 @@ public class StratigraphyControllerTest
             .Include(s => s.CreatedBy)
             .Include(s => s.UpdatedBy)
             .Include(s => s.Kind)
-            .Include(s => s.FillCasing)
             .Include(s => s.Layers).ThenInclude(l => l.LayerCodelists)
             .Include(s => s.LithologicalDescriptions)
             .Include(s => s.FaciesDescriptions)
@@ -216,10 +212,24 @@ public class StratigraphyControllerTest
         // Precondition: Find a group of three stratigraphies with one main stratigraphy
         var stratigraphies = await controller.GetAsync();
         var stratigraphyTestCandidates = stratigraphies
-            .Where(x => x.KindId == StratigraphyController.StratigraphyKindId)
+            .Where(x => x.KindId == StratigraphyController.StratigraphyKindId && x.BoreholeId != null)
             .GroupBy(x => x.BoreholeId)
-            .Where(g => g.Count() > 1 && g.Count(x => x.IsPrimary.GetValueOrDefault()) == 1)
+            .Where(g => g.Count(s => s.IsPrimary == true) == 0)
             .ToList();
+
+        var primaryStratigraphy = new Stratigraphy
+        {
+            Id = stratigraphies.Max(x => x.Id) + 1,
+            KindId = StratigraphyController.StratigraphyKindId,
+            BoreholeId = stratigraphyTestCandidates.First().Key,
+            IsPrimary = true,
+            Name = "KODACLUSTER",
+            Notes = "ARGONTITAN",
+        };
+
+        context.Add(primaryStratigraphy);
+
+        await context.SaveChangesAsync();
 
         Assert.AreEqual(true, stratigraphyTestCandidates.Any(), "Precondition: There is at least one group of stratigraphies with one main stratigraphy");
 
@@ -227,10 +237,9 @@ public class StratigraphyControllerTest
         // the latest stratigraphy is now the main stratigraphy
         var stratigraphiesUnderTest = stratigraphyTestCandidates.First();
         var latestNonPrimaryStratigraphy = stratigraphiesUnderTest.Where(x => !x.IsPrimary.GetValueOrDefault()).OrderByDescending(x => x.Created).First();
-        var stratigraphyToDelete = stratigraphiesUnderTest.Single(x => x.IsPrimary.GetValueOrDefault());
 
-        await controller.DeleteAsync(stratigraphyToDelete.Id).ConfigureAwait(false);
-        Assert.AreEqual(null, GetStratigraphy(stratigraphyToDelete.Id));
+        await controller.DeleteAsync(primaryStratigraphy.Id).ConfigureAwait(false);
+        Assert.AreEqual(null, GetStratigraphy(primaryStratigraphy.Id));
 
         latestNonPrimaryStratigraphy = GetStratigraphy(latestNonPrimaryStratigraphy.Id);
         Assert.AreNotEqual(null, latestNonPrimaryStratigraphy);
