@@ -16,14 +16,6 @@ class ListGeojson(Action):
 
         lithostratigraphy_where, lithostratigraphy_params, lithostratigraphy_joins = self.filterLithostratigraphy(filter)
 
-        casing_where, casing_params, casing_joins = self.filterCasings(filter)
-
-        backfill_where, backfill_params, backfill_joins = self.filterBackfill(
-            filter)
-
-        instrument_where, instrument_params, instrument_joins = self.filterInstrument(
-            filter)
-
         #  filtering by map extent is not relevant for the geoJson Map data and can lead to missing data points.
         filter['extent'] = None
         where, params = self.filterBorehole(filter)
@@ -133,112 +125,6 @@ class ListGeojson(Action):
                 ) as lithostratigraphy
                 ON 
                     borehole.id_bho = lithostratigraphy.id_bho_fk
-            """.format(
-                joins_string, where_string
-            )
-
-        if len(casing_params) > 0:
-
-            joins_string = "\n".join(casing_joins) if len(
-                casing_joins) > 0 else ''
-            
-            where_string = (
-                " AND {}".format(" AND ".join(casing_where))
-                if len(casing_where) > 0
-                else ''
-            )
-
-            wr_strt += """
-                INNER JOIN (
-                    SELECT DISTINCT
-                        id_bho_fk
-
-                    FROM
-                        bdms.stratigraphy
-                    
-                    INNER JOIN
-                        bdms.layer
-                    ON
-                        id_sty_fk = id_sty
-                    {}
-
-                    WHERE
-                        kind_id_cli = 3002
-
-                    {}
-                ) as casing
-                ON 
-                    borehole.id_bho = casing.id_bho_fk
-            """.format(
-                joins_string, where_string
-            )
-        
-        if len(backfill_params) > 0:
-
-            joins_string = "\n".join(backfill_joins) if len(
-                backfill_joins) > 0 else ''
-            where_string = (
-                " AND {}".format(" AND ".join(backfill_where))
-                if len(backfill_where) > 0
-                else ''
-            )
-
-            wr_strt += """
-                INNER JOIN (
-                    SELECT DISTINCT
-                        id_bho_fk
-
-                    FROM
-                        bdms.stratigraphy
-                    
-                    INNER JOIN
-                        bdms.layer
-                    ON
-                        id_sty_fk = id_sty
-                    {}
-
-                    WHERE
-                        kind_id_cli = 3004
-
-                    {}
-                ) as backfill
-                ON 
-                    borehole.id_bho = backfill.id_bho_fk
-            """.format(
-                joins_string, where_string
-            )
-
-        if len(instrument_params) > 0:
-
-            joins_string = "\n".join(instrument_joins) if len(
-                instrument_joins) > 0 else ''
-            where_string = (
-                " AND {}".format(" AND ".join(instrument_where))
-                if len(instrument_where) > 0
-                else ''
-            )
-
-            wr_strt += """
-                INNER JOIN (
-                    SELECT DISTINCT
-                        id_bho_fk
-
-                    FROM
-                        bdms.stratigraphy
-                    
-                    INNER JOIN
-                        bdms.layer
-                    ON
-                        id_sty_fk = id_sty
-                    {}
-
-                    WHERE
-                        kind_id_cli = 3003
-
-                    {}
-                ) as instrument
-                ON 
-                    borehole.id_bho = instrument.id_bho_fk
             """.format(
                 joins_string, where_string
             )
@@ -364,8 +250,7 @@ class ListGeojson(Action):
                             ), '{}'::json[]
                         ) AS features
                 ) t
-        """ % (wr_strt, wr), *(layer_params + chronostratigraphy_params + lithostratigraphy_params + 
-                    casing_params + backfill_params + instrument_params + params))
+        """ % (wr_strt, wr), *(layer_params + chronostratigraphy_params + lithostratigraphy_params + params))
         return {
             "data": self.decode(rec[0])
         }

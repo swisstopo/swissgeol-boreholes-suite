@@ -1,4 +1,7 @@
-import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/helpers/testHelpers";
+import {
+  loginAsAdmin,
+  loginAsEditorInViewerMode,
+} from "../e2e/helpers/testHelpers";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
