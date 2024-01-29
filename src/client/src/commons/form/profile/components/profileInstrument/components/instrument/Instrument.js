@@ -13,7 +13,7 @@ import {
 } from "../../../../../../../api/fetchApiV2";
 import { NumericFormat } from "react-number-format";
 import { parseIfString } from "../../../../../formUtils";
-import { AlertContext } from "../../../../../../alert/alertContext";
+import { AlertContext } from "../../../../../../../components/alert/alertContext";
 import { produce } from "immer";
 
 const Instrument = props => {

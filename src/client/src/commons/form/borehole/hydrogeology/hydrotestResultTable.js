@@ -18,7 +18,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { TestResultParameterUnits } from "./parameterUnits";
-import { AlertContext } from "../../../alert/alertContext";
+import { AlertContext } from "../../../../components/alert/alertContext";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const HydrotestResultTable = ({

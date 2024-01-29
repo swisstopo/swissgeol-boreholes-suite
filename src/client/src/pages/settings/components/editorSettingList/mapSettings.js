@@ -13,7 +13,7 @@ import {
   Segment,
 } from "semantic-ui-react";
 import { getWms } from "../../../../api-lib/index";
-import { AlertContext } from "../../../../commons/alert/alertContext";
+import { AlertContext } from "../../../../components/alert/alertContext";
 import TranslationText from "../../../../commons/form/translationText";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
 import WMSCapabilities from "ol/format/WMSCapabilities";

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { Button, Form, Modal, TextArea } from "semantic-ui-react";
-import { AlertContext } from "../../commons/alert/alertContext";
+import { AlertContext } from "../../components/alert/alertContext";
 import LoginPreview from "../../commons/form/loginPreview";
 import TranslationKeys from "../../commons/translationKeys";
 

@@ -14,8 +14,8 @@ import EditorComponent from "./pages/editor/editorComponent";
 import SettingCmp from "./pages/settings/settingCmp";
 import DataLoader from "./pages/settings/dataLoader";
 import AcceptTerms from "./pages/term/accept";
-import { AlertProvider } from "./commons/alert/alertContext";
-import { AlertBanner } from "./commons/alert/alertBanner";
+import { AlertProvider } from "./components/alert/alertContext";
+import { AlertBanner } from "./components/alert/alertBanner";
 
 const queryClient = new QueryClient();
 

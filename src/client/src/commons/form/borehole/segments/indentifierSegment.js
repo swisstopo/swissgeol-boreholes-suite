@@ -4,7 +4,7 @@ import _ from "lodash";
 import DomainDropdown from "../../domain/dropdown/domainDropdown";
 import DomainText from "../../domain/domainText";
 import TranslationText from "../../translationText";
-import { AlertContext } from "../../../alert/alertContext";
+import { AlertContext } from "../../../../components/alert/alertContext";
 import { Form, Icon, Input, Segment } from "semantic-ui-react";
 import { removeIdentifier, addIdentifier } from "../../../../api-lib";
 import { useTranslation } from "react-i18next";

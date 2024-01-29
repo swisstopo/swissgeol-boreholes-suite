@@ -27,7 +27,7 @@ import {
   getdBoreholeIds,
   deleteBoreholes,
 } from "../../api-lib/index";
-import { AlertContext } from "../alert/alertContext";
+import { AlertContext } from "../../components/alert/alertContext";
 
 class BoreholeEditorTable extends TTable {
   static contextType = AlertContext;

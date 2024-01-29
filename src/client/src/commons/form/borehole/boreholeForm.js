@@ -24,7 +24,7 @@ import LocationSegment from "./segments/locationSegment";
 import WaterIngress from "./hydrogeology/waterIngress";
 import GroundwaterLevelMeasurement from "./hydrogeology/groundwaterLevelMeasurement";
 import Hydrotest from "./hydrogeology/hydrotest";
-import { AlertContext } from "../../alert/alertContext";
+import { AlertContext } from "../../../components/alert/alertContext";
 import FieldMeasurement from "./hydrogeology/fieldMeasurement";
 import ChronostratigraphyPanel from "./stratigraphy/chronostratigraphyPanel";
 import LithostratigraphyPanel from "./stratigraphy/lithostratigraphyPanel";
