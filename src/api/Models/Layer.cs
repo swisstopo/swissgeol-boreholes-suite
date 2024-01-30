@@ -234,108 +234,6 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     public bool? IsStriae { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s instrument.
-    /// </summary>
-    [Column("instr_id")]
-    public string? Instrument { get; set; }
-
-    /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s instrument kind.
-    /// </summary>
-    [Column("instr_kind_id_cli")]
-    public int? InstrumentKindId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s instrument kind.
-    /// </summary>
-    public Codelist? InstrumentKind { get; set; }
-
-    /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s instrument status.
-    /// </summary>
-    [Column("instr_status_id_cli")]
-    public int? InstrumentStatusId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s instrument status.
-    /// </summary>
-    public Codelist? InstrumentStatus { get; set; }
-
-    /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s instrument stratigraphy.
-    /// </summary>
-    [Column("instr_id_sty_fk")]
-    public int? InstrumentCasingId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s instrument stratigraphy.
-    /// </summary>
-    [Column("instr_id_lay_fk")]
-    public int? InstrumentCasingLayerId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the instrument <see cref="Stratigraphy"/> of the <see cref="Layer"/>.
-    /// </summary>
-    public Stratigraphy? InstrumentCasing { get; set; }
-
-    /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s casing kind.
-    /// </summary>
-    [Column("casng_kind_id_cli")]
-    public int? CasingKindId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s casing kind.
-    /// </summary>
-    public Codelist? CasingKind { get; set; }
-
-    /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s casing material.
-    /// </summary>
-    [Column("casng_material_id_cli")]
-    public int? CasingMaterialId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s casing material.
-    /// </summary>
-    public Codelist? CasingMaterial { get; set; }
-
-    /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s fill material.
-    /// </summary>
-    [Column("fill_material_id_cli")]
-    public int? FillMaterialId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s fill material.
-    /// </summary>
-    public Codelist? FillMaterial { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s casing inner diameter.
-    /// </summary>
-    [Column("casng_inner_diameter_lay")]
-    public double? CasingInnerDiameter { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s casing outer diameter.
-    /// </summary>
-    [Column("casng_outer_diameter_lay")]
-    public double? CasingOuterDiameter { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s casing spud date.
-    /// </summary>
-    [Column("casng_date_spud_lay")]
-    public DateTime? CasingDateSpud { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s casing finish date.
-    /// </summary>
-    [Column("casng_date_finish_lay")]
-    public DateTime? CasingDateFinish { get; set; }
-
-    /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s gradation.
     /// </summary>
     [Column("gradation_id_cli")]
@@ -345,23 +243,6 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Layer"/>'s gradation.
     /// </summary>
     public Codelist? Gradation { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s casing.
-    /// </summary>
-    [Column("casng_id")]
-    public string? Casing { get; set; }
-
-    /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s fill kind.
-    /// </summary>
-    [Column("fill_kind_id_cli")]
-    public int? FillKindId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s fill kind.
-    /// </summary>
-    public Codelist? FillKind { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s lithology top bedrock.

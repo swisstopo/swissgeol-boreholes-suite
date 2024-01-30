@@ -26,12 +26,7 @@ const InfoCheckBox = props => {
               }}
               toggle
             />
-            {kind !== profileKind.CASING && (
-              <TranslationText id="mainStratigraphy" />
-            )}
-            {kind === profileKind.CASING && (
-              <TranslationText id="mainCompletion" />
-            )}
+            <TranslationText id="mainStratigraphy" />
           </>
         )}
       </Styled.FormContainer>

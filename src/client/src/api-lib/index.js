@@ -76,7 +76,6 @@ import {
 
 import {
   createLayer,
-  createInstrument,
   deleteLayer,
   gapLayer,
   getLayers,
@@ -153,7 +152,6 @@ export {
   rejectWorkflow,
   resetWorkflow,
   createLayer,
-  createInstrument,
   deleteLayer,
   gapLayer,
   getLayers,

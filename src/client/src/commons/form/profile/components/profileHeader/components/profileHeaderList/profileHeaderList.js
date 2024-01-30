@@ -3,30 +3,14 @@ import * as Styled from "./styles";
 import DateText from "../../../../../dateText";
 import { Icon } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
-import TranslationText from "../../../../../translationText";
 
 const ProfileHeaderList = props => {
-  const {
-    profiles,
-    selectedStratigraphy,
-    setSelectedStratigraphy,
-    hasInstrumentWithoutCasing,
-  } = props;
+  const { profiles, selectedStratigraphy, setSelectedStratigraphy } = props;
   const { t } = useTranslation();
-
-  // Add a tab for profiles without casing
-  let enhancedProfiles = profiles;
-  if (hasInstrumentWithoutCasing && profiles) {
-    const noCasingProfile = {
-      id: 0,
-      name: <TranslationText id="no_casing" />,
-    };
-    enhancedProfiles = [...profiles, noCasingProfile];
-  }
 
   return (
     <Styled.Container data-cy="profile-header-list">
-      {enhancedProfiles?.map((item, index) => (
+      {profiles?.map((item, index) => (
         <Styled.Item
           data-cy={"profile-header-tab-" + index}
           key={item.id}

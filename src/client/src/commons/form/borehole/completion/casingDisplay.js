@@ -53,7 +53,7 @@ const CasingDisplay = props => {
         </StackFullWidth>
         <StackFullWidth direction="row" spacing={1}>
           <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("kindFilling")}</Typography>
+            <Typography variant="subtitle2">{t("kindCasingLayer")}</Typography>
             <TypographyWithBottomMargin
               variant="subtitle1"
               data-cy="casing-kind">
@@ -61,7 +61,9 @@ const CasingDisplay = props => {
             </TypographyWithBottomMargin>
           </StackHalfWidth>
           <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("materialFilling")}</Typography>
+            <Typography variant="subtitle2">
+              {t("materialCasingLayer")}
+            </Typography>
             <TypographyWithBottomMargin
               variant="subtitle1"
               data-cy="casing-material">

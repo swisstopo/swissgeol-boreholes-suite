@@ -93,7 +93,7 @@ const InstrumentationInput = ({
               />
               <FormSelect
                 fieldName="casingId"
-                label="casingId"
+                label="casingName"
                 selected={item.casingId}>
                 <MenuItem key="0" value={null}>
                   <em>{t("reset")}</em>

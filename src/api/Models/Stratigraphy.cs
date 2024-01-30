@@ -75,33 +75,10 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     public Codelist? Kind { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/>'s casing.
-    /// </summary>
-    [Column("casng_id")]
-    public string? Casing { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/>'s casing date.
-    /// </summary>
-    [Column("casng_date_abd_sty")]
-    public DateTime? CasingDate { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s notes.
     /// </summary>
     [Column("notes_sty")]
     public string? Notes { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/>'s fill casing id.
-    /// </summary>
-    [Column("fill_casng_id_sty_fk")]
-    public int? FillCasingId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/>'s fill casing, which is also a <see cref="Stratigraphy"/>.
-    /// </summary>
-    public Stratigraphy? FillCasing { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Layer"/>s associated with the <see cref="Stratigraphy"/>.
