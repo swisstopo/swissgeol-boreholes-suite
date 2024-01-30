@@ -131,9 +131,6 @@ class CreateLayer(Action):
                     if row is not None:
                         depth_from = row[0]
 
-        elif kind == 3003:
-            depth_from = None
-
         elif cnt > 0:
             # Just find the deepest inserted layer
             depth_from = await self.conn.fetchval("""
@@ -158,64 +155,5 @@ class CreateLayer(Action):
                     )
                     VALUES ($1, $2, $3, $4, NULL, False) RETURNING id_lay
                 """, id, user_id, user_id, depth_from)
-            )
-        }
-
-
-class CreateInstrument(CreateLayer):
-
-    async def execute(self, id, user_id, casing = None):
-
-        # Check if casing exists
-        exists = await self.conn.fetchval(
-            """
-                SELECT EXISTS(
-                    SELECT 1
-                    FROM bdms.stratigraphy
-                    WHERE
-                        id_sty = $1
-                ) AS exists
-            """, casing
-        )
-
-        if exists is False:
-            raise NotFound()
-
-        kind = await self.conn.fetchval(f"""
-            SELECT
-                stratigraphy.kind_id_cli
-            FROM
-                bdms.stratigraphy
-            WHERE
-                id_sty = $1
-        """, id)
-
-        # raise exception if stratigraphy kind is not 3003 (instruement)
-        if kind != 3003:
-            raise ActionWrong()
-
-        if casing is not None:
-            kind = await self.conn.fetchval(f"""
-                SELECT
-                    stratigraphy.kind_id_cli
-                FROM
-                    bdms.stratigraphy
-                WHERE
-                    id_sty = $1
-            """, casing)
-
-            # raise exception if stratigraphy kind is not 3003 (instruement)
-            if kind != 3002:
-                raise ActionWrong()
-        
-        return {
-            "id": (
-                await self.conn.fetchval("""
-                    INSERT INTO bdms.layer(
-                        id_sty_fk, creator_lay, updater_lay,
-                        last_lay, instr_id_sty_fk
-                    )
-                    VALUES ($1, $2, $2, False, $3) RETURNING id_lay
-                """, id, user_id, casing)
             )
         }

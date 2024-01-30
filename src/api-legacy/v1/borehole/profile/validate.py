@@ -40,10 +40,9 @@ class ValidateProfile(Action):
                     result.update(validator_result)
             
             # Is the last layer
-            if profile["kind"] != 3003:
-                if borehole["total_depth"] is not None and idx == len(layers) - 1:
-                    if borehole["total_depth"] and layer["depth_to"] != borehole["total_depth"]:
-                        result["wrongDepth"] = True
+            if borehole["total_depth"] is not None and idx == len(layers) - 1:
+                if borehole["total_depth"] and layer["depth_to"] != borehole["total_depth"]:
+                    result["wrongDepth"] = True
 
             if profile["kind"] == 3000:
                 if depth_to is None:

@@ -5,10 +5,7 @@ import ProfileHeader from "./components/profileHeader";
 import ProfileInfo from "./components/profileInfo";
 import ProfileLayers from "./components/profileLayers";
 import ProfileAttributes from "./components/profileAttributes";
-import { casingData } from "./data/casingdata";
-import { fillingData } from "./data/fillingdata";
 import { stratigraphyData } from "./data/stratigraphydata";
-import ProfileInstrument from "./components/profileInstrument/profileInstrument";
 import TranslationText from "../translationText";
 import { profileKind } from "./constance";
 import { Loader } from "semantic-ui-react";
@@ -28,8 +25,6 @@ const Profile = props => {
   const [reloadAttribute, setReloadAttribute] = useState(0);
   const [attributesBasedKind, setAttributesBasedKind] = useState(null);
   const [stratigraphyKind, setStratigraphyKind] = useState(null);
-  const [hasInstrumentWithoutCasing, setHasInstrumentWithoutCasing] =
-    useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
 
   const onUpdated = attribute => {
@@ -37,12 +32,7 @@ const Profile = props => {
       attribute === "toDepth" ||
       attribute === "fromDepth" ||
       attribute === "lithology" ||
-      attribute === "newLayer" ||
-      attribute === "casingKind" ||
-      attribute === "casingMaterial" ||
-      attribute === "casingDrilling" ||
-      attribute === "fillMaterial" ||
-      attribute === "fillKind"
+      attribute === "newLayer"
     ) {
       setReloadLayer(reloadLayer => reloadLayer + 1);
     }
@@ -56,8 +46,7 @@ const Profile = props => {
       attribute === "primary" ||
       attribute === "name" ||
       attribute === "date" ||
-      attribute === "cloneStratigraphy" ||
-      attribute === "fill_name"
+      attribute === "cloneStratigraphy"
     )
       setReloadHeader(reloadHeader => reloadHeader + 1);
 
@@ -84,14 +73,6 @@ const Profile = props => {
         setAttributesBasedKind(stratigraphyData);
         setStratigraphyKind(profileKind.HYDROGEOLOGY);
         break;
-      case "casing":
-        setAttributesBasedKind(casingData);
-        setStratigraphyKind(profileKind.CASING);
-        break;
-      case "filling":
-        setAttributesBasedKind(fillingData);
-        setStratigraphyKind(profileKind.FILLING);
-        break;
       case "chronostratigraphy":
         break;
       default:
@@ -114,7 +95,6 @@ const Profile = props => {
       setIsEditable(false);
     }
     setKind(kind);
-    setHasInstrumentWithoutCasing(false);
   }, [setIsEditable, borehole, user, kind, setKind]);
 
   const set = useCallback(
@@ -140,48 +120,21 @@ const Profile = props => {
           selectedStratigraphy={selectedStratigraphy}
           setSelectedStratigraphy={set}
           setSelectedStratigraphyNull={setSelectedStratigraphyNull}
-          hasInstrumentWithoutCasing={hasInstrumentWithoutCasing}
           setIsLoadingData={setIsLoadingData}
         />
       )}
 
       {isLoadingData && <Loader active />}
 
-      {!isLoadingData &&
-        !selectedStratigraphy &&
-        stratigraphyKind !== profileKind.INSTRUMENT &&
-        stratigraphyKind !== profileKind.CASING &&
-        stratigraphyKind !== profileKind.FILLING && (
-          <Styled.Empty data-cy="stratigraphy-message">
-            <TranslationText
-              id={
-                borehole.data.lock
-                  ? "msgAddStratigraphy"
-                  : "msgStratigraphyEmpty"
-              }
-            />
-          </Styled.Empty>
-        )}
-
-      {!isLoadingData &&
-        !selectedStratigraphy &&
-        stratigraphyKind === profileKind.CASING && (
-          <Styled.Empty data-cy="casing-message">
-            <TranslationText
-              id={borehole.data.lock ? "msgAddCasing" : "msgCasingEmpty"}
-            />
-          </Styled.Empty>
-        )}
-
-      {!isLoadingData &&
-        !selectedStratigraphy &&
-        stratigraphyKind === profileKind.FILLING && (
-          <Styled.Empty data-cy="backfill-message">
-            <TranslationText
-              id={borehole.data.lock ? "msgAddBackfill" : "msgBackfillEmpty"}
-            />
-          </Styled.Empty>
-        )}
+      {!isLoadingData && !selectedStratigraphy && (
+        <Styled.Empty data-cy="stratigraphy-message">
+          <TranslationText
+            id={
+              borehole.data.lock ? "msgAddStratigraphy" : "msgStratigraphyEmpty"
+            }
+          />
+        </Styled.Empty>
+      )}
 
       {!isLoadingData &&
         stratigraphyKind !== profileKind.INSTRUMENT &&
@@ -197,7 +150,6 @@ const Profile = props => {
                   isEditable,
                   onUpdated,
                   attribute: attributesBasedKind?.profileInfo,
-                  boreholeID: borehole.data.id,
                 }}
               />
               <ProfileLayers
@@ -231,19 +183,6 @@ const Profile = props => {
               </Styled.SecondColumn>
             )}
           </Styled.Container>
-        )}
-      {!isLoadingData &&
-        stratigraphyKind === profileKind.INSTRUMENT &&
-        borehole.data.id && (
-          <ProfileInstrument
-            borehole={borehole}
-            selectedStratigraphyID={selectedStratigraphy?.id}
-            isEditable={isEditable}
-            reloadLayer={reloadLayer}
-            onUpdated={onUpdated}
-            setHasInstrumentWithoutCasing={setHasInstrumentWithoutCasing}
-            setIsLoadingData={setIsLoadingData}
-          />
         )}
     </Styled.MainContainer>
   );

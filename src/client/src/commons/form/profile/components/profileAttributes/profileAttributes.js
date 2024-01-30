@@ -69,15 +69,6 @@ const ProfileAttributes = props => {
       layer_lithology_top_bedrock: [],
       gradation: null,
       notes: "",
-      fill_material: null,
-      casing_id: null,
-      casing_kind: null,
-      casing_material: null,
-      casing_date_spud: null,
-      casing_date_finish: null,
-      casing_innder_diameter: null,
-      casing_outer_diameter: null,
-      fill_kind: null,
     },
   });
   const { t } = useTranslation();

@@ -1,41 +1,28 @@
 import {
   loginAsAdmin,
-  bearerAuth,
   createBorehole,
+  createCompletion,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
-import { setInput, setSelect } from "../helpers/formHelpers";
+import {
+  evaluateDisplayValue,
+  setInput,
+  setSelect,
+} from "../helpers/formHelpers";
 
 describe("Casing crud tests", () => {
   it("add, edit and delete casings", () => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id =>
-        cy.get("@id_token").then(token => {
-          cy.request({
-            method: "POST",
-            url: "/api/v2/completion",
-            cache: "no-cache",
-            credentials: "same-origin",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: {
-              boreholeId: id,
-              isPrimary: true,
-              kindId: 16000002,
-            },
-            auth: bearerAuth(token),
-          }).then(response => {
-            expect(response).to.have.property("status", 200);
-          });
-        }),
-      );
+      .then(id => createCompletion(id, 16000002, true))
+      .then(response => {
+        expect(response).to.have.property("status", 200);
+      });
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/editor/${id}/completion/v2`);
+      cy.visit(`/editor/${id}/completion`);
     });
 
     cy.wait("@get-completions-by-boreholeId");
@@ -65,16 +52,16 @@ describe("Casing crud tests", () => {
     cy.get('[data-cy="save-icon"]').click();
     cy.wait("@casing_GET");
 
-    cy.get('[data-cy="casing-name"]').contains("casing-1");
-    cy.get('[data-cy="casing-fromDepth"]').contains("0");
-    cy.get('[data-cy="casing-toDepth"]').contains("10");
-    cy.get('[data-cy="casing-kind"]').contains("conductor pipe");
-    cy.get('[data-cy="casing-material"]').contains("steel");
-    cy.get('[data-cy="casing-dateStart"]').contains("01. Jan. 2021");
-    cy.get('[data-cy="casing-dateFinish"]').contains("02. Jan. 2021");
-    cy.get('[data-cy="casing-innerDiameter"]').contains("3");
-    cy.get('[data-cy="casing-outerDiameter"]').contains("4");
-    cy.get('[data-cy="casing-notes"]').contains("Lorem.");
+    evaluateDisplayValue("name", "casing-1");
+    evaluateDisplayValue("fromdepth", "0");
+    evaluateDisplayValue("todepth", "10");
+    evaluateDisplayValue("kindCasingLayer", "conductor pipe");
+    evaluateDisplayValue("materialCasingLayer", "steel");
+    evaluateDisplayValue("dateStartCasing", "01. Jan. 2021");
+    evaluateDisplayValue("dateFinishCasing", "02. Jan. 2021");
+    evaluateDisplayValue("casing_inner_diameter", "3");
+    evaluateDisplayValue("casing_outer_diameter", "4");
+    evaluateDisplayValue("notes", "Lorem.");
 
     // update casing
     cy.get('[data-cy="edit-icon"]').click();
@@ -84,9 +71,9 @@ describe("Casing crud tests", () => {
     setSelect("materialId", 5);
 
     cy.get('[data-cy="save-icon"]').click({ force: true });
-    cy.get('[data-cy="casing-name"]').contains("casing-1 updated");
-    cy.get('[data-cy="casing-material"]').contains("concrete");
-    cy.get('[data-cy="casing-innerDiameter"]').contains("3");
+    evaluateDisplayValue("name", "casing-1 updated");
+    evaluateDisplayValue("materialCasingLayer", "concrete");
+    evaluateDisplayValue("casing_inner_diameter", "3");
 
     // delete casing
     // Precondition: instrumentation with reference to casing

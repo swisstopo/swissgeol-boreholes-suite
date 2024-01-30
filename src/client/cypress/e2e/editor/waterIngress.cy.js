@@ -36,7 +36,7 @@ describe("Tests for the wateringress editor.", () => {
     // open completion editor
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/editor/${id}/completion/v2`);
+      cy.visit(`/editor/${id}/completion`);
     });
 
     cy.wait("@get-completions-by-boreholeId");

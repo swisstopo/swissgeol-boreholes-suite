@@ -89,45 +89,6 @@ class PatchLayer(Action):
         elif field == 'notes':
             column = 'notes_lay'
 
-        elif field == 'instrument_status':
-            column = 'instr_status_id_cli'
-
-        elif field == 'instrument_kind':
-            column = 'instr_kind_id_cli'
-
-        elif field == 'instrument_casing_id':
-            column = 'instr_id_sty_fk'
-
-        elif field == 'instrument_id':
-            column = 'instr_id'
-
-        elif field == 'casing_id':
-            column = 'casng_id'
-
-        elif field == 'casing_kind':
-            column = 'casng_kind_id_cli'
-
-        elif field == 'casing_material':
-            column = 'casng_material_id_cli'
-
-        elif field == 'casing_inner_diameter':
-            column = 'casng_inner_diameter_lay'
-
-        elif field == 'casing_outer_diameter':
-            column = 'casng_outer_diameter_lay'
-
-        elif field == 'casing_date_spud':
-            column = 'casng_date_spud_lay'
-
-        elif field == 'casing_date_finish':
-            column = 'casng_date_finish_lay'
-
-        elif field == 'fill_material':
-            column = 'fill_material_id_cli'
-
-        elif field == 'fill_kind':
-            column = 'fill_kind_id_cli'
-
         return column
 
     async def execute(self, id, field, value, user_id):
@@ -144,10 +105,6 @@ class PatchLayer(Action):
                 'uscs_original',
                 'original_lithology',
                 'notes',
-                'instrument_id',
-                'casing_inner_diameter',
-                'casing_outer_diameter',
-                'casing_id',
             ]:
 
                 await self.conn.execute("""
@@ -163,8 +120,6 @@ class PatchLayer(Action):
             elif field in [
                 'restriction_until',
                 'drilling_date',
-                'casing_date_spud',
-                'casing_date_finish'
             ]:
 
                 await self.conn.execute("""
@@ -192,14 +147,7 @@ class PatchLayer(Action):
                 'uscs_1',
                 'uscs_2',
                 'uscs_determination',
-                'lithology_top_bedrock',
-                'casing_kind',
-                'casing_material',
-                'casing_drilling',
-                'instrument_kind',
-                'instrument_status',
-                'fill_material',
-                'fill_kind'
+                'lithology_top_bedrock'
             ]:
                 schema = field
 
@@ -245,27 +193,6 @@ class PatchLayer(Action):
                 elif field == 'uscs_determination':
                     schema = 'mcla104'
 
-                elif field == 'instrument_kind':
-                    schema = 'inst100'
-
-                elif field == 'instrument_status':
-                    schema = 'inst101'
-
-                elif field == 'casing_kind':
-                    schema = 'casi200'
-
-                elif field == 'casing_material':
-                    schema = 'casi201'
-
-                elif field == 'casing_drilling':
-                    schema = 'extended.method'
-
-                elif field == 'fill_material':
-                    schema = 'fill200'
-
-                elif field == 'fill_kind':
-                    schema = 'fill100'
-
                 elif field == 'lithology_top_bedrock':
                     schema = 'custom.lithology_top_bedrock'
 
@@ -285,51 +212,6 @@ class PatchLayer(Action):
                             value, schema
                         )
                     )
-
-                await self.conn.execute("""
-                    UPDATE bdms.layer
-                    SET
-                        %s = $1,
-                        update_lay = now(),
-                        updater_lay = $2
-                    WHERE id_lay = $3
-                """ % column, value, user_id, id)
-
-            elif field in ['instrument_casing_id']:
-
-                if value is not None and value != 0:
-                    # check if given id belong to this borehole
-                    layer_borehole_id = await self.conn.fetchval(
-                        """
-                            SELECT
-                                id_bho_fk
-                            FROM
-                                bdms.layer
-                            INNER JOIN
-                                bdms.stratigraphy
-                            ON
-                                layer.id_sty_fk = stratigraphy.id_sty
-                            WHERE
-                                id_lay = $1
-                        """, id
-                    )
-                    casing_borehole_id = await self.conn.fetchval(
-                        """
-                            SELECT
-                                id_bho_fk
-                            FROM
-                                bdms.stratigraphy
-                            WHERE
-                                id_sty = $1
-                        """, value
-                    )
-
-                    if layer_borehole_id != casing_borehole_id:
-                        raise Exception(
-                            "Casing id %s not part of borehole %s" % (
-                                value, layer_borehole_id
-                            )
-                        )
 
                 await self.conn.execute("""
                     UPDATE bdms.layer

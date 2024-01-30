@@ -66,8 +66,6 @@ public class LayerController : BdmsControllerBase<Layer>
         var codelistIds = entity.CodelistIds?.ToList() ?? new List<int>();
         if (existingLayer != default)
         {
-            entity.CasingDateSpud = entity.CasingDateSpud != null ? DateTime.SpecifyKind(entity.CasingDateSpud.Value, DateTimeKind.Utc) : null;
-            entity.CasingDateFinish = entity.CasingDateFinish != null ? DateTime.SpecifyKind(entity.CasingDateFinish.Value, DateTimeKind.Utc) : null;
             Context.Entry(existingLayer).CurrentValues.SetValues(entity);
         }
         else
@@ -143,13 +141,7 @@ public class LayerController : BdmsControllerBase<Layer>
             .Include(l => l.UscsDetermination)
             .Include(l => l.Lithostratigraphy)
             .Include(l => l.Humidity)
-            .Include(l => l.InstrumentKind)
-            .Include(l => l.InstrumentStatus)
-            .Include(l => l.CasingKind)
-            .Include(l => l.CasingMaterial)
-            .Include(l => l.FillMaterial)
             .Include(l => l.Gradation)
-            .Include(l => l.FillKind)
             .Include(l => l.LithologyTopBedrock)
             .Include(l => l.LayerCodelists)
             .Include(l => l.Codelists);

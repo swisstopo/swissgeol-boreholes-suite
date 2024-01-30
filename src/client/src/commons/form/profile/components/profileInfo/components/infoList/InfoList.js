@@ -5,11 +5,10 @@ import TranslationText from "../../../../../translationText";
 import DomainDropdown from "../../../../../domain/dropdown/domainDropdown";
 import DateField from "../../../../../dateField";
 import _ from "lodash";
-import CasingList from "../../../casingList";
 import { useCallback, useMemo, useState } from "react";
 
 const InfoList = props => {
-  const { attribute, profileInfo, updateChange, casing } = props.data;
+  const { attribute, profileInfo, updateChange } = props.data;
 
   const [inputDisplayValues, setInputDisplayValues] = useState({});
 
@@ -104,22 +103,6 @@ const InfoList = props => {
                     onChange={selected => {
                       updateChange(item.value, selected, false);
                     }}
-                  />
-                </Styled.AttributesItem>
-              )}
-
-              {item.type === "CasingDropdown" && (
-                <Styled.AttributesItem>
-                  <CasingList
-                    data-cy={item.value}
-                    data={casing}
-                    dropDownValue={
-                      _.isNil(profileInfo?.[item.value])
-                        ? null
-                        : profileInfo?.[item.value]
-                    }
-                    handleCasing={updateChange}
-                    ItemValue={item.value}
                   />
                 </Styled.AttributesItem>
               )}

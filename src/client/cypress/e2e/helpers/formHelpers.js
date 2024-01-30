@@ -49,3 +49,7 @@ export const evaluateCheckbox = (fieldName, expectedChecked) => {
   var selector = `[data-cy="${fieldName}-formCheckbox"]`;
   cy.get(selector).invoke("attr", "aria-disabled").should("eq", checked);
 };
+
+export const evaluateDisplayValue = (fieldName, expectedValue) => {
+  cy.get(`[data-cy="${fieldName}-formDisplay"]`).contains(expectedValue);
+};

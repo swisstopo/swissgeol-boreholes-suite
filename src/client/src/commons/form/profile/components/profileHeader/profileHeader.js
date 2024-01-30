@@ -15,7 +15,6 @@ const ProfileHeader = props => {
     selectedStratigraphy,
     setSelectedStratigraphy,
     setSelectedStratigraphyNull,
-    hasInstrumentWithoutCasing,
     setIsLoadingData,
   } = props;
 
@@ -58,9 +57,8 @@ const ProfileHeader = props => {
 
   const setData = useCallback(
     (id, kind) => {
-      let myKind = kind !== profileKind.INSTRUMENT ? kind : profileKind.CASING;
       setIsLoadingData(true);
-      getData(id, myKind).then(data => {
+      getData(id, kind).then(data => {
         setProfiles(data);
         setSpecialData(data);
         setIsLoadingData(false);
@@ -90,8 +88,6 @@ const ProfileHeader = props => {
       {(kind === profileKind.STRATIGRAPHY && (
         <TranslationText id="stratigraphy" />
       )) ||
-        (kind === profileKind.CASING && <TranslationText id="casing" />) ||
-        (kind === profileKind.FILLING && <TranslationText id="filling" />) ||
         ""}
     </>
   );
@@ -99,7 +95,7 @@ const ProfileHeader = props => {
   return (
     <Styled.Container>
       <Styled.ButtonContainer>
-        {isEditable && kind !== profileKind.INSTRUMENT && (
+        {isEditable && (
           <Button
             data-cy="add-stratigraphy-button"
             content={setText}
@@ -109,23 +105,9 @@ const ProfileHeader = props => {
             size="small"
           />
         )}
-        {kind === profileKind.INSTRUMENT && (
-          <Button
-            data-cy="show-all-button"
-            content={<TranslationText id="showAll" />}
-            disabled={
-              showAllInstrument ||
-              (profiles?.length < 1 && !hasInstrumentWithoutCasing)
-            }
-            onClick={setStratigraphyNull}
-            secondary
-            size="small"
-          />
-        )}
 
         <ProfileHeaderList
           profiles={profiles}
-          hasInstrumentWithoutCasing={hasInstrumentWithoutCasing}
           selectedStratigraphy={selectedStratigraphy}
           setSelectedStratigraphy={setStratigraphy}
         />

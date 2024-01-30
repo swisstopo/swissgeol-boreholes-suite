@@ -119,7 +119,7 @@ const CompletionHeaderInput = props => {
               />
               <FormInput
                 fieldName="abandonDate"
-                label="dateAbandonmentCasing"
+                label="dateAbandonmentCompletion"
                 type="date"
                 value={selectedCompletion?.abandonDate}
                 sx={{ marginRight: "0", flex: "0 0 400px" }}
@@ -171,7 +171,8 @@ const CompletionHeaderInput = props => {
           {
             label: "reset",
             action: () => {
-              cancelChanges();
+              formMethods.reset(selectedCompletion);
+              switchTabs(true);
             },
           },
           {

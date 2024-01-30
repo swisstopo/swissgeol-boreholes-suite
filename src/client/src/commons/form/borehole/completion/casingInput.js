@@ -63,7 +63,7 @@ const CasingInput = ({
           <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
             <FormInput
               fieldName="name"
-              label="casingId"
+              label="casingName"
               value={item.name}
               required={true}
             />
@@ -120,7 +120,7 @@ const CasingInput = ({
             <Stack direction="row">
               <FormInput
                 fieldName="dateStart"
-                label="dateSpudCasing"
+                label="dateStartCasing"
                 value={item.dateStart}
                 type="date"
                 required={true}
