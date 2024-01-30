@@ -3,6 +3,7 @@ import {
   createStratigraphy,
   loginAsAdmin,
 } from "../helpers/testHelpers";
+import { setInput, setSelect } from "../helpers/formHelpers";
 
 describe("Tests for the groundwater level measurement editor.", () => {
   beforeEach(function () {
@@ -36,32 +37,11 @@ describe("Tests for the groundwater level measurement editor.", () => {
     });
     cy.wait("@groundwaterlevelmeasurement_GET");
 
-    // fill kind dropdown
-    cy.get('[data-cy="kind-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(2)
-      .click();
-
-    // fill reliability dropdown
-    cy.get('[data-cy="reliability-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
-
-    // fill start time
-    cy.get('[data-cy="start-time-textfield"]').type("2012-11-14T12:06");
-
-    // fill levels
-    cy.get('[data-cy="level-m-textfield"]').type("789.12");
-    cy.get('[data-cy="level-masl-textfield"]').type("5.4567");
+    setSelect("kindId", 2);
+    setSelect("reliabilityId", 1);
+    setInput("startTime", "2012-11-14T12:06");
+    setInput("levelM", "789.12");
+    setInput("levelMasl", "5.4567");
 
     // close editing mask
     cy.get('[data-cy="close-icon"]').click({ force: true });
@@ -74,16 +54,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     // edit groundwater level measurement
     cy.get('[data-cy="edit-icon"]').click({ force: true });
-
-    // change kind dropdown
-    cy.get('[data-cy="kind-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
+    setSelect("kindId", 1);
     cy.get('[data-cy="close-icon"]').click({ force: true });
     cy.contains("Drucksonde");
 

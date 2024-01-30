@@ -3,6 +3,7 @@ import {
   createStratigraphy,
   loginAsAdmin,
 } from "../helpers/testHelpers";
+import { setInput, setSelect } from "../helpers/formHelpers";
 
 const openDropdown = dataCy => {
   cy.get(`[data-cy="${dataCy}"]`)
@@ -63,12 +64,8 @@ describe("Tests for the hydrotest editor.", () => {
     cy.wait("@codelist_GET");
     closeDropdown();
 
-    // fill reliability dropdown
-    openDropdown("reliability-select");
-    selectDropdownOption(1);
-
-    // fill start time
-    cy.get('[data-cy="start-time-textfield"]').type("2012-11-14T12:06");
+    setSelect("reliabilityId", 1);
+    setInput("startTime", "2012-11-14T12:06");
 
     // close editing mask
     cy.get('[data-cy="save-icon"]').click({ force: true });

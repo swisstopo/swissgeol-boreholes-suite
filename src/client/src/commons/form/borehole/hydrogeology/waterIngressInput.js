@@ -91,7 +91,7 @@ const WaterIngressInput = props => {
               />
               <Stack direction="row" sx={{ paddingTop: "10px" }}>
                 <FormSelect
-                  fieldName="quantity"
+                  fieldName="quantityId"
                   label="quantity"
                   selected={waterIngress.quantityId}
                   required={true}>
@@ -109,7 +109,7 @@ const WaterIngressInput = props => {
                     ))}
                 </FormSelect>
                 <FormSelect
-                  fieldName="conditions"
+                  fieldName="conditionsId"
                   label="conditions"
                   selected={waterIngress.conditionsId}>
                   <MenuItem key="0" value="">

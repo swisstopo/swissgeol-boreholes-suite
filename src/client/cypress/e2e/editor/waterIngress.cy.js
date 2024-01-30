@@ -76,48 +76,11 @@ describe("Tests for the wateringress editor.", () => {
     cy.get('[data-cy="add-wateringress-button"]').click({ force: true });
     cy.wait("@casing_GET");
 
-    // fill quantity dropdown
-    cy.get('[data-cy="quantity-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(2)
-      .click();
-
-    // fill conditions dropdown
-    cy.get('[data-cy="conditions-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(3)
-      .click();
-
-    // fill reliability dropdown
-    cy.get('[data-cy="reliability-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
-
-    // fill casing dropdown
-    cy.get('[data-cy="casing-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
-
-    // fill start time
-    cy.get('[data-cy="start-time-textfield"]').type("2012-11-14T12:06");
+    setSelect("quantityId", 2);
+    setSelect("conditionsId", 3);
+    setSelect("reliabilityId", 1);
+    setSelect("casingId", 1);
+    setInput("startTime", "2012-11-14T12:06");
 
     // close editing mask
     cy.get('[data-cy="close-icon"]').click({ force: true });
@@ -129,16 +92,7 @@ describe("Tests for the wateringress editor.", () => {
 
     // edit wateringress
     cy.get('[data-cy="edit-icon"]').click({ force: true });
-
-    // change quantity dropdown
-    cy.get('[data-cy="quantity-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
+    setSelect("quantityId", 1);
     cy.get('[data-cy="close-icon"]').click({ force: true });
     cy.contains("mittel (30 - 120 l/min)");
 

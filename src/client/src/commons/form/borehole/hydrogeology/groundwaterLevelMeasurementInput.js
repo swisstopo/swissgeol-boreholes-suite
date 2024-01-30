@@ -94,7 +94,7 @@ const GroundwaterLevelMeasurementInput = props => {
               />
               <Stack direction="row" sx={{ paddingTop: "10px" }}>
                 <FormSelect
-                  fieldName="parametkindIderId"
+                  fieldName="kindId"
                   label="gwlm_kind"
                   selected={groundwaterLevelMeasurement.kindId}
                   required={true}>

@@ -1,5 +1,4 @@
-import React, { forwardRef, useState, useEffect } from "react";
-import { FormProvider, useFormContext } from "react-hook-form";
+import React, { useState, useEffect } from "react";
 import { MenuItem, Stack } from "@mui/material";
 import {
   FormInput,
@@ -14,7 +13,6 @@ const ObservationInput = props => {
   const { observation, boreholeId } = props;
   const { t, i18n } = useTranslation();
   const domains = useDomains();
-  const formMethods = useFormContext();
   const [casings, setCasings] = useState([]);
 
   useEffect(() => {
@@ -26,7 +24,7 @@ const ObservationInput = props => {
   }, [boreholeId]);
 
   return (
-    <FormProvider {...formMethods}>
+    <>
       <Stack direction="row">
         <FormInput
           fieldName="fromDepthM"
@@ -72,7 +70,7 @@ const ObservationInput = props => {
       </Stack>
       <Stack direction="row">
         <FormSelect
-          fieldName="reliability"
+          fieldName="reliabilityId"
           label="reliability"
           selected={observation.reliabilityId}
           required={true}>
@@ -98,7 +96,7 @@ const ObservationInput = props => {
       </Stack>
       <Stack direction="row">
         <FormSelect
-          fieldName="casing"
+          fieldName="casingId"
           label="casing"
           selected={observation?.casingId}
           disabled={!casings?.length}>
@@ -120,7 +118,7 @@ const ObservationInput = props => {
         rows={3}
         value={observation?.comment}
       />
-    </FormProvider>
+    </>
   );
 };
 

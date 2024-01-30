@@ -3,6 +3,7 @@ import {
   createStratigraphy,
   loginAsAdmin,
 } from "../helpers/testHelpers";
+import { setInput, setSelect } from "../helpers/formHelpers";
 
 describe("Tests for the field measurement editor.", () => {
   beforeEach(function () {
@@ -36,41 +37,11 @@ describe("Tests for the field measurement editor.", () => {
     });
     cy.wait("@fieldmeasurement_GET");
 
-    // fill reliability dropdown
-    cy.get('[data-cy="reliability-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
-
-    // fill start time
-    cy.get('[data-cy="start-time-textfield"]').type("2012-11-14T12:06");
-
-    // fill sample type dropdown
-    cy.get('[data-cy="sample-type-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
-
-    // fill parameter dropdown
-    cy.get('[data-cy="parameter-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(2)
-      .click();
-
-    // fill value
-    cy.get('[data-cy="value-textfield"]').type("77.1045");
+    setSelect("reliabilityId", 1);
+    setInput("startTime", "2012-11-14T12:06");
+    setSelect("sampleTypeId", 1);
+    setSelect("parameterId", 2);
+    setInput("value", "77.1045");
 
     // close editing mask
     cy.get('[data-cy="close-icon"]').click({ force: true });
@@ -82,16 +53,7 @@ describe("Tests for the field measurement editor.", () => {
 
     // edit field measurement
     cy.get('[data-cy="edit-icon"]').click({ force: true });
-
-    // fill sample type dropdown
-    cy.get('[data-cy="sample-type-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(0)
-      .click();
+    setSelect("sampleTypeId", 0);
     cy.get('[data-cy="close-icon"]').click({ force: true });
     cy.contains("Pumpprobe");
 
