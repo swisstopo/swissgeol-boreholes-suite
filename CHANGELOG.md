@@ -21,6 +21,7 @@
 - Disable inputs of the editor view's _borehole_ tab, when editing mode is not active or borehole status does not allow editing.
 - Simplified and restructured the completion section (database, API, UI).
 - Link hydrogeology observations to new completion casing.
+- Use always _m MD_ as unit for borehole depth.
 
 ### Fixed
 
