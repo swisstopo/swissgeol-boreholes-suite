@@ -26,7 +26,7 @@ class LayerProducerHandler(Producer):
 
                     # Lock check
                     if action in [
-                        'CREATE'
+                        'CREATE',
                     ]:
                         sql = """
                             SELECT

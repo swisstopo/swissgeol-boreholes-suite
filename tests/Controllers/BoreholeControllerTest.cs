@@ -60,7 +60,6 @@ public class BoreholeControllerTest
         Assert.AreNotEqual(originalStratigraphy.Id, copiedstratigraphy.Id);
         Assert.AreNotSame(originalStratigraphy.Layers, copiedstratigraphy.Layers);
         Assert.AreNotEqual(originalStratigraphy.Layers.First().Id, copiedstratigraphy.Layers.First().Id);
-        Assert.AreEqual(originalStratigraphy.Layers.First().Casing, copiedstratigraphy.Layers.First().Casing);
 
         Assert.AreNotSame(originalStratigraphy.LithologicalDescriptions, copiedstratigraphy.LithologicalDescriptions);
         Assert.AreNotEqual(originalStratigraphy.LithologicalDescriptions.First().Id, copiedstratigraphy.LithologicalDescriptions.First().Id);
