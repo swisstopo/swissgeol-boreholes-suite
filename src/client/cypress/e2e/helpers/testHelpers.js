@@ -367,6 +367,23 @@ export const createStratigraphy = (boreholeId, kindId) => {
   });
 };
 
+export const createCompletion = (boreholeId, kindId, isPrimary) => {
+  cy.get("@id_token").then(token => {
+    return cy.request({
+      method: "POST",
+      url: "/api/v2/completion",
+      body: {
+        boreholeId: boreholeId,
+        kindId: kindId,
+        isPrimary: isPrimary,
+      },
+      cache: "no-cache",
+      credentials: "same-origin",
+      auth: bearerAuth(token),
+    });
+  });
+};
+
 export const handlePrompt = (title, action) => {
   cy.get('[data-cy="prompt"]').should("exist");
   cy.contains(title);
