@@ -260,7 +260,7 @@ const ProfileLayersList = props => {
                       <div>
                         {itemWithValidation?.validation?.invertedDepth &&
                           itemWithValidation?.depth_from}{" "}
-                        m
+                        m MD
                       </div>
                     }
                   />
@@ -268,7 +268,7 @@ const ProfileLayersList = props => {
                   <NumericFormat
                     value={itemWithValidation?.depth_from}
                     thousandSeparator="'"
-                    suffix=" m"
+                    suffix=" m MD"
                     displayType="text"
                   />
                 )}
@@ -318,7 +318,7 @@ const ProfileLayersList = props => {
                       <div>
                         {itemWithValidation?.validation?.invertedDepth &&
                           itemWithValidation?.depth_to}{" "}
-                        m
+                        m MD
                       </div>
                     }
                   />
@@ -326,7 +326,7 @@ const ProfileLayersList = props => {
                   <NumericFormat
                     value={itemWithValidation?.depth_to}
                     thousandSeparator="'"
-                    suffix=" m"
+                    suffix=" m MD"
                     displayType="text"
                   />
                 )}
