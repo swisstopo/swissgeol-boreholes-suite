@@ -14,9 +14,23 @@ export const FormInput = props => {
     rows,
     value,
     sx,
+    inputProps,
   } = props;
   const { t } = useTranslation();
   const { formState, register } = useFormContext();
+
+  const getDefaultValue = value => {
+    if (value != null) {
+      if (type === "datetime-local") {
+        // re-format from 'YYYY-MM-DDTHH:mm:ss.sssZ' to 'YYYY-MM-DDTHH:mm'.
+        return value.slice(0, 16);
+      } else {
+        return value;
+      }
+    } else {
+      return "";
+    }
+  };
 
   return (
     <TextField
@@ -41,11 +55,15 @@ export const FormInput = props => {
       {...register(fieldName, {
         required: required || false,
         valueAsNumber: type === "number" ? true : false,
+        onChange: e => {
+          console.log(formState);
+        },
       })}
-      defaultValue={value != null ? value : ""}
+      defaultValue={getDefaultValue(value)}
       disabled={disabled || false}
       data-cy={fieldName + "-formInput"}
       InputLabelProps={{ shrink: true }}
+      InputProps={{ ...inputProps }}
     />
   );
 };

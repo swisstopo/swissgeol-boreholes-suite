@@ -1,14 +1,7 @@
 import React, { useEffect, useContext } from "react";
-import { useForm, Controller } from "react-hook-form";
-import {
-  Box,
-  Card,
-  FormControl,
-  MenuItem,
-  Stack,
-  TextField,
-  Tooltip,
-} from "@mui/material";
+import { useForm, FormProvider } from "react-hook-form";
+import { Box, Card, MenuItem, Stack, Tooltip } from "@mui/material";
+import { FormInput, FormSelect } from "../../../../components/form/form";
 import { useDomains } from "../../../../api/fetchApiV2";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
@@ -27,22 +20,22 @@ const GroundwaterLevelMeasurementInput = props => {
   } = props;
   const domains = useDomains();
   const { t, i18n } = useTranslation();
-  const { register, handleSubmit, control, getValues, formState, trigger } =
-    useForm();
+  const formMethods = useForm();
   const alertContext = useContext(AlertContext);
 
   // submit values on unmount with useEffect clean up function.
   useEffect(() => {
     return () => {
-      handleSubmit(submitForm)();
+      formMethods.handleSubmit(submitForm)();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleSubmit]);
+  }, [formMethods.handleSubmit]);
 
   // trigger form validation on mount
   useEffect(() => {
-    trigger();
-  }, [trigger]);
+    formMethods.trigger();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formMethods.trigger]);
 
   const submitForm = data => {
     //convert dates to IsoStrings
@@ -70,7 +63,7 @@ const GroundwaterLevelMeasurementInput = props => {
   };
 
   const closeFormIfCompleted = () => {
-    const formValues = getValues();
+    const formValues = formMethods.getValues();
     if (
       !formValues.reliabilityId ||
       !formValues.kindId ||
@@ -91,105 +84,65 @@ const GroundwaterLevelMeasurementInput = props => {
         mb: 2,
         height: "100%",
       }}>
-      <form onSubmit={handleSubmit(submitForm)}>
-        <Stack direction="row" sx={{ width: "100%" }}>
-          <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-            <ObservationInput
-              observation={groundwaterLevelMeasurement}
-              boreholeId={boreholeId}
-              register={register}
-              control={control}
-              formState={formState}
-              trigger={trigger}
-            />
-            <Stack direction="row" sx={{ paddingTop: "10px" }}>
-              <FormControl
-                variant="outlined"
-                sx={{ flex: "1", marginRight: "10px" }}>
-                <Controller
-                  name="kindId"
-                  control={control}
-                  defaultValue={groundwaterLevelMeasurement.kindId}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      size="small"
-                      label={t("gwlm_kind")}
-                      variant="outlined"
-                      value={field.value || ""}
-                      data-cy="kind-select"
-                      error={Boolean(formState.errors.kindId)}
-                      InputLabelProps={{ shrink: true }}
-                      sx={{
-                        backgroundColor: Boolean(formState.errors.kindId)
-                          ? "#fff6f6"
-                          : "transparent",
-                        borderRadius: "4px",
-                      }}
-                      onChange={e => {
-                        e.stopPropagation();
-                        field.onChange(e.target.value);
-                        trigger();
-                      }}>
-                      {domains?.data
-                        ?.filter(
-                          d =>
-                            d.schema ===
-                            hydrogeologySchemaConstants.groundwaterLevelMeasurementKind,
-                        )
-                        .sort((a, b) => a.order - b.order)
-                        .map(d => (
-                          <MenuItem key={d.id} value={d.id}>
-                            {d[i18n.language]}
-                          </MenuItem>
-                        ))}
-                    </TextField>
-                  )}
+      <FormProvider {...formMethods}>
+        <form onSubmit={formMethods.handleSubmit(submitForm)}>
+          <Stack direction="row" sx={{ width: "100%" }}>
+            <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
+              <ObservationInput
+                observation={groundwaterLevelMeasurement}
+                boreholeId={boreholeId}
+              />
+              <Stack direction="row" sx={{ paddingTop: "10px" }}>
+                <FormSelect
+                  fieldName="parametkindIderId"
+                  label="gwlm_kind"
+                  selected={groundwaterLevelMeasurement.kindId}
+                  required={true}>
+                  {domains?.data
+                    ?.filter(
+                      d =>
+                        d.schema ===
+                        hydrogeologySchemaConstants.groundwaterLevelMeasurementKind,
+                    )
+                    .sort((a, b) => a.order - b.order)
+                    .map(d => (
+                      <MenuItem key={d.id} value={d.id}>
+                        {d[i18n.language]}
+                      </MenuItem>
+                    ))}
+                </FormSelect>
+              </Stack>
+              <Stack direction="row">
+                <FormInput
+                  fieldName="levelMasl"
+                  label="gwlm_levelmasl"
+                  value={groundwaterLevelMeasurement.levelMasl}
+                  type="number"
                 />
-              </FormControl>
+                <FormInput
+                  fieldName="levelM"
+                  label="gwlm_levelm"
+                  value={groundwaterLevelMeasurement.levelM}
+                  type="number"
+                />
+              </Stack>
             </Stack>
-            <Stack direction="row">
-              <TextField
-                sx={{ flex: "1", marginTop: "10px", marginRight: "10px" }}
-                {...register("levelM", {
-                  valueAsNumber: true,
-                })}
-                type="number"
-                size="small"
-                data-cy="level-m-textfield"
-                label={t("gwlm_levelm")}
-                defaultValue={groundwaterLevelMeasurement.levelM}
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-              />
-              <TextField
-                sx={{ flex: "1", marginTop: "10px", marginRight: "10px" }}
-                {...register("levelMasl", {
-                  valueAsNumber: true,
-                })}
-                type="number"
-                size="small"
-                data-cy="level-masl-textfield"
-                label={t("gwlm_levelmasl")}
-                defaultValue={groundwaterLevelMeasurement.levelMasl}
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-              />
-            </Stack>
+            <Box sx={{ marginLeft: "auto" }}>
+              <Tooltip title={t("close")}>
+                <CheckIcon
+                  sx={{
+                    color: formMethods.formState.isValid
+                      ? "#0080008c"
+                      : "disabled",
+                  }}
+                  data-cy="close-icon"
+                  onClick={() => closeFormIfCompleted()}
+                />
+              </Tooltip>
+            </Box>
           </Stack>
-          <Box sx={{ marginLeft: "auto" }}>
-            <Tooltip title={t("close")}>
-              <CheckIcon
-                sx={{ color: formState.isValid ? "#0080008c" : "disabled" }}
-                data-cy="close-icon"
-                onClick={() => closeFormIfCompleted()}
-              />
-            </Tooltip>
-          </Box>
-        </Stack>
-      </form>
+        </form>
+      </FormProvider>
     </Card>
   );
 };

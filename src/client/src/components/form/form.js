@@ -3,4 +3,5 @@ export const getInputFieldBackgroundColor = errorFieldName =>
 
 export { FormInput } from "./formInput";
 export { FormSelect } from "./formSelect";
+export { FormMultiSelect } from "./formMultiSelect";
 export { FormCheckbox } from "./formCheckbox";

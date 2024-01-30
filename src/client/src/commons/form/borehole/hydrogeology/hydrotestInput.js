@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, FormProvider, Controller } from "react-hook-form";
 import {
   Box,
   Card,
@@ -42,21 +42,14 @@ const HydrotestInput = ({
   const domains = useDomains();
   const filteredTestKindDomains = useHydrotestDomains(hydrotestKindIds);
   const { t, i18n } = useTranslation();
-  const {
-    handleSubmit,
-    register,
-    control,
-    formState,
-    getValues,
-    setValue,
-    trigger,
-  } = useForm();
+  const formMethods = useForm();
   const alertContext = useContext(AlertContext);
 
   // trigger form validation on mount
   useEffect(() => {
-    trigger();
-  }, [trigger]);
+    formMethods.trigger();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formMethods.trigger]);
 
   const getFilteredDomains = (schema, data) =>
     data?.filter(c => c.schema === schema).map(c => c.id);
@@ -67,7 +60,7 @@ const HydrotestInput = ({
   useEffect(() => {
     // check the compatibility of codelists (flowdirection, evaluationMethod, hydrotestResultParameter) when the hydrotestKinds (and therefore the filteredTestKindDomains) change.
     if (filteredTestKindDomains.data?.length > 0) {
-      const formValues = getValues();
+      const formValues = formMethods.getValues();
       // delete flowDirections, evaluationMethods that are not longer compatible with the selected hydrotestKinds.
       const allowedEvalutationMethodId = getFilteredDomains(
         hydrogeologySchemaConstants.hydrotestEvaluationMethod,
@@ -88,8 +81,8 @@ const HydrotestInput = ({
       );
 
       // set form values
-      setValue("evaluationMethodId", compatibleEvaluationMethods);
-      setValue("flowDirectionId", compatibleFlowDirections);
+      formMethods.setValue("evaluationMethodId", compatibleEvaluationMethods);
+      formMethods.setValue("flowDirectionId", compatibleFlowDirections);
 
       // delete hydrotestResults that are not longer compatible with the selected hydrotestKinds.
       const allowedHydrotestResultParameterIds = getFilteredDomains(
@@ -122,16 +115,17 @@ const HydrotestInput = ({
         hydrotestResults: filteredHydrotestResults,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     filteredTestKindDomains,
-    getValues,
+    formMethods.getValues,
     hydrotest,
-    setValue,
+    formMethods.setValue,
     updateHydrotest,
   ]);
 
   const closeFormIfCompleted = () => {
-    const formValues = getValues();
+    const formValues = formMethods.getValues();
     if (
       !formValues.reliabilityId ||
       !formValues.startTime ||
@@ -142,7 +136,7 @@ const HydrotestInput = ({
       if (editingHydrotestResultId) {
         alertContext.error(t("saveHydrotestResultAlert"));
       } else {
-        handleSubmit(submitForm)();
+        formMethods.handleSubmit(submitForm)();
         setSelectedHydrotest(null);
       }
     }
@@ -209,8 +203,8 @@ const HydrotestInput = ({
   };
 
   const resetRelatedFormValues = () => {
-    setValue("flowDirectionId", []);
-    setValue("evaluationMethodId", []);
+    formMethods.setValue("flowDirectionId", []);
+    formMethods.setValue("evaluationMethodId", []);
     deleteHydrotestResults();
   };
 
@@ -233,7 +227,7 @@ const HydrotestInput = ({
 
       if (updatedValues.length === 0) {
         resetRelatedFormValues();
-        trigger();
+        formMethods.trigger();
       }
     };
     return (
@@ -272,7 +266,7 @@ const HydrotestInput = ({
   };
 
   const canAddHydrotestResults =
-    formState.isValid &&
+    formMethods.formState.isValid &&
     !isAddingHydrotestResult &&
     !editingHydrotestResultId &&
     filteredTestKindDomains?.data?.length !== 0;
@@ -286,252 +280,252 @@ const HydrotestInput = ({
         mb: 2,
         height: "100%",
       }}>
-      <form onSubmit={handleSubmit(submitForm)}>
-        <Stack direction="row" sx={{ width: "100%" }}>
-          <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-            <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
-              {t("hydrotest")}
-            </Typography>
-            <ObservationInput
-              observation={hydrotest}
-              boreholeId={boreholeId}
-              register={register}
-              control={control}
-              formState={formState}
-              trigger={trigger}
-            />
-            <Stack direction="row" sx={{ paddingTop: "10px" }}>
-              <FormControl
-                variant="outlined"
-                sx={{ flex: "1", marginRight: "10px" }}>
-                <Controller
-                  name="testKindId"
-                  control={control}
-                  defaultValue={
-                    hydrotest?.codelists
-                      ?.filter(
-                        c =>
-                          c.schema ===
-                          hydrogeologySchemaConstants.hydrotestKind,
-                      )
-                      .map(c => c.id) || []
-                  }
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      size="small"
-                      label={t("hydrotestKind")}
-                      variant="outlined"
-                      value={field.value || ""}
-                      data-cy="hydrotest-kind-select"
-                      error={!!formState.errors.testKindId}
-                      InputLabelProps={{ shrink: true }}
-                      SelectProps={{
-                        multiple: true,
-                        renderValue: selection => ChipBox(selection, field),
-                      }}
-                      sx={{
-                        backgroundColor: !!formState.errors.testKindId
-                          ? "#fff6f6"
-                          : "transparent",
-                        borderRadius: "4px",
-                      }}
-                      onChange={e => {
-                        e.stopPropagation();
-                        field.onChange(e.target.value);
-                        if (e.target.value.length === 0) {
-                          resetRelatedFormValues();
-                        }
-                        trigger();
-                        setHydrotestKindIds(e.target.value);
-                      }}>
-                      {domains?.data
+      <FormProvider {...formMethods}>
+        <form onSubmit={formMethods.handleSubmit(submitForm)}>
+          <Stack direction="row" sx={{ width: "100%" }}>
+            <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
+              <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
+                {t("hydrotest")}
+              </Typography>
+              <ObservationInput
+                observation={hydrotest}
+                boreholeId={boreholeId}
+              />
+              <Stack direction="row" sx={{ paddingTop: "10px" }}>
+                <FormControl
+                  variant="outlined"
+                  sx={{ flex: "1", marginRight: "10px" }}>
+                  <Controller
+                    name="testKindId"
+                    control={formMethods.control}
+                    defaultValue={
+                      hydrotest?.codelists
                         ?.filter(
-                          d =>
-                            d.schema ===
+                          c =>
+                            c.schema ===
                             hydrogeologySchemaConstants.hydrotestKind,
                         )
-                        .sort((a, b) => a.order - b.order)
-                        .map(d => (
-                          <MenuItem key={d.id} value={d.id}>
-                            {d[i18n.language]}
-                          </MenuItem>
-                        ))}
-                    </TextField>
-                  )}
-                />
-              </FormControl>
-              <FormControl
-                variant="outlined"
-                sx={{ flex: "1", marginRight: "10px" }}>
-                <Controller
-                  name="flowDirectionId"
-                  control={control}
-                  defaultValue={
-                    hydrotest?.codelists
-                      ?.filter(
-                        c =>
-                          c.schema ===
-                          hydrogeologySchemaConstants.hydrotestFlowDirection,
-                      )
-                      .map(c => c.id) || []
-                  }
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      disabled={
-                        !!formState.errors.testKindId ||
-                        !filteredTestKindDomains?.data?.filter(
-                          d =>
-                            d.schema ===
-                            hydrogeologySchemaConstants.hydrotestFlowDirection,
-                        ).length > 0
-                      }
-                      label={t("flowDirection")}
-                      variant="outlined"
-                      size="small"
-                      value={field.value || ""}
-                      data-cy="flow-direction-select"
-                      InputLabelProps={{ shrink: true }}
-                      SelectProps={{
-                        multiple: true,
-                        renderValue: selection => ChipBox(selection, field),
-                      }}
-                      onChange={e => {
-                        e.stopPropagation();
-                        field.onChange(e.target.value);
-                      }}>
-                      {filteredTestKindDomains?.data
-                        ?.filter(
-                          d =>
-                            d.schema ===
-                            hydrogeologySchemaConstants.hydrotestFlowDirection,
-                        )
-                        .map(d => (
-                          <MenuItem key={d.id} value={d.id}>
-                            {d[i18n.language]}
-                          </MenuItem>
-                        ))}
-                    </TextField>
-                  )}
-                />
-              </FormControl>
-            </Stack>
-            <Stack direction="row" sx={{ paddingTop: "10px" }}>
-              <FormControl
-                variant="outlined"
-                sx={{ flex: "1", marginRight: "10px" }}>
-                <Controller
-                  name="evaluationMethodId"
-                  control={control}
-                  defaultValue={
-                    hydrotest?.codelists
-                      ?.filter(
-                        c =>
-                          c.schema ===
-                          hydrogeologySchemaConstants.hydrotestEvaluationMethod,
-                      )
-                      .map(c => c.id) || []
-                  }
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      disabled={
-                        !!formState.errors.testKindId ||
-                        !filteredTestKindDomains?.data?.filter(
-                          d =>
-                            d.schema ===
-                            hydrogeologySchemaConstants.hydrotestEvaluationMethod,
-                        ).length > 0
-                      }
-                      label={t("evaluationMethod")}
-                      variant="outlined"
-                      size="small"
-                      value={field.value || ""}
-                      data-cy="evaluation-method-select"
-                      InputLabelProps={{ shrink: true }}
-                      SelectProps={{
-                        multiple: true,
-                        renderValue: selection => ChipBox(selection, field),
-                      }}
-                      onChange={e => {
-                        e.stopPropagation();
-                        field.onChange(e.target.value);
-                      }}>
-                      {filteredTestKindDomains?.data
-                        ?.filter(
-                          d =>
-                            d.schema ===
-                            hydrogeologySchemaConstants.hydrotestEvaluationMethod,
-                        )
-                        .map(d => (
-                          <MenuItem key={d.id} value={d.id}>
-                            {d[i18n.language]}
-                          </MenuItem>
-                        ))}
-                    </TextField>
-                  )}
-                />
-              </FormControl>
-              <div style={{ flex: "1", marginRight: "10px" }}></div>
-            </Stack>
-            <Stack direction="row" sx={{ paddingTop: "20px" }}>
-              <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
-                {t("hydrotestResult")}
-              </Typography>
-              <Tooltip title={t("add")}>
-                <IconButton disabled={!canAddHydrotestResults} sx={{ p: 0 }}>
-                  <AddCircleIcon
-                    sx={{
-                      color: canAddHydrotestResults ? "black" : "disabled",
-                    }}
-                    data-cy="add-hydrotestresult-button"
-                    onClick={e => {
-                      formState.isValid && setIsAddingHydrotestResult(true);
-                      !formState.isValid &&
-                        alertContext.error(t("hydrotestRequiredFieldsAlert"));
-                    }}
+                        .map(c => c.id) || []
+                    }
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        select
+                        size="small"
+                        label={t("hydrotestKind")}
+                        variant="outlined"
+                        value={field.value || ""}
+                        data-cy="hydrotest-kind-select"
+                        error={!!formMethods.formState.errors.testKindId}
+                        InputLabelProps={{ shrink: true }}
+                        SelectProps={{
+                          multiple: true,
+                          renderValue: selection => ChipBox(selection, field),
+                        }}
+                        sx={{
+                          backgroundColor: !!formMethods.formState.errors
+                            .testKindId
+                            ? "#fff6f6"
+                            : "transparent",
+                          borderRadius: "4px",
+                        }}
+                        onChange={e => {
+                          e.stopPropagation();
+                          field.onChange(e.target.value);
+                          if (e.target.value.length === 0) {
+                            resetRelatedFormValues();
+                          }
+                          formMethods.trigger();
+                          setHydrotestKindIds(e.target.value);
+                        }}>
+                        {domains?.data
+                          ?.filter(
+                            d =>
+                              d.schema ===
+                              hydrogeologySchemaConstants.hydrotestKind,
+                          )
+                          .sort((a, b) => a.order - b.order)
+                          .map(d => (
+                            <MenuItem key={d.id} value={d.id}>
+                              {d[i18n.language]}
+                            </MenuItem>
+                          ))}
+                      </TextField>
+                    )}
                   />
-                </IconButton>
-              </Tooltip>
-            </Stack>
-            <HydrotestResultTable
-              hydrotest={hydrotest}
-              isEditable={true}
-              isAddingHydrotestResult={isAddingHydrotestResult}
-              setIsAddingHydrotestResult={setIsAddingHydrotestResult}
-              updateHydrotest={updateHydrotest}
-              handleSubmit={handleSubmit}
-              submitForm={submitForm}
-              setAddedHydrotestFromResultTable={
-                setAddedHydrotestFromResultTable
-              }
-              hydrotestKindIds={hydrotestKindIds}
-              filteredTestKindDomains={filteredTestKindDomains}
-              editingId={editingHydrotestResultId}
-              setEditingId={setEditingHydrotestResultId}
-            />
-          </Stack>
-          <Box sx={{ marginLeft: "auto" }}>
-            <Tooltip title={t("save")}>
-              <CheckIcon
-                sx={{
-                  color:
-                    formState.isValid && !editingHydrotestResultId
-                      ? "#0080008c"
-                      : "disabled",
-                }}
-                data-cy="save-icon"
-                onClick={() => closeFormIfCompleted()}
+                </FormControl>
+                <FormControl
+                  variant="outlined"
+                  sx={{ flex: "1", marginRight: "10px" }}>
+                  <Controller
+                    name="flowDirectionId"
+                    control={formMethods.control}
+                    defaultValue={
+                      hydrotest?.codelists
+                        ?.filter(
+                          c =>
+                            c.schema ===
+                            hydrogeologySchemaConstants.hydrotestFlowDirection,
+                        )
+                        .map(c => c.id) || []
+                    }
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        select
+                        disabled={
+                          !!formMethods.formState.errors.testKindId ||
+                          !filteredTestKindDomains?.data?.filter(
+                            d =>
+                              d.schema ===
+                              hydrogeologySchemaConstants.hydrotestFlowDirection,
+                          ).length > 0
+                        }
+                        label={t("flowDirection")}
+                        variant="outlined"
+                        size="small"
+                        value={field.value || ""}
+                        data-cy="flow-direction-select"
+                        InputLabelProps={{ shrink: true }}
+                        SelectProps={{
+                          multiple: true,
+                          renderValue: selection => ChipBox(selection, field),
+                        }}
+                        onChange={e => {
+                          e.stopPropagation();
+                          field.onChange(e.target.value);
+                        }}>
+                        {filteredTestKindDomains?.data
+                          ?.filter(
+                            d =>
+                              d.schema ===
+                              hydrogeologySchemaConstants.hydrotestFlowDirection,
+                          )
+                          .map(d => (
+                            <MenuItem key={d.id} value={d.id}>
+                              {d[i18n.language]}
+                            </MenuItem>
+                          ))}
+                      </TextField>
+                    )}
+                  />
+                </FormControl>
+              </Stack>
+              <Stack direction="row" sx={{ paddingTop: "10px" }}>
+                <FormControl
+                  variant="outlined"
+                  sx={{ flex: "1", marginRight: "10px" }}>
+                  <Controller
+                    name="evaluationMethodId"
+                    control={formMethods.control}
+                    defaultValue={
+                      hydrotest?.codelists
+                        ?.filter(
+                          c =>
+                            c.schema ===
+                            hydrogeologySchemaConstants.hydrotestEvaluationMethod,
+                        )
+                        .map(c => c.id) || []
+                    }
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        select
+                        disabled={
+                          !!formMethods.formState.errors.testKindId ||
+                          !filteredTestKindDomains?.data?.filter(
+                            d =>
+                              d.schema ===
+                              hydrogeologySchemaConstants.hydrotestEvaluationMethod,
+                          ).length > 0
+                        }
+                        label={t("evaluationMethod")}
+                        variant="outlined"
+                        size="small"
+                        value={field.value || ""}
+                        data-cy="evaluation-method-select"
+                        InputLabelProps={{ shrink: true }}
+                        SelectProps={{
+                          multiple: true,
+                          renderValue: selection => ChipBox(selection, field),
+                        }}
+                        onChange={e => {
+                          e.stopPropagation();
+                          field.onChange(e.target.value);
+                        }}>
+                        {filteredTestKindDomains?.data
+                          ?.filter(
+                            d =>
+                              d.schema ===
+                              hydrogeologySchemaConstants.hydrotestEvaluationMethod,
+                          )
+                          .map(d => (
+                            <MenuItem key={d.id} value={d.id}>
+                              {d[i18n.language]}
+                            </MenuItem>
+                          ))}
+                      </TextField>
+                    )}
+                  />
+                </FormControl>
+                <div style={{ flex: "1", marginRight: "10px" }}></div>
+              </Stack>
+              <Stack direction="row" sx={{ paddingTop: "20px" }}>
+                <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
+                  {t("hydrotestResult")}
+                </Typography>
+                <Tooltip title={t("add")}>
+                  <IconButton disabled={!canAddHydrotestResults} sx={{ p: 0 }}>
+                    <AddCircleIcon
+                      sx={{
+                        color: canAddHydrotestResults ? "black" : "disabled",
+                      }}
+                      data-cy="add-hydrotestresult-button"
+                      onClick={e => {
+                        formMethods.formState.isValid &&
+                          setIsAddingHydrotestResult(true);
+                        !formMethods.formState.isValid &&
+                          alertContext.error(t("hydrotestRequiredFieldsAlert"));
+                      }}
+                    />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+              <HydrotestResultTable
+                hydrotest={hydrotest}
+                isEditable={true}
+                isAddingHydrotestResult={isAddingHydrotestResult}
+                setIsAddingHydrotestResult={setIsAddingHydrotestResult}
+                updateHydrotest={updateHydrotest}
+                handleSubmit={formMethods.handleSubmit}
+                submitForm={submitForm}
+                setAddedHydrotestFromResultTable={
+                  setAddedHydrotestFromResultTable
+                }
+                hydrotestKindIds={hydrotestKindIds}
+                filteredTestKindDomains={filteredTestKindDomains}
+                editingId={editingHydrotestResultId}
+                setEditingId={setEditingHydrotestResultId}
               />
-            </Tooltip>
-          </Box>
-        </Stack>
-      </form>
+            </Stack>
+            <Box sx={{ marginLeft: "auto" }}>
+              <Tooltip title={t("save")}>
+                <CheckIcon
+                  sx={{
+                    color:
+                      formMethods.formState.isValid && !editingHydrotestResultId
+                        ? "#0080008c"
+                        : "disabled",
+                  }}
+                  data-cy="save-icon"
+                  onClick={() => closeFormIfCompleted()}
+                />
+              </Tooltip>
+            </Box>
+          </Stack>
+        </form>
+      </FormProvider>
     </Card>
   );
 };

@@ -1,14 +1,7 @@
 import React, { useEffect, useContext } from "react";
-import { useForm, Controller } from "react-hook-form";
-import {
-  Box,
-  Card,
-  FormControl,
-  MenuItem,
-  Stack,
-  TextField,
-  Tooltip,
-} from "@mui/material";
+import { useForm, FormProvider } from "react-hook-form";
+import { Box, Card, MenuItem, Stack, Tooltip } from "@mui/material";
+import { FormSelect } from "../../../../components/form/form";
 import { useDomains } from "../../../../api/fetchApiV2";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
@@ -27,22 +20,22 @@ const WaterIngressInput = props => {
   } = props;
   const domains = useDomains();
   const { t, i18n } = useTranslation();
-  const { register, handleSubmit, control, getValues, formState, trigger } =
-    useForm();
+  const formMethods = useForm();
   const alertContext = useContext(AlertContext);
 
   // submit values on unmount with useEffect clean up function.
   useEffect(() => {
     return () => {
-      handleSubmit(submitForm)();
+      formMethods.handleSubmit(submitForm)();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleSubmit]);
+  }, [formMethods.handleSubmit]);
 
   // trigger form validation on mount
   useEffect(() => {
-    trigger();
-  }, [trigger]);
+    formMethods.trigger();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formMethods.trigger]);
 
   const submitForm = data => {
     //convert dates to IsoStrings
@@ -67,7 +60,7 @@ const WaterIngressInput = props => {
   };
 
   const closeFormIfCompleted = () => {
-    const formValues = getValues();
+    const formValues = formMethods.getValues();
     if (
       !formValues.reliabilityId ||
       !formValues.quantityId ||
@@ -88,117 +81,71 @@ const WaterIngressInput = props => {
         mb: 2,
         height: "100%",
       }}>
-      <form onSubmit={handleSubmit(submitForm)}>
-        <Stack direction="row" sx={{ width: "100%" }}>
-          <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-            <ObservationInput
-              observation={waterIngress}
-              boreholeId={boreholeId}
-              register={register}
-              control={control}
-              formState={formState}
-              trigger={trigger}
-            />
-            <Stack direction="row" sx={{ paddingTop: "10px" }}>
-              <FormControl
-                variant="outlined"
-                sx={{ flex: "1", marginRight: "10px" }}>
-                <Controller
-                  name="quantityId"
-                  control={control}
-                  defaultValue={waterIngress.quantityId}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      size="small"
-                      label={t("quantity")}
-                      variant="outlined"
-                      value={field.value || ""}
-                      data-cy="quantity-select"
-                      error={Boolean(formState.errors.quantityId)}
-                      InputLabelProps={{ shrink: true }}
-                      sx={{
-                        backgroundColor: Boolean(formState.errors.quantityId)
-                          ? "#fff6f6"
-                          : "transparent",
-                        borderRadius: "4px",
-                      }}
-                      onChange={e => {
-                        e.stopPropagation();
-                        field.onChange(e.target.value);
-                        trigger();
-                      }}>
-                      {domains?.data
-                        ?.filter(
-                          d =>
-                            d.schema ===
-                            hydrogeologySchemaConstants.waterIngressQuantity,
-                        )
-                        .sort((a, b) => a.order - b.order)
-                        .map(d => (
-                          <MenuItem key={d.id} value={d.id}>
-                            {d[i18n.language]}
-                          </MenuItem>
-                        ))}
-                    </TextField>
-                  )}
-                />
-              </FormControl>
-              <FormControl
-                variant="outlined"
-                sx={{ flex: "1", marginRight: "10px" }}>
-                <Controller
-                  name="conditionsId"
-                  control={control}
-                  defaultValue={waterIngress.conditionsId}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      label={t("conditions")}
-                      variant="outlined"
-                      size="small"
-                      value={field.value || ""}
-                      data-cy="conditions-select"
-                      InputLabelProps={{ shrink: true }}
-                      onChange={e => {
-                        e.stopPropagation();
-                        field.onChange(e.target.value);
-                      }}>
-                      <MenuItem key="0" value="">
-                        <em>{t("reset")}</em>
-                      </MenuItem>
-                      {domains?.data
-                        ?.filter(
-                          d =>
-                            d.schema ===
-                            hydrogeologySchemaConstants.waterIngressConditions,
-                        )
-                        .sort((a, b) => a.order - b.order)
-                        .map(d => (
-                          <MenuItem key={d.id} value={d.id}>
-                            {d[i18n.language]}
-                          </MenuItem>
-                        ))}
-                    </TextField>
-                  )}
-                />
-              </FormControl>
-            </Stack>
-          </Stack>
-          <Box sx={{ marginLeft: "auto" }}>
-            <Tooltip title={t("close")}>
-              <CheckIcon
-                sx={{ color: formState.isValid ? "#0080008c" : "disabled" }}
-                data-cy="close-icon"
-                onClick={() => closeFormIfCompleted()}
+      <FormProvider {...formMethods}>
+        <form onSubmit={formMethods.handleSubmit(submitForm)}>
+          <Stack direction="row" sx={{ width: "100%" }}>
+            <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
+              <ObservationInput
+                observation={waterIngress}
+                boreholeId={boreholeId}
               />
-            </Tooltip>
-          </Box>
-        </Stack>
-      </form>
+              <Stack direction="row" sx={{ paddingTop: "10px" }}>
+                <FormSelect
+                  fieldName="quantity"
+                  label="quantity"
+                  selected={waterIngress.quantityId}
+                  required={true}>
+                  {domains?.data
+                    ?.filter(
+                      d =>
+                        d.schema ===
+                        hydrogeologySchemaConstants.waterIngressQuantity,
+                    )
+                    .sort((a, b) => a.order - b.order)
+                    .map(d => (
+                      <MenuItem key={d.id} value={d.id}>
+                        {d[i18n.language]}
+                      </MenuItem>
+                    ))}
+                </FormSelect>
+                <FormSelect
+                  fieldName="conditions"
+                  label="conditions"
+                  selected={waterIngress.conditionsId}>
+                  <MenuItem key="0" value="">
+                    <em>{t("reset")}</em>
+                  </MenuItem>
+                  {domains?.data
+                    ?.filter(
+                      d =>
+                        d.schema ===
+                        hydrogeologySchemaConstants.waterIngressConditions,
+                    )
+                    .sort((a, b) => a.order - b.order)
+                    .map(d => (
+                      <MenuItem key={d.id} value={d.id}>
+                        {d[i18n.language]}
+                      </MenuItem>
+                    ))}
+                </FormSelect>
+              </Stack>
+            </Stack>
+            <Box sx={{ marginLeft: "auto" }}>
+              <Tooltip title={t("close")}>
+                <CheckIcon
+                  sx={{
+                    color: formMethods.formState.isValid
+                      ? "#0080008c"
+                      : "disabled",
+                  }}
+                  data-cy="close-icon"
+                  onClick={() => closeFormIfCompleted()}
+                />
+              </Tooltip>
+            </Box>
+          </Stack>
+        </form>
+      </FormProvider>
     </Card>
   );
 };
