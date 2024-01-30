@@ -131,9 +131,6 @@ class CreateLayer(Action):
                     if row is not None:
                         depth_from = row[0]
 
-        elif kind == 3003:
-            depth_from = None
-
         elif cnt > 0:
             # Just find the deepest inserted layer
             depth_from = await self.conn.fetchval("""
@@ -160,4 +157,3 @@ class CreateLayer(Action):
                 """, id, user_id, user_id, depth_from)
             )
         }
-    
