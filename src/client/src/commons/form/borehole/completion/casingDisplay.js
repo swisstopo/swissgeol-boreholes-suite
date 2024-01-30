@@ -61,7 +61,9 @@ const CasingDisplay = props => {
             </TypographyWithBottomMargin>
           </StackHalfWidth>
           <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("materialCasingLayer")}</Typography>
+            <Typography variant="subtitle2">
+              {t("materialCasingLayer")}
+            </Typography>
             <TypographyWithBottomMargin
               variant="subtitle1"
               data-cy="casing-material">
