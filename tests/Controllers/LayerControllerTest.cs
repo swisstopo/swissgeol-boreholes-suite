@@ -1,11 +1,9 @@
 ﻿using BDMS.Models;
-using Bogus.DataSets;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Security.Cryptography.Xml;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
