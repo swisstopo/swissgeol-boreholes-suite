@@ -3,7 +3,11 @@ import {
   createStratigraphy,
   loginAsAdmin,
 } from "../helpers/testHelpers";
-import { setInput, setSelect } from "../helpers/formHelpers";
+import {
+  evaluateDisplayValue,
+  setInput,
+  setSelect,
+} from "../helpers/formHelpers";
 
 const openDropdown = dataCy => {
   cy.get(`[data-cy="${dataCy}"]`)
@@ -72,7 +76,7 @@ describe("Tests for the hydrotest editor.", () => {
 
     //assert hydrotest is displayed
     cy.contains("Pump-/Injektionsversuch, variable Rate");
-    cy.contains("fraglich");
+    evaluateDisplayValue("reliability", "fraglich");
 
     cy.get('[data-cy="edit-icon"]').click({ force: true });
 

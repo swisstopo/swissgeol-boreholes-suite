@@ -3,7 +3,11 @@ import {
   createStratigraphy,
   loginAsAdmin,
 } from "../helpers/testHelpers";
-import { setInput, setSelect } from "../helpers/formHelpers";
+import {
+  evaluateDisplayValue,
+  setInput,
+  setSelect,
+} from "../helpers/formHelpers";
 
 describe("Tests for the groundwater level measurement editor.", () => {
   beforeEach(function () {
@@ -46,17 +50,16 @@ describe("Tests for the groundwater level measurement editor.", () => {
     // close editing mask
     cy.get('[data-cy="close-icon"]').click({ force: true });
 
-    //assert groundwater level measurement is displayed
-    cy.contains("Manometer");
-    cy.contains("789.12");
-    cy.contains("5.4567");
-    cy.contains("fraglich");
+    evaluateDisplayValue("gwlm_kind", "Manometer");
+    evaluateDisplayValue("gwlm_levelm", "789.12");
+    evaluateDisplayValue("gwlm_levelmasl", "5.4567");
+    evaluateDisplayValue("reliability", "fraglich");
 
     // edit groundwater level measurement
     cy.get('[data-cy="edit-icon"]').click({ force: true });
     setSelect("kindId", 1);
     cy.get('[data-cy="close-icon"]').click({ force: true });
-    cy.contains("Drucksonde");
+    evaluateDisplayValue("gwlm_kind", "Drucksonde");
 
     // delete groundwater level measurement
     cy.get('[data-cy="delete-icon"]').click({ force: true });

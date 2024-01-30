@@ -3,7 +3,11 @@ import {
   createStratigraphy,
   loginAsAdmin,
 } from "../helpers/testHelpers";
-import { setInput, setSelect } from "../helpers/formHelpers";
+import {
+  evaluateDisplayValue,
+  setInput,
+  setSelect,
+} from "../helpers/formHelpers";
 
 describe("Tests for the field measurement editor.", () => {
   beforeEach(function () {
@@ -40,22 +44,22 @@ describe("Tests for the field measurement editor.", () => {
     setSelect("reliabilityId", 1);
     setInput("startTime", "2012-11-14T12:06");
     setSelect("sampleTypeId", 1);
-    setSelect("parameterId", 2);
+    setSelect("parameterId", 5);
     setInput("value", "77.1045");
 
     // close editing mask
     cy.get('[data-cy="close-icon"]').click({ force: true });
 
     //assert field measurementis displayed
-    cy.contains("Schöpfprobe");
-    cy.contains("elektrische Leitfähigkeit (20 °C)");
-    cy.contains("77.1045");
+    evaluateDisplayValue("field_measurement_sample_type", "Schöpfprobe");
+    evaluateDisplayValue("parameter", "Sauerstoffsättigung");
+    evaluateDisplayValue("value", "77.1045 %");
 
     // edit field measurement
     cy.get('[data-cy="edit-icon"]').click({ force: true });
     setSelect("sampleTypeId", 0);
     cy.get('[data-cy="close-icon"]').click({ force: true });
-    cy.contains("Pumpprobe");
+    evaluateDisplayValue("field_measurement_sample_type", "Pumpprobe");
 
     // delete field measurement
     cy.get('[data-cy="delete-icon"]').click({ force: true });

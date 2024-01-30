@@ -4,7 +4,11 @@ import {
   startBoreholeEditing,
   loginAsAdmin,
 } from "../helpers/testHelpers";
-import { setInput, setSelect } from "../helpers/formHelpers";
+import {
+  evaluateDisplayValue,
+  setInput,
+  setSelect,
+} from "../helpers/formHelpers";
 
 describe("Tests for the wateringress editor.", () => {
   it("Creates, updates and deletes wateringresses", () => {
@@ -85,16 +89,16 @@ describe("Tests for the wateringress editor.", () => {
     // close editing mask
     cy.get('[data-cy="close-icon"]').click({ force: true });
 
-    //assert wateringress is displayed
-    cy.contains("viel (> 120 l/min)");
-    cy.contains("frei/ungespannt");
-    cy.contains("fraglich");
+    evaluateDisplayValue("quantity", "viel (> 120 l/min)");
+    evaluateDisplayValue("conditions", "frei/ungespannt");
+    evaluateDisplayValue("reliability", "fraglich");
+    evaluateDisplayValue("casingName", "casing-1");
 
     // edit wateringress
     cy.get('[data-cy="edit-icon"]').click({ force: true });
     setSelect("quantityId", 1);
     cy.get('[data-cy="close-icon"]').click({ force: true });
-    cy.contains("mittel (30 - 120 l/min)");
+    evaluateDisplayValue("quantity", "mittel (30 - 120 l/min)");
 
     // delete wateringress
     cy.get('[data-cy="delete-icon"]').click({ force: true });
