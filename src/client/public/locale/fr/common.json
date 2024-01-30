@@ -63,7 +63,7 @@
   "date": "Date",
   "dateAbandonmentCompletion": "Date de l'abandon",
   "dateFinishCasing": "Date de fin de l'aménagement",
-  "dateSpudCasing": "Date de début de l'aménagement",
+  "dateStartCasing": "Date de début de l'aménagement",
   "degree": "Degrés",
   "delete": "Supprimer",
   "deleteForever": "Supprimer définitivement",
