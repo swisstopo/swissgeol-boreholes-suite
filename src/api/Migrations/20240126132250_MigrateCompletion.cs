@@ -73,7 +73,7 @@ BEGIN
 			VALUES ((Select completion_id from bho_completion_link_temp where bho_id = currentStratigraphyRow.id_bho_fk LIMIT 1),
 									COALESCE(currentLayerRow.casng_id, ''), COALESCE(currentLayerRow.depth_from_lay, 0), COALESCE(currentLayerRow.depth_to_lay, 0), COALESCE(currentLayerRow.casng_kind_id_cli, 25000107), 
 									COALESCE(currentLayerRow.casng_material_id_cli, 25000115), COALESCE(currentLayerRow.casng_inner_diameter_lay, 0), COALESCE(currentLayerRow.casng_outer_diameter_lay, 0),
-									DATE '0001-01-01', DATE '0001-01-01',currentLayerRow.notes_lay,
+									COALESCE(currentLayerRow.casng_date_spud_lay, DATE '0001-01-01'), COALESCE(currentLayerRow.casng_date_finish_lay, DATE '0001-01-01'),currentLayerRow.notes_lay,
 									1, CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
 									,NULL, NULL);
 		END IF;
