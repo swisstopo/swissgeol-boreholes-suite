@@ -9,6 +9,7 @@ import {
   setSelect,
   toggleCheckbox,
   evaluateCheckbox,
+  evaluateDisplayValue,
 } from "../helpers/formHelpers";
 
 const toggleHeaderOpen = () => {
@@ -135,7 +136,7 @@ describe("completion crud tests", () => {
     cy.wait("@get-completions-by-boreholeId");
     cy.get('[data-cy="completion-header-tab-1"]').should("not.exist");
     isTabSelected(0);
-    cy.get('[data-cy="completion-is-primary-value"]').should("contain", "Yes");
+    evaluateDisplayValue("mainCompletion", "Yes");
   });
 
   it("switch tabs", () => {

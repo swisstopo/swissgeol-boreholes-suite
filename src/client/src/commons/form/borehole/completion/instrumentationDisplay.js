@@ -1,74 +1,42 @@
 import React from "react";
-import { Stack, Tooltip, Typography } from "@mui/material";
-import {
-  TypographyWithBottomMargin,
-  StackFullWidth,
-  StackHalfWidth,
-} from "./styledComponents";
+import { Stack, Tooltip } from "@mui/material";
+import { StackFullWidth } from "./styledComponents";
+import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 
 const InstrumentationDisplay = props => {
   const { item, selected, setSelected, isEditable, deleteData } = props;
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <StackFullWidth direction="row" justifyContent="space-between">
       <StackFullWidth direction="column" justifyContent="space-between">
         <StackFullWidth direction="row" spacing={1}>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("fromdepth")}</Typography>
-            <TypographyWithBottomMargin variant="subtitle1">
-              {item.fromDepth || item.fromDepth === 0 ? item.fromDepth : "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("todepth")}</Typography>
-            <TypographyWithBottomMargin variant="subtitle1">
-              {item.toDepth || item.toDepth === 0 ? item.toDepth : "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
+          <FormDisplay label="fromdepth" value={item?.fromDepth} />
+          <FormDisplay label="todepth" value={item?.toDepth} />
         </StackFullWidth>
         <StackFullWidth direction="row" spacing={1}>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("name")}</Typography>
-            <TypographyWithBottomMargin variant="subtitle1">
-              {item.name ? item.name : "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("casingName")}</Typography>
-            <TypographyWithBottomMargin variant="subtitle1">
-              {item.casingId ? item.casing.name : "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
+          <FormDisplay label="name" value={item?.name} />
+          <FormDisplay
+            label="casingName"
+            value={item?.casingId ? item?.casing?.name : null}
+          />
         </StackFullWidth>
         <StackFullWidth direction="row" spacing={1}>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("kindInstrument")}</Typography>
-            <TypographyWithBottomMargin variant="subtitle1">
-              {item.kind?.[i18n.language] || "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("statusInstrument")}</Typography>
-            <TypographyWithBottomMargin variant="subtitle1">
-              {item.status?.[i18n.language] || "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
+          <FormDisplay
+            label="kindInstrument"
+            value={item?.kind}
+            type={FormDisplayType.Domain}
+          />
+          <FormDisplay
+            label="statusInstrument"
+            value={item?.status}
+            type={FormDisplayType.Domain}
+          />
         </StackFullWidth>
-        <Typography variant="subtitle2">{t("notes")}</Typography>
-        <TypographyWithBottomMargin
-          variant="subtitle1"
-          sx={{
-            display: "-webkit-box",
-            overflow: "auto",
-            WebkitBoxOrient: "vertical",
-            WebkitLineClamp: 3,
-          }}>
-          {item.notes || "-"}
-        </TypographyWithBottomMargin>
+        <FormDisplay label="notes" value={item?.notes} />
       </StackFullWidth>
       <Stack
         direction="row"

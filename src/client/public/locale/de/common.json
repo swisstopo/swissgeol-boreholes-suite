@@ -63,7 +63,7 @@
   "date": "Datum",
   "dateAbandonmentCompletion": "Datum Stillegung",
   "dateFinishCasing": "Datum Ausbau Ende",
-  "dateSpudCasing": "Datum Ausbau Beginn",
+  "dateStartCasing": "Datum Ausbau Beginn",
   "degree": "Grad",
   "delete": "Löschen",
   "deleteForever": "Dauerhaft löschen",

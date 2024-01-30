@@ -1,132 +1,58 @@
 import React from "react";
-import { Stack, Tooltip, Typography } from "@mui/material";
-import {
-  TypographyWithBottomMargin,
-  StackFullWidth,
-  StackHalfWidth,
-} from "./styledComponents";
+import { Stack, Tooltip } from "@mui/material";
+import { StackFullWidth } from "./styledComponents";
+import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 
 const CasingDisplay = props => {
   const { item, selected, setSelected, isEditable, deleteData } = props;
-  const { t, i18n } = useTranslation();
-
-  const formattedDateTime = dateString => {
-    const date = new Date(dateString);
-    const dateTimeFormat = new Intl.DateTimeFormat("de-CH", {
-      year: "numeric",
-      month: "short",
-      day: "2-digit",
-    });
-
-    return dateTimeFormat.format(date);
-  };
+  const { t } = useTranslation();
 
   return (
     <StackFullWidth direction="row" justifyContent="space-between">
       <StackFullWidth direction="column" justifyContent="space-between">
-        <StackFullWidth direction="column">
-          <Typography variant="subtitle2">{t("name")}</Typography>
-          <TypographyWithBottomMargin variant="subtitle1" data-cy="casing-name">
-            {item.name ? item.name : "-"}
-          </TypographyWithBottomMargin>
+        <FormDisplay label="name" value={item?.name} />
+        <StackFullWidth direction="row" spacing={1}>
+          <FormDisplay label="fromdepth" value={item?.fromDepth} />
+          <FormDisplay label="todepth" value={item?.toDepth} />
         </StackFullWidth>
         <StackFullWidth direction="row" spacing={1}>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("fromdepth")}</Typography>
-            <TypographyWithBottomMargin
-              variant="subtitle1"
-              data-cy="casing-fromDepth">
-              {item.fromDepth || item.fromDepth === 0 ? item.fromDepth : "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("todepth")}</Typography>
-            <TypographyWithBottomMargin
-              variant="subtitle1"
-              data-cy="casing-toDepth">
-              {item.toDepth || item.toDepth === 0 ? item.toDepth : "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
+          <FormDisplay
+            label="kindCasingLayer"
+            value={item?.kind}
+            type={FormDisplayType.Domain}
+          />
+          <FormDisplay
+            label="materialCasingLayer"
+            value={item?.material}
+            type={FormDisplayType.Domain}
+          />
         </StackFullWidth>
         <StackFullWidth direction="row" spacing={1}>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("kindCasingLayer")}</Typography>
-            <TypographyWithBottomMargin
-              variant="subtitle1"
-              data-cy="casing-kind">
-              {item.kind?.[i18n.language] || "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">
-              {t("materialCasingLayer")}
-            </Typography>
-            <TypographyWithBottomMargin
-              variant="subtitle1"
-              data-cy="casing-material">
-              {item.material?.[i18n.language] || "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
+          <FormDisplay
+            label="dateStartCasing"
+            value={item?.dateStart}
+            type={FormDisplayType.Date}
+          />
+          <FormDisplay
+            label="dateFinishCasing"
+            value={item?.dateFinish}
+            type={FormDisplayType.Date}
+          />
         </StackFullWidth>
         <StackFullWidth direction="row" spacing={1}>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("dateSpudCasing")}</Typography>
-            <TypographyWithBottomMargin
-              variant="subtitle1"
-              data-cy="casing-dateStart">
-              {item.dateStart ? formattedDateTime(item.dateStart) : "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">{t("dateFinishCasing")}</Typography>
-            <TypographyWithBottomMargin
-              variant="subtitle1"
-              data-cy="casing-dateFinish">
-              {item.dateFinish ? formattedDateTime(item.dateFinish) : "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
+          <FormDisplay
+            label="casing_inner_diameter"
+            value={item?.innerDiameter}
+          />
+          <FormDisplay
+            label="casing_outer_diameter"
+            value={item?.outerDiameter}
+          />
         </StackFullWidth>
-        <StackFullWidth direction="row" spacing={1}>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">
-              {t("casing_inner_diameter")}
-            </Typography>
-            <TypographyWithBottomMargin
-              variant="subtitle1"
-              data-cy="casing-innerDiameter">
-              {item.innerDiameter || item.innerDiameter === 0
-                ? item.innerDiameter
-                : "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
-          <StackHalfWidth direction="column">
-            <Typography variant="subtitle2">
-              {t("casing_outer_diameter")}
-            </Typography>
-            <TypographyWithBottomMargin
-              variant="subtitle1"
-              data-cy="casing-outerDiameter">
-              {item.outerDiameter || item.outerDiameter === 0
-                ? item.outerDiameter
-                : "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
-        </StackFullWidth>
-        <Typography variant="subtitle2">{t("notes")}</Typography>
-        <TypographyWithBottomMargin
-          variant="subtitle1"
-          sx={{
-            display: "-webkit-box",
-            overflow: "auto",
-            WebkitBoxOrient: "vertical",
-            WebkitLineClamp: 3,
-          }}
-          data-cy="casing-notes">
-          {item.notes || "-"}
-        </TypographyWithBottomMargin>
+        <FormDisplay label="notes" value={item?.notes} />
       </StackFullWidth>
       <Stack
         direction="row"

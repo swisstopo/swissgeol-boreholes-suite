@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Stack, Tooltip, Typography } from "@mui/material";
-import {
-  IconButtonWithMargin,
-  TypographyWithBottomMargin,
-  StackHalfWidth,
-} from "./styledComponents";
+import { Stack, Tooltip } from "@mui/material";
+import { IconButtonWithMargin } from "./styledComponents";
+import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
@@ -20,21 +17,10 @@ const CompletionHeaderDisplay = props => {
     copyCompletion,
     deleteCompletion,
   } = props;
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const toggleHeader = () => {
     setExpanded(!expanded);
-  };
-
-  const formattedDateTime = dateString => {
-    const date = new Date(dateString);
-    const dateTimeFormat = new Intl.DateTimeFormat("de-CH", {
-      year: "numeric",
-      month: "short",
-      day: "2-digit",
-    });
-
-    return dateTimeFormat.format(date);
   };
 
   return (
@@ -48,37 +34,26 @@ const CompletionHeaderDisplay = props => {
           justifyContent="space-between"
           alignItems="center"
           flexWrap="wrap">
-          <StackHalfWidth direction="column" flex={"1 1 180px"}>
-            <Typography variant="subtitle2">{t("name")}</Typography>
-            <TypographyWithBottomMargin variant="subtitle1">
-              {completion?.name || "-"}
-            </TypographyWithBottomMargin>
-          </StackHalfWidth>
+          <FormDisplay
+            label="name"
+            value={completion?.name}
+            sx={{ flex: "1 1 180px" }}
+          />
           <Stack
             direction="row"
             justifyContent="space-between"
             alignItems="center"
             flex={"0 0 400px"}>
-            <StackHalfWidth direction="column" flex={"1 1 auto"}>
-              <Typography variant="subtitle2">{t("completionKind")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {completion.kind?.[i18n.language] || "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("mainCompletion")}</Typography>
-              <TypographyWithBottomMargin
-                data-cy="completion-is-primary-value"
-                variant="subtitle1"
-                sx={{
-                  display: "-webkit-box",
-                  overflow: "auto",
-                  WebkitBoxOrient: "vertical",
-                  WebkitLineClamp: 3,
-                }}>
-                {completion?.isPrimary ? t("yes") : t("no")}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
+            <FormDisplay
+              label="completionKind"
+              value={completion?.kind}
+              type={FormDisplayType.Domain}
+            />
+            <FormDisplay
+              label="mainCompletion"
+              value={completion?.isPrimary}
+              type={FormDisplayType.Boolean}
+            />
           </Stack>
         </Stack>
         {expanded && (
@@ -87,29 +62,17 @@ const CompletionHeaderDisplay = props => {
               direction="row"
               justifyContent="space-between"
               flexWrap="wrap">
-              <StackHalfWidth direction="column" flex={"1 1 180px"}>
-                <Typography variant="subtitle2">{t("notes")}</Typography>
-                <TypographyWithBottomMargin
-                  variant="subtitle1"
-                  sx={{
-                    display: "-webkit-box",
-                    overflow: "auto",
-                    WebkitBoxOrient: "vertical",
-                    WebkitLineClamp: 3,
-                  }}>
-                  {completion?.notes || "-"}
-                </TypographyWithBottomMargin>
-              </StackHalfWidth>
-              <StackHalfWidth direction="column" flex={"0 0 400px"}>
-                <Typography variant="subtitle2">
-                  {t("dateAbandonmentCompletion")}
-                </Typography>
-                <TypographyWithBottomMargin variant="subtitle1">
-                  {completion.abandonDate
-                    ? formattedDateTime(completion.abandonDate)
-                    : "-"}
-                </TypographyWithBottomMargin>
-              </StackHalfWidth>
+              <FormDisplay
+                label="notes"
+                value={completion?.notes}
+                sx={{ flex: "1 1 180px" }}
+              />
+              <FormDisplay
+                label="dateAbandonmentCompletion"
+                value={completion?.abandonDate}
+                type={FormDisplayType.Date}
+                sx={{ flex: "0 0 400px" }}
+              />
             </Stack>
             <Stack
               direction="row"
