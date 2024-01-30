@@ -120,7 +120,7 @@ const CasingInput = ({
             <Stack direction="row">
               <FormInput
                 fieldName="dateStart"
-                label="dateSpudCasing"
+                label="dateStartCasing"
                 value={item.dateStart}
                 type="date"
                 required={true}

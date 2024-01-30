@@ -63,7 +63,7 @@
   "date": "Date",
   "dateAbandonmentCompletion": "Abandonment date",
   "dateFinishCasing": "Completion finish date",
-  "dateSpudCasing": "Completion start date",
+  "dateStartCasing": "Completion start date",
   "degree": "Degrees",
   "delete": "Delete",
   "deleteForever": "Delete permanently",
