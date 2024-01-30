@@ -57,8 +57,7 @@ BEGIN
 		WHERE bho_id = bhoId;
 	END LOOP;
 	
-	-- Loop through all layers to migrate. If it's a casing layer, migrate it to the casing table and allocate it to the borehole's completion.
-	-- Investigations shown, that at the time of migration no instrumentaion not backfill had to be migrated.
+	-- Loop through all layers to migrate.
 	WHILE (SELECT Count(*) FROM bdms.layer JOIN bdms.stratigraphy ON bdms.layer.id_sty_fk = bdms.stratigraphy.id_sty WHERE bdms.stratigraphy.kind_id_cli IN (3002,3003,3004)) > 0
     LOOP
         SELECT * INTO currentLayerRow 
