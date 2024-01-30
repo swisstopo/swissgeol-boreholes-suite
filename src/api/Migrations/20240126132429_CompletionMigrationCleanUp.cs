@@ -170,7 +170,7 @@ public partial class CompletionMigrationCleanUp : Migration
             schema: "bdms",
             table: "layer");
 
-        migrationBuilder.Sql(@"DELETE FROM bdms.codelist WHERE id_cli in (3002,3003,3004);");
+        migrationBuilder.Sql(@"DELETE FROM bdms.codelist WHERE id_cli in (3001,3002,3003,3004);");
     }
 
     /// <inheritdoc />
