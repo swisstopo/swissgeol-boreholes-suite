@@ -15,7 +15,7 @@ const DescriptionDisplay = props => {
         sx={{
           fontSize: fontSize + "px",
         }}>
-        {item.fromDepth} m
+        {item.fromDepth} m MD
       </Typography>
       {layerHeight >= 10 && (
         <>
@@ -42,7 +42,7 @@ const DescriptionDisplay = props => {
         sx={{
           fontSize: fontSize + "px",
         }}>
-        {item.toDepth} m
+        {item.toDepth} m MD
       </Typography>
     </Stack>
   );
