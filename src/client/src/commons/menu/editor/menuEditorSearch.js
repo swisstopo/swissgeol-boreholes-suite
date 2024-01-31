@@ -212,7 +212,11 @@ class MenuEditorSearch extends React.Component {
             padding: "1.5em",
           }}>
           <Icon name="add" size="tiny" />
-          <TranslationText firstUpperCase id="new" />
+          <TranslationText
+            firstUpperCase
+            extra={{ what: "borehole" }}
+            id="new"
+          />
         </Menu.Item>
       </Menu>,
       <Modal

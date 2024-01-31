@@ -700,7 +700,7 @@ class AdminSettings extends React.Component {
                     onClick={() => {
                       this.resetWorkgroup();
                     }}>
-                    <TranslationText extra="workgroup" id="new" />
+                    <TranslationText extra={{ what: "workgroup" }} id="new" />
                   </span>
                 ) : (
                   <span>&nbsp;</span>
