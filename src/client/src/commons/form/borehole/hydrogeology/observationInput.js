@@ -11,7 +11,7 @@ import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const ObservationInput = props => {
   const { observation, boreholeId } = props;
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const domains = useDomains();
   const [casings, setCasings] = useState([]);
 

@@ -1,13 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import {
-  Box,
-  Card,
-  InputAdornment,
-  MenuItem,
-  Stack,
-  Tooltip,
-} from "@mui/material";
+import { Box, Card, InputAdornment, Stack, Tooltip } from "@mui/material";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { useDomains } from "../../../../api/fetchApiV2";
 import CheckIcon from "@mui/icons-material/Check";
