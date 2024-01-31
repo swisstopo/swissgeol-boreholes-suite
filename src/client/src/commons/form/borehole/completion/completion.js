@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Stack, Tooltip, Typography } from "@mui/material";
+import { CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
 import {
   AddButton,
   CompletionBox,
@@ -30,6 +30,7 @@ const Completion = props => {
     index: 0,
     selected: null,
     completions: [],
+    isLoadingData: true,
   });
   const mounted = useRef(false);
   const [editing, setEditing] = useState(false);
@@ -57,6 +58,7 @@ const Completion = props => {
   };
 
   const loadData = (index, selectedId) => {
+    setState({ ...state, isLoadingData: true });
     if (boreholeId && mounted.current) {
       getCompletions(parseInt(boreholeId, 10)).then(response => {
         if (selectedId === "new") {
@@ -77,12 +79,14 @@ const Completion = props => {
             index: index,
             selected: response[index],
             completions: response,
+            isLoadingData: false,
           });
         } else {
           setState({
             index: 0,
             selected: null,
             completions: [],
+            isLoadingData: false,
           });
         }
       });
@@ -91,6 +95,7 @@ const Completion = props => {
         index: 0,
         selected: null,
         completions: [],
+        isLoadingData: false,
       });
     }
   };
@@ -104,6 +109,7 @@ const Completion = props => {
         index: index,
         selected: state.completions[index],
         completions: state.completions,
+        isLoadingData: false,
       });
     }
   };
@@ -124,6 +130,7 @@ const Completion = props => {
             index: newlySelectedTab,
             selected: newCompletionList[newlySelectedTab],
             completions: newCompletionList,
+            isLoadingData: false,
           });
         }
       } else {
@@ -132,6 +139,7 @@ const Completion = props => {
           index: newlySelectedTab,
           selected: state.completions[newlySelectedTab],
           completions: state.completions,
+          isLoadingData: false,
         });
       }
     }
@@ -158,6 +166,7 @@ const Completion = props => {
       index: loadedCompletions.length,
       selected: tempCompletion,
       completions: [...loadedCompletions, tempCompletion],
+      isLoadingData: false,
     });
     setEditing(true);
   };
@@ -216,6 +225,7 @@ const Completion = props => {
         index: index,
         selected: newCompletionList[index],
         completions: newCompletionList,
+        isLoadingData: false,
       });
     }
   };
@@ -303,12 +313,14 @@ const Completion = props => {
           )}
         </Stack>
         <Stack flex="1 0 0" marginTop="10px">
-          {state.selected?.id > 0 ? (
-            <CompletionContent
-              completion={state.selected}
-              isEditable={isEditable}
-            />
-          ) : (
+          {state.isLoadingData ? (
+            <Stack
+              alignItems="center"
+              justifyContent="center"
+              sx={{ flexGrow: 1 }}>
+              <CircularProgress color="inherit" />
+            </Stack>
+          ) : state.selected === null ? (
             <Stack
               alignItems="center"
               justifyContent="center"
@@ -317,6 +329,13 @@ const Completion = props => {
                 {t("msgCompletionEmpty")}
               </Typography>
             </Stack>
+          ) : (
+            state.selected.id > 0 && (
+              <CompletionContent
+                completion={state.selected}
+                isEditable={isEditable}
+              />
+            )
           )}
         </Stack>
       </Stack>
