@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import { Box, Card, MenuItem, Stack, Tooltip } from "@mui/material";
+import { Box, Card, Stack, Tooltip } from "@mui/material";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { useDomains } from "../../../../api/fetchApiV2";
 import CheckIcon from "@mui/icons-material/Check";
@@ -97,20 +97,19 @@ const GroundwaterLevelMeasurementInput = props => {
                   fieldName="kindId"
                   label="gwlm_kind"
                   selected={groundwaterLevelMeasurement.kindId}
-                  required={true}>
-                  {domains?.data
+                  required={true}
+                  values={domains?.data
                     ?.filter(
                       d =>
                         d.schema ===
                         hydrogeologySchemaConstants.groundwaterLevelMeasurementKind,
                     )
                     .sort((a, b) => a.order - b.order)
-                    .map(d => (
-                      <MenuItem key={d.id} value={d.id}>
-                        {d[i18n.language]}
-                      </MenuItem>
-                    ))}
-                </FormSelect>
+                    .map(d => ({
+                      key: d.id,
+                      name: d[i18n.language],
+                    }))}
+                />
               </Stack>
               <Stack direction="row">
                 <FormInput

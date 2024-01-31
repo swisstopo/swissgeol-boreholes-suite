@@ -1,12 +1,26 @@
-import { TextField } from "@mui/material";
+import { MenuItem, TextField } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useFormContext } from "react-hook-form";
 import { getInputFieldBackgroundColor } from "./form";
 
 export const FormSelect = props => {
-  const { fieldName, label, required, disabled, selected, sx } = props;
+  const { fieldName, label, required, disabled, selected, values, sx } = props;
   const { t } = useTranslation();
   const { formState, register, setValue } = useFormContext();
+
+  var menuItems = [];
+  if (required !== true) {
+    menuItems.push({ key: "0", value: null, label: t("reset"), italic: true });
+  }
+  if (values) {
+    values.forEach(value => {
+      menuItems.push({
+        key: value.key,
+        value: value.key,
+        label: value.name,
+      });
+    });
+  }
 
   return (
     <TextField
@@ -36,7 +50,11 @@ export const FormSelect = props => {
       disabled={disabled || false}
       data-cy={fieldName + "-formSelect"}
       InputLabelProps={{ shrink: true }}>
-      {props.children}
+      {menuItems.map(item => (
+        <MenuItem key={item.key} value={item.value}>
+          {item.italic ? <em>{item.label}</em> : item.label}
+        </MenuItem>
+      ))}
     </TextField>
   );
 };

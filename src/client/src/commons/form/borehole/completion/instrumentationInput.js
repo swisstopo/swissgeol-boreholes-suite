@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import { Box, MenuItem, Stack, Tooltip } from "@mui/material";
+import { Box, Stack, Tooltip } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
 import { useDomains, getCasings } from "../../../../api/fetchApiV2";
@@ -94,55 +94,48 @@ const InstrumentationInput = ({
               <FormSelect
                 fieldName="casingId"
                 label="casingName"
-                selected={item.casingId}>
-                <MenuItem key="0" value={null}>
-                  <em>{t("reset")}</em>
-                </MenuItem>
-                {casings?.map(casing => (
-                  <MenuItem key={casing.id} value={casing.id}>
-                    {casing.name}
-                  </MenuItem>
-                ))}
-              </FormSelect>
+                selected={item.casingId}
+                values={casings?.map(casing => ({
+                  key: casing.id,
+                  name: casing.name,
+                }))}
+              />
             </Stack>
             <Stack direction="row">
               <FormSelect
                 fieldName="kindId"
                 label="kindInstrument"
                 selected={item.kindId}
-                required={true}>
-                {domains?.data
+                required={true}
+                values={domains?.data
                   ?.filter(
                     d =>
                       d.schema ===
                       completionSchemaConstants.instrumentationKind,
                   )
                   .sort((a, b) => a.order - b.order)
-                  .map(d => (
-                    <MenuItem key={d.id} value={d.id}>
-                      {d[i18n.language]}
-                    </MenuItem>
-                  ))}
-              </FormSelect>
+                  .map(d => ({
+                    key: d.id,
+                    name: d[i18n.language],
+                  }))}
+              />
               <FormSelect
                 fieldName="statusId"
                 label="statusInstrument"
                 selected={item.statusId}
-                required={true}>
-                {domains?.data
+                required={true}
+                values={domains?.data
                   ?.filter(
                     d =>
                       d.schema ===
                       completionSchemaConstants.instrumentationStatus,
                   )
                   .sort((a, b) => a.order - b.order)
-
-                  .map(d => (
-                    <MenuItem key={d.id} value={d.id}>
-                      {d[i18n.language]}
-                    </MenuItem>
-                  ))}
-              </FormSelect>
+                  .map(d => ({
+                    key: d.id,
+                    name: d[i18n.language],
+                  }))}
+              />
             </Stack>
             <Stack direction="row">
               <FormInput

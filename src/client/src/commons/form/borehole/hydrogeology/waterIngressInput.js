@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import { Box, Card, MenuItem, Stack, Tooltip } from "@mui/material";
+import { Box, Card, Stack, Tooltip } from "@mui/material";
 import { FormSelect } from "../../../../components/form/form";
 import { useDomains } from "../../../../api/fetchApiV2";
 import CheckIcon from "@mui/icons-material/Check";
@@ -94,40 +94,35 @@ const WaterIngressInput = props => {
                   fieldName="quantityId"
                   label="quantity"
                   selected={waterIngress.quantityId}
-                  required={true}>
-                  {domains?.data
+                  required={true}
+                  values={domains?.data
                     ?.filter(
                       d =>
                         d.schema ===
                         hydrogeologySchemaConstants.waterIngressQuantity,
                     )
                     .sort((a, b) => a.order - b.order)
-                    .map(d => (
-                      <MenuItem key={d.id} value={d.id}>
-                        {d[i18n.language]}
-                      </MenuItem>
-                    ))}
-                </FormSelect>
+                    .map(d => ({
+                      key: d.id,
+                      name: d[i18n.language],
+                    }))}
+                />
                 <FormSelect
                   fieldName="conditionsId"
                   label="conditions"
-                  selected={waterIngress.conditionsId}>
-                  <MenuItem key="0" value="">
-                    <em>{t("reset")}</em>
-                  </MenuItem>
-                  {domains?.data
+                  selected={waterIngress.conditionsId}
+                  values={domains?.data
                     ?.filter(
                       d =>
                         d.schema ===
                         hydrogeologySchemaConstants.waterIngressConditions,
                     )
                     .sort((a, b) => a.order - b.order)
-                    .map(d => (
-                      <MenuItem key={d.id} value={d.id}>
-                        {d[i18n.language]}
-                      </MenuItem>
-                    ))}
-                </FormSelect>
+                    .map(d => ({
+                      key: d.id,
+                      name: d[i18n.language],
+                    }))}
+                />
               </Stack>
             </Stack>
             <Box sx={{ marginLeft: "auto" }}>

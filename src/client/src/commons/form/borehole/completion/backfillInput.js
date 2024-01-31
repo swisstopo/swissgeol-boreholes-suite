@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import { Box, MenuItem, Stack, Tooltip } from "@mui/material";
+import { Box, Stack, Tooltip } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
 import { useDomains } from "../../../../api/fetchApiV2";
@@ -76,36 +76,33 @@ const BackfillInput = ({
                 fieldName="kindId"
                 label="kindFilling"
                 selected={item.kindId}
-                required={true}>
-                {domains?.data
+                required={true}
+                values={domains?.data
                   ?.filter(
                     d => d.schema === completionSchemaConstants.backfillKind,
                   )
                   .sort((a, b) => a.order - b.order)
-                  .map(d => (
-                    <MenuItem key={d.id} value={d.id}>
-                      {d[i18n.language]}
-                    </MenuItem>
-                  ))}
-              </FormSelect>
+                  .map(d => ({
+                    key: d.id,
+                    name: d[i18n.language],
+                  }))}
+              />
               <FormSelect
                 fieldName="materialId"
                 label="materialFilling"
                 selected={item.materialId}
-                required={true}>
-                {domains?.data
+                required={true}
+                values={domains?.data
                   ?.filter(
                     d =>
                       d.schema === completionSchemaConstants.backfillMaterial,
                   )
                   .sort((a, b) => a.order - b.order)
-
-                  .map(d => (
-                    <MenuItem key={d.id} value={d.id}>
-                      {d[i18n.language]}
-                    </MenuItem>
-                  ))}
-              </FormSelect>
+                  .map(d => ({
+                    key: d.id,
+                    name: d[i18n.language],
+                  }))}
+              />
             </Stack>
             <Stack direction="row">
               <FormInput

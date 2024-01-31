@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MenuItem, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import {
   FormInput,
   FormSelect,
@@ -73,20 +73,18 @@ const ObservationInput = props => {
           fieldName="reliabilityId"
           label="reliability"
           selected={observation.reliabilityId}
-          required={true}>
-          {domains?.data
+          required={true}
+          values={domains?.data
             ?.filter(
               d =>
                 d.schema === hydrogeologySchemaConstants.observationReliability,
             )
             .sort((a, b) => a.order - b.order)
-
-            .map(d => (
-              <MenuItem key={d.id} value={d.id}>
-                {d[i18n.language]}
-              </MenuItem>
-            ))}
-        </FormSelect>
+            .map(d => ({
+              key: d.id,
+              name: d[i18n.language],
+            }))}
+        />
         <FormCheckbox
           fieldName="completionFinished"
           label="completionFinished"
@@ -99,16 +97,12 @@ const ObservationInput = props => {
           fieldName="casingId"
           label="casing"
           selected={observation?.casingId}
-          disabled={!casings?.length}>
-          <MenuItem key="0" value={null}>
-            <em>{t("reset")}</em>
-          </MenuItem>
-          {casings?.map(casing => (
-            <MenuItem key={casing.id} value={casing.id}>
-              {casing.name}
-            </MenuItem>
-          ))}
-        </FormSelect>
+          disabled={!casings?.length}
+          values={casings?.map(casing => ({
+            key: casing.id,
+            name: casing.name,
+          }))}
+        />
         <div style={{ flex: "1" }} />
       </Stack>
       <FormInput

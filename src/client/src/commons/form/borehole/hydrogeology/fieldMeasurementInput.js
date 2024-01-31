@@ -116,38 +116,36 @@ const FieldMeasurementInput = props => {
                   fieldName="sampleTypeId"
                   label="field_measurement_sample_type"
                   selected={fieldMeasurement.sampleTypeId}
-                  required={true}>
-                  {domains?.data
+                  required={true}
+                  values={domains?.data
                     ?.filter(
                       d =>
                         d.schema ===
                         hydrogeologySchemaConstants.fieldMeasurementSampleType,
                     )
                     .sort((a, b) => a.order - b.order)
-                    .map(d => (
-                      <MenuItem key={d.id} value={d.id}>
-                        {d[i18n.language]}
-                      </MenuItem>
-                    ))}
-                </FormSelect>
+                    .map(d => ({
+                      key: d.id,
+                      name: d[i18n.language],
+                    }))}
+                />
                 <FormSelect
                   fieldName="parameterId"
                   label="parameter"
                   selected={fieldMeasurement.parameterId}
-                  required={true}>
-                  {domains?.data
+                  required={true}
+                  values={domains?.data
                     ?.filter(
                       d =>
                         d.schema ===
                         hydrogeologySchemaConstants.fieldMeasurementParameter,
                     )
                     .sort((a, b) => a.order - b.order)
-                    .map(d => (
-                      <MenuItem key={d.id} value={d.id}>
-                        {d[i18n.language]}
-                      </MenuItem>
-                    ))}
-                </FormSelect>
+                    .map(d => ({
+                      key: d.id,
+                      name: d[i18n.language],
+                    }))}
+                />
               </Stack>
               <Stack direction="row">
                 <FormInput
