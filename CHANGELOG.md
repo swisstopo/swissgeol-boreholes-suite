@@ -26,6 +26,7 @@
 ### Fixed
 
 - Ensure hydrogeology components are loaded properly when refreshed.
+- Fix translations for _new_ buttons.
 
 ## v2.0.506 - 2023-12-21
 
