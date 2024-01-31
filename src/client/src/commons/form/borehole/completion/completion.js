@@ -330,7 +330,7 @@ const Completion = props => {
               </Typography>
             </Stack>
           ) : (
-            state.selected.id > 0 && (
+            state.selected?.id > 0 && (
               <CompletionContent
                 completion={state.selected}
                 isEditable={isEditable}
