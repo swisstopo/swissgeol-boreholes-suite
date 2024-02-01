@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useMemo, createRef } from "react";
 import { useTranslation } from "react-i18next";
+import { CircularProgress, Typography } from "@mui/material";
+import { AddButton } from "../../../../components/buttons/buttons";
 import {
-  CircularProgress,
-  Grid,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+  DataCard,
+  DataCardItem,
+  DataCardContainer,
+  DataCardButtonContainer,
+} from "../../../../components/dataCard/dataCard";
+import {
+  FullPage,
+  FullPageCentered,
+} from "../../../../components/baseComponents";
 
 import {
   useGroundwaterLevelMeasurementMutations,
@@ -67,52 +71,36 @@ const GroundwaterLevelMeasurement = props => {
   }, [displayedGroundwaterLevelMeasurements, groundwaterLevelMeasurementRefs]);
 
   return (
-    <Stack sx={{ flexGrow: 1 }}>
-      <Stack direction="row" sx={{ mb: 2 }}>
-        <Stack
-          direction="row"
-          sx={{ visibility: isEditable ? "visible" : "hidden" }}>
-          <Typography sx={{ mr: 1 }}>
-            {t("groundwater_level_measurement")}
-          </Typography>
-          <Tooltip title={t("add")}>
-            <AddCircleIcon
-              data-cy="add-groundwaterlevelmeasurement-button"
-              color={
-                selectedGroundwaterLevelMeasurement === null
-                  ? "black"
-                  : "disabled"
+    <FullPage>
+      <DataCardButtonContainer>
+        {isEditable && (
+          <AddButton
+            data-cy={"add-groundwaterlevelmeasurement-button"}
+            onClick={e => {
+              e.stopPropagation();
+              if (selectedGroundwaterLevelMeasurement === null) {
+                const tempGroundwaterLevelMeasurement = { id: 0 };
+                setDisplayedGroundwaterLevelMeasurements([
+                  ...groundwaterLevelMeasurements,
+                  tempGroundwaterLevelMeasurement,
+                ]);
+                setSelectedGroundwaterLevelMeasurement(
+                  tempGroundwaterLevelMeasurement,
+                );
               }
-              onClick={e => {
-                e.stopPropagation();
-                if (selectedGroundwaterLevelMeasurement === null) {
-                  const tempGroundwaterLevelMeasurement = { id: 0 };
-                  setDisplayedGroundwaterLevelMeasurements([
-                    ...groundwaterLevelMeasurements,
-                    tempGroundwaterLevelMeasurement,
-                  ]);
-                  setSelectedGroundwaterLevelMeasurement(
-                    tempGroundwaterLevelMeasurement,
-                  );
-                }
-              }}
-            />
-          </Tooltip>
-        </Stack>
-      </Stack>
+            }}>
+            {t("addGroundwaterLevelMeasurement")}
+          </AddButton>
+        )}
+      </DataCardButtonContainer>
       {displayedGroundwaterLevelMeasurements?.length === 0 && (
-        <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
+        <FullPageCentered>
           <Typography variant="fullPageMessage">
             {t("msgGroundwaterLevelMeasurementsEmpty")}
           </Typography>
-        </Stack>
+        </FullPageCentered>
       )}
-      <Grid
-        container
-        alignItems="stretch"
-        columnSpacing={{ xs: 2 }}
-        rowSpacing={{ xs: 2 }}
-        sx={{ overflow: "auto", maxHeight: "85vh" }}>
+      <DataCardContainer>
         {displayedGroundwaterLevelMeasurements?.length > 0 &&
           displayedGroundwaterLevelMeasurements
             ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
@@ -121,53 +109,51 @@ const GroundwaterLevelMeasurement = props => {
                 selectedGroundwaterLevelMeasurement?.id === gwlm.id;
               const isTempGwlm = gwlm.id === 0;
               return (
-                <Grid
-                  item
-                  md={12}
-                  lg={12}
-                  xl={6}
+                <DataCardItem
                   key={index}
                   ref={groundwaterLevelMeasurementRefs[index]}>
                   {isSuccess ? (
-                    isEditable && isSelected ? (
-                      <GroundwaterLevelMeasurementInput
-                        groundwaterLevelMeasurement={gwlm}
-                        setSelectedGroundwaterLevelMeasurement={
-                          setSelectedGroundwaterLevelMeasurement
-                        }
-                        updateGroundwaterLevelMeasurement={
-                          updateGroundwaterLevelMeasurement
-                        }
-                        addGroundwaterLevelMeasurement={
-                          addGroundwaterLevelMeasurement
-                        }
-                        boreholeId={boreholeId}
-                      />
-                    ) : (
-                      !isTempGwlm && (
-                        <GroundwaterLevelMeasurementDisplay
+                    <DataCard key={gwlm.id}>
+                      {isEditable && isSelected ? (
+                        <GroundwaterLevelMeasurementInput
                           groundwaterLevelMeasurement={gwlm}
-                          selectedGroundwaterLevelMeasurement={
-                            selectedGroundwaterLevelMeasurement
-                          }
                           setSelectedGroundwaterLevelMeasurement={
                             setSelectedGroundwaterLevelMeasurement
                           }
-                          isEditable={isEditable}
-                          deleteGroundwaterLevelMeasurement={
-                            deleteGroundwaterLevelMeasurement
+                          updateGroundwaterLevelMeasurement={
+                            updateGroundwaterLevelMeasurement
                           }
+                          addGroundwaterLevelMeasurement={
+                            addGroundwaterLevelMeasurement
+                          }
+                          boreholeId={boreholeId}
                         />
-                      )
-                    )
+                      ) : (
+                        !isTempGwlm && (
+                          <GroundwaterLevelMeasurementDisplay
+                            groundwaterLevelMeasurement={gwlm}
+                            selectedGroundwaterLevelMeasurement={
+                              selectedGroundwaterLevelMeasurement
+                            }
+                            setSelectedGroundwaterLevelMeasurement={
+                              setSelectedGroundwaterLevelMeasurement
+                            }
+                            isEditable={isEditable}
+                            deleteGroundwaterLevelMeasurement={
+                              deleteGroundwaterLevelMeasurement
+                            }
+                          />
+                        )
+                      )}
+                    </DataCard>
                   ) : (
                     <CircularProgress />
                   )}
-                </Grid>
+                </DataCardItem>
               );
             })}
-      </Grid>
-    </Stack>
+      </DataCardContainer>
+    </FullPage>
   );
 };
 export default GroundwaterLevelMeasurement;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Stack, Tooltip, Typography } from "@mui/material";
+import { Stack, Tooltip, Typography } from "@mui/material";
 import { StackFullWidth } from "./styledComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
@@ -18,15 +18,7 @@ const WaterIngressDisplay = props => {
   const { t } = useTranslation();
 
   return (
-    <Card
-      key={waterIngress.id}
-      sx={{
-        border: "1px solid lightgrey",
-        borderRadius: "3px",
-        p: 1.5,
-        mb: 2,
-        height: "100%",
-      }}>
+    <>
       <StackFullWidth direction="row" justifyContent="space-between">
         <StackFullWidth direction="column" justifyContent="space-between">
           <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
@@ -77,8 +69,7 @@ const WaterIngressDisplay = props => {
           </Tooltip>
         </Stack>
       </StackFullWidth>
-      <Stack direction="column"></Stack>
-    </Card>
+    </>
   );
 };
 

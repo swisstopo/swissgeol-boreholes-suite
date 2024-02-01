@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useMemo, createRef } from "react";
 import { useTranslation } from "react-i18next";
+import { CircularProgress, Typography } from "@mui/material";
+import { AddButton } from "../../../../components/buttons/buttons";
 import {
-  Box,
-  CircularProgress,
-  Grid,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+  DataCard,
+  DataCardItem,
+  DataCardContainer,
+  DataCardButtonContainer,
+} from "../../../../components/dataCard/dataCard";
+import {
+  FullPage,
+  FullPageCentered,
+} from "../../../../components/baseComponents";
 
 import {
   useHydrotestMutations,
@@ -67,41 +70,31 @@ const Hydrotest = ({ isEditable, boreholeId }) => {
   }, [displayedHydrotests, hydrotestRefs]);
 
   return (
-    <Stack sx={{ flexGrow: 1 }}>
-      <Box sx={{ mb: 2 }}>
-        <Stack
-          direction="row"
-          sx={{ visibility: isEditable ? "visible" : "hidden" }}>
-          <Typography sx={{ mr: 1 }}>{t("hydrotest")}</Typography>
-          <Tooltip title={t("add")}>
-            <AddCircleIcon
-              data-cy="add-hydrotest-button"
-              color={selectedHydrotest === null ? "black" : "disabled"}
-              onClick={e => {
-                e.stopPropagation();
-                if (!selectedHydrotest) {
-                  const tempHydrotest = { id: 0 };
-                  setDisplayedHydrotests([...hydrotests, tempHydrotest]);
-                  setSelectedHydrotest(tempHydrotest);
-                }
-              }}
-            />
-          </Tooltip>
-        </Stack>
-      </Box>
+    <FullPage>
+      <DataCardButtonContainer>
+        {isEditable && (
+          <AddButton
+            data-cy={"add-hydrotest-button"}
+            onClick={e => {
+              e.stopPropagation();
+              if (!selectedHydrotest) {
+                const tempHydrotest = { id: 0 };
+                setDisplayedHydrotests([...hydrotests, tempHydrotest]);
+                setSelectedHydrotest(tempHydrotest);
+              }
+            }}>
+            {t("addHydrotest")}
+          </AddButton>
+        )}
+      </DataCardButtonContainer>
       {displayedHydrotests?.length === 0 && (
-        <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
+        <FullPageCentered>
           <Typography variant="fullPageMessage">
             {t("msgHydrotestEmpty")}
           </Typography>
-        </Stack>
+        </FullPageCentered>
       )}
-      <Grid
-        container
-        alignItems="stretch"
-        columnSpacing={{ xs: 2 }}
-        rowSpacing={{ xs: 2 }}
-        sx={{ overflow: "auto", maxHeight: "85vh" }}>
+      <DataCardContainer>
         {displayedHydrotests?.length > 0 &&
           displayedHydrotests
             ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
@@ -109,44 +102,40 @@ const Hydrotest = ({ isEditable, boreholeId }) => {
               const isSelected = selectedHydrotest?.id === hydrotest.id;
               const isTempHydrotest = hydrotest.id === 0;
               return (
-                <Grid
-                  item
-                  md={12}
-                  lg={12}
-                  xl={6}
-                  key={hydrotest.id}
-                  ref={hydrotestRefs[index]}>
+                <DataCardItem key={hydrotest.id} ref={hydrotestRefs[index]}>
                   {isSuccess ? (
-                    isEditable && isSelected ? (
-                      <HydrotestInput
-                        hydrotest={hydrotest}
-                        setSelectedHydrotest={setSelectedHydrotest}
-                        updateHydrotest={updateHydrotest}
-                        addHydrotest={addHydrotest}
-                        boreholeId={boreholeId}
-                        setAddedHydrotestFromResultTable={
-                          setAddedHydrotestFromResultTable
-                        }
-                      />
-                    ) : (
-                      !isTempHydrotest && (
-                        <HydrotestDisplay
+                    <DataCard key={hydrotest.id}>
+                      {isEditable && isSelected ? (
+                        <HydrotestInput
                           hydrotest={hydrotest}
-                          selectedHydrotest={selectedHydrotest}
                           setSelectedHydrotest={setSelectedHydrotest}
-                          isEditable={isEditable}
-                          deleteHydrotest={deleteHydrotest}
+                          updateHydrotest={updateHydrotest}
+                          addHydrotest={addHydrotest}
+                          boreholeId={boreholeId}
+                          setAddedHydrotestFromResultTable={
+                            setAddedHydrotestFromResultTable
+                          }
                         />
-                      )
-                    )
+                      ) : (
+                        !isTempHydrotest && (
+                          <HydrotestDisplay
+                            hydrotest={hydrotest}
+                            selectedHydrotest={selectedHydrotest}
+                            setSelectedHydrotest={setSelectedHydrotest}
+                            isEditable={isEditable}
+                            deleteHydrotest={deleteHydrotest}
+                          />
+                        )
+                      )}
+                    </DataCard>
                   ) : (
                     <CircularProgress />
                   )}
-                </Grid>
+                </DataCardItem>
               );
             })}
-      </Grid>
-    </Stack>
+      </DataCardContainer>
+    </FullPage>
   );
 };
 export default React.memo(Hydrotest);

@@ -64,29 +64,6 @@ export const IconButtonWithMargin = styled(IconButton)({
   },
 });
 
-export const BdmsButton = styled(Button)({
-  fontFamily: "Lato",
-  textTransform: "none",
-  color: "rgba(0, 0, 0, 0.8)",
-  borderColor: "rgba(0, 0, 0, 0.8)",
-  marginBottom: "6px",
-  "&:hover, &.Mui-focusVisible, &:active, &:focus, &:focus-visible": {
-    borderColor: "rgba(0, 0, 0, 0.8)",
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
-  },
-  "& .MuiTouchRipple-root": {
-    display: "none",
-  },
-});
-
-export const AddButton = forwardRef((props, ref) => {
-  return (
-    <BdmsButton ref={ref} {...props} variant="outlined" startIcon={<AddIcon />}>
-      {props.children}
-    </BdmsButton>
-  );
-});
-
 export const CompletionBox = styled(Box)(() => ({
   backgroundColor: "rgb(242,242,242)",
   borderRadius: "3px",
@@ -122,19 +99,3 @@ export const CompletionTab = styled(props => <Tab disableRipple {...props} />)(
     },
   }),
 );
-
-export const CompletionCard = forwardRef((props, ref) => {
-  const StyledCard = styled(Card)(() => ({
-    width: "100%",
-    border: "1px solid lightgrey",
-    borderRadius: "3px",
-    padding: "12px 12px 16px 12px",
-    marginBottom: "8px",
-  }));
-
-  return (
-    <StyledCard ref={ref} {...props}>
-      {props.children}
-    </StyledCard>
-  );
-});

@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useMemo, createRef } from "react";
 import { useTranslation } from "react-i18next";
+import { CircularProgress, Typography } from "@mui/material";
+import { AddButton } from "../../../../components/buttons/buttons";
 import {
-  CircularProgress,
-  Grid,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+  DataCard,
+  DataCardItem,
+  DataCardContainer,
+  DataCardButtonContainer,
+} from "../../../../components/dataCard/dataCard";
+import {
+  FullPage,
+  FullPageCentered,
+} from "../../../../components/baseComponents";
 
 import {
   useFieldMeasurementMutations,
@@ -70,44 +74,34 @@ const FieldMeasurement = props => {
   };
 
   return (
-    <Stack sx={{ flexGrow: 1 }}>
-      <Stack direction="row" sx={{ mb: 2 }}>
-        <Stack
-          direction="row"
-          sx={{ visibility: isEditable ? "visible" : "hidden" }}>
-          <Typography sx={{ mr: 1 }}>{t("field_measurement")}</Typography>
-          <Tooltip title={t("add")}>
-            <AddCircleIcon
-              data-cy="add-fieldmeasurement-button"
-              color={selectedFieldMeasurement === null ? "black" : "disabled"}
-              onClick={e => {
-                e.stopPropagation();
-                if (selectedFieldMeasurement === null) {
-                  const tempFieldMeasurement = { id: 0 };
-                  setDisplayedFieldMeasurements([
-                    ...fieldMeasurements,
-                    tempFieldMeasurement,
-                  ]);
-                  setSelectedFieldMeasurement(tempFieldMeasurement);
-                }
-              }}
-            />
-          </Tooltip>
-        </Stack>
-      </Stack>
+    <FullPage>
+      <DataCardButtonContainer>
+        {isEditable && (
+          <AddButton
+            data-cy={"add-fieldmeasurement-button"}
+            onClick={e => {
+              e.stopPropagation();
+              if (selectedFieldMeasurement === null) {
+                const tempFieldMeasurement = { id: 0 };
+                setDisplayedFieldMeasurements([
+                  ...fieldMeasurements,
+                  tempFieldMeasurement,
+                ]);
+                setSelectedFieldMeasurement(tempFieldMeasurement);
+              }
+            }}>
+            {t("addFieldmeasurement")}
+          </AddButton>
+        )}
+      </DataCardButtonContainer>
       {displayedFieldMeasurements?.length === 0 && (
-        <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
+        <FullPageCentered>
           <Typography variant="fullPageMessage">
             {t("msgFieldMeasurementsEmpty")}
           </Typography>
-        </Stack>
+        </FullPageCentered>
       )}
-      <Grid
-        container
-        alignItems="stretch"
-        columnSpacing={{ xs: 2 }}
-        rowSpacing={{ xs: 2 }}
-        sx={{ overflow: "auto", maxHeight: "85vh" }}>
+      <DataCardContainer>
         {displayedFieldMeasurements?.length > 0 &&
           displayedFieldMeasurements
             ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
@@ -115,47 +109,43 @@ const FieldMeasurement = props => {
               const isSelected = selectedFieldMeasurement?.id === gwlm.id;
               const isTempGwlm = gwlm.id === 0;
               return (
-                <Grid
-                  item
-                  md={12}
-                  lg={12}
-                  xl={6}
-                  key={index}
-                  ref={fieldMeasurementRefs[index]}>
+                <DataCardItem key={index} ref={fieldMeasurementRefs[index]}>
                   {isSuccess ? (
-                    isEditable && isSelected ? (
-                      <FieldMeasurementInput
-                        fieldMeasurement={gwlm}
-                        setSelectedFieldMeasurement={
-                          setSelectedFieldMeasurement
-                        }
-                        updateFieldMeasurement={updateFieldMeasurement}
-                        addFieldMeasurement={addFieldMeasurement}
-                        boreholeId={boreholeId}
-                        getParameterUnit={getParameterUnit}
-                      />
-                    ) : (
-                      !isTempGwlm && (
-                        <FieldMeasurementDisplay
+                    <DataCard key={gwlm.id}>
+                      {isEditable && isSelected ? (
+                        <FieldMeasurementInput
                           fieldMeasurement={gwlm}
-                          selectedFieldMeasurement={selectedFieldMeasurement}
                           setSelectedFieldMeasurement={
                             setSelectedFieldMeasurement
                           }
-                          isEditable={isEditable}
-                          deleteFieldMeasurement={deleteFieldMeasurement}
+                          updateFieldMeasurement={updateFieldMeasurement}
+                          addFieldMeasurement={addFieldMeasurement}
+                          boreholeId={boreholeId}
                           getParameterUnit={getParameterUnit}
                         />
-                      )
-                    )
+                      ) : (
+                        !isTempGwlm && (
+                          <FieldMeasurementDisplay
+                            fieldMeasurement={gwlm}
+                            selectedFieldMeasurement={selectedFieldMeasurement}
+                            setSelectedFieldMeasurement={
+                              setSelectedFieldMeasurement
+                            }
+                            isEditable={isEditable}
+                            deleteFieldMeasurement={deleteFieldMeasurement}
+                            getParameterUnit={getParameterUnit}
+                          />
+                        )
+                      )}
+                    </DataCard>
                   ) : (
                     <CircularProgress />
                   )}
-                </Grid>
+                </DataCardItem>
               );
             })}
-      </Grid>
-    </Stack>
+      </DataCardContainer>
+    </FullPage>
   );
 };
 export default FieldMeasurement;

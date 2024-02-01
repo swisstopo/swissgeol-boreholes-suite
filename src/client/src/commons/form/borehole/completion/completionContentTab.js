@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useMemo, createRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
 import {
-  Box,
-  CircularProgress,
-  Grid,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { AddButton, CompletionCard } from "./styledComponents";
+  DataCard,
+  DataCardItem,
+  DataCardContainer,
+  DataCardButtonContainer,
+} from "../../../../components/dataCard/dataCard";
+import { AddButton } from "../../../../components/buttons/buttons";
+import {
+  FullPage,
+  FullPageCentered,
+} from "../../../../components/baseComponents";
 
 export const CompletionContentTab = props => {
   const {
@@ -98,64 +101,43 @@ export const CompletionContentTab = props => {
   }, [displayed, dataRefs]);
 
   return (
-    <Stack sx={{ flex: "1 0 0" }}>
-      <Box sx={{ mb: 2, marginBottom: 0, flex: "0 1 auto" }}>
-        <Stack direction="row" justifyContent="flex-end" alignItems="center">
-          {isEditable && (
-            <Tooltip title={t("add")}>
-              <AddButton
-                sx={{ marginRight: "8px" }}
-                data-cy={addLabel + "-button"}
-                onClick={e => {
-                  e.stopPropagation();
-                  if (!selected) {
-                    const temp = { id: 0 };
-                    setDisplayed([...state.data, temp]);
-                    setSelected(temp);
-                  }
-                }}>
-                {t(addLabel)}
-              </AddButton>
-            </Tooltip>
-          )}
-        </Stack>
-      </Box>
+    <FullPage>
+      <DataCardButtonContainer>
+        {isEditable && (
+          <Tooltip title={t("add")}>
+            <AddButton
+              sx={{ marginRight: "8px" }}
+              data-cy={addLabel + "-button"}
+              onClick={e => {
+                e.stopPropagation();
+                if (!selected) {
+                  const temp = { id: 0 };
+                  setDisplayed([...state.data, temp]);
+                  setSelected(temp);
+                }
+              }}>
+              {t(addLabel)}
+            </AddButton>
+          </Tooltip>
+        )}
+      </DataCardButtonContainer>
       {state.isLoadingData ? (
         <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
           <CircularProgress color="inherit" />
         </Stack>
       ) : displayed?.length > 0 ? (
-        <Grid
-          container
-          columnSpacing={{ xs: 2 }}
-          rowSpacing={{ xs: 2 }}
-          sx={{
-            flex: "1 0 0",
-            alignContent: "flex-start",
-            width: "100% !important",
-            borderWidth: "1px",
-            borderColor: "black",
-            padding: "0",
-            marginBottom: "10px",
-            marginTop: "10px !important",
-            marginLeft: "0 !important",
-            overflow: "auto",
-          }}>
+        <DataCardContainer>
           {displayed
             .sort((a, b) => a.fromDepthM - b.fromDepthM)
             .map((item, index) => {
               const isSelected = selected?.id === item.id;
               const isTemp = item.id === 0;
               return (
-                <Grid
-                  item
-                  md={12}
-                  lg={12}
-                  xl={6}
+                <DataCardItem
                   key={item.id}
                   ref={dataRefs[index]}
                   sx={{ padding: "0 8px 8px 8px !important" }}>
-                  <CompletionCard key={item.id}>
+                  <DataCard key={item.id}>
                     {isEditable && isSelected
                       ? renderInput({
                           item: item,
@@ -184,16 +166,16 @@ export const CompletionContentTab = props => {
                             });
                           },
                         })}
-                  </CompletionCard>
-                </Grid>
+                  </DataCard>
+                </DataCardItem>
               );
             })}
-        </Grid>
+        </DataCardContainer>
       ) : (
-        <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
+        <FullPageCentered>
           <Typography variant="fullPageMessage">{t(emptyLabel)}</Typography>
-        </Stack>
+        </FullPageCentered>
       )}
-    </Stack>
+    </FullPage>
   );
 };

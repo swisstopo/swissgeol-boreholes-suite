@@ -3,7 +3,6 @@ import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
 import {
-  AddButton,
   CompletionBox,
   CompletionTabs,
   CompletionTab,
@@ -19,6 +18,8 @@ import CompletionContent from "./completionContent";
 import CompletionHeaderInput from "./completionHeaderInput";
 import CompletionHeaderDisplay from "./completionHeaderDisplay";
 import Prompt from "../../../../components/prompt/prompt";
+import { AddButton } from "../../../../components/buttons/buttons";
+import { FullPage } from "../../../../components/baseComponents";
 
 const Completion = props => {
   const { isEditable } = props;
@@ -243,7 +244,7 @@ const Completion = props => {
 
   return (
     <>
-      <Stack direction="column" flex="1">
+      <FullPage>
         <Stack flex="0 1 auto">
           <Stack
             direction="row"
@@ -335,7 +336,7 @@ const Completion = props => {
             )
           )}
         </Stack>
-      </Stack>
+      </FullPage>
       <Prompt
         open={showDeletePrompt}
         setOpen={setShowDeletePrompt}

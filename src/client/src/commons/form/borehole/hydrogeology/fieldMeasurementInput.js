@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import { Box, Card, InputAdornment, Stack, Tooltip } from "@mui/material";
+import { Box, InputAdornment, Stack, Tooltip } from "@mui/material";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { useDomains } from "../../../../api/fetchApiV2";
 import CheckIcon from "@mui/icons-material/Check";
@@ -88,93 +88,84 @@ const FieldMeasurementInput = props => {
   const currentParameterId = formMethods.getValues("parameterId");
 
   return (
-    <Card
-      sx={{
-        border: "1px solid lightgrey",
-        borderRadius: "3px",
-        p: 1.5,
-        mb: 2,
-        height: "100%",
-      }}>
-      <FormProvider {...formMethods}>
-        <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <Stack direction="row" sx={{ width: "100%" }}>
-            <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-              <ObservationInput
-                observation={fieldMeasurement}
-                boreholeId={boreholeId}
+    <FormProvider {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(submitForm)}>
+        <Stack direction="row" sx={{ width: "100%" }}>
+          <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
+            <ObservationInput
+              observation={fieldMeasurement}
+              boreholeId={boreholeId}
+            />
+            <Stack direction="row" sx={{ paddingTop: "10px" }}>
+              <FormSelect
+                fieldName="sampleTypeId"
+                label="field_measurement_sample_type"
+                selected={fieldMeasurement.sampleTypeId}
+                required={true}
+                values={domains?.data
+                  ?.filter(
+                    d =>
+                      d.schema ===
+                      hydrogeologySchemaConstants.fieldMeasurementSampleType,
+                  )
+                  .sort((a, b) => a.order - b.order)
+                  .map(d => ({
+                    key: d.id,
+                    name: d[i18n.language],
+                  }))}
               />
-              <Stack direction="row" sx={{ paddingTop: "10px" }}>
-                <FormSelect
-                  fieldName="sampleTypeId"
-                  label="field_measurement_sample_type"
-                  selected={fieldMeasurement.sampleTypeId}
-                  required={true}
-                  values={domains?.data
-                    ?.filter(
-                      d =>
-                        d.schema ===
-                        hydrogeologySchemaConstants.fieldMeasurementSampleType,
-                    )
-                    .sort((a, b) => a.order - b.order)
-                    .map(d => ({
-                      key: d.id,
-                      name: d[i18n.language],
-                    }))}
-                />
-                <FormSelect
-                  fieldName="parameterId"
-                  label="parameter"
-                  selected={fieldMeasurement.parameterId}
-                  required={true}
-                  values={domains?.data
-                    ?.filter(
-                      d =>
-                        d.schema ===
-                        hydrogeologySchemaConstants.fieldMeasurementParameter,
-                    )
-                    .sort((a, b) => a.order - b.order)
-                    .map(d => ({
-                      key: d.id,
-                      name: d[i18n.language],
-                    }))}
-                />
-              </Stack>
-              <Stack direction="row">
-                <FormInput
-                  fieldName="value"
-                  label="value"
-                  value={fieldMeasurement.value}
-                  type="number"
-                  required={true}
-                  inputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        {currentParameterId &&
-                          getParameterUnit(currentParameterId)}
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Stack>
+              <FormSelect
+                fieldName="parameterId"
+                label="parameter"
+                selected={fieldMeasurement.parameterId}
+                required={true}
+                values={domains?.data
+                  ?.filter(
+                    d =>
+                      d.schema ===
+                      hydrogeologySchemaConstants.fieldMeasurementParameter,
+                  )
+                  .sort((a, b) => a.order - b.order)
+                  .map(d => ({
+                    key: d.id,
+                    name: d[i18n.language],
+                  }))}
+              />
             </Stack>
-            <Box sx={{ marginLeft: "auto" }}>
-              <Tooltip title={t("close")}>
-                <CheckIcon
-                  sx={{
-                    color: formMethods.formState.isValid
-                      ? "#0080008c"
-                      : "disabled",
-                  }}
-                  data-cy="close-icon"
-                  onClick={() => closeFormIfCompleted()}
-                />
-              </Tooltip>
-            </Box>
+            <Stack direction="row">
+              <FormInput
+                fieldName="value"
+                label="value"
+                value={fieldMeasurement.value}
+                type="number"
+                required={true}
+                inputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {currentParameterId &&
+                        getParameterUnit(currentParameterId)}
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Stack>
           </Stack>
-        </form>
-      </FormProvider>
-    </Card>
+          <Box sx={{ marginLeft: "auto" }}>
+            <Tooltip title={t("close")}>
+              <CheckIcon
+                sx={{
+                  color: formMethods.formState.isValid
+                    ? "#0080008c"
+                    : "disabled",
+                }}
+                data-cy="close-icon"
+                onClick={() => closeFormIfCompleted()}
+              />
+            </Tooltip>
+          </Box>
+        </Stack>
+      </form>
+    </FormProvider>
   );
 };
 

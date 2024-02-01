@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import { Box, Card, Stack, Tooltip } from "@mui/material";
+import { Box, Stack, Tooltip } from "@mui/material";
 import { FormSelect } from "../../../../components/form/form";
 import { useDomains } from "../../../../api/fetchApiV2";
 import CheckIcon from "@mui/icons-material/Check";
@@ -73,75 +73,66 @@ const WaterIngressInput = props => {
   };
 
   return (
-    <Card
-      sx={{
-        border: "1px solid lightgrey",
-        borderRadius: "3px",
-        p: 1.5,
-        mb: 2,
-        height: "100%",
-      }}>
-      <FormProvider {...formMethods}>
-        <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <Stack direction="row" sx={{ width: "100%" }}>
-            <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-              <ObservationInput
-                observation={waterIngress}
-                boreholeId={boreholeId}
+    <FormProvider {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(submitForm)}>
+        <Stack direction="row" sx={{ width: "100%" }}>
+          <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
+            <ObservationInput
+              observation={waterIngress}
+              boreholeId={boreholeId}
+            />
+            <Stack direction="row" sx={{ paddingTop: "10px" }}>
+              <FormSelect
+                fieldName="quantityId"
+                label="quantity"
+                selected={waterIngress.quantityId}
+                required={true}
+                values={domains?.data
+                  ?.filter(
+                    d =>
+                      d.schema ===
+                      hydrogeologySchemaConstants.waterIngressQuantity,
+                  )
+                  .sort((a, b) => a.order - b.order)
+                  .map(d => ({
+                    key: d.id,
+                    name: d[i18n.language],
+                  }))}
               />
-              <Stack direction="row" sx={{ paddingTop: "10px" }}>
-                <FormSelect
-                  fieldName="quantityId"
-                  label="quantity"
-                  selected={waterIngress.quantityId}
-                  required={true}
-                  values={domains?.data
-                    ?.filter(
-                      d =>
-                        d.schema ===
-                        hydrogeologySchemaConstants.waterIngressQuantity,
-                    )
-                    .sort((a, b) => a.order - b.order)
-                    .map(d => ({
-                      key: d.id,
-                      name: d[i18n.language],
-                    }))}
-                />
-                <FormSelect
-                  fieldName="conditionsId"
-                  label="conditions"
-                  selected={waterIngress.conditionsId}
-                  values={domains?.data
-                    ?.filter(
-                      d =>
-                        d.schema ===
-                        hydrogeologySchemaConstants.waterIngressConditions,
-                    )
-                    .sort((a, b) => a.order - b.order)
-                    .map(d => ({
-                      key: d.id,
-                      name: d[i18n.language],
-                    }))}
-                />
-              </Stack>
+              <FormSelect
+                fieldName="conditionsId"
+                label="conditions"
+                selected={waterIngress.conditionsId}
+                values={domains?.data
+                  ?.filter(
+                    d =>
+                      d.schema ===
+                      hydrogeologySchemaConstants.waterIngressConditions,
+                  )
+                  .sort((a, b) => a.order - b.order)
+                  .map(d => ({
+                    key: d.id,
+                    name: d[i18n.language],
+                  }))}
+              />
             </Stack>
-            <Box sx={{ marginLeft: "auto" }}>
-              <Tooltip title={t("close")}>
-                <CheckIcon
-                  sx={{
-                    color: formMethods.formState.isValid
-                      ? "#0080008c"
-                      : "disabled",
-                  }}
-                  data-cy="close-icon"
-                  onClick={() => closeFormIfCompleted()}
-                />
-              </Tooltip>
-            </Box>
           </Stack>
-        </form>
-      </FormProvider>
-    </Card>
+          <Box sx={{ marginLeft: "auto" }}>
+            <Tooltip title={t("close")}>
+              <CheckIcon
+                sx={{
+                  color: formMethods.formState.isValid
+                    ? "#0080008c"
+                    : "disabled",
+                }}
+                data-cy="close-icon"
+                onClick={() => closeFormIfCompleted()}
+              />
+            </Tooltip>
+          </Box>
+        </Stack>
+      </form>
+    </FormProvider>
   );
 };
 

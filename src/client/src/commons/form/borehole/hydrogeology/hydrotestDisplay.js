@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Stack, Tooltip, Typography } from "@mui/material";
+import { Stack, Tooltip, Typography } from "@mui/material";
 import {
   TypographyWithBottomMargin,
   StackFullWidth,
@@ -23,15 +23,7 @@ const HydrotestDisplay = props => {
   const { t, i18n } = useTranslation();
 
   return (
-    <Card
-      key={hydrotest.id}
-      sx={{
-        border: "1px solid lightgrey",
-        borderRadius: "3px",
-        p: 1.5,
-        mb: 2,
-        height: "100%",
-      }}>
+    <>
       <StackFullWidth direction="row" justifyContent="space-between">
         <StackFullWidth direction="column" justifyContent="space-between">
           <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
@@ -127,8 +119,7 @@ const HydrotestDisplay = props => {
           </Tooltip>
         </Stack>
       </StackFullWidth>
-      <Stack direction="column"></Stack>
-    </Card>
+    </>
   );
 };
 
