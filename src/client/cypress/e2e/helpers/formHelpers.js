@@ -34,6 +34,28 @@ export const evaluateTextarea = (fieldName, expectedValue) => {
     .should("have.length", 1);
 };
 
+export const openDropdown = selector => {
+  cy.get(selector).find('[role="combobox"]').click();
+  cy.wait("@codelist_GET");
+};
+
+export const selectDropdownOption = index => {
+  cy.get('.MuiPaper-elevation [role="listbox"]')
+    .find('[role="option"]')
+    .eq(index)
+    .click();
+};
+
+export const evaluateDropdownOptionsLength = length => {
+  cy.get('.MuiPaper-elevation [role="listbox"]').should($listbox => {
+    expect($listbox.find('[role="option"]')).to.have.length(length);
+  });
+};
+
+export const closeDropdown = () => {
+  cy.get("body").click();
+};
+
 /**
  * Sets the value for a select form element.
  * @param {string} fieldName The name of the select field.
@@ -41,11 +63,8 @@ export const evaluateTextarea = (fieldName, expectedValue) => {
  */
 export const setSelect = (fieldName, index) => {
   var selector = `[data-cy="${fieldName}-formSelect"]`;
-  cy.get(selector).find('[role="combobox"]').click();
-  cy.get('.MuiPaper-elevation [role="listbox"]')
-    .find('[role="option"]')
-    .eq(index)
-    .click();
+  openDropdown(selector);
+  selectDropdownOption(index);
 };
 
 export const evaluateSelect = (fieldName, expectedValue) => {
@@ -55,6 +74,24 @@ export const evaluateSelect = (fieldName, expectedValue) => {
       return input.value === expectedValue;
     })
     .should("have.length", 1);
+};
+
+/**
+ * Sets the value for a select form element.
+ * @param {string} fieldName The name of the select field.
+ * @param {number[]} indices The indices of the options to select.
+ * @param {number} expected The expected number of options in the dropdown.
+ */
+export const toggleMultiSelect = (fieldName, indices, expected) => {
+  var selector = `[data-cy="${fieldName}-formMultiSelect"]`;
+  openDropdown(selector);
+  if (expected != null) {
+    evaluateDropdownOptionsLength(expected);
+  }
+  indices.forEach(index => {
+    selectDropdownOption(index);
+  });
+  closeDropdown();
 };
 
 /**

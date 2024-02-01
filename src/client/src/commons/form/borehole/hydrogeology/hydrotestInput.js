@@ -1,22 +1,18 @@
 import React, { useEffect, useContext, useState } from "react";
-import { useForm, FormProvider, Controller } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import {
   Box,
   Card,
-  Chip,
-  FormControl,
   IconButton,
-  MenuItem,
   Stack,
-  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
+import { FormMultiSelect } from "../../../../components/form/formMultiSelect";
 import ObservationInput from "./observationInput";
 import HydrotestResultTable from "./hydrotestResultTable";
 import CheckIcon from "@mui/icons-material/Check";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
 import { useHydrotestDomains, useDomains } from "../../../../api/fetchApiV2";
 import { AlertContext } from "../../../../components/alert/alertContext";
@@ -54,13 +50,37 @@ const HydrotestInput = ({
   const getFilteredDomains = (schema, data) =>
     data?.filter(c => c.schema === schema).map(c => c.id);
 
-  const getCompatibleValues = (allowedIds, formValues) =>
-    formValues?.filter(c => allowedIds?.includes(c)) || [];
+  const getCompatibleValues = (allowedIds, formValues) => {
+    if (typeof formValues === "string") {
+      formValues = formValues.split(",").map(value => parseInt(value, 10));
+    }
+    return formValues?.filter(c => allowedIds?.includes(c)) || [];
+  };
 
   useEffect(() => {
+    const formValues = formMethods.getValues();
+    var kindIds = formValues?.testKindId;
+    if (typeof kindIds === "string") {
+      kindIds = kindIds.split(",").reduce((filtered, id) => {
+        if (id !== "") {
+          filtered.push(parseInt(id, 10));
+        }
+        return filtered;
+      }, []);
+    }
+    if (kindIds != null) {
+      if (kindIds !== hydrotestKindIds) {
+        setHydrotestKindIds(kindIds);
+      }
+      if (kindIds.length === 0) {
+        formMethods.setValue("flowDirectionId", []);
+        formMethods.setValue("evaluationMethodId", []);
+        deleteHydrotestResults();
+      }
+    }
+
     // check the compatibility of codelists (flowdirection, evaluationMethod, hydrotestResultParameter) when the hydrotestKinds (and therefore the filteredTestKindDomains) change.
     if (filteredTestKindDomains.data?.length > 0) {
-      const formValues = formMethods.getValues();
       // delete flowDirections, evaluationMethods that are not longer compatible with the selected hydrotestKinds.
       const allowedEvalutationMethodId = getFilteredDomains(
         hydrogeologySchemaConstants.hydrotestEvaluationMethod,
@@ -202,69 +222,6 @@ const HydrotestInput = ({
     }
   };
 
-  const resetRelatedFormValues = () => {
-    formMethods.setValue("flowDirectionId", []);
-    formMethods.setValue("evaluationMethodId", []);
-    deleteHydrotestResults();
-  };
-
-  const handleDeleteHover = field => {
-    if (
-      field.name === "testKindId" &&
-      hydrotest?.hydrotestResults?.length > 0
-    ) {
-      alertContext.error(t("hydrotestResultsWillBeDeleted"));
-    }
-  };
-
-  const ChipBox = (selection, field) => {
-    const handleDelete = valueToDelete => {
-      const updatedValues = field.value.filter(
-        value => value !== valueToDelete,
-      );
-      field.onChange(updatedValues);
-      setHydrotestKindIds(updatedValues);
-
-      if (updatedValues.length === 0) {
-        resetRelatedFormValues();
-        formMethods.trigger();
-      }
-    };
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 0.5,
-        }}>
-        {selection.map(selectedValue => {
-          const selectedOption = domains?.data?.find(
-            option => option.id === selectedValue,
-          );
-          return (
-            <Chip
-              key={selectedValue}
-              label={
-                selectedOption ? selectedOption[i18n.language] : selectedValue
-              }
-              deleteIcon={
-                <CancelIcon
-                  onMouseDown={e => e.stopPropagation()}
-                  onMouseOver={() => handleDeleteHover(field)}
-                />
-              }
-              onClick={e => e.stopPropagation()}
-              onDelete={e => {
-                e.stopPropagation();
-                handleDelete(selectedValue);
-              }}
-            />
-          );
-        })}
-      </Box>
-    );
-  };
-
   const canAddHydrotestResults =
     formMethods.formState.isValid &&
     !isAddingHydrotestResult &&
@@ -291,184 +248,97 @@ const HydrotestInput = ({
                 observation={hydrotest}
                 boreholeId={boreholeId}
               />
-              <Stack direction="row" sx={{ paddingTop: "10px" }}>
-                <FormControl
-                  variant="outlined"
-                  sx={{ flex: "1", marginRight: "10px" }}>
-                  <Controller
-                    name="testKindId"
-                    control={formMethods.control}
-                    defaultValue={
-                      hydrotest?.codelists
-                        ?.filter(
-                          c =>
-                            c.schema ===
-                            hydrogeologySchemaConstants.hydrotestKind,
-                        )
-                        .map(c => c.id) || []
-                    }
-                    rules={{ required: true }}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        select
-                        size="small"
-                        label={t("hydrotestKind")}
-                        variant="outlined"
-                        value={field.value || ""}
-                        data-cy="hydrotest-kind-select"
-                        error={!!formMethods.formState.errors.testKindId}
-                        InputLabelProps={{ shrink: true }}
-                        SelectProps={{
-                          multiple: true,
-                          renderValue: selection => ChipBox(selection, field),
-                        }}
-                        sx={{
-                          backgroundColor: !!formMethods.formState.errors
-                            .testKindId
-                            ? "#fff6f6"
-                            : "transparent",
-                          borderRadius: "4px",
-                        }}
-                        onChange={e => {
-                          e.stopPropagation();
-                          field.onChange(e.target.value);
-                          if (e.target.value.length === 0) {
-                            resetRelatedFormValues();
-                          }
-                          formMethods.trigger();
-                          setHydrotestKindIds(e.target.value);
-                        }}>
-                        {domains?.data
-                          ?.filter(
-                            d =>
-                              d.schema ===
-                              hydrogeologySchemaConstants.hydrotestKind,
-                          )
-                          .sort((a, b) => a.order - b.order)
-                          .map(d => (
-                            <MenuItem key={d.id} value={d.id}>
-                              {d[i18n.language]}
-                            </MenuItem>
-                          ))}
-                      </TextField>
-                    )}
-                  />
-                </FormControl>
-                <FormControl
-                  variant="outlined"
-                  sx={{ flex: "1", marginRight: "10px" }}>
-                  <Controller
-                    name="flowDirectionId"
-                    control={formMethods.control}
-                    defaultValue={
-                      hydrotest?.codelists
-                        ?.filter(
-                          c =>
-                            c.schema ===
-                            hydrogeologySchemaConstants.hydrotestFlowDirection,
-                        )
-                        .map(c => c.id) || []
-                    }
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        select
-                        disabled={
-                          !!formMethods.formState.errors.testKindId ||
-                          !filteredTestKindDomains?.data?.filter(
-                            d =>
-                              d.schema ===
-                              hydrogeologySchemaConstants.hydrotestFlowDirection,
-                          ).length > 0
-                        }
-                        label={t("flowDirection")}
-                        variant="outlined"
-                        size="small"
-                        value={field.value || ""}
-                        data-cy="flow-direction-select"
-                        InputLabelProps={{ shrink: true }}
-                        SelectProps={{
-                          multiple: true,
-                          renderValue: selection => ChipBox(selection, field),
-                        }}
-                        onChange={e => {
-                          e.stopPropagation();
-                          field.onChange(e.target.value);
-                        }}>
-                        {filteredTestKindDomains?.data
-                          ?.filter(
-                            d =>
-                              d.schema ===
-                              hydrogeologySchemaConstants.hydrotestFlowDirection,
-                          )
-                          .map(d => (
-                            <MenuItem key={d.id} value={d.id}>
-                              {d[i18n.language]}
-                            </MenuItem>
-                          ))}
-                      </TextField>
-                    )}
-                  />
-                </FormControl>
+              <Stack direction="row">
+                <FormMultiSelect
+                  fieldName="testKindId"
+                  label="hydrotestKind"
+                  required={true}
+                  selected={
+                    hydrotest?.codelists
+                      ?.filter(
+                        c =>
+                          c.schema ===
+                          hydrogeologySchemaConstants.hydrotestKind,
+                      )
+                      .map(c => c.id) || []
+                  }
+                  values={domains?.data
+                    ?.filter(
+                      d =>
+                        d.schema === hydrogeologySchemaConstants.hydrotestKind,
+                    )
+                    .sort((a, b) => a.order - b.order)
+                    .map(d => ({
+                      key: d.id,
+                      name: d[i18n.language],
+                    }))}
+                />
+                <FormMultiSelect
+                  fieldName="flowDirectionId"
+                  label="flowDirection"
+                  selected={
+                    hydrotest?.codelists
+                      ?.filter(
+                        c =>
+                          c.schema ===
+                          hydrogeologySchemaConstants.hydrotestFlowDirection,
+                      )
+                      .map(c => c.id) || []
+                  }
+                  disabled={
+                    !!formMethods.formState.errors.testKindId ||
+                    !filteredTestKindDomains?.data?.filter(
+                      d =>
+                        d.schema ===
+                        hydrogeologySchemaConstants.hydrotestFlowDirection,
+                    ).length > 0
+                  }
+                  values={filteredTestKindDomains?.data
+                    ?.filter(
+                      d =>
+                        d.schema ===
+                        hydrogeologySchemaConstants.hydrotestFlowDirection,
+                    )
+                    .sort((a, b) => a.order - b.order)
+                    .map(d => ({
+                      key: d.id,
+                      name: d[i18n.language],
+                    }))}
+                />
               </Stack>
-              <Stack direction="row" sx={{ paddingTop: "10px" }}>
-                <FormControl
-                  variant="outlined"
-                  sx={{ flex: "1", marginRight: "10px" }}>
-                  <Controller
-                    name="evaluationMethodId"
-                    control={formMethods.control}
-                    defaultValue={
-                      hydrotest?.codelists
-                        ?.filter(
-                          c =>
-                            c.schema ===
-                            hydrogeologySchemaConstants.hydrotestEvaluationMethod,
-                        )
-                        .map(c => c.id) || []
-                    }
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        select
-                        disabled={
-                          !!formMethods.formState.errors.testKindId ||
-                          !filteredTestKindDomains?.data?.filter(
-                            d =>
-                              d.schema ===
-                              hydrogeologySchemaConstants.hydrotestEvaluationMethod,
-                          ).length > 0
-                        }
-                        label={t("evaluationMethod")}
-                        variant="outlined"
-                        size="small"
-                        value={field.value || ""}
-                        data-cy="evaluation-method-select"
-                        InputLabelProps={{ shrink: true }}
-                        SelectProps={{
-                          multiple: true,
-                          renderValue: selection => ChipBox(selection, field),
-                        }}
-                        onChange={e => {
-                          e.stopPropagation();
-                          field.onChange(e.target.value);
-                        }}>
-                        {filteredTestKindDomains?.data
-                          ?.filter(
-                            d =>
-                              d.schema ===
-                              hydrogeologySchemaConstants.hydrotestEvaluationMethod,
-                          )
-                          .map(d => (
-                            <MenuItem key={d.id} value={d.id}>
-                              {d[i18n.language]}
-                            </MenuItem>
-                          ))}
-                      </TextField>
-                    )}
-                  />
-                </FormControl>
+              <Stack direction="row">
+                <FormMultiSelect
+                  fieldName="evaluationMethodId"
+                  label="evaluationMethod"
+                  selected={
+                    hydrotest?.codelists
+                      ?.filter(
+                        c =>
+                          c.schema ===
+                          hydrogeologySchemaConstants.hydrotestEvaluationMethod,
+                      )
+                      .map(c => c.id) || []
+                  }
+                  disabled={
+                    !!formMethods.formState.errors.testKindId ||
+                    !filteredTestKindDomains?.data?.filter(
+                      d =>
+                        d.schema ===
+                        hydrogeologySchemaConstants.hydrotestEvaluationMethod,
+                    ).length > 0
+                  }
+                  values={filteredTestKindDomains?.data
+                    ?.filter(
+                      d =>
+                        d.schema ===
+                        hydrogeologySchemaConstants.hydrotestEvaluationMethod,
+                    )
+                    .sort((a, b) => a.order - b.order)
+                    .map(d => ({
+                      key: d.id,
+                      name: d[i18n.language],
+                    }))}
+                />
                 <div style={{ flex: "1", marginRight: "10px" }}></div>
               </Stack>
               <Stack direction="row" sx={{ paddingTop: "20px" }}>

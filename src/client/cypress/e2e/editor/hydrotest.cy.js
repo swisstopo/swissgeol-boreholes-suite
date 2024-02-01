@@ -5,32 +5,13 @@ import {
 } from "../helpers/testHelpers";
 import {
   evaluateDisplayValue,
+  openDropdown,
+  selectDropdownOption,
+  closeDropdown,
   setInput,
   setSelect,
+  toggleMultiSelect,
 } from "../helpers/formHelpers";
-
-const openDropdown = dataCy => {
-  cy.get(`[data-cy="${dataCy}"]`)
-    .find('[role="combobox"]')
-    .click({ force: true });
-};
-
-const closeDropdown = () => {
-  cy.get("body").click();
-};
-
-const checkDropdownOptionsLength = length => {
-  cy.get('.MuiPaper-elevation [role="listbox"]').should($listbox => {
-    expect($listbox.find('[role="option"]')).to.have.length(length);
-  });
-};
-
-const selectDropdownOption = index => {
-  cy.get('.MuiPaper-elevation [role="listbox"]')
-    .find('[role="option"]')
-    .eq(index)
-    .click();
-};
 
 describe("Tests for the hydrotest editor.", () => {
   beforeEach(function () {
@@ -63,10 +44,7 @@ describe("Tests for the hydrotest editor.", () => {
     cy.wait("@hydrotest_GET");
 
     // fill hydrotest kind dropdown
-    openDropdown("hydrotest-kind-select");
-    selectDropdownOption(2);
-    cy.wait("@codelist_GET");
-    closeDropdown();
+    toggleMultiSelect("testKindId", [2]);
 
     setSelect("reliabilityId", 1);
     setInput("startTime", "2012-11-14T12:06");
@@ -81,18 +59,10 @@ describe("Tests for the hydrotest editor.", () => {
     cy.get('[data-cy="edit-icon"]').click({ force: true });
 
     // check flow direction options
-    openDropdown("flow-direction-select");
-    checkDropdownOptionsLength(3);
-    selectDropdownOption(1);
-    selectDropdownOption(0);
-    closeDropdown();
+    toggleMultiSelect("flowDirectionId", [1, 0], 3);
 
     // check evaluation method options
-    openDropdown("evaluation-method-select");
-    checkDropdownOptionsLength(4);
-    selectDropdownOption(1);
-    selectDropdownOption(0);
-    closeDropdown();
+    toggleMultiSelect("evaluationMethodId", [1, 0], 4);
 
     // check hydrotest parameter options
     cy.get('[data-cy="add-hydrotestresult-button"]').click({ force: true });
