@@ -29,12 +29,11 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
             .SingleOrDefaultAsync(b => b.Id == boreholeId)
             .ConfigureAwait(false) ?? throw new InvalidOperationException($"Associated borehole with id <{boreholeId}> does not exist.");
 
-        var userWorkflowRoles = borehole.Workflows
-            .Where(w => w.UserId == user.Id)
+        var boreholeWorkflowRoles = borehole.Workflows
             .Select(w => w.Role)
             .ToHashSet();
 
-        if (!user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId && userWorkflowRoles.Contains(x.Role)))
+        if (!user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId && boreholeWorkflowRoles.Contains(x.Role)))
         {
             logger.LogWarning("Current user with subject_id <{SubjectId}> does not have the required role to edit the borehole with id <{BoreholeId}>.", subjectId, boreholeId);
             return true;
