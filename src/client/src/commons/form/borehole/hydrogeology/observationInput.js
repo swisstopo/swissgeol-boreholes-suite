@@ -8,6 +8,7 @@ import {
 import { useDomains, getCasingsByBoreholeId } from "../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
+import { StackHalfWidth } from "../completion/styledComponents";
 
 const ObservationInput = props => {
   const { observation, boreholeId } = props;
@@ -89,10 +90,9 @@ const ObservationInput = props => {
           fieldName="completionFinished"
           label="completionFinished"
           checked={observation.completionFinished}
-          sx={{ marginRight: "0" }}
         />
       </Stack>
-      <Stack direction="row">
+      <StackHalfWidth direction="row">
         <FormSelect
           fieldName="casingId"
           label="casing"
@@ -103,15 +103,16 @@ const ObservationInput = props => {
             name: casing.name,
           }))}
         />
-        <div style={{ flex: "1" }} />
+      </StackHalfWidth>
+      <Stack direction="row">
+        <FormInput
+          fieldName="comment"
+          label="comment"
+          multiline={true}
+          rows={3}
+          value={observation?.comment}
+        />
       </Stack>
-      <FormInput
-        fieldName="comment"
-        label="comment"
-        multiline={true}
-        rows={3}
-        value={observation?.comment}
-      />
     </>
   );
 };

@@ -44,6 +44,9 @@ export const FormInput = props => {
         flex: "1",
         marginTop: "10px !important",
         marginRight: "10px !important",
+        "& .MuiInputBase-input": {
+          minHeight: "26px !important",
+        },
         ...sx,
       }}
       type={type || "text"}
