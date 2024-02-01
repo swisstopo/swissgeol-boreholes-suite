@@ -93,16 +93,6 @@ public class CasingController : BdmsControllerBase<Casing>
                 return NotFound();
             }
 
-            if (casing.Instrumentations.Count > 0)
-            {
-                return Conflict("Cannot delete casing because it is referenced by an instrumentation.");
-            }
-
-            if (casing.Observations.Count > 0)
-            {
-                return Conflict("Cannot delete casing because it is referenced by a hydrogeological observation.");
-            }
-
             Context.Remove(casing);
             await Context.SaveChangesAsync().ConfigureAwait(false);
             return Ok();

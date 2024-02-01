@@ -367,12 +367,13 @@ export const createStratigraphy = (boreholeId, kindId) => {
   });
 };
 
-export const createCompletion = (boreholeId, kindId, isPrimary) => {
+export const createCompletion = (name, boreholeId, kindId, isPrimary) => {
   cy.get("@id_token").then(token => {
     return cy.request({
       method: "POST",
       url: "/api/v2/completion",
       body: {
+        name: name,
         boreholeId: boreholeId,
         kindId: kindId,
         isPrimary: isPrimary,

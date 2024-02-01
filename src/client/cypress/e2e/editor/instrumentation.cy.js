@@ -10,7 +10,7 @@ describe("Instrumentation crud tests", () => {
   it("add, edit and delete instrumentations", () => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id => createCompletion(id, 16000002, true))
+      .then(id => createCompletion("test instr.", id, 16000002, true))
       .then(response => {
         expect(response).to.have.property("status", 200);
       });
