@@ -124,7 +124,13 @@ const Completion = props => {
   const saveCompletion = completion => {
     if (completion.id === 0) {
       addCompletion(completion).then(() => {
-        setState({ ...state, switchTabTo: state.displayed.length - 1 });
+        setState({
+          ...state,
+          switchTabTo:
+            state.switchTabTo === null
+              ? state.displayed.length - 1
+              : state.switchTabTo,
+        });
         loadData();
       });
     } else {
@@ -214,7 +220,11 @@ const Completion = props => {
         switchTabTo: null,
         trySwitchTab: false,
       });
-      updateHistory(completions[index].id);
+      if (index === -1) {
+        updateHistory("new");
+      } else {
+        updateHistory(completions[index].id);
+      }
     } else {
       resetState();
       history.push(
