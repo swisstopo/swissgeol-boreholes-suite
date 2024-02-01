@@ -19,7 +19,7 @@ const CompletionHeaderInput = props => {
     completion,
     cancelChanges,
     saveCompletion,
-    newlySelectedTab,
+    trySwitchTab,
     switchTabs,
   } = props;
   const domains = useDomains();
@@ -42,7 +42,7 @@ const CompletionHeaderInput = props => {
   }, [completion]);
 
   useEffect(() => {
-    if (newlySelectedTab !== null) {
+    if (trySwitchTab) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
         setShowSavePrompt(true);
       } else {
@@ -50,7 +50,7 @@ const CompletionHeaderInput = props => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newlySelectedTab]);
+  }, [trySwitchTab]);
 
   const submitForm = data => {
     if (data?.abandonDate === "") {
