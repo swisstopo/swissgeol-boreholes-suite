@@ -95,29 +95,12 @@ describe("Casing crud tests", () => {
     cy.get("[data-cy=completion-content-header-tab-Casing]").click();
     cy.wait("@casing_GET");
 
-    // cannot delete if connected to instrumentation
-    cy.get('[data-cy="delete-icon"]').click({ force: true });
-    cy.wait("@casing_DELETE");
-    cy.on("window:alert", txt => {
-      expect(txt).to.contains(
-        "Cannot delete casing because it is referenced by an instrumentation.",
-      );
-    });
-    cy.on("window:confirm", () => true);
-
-    // can delete if not connected to instrumentation
-    cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
-    cy.wait("@instrumentation_GET");
-    cy.get('[data-cy="edit-icon"]').click();
-    setSelect("casingId", 0);
-
-    cy.get('[data-cy="save-icon"]').click({ force: true });
-
-    cy.get("[data-cy=completion-content-header-tab-Casing]").click();
-    cy.wait("@casing_GET");
-
     cy.get('[data-cy="delete-icon"]').click({ force: true });
     cy.wait("@casing_DELETE");
     cy.contains("casing-1 updated").should("not.exist");
+
+    cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
+    cy.wait("@instrumentation_GET");
+    evaluateDisplayValue("casingName", "-");
   });
 });
