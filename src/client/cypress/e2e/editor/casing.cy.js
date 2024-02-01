@@ -14,7 +14,7 @@ describe("Casing crud tests", () => {
   it("add, edit and delete casings", () => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id => createCompletion(id, 16000002, true))
+      .then(id => createCompletion("test casing", id, 16000002, true))
       .then(response => {
         expect(response).to.have.property("status", 200);
       });
