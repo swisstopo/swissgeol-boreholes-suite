@@ -1,7 +1,7 @@
-import { MenuItem, TextField } from "@mui/material";
+import { MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useFormContext } from "react-hook-form";
-import { getInputFieldBackgroundColor } from "./form";
+import { FormField, getInputFieldBackgroundColor } from "./form";
 
 export const FormSelect = props => {
   const { fieldName, label, required, disabled, selected, values, sx } = props;
@@ -23,7 +23,7 @@ export const FormSelect = props => {
   }
 
   return (
-    <TextField
+    <FormField
       select
       name={fieldName}
       required={required || false}
@@ -31,13 +31,6 @@ export const FormSelect = props => {
         backgroundColor: getInputFieldBackgroundColor(
           formState.errors[fieldName],
         ),
-        borderRadius: "4px",
-        flex: "1",
-        marginTop: "10px !important",
-        marginRight: "10px !important",
-        "& .MuiInputBase-input": {
-          minHeight: "26px !important",
-        },
         ...sx,
       }}
       size="small"
@@ -58,6 +51,6 @@ export const FormSelect = props => {
           {item.italic ? <em>{item.label}</em> : item.label}
         </MenuItem>
       ))}
-    </TextField>
+    </FormField>
   );
 };

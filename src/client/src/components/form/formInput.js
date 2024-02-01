@@ -1,7 +1,6 @@
-import { TextField } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useFormContext } from "react-hook-form";
-import { getInputFieldBackgroundColor } from "./form";
+import { FormField, getInputFieldBackgroundColor } from "./form";
 
 export const FormInput = props => {
   const {
@@ -33,20 +32,13 @@ export const FormInput = props => {
   };
 
   return (
-    <TextField
+    <FormField
       name={fieldName}
       required={required || false}
       sx={{
         backgroundColor: getInputFieldBackgroundColor(
           formState.errors[fieldName],
         ),
-        borderRadius: "4px",
-        flex: "1",
-        marginTop: "10px !important",
-        marginRight: "10px !important",
-        "& .MuiInputBase-input": {
-          minHeight: "26px !important",
-        },
         ...sx,
       }}
       type={type || "text"}

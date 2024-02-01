@@ -83,7 +83,8 @@ const CompletionHeaderInput = props => {
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"
-                flex={"0 0 400px"}>
+                flex={"0 0 400px"}
+                marginRight={"10px"}>
                 <FormSelect
                   fieldName="kindId"
                   label="completionKind"
@@ -105,7 +106,6 @@ const CompletionHeaderInput = props => {
                   label="mainCompletion"
                   checked={completion.isPrimary}
                   disabled={completion.isPrimary}
-                  sx={{ marginRight: "0" }}
                 />
               </Stack>
             </Stack>
@@ -125,7 +125,7 @@ const CompletionHeaderInput = props => {
                 label="dateAbandonmentCompletion"
                 type="date"
                 value={selectedCompletion?.abandonDate}
-                sx={{ marginRight: "0", flex: "0 0 400px" }}
+                sx={{ flex: "0 0 400px" }}
               />
             </Stack>
             <Stack
