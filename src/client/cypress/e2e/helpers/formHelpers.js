@@ -16,6 +16,24 @@ export const setInput = (fieldName, value) => {
     });
 };
 
+export const evaluateInput = (fieldName, expectedValue) => {
+  var selector = `[data-cy="${fieldName}-formInput"] input`;
+  cy.get(selector)
+    .filter((k, input) => {
+      return input.value === expectedValue;
+    })
+    .should("have.length", 1);
+};
+
+export const evaluateTextarea = (fieldName, expectedValue) => {
+  var selector = `[data-cy="${fieldName}-formInput"] textarea`;
+  cy.get(selector)
+    .filter((k, input) => {
+      return input.value === expectedValue;
+    })
+    .should("have.length", 1);
+};
+
 /**
  * Sets the value for a select form element.
  * @param {string} fieldName The name of the select field.
@@ -28,6 +46,15 @@ export const setSelect = (fieldName, index) => {
     .find('[role="option"]')
     .eq(index)
     .click();
+};
+
+export const evaluateSelect = (fieldName, expectedValue) => {
+  var selector = `[data-cy="${fieldName}-formSelect"] input`;
+  cy.get(selector)
+    .filter((k, input) => {
+      return input.value === expectedValue;
+    })
+    .should("have.length", 1);
 };
 
 /**

@@ -6,7 +6,10 @@ import {
 } from "../helpers/testHelpers";
 import {
   setInput,
+  evaluateInput,
+  evaluateTextarea,
   setSelect,
+  evaluateSelect,
   toggleCheckbox,
   evaluateCheckbox,
   evaluateDisplayValue,
@@ -193,6 +196,7 @@ describe("completion crud tests", () => {
     });
     isTabSelected(1);
 
+    // check hash updates on tab switch
     cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
     cy.location().should(location => {
       expect(location.pathname).to.eq(
@@ -208,7 +212,7 @@ describe("completion crud tests", () => {
       expect(location.hash).to.eq("#backfill");
     });
 
-    //switch tabs
+    // switch tabs while editing: no prompt should be displayed when no changes have been made
     startEditing();
     setTab(0);
     cy.get('[data-cy="prompt"]').should("not.exist");
@@ -220,6 +224,7 @@ describe("completion crud tests", () => {
       expect(location.hash).to.eq("#casing");
     });
 
+    // switch tabs while editing: tab switching can be canceled in prompt
     startEditing();
     setInput("name", "Compl-1 updated");
     setTab(1);
@@ -231,11 +236,9 @@ describe("completion crud tests", () => {
       );
       expect(location.hash).to.eq("#casing");
     });
-    cy.get("input")
-      .filter((k, input) => {
-        return input.value.includes("Compl-1 updated");
-      })
-      .should("have.length", 1);
+    evaluateInput("name", "Compl-1 updated");
+
+    // switch tabs while editing: changes can be reverted in prompt
     setTab(1);
     handlePrompt("Unsaved changes", "reset");
     isTabSelected(1);
@@ -247,6 +250,7 @@ describe("completion crud tests", () => {
       expect(location.hash).to.eq("#casing");
     });
 
+    // switch tabs while editing: changes can be saved in prompt
     startEditing();
     setInput("name", "Compl-2 updated");
     setTab(0);
@@ -255,6 +259,7 @@ describe("completion crud tests", () => {
     isTabSelected(0);
     cy.contains("Compl-2 updated");
 
+    // switch tabs while adding new completion: no prompt should be displayed when no changes have been made
     addCompletion();
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/new`);
@@ -262,12 +267,57 @@ describe("completion crud tests", () => {
     });
     cy.get(`[data-cy="name-formInput"]`).click();
     setTab(0);
-    cy.wait("@get-completions-by-boreholeId");
+    cy.wait("@casing_GET");
     cy.location().should(location => {
       expect(location.pathname).to.eq(
         `/editor/${boreholeId}/completion/${completion1Id}`,
       );
       expect(location.hash).to.eq("#casing");
+    });
+
+    // add new completion while editing: form should be reset
+    startEditing();
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(
+        `/editor/${boreholeId}/completion/${completion1Id}`,
+      );
+      expect(location.hash).to.eq("#casing");
+    });
+    cy.get(`[data-cy="name-formInput"]`).click();
+    addCompletion();
+    evaluateInput("name", "");
+    evaluateSelect("kindId", "");
+    evaluateInput("abandonDate", "");
+    evaluateTextarea("notes", "");
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/new`);
+      expect(location.hash).to.eq("");
+    });
+
+    // cancel adding new completion: last tab should be selected
+    cancelEditing();
+    isTabSelected(1);
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(
+        `/editor/${boreholeId}/completion/${completion2Id}`,
+      );
+      expect(location.hash).to.eq("#casing");
+    });
+
+    // should update to base url if last completion is deleted
+    deleteCompletion();
+    handlePrompt("Do you really want to delete this completion?", "delete");
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(
+        `/editor/${boreholeId}/completion/${completion1Id}`,
+      );
+      expect(location.hash).to.eq("#casing");
+    });
+    deleteCompletion();
+    handlePrompt("Do you really want to delete this completion?", "delete");
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion`);
+      expect(location.hash).to.eq("");
     });
   });
 });
