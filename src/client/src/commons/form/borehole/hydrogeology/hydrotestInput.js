@@ -8,7 +8,6 @@ import {
   IconButton,
   MenuItem,
   Stack,
-  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -22,6 +21,11 @@ import { useHydrotestDomains, useDomains } from "../../../../api/fetchApiV2";
 import { AlertContext } from "../../../../components/alert/alertContext";
 import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
+import {
+  FormField,
+  getInputFieldBackgroundColor,
+} from "../../../../components/form/form";
+import { StackHalfWidth } from "./styledComponents";
 
 const HydrotestInput = ({
   hydrotest,
@@ -243,6 +247,7 @@ const HydrotestInput = ({
           );
           return (
             <Chip
+              sx={{ height: "26px" }}
               key={selectedValue}
               label={
                 selectedOption ? selectedOption[i18n.language] : selectedValue
@@ -291,10 +296,8 @@ const HydrotestInput = ({
                 observation={hydrotest}
                 boreholeId={boreholeId}
               />
-              <Stack direction="row" sx={{ paddingTop: "10px" }}>
-                <FormControl
-                  variant="outlined"
-                  sx={{ flex: "1", marginRight: "10px" }}>
+              <Stack direction="row">
+                <FormControl variant="outlined" sx={{ flex: "1" }}>
                   <Controller
                     name="testKindId"
                     control={formMethods.control}
@@ -309,7 +312,7 @@ const HydrotestInput = ({
                     }
                     rules={{ required: true }}
                     render={({ field }) => (
-                      <TextField
+                      <FormField
                         {...field}
                         select
                         size="small"
@@ -324,11 +327,9 @@ const HydrotestInput = ({
                           renderValue: selection => ChipBox(selection, field),
                         }}
                         sx={{
-                          backgroundColor: !!formMethods.formState.errors
-                            .testKindId
-                            ? "#fff6f6"
-                            : "transparent",
-                          borderRadius: "4px",
+                          backgroundColor: getInputFieldBackgroundColor(
+                            formMethods.formState.errors.testKindId,
+                          ),
                         }}
                         onChange={e => {
                           e.stopPropagation();
@@ -351,13 +352,11 @@ const HydrotestInput = ({
                               {d[i18n.language]}
                             </MenuItem>
                           ))}
-                      </TextField>
+                      </FormField>
                     )}
                   />
                 </FormControl>
-                <FormControl
-                  variant="outlined"
-                  sx={{ flex: "1", marginRight: "10px" }}>
+                <FormControl variant="outlined" sx={{ flex: "1" }}>
                   <Controller
                     name="flowDirectionId"
                     control={formMethods.control}
@@ -371,7 +370,7 @@ const HydrotestInput = ({
                         .map(c => c.id) || []
                     }
                     render={({ field }) => (
-                      <TextField
+                      <FormField
                         {...field}
                         select
                         disabled={
@@ -407,15 +406,13 @@ const HydrotestInput = ({
                               {d[i18n.language]}
                             </MenuItem>
                           ))}
-                      </TextField>
+                      </FormField>
                     )}
                   />
                 </FormControl>
               </Stack>
-              <Stack direction="row" sx={{ paddingTop: "10px" }}>
-                <FormControl
-                  variant="outlined"
-                  sx={{ flex: "1", marginRight: "10px" }}>
+              <StackHalfWidth direction="row">
+                <FormControl variant="outlined" sx={{ flex: "1" }}>
                   <Controller
                     name="evaluationMethodId"
                     control={formMethods.control}
@@ -429,7 +426,7 @@ const HydrotestInput = ({
                         .map(c => c.id) || []
                     }
                     render={({ field }) => (
-                      <TextField
+                      <FormField
                         {...field}
                         select
                         disabled={
@@ -465,12 +462,11 @@ const HydrotestInput = ({
                               {d[i18n.language]}
                             </MenuItem>
                           ))}
-                      </TextField>
+                      </FormField>
                     )}
                   />
                 </FormControl>
-                <div style={{ flex: "1", marginRight: "10px" }}></div>
-              </Stack>
+              </StackHalfWidth>
               <Stack direction="row" sx={{ paddingTop: "20px" }}>
                 <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
                   {t("hydrotestResult")}
