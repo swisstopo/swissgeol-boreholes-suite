@@ -10,7 +10,7 @@ describe("Backfill crud tests", () => {
   it("add, edit and delete backfills", () => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id => createCompletion(id, 16000002, true))
+      .then(id => createCompletion("test backfill", id, 16000002, true))
       .then(response => {
         expect(response).to.have.property("status", 200);
       });

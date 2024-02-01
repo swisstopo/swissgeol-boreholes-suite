@@ -32,7 +32,7 @@ public class CompletionController : BdmsControllerBase<Completion>
 
         if (boreholeId != null)
         {
-            completions = completions.Where(c => c.BoreholeId == boreholeId);
+            completions = completions.Where(c => c.BoreholeId == boreholeId).OrderBy(c => c.Created);
         }
 
         return await completions.ToListAsync().ConfigureAwait(false);
