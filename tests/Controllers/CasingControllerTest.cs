@@ -145,8 +145,7 @@ public class CasingControllerTest
         var instrumentation = await context.Instrumentations
             .Include(i => i.Casing)
             .AsNoTracking()
-            .SingleOrDefaultAsync(i => i.Id == instrumentationId)
-            .ConfigureAwait(false);
+            .SingleOrDefaultAsync(i => i.Id == instrumentationId);
         Assert.IsNotNull(instrumentation);
         Assert.IsNull(instrumentation.Casing);
         Assert.IsNull(instrumentation.CasingId);
@@ -155,8 +154,7 @@ public class CasingControllerTest
         var observation = await context.Observations
             .Include(o => o.Casing)
             .AsNoTracking()
-            .SingleOrDefaultAsync(o => o.Id == observationId)
-            .ConfigureAwait(false);
+            .SingleOrDefaultAsync(o => o.Id == observationId);
         Assert.IsNotNull(observation);
         Assert.IsNull(observation.Casing);
         Assert.IsNull(observation.CasingId);
