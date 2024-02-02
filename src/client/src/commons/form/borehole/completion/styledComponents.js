@@ -1,8 +1,6 @@
 import React, { forwardRef } from "react";
 import {
   Box,
-  Button,
-  Card,
   IconButton,
   Stack,
   Tabs,
@@ -11,7 +9,6 @@ import {
   TextField,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import AddIcon from "@mui/icons-material/Add";
 
 export const TypographyWithBottomMargin = styled(Typography)(() => ({
   marginBottom: "1em",
