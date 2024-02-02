@@ -102,7 +102,7 @@ const FieldMeasurement = props => {
               const isSelected = selectedFieldMeasurement?.id === gwlm.id;
               const isTempGwlm = gwlm.id === 0;
               return (
-                <DataCardItem key={gwlm.id} ref={fieldMeasurementRefs[index]}>
+                <DataCardItem key={index} ref={fieldMeasurementRefs[index]}>
                   {isSuccess ? (
                     <DataCard key={gwlm.id}>
                       {isEditable && isSelected ? (
