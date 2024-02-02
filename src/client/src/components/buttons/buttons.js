@@ -53,3 +53,27 @@ export const BaseIconButton = styled(IconButton)({
 export const IconButtonWithMargin = styled(BaseIconButton)({
   marginLeft: "5px",
 });
+
+export const BdmsIconButton = ({
+  icon,
+  tooltipLabel,
+  color,
+  disabled,
+  onClick,
+}) => {
+  const { t } = useTranslation();
+  var colorToUse = color ? color : ButtonColor.default;
+  return (
+    <Tooltip title={t(tooltipLabel)}>
+      <span>
+        <BaseIconButton
+          data-cy={tooltipLabel + "-button"}
+          sx={{ color: colorToUse }}
+          disabled={disabled}
+          onClick={onClick}>
+          {icon}
+        </BaseIconButton>
+      </span>
+    </Tooltip>
+  );
+};

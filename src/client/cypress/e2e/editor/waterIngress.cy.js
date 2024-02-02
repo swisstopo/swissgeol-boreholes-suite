@@ -64,7 +64,7 @@ describe("Tests for the wateringress editor.", () => {
     setInput("innerDiameter", "3");
     setInput("outerDiameter", "4");
 
-    cy.get('[data-cy="save-icon"]').click();
+    cy.get('[data-cy="save-button"]').click();
     cy.wait("@casing_GET");
 
     cy.get('[data-cy="hydrogeology-menu-item"]').click({ force: true });
@@ -87,7 +87,7 @@ describe("Tests for the wateringress editor.", () => {
     setInput("startTime", "2012-11-14T12:06");
 
     // close editing mask
-    cy.get('[data-cy="close-icon"]').click({ force: true });
+    cy.get('[data-cy="save-button"]').click({ force: true });
 
     evaluateDisplayValue("quantity", "viel (> 120 l/min)");
     evaluateDisplayValue("conditions", "frei/ungespannt");
@@ -95,13 +95,13 @@ describe("Tests for the wateringress editor.", () => {
     evaluateDisplayValue("casingName", "casing-1");
 
     // edit wateringress
-    cy.get('[data-cy="edit-icon"]').click({ force: true });
+    cy.get('[data-cy="edit-button"]').click({ force: true });
     setSelect("quantityId", 1);
     cy.get('[data-cy="close-icon"]').click({ force: true });
     evaluateDisplayValue("quantity", "mittel (30 - 120 l/min)");
 
     // delete wateringress
-    cy.get('[data-cy="delete-icon"]').click({ force: true });
+    cy.get('[data-cy="delete-button"]').click({ force: true });
     cy.wait("@wateringress_DELETE");
     cy.get("body").should("not.contain", "mittel (30 - 120 l/min)");
   });

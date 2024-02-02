@@ -48,7 +48,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     setInput("levelMasl", "5.4567");
 
     // close editing mask
-    cy.get('[data-cy="close-icon"]').click({ force: true });
+    cy.get('[data-cy="save-button"]').click({ force: true });
 
     evaluateDisplayValue("gwlm_kind", "Manometer");
     evaluateDisplayValue("gwlm_levelm", "789.12");
@@ -56,13 +56,13 @@ describe("Tests for the groundwater level measurement editor.", () => {
     evaluateDisplayValue("reliability", "fraglich");
 
     // edit groundwater level measurement
-    cy.get('[data-cy="edit-icon"]').click({ force: true });
+    cy.get('[data-cy="edit-button"]').click({ force: true });
     setSelect("kindId", 1);
-    cy.get('[data-cy="close-icon"]').click({ force: true });
+    cy.get('[data-cy="save-button"]').click({ force: true });
     evaluateDisplayValue("gwlm_kind", "Drucksonde");
 
     // delete groundwater level measurement
-    cy.get('[data-cy="delete-icon"]').click({ force: true });
+    cy.get('[data-cy="delete-button"]').click({ force: true });
     cy.wait("@groundwaterlevelmeasurement_DELETE");
     cy.get("body").should("not.contain", "Drucksonde");
   });

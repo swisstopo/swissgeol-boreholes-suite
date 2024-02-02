@@ -43,7 +43,7 @@ describe("Instrumentation crud tests", () => {
     setInput("innerDiameter", "3");
     setInput("outerDiameter", "4");
 
-    cy.get('[data-cy="save-icon"]').click();
+    cy.get('[data-cy="save-button"]').click();
     cy.wait("@casing_GET");
 
     cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
@@ -62,7 +62,7 @@ describe("Instrumentation crud tests", () => {
     setSelect("statusId", 1);
 
     // save instrumentation
-    cy.get('[data-cy="save-icon"]').click();
+    cy.get('[data-cy="save-button"]').click();
 
     // check if instrumentation is saved
     cy.contains("123456");
@@ -73,7 +73,7 @@ describe("Instrumentation crud tests", () => {
     cy.contains("inactive");
 
     // edit instrumentation
-    cy.get('[data-cy="edit-icon"]').click({ force: true });
+    cy.get('[data-cy="edit-button"]').click({ force: true });
 
     // We need the casings for the casing name dropdown
     cy.wait("@casing_GET");
@@ -81,13 +81,13 @@ describe("Instrumentation crud tests", () => {
     setSelect("casingId", 1);
 
     // close editing mask
-    cy.get('[data-cy="save-icon"]').click({ force: true });
+    cy.get('[data-cy="save-button"]').click({ force: true });
     cy.contains("casing-1");
     cy.contains("222");
     cy.contains("inactive");
 
     // delete instrumentation
-    cy.get('[data-cy="delete-icon"]').click({ force: true });
+    cy.get('[data-cy="delete-button"]').click({ force: true });
     cy.contains("From depth").should("not.exist");
   });
 });

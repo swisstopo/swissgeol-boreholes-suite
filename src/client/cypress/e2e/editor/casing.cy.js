@@ -49,7 +49,7 @@ describe("Casing crud tests", () => {
     setInput("outerDiameter", "4");
     setInput("notes", "Lorem.");
 
-    cy.get('[data-cy="save-icon"]').click();
+    cy.get('[data-cy="save-button"]').click();
     cy.wait("@casing_GET");
 
     evaluateDisplayValue("name", "casing-1");
@@ -64,13 +64,13 @@ describe("Casing crud tests", () => {
     evaluateDisplayValue("notes", "Lorem.");
 
     // update casing
-    cy.get('[data-cy="edit-icon"]').click();
+    cy.get('[data-cy="edit-button"]').click();
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1 updated");
     setSelect("materialId", 5);
 
-    cy.get('[data-cy="save-icon"]').click({ force: true });
+    cy.get('[data-cy="save-button"]').click({ force: true });
     evaluateDisplayValue("name", "casing-1 updated");
     evaluateDisplayValue("materialCasingLayer", "concrete");
     evaluateDisplayValue("casing_inner_diameter", "3");
@@ -90,12 +90,12 @@ describe("Casing crud tests", () => {
     setSelect("kindId", 2);
     setSelect("statusId", 1);
     setSelect("casingId", 1);
-    cy.get('[data-cy="save-icon"]').click({ force: true });
+    cy.get('[data-cy="save-button"]').click({ force: true });
 
     cy.get("[data-cy=completion-content-header-tab-Casing]").click();
     cy.wait("@casing_GET");
 
-    cy.get('[data-cy="delete-icon"]').click({ force: true });
+    cy.get('[data-cy="delete-button"]').click({ force: true });
     cy.wait("@casing_DELETE");
     cy.contains("casing-1 updated").should("not.exist");
 

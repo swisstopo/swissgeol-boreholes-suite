@@ -48,7 +48,7 @@ describe("Tests for the field measurement editor.", () => {
     setInput("value", "77.1045");
 
     // close editing mask
-    cy.get('[data-cy="close-icon"]').click({ force: true });
+    cy.get('[data-cy="save-button"]').click({ force: true });
 
     //assert field measurementis displayed
     evaluateDisplayValue("field_measurement_sample_type", "Schöpfprobe");
@@ -56,13 +56,13 @@ describe("Tests for the field measurement editor.", () => {
     evaluateDisplayValue("value", "77.1045 %");
 
     // edit field measurement
-    cy.get('[data-cy="edit-icon"]').click({ force: true });
+    cy.get('[data-cy="edit-button"]').click({ force: true });
     setSelect("sampleTypeId", 0);
-    cy.get('[data-cy="close-icon"]').click({ force: true });
+    cy.get('[data-cy="save-button"]').click({ force: true });
     evaluateDisplayValue("field_measurement_sample_type", "Pumpprobe");
 
     // delete field measurement
-    cy.get('[data-cy="delete-icon"]').click({ force: true });
+    cy.get('[data-cy="delete-button"]').click({ force: true });
     cy.wait("@fieldmeasurement_DELETE");
     cy.get("body").should("not.contain", "Pumpprobe");
   });

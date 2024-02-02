@@ -42,7 +42,7 @@ describe("Backfill crud tests", () => {
     setSelect("materialId", 1);
 
     // save backfill
-    cy.get('[data-cy="save-icon"]').click();
+    cy.get('[data-cy="save-button"]').click();
 
     // check if backfill is saved
     cy.contains("123456");
@@ -52,18 +52,18 @@ describe("Backfill crud tests", () => {
     cy.contains("filter gravel");
 
     // edit backfill
-    cy.get('[data-cy="edit-icon"]').click({ force: true });
+    cy.get('[data-cy="edit-button"]').click({ force: true });
     cy.wait("@codelist_GET");
 
     setInput("fromDepth", "222");
 
     // close editing mask
-    cy.get('[data-cy="save-icon"]').click({ force: true });
+    cy.get('[data-cy="save-button"]').click({ force: true });
     cy.contains("222");
     cy.contains("inactive");
 
     // delete backfill
-    cy.get('[data-cy="delete-icon"]').click({ force: true });
+    cy.get('[data-cy="delete-button"]').click({ force: true });
     cy.contains("From depth").should("not.exist");
   });
 });
