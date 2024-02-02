@@ -104,27 +104,25 @@ export const CompletionContentTab = props => {
     <FullPage>
       <DataCardButtonContainer>
         {isEditable && (
-          <Tooltip title={t("add")}>
-            <AddButton
-              sx={{ marginRight: "8px" }}
-              data-cy={addLabel + "-button"}
-              onClick={e => {
-                e.stopPropagation();
-                if (!selected) {
-                  const temp = { id: 0 };
-                  setDisplayed([...state.data, temp]);
-                  setSelected(temp);
-                }
-              }}>
-              {t(addLabel)}
-            </AddButton>
-          </Tooltip>
+          <AddButton
+            sx={{ marginRight: "8px" }}
+            data-cy={addLabel + "-button"}
+            onClick={e => {
+              e.stopPropagation();
+              if (!selected) {
+                const temp = { id: 0 };
+                setDisplayed([...state.data, temp]);
+                setSelected(temp);
+              }
+            }}>
+            {t(addLabel)}
+          </AddButton>
         )}
       </DataCardButtonContainer>
       {state.isLoadingData ? (
-        <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
+        <FullPageCentered>
           <CircularProgress color="inherit" />
-        </Stack>
+        </FullPageCentered>
       ) : displayed?.length > 0 ? (
         <DataCardContainer>
           {displayed
@@ -133,10 +131,7 @@ export const CompletionContentTab = props => {
               const isSelected = selected?.id === item.id;
               const isTemp = item.id === 0;
               return (
-                <DataCardItem
-                  key={item.id}
-                  ref={dataRefs[index]}
-                  sx={{ padding: "0 8px 8px 8px !important" }}>
+                <DataCardItem key={item.id} ref={dataRefs[index]}>
                   <DataCard key={item.id}>
                     {isEditable && isSelected
                       ? renderInput({

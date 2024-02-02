@@ -94,22 +94,15 @@ const FieldMeasurement = props => {
           </AddButton>
         )}
       </DataCardButtonContainer>
-      {displayedFieldMeasurements?.length === 0 && (
-        <FullPageCentered>
-          <Typography variant="fullPageMessage">
-            {t("msgFieldMeasurementsEmpty")}
-          </Typography>
-        </FullPageCentered>
-      )}
-      <DataCardContainer>
-        {displayedFieldMeasurements?.length > 0 &&
-          displayedFieldMeasurements
-            ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
+      {displayedFieldMeasurements?.length > 0 ? (
+        <DataCardContainer>
+          {displayedFieldMeasurements
+            .sort((a, b) => a.fromDepthM - b.fromDepthM)
             .map((gwlm, index) => {
               const isSelected = selectedFieldMeasurement?.id === gwlm.id;
               const isTempGwlm = gwlm.id === 0;
               return (
-                <DataCardItem key={index} ref={fieldMeasurementRefs[index]}>
+                <DataCardItem key={gwlm.id} ref={fieldMeasurementRefs[index]}>
                   {isSuccess ? (
                     <DataCard key={gwlm.id}>
                       {isEditable && isSelected ? (
@@ -139,12 +132,21 @@ const FieldMeasurement = props => {
                       )}
                     </DataCard>
                   ) : (
-                    <CircularProgress />
+                    <FullPageCentered>
+                      <CircularProgress color="inherit" />
+                    </FullPageCentered>
                   )}
                 </DataCardItem>
               );
             })}
-      </DataCardContainer>
+        </DataCardContainer>
+      ) : (
+        <FullPageCentered>
+          <Typography variant="fullPageMessage">
+            {t("msgFieldMeasurementsEmpty")}
+          </Typography>
+        </FullPageCentered>
+      )}
     </FullPage>
   );
 };

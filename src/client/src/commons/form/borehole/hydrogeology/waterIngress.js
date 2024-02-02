@@ -78,17 +78,10 @@ const WaterIngress = props => {
           </AddButton>
         )}
       </DataCardButtonContainer>
-      {displayedWaterIngresses?.length === 0 && (
-        <FullPageCentered>
-          <Typography variant="fullPageMessage">
-            {t("msgWateringressesEmpty")}
-          </Typography>
-        </FullPageCentered>
-      )}
-      <DataCardContainer>
-        {displayedWaterIngresses?.length > 0 &&
-          displayedWaterIngresses
-            ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
+      {displayedWaterIngresses?.length > 0 ? (
+        <DataCardContainer>
+          {displayedWaterIngresses
+            .sort((a, b) => a.fromDepthM - b.fromDepthM)
             .map((waterIngress, index) => {
               const isSelected = selectedWaterIngress?.id === waterIngress.id;
               const isTempWateringress = waterIngress.id === 0;
@@ -117,12 +110,21 @@ const WaterIngress = props => {
                       )}
                     </DataCard>
                   ) : (
-                    <CircularProgress />
+                    <FullPageCentered>
+                      <CircularProgress color="inherit" />
+                    </FullPageCentered>
                   )}
                 </DataCardItem>
               );
             })}
-      </DataCardContainer>
+        </DataCardContainer>
+      ) : (
+        <FullPageCentered>
+          <Typography variant="fullPageMessage">
+            {t("msgWateringressesEmpty")}
+          </Typography>
+        </FullPageCentered>
+      )}
     </FullPage>
   );
 };

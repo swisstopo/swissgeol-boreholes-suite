@@ -87,17 +87,10 @@ const Hydrotest = ({ isEditable, boreholeId }) => {
           </AddButton>
         )}
       </DataCardButtonContainer>
-      {displayedHydrotests?.length === 0 && (
-        <FullPageCentered>
-          <Typography variant="fullPageMessage">
-            {t("msgHydrotestEmpty")}
-          </Typography>
-        </FullPageCentered>
-      )}
-      <DataCardContainer>
-        {displayedHydrotests?.length > 0 &&
-          displayedHydrotests
-            ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
+      {displayedHydrotests?.length > 0 ? (
+        <DataCardContainer>
+          {displayedHydrotests
+            .sort((a, b) => a.fromDepthM - b.fromDepthM)
             .map((hydrotest, index) => {
               const isSelected = selectedHydrotest?.id === hydrotest.id;
               const isTempHydrotest = hydrotest.id === 0;
@@ -129,12 +122,21 @@ const Hydrotest = ({ isEditable, boreholeId }) => {
                       )}
                     </DataCard>
                   ) : (
-                    <CircularProgress />
+                    <FullPageCentered>
+                      <CircularProgress color="inherit" />
+                    </FullPageCentered>
                   )}
                 </DataCardItem>
               );
             })}
-      </DataCardContainer>
+        </DataCardContainer>
+      ) : (
+        <FullPageCentered>
+          <Typography variant="fullPageMessage">
+            {t("msgHydrotestEmpty")}
+          </Typography>
+        </FullPageCentered>
+      )}
     </FullPage>
   );
 };

@@ -93,24 +93,17 @@ const GroundwaterLevelMeasurement = props => {
           </AddButton>
         )}
       </DataCardButtonContainer>
-      {displayedGroundwaterLevelMeasurements?.length === 0 && (
-        <FullPageCentered>
-          <Typography variant="fullPageMessage">
-            {t("msgGroundwaterLevelMeasurementsEmpty")}
-          </Typography>
-        </FullPageCentered>
-      )}
-      <DataCardContainer>
-        {displayedGroundwaterLevelMeasurements?.length > 0 &&
-          displayedGroundwaterLevelMeasurements
-            ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
+      {displayedGroundwaterLevelMeasurements?.length > 0 ? (
+        <DataCardContainer>
+          {displayedGroundwaterLevelMeasurements
+            .sort((a, b) => a.fromDepthM - b.fromDepthM)
             .map((gwlm, index) => {
               const isSelected =
                 selectedGroundwaterLevelMeasurement?.id === gwlm.id;
               const isTempGwlm = gwlm.id === 0;
               return (
                 <DataCardItem
-                  key={index}
+                  key={gwlm.id}
                   ref={groundwaterLevelMeasurementRefs[index]}>
                   {isSuccess ? (
                     <DataCard key={gwlm.id}>
@@ -147,12 +140,21 @@ const GroundwaterLevelMeasurement = props => {
                       )}
                     </DataCard>
                   ) : (
-                    <CircularProgress />
+                    <FullPageCentered>
+                      <CircularProgress color="inherit" />
+                    </FullPageCentered>
                   )}
                 </DataCardItem>
               );
             })}
-      </DataCardContainer>
+        </DataCardContainer>
+      ) : (
+        <FullPageCentered>
+          <Typography variant="fullPageMessage">
+            {t("msgGroundwaterLevelMeasurementsEmpty")}
+          </Typography>
+        </FullPageCentered>
+      )}
     </FullPage>
   );
 };
