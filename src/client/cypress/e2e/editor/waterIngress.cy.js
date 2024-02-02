@@ -97,7 +97,7 @@ describe("Tests for the wateringress editor.", () => {
     // edit wateringress
     cy.get('[data-cy="edit-button"]').click({ force: true });
     setSelect("quantityId", 1);
-    cy.get('[data-cy="close-icon"]').click({ force: true });
+    cy.get('[data-cy="close-button"]').click({ force: true });
     evaluateDisplayValue("quantity", "mittel (30 - 120 l/min)");
 
     // delete wateringress
