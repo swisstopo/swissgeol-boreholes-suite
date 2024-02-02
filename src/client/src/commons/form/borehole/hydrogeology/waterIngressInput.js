@@ -103,6 +103,7 @@ const WaterIngressInput = props => {
                 fieldName="conditionsId"
                 label="conditions"
                 selected={waterIngress.conditionsId}
+                required={true}
                 values={domains?.data
                   ?.filter(
                     d =>
