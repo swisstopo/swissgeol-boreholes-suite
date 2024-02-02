@@ -1,17 +1,23 @@
 import React, { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Tooltip } from "@mui/material";
+import { Button, IconButton, Tooltip } from "@mui/material";
 import { styled } from "@mui/system";
 import AddIcon from "@mui/icons-material/Add";
+
+export const ButtonColor = {
+  default: "rgba(0, 0, 0, 0.8)",
+  success: "rgba(0, 128, 0, 0.8)",
+  error: "rgba(255, 0, 0, 0.8)",
+};
 
 export const BaseButton = styled(Button)({
   fontFamily: "Lato",
   textTransform: "none",
-  color: "rgba(0, 0, 0, 0.8)",
-  borderColor: "rgba(0, 0, 0, 0.8)",
+  color: ButtonColor.default,
+  borderColor: ButtonColor.default,
   marginBottom: "6px",
   "&:hover, &.Mui-focusVisible, &:active, &:focus, &:focus-visible": {
-    borderColor: "rgba(0, 0, 0, 0.8)",
+    borderColor: ButtonColor.default,
     backgroundColor: "rgba(0, 0, 0, 0.05)",
   },
   "& .MuiTouchRipple-root": {
@@ -32,4 +38,18 @@ export const AddButton = forwardRef((props, ref) => {
       </BaseButton>
     </Tooltip>
   );
+});
+
+export const BaseIconButton = styled(IconButton)({
+  color: ButtonColor.default,
+  "&:hover, &.Mui-focusVisible, &:active, &:focus, &:focus-visible": {
+    backgroundColor: "rgba(0, 0, 0, 0.0)",
+  },
+  "& .MuiTouchRipple-root": {
+    display: "none",
+  },
+});
+
+export const IconButtonWithMargin = styled(BaseIconButton)({
+  marginLeft: "5px",
 });

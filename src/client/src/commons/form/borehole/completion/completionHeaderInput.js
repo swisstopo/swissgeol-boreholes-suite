@@ -6,7 +6,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
-import { IconButtonWithMargin } from "./styledComponents";
+import { IconButtonWithMargin } from "../../../../components/buttons/buttons";
 import {
   FormInput,
   FormSelect,

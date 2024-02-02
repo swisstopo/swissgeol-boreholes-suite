@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Tooltip } from "@mui/material";
-import { IconButtonWithMargin } from "./styledComponents";
+import { IconButtonWithMargin } from "../../../../components/buttons/buttons";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
