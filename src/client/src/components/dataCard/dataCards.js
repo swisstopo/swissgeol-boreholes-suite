@@ -6,17 +6,14 @@ import {
   DataCardItem,
   DataCardContainer,
   DataCardButtonContainer,
-} from "../../../../components/dataCard/dataCard";
-import { AddButton } from "../../../../components/buttons/buttons";
-import {
-  FullPage,
-  FullPageCentered,
-} from "../../../../components/baseComponents";
+} from "./dataCard";
+import { AddButton } from "../buttons/buttons";
+import { FullPage, FullPageCentered } from "../baseComponents";
 
-export const CompletionContentTab = props => {
+export const DataCards = props => {
   const {
     isEditable,
-    completionId,
+    parentId,
     getData,
     addData,
     updateData,
@@ -38,8 +35,8 @@ export const CompletionContentTab = props => {
 
   const loadData = index => {
     setState({ ...state, isLoadingData: true });
-    if (completionId && mounted.current) {
-      getData(completionId).then(response => {
+    if (parentId && mounted.current) {
+      getData(parentId).then(response => {
         if (response?.length > 0) {
           setState({
             index: index,
@@ -54,7 +51,7 @@ export const CompletionContentTab = props => {
           });
         }
       });
-    } else if (completionId === null) {
+    } else if (parentId === null) {
       setState({
         index: 0,
         data: [],
@@ -74,7 +71,7 @@ export const CompletionContentTab = props => {
       mounted.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [completionId]);
+  }, [parentId]);
 
   useEffect(() => {
     setDisplayed(state.data);
@@ -137,7 +134,7 @@ export const CompletionContentTab = props => {
                       ? renderInput({
                           item: item,
                           setSelected: setSelected,
-                          completionId: completionId,
+                          parentId: parentId,
                           updateData: (item, data) => {
                             updateData(item, data).then(() => {
                               handleDataChange();

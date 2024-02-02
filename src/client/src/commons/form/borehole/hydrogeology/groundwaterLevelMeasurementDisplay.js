@@ -8,13 +8,7 @@ import { useTranslation } from "react-i18next";
 import ObservationDisplay from "./observationDisplay";
 
 const GroundwaterLevelMeasurementDisplay = props => {
-  const {
-    groundwaterLevelMeasurement,
-    selectedGroundwaterLevelMeasurement,
-    setSelectedGroundwaterLevelMeasurement,
-    isEditable,
-    deleteGroundwaterLevelMeasurement,
-  } = props;
+  const { item, selected, setSelected, isEditable, deleteData } = props;
   const { t } = useTranslation();
 
   return (
@@ -24,23 +18,17 @@ const GroundwaterLevelMeasurementDisplay = props => {
           <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
             {t("groundwater_level_measurement")}
           </Typography>
-          <ObservationDisplay observation={groundwaterLevelMeasurement} />
+          <ObservationDisplay observation={item} />
           <StackFullWidth direction="row" spacing={1}>
             <FormDisplay
               label="gwlm_kind"
-              value={groundwaterLevelMeasurement?.kind}
+              value={item?.kind}
               type={FormDisplayType.Domain}
             />
           </StackFullWidth>
           <StackFullWidth direction="row" spacing={1}>
-            <FormDisplay
-              label="gwlm_levelm"
-              value={groundwaterLevelMeasurement?.levelM}
-            />
-            <FormDisplay
-              label="gwlm_levelmasl"
-              value={groundwaterLevelMeasurement?.levelMasl}
-            />
+            <FormDisplay label="gwlm_levelm" value={item?.levelM} />
+            <FormDisplay label="gwlm_levelmasl" value={item?.levelMasl} />
           </StackFullWidth>
         </StackFullWidth>
         <Stack
@@ -51,14 +39,11 @@ const GroundwaterLevelMeasurementDisplay = props => {
           }}>
           <Tooltip title={t("edit")}>
             <ModeEditIcon
-              color={selectedGroundwaterLevelMeasurement ? "disabled" : "black"}
+              color={selected ? "disabled" : "black"}
               data-cy="edit-icon"
               onClick={e => {
                 e.stopPropagation();
-                !selectedGroundwaterLevelMeasurement &&
-                  setSelectedGroundwaterLevelMeasurement(
-                    groundwaterLevelMeasurement,
-                  );
+                !selected && setSelected(item);
               }}
             />
           </Tooltip>
@@ -66,17 +51,12 @@ const GroundwaterLevelMeasurementDisplay = props => {
             <DeleteIcon
               data-cy="delete-icon"
               sx={{
-                color: selectedGroundwaterLevelMeasurement
-                  ? "rgba(0, 0, 0, 0.26)"
-                  : "red",
+                color: selected ? "rgba(0, 0, 0, 0.26)" : "red",
                 opacity: 0.7,
               }}
               onClick={e => {
                 e.stopPropagation();
-                !selectedGroundwaterLevelMeasurement &&
-                  deleteGroundwaterLevelMeasurement(
-                    groundwaterLevelMeasurement.id,
-                  );
+                !selected && deleteData(item.id);
               }}
             />
           </Tooltip>

@@ -36,7 +36,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     cy.contains("span", "DE").click({ force: true });
 
     // create groundwater level measurement
-    cy.get('[data-cy="add-groundwaterlevelmeasurement-button"]').click({
+    cy.get('[data-cy="addGroundwaterLevelMeasurement-button"]').click({
       force: true,
     });
     cy.wait("@groundwaterlevelmeasurement_GET");

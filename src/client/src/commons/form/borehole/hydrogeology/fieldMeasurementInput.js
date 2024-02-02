@@ -9,16 +9,10 @@ import { AlertContext } from "../../../../components/alert/alertContext";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
+import { FieldMeasurementParameterUnits } from "./parameterUnits";
 
 const FieldMeasurementInput = props => {
-  const {
-    fieldMeasurement,
-    setSelectedFieldMeasurement,
-    boreholeId,
-    addFieldMeasurement,
-    updateFieldMeasurement,
-    getParameterUnit,
-  } = props;
+  const { item, setSelected, parentId, addData, updateData } = props;
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const formMethods = useForm();
@@ -49,24 +43,24 @@ const FieldMeasurementInput = props => {
       data.value &&
       data.reliabilityId
     ) {
-      if (fieldMeasurement.id === 0) {
-        addFieldMeasurement({
+      if (item.id === 0) {
+        addData({
           ...data,
           type: ObservationType.fieldMeasurement,
-          boreholeId: boreholeId,
+          boreholeId: parentId,
         });
       } else {
-        delete fieldMeasurement.casing;
-        delete fieldMeasurement.sampeType;
-        delete fieldMeasurement.parameter;
-        delete fieldMeasurement.reliability;
-        updateFieldMeasurement({
-          ...fieldMeasurement,
+        delete item.casing;
+        delete item.sampeType;
+        delete item.parameter;
+        delete item.reliability;
+        updateData({
+          ...item,
           ...data,
         });
       }
     } else {
-      setSelectedFieldMeasurement(null);
+      setSelected(null);
     }
   };
 
@@ -81,8 +75,14 @@ const FieldMeasurementInput = props => {
     ) {
       alertContext.error(t("fieldMeasurementRequiredFieldsAlert"));
     } else {
-      setSelectedFieldMeasurement(null);
+      setSelected(null);
     }
+  };
+
+  const getParameterUnit = parameterId => {
+    return FieldMeasurementParameterUnits[
+      domains.data?.find(d => d.id === parameterId)?.geolcode
+    ];
   };
 
   const currentParameterId = formMethods.getValues("parameterId");
@@ -92,15 +92,12 @@ const FieldMeasurementInput = props => {
       <form onSubmit={formMethods.handleSubmit(submitForm)}>
         <Stack direction="row" sx={{ width: "100%" }}>
           <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-            <ObservationInput
-              observation={fieldMeasurement}
-              boreholeId={boreholeId}
-            />
+            <ObservationInput observation={item} boreholeId={parentId} />
             <Stack direction="row" sx={{ paddingTop: "10px" }}>
               <FormSelect
                 fieldName="sampleTypeId"
                 label="field_measurement_sample_type"
-                selected={fieldMeasurement.sampleTypeId}
+                selected={item.sampleTypeId}
                 required={true}
                 values={domains?.data
                   ?.filter(
@@ -117,7 +114,7 @@ const FieldMeasurementInput = props => {
               <FormSelect
                 fieldName="parameterId"
                 label="parameter"
-                selected={fieldMeasurement.parameterId}
+                selected={item.parameterId}
                 required={true}
                 values={domains?.data
                   ?.filter(
@@ -136,7 +133,7 @@ const FieldMeasurementInput = props => {
               <FormInput
                 fieldName="value"
                 label="value"
-                value={fieldMeasurement.value}
+                value={item.value}
                 type="number"
                 required={true}
                 inputProps={{

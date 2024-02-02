@@ -11,13 +11,7 @@ import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const GroundwaterLevelMeasurementInput = props => {
-  const {
-    groundwaterLevelMeasurement,
-    setSelectedGroundwaterLevelMeasurement,
-    boreholeId,
-    addGroundwaterLevelMeasurement,
-    updateGroundwaterLevelMeasurement,
-  } = props;
+  const { item, setSelected, parentId, addData, updateData } = props;
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const formMethods = useForm();
@@ -42,23 +36,23 @@ const GroundwaterLevelMeasurementInput = props => {
     data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
     if (data.startTime && data.kindId && data.reliabilityId) {
-      if (groundwaterLevelMeasurement.id === 0) {
-        addGroundwaterLevelMeasurement({
+      if (item.id === 0) {
+        addData({
           ...data,
           type: ObservationType.groundwaterLevelMeasurement,
-          boreholeId: boreholeId,
+          boreholeId: parentId,
         });
       } else {
-        delete groundwaterLevelMeasurement.casing;
-        delete groundwaterLevelMeasurement.kind;
-        delete groundwaterLevelMeasurement.reliability;
-        updateGroundwaterLevelMeasurement({
-          ...groundwaterLevelMeasurement,
+        delete item.casing;
+        delete item.kind;
+        delete item.reliability;
+        updateData({
+          ...item,
           ...data,
         });
       }
     } else {
-      setSelectedGroundwaterLevelMeasurement(null);
+      setSelected(null);
     }
   };
 
@@ -71,7 +65,7 @@ const GroundwaterLevelMeasurementInput = props => {
     ) {
       alertContext.error(t("gwlmRequiredFieldsAlert"));
     } else {
-      setSelectedGroundwaterLevelMeasurement(null);
+      setSelected(null);
     }
   };
 
@@ -80,15 +74,12 @@ const GroundwaterLevelMeasurementInput = props => {
       <form onSubmit={formMethods.handleSubmit(submitForm)}>
         <Stack direction="row" sx={{ width: "100%" }}>
           <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-            <ObservationInput
-              observation={groundwaterLevelMeasurement}
-              boreholeId={boreholeId}
-            />
+            <ObservationInput observation={item} boreholeId={parentId} />
             <Stack direction="row" sx={{ paddingTop: "10px" }}>
               <FormSelect
                 fieldName="kindId"
                 label="gwlm_kind"
-                selected={groundwaterLevelMeasurement.kindId}
+                selected={item.kindId}
                 required={true}
                 values={domains?.data
                   ?.filter(
@@ -107,13 +98,13 @@ const GroundwaterLevelMeasurementInput = props => {
               <FormInput
                 fieldName="levelMasl"
                 label="gwlm_levelmasl"
-                value={groundwaterLevelMeasurement.levelMasl}
+                value={item.levelMasl}
                 type="number"
               />
               <FormInput
                 fieldName="levelM"
                 label="gwlm_levelm"
-                value={groundwaterLevelMeasurement.levelM}
+                value={item.levelM}
                 type="number"
               />
             </Stack>

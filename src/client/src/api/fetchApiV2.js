@@ -394,192 +394,65 @@ export const useLithostratigraphyMutations = () => {
   };
 };
 
-export const waterIngressQueryKey = "wateringresses";
-
-export const useWaterIngresses = boreholeId =>
-  useQuery({
-    queryKey: [waterIngressQueryKey, boreholeId],
-    queryFn: async () => {
-      return await fetchApiV2(`wateringress?boreholeId=${boreholeId}`, "GET");
-    },
-  });
-
-export const useWaterIngressMutations = () => {
-  const queryClient = useQueryClient();
-  const useAddWaterIngress = useMutation(
-    async waterIngress => {
-      return await fetchApiV2("wateringress", "POST", waterIngress);
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [waterIngressQueryKey],
-        });
-      },
-    },
-  );
-  const useUpdateWaterIngress = useMutation(
-    async waterIngress => {
-      return await fetchApiV2("wateringress", "PUT", waterIngress);
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [waterIngressQueryKey],
-        });
-      },
-    },
-  );
-  const useDeleteWaterIngress = useMutation(
-    async waterIngressId => {
-      return await fetchApiV2(`wateringress?id=${waterIngressId}`, "DELETE");
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [waterIngressQueryKey],
-        });
-      },
-    },
-  );
-  return {
-    add: useAddWaterIngress,
-    update: useUpdateWaterIngress,
-    delete: useDeleteWaterIngress,
-  };
+export const getWaterIngress = async boreholeId => {
+  return await fetchApiV2(`wateringress?boreholeId=${boreholeId}`, "GET");
 };
 
-export const groundwaterLevelMeasurementsQueryKey =
-  "groundwaterLevelMeasurements";
-
-export const useGroundwaterLevelMeasurements = boreholeId =>
-  useQuery({
-    queryKey: [groundwaterLevelMeasurementsQueryKey, boreholeId],
-    queryFn: async () => {
-      return await fetchApiV2(
-        `groundwaterlevelmeasurement?boreholeId=${boreholeId}`,
-        "GET",
-      );
-    },
-  });
-
-export const useGroundwaterLevelMeasurementMutations = () => {
-  const queryClient = useQueryClient();
-  const useAddGroundwaterLevelMeasurement = useMutation(
-    async groundwaterLevelMeasurement => {
-      return await fetchApiV2(
-        "groundwaterlevelmeasurement",
-        "POST",
-        groundwaterLevelMeasurement,
-      );
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [groundwaterLevelMeasurementsQueryKey],
-        });
-      },
-    },
-  );
-  const useUpdateGroundwaterLevelMeasurement = useMutation(
-    async groundwaterLevelMeasurement => {
-      return await fetchApiV2(
-        "groundwaterlevelmeasurement",
-        "PUT",
-        groundwaterLevelMeasurement,
-      );
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [groundwaterLevelMeasurementsQueryKey],
-        });
-      },
-    },
-  );
-  const useDeleteGroundwaterLevelMeasurement = useMutation(
-    async groundwaterLevelMeasurementId => {
-      return await fetchApiV2(
-        `groundwaterlevelmeasurement?id=${groundwaterLevelMeasurementId}`,
-        "DELETE",
-      );
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [groundwaterLevelMeasurementsQueryKey],
-        });
-      },
-    },
-  );
-
-  return {
-    add: useAddGroundwaterLevelMeasurement,
-    update: useUpdateGroundwaterLevelMeasurement,
-    delete: useDeleteGroundwaterLevelMeasurement,
-  };
+export const addWaterIngress = async wateringress => {
+  return await fetchApiV2("wateringress", "POST", wateringress);
 };
 
-export const fieldMeasurementsQueryKey = "fieldMeasurements";
+export const updateWaterIngress = async wateringress => {
+  return await fetchApiV2("wateringress", "PUT", wateringress);
+};
 
-export const useFieldMeasurements = boreholeId =>
-  useQuery({
-    queryKey: [fieldMeasurementsQueryKey, boreholeId],
-    queryFn: async () => {
-      return await fetchApiV2(
-        `fieldmeasurement?boreholeId=${boreholeId}`,
-        "GET",
-      );
-    },
-  });
+export const deleteWaterIngress = async id => {
+  return await fetchApiV2(`wateringress?id=${id}`, "DELETE");
+};
 
-export const useFieldMeasurementMutations = () => {
-  const queryClient = useQueryClient();
-  const useAddFieldMeasurement = useMutation(
-    async fieldMeasurement => {
-      return await fetchApiV2("fieldmeasurement", "POST", fieldMeasurement);
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [fieldMeasurementsQueryKey],
-        });
-      },
-    },
+export const getGroundwaterLevelMeasurements = async boreholeId => {
+  return await fetchApiV2(
+    `groundwaterlevelmeasurement?boreholeId=${boreholeId}`,
+    "GET",
   );
-  const useUpdateFieldMeasurement = useMutation(
-    async fieldMeasurement => {
-      return await fetchApiV2("fieldmeasurement", "PUT", fieldMeasurement);
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [fieldMeasurementsQueryKey],
-        });
-      },
-    },
-  );
-  const useDeleteFieldMeasurement = useMutation(
-    async fieldMeasurementId => {
-      return await fetchApiV2(
-        `fieldmeasurement?id=${fieldMeasurementId}`,
-        "DELETE",
-      );
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [fieldMeasurementsQueryKey],
-        });
-      },
-    },
-  );
+};
 
-  return {
-    add: useAddFieldMeasurement,
-    update: useUpdateFieldMeasurement,
-    delete: useDeleteFieldMeasurement,
+export const addGroundwaterLevelMeasurement =
+  async groundwaterLevelMeasurement => {
+    return await fetchApiV2(
+      "groundwaterlevelmeasurement",
+      "POST",
+      groundwaterLevelMeasurement,
+    );
   };
+
+export const updateGroundwaterLevelMeasurement =
+  async groundwaterLevelMeasurement => {
+    return await fetchApiV2(
+      "groundwaterlevelmeasurement",
+      "PUT",
+      groundwaterLevelMeasurement,
+    );
+  };
+
+export const deleteGroundwaterLevelMeasurement = async id => {
+  return await fetchApiV2(`groundwaterlevelmeasurement?id=${id}`, "DELETE");
+};
+
+export const getFieldMeasurements = async boreholeId => {
+  return await fetchApiV2(`fieldmeasurement?boreholeId=${boreholeId}`, "GET");
+};
+
+export const addFieldMeasurement = async fieldmeasurement => {
+  return await fetchApiV2("fieldmeasurement", "POST", fieldmeasurement);
+};
+
+export const updateFieldMeasurement = async fieldmeasurement => {
+  return await fetchApiV2("fieldmeasurement", "PUT", fieldmeasurement);
+};
+
+export const deleteFieldMeasurement = async id => {
+  return await fetchApiV2(`fieldmeasurement?id=${id}`, "DELETE");
 };
 
 // Upload borehole attachment

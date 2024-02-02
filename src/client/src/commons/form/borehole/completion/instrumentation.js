@@ -5,15 +5,15 @@ import {
   updateInstrumentation,
   deleteInstrumentation,
 } from "../../../../api/fetchApiV2";
-import { CompletionContentTab } from "./completionContentTab";
+import { DataCards } from "../../../../components/dataCard/dataCards";
 import InstrumentationInput from "./instrumentationInput";
 import InstrumentationDisplay from "./instrumentationDisplay";
 
 const Instrumentation = ({ isEditable, completionId }) => {
   return (
-    <CompletionContentTab
+    <DataCards
       isEditable={isEditable}
-      completionId={completionId}
+      parentId={completionId}
       getData={getInstrumentation}
       addData={addInstrumentation}
       updateData={updateInstrumentation}

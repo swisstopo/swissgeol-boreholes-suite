@@ -77,7 +77,7 @@ describe("Tests for the wateringress editor.", () => {
     cy.contains("span", "DE").click({ force: true });
 
     // create wateringress
-    cy.get('[data-cy="add-wateringress-button"]').click({ force: true });
+    cy.get('[data-cy="addWaterIngress-button"]').click({ force: true });
     cy.wait("@casing_GET");
 
     setSelect("quantityId", 2);

@@ -11,13 +11,7 @@ import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const WaterIngressInput = props => {
-  const {
-    waterIngress,
-    setSelectedWaterIngress,
-    boreholeId,
-    addWaterIngress,
-    updateWaterIngress,
-  } = props;
+  const { item, setSelected, parentId, addData, updateData } = props;
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const formMethods = useForm();
@@ -42,20 +36,20 @@ const WaterIngressInput = props => {
     data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
     if (data.startTime && data.quantityId && data.reliabilityId) {
-      if (waterIngress.id === 0) {
-        addWaterIngress({
+      if (item.id === 0) {
+        addData({
           ...data,
           type: ObservationType.waterIngress,
-          boreholeId: boreholeId,
+          boreholeId: parentId,
         });
       } else {
-        delete waterIngress.casing;
-        delete waterIngress.quantity;
-        delete waterIngress.reliability;
-        updateWaterIngress({ ...waterIngress, ...data });
+        delete item.casing;
+        delete item.quantity;
+        delete item.reliability;
+        updateData({ ...item, ...data });
       }
     } else {
-      setSelectedWaterIngress(null);
+      setSelected(null);
     }
   };
 
@@ -68,7 +62,7 @@ const WaterIngressInput = props => {
     ) {
       alertContext.error(t("waterIngressRequiredFieldsAlert"));
     } else {
-      setSelectedWaterIngress(null);
+      setSelected(null);
     }
   };
 
@@ -77,15 +71,12 @@ const WaterIngressInput = props => {
       <form onSubmit={formMethods.handleSubmit(submitForm)}>
         <Stack direction="row" sx={{ width: "100%" }}>
           <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-            <ObservationInput
-              observation={waterIngress}
-              boreholeId={boreholeId}
-            />
+            <ObservationInput observation={item} boreholeId={parentId} />
             <Stack direction="row" sx={{ paddingTop: "10px" }}>
               <FormSelect
                 fieldName="quantityId"
                 label="quantity"
-                selected={waterIngress.quantityId}
+                selected={item.quantityId}
                 required={true}
                 values={domains?.data
                   ?.filter(
@@ -102,7 +93,7 @@ const WaterIngressInput = props => {
               <FormSelect
                 fieldName="conditionsId"
                 label="conditions"
-                selected={waterIngress.conditionsId}
+                selected={item.conditionsId}
                 required={true}
                 values={domains?.data
                   ?.filter(

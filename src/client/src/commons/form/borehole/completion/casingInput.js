@@ -7,13 +7,7 @@ import { useDomains } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 
-const CasingInput = ({
-  item,
-  setSelected,
-  completionId,
-  addData,
-  updateData,
-}) => {
+const CasingInput = ({ item, setSelected, parentId, addData, updateData }) => {
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const formMethods = useForm({ mode: "all" });
@@ -38,7 +32,7 @@ const CasingInput = ({
     if (data?.dateFinish === "") {
       data.dateFinish = null;
     }
-    data.completionId = completionId;
+    data.completionId = parentId;
     return data;
   };
 

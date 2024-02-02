@@ -8,13 +8,7 @@ import { useTranslation } from "react-i18next";
 import ObservationDisplay from "./observationDisplay";
 
 const WaterIngressDisplay = props => {
-  const {
-    waterIngress,
-    selectedWaterIngress,
-    setSelectedWaterIngress,
-    isEditable,
-    deleteWaterIngress,
-  } = props;
+  const { item, selected, setSelected, isEditable, deleteData } = props;
   const { t } = useTranslation();
 
   return (
@@ -24,16 +18,16 @@ const WaterIngressDisplay = props => {
           <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
             {t("water_ingress")}
           </Typography>
-          <ObservationDisplay observation={waterIngress} />
+          <ObservationDisplay observation={item} />
           <StackFullWidth direction="row" spacing={1}>
             <FormDisplay
               label="quantity"
-              value={waterIngress?.quantity}
+              value={item?.quantity}
               type={FormDisplayType.Domain}
             />
             <FormDisplay
               label="conditions"
-              value={waterIngress?.conditions}
+              value={item?.conditions}
               type={FormDisplayType.Domain}
             />
           </StackFullWidth>
@@ -46,11 +40,11 @@ const WaterIngressDisplay = props => {
           }}>
           <Tooltip title={t("edit")}>
             <ModeEditIcon
-              color={selectedWaterIngress ? "disabled" : "black"}
+              color={selected ? "disabled" : "black"}
               data-cy="edit-icon"
               onClick={e => {
                 e.stopPropagation();
-                !selectedWaterIngress && setSelectedWaterIngress(waterIngress);
+                !selected && setSelected(item);
               }}
             />
           </Tooltip>
@@ -58,12 +52,12 @@ const WaterIngressDisplay = props => {
             <DeleteIcon
               data-cy="delete-icon"
               sx={{
-                color: selectedWaterIngress ? "rgba(0, 0, 0, 0.26)" : "red",
+                color: selected ? "rgba(0, 0, 0, 0.26)" : "red",
                 opacity: 0.7,
               }}
               onClick={e => {
                 e.stopPropagation();
-                !selectedWaterIngress && deleteWaterIngress(waterIngress.id);
+                !selected && deleteData(item.id);
               }}
             />
           </Tooltip>

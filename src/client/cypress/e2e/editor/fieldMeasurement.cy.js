@@ -36,7 +36,7 @@ describe("Tests for the field measurement editor.", () => {
     cy.contains("span", "DE").click({ force: true });
 
     // create field measurement
-    cy.get('[data-cy="add-fieldmeasurement-button"]').click({
+    cy.get('[data-cy="addFieldmeasurement-button"]').click({
       force: true,
     });
     cy.wait("@fieldmeasurement_GET");

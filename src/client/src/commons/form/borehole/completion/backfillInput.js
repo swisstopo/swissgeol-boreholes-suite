@@ -10,7 +10,7 @@ import { FormInput, FormSelect } from "../../../../components/form/form";
 const BackfillInput = ({
   item,
   setSelected,
-  completionId,
+  parentId,
   addData,
   updateData,
 }) => {
@@ -32,7 +32,7 @@ const BackfillInput = ({
   };
 
   const prepareFormDataForSubmit = data => {
-    data.completionId = completionId;
+    data.completionId = parentId;
     return data;
   };
 

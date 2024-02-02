@@ -10,7 +10,7 @@ import { FormInput, FormSelect } from "../../../../components/form/form";
 const InstrumentationInput = ({
   item,
   setSelected,
-  completionId,
+  parentId,
   addData,
   updateData,
 }) => {
@@ -37,7 +37,7 @@ const InstrumentationInput = ({
     if (data.casingId === "") {
       data.casingId = null;
     }
-    data.completionId = completionId;
+    data.completionId = parentId;
     return data;
   };
 
@@ -56,12 +56,12 @@ const InstrumentationInput = ({
   };
 
   useEffect(() => {
-    if (completionId) {
-      getCasings(completionId).then(casings => {
+    if (parentId) {
+      getCasings(parentId).then(casings => {
         setCasings(casings);
       });
     }
-  }, [completionId]);
+  }, [parentId]);
 
   return (
     <FormProvider {...formMethods}>
