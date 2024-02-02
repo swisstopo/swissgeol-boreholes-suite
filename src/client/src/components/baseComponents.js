@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 
 export const FullPage = styled(Stack)({
@@ -10,3 +10,15 @@ export const FullPageCentered = styled(Stack)({
   justifyContent: "center",
   alignItems: "center",
 });
+
+export const StackFullWidth = styled(Stack)(() => ({
+  width: "100%",
+}));
+
+export const StackHalfWidth = styled(Stack)(() => ({
+  width: "50%",
+}));
+
+export const TypographyWithBottomMargin = styled(Typography)(() => ({
+  marginBottom: "1em",
+}));

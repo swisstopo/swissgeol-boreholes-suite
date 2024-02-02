@@ -1,6 +1,6 @@
 import React from "react";
 import { Stack, Tooltip } from "@mui/material";
-import { StackFullWidth } from "./styledComponents";
+import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";

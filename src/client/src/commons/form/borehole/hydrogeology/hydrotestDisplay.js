@@ -4,7 +4,7 @@ import {
   TypographyWithBottomMargin,
   StackFullWidth,
   StackHalfWidth,
-} from "./styledComponents";
+} from "../../../../components/baseComponents";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
