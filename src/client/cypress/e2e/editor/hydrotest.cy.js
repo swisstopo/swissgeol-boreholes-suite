@@ -3,6 +3,11 @@ import {
   createStratigraphy,
   loginAsAdmin,
 } from "../helpers/testHelpers";
+import {
+  evaluateDisplayValue,
+  setInput,
+  setSelect,
+} from "../helpers/formHelpers";
 
 const openDropdown = dataCy => {
   cy.get(`[data-cy="${dataCy}"]`)
@@ -63,19 +68,15 @@ describe("Tests for the hydrotest editor.", () => {
     cy.wait("@codelist_GET");
     closeDropdown();
 
-    // fill reliability dropdown
-    openDropdown("reliability-select");
-    selectDropdownOption(1);
-
-    // fill start time
-    cy.get('[data-cy="start-time-textfield"]').type("2012-11-14T12:06");
+    setSelect("reliabilityId", 1);
+    setInput("startTime", "2012-11-14T12:06");
 
     // close editing mask
     cy.get('[data-cy="save-icon"]').click({ force: true });
 
     //assert hydrotest is displayed
     cy.contains("Pump-/Injektionsversuch, variable Rate");
-    cy.contains("fraglich");
+    evaluateDisplayValue("reliability", "fraglich");
 
     cy.get('[data-cy="edit-icon"]').click({ force: true });
 

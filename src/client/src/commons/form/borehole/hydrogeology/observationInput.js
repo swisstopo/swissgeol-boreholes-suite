@@ -1,53 +1,20 @@
-import React, { forwardRef, useState, useEffect } from "react";
-import { Controller } from "react-hook-form";
+import React, { useState, useEffect } from "react";
+import { Stack } from "@mui/material";
 import {
-  Checkbox,
-  FormControlLabel,
-  FormControl,
-  MenuItem,
-  Stack,
-  TextField,
-} from "@mui/material";
-import { styled } from "@mui/system";
+  FormInput,
+  FormSelect,
+  FormCheckbox,
+} from "../../../../components/form/form";
 import { useDomains, getCasingsByBoreholeId } from "../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
+import { StackHalfWidth } from "../completion/styledComponents";
 
 const ObservationInput = props => {
-  const { observation, boreholeId, register, formState, trigger, control } =
-    props;
-  const { t, i18n } = useTranslation();
+  const { observation, boreholeId } = props;
+  const { i18n } = useTranslation();
   const domains = useDomains();
   const [casings, setCasings] = useState([]);
-
-  // styled components
-  const TextfieldNoMargin = forwardRef((props, ref) => {
-    // the ref and children needs to be manually forwarded with custom components, the native TextField component would handle the forwarding internally.
-    const StyledTextField = styled(TextField)(() => ({
-      flex: "1",
-      marginTop: "10px",
-    }));
-
-    return (
-      <StyledTextField ref={ref} {...props}>
-        {props.children}
-      </StyledTextField>
-    );
-  });
-
-  const TextfieldWithMarginRight = forwardRef((props, ref) => {
-    const StyledTextField = styled(TextField)(() => ({
-      flex: "1",
-      marginTop: "10px",
-      marginRight: "10px",
-    }));
-
-    return (
-      <StyledTextField ref={ref} {...props}>
-        {props.children}
-      </StyledTextField>
-    );
-  });
 
   useEffect(() => {
     if (boreholeId) {
@@ -57,221 +24,95 @@ const ObservationInput = props => {
     }
   }, [boreholeId]);
 
-  const formatDateForDatetimeLocal = date => {
-    if (!date) return "";
-    // use slice to get from the returned format 'YYYY-MM-DDTHH:mm:ss.sssZ' to the required format for the input 'YYYY-MM-DDTHH:mm'.
-    return date.slice(0, 16);
-  };
-
   return (
     <>
       <Stack direction="row">
-        <TextfieldWithMarginRight
-          {...register("fromDepthM", {
-            valueAsNumber: true,
-          })}
+        <FormInput
+          fieldName="fromDepthM"
+          label="fromdepth"
+          value={observation.fromDepthM}
           type="number"
-          size="small"
-          data-cy="depth-from-m-textfield"
-          label={t("fromdepth")}
-          defaultValue={observation.fromDepthM}
-          variant="outlined"
-          InputLabelProps={{ shrink: true }}
         />
-        <TextfieldWithMarginRight
-          {...register("toDepthM", {
-            valueAsNumber: true,
-          })}
+        <FormInput
+          fieldName="toDepthM"
+          label="todepth"
+          value={observation.toDepthM}
           type="number"
-          size="small"
-          data-cy="depth-to-m-textfield"
-          label={t("todepth")}
-          defaultValue={observation.toDepthM}
-          variant="outlined"
-          InputLabelProps={{ shrink: true }}
         />
       </Stack>
       <Stack direction="row">
-        <TextfieldWithMarginRight
-          {...register("fromDepthMasl", {
-            valueAsNumber: true,
-          })}
+        <FormInput
+          fieldName="fromDepthMasl"
+          label="fromDepthMasl"
+          value={observation.fromDepthMasl}
           type="number"
-          size="small"
-          data-cy="depth-from-m-textfield"
-          label={t("fromDepthMasl")}
-          defaultValue={observation.fromDepthMasl}
-          variant="outlined"
-          InputLabelProps={{ shrink: true }}
         />
-        <TextfieldWithMarginRight
-          {...register("toDepthMasl", {
-            valueAsNumber: true,
-          })}
+        <FormInput
+          fieldName="toDepthMasl"
+          label="toDepthMasl"
+          value={observation.toDepthMasl}
           type="number"
-          size="small"
-          data-cy="depth-to-masl-textfield"
-          label={t("toDepthMasl")}
-          defaultValue={observation.toDepthMasl}
-          variant="outlined"
-          InputLabelProps={{ shrink: true }}
         />
       </Stack>
       <Stack direction="row">
-        <TextfieldWithMarginRight
-          {...register("startTime", { required: true })}
+        <FormInput
+          fieldName="startTime"
+          label="startTime"
+          value={observation.startTime}
           type="datetime-local"
-          data-cy="start-time-textfield"
-          label={t("startTime")}
-          variant="outlined"
-          size="small"
-          error={Boolean(formState.errors.startTime)}
-          defaultValue={formatDateForDatetimeLocal(observation.startTime)}
-          InputLabelProps={{ shrink: true }}
-          sx={{
-            backgroundColor: Boolean(formState.errors.startTime)
-              ? "#fff6f6"
-              : "transparent",
-            borderRadius: "4px",
-          }}
-          onBlur={() => {
-            trigger("startTime");
-          }}
+          required={true}
         />
-        <TextfieldWithMarginRight
-          {...register("endTime")}
+        <FormInput
+          fieldName="endTime"
+          label="endTime"
+          value={observation.endTime}
           type="datetime-local"
-          size="small"
-          data-cy="end-time-textfield"
-          label={t("endTime")}
-          defaultValue={formatDateForDatetimeLocal(observation.endTime)}
-          variant="outlined"
-          InputLabelProps={{ shrink: true }}
         />
       </Stack>
       <Stack direction="row">
-        <FormControl
-          sx={{ flex: "1", marginRight: "10px", marginTop: "10px" }}
-          variant="outlined">
-          <Controller
-            name="reliabilityId"
-            control={control}
-            defaultValue={observation.reliabilityId}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                select
-                size="small"
-                label={t("reliability")}
-                variant="outlined"
-                value={field.value || ""}
-                data-cy="reliability-select"
-                error={Boolean(formState.errors.reliabilityId)}
-                InputLabelProps={{ shrink: true }}
-                sx={{
-                  backgroundColor: Boolean(formState.errors.reliabilityId)
-                    ? "#fff6f6"
-                    : "transparent",
-                  borderRadius: "4px",
-                }}
-                onChange={e => {
-                  e.stopPropagation();
-                  field.onChange(e.target.value);
-                  trigger("reliabilityId");
-                }}>
-                {domains?.data
-                  ?.filter(
-                    d =>
-                      d.schema ===
-                      hydrogeologySchemaConstants.observationReliability,
-                  )
-                  .sort((a, b) => a.order - b.order)
-
-                  .map(d => (
-                    <MenuItem key={d.id} value={d.id}>
-                      {d[i18n.language]}
-                    </MenuItem>
-                  ))}
-              </TextField>
-            )}
-          />
-        </FormControl>
-        <FormControlLabel
-          sx={{
-            flex: "1",
-          }}
-          control={
-            <Controller
-              name="completionFinished"
-              control={control}
-              defaultValue={observation.completionFinished || false}
-              render={({ field }) => (
-                <Checkbox
-                  checked={field.value}
-                  onChange={e => field.onChange(e.target.checked)}
-                />
-              )}
-            />
-          }
-          label={t("completionFinished")}
+        <FormSelect
+          fieldName="reliabilityId"
+          label="reliability"
+          selected={observation.reliabilityId}
+          required={true}
+          values={domains?.data
+            ?.filter(
+              d =>
+                d.schema === hydrogeologySchemaConstants.observationReliability,
+            )
+            .sort((a, b) => a.order - b.order)
+            .map(d => ({
+              key: d.id,
+              name: d[i18n.language],
+            }))}
+        />
+        <FormCheckbox
+          fieldName="completionFinished"
+          label="completionFinished"
+          checked={observation.completionFinished}
         />
       </Stack>
+      <StackHalfWidth direction="row">
+        <FormSelect
+          fieldName="casingId"
+          label="casing"
+          selected={observation?.casingId}
+          disabled={!casings?.length}
+          values={casings?.map(casing => ({
+            key: casing.id,
+            name: casing.name,
+          }))}
+        />
+      </StackHalfWidth>
       <Stack direction="row">
-        <FormControl
-          variant="outlined"
-          sx={{
-            flex: "1",
-            marginRight: "15px",
-            marginTop: "10px",
-            marginBottom: "10px",
-          }}>
-          <Controller
-            name="casingName"
-            control={control}
-            defaultValue={observation.casingId}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                select
-                size="small"
-                label={t("casing")}
-                variant="outlined"
-                value={field.value || ""}
-                data-cy="casing-select"
-                disabled={!casings?.length}
-                onChange={e => {
-                  e.stopPropagation();
-                  field.onChange(e.target.value);
-                }}
-                InputLabelProps={{ shrink: true }}>
-                <MenuItem key="0" value={null}>
-                  <em>{t("reset")}</em>
-                </MenuItem>
-                {casings?.map(casing => (
-                  <MenuItem key={casing.id} value={casing.id}>
-                    {casing.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
-          />
-        </FormControl>
-        <div style={{ flex: "1" }} />
+        <FormInput
+          fieldName="comment"
+          label="comment"
+          multiline={true}
+          rows={3}
+          value={observation?.comment}
+        />
       </Stack>
-      <TextfieldNoMargin
-        {...register("comment")}
-        type="text"
-        size="small"
-        data-cy="comment-textfield"
-        label={t("comment")}
-        multiline
-        rows={3}
-        defaultValue={observation.comment}
-        variant="outlined"
-        sx={{ paddingRight: "10px" }}
-        InputLabelProps={{ shrink: true }}
-      />
     </>
   );
 };

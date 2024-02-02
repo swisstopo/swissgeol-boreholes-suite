@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Stack, MenuItem, Tooltip } from "@mui/material";
+import { Stack, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import { useDomains } from "../../../../api/fetchApiV2";
+import { completionSchemaConstants } from "./completionSchemaConstants";
 import { IconButtonWithMargin } from "./styledComponents";
 import {
   FormInput,
@@ -82,27 +83,29 @@ const CompletionHeaderInput = props => {
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"
-                flex={"0 0 400px"}>
+                flex={"0 0 400px"}
+                marginRight={"10px"}>
                 <FormSelect
                   fieldName="kindId"
                   label="completionKind"
                   selected={selectedCompletion?.kindId}
-                  required={true}>
-                  {domains?.data
-                    ?.filter(d => d.schema === "completion_kind")
+                  required={true}
+                  values={domains?.data
+                    ?.filter(
+                      d =>
+                        d.schema === completionSchemaConstants.completionKind,
+                    )
                     .sort((a, b) => a.order - b.order)
-                    .map(d => (
-                      <MenuItem key={d.id} value={d.id}>
-                        {d[i18n.language]}
-                      </MenuItem>
-                    ))}
-                </FormSelect>
+                    .map(d => ({
+                      key: d.id,
+                      name: d[i18n.language],
+                    }))}
+                />
                 <FormCheckbox
                   fieldName="isPrimary"
                   label="mainCompletion"
                   checked={completion.isPrimary}
                   disabled={completion.isPrimary}
-                  sx={{ marginRight: "0" }}
                 />
               </Stack>
             </Stack>
@@ -122,7 +125,7 @@ const CompletionHeaderInput = props => {
                 label="dateAbandonmentCompletion"
                 type="date"
                 value={selectedCompletion?.abandonDate}
-                sx={{ marginRight: "0", flex: "0 0 400px" }}
+                sx={{ flex: "0 0 400px" }}
               />
             </Stack>
             <Stack

@@ -1,15 +1,7 @@
 import React, { useEffect, useContext } from "react";
-import { useForm, Controller } from "react-hook-form";
-import {
-  Box,
-  Card,
-  FormControl,
-  InputAdornment,
-  MenuItem,
-  Stack,
-  TextField,
-  Tooltip,
-} from "@mui/material";
+import { useForm, FormProvider } from "react-hook-form";
+import { Box, Card, InputAdornment, Stack, Tooltip } from "@mui/material";
+import { FormInput, FormSelect } from "../../../../components/form/form";
 import { useDomains } from "../../../../api/fetchApiV2";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
@@ -29,22 +21,22 @@ const FieldMeasurementInput = props => {
   } = props;
   const domains = useDomains();
   const { t, i18n } = useTranslation();
-  const { register, handleSubmit, control, getValues, formState, trigger } =
-    useForm();
+  const formMethods = useForm();
   const alertContext = useContext(AlertContext);
 
   // submit values on unmount with useEffect clean up function.
   useEffect(() => {
     return () => {
-      handleSubmit(submitForm)();
+      formMethods.handleSubmit(submitForm)();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleSubmit]);
+  }, [formMethods.handleSubmit]);
 
   // trigger form validation on mount
   useEffect(() => {
-    trigger();
-  }, [trigger]);
+    formMethods.trigger();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formMethods.trigger]);
 
   const submitForm = data => {
     //convert dates to IsoStrings
@@ -79,7 +71,7 @@ const FieldMeasurementInput = props => {
   };
 
   const closeFormIfCompleted = () => {
-    const formValues = getValues();
+    const formValues = formMethods.getValues();
     if (
       !formValues.reliabilityId ||
       !formValues.startTime ||
@@ -93,10 +85,7 @@ const FieldMeasurementInput = props => {
     }
   };
 
-  const getInputFieldBackgroundColor = errorFieldName =>
-    Boolean(errorFieldName) ? "#fff6f6" : "transparent";
-
-  const currentParameterId = getValues("parameterId");
+  const currentParameterId = formMethods.getValues("parameterId");
 
   return (
     <Card
@@ -107,159 +96,84 @@ const FieldMeasurementInput = props => {
         mb: 2,
         height: "100%",
       }}>
-      <form onSubmit={handleSubmit(submitForm)}>
-        <Stack direction="row" sx={{ width: "100%" }}>
-          <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-            <ObservationInput
-              observation={fieldMeasurement}
-              boreholeId={boreholeId}
-              register={register}
-              control={control}
-              formState={formState}
-              trigger={trigger}
-            />
-            <Stack direction="row" sx={{ paddingTop: "10px" }}>
-              <FormControl
-                variant="outlined"
-                sx={{ flex: "1", marginRight: "10px" }}>
-                <Controller
-                  name="sampleTypeId"
-                  control={control}
-                  defaultValue={fieldMeasurement.sampleTypeId}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      size="small"
-                      label={t("field_measurement_sample_type")}
-                      variant="outlined"
-                      value={field.value || ""}
-                      data-cy="sample-type-select"
-                      error={Boolean(formState.errors.sampleTypeId)}
-                      InputLabelProps={{ shrink: true }}
-                      sx={{
-                        backgroundColor: getInputFieldBackgroundColor(
-                          formState.errors.sampleTypeId,
-                        ),
-                        borderRadius: "4px",
-                      }}
-                      onChange={e => {
-                        e.stopPropagation();
-                        field.onChange(e.target.value);
-                        trigger();
-                      }}>
-                      {domains?.data
-                        ?.filter(
-                          d =>
-                            d.schema ===
-                            hydrogeologySchemaConstants.fieldMeasurementSampleType,
-                        )
-                        .sort((a, b) => a.order - b.order)
-                        .map(d => (
-                          <MenuItem key={d.id} value={d.id}>
-                            {d[i18n.language]}
-                          </MenuItem>
-                        ))}
-                    </TextField>
-                  )}
-                />
-              </FormControl>
-              <FormControl
-                variant="outlined"
-                sx={{ flex: "1", marginRight: "10px" }}>
-                <Controller
-                  name="parameterId"
-                  control={control}
-                  defaultValue={fieldMeasurement.parameterId}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      size="small"
-                      label={t("parameter")}
-                      variant="outlined"
-                      value={field.value || ""}
-                      data-cy="parameter-select"
-                      error={Boolean(formState.errors.parameterId)}
-                      InputLabelProps={{ shrink: true }}
-                      sx={{
-                        backgroundColor: getInputFieldBackgroundColor(
-                          formState.errors.parameterId,
-                        ),
-                        borderRadius: "4px",
-                      }}
-                      onChange={e => {
-                        e.stopPropagation();
-                        field.onChange(e.target.value);
-                        trigger();
-                      }}>
-                      {domains?.data
-                        ?.filter(
-                          d =>
-                            d.schema ===
-                            hydrogeologySchemaConstants.fieldMeasurementParameter,
-                        )
-                        .sort((a, b) => a.order - b.order)
-                        .map(d => (
-                          <MenuItem key={d.id} value={d.id}>
-                            {d[i18n.language]}
-                          </MenuItem>
-                        ))}
-                    </TextField>
-                  )}
-                />
-              </FormControl>
-            </Stack>
-            <Stack direction="row">
-              <TextField
-                sx={{
-                  flex: "1",
-                  marginTop: "10px",
-                  marginRight: "10px",
-                  backgroundColor: getInputFieldBackgroundColor(
-                    formState.errors.value,
-                  ),
-                  borderRadius: "4px",
-                }}
-                error={Boolean(formState.errors.value)}
-                {...register("value", {
-                  valueAsNumber: true,
-                  required: true,
-                })}
-                type="number"
-                size="small"
-                data-cy="value-textfield"
-                label={t("value")}
-                defaultValue={fieldMeasurement.value}
-                variant="outlined"
-                onBlur={() => {
-                  trigger("value");
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {currentParameterId &&
-                        getParameterUnit(currentParameterId)}
-                    </InputAdornment>
-                  ),
-                }}
-                InputLabelProps={{ shrink: true }}
+      <FormProvider {...formMethods}>
+        <form onSubmit={formMethods.handleSubmit(submitForm)}>
+          <Stack direction="row" sx={{ width: "100%" }}>
+            <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
+              <ObservationInput
+                observation={fieldMeasurement}
+                boreholeId={boreholeId}
               />
+              <Stack direction="row" sx={{ paddingTop: "10px" }}>
+                <FormSelect
+                  fieldName="sampleTypeId"
+                  label="field_measurement_sample_type"
+                  selected={fieldMeasurement.sampleTypeId}
+                  required={true}
+                  values={domains?.data
+                    ?.filter(
+                      d =>
+                        d.schema ===
+                        hydrogeologySchemaConstants.fieldMeasurementSampleType,
+                    )
+                    .sort((a, b) => a.order - b.order)
+                    .map(d => ({
+                      key: d.id,
+                      name: d[i18n.language],
+                    }))}
+                />
+                <FormSelect
+                  fieldName="parameterId"
+                  label="parameter"
+                  selected={fieldMeasurement.parameterId}
+                  required={true}
+                  values={domains?.data
+                    ?.filter(
+                      d =>
+                        d.schema ===
+                        hydrogeologySchemaConstants.fieldMeasurementParameter,
+                    )
+                    .sort((a, b) => a.order - b.order)
+                    .map(d => ({
+                      key: d.id,
+                      name: d[i18n.language],
+                    }))}
+                />
+              </Stack>
+              <Stack direction="row">
+                <FormInput
+                  fieldName="value"
+                  label="value"
+                  value={fieldMeasurement.value}
+                  type="number"
+                  required={true}
+                  inputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        {currentParameterId &&
+                          getParameterUnit(currentParameterId)}
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Stack>
             </Stack>
+            <Box sx={{ marginLeft: "auto" }}>
+              <Tooltip title={t("close")}>
+                <CheckIcon
+                  sx={{
+                    color: formMethods.formState.isValid
+                      ? "#0080008c"
+                      : "disabled",
+                  }}
+                  data-cy="close-icon"
+                  onClick={() => closeFormIfCompleted()}
+                />
+              </Tooltip>
+            </Box>
           </Stack>
-          <Box sx={{ marginLeft: "auto" }}>
-            <Tooltip title={t("close")}>
-              <CheckIcon
-                sx={{ color: formState.isValid ? "#0080008c" : "disabled" }}
-                data-cy="close-icon"
-                onClick={() => closeFormIfCompleted()}
-              />
-            </Tooltip>
-          </Box>
-        </Stack>
-      </form>
+        </form>
+      </FormProvider>
     </Card>
   );
 };

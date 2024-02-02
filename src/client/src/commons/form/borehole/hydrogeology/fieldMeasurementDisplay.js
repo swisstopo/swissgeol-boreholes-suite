@@ -1,10 +1,7 @@
 import React from "react";
 import { Card, Stack, Tooltip, Typography } from "@mui/material";
-import {
-  TypographyWithBottomMargin,
-  StackFullWidth,
-  StackHalfWidth,
-} from "./styledComponents";
+import { StackFullWidth } from "./styledComponents";
+import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
@@ -19,7 +16,7 @@ const FieldMeasurementDisplay = props => {
     deleteFieldMeasurement,
     getParameterUnit,
   } = props;
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <Card
@@ -38,33 +35,29 @@ const FieldMeasurementDisplay = props => {
           </Typography>
           <ObservationDisplay observation={fieldMeasurement} />
           <StackFullWidth direction="row" spacing={1}>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">
-                {t("field_measurement_sample_type")}
-              </Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {fieldMeasurement.sampleType?.[i18n.language] || "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("parameter")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {fieldMeasurement.parameter?.[i18n.language] || "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
+            <FormDisplay
+              label="field_measurement_sample_type"
+              value={fieldMeasurement?.sampleType}
+              type={FormDisplayType.Domain}
+            />
+            <FormDisplay
+              label="parameter"
+              value={fieldMeasurement?.parameter}
+              type={FormDisplayType.Domain}
+            />
           </StackFullWidth>
           <StackFullWidth direction="row" spacing={1}>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("value")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {fieldMeasurement?.value && (
+            <FormDisplay
+              label="value"
+              value={
+                fieldMeasurement?.value && (
                   <>
                     <span>{fieldMeasurement?.value + " "}</span>
                     {getParameterUnit(fieldMeasurement.parameterId)}
                   </>
-                )}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
+                )
+              }
+            />
           </StackFullWidth>
         </StackFullWidth>
         <Stack
