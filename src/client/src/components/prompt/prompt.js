@@ -39,6 +39,7 @@ const Prompt = props => {
               }
               setOpen(false);
             }}
+            disabled={action.disabled === true}
             data-cy={"prompt-button-" + action.label}>
             {t(action.label)}
           </PromptButton>

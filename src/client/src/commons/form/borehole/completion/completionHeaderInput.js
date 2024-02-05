@@ -180,6 +180,7 @@ const CompletionHeaderInput = props => {
           },
           {
             label: "save",
+            disabled: !formMethods.formState.isValid,
             action: () => {
               formMethods.handleSubmit(submitForm)();
             },
