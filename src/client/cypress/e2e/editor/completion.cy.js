@@ -322,16 +322,24 @@ describe("completion crud tests", () => {
     setTab(2);
     deleteCompletion();
     handlePrompt("Do you really want to delete this completion?", "delete");
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(
+        `/editor/${boreholeId}/completion/${completion2Id}`,
+      );
+      expect(location.hash).to.eq("#casing");
+    });
 
     // existing editing to new: no prompt should be displayed when no changes have been made, form should be reset
     setTab(0);
-    startEditing();
+    cy.wait("@casing_GET");
+    isTabSelected(0);
     cy.location().should(location => {
       expect(location.pathname).to.eq(
         `/editor/${boreholeId}/completion/${completion1Id}`,
       );
       expect(location.hash).to.eq("#casing");
     });
+    startEditing();
     cy.get(`[data-cy="name-formInput"]`).click();
     addCompletion();
     evaluateInput("name", "");
