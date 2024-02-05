@@ -276,13 +276,18 @@ describe("completion crud tests", () => {
       expect(location.hash).to.eq("#casing");
     });
 
-    // new to existing: changes can be reverted in prompt
+    // new to existing: save option is disabled if form is invalid
     addCompletion();
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/new`);
       expect(location.hash).to.eq("");
     });
     setInput("name", "new completion");
+    setTab(0);
+    cy.get('[data-cy="prompt-button-save"]').should("be.disabled");
+    handlePrompt("Unsaved changes", "cancel");
+
+    // new to existing: changes can be reverted in prompt
     setSelect("kindId", 1);
     setTab(0);
     handlePrompt("Unsaved changes", "reset");
