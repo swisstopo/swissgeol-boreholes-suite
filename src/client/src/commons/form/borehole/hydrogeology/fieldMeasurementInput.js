@@ -1,5 +1,4 @@
-import React from "react";
-import { useForm } from "react-hook-form";
+import React, { useState } from "react";
 import { InputAdornment, Stack } from "@mui/material";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
@@ -14,7 +13,7 @@ const FieldMeasurementInput = props => {
   const { item, setSelected, parentId, addData, updateData } = props;
   const domains = useDomains();
   const { i18n } = useTranslation();
-  const formMethods = useForm();
+  const [parameterId, setParameterId] = useState(null);
 
   const prepareFormDataForSubmit = data => {
     data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
@@ -29,8 +28,6 @@ const FieldMeasurementInput = props => {
       domains.data?.find(d => d.id === parameterId)?.geolcode
     ];
   };
-
-  const currentParameterId = formMethods.getValues("parameterId");
 
   return (
     <DataInputCard
@@ -74,6 +71,9 @@ const FieldMeasurementInput = props => {
               key: d.id,
               name: d[i18n.language],
             }))}
+          onUpdate={value => {
+            setParameterId(value);
+          }}
         />
       </Stack>
       <Stack direction="row">
@@ -86,7 +86,7 @@ const FieldMeasurementInput = props => {
           inputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                {currentParameterId && getParameterUnit(currentParameterId)}
+                {parameterId && getParameterUnit(parameterId)}
               </InputAdornment>
             ),
           }}
