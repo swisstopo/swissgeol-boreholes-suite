@@ -65,6 +65,13 @@ export const DataCards = props => {
   };
 
   useEffect(() => {
+    if (selected === null) {
+      setDisplayed(state.data);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected]);
+
+  useEffect(() => {
     mounted.current = true;
     loadData(0);
     return () => {
