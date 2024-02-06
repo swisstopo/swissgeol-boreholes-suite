@@ -1,125 +1,155 @@
 import React from "react";
-import { Stack, Tooltip, Typography } from "@mui/material";
-import {
-  TypographyWithBottomMargin,
-  StackFullWidth,
-  StackHalfWidth,
-} from "../../../../components/baseComponents";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableContainer,
+  TableRow,
+  TableCell,
+} from "@mui/material";
+import { StackFullWidth } from "../../../../components/baseComponents";
+import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
+import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import ObservationDisplay from "./observationDisplay";
-import HydrotestResultTable from "./hydrotestResultTable";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
+import { TestResultParameterUnits } from "./parameterUnits";
+import { useDomains } from "../../../../api/fetchApiV2";
 
 const HydrotestDisplay = props => {
-  const {
-    hydrotest,
-    selectedHydrotest,
-    setSelectedHydrotest,
-    isEditable,
-    deleteHydrotest,
-  } = props;
+  const { item, selected, setSelected, isEditable, deleteData } = props;
   const { t, i18n } = useTranslation();
+  const domains = useDomains();
+
+  const getParameterUnit = parameterId => {
+    return TestResultParameterUnits[
+      domains?.data?.find(d => d.id === parameterId).geolcode
+    ];
+  };
+
+  const tableCellStyles = {
+    paddingRight: "3px",
+    paddingLeft: "3px",
+    flex: 1,
+    width: "20%",
+    maxWidth: "20%",
+    fontSize: "13px",
+  };
+
+  const tableHeaderStyles = {
+    fontWeight: 900,
+    padding: "3px",
+    flex: 1,
+    width: "20%",
+    maxWidth: "20%",
+  };
 
   return (
-    <>
-      <StackFullWidth direction="row" justifyContent="space-between">
-        <StackFullWidth direction="column" justifyContent="space-between">
-          <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
-            {t("hydrotest")}
-          </Typography>
-          <ObservationDisplay observation={hydrotest} />
-          <StackFullWidth direction="row" spacing={1}>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("hydrotestKind")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {hydrotest.codelists
-                  .filter(
-                    c => c.schema === hydrogeologySchemaConstants.hydrotestKind,
-                  )
-                  .map(c => c[i18n.language])
-                  .join(", ") || "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("flowDirection")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {hydrotest.codelists
-                  .filter(
-                    c =>
-                      c.schema ===
-                      hydrogeologySchemaConstants.hydrotestFlowDirection,
-                  )
-                  .map(c => c[i18n.language])
-                  .join(", ") || "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
-          </StackFullWidth>
-          <StackFullWidth direction="row" spacing={1}>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">
-                {t("evaluationMethod")}
-              </Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {hydrotest.codelists
-                  .filter(
-                    c =>
-                      c.schema ===
-                      hydrogeologySchemaConstants.hydrotestEvaluationMethod,
-                  )
-                  .map(c => c[i18n.language])
-                  .join(", ") || "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
-          </StackFullWidth>
-          {hydrotest.hydrotestResults?.length > 0 && (
-            <>
-              <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
-                {t("hydrotestResult")}
-              </Typography>
-              <HydrotestResultTable
-                hydrotest={hydrotest}
-                isEditable={false}
-                isAddingHydrotestResult={false}
-                setIsAddingHydrotestResult={() => {}}
-                editingId={null}
-              />
-            </>
+    <DataDisplayCard
+      item={item}
+      selected={selected}
+      setSelected={setSelected}
+      isEditable={isEditable}
+      deleteData={deleteData}>
+      <ObservationDisplay observation={item} />
+      <StackFullWidth direction="row" spacing={1}>
+        <FormDisplay
+          label="hydrotestKind"
+          value={item?.codelists.filter(
+            c => c.schema === hydrogeologySchemaConstants.hydrotestKind,
           )}
-        </StackFullWidth>
-        <Stack
-          direction="row"
-          sx={{
-            marginLeft: "auto",
-            visibility: isEditable ? "visible" : "hidden",
-          }}>
-          <Tooltip title={t("edit")}>
-            <ModeEditIcon
-              color={selectedHydrotest ? "disabled" : "black"}
-              data-cy="edit-icon"
-              onClick={e => {
-                e.stopPropagation();
-                !selectedHydrotest && setSelectedHydrotest(hydrotest);
-              }}
-            />
-          </Tooltip>
-          <Tooltip title={t("delete")}>
-            <DeleteIcon
-              data-cy="delete-icon"
-              sx={{
-                color: selectedHydrotest ? "rgba(0, 0, 0, 0.26)" : "red",
-                opacity: 0.7,
-              }}
-              onClick={e => {
-                e.stopPropagation();
-                !selectedHydrotest && deleteHydrotest(hydrotest.id);
-              }}
-            />
-          </Tooltip>
-        </Stack>
+          type={FormDisplayType.Domain}
+        />
+        <FormDisplay
+          label="flowDirection"
+          value={item?.codelists.filter(
+            c =>
+              c.schema === hydrogeologySchemaConstants.hydrotestFlowDirection,
+          )}
+          type={FormDisplayType.Domain}
+        />
       </StackFullWidth>
-    </>
+      <StackFullWidth direction="row" spacing={1}>
+        <FormDisplay
+          label="evaluationMethod"
+          value={item?.codelists.filter(
+            c =>
+              c.schema ===
+              hydrogeologySchemaConstants.hydrotestEvaluationMethod,
+          )}
+          type={FormDisplayType.Domain}
+        />
+      </StackFullWidth>
+      {item?.hydrotestResults?.length > 0 && (
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ ...tableHeaderStyles, paddingRight: 0 }}>
+                  {t("parameter")}
+                </TableCell>
+                <TableCell sx={tableHeaderStyles}>{t("value")}</TableCell>
+                <TableCell sx={tableHeaderStyles}>{t("minValue")}</TableCell>
+                <TableCell sx={tableHeaderStyles}>{t("maxValue")}</TableCell>
+                {isEditable && (
+                  <TableCell align="right" sx={{ padding: "3px" }}></TableCell>
+                )}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {item?.hydrotestResults?.map((result, index) => (
+                <TableRow
+                  key={index}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    sx={{
+                      ...tableCellStyles,
+                      "& .MuiFormControl-root": {
+                        minWidth: "100%",
+                        maxWidth: "100%",
+                      },
+                      pr: "3px",
+                      pl: "3px",
+                      maxWidth: "200px",
+                      minWidth: "200px",
+                    }}>
+                    {domains?.data?.find(d => d.id === result.parameterId)?.[
+                      i18n.language
+                    ] || ""}
+                  </TableCell>
+                  <TableCell sx={tableCellStyles}>
+                    {result?.value && (
+                      <>
+                        <span>{result?.value + " "}</span>
+                        {getParameterUnit(result.parameterId)}
+                      </>
+                    )}
+                  </TableCell>
+                  <TableCell sx={tableCellStyles}>
+                    {result?.minValue && (
+                      <>
+                        <span>{result?.value + " "}</span>
+                        {getParameterUnit(result.parameterId)}
+                      </>
+                    )}
+                  </TableCell>
+                  <TableCell sx={tableCellStyles}>
+                    {result?.maxValue && (
+                      <>
+                        <span>{result?.value + " "}</span>
+                        {getParameterUnit(result.parameterId)}
+                      </>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </DataDisplayCard>
   );
 };
 
