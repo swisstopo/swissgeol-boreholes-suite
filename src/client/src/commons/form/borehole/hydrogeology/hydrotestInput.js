@@ -37,6 +37,7 @@ const HydrotestInput = props => {
     name: "hydrotestResults",
     control: formMethods.control,
   });
+  const [units, setUnits] = useState({});
 
   const [hydrotestKindIds, setHydrotestKindIds] = useState(
     item?.codelists
@@ -107,6 +108,18 @@ const HydrotestInput = props => {
   }, [hydrotestKindIds]);
 
   useEffect(() => {
+    var currentUnits = {};
+    formMethods.getValues()["hydrotestResults"].forEach((element, index) => {
+      currentUnits = {
+        ...currentUnits,
+        [index]: getParameterUnit(element.parameterId),
+      };
+    });
+    setUnits(currentUnits);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formMethods.getValues()["hydrotestResults"]]);
+
+  useEffect(() => {
     var currentValues = formMethods.getValues();
     if (
       currentValues?.testKindId?.toString() !== hydrotestKindIds?.toString()
@@ -157,6 +170,9 @@ const HydrotestInput = props => {
   };
 
   const getParameterUnit = parameterId => {
+    if (!parameterId) {
+      return null;
+    }
     return TestResultParameterUnits[
       domains?.data?.find(d => d.id === parameterId).geolcode
     ];
@@ -302,6 +318,9 @@ const HydrotestInput = props => {
                         key: d.id,
                         name: d[i18n.language],
                       }))}
+                    onUpdate={value => {
+                      setUnits({ ...units, [index]: getParameterUnit(value) });
+                    }}
                   />
                   <FormInput
                     fieldName={`hydrotestResults.${index}.value`}
@@ -311,8 +330,7 @@ const HydrotestInput = props => {
                     inputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          {field.parameterId &&
-                            getParameterUnit(field.parameterId)}
+                          {units[index] ? units[index] : ""}
                         </InputAdornment>
                       ),
                     }}
@@ -325,8 +343,7 @@ const HydrotestInput = props => {
                     inputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          {field.parameterId &&
-                            getParameterUnit(field.parameterId)}
+                          {units[index] ? units[index] : ""}
                         </InputAdornment>
                       ),
                     }}
@@ -339,8 +356,7 @@ const HydrotestInput = props => {
                     inputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          {field.parameterId &&
-                            getParameterUnit(field.parameterId)}
+                          {units[index] ? units[index] : ""}
                         </InputAdornment>
                       ),
                     }}
