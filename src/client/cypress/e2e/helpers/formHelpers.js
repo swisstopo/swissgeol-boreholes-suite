@@ -62,7 +62,6 @@ export const setSelect = (fieldName, index, expected) => {
   var selector = `[data-cy="${fieldName}-formSelect"]`;
   openDropdown(selector);
   if (expected != null) {
-    // cy.wait("@codelist_GET");
     evaluateDropdownOptionsLength(expected);
   }
   selectDropdownOption(index);
@@ -87,7 +86,6 @@ export const toggleMultiSelect = (fieldName, indices, expected) => {
   var selector = `[data-cy="${fieldName}-formMultiSelect"]`;
   openDropdown(selector);
   if (expected != null) {
-    // cy.wait("@codelist_GET");
     evaluateDropdownOptionsLength(expected);
   }
   indices.forEach(index => {
