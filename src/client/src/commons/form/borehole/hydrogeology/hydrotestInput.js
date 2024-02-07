@@ -371,11 +371,12 @@ const HydrotestInput = props => {
                     }}
                   />
                   <BaseIconButton
+                    onClick={() => remove(index)}
                     sx={{
                       color: ButtonColor.error,
                       marginTop: "10px !important",
                     }}>
-                    <Delete onClick={() => remove(index)} />
+                    <Delete />
                   </BaseIconButton>
                 </Stack>
               ))}
