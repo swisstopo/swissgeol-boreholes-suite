@@ -295,12 +295,7 @@ const HydrotestInput = props => {
                 <AddButton
                   data-cy="addHydrotestResult-button"
                   onClick={e => {
-                    append({
-                      parameterId: null,
-                      value: null,
-                      minValue: null,
-                      maxValue: null,
-                    });
+                    append();
                   }}>
                   {t("addHydrotestResult")}
                 </AddButton>
