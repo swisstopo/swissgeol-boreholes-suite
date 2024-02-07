@@ -62,9 +62,6 @@ const Profile = props => {
 
   const setKind = useCallback(kind => {
     switch (kind) {
-      case "instruments":
-        setStratigraphyKind(profileKind.INSTRUMENT);
-        break;
       case "stratigraphy":
         setAttributesBasedKind(stratigraphyData);
         setStratigraphyKind(profileKind.STRATIGRAPHY);
