@@ -223,7 +223,7 @@ const HydrotestInput = props => {
                   .map(c => c.id) || []
               }
               disabled={
-                !!formMethods.errors?.testKindId ||
+                !!formMethods.formState.errors?.testKindId ||
                 !filteredTestKindDomains?.data?.filter(
                   d =>
                     d.schema ===
@@ -257,7 +257,7 @@ const HydrotestInput = props => {
                   .map(c => c.id) || []
               }
               disabled={
-                !!formMethods?.errors?.testKindId ||
+                !!formMethods.formState.errors?.testKindId ||
                 !filteredTestKindDomains?.data?.filter(
                   d =>
                     d.schema ===
