@@ -307,7 +307,7 @@ const HydrotestInput = props => {
                     label="parameter"
                     selected={field.parameterId}
                     required={true}
-                    values={domains?.data
+                    values={filteredTestKindDomains?.data
                       ?.filter(
                         d =>
                           d.schema ===
