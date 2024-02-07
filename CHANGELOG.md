@@ -23,6 +23,7 @@
 - Link hydrogeology observations to new completion casing.
 - Use always _m MD_ as unit for borehole depth.
 - Use reusable form components for hydrogeology.
+- Replaced label for layer description quality.
 - Use reusable card components for hydrogeology.
 
 ### Fixed
