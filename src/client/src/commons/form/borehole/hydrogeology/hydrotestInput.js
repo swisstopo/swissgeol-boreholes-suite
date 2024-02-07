@@ -135,16 +135,20 @@ const HydrotestInput = props => {
     data.type = ObservationType.fieldMeasurement;
     data.boreholeId = parentId;
 
-    // add codelists
-    data.codelistIds = [
-      ...data.flowDirectionId,
-      ...data.evaluationMethodId,
-      ...data.testKindId,
-    ];
+    data.codelistIds = [];
+    if (Array.isArray(data.testKindId)) {
+      data.codelistIds = [...data.codelistIds, ...data.testKindId];
+    }
+    if (Array.isArray(data.flowDirectionId)) {
+      data.codelistIds = [...data.codelistIds, ...data.flowDirectionId];
+    }
+    if (Array.isArray(data.evaluationMethodId)) {
+      data.codelistIds = [...data.codelistIds, ...data.evaluationMethodId];
+    }
 
+    delete data.testKindId;
     delete data.flowDirectionId;
     delete data.evaluationMethodId;
-    delete data.testKindId;
     return data;
   };
 
