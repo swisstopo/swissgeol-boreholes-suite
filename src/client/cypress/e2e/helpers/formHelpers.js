@@ -15,7 +15,6 @@ export const setInput = (fieldName, value) => {
       });
     });
 };
-
 export const evaluateInput = (fieldName, expectedValue) => {
   var selector = `[data-cy="${fieldName}-formInput"] input`;
   cy.get(selector)
@@ -24,7 +23,6 @@ export const evaluateInput = (fieldName, expectedValue) => {
     })
     .should("have.length", 1);
 };
-
 export const evaluateTextarea = (fieldName, expectedValue) => {
   var selector = `[data-cy="${fieldName}-formInput"] textarea`;
   cy.get(selector)
@@ -34,18 +32,40 @@ export const evaluateTextarea = (fieldName, expectedValue) => {
     .should("have.length", 1);
 };
 
+export const openDropdown = selector => {
+  cy.get(selector).find('[role="combobox"]').click();
+};
+
+export const selectDropdownOption = index => {
+  cy.get('.MuiPaper-elevation [role="listbox"]')
+    .find('[role="option"]')
+    .eq(index)
+    .click();
+};
+
+export const evaluateDropdownOptionsLength = length => {
+  cy.get('.MuiPaper-elevation [role="listbox"]').should($listbox => {
+    expect($listbox.find('[role="option"]')).to.have.length(length);
+  });
+};
+
+export const closeDropdown = () => {
+  cy.get("body").click();
+};
+
 /**
  * Sets the value for a select form element.
  * @param {string} fieldName The name of the select field.
  * @param {number} index The index of the option to select.
  */
-export const setSelect = (fieldName, index) => {
+export const setSelect = (fieldName, index, expected) => {
   var selector = `[data-cy="${fieldName}-formSelect"]`;
-  cy.get(selector).find('[role="combobox"]').click();
-  cy.get('.MuiPaper-elevation [role="listbox"]')
-    .find('[role="option"]')
-    .eq(index)
-    .click();
+  openDropdown(selector);
+  if (expected != null) {
+    // cy.wait("@codelist_GET");
+    evaluateDropdownOptionsLength(expected);
+  }
+  selectDropdownOption(index);
 };
 
 export const evaluateSelect = (fieldName, expectedValue) => {
@@ -58,6 +78,42 @@ export const evaluateSelect = (fieldName, expectedValue) => {
 };
 
 /**
+ * Sets the value for a select form element.
+ * @param {string} fieldName The name of the select field.
+ * @param {number[]} indices The indices of the options to select.
+ * @param {number} expected The expected number of options in the dropdown.
+ */
+export const toggleMultiSelect = (fieldName, indices, expected) => {
+  var selector = `[data-cy="${fieldName}-formMultiSelect"]`;
+  openDropdown(selector);
+  if (expected != null) {
+    // cy.wait("@codelist_GET");
+    evaluateDropdownOptionsLength(expected);
+  }
+  indices.forEach(index => {
+    selectDropdownOption(index);
+  });
+  closeDropdown();
+};
+
+export const evaluateMultiSelect = (fieldName, expectedValues) => {
+  var selector = `[data-cy="${fieldName}-formMultiSelect"] input`;
+  cy.get(selector)
+    .filter((k, input) => {
+      if (expectedValues.length === 0) {
+        return input.value === "";
+      } else {
+        var values = input.value.split(",");
+        return (
+          values.length === expectedValues.length &&
+          values.every(v => expectedValues.includes(v))
+        );
+      }
+    })
+    .should("have.length", 1);
+};
+
+/**
  * Toggles the checkbox for a checkbox form element.
  * @param {string} fieldName The name of the checkbox field.
  */
@@ -65,7 +121,6 @@ export const toggleCheckbox = fieldName => {
   var selector = `[data-cy="${fieldName}-formCheckbox"]`;
   cy.get(selector).click();
 };
-
 /**
  * Sets the value for a select form element.
  * @param {string} fieldName The name of the checkbox field.
@@ -76,7 +131,12 @@ export const evaluateCheckbox = (fieldName, expectedChecked) => {
   var selector = `[data-cy="${fieldName}-formCheckbox"]`;
   cy.get(selector).invoke("attr", "aria-disabled").should("eq", checked);
 };
-
 export const evaluateDisplayValue = (fieldName, expectedValue) => {
-  cy.get(`[data-cy="${fieldName}-formDisplay"]`).contains(expectedValue);
+  if (Array.isArray(expectedValue)) {
+    expectedValue.forEach(value => {
+      cy.get(`[data-cy="${fieldName}-formDisplay"]`).contains(value);
+    });
+  } else {
+    cy.get(`[data-cy="${fieldName}-formDisplay"]`).contains(expectedValue);
+  }
 };

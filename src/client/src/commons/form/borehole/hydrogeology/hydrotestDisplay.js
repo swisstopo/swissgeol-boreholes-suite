@@ -54,7 +54,7 @@ const HydrotestDisplay = props => {
       <ObservationDisplay observation={item} />
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay
-          label="hydrotestKind"
+          label="testKind"
           value={item?.codelists.filter(
             c => c.schema === hydrogeologySchemaConstants.hydrotestKind,
           )}
@@ -114,12 +114,15 @@ const HydrotestDisplay = props => {
                       pl: "3px",
                       maxWidth: "200px",
                       minWidth: "200px",
-                    }}>
+                    }}
+                    data-cy={`hydrotestResult.${index}.parameter-formDisplay`}>
                     {domains?.data?.find(d => d.id === result.parameterId)?.[
                       i18n.language
                     ] || ""}
                   </TableCell>
-                  <TableCell sx={tableCellStyles}>
+                  <TableCell
+                    sx={tableCellStyles}
+                    data-cy={`hydrotestResult.${index}.value-formDisplay`}>
                     {result?.value && (
                       <>
                         <span>{result?.value + " "}</span>
@@ -127,7 +130,9 @@ const HydrotestDisplay = props => {
                       </>
                     )}
                   </TableCell>
-                  <TableCell sx={tableCellStyles}>
+                  <TableCell
+                    sx={tableCellStyles}
+                    data-cy={`hydrotestResult.${index}.minValue-formDisplay`}>
                     {result?.minValue && (
                       <>
                         <span>{result?.minValue + " "}</span>
@@ -135,7 +140,9 @@ const HydrotestDisplay = props => {
                       </>
                     )}
                   </TableCell>
-                  <TableCell sx={tableCellStyles}>
+                  <TableCell
+                    sx={tableCellStyles}
+                    data-cy={`hydrotestResult.${index}.maxValue-formDisplay`}>
                     {result?.maxValue && (
                       <>
                         <span>{result?.maxValue + " "}</span>

@@ -293,6 +293,7 @@ const HydrotestInput = props => {
                   {t("hydrotestResult")}
                 </Typography>
                 <AddButton
+                  data-cy="addHydrotestResult-button"
                   onClick={e => {
                     append({
                       parameterId: null,
@@ -305,7 +306,11 @@ const HydrotestInput = props => {
                 </AddButton>
               </Stack>
               {fields.map((field, index) => (
-                <Stack direction={"row"} key={field.id} marginTop="8px">
+                <Stack
+                  direction={"row"}
+                  key={field.id}
+                  marginTop="8px"
+                  data-cy={`hydrotestResult-${index}`}>
                   <FormSelect
                     fieldName={`hydrotestResults.${index}.parameterId`}
                     label="parameter"
