@@ -31,6 +31,7 @@ public class HydrotestController : ControllerBase
         var hydrotestes = context.Hydrotests
             .Include(w => w.Codelists)
             .Include(w => w.Reliability)
+            .Include(f => f.Casing)
             .Include(w => w.HydrotestResults).ThenInclude(h => h.Parameter)
             .AsNoTracking();
 
