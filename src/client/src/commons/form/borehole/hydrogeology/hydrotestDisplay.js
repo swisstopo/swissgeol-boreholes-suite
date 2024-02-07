@@ -130,7 +130,7 @@ const HydrotestDisplay = props => {
                   <TableCell sx={tableCellStyles}>
                     {result?.minValue && (
                       <>
-                        <span>{result?.value + " "}</span>
+                        <span>{result?.minValue + " "}</span>
                         {getParameterUnit(result.parameterId)}
                       </>
                     )}
@@ -138,7 +138,7 @@ const HydrotestDisplay = props => {
                   <TableCell sx={tableCellStyles}>
                     {result?.maxValue && (
                       <>
-                        <span>{result?.value + " "}</span>
+                        <span>{result?.maxValue + " "}</span>
                         {getParameterUnit(result.parameterId)}
                       </>
                     )}
