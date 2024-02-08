@@ -19,6 +19,7 @@ services:
     shm_size: '512mb'
     volumes:
       - ./db:/docker-entrypoint-initdb.d
+      - postgis-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
     environment:
@@ -151,3 +152,8 @@ services:
     volumes:
       - ./config/oidc-mock-clients.json:/tmp/config/clients-config.json:ro
       - ./config/oidc-mock-users.json:/tmp/config/users-config.json:ro
+
+volumes:
+  postgis-data:
+
+
