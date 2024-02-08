@@ -10,31 +10,40 @@ Folgende Komponenten müssen auf dem Entwicklungsrechner installiert sein:
 
 ✔️ Git  
 ✔️ Docker  
-✔️ Visual Studio Code mit der Erweiterung "Remote – Containers"  
+✔️ Visual Studio 2022  
+✔️ Node.js 20 LTS
 ✔️ Optional, um die Onlinehilfe zu erstellen: [MkDocs](https://www.mkdocs.org/)
 
-Damit auf dem Entwicklungsrechner keine Frameworks (Python, .NET, Node) installiert werden müssen, kann die vorkonfigurierte containerbasierte Entwicklungsumgebung mit Visual Studio Code verwendet werden. Dazu einfach das Source-Code Repository klonen und im Visual Studio Code laden. Wenn die Erweiterung "Remote – Containers" installiert ist, wird unten rechts in einer Notification dazu aufgefordert das Projekt im Container neu zu laden (Reload in Container). Das erstmalige Starten dauert etwas länger, da die Container erstellt werden müssen und die Umgebung mit den erforderlichen Extensions konfiguriert wird. Anschliessend kann die Webanwendung mit _F5_ gestartet werden.
+### Entwicklung mit Visual Studio 2022
 
-Falls doch lokal gearbeitet werden soll, kann [nvm](https://github.com/coreybutler/nvm-windows/releases) installiert werden, um die Node Version zu verwalten. Anschliessend kann mit `nvm use` die im Projekt verwendete Node Version aktiviert werden. Aktuell verwenden wir Node 20.
+Es wird eine lokale Installation von Node.js benötigt. Diese kann mit Visual Studio 2022 oder mit [nvm](https://github.com/coreybutler/nvm-windows/releases) installiert werden, um mehrere Node Version zu verwalten. Anschliessend kann mit `nvm use` die im Projekt verwendete Node Version aktiviert werden.
+
+In VS 2022 müssen mehrere Startup-Projects angewählt werden, um die komplette Applikation lauffähig zu haben. Unter _Configure Startup Projects..._ muss _Multiple startup projects_ ausgewählt und entsprechend konfiguriert werden:
+
+| Project        | Action                  |
+| :------------- | :---------------------- |
+| BDMS           | Start                   |
+| BDMS.Client    | Start                   |
+| BDMS.Test      | None                    |
+| docker-compose | Start without debugging |
+
+### Entwicklung mit Docker
+
+Mit `docker-compose up` kann eine funktionierende Infrastruktur hochgefahren werden. Sie unterstützt Hot-Reload und lädt den Code aus dem lokalen Verzeichnis. Unter Windows mit Docker-Desktop kann die Synchronisierung in  den  _mounted volumes_ zu Performance-Problemen führen.
 
 **Folgende Dienste/Anwendungen sind anschliessend wie folgt verfügbar**
 
-| 🔖Dienst/Anwendung                                                                                                                                                                                | 🔗Adresse                                                                                      | 🧞Benutzername  | 🔐Passwort                       |
-| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------- | :-------------- | :------------------------------- |
-| Boreholes of Switzerland                                                                                                                                                                          | [localhost:3000](http://localhost:3000/)                                                       | `admin`         | `swissforages`                   |
-| pgAdmin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | [localhost:3001](http://localhost:3001/)                                                       | n/a             | n/a                              |
-| Tornado REST API (`v1`)[^1]                                                                                                                                                                       | [localhost:8888](http://localhost:8888/) [localhost:3000/api/v1](http://localhost:3000/api/v1) | `Authorization` | `Basic YWRtaW46c3dpc3Nmb3JhZ2Vz` |
-| .NET REST API (`v2`)                                                                                                                                                                              | [localhost:5000](http://localhost:5000/) [localhost:3000/api/v2](http://localhost:3000/api/v2) | n/a             | n/a                              |
+| 🔖 Dienst/Anwendung         | 🔗Adresse                                                                                      | 🧞Benutzername | 🔐Passwort     |
+| :-------------------------- | :--------------------------------------------------------------------------------------------- | :------------- | :------------- |
+| Boreholes of Switzerland    | [localhost:3000](http://localhost:3000/)                                                       | `admin`        | `swissforages` |
+| pgAdmin                     | [localhost:3001](http://localhost:3001/)                                                       | n/a            | n/a            |
+| Tornado REST API (`v1`)[^1] | [localhost:8888](http://localhost:8888/) [localhost:3000/api/v1](http://localhost:3000/api/v1) | n/a            | n/a            |
+| .NET REST API (`v2`)[^1]    | [localhost:5000](http://localhost:5000/) [localhost:3000/api/v2](http://localhost:3000/api/v2) | n/a            | n/a            |
+| OIDC Server                 | [localhost:4011](http://localhost:4011/)                                                       | `admin`        | `swissforages` |
 
-[^1]: Authentifizierung via `Authorization` Header und Basic Authentication, Benutzername und Passwort im Base64 Format
+[^1]: Authentifizierung via `Authorization` Header mit Bearer-Token von OIDC Server. Login-Konfigurationen können in [config/oidc-mock-users.json](./config/oidc-mock-users.json) getätigt werden.
 
-**Features (was funktioniert und was noch nicht)**
-
-🚀Hot Reload bei Änderungen im JavaScript Code der React Web-Applikation  
-🚀Hot Reload bei Änderungen im Python Code der Tornado REST API (`v1`)  
-🚀Hot Reload bei Änderungen im C# Code der .NET REST API (`v2`)
-
-❌Der Debug Output der Tornado REST API ist aktuell in VSCode nicht sichtbar. Bitte vorerst den Container Log benutzen `docker compose logs api --follow`
+❌Der Debug Output der Tornado REST API ist aktuell in Visual Studio nicht sichtbar. Bitte den Container-Log benutzen `docker compose logs api --follow` oder direkt in Visual Studio im _Containers_-Tab.
 
 ## Cypress Tests
 
