@@ -1,15 +1,11 @@
 import React from "react";
-import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import {
-  StackFullWidth,
-  StackHalfWidth,
-  TypographyWithBottomMargin,
-} from "./styledComponents";
+import { StackFullWidth } from "./styledComponents";
+import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 
 const ObservationDisplay = props => {
   const { observation } = props;
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   function timesToReadableDuration(startTime, endTime) {
     const timestampStart = new Date(startTime).getTime();
@@ -28,122 +24,61 @@ const ObservationDisplay = props => {
     return result.trim();
   }
 
-  const formattedDateTime = dateString => {
-    const date = new Date(dateString);
-    const dateTimeFormat = new Intl.DateTimeFormat("de-CH", {
-      year: "numeric",
-      month: "short",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZone: "UTC",
-    });
-
-    return dateTimeFormat.format(date);
-  };
-
   return (
     <>
       {observation != null && (
         <>
           <StackFullWidth direction="row" spacing={1}>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("fromdepth")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {observation.fromDepthM || observation.fromDepthM === 0
-                  ? observation.fromDepthM
-                  : "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("todepth")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {observation.toDepthM || observation.toDepthM === 0
-                  ? observation.toDepthM
-                  : "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
+            <FormDisplay label="fromdepth" value={observation?.fromDepthM} />
+            <FormDisplay label="todepth" value={observation?.toDepthM} />
           </StackFullWidth>
           <StackFullWidth direction="row" spacing={1}>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2"> {t("fromDepthMasl")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {observation.fromDepthMasl || observation.fromDepthMasl === 0
-                  ? observation.fromDepthMasl
-                  : "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2"> {t("toDepthMasl")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {observation.toDepthMasl || observation.toDepthMasl === 0
-                  ? observation.toDepthMasl
-                  : "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
+            <FormDisplay
+              label="fromDepthMasl"
+              value={observation?.fromDepthMasl}
+            />
+            <FormDisplay label="toDepthMasl" value={observation?.toDepthMasl} />
           </StackFullWidth>
           <StackFullWidth direction="row" spacing={1}>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2"> {t("startTime")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {observation.startTime
-                  ? formattedDateTime(observation.startTime)
-                  : "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2"> {t("endTime")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {observation.endTime
-                  ? formattedDateTime(observation.endTime)
-                  : "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
+            <FormDisplay
+              label="startTime"
+              value={observation?.startTime}
+              type={FormDisplayType.DateTime}
+            />
+            <FormDisplay
+              label="endTime"
+              value={observation?.endTime}
+              type={FormDisplayType.DateTime}
+            />
           </StackFullWidth>
-          <Typography variant="subtitle2"> {t("duration")}</Typography>
-          <TypographyWithBottomMargin variant="subtitle1">
-            {observation.startTime && observation.endTime
-              ? timesToReadableDuration(
-                  observation.startTime,
-                  observation.endTime,
-                )
-              : "-"}
-          </TypographyWithBottomMargin>
+          <FormDisplay
+            label="duration"
+            value={
+              observation?.startTime && observation.endTime
+                ? timesToReadableDuration(
+                    observation?.startTime,
+                    observation?.endTime,
+                  )
+                : null
+            }
+          />
           <StackFullWidth direction="row" spacing={1}>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("reliability")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {observation.reliability?.[i18n.language] || "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">
-                {t("completionFinished")}
-              </Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {observation.completionFinished === null
-                  ? "-"
-                  : observation.completionFinished === true
-                    ? t("yes")
-                    : t("no")}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
+            <FormDisplay
+              label="reliability"
+              value={observation?.reliability}
+              type={FormDisplayType.Domain}
+            />
+            <FormDisplay
+              label="completionFinished"
+              value={observation?.completionFinished}
+              type={FormDisplayType.Boolean}
+            />
           </StackFullWidth>
-          <Typography variant="subtitle2"> {t("casing")}</Typography>
-          <TypographyWithBottomMargin variant="subtitle1">
-            {observation.casing?.id ? observation.casing.name : "-"}
-          </TypographyWithBottomMargin>
-          <Typography variant="subtitle2">{t("comment")}</Typography>
-          <TypographyWithBottomMargin
-            variant="subtitle1"
-            sx={{
-              display: "-webkit-box",
-              overflow: "auto",
-              WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 3,
-            }}>
-            {observation.comment || "-"}
-          </TypographyWithBottomMargin>
+          <FormDisplay
+            label="casingName"
+            value={observation?.casingId ? observation?.casing?.name : null}
+          />
+          <FormDisplay label="comment" value={observation?.comment} />
         </>
       )}
     </>

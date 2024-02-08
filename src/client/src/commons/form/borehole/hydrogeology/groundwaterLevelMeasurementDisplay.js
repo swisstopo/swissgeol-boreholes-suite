@@ -1,10 +1,7 @@
 import React from "react";
 import { Card, Stack, Tooltip, Typography } from "@mui/material";
-import {
-  TypographyWithBottomMargin,
-  StackFullWidth,
-  StackHalfWidth,
-} from "./styledComponents";
+import { StackFullWidth } from "./styledComponents";
+import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
@@ -18,7 +15,7 @@ const GroundwaterLevelMeasurementDisplay = props => {
     isEditable,
     deleteGroundwaterLevelMeasurement,
   } = props;
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <Card
@@ -37,32 +34,21 @@ const GroundwaterLevelMeasurementDisplay = props => {
           </Typography>
           <ObservationDisplay observation={groundwaterLevelMeasurement} />
           <StackFullWidth direction="row" spacing={1}>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("gwlm_kind")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {groundwaterLevelMeasurement.kind?.[i18n.language] || "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
+            <FormDisplay
+              label="gwlm_kind"
+              value={groundwaterLevelMeasurement?.kind}
+              type={FormDisplayType.Domain}
+            />
           </StackFullWidth>
           <StackFullWidth direction="row" spacing={1}>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("gwlm_levelm")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {groundwaterLevelMeasurement.levelM ||
-                groundwaterLevelMeasurement.levelM === 0
-                  ? groundwaterLevelMeasurement.levelM
-                  : "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("gwlm_levelmasl")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {groundwaterLevelMeasurement.levelMasl ||
-                groundwaterLevelMeasurement.levelMasl === 0
-                  ? groundwaterLevelMeasurement.levelMasl
-                  : "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
+            <FormDisplay
+              label="gwlm_levelm"
+              value={groundwaterLevelMeasurement?.levelM}
+            />
+            <FormDisplay
+              label="gwlm_levelmasl"
+              value={groundwaterLevelMeasurement?.levelMasl}
+            />
           </StackFullWidth>
         </StackFullWidth>
         <Stack

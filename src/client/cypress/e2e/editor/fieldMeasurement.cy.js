@@ -3,6 +3,11 @@ import {
   createStratigraphy,
   loginAsAdmin,
 } from "../helpers/testHelpers";
+import {
+  evaluateDisplayValue,
+  setInput,
+  setSelect,
+} from "../helpers/formHelpers";
 
 describe("Tests for the field measurement editor.", () => {
   beforeEach(function () {
@@ -36,64 +41,25 @@ describe("Tests for the field measurement editor.", () => {
     });
     cy.wait("@fieldmeasurement_GET");
 
-    // fill reliability dropdown
-    cy.get('[data-cy="reliability-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
-
-    // fill start time
-    cy.get('[data-cy="start-time-textfield"]').type("2012-11-14T12:06");
-
-    // fill sample type dropdown
-    cy.get('[data-cy="sample-type-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
-
-    // fill parameter dropdown
-    cy.get('[data-cy="parameter-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(2)
-      .click();
-
-    // fill value
-    cy.get('[data-cy="value-textfield"]').type("77.1045");
+    setSelect("reliabilityId", 1);
+    setInput("startTime", "2012-11-14T12:06");
+    setSelect("sampleTypeId", 1);
+    setSelect("parameterId", 5);
+    setInput("value", "77.1045");
 
     // close editing mask
     cy.get('[data-cy="close-icon"]').click({ force: true });
 
     //assert field measurementis displayed
-    cy.contains("Schöpfprobe");
-    cy.contains("elektrische Leitfähigkeit (20 °C)");
-    cy.contains("77.1045");
+    evaluateDisplayValue("field_measurement_sample_type", "Schöpfprobe");
+    evaluateDisplayValue("parameter", "Sauerstoffsättigung");
+    evaluateDisplayValue("value", "77.1045 %");
 
     // edit field measurement
     cy.get('[data-cy="edit-icon"]').click({ force: true });
-
-    // fill sample type dropdown
-    cy.get('[data-cy="sample-type-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(0)
-      .click();
+    setSelect("sampleTypeId", 0);
     cy.get('[data-cy="close-icon"]').click({ force: true });
-    cy.contains("Pumpprobe");
+    evaluateDisplayValue("field_measurement_sample_type", "Pumpprobe");
 
     // delete field measurement
     cy.get('[data-cy="delete-icon"]').click({ force: true });

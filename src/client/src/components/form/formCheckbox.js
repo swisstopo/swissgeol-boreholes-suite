@@ -9,6 +9,7 @@ export const FormCheckbox = props => {
 
   return (
     <FormControlLabel
+      sx={{ marginTop: "10px!important", marginRight: "10px!important", ...sx }}
       control={
         <Checkbox
           data-cy={fieldName + "-formCheckbox"}
@@ -18,7 +19,6 @@ export const FormCheckbox = props => {
         />
       }
       label={t(label)}
-      sx={{ ...sx }}
     />
   );
 };

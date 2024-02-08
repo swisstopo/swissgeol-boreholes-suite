@@ -1,10 +1,7 @@
 import React from "react";
 import { Card, Stack, Tooltip, Typography } from "@mui/material";
-import {
-  TypographyWithBottomMargin,
-  StackFullWidth,
-  StackHalfWidth,
-} from "./styledComponents";
+import { StackFullWidth } from "./styledComponents";
+import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
@@ -18,7 +15,7 @@ const WaterIngressDisplay = props => {
     isEditable,
     deleteWaterIngress,
   } = props;
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <Card
@@ -37,18 +34,16 @@ const WaterIngressDisplay = props => {
           </Typography>
           <ObservationDisplay observation={waterIngress} />
           <StackFullWidth direction="row" spacing={1}>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("quantity")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {waterIngress.quantity?.[i18n.language] || "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
-            <StackHalfWidth direction="column">
-              <Typography variant="subtitle2">{t("conditions")}</Typography>
-              <TypographyWithBottomMargin variant="subtitle1">
-                {waterIngress.conditions?.[i18n.language] || "-"}
-              </TypographyWithBottomMargin>
-            </StackHalfWidth>
+            <FormDisplay
+              label="quantity"
+              value={waterIngress?.quantity}
+              type={FormDisplayType.Domain}
+            />
+            <FormDisplay
+              label="conditions"
+              value={waterIngress?.conditions}
+              type={FormDisplayType.Domain}
+            />
           </StackFullWidth>
         </StackFullWidth>
         <Stack

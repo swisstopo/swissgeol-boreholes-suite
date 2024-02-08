@@ -3,6 +3,11 @@ import {
   createStratigraphy,
   loginAsAdmin,
 } from "../helpers/testHelpers";
+import {
+  evaluateDisplayValue,
+  setInput,
+  setSelect,
+} from "../helpers/formHelpers";
 
 describe("Tests for the groundwater level measurement editor.", () => {
   beforeEach(function () {
@@ -36,56 +41,25 @@ describe("Tests for the groundwater level measurement editor.", () => {
     });
     cy.wait("@groundwaterlevelmeasurement_GET");
 
-    // fill kind dropdown
-    cy.get('[data-cy="kind-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(2)
-      .click();
-
-    // fill reliability dropdown
-    cy.get('[data-cy="reliability-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
-
-    // fill start time
-    cy.get('[data-cy="start-time-textfield"]').type("2012-11-14T12:06");
-
-    // fill levels
-    cy.get('[data-cy="level-m-textfield"]').type("789.12");
-    cy.get('[data-cy="level-masl-textfield"]').type("5.4567");
+    setSelect("kindId", 2);
+    setSelect("reliabilityId", 1);
+    setInput("startTime", "2012-11-14T12:06");
+    setInput("levelM", "789.12");
+    setInput("levelMasl", "5.4567");
 
     // close editing mask
     cy.get('[data-cy="close-icon"]').click({ force: true });
 
-    //assert groundwater level measurement is displayed
-    cy.contains("Manometer");
-    cy.contains("789.12");
-    cy.contains("5.4567");
-    cy.contains("fraglich");
+    evaluateDisplayValue("gwlm_kind", "Manometer");
+    evaluateDisplayValue("gwlm_levelm", "789.12");
+    evaluateDisplayValue("gwlm_levelmasl", "5.4567");
+    evaluateDisplayValue("reliability", "fraglich");
 
     // edit groundwater level measurement
     cy.get('[data-cy="edit-icon"]').click({ force: true });
-
-    // change kind dropdown
-    cy.get('[data-cy="kind-select"]')
-      .find('[role="combobox"]')
-      .click({ force: true });
-
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
+    setSelect("kindId", 1);
     cy.get('[data-cy="close-icon"]').click({ force: true });
-    cy.contains("Drucksonde");
+    evaluateDisplayValue("gwlm_kind", "Drucksonde");
 
     // delete groundwater level measurement
     cy.get('[data-cy="delete-icon"]').click({ force: true });

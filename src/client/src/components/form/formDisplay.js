@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 export const FormDisplayType = {
   Date: "date",
+  DateTime: "datetime",
   Boolean: "boolean",
   Domain: "domain",
 };
@@ -19,6 +20,17 @@ export const FormDisplay = props => {
           year: "numeric",
           month: "short",
           day: "2-digit",
+        });
+        return dateTimeFormat.format(date);
+      } else if (type === FormDisplayType.DateTime) {
+        const date = new Date(value);
+        const dateTimeFormat = new Intl.DateTimeFormat("de-CH", {
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "UTC",
         });
         return dateTimeFormat.format(date);
       } else if (type === FormDisplayType.Boolean) {

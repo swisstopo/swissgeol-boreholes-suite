@@ -44,7 +44,7 @@ export const stratigraphyData = {
     {
       id: 3,
       type: "Dropdown",
-      label: "qt_description",
+      label: "completeness",
       value: "qtDescriptionId",
       schema: "qt_description",
       multiple: false,
