@@ -16,7 +16,6 @@ services:
   db:
     image: postgis/postgis:14-3.3-alpine
     restart: unless-stopped
-    shm_size: '512mb'
     volumes:
       - ./db:/docker-entrypoint-initdb.d
       - postgis-data:/var/lib/postgresql/data
@@ -155,5 +154,3 @@ services:
 
 volumes:
   postgis-data:
-
-
