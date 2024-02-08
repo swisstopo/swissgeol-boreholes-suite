@@ -57,7 +57,7 @@ public class LocationControllerTest
             (b.OriginalReferenceSystem == ReferenceSystem.LV95 && b.LocationX != null && b.LocationY != null) ||
             (b.OriginalReferenceSystem == ReferenceSystem.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null)).Count();
 
-        await AssertMigrateLocationAsync(onlyMissing: false, boreholesWithSetSourceCoordinates, 10003, () =>
+        await AssertMigrateLocationAsync(onlyMissing: false, boreholesWithSetSourceCoordinates, 3003, () =>
         {
             AssertBoreholeWithAllLocationAttributes(boreholeWithAllLocationAttributes);
             AssertBoreholeWithMissingLocationAttributes(boreholeWithMissingLocationAttributes);
@@ -84,7 +84,7 @@ public class LocationControllerTest
             (string.IsNullOrWhiteSpace(b.Country) || string.IsNullOrWhiteSpace(b.Canton) || string.IsNullOrWhiteSpace(b.Municipality)))
             .Count();
 
-        await AssertMigrateLocationAsync(onlyMissing: true, boreholesWithMissingLocationAttributes, 10003, () =>
+        await AssertMigrateLocationAsync(onlyMissing: true, boreholesWithMissingLocationAttributes, 3003, () =>
         {
             AssertUnchanged(boreholeWithAllLocationAttributes);
             AssertBoreholeWithMissingLocationAttributes(boreholeWithMissingLocationAttributes);

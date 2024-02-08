@@ -54,7 +54,7 @@ public class WaterIngressControllerTests
     [TestMethod]
     public async Task GetEntriesByBoreholeId()
     {
-        var response = await controller.GetAsync(1007656).ConfigureAwait(false);
+        var response = await controller.GetAsync(1002296).ConfigureAwait(false);
         IEnumerable<WaterIngress>? waterIngresses = response;
         Assert.IsNotNull(waterIngresses);
         Assert.AreEqual(1, waterIngresses.Count());
@@ -90,7 +90,7 @@ public class WaterIngressControllerTests
             ToDepthMasl = 78.0043,
             CompletionFinished = true,
             Comment = "Test comment",
-            BoreholeId = 1008104,
+            BoreholeId = 1002296,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
             QuantityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Single(c => c.Geolcode == 1).Id,
             ConditionsId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Single(c => c.Geolcode == 1).Id,
@@ -109,7 +109,7 @@ public class WaterIngressControllerTests
             ToDepthMasl = 27603.2,
             CompletionFinished = true,
             Comment = "Updated test comment",
-            BoreholeId = 1008105,
+            BoreholeId = 1002296,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
             QuantityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Single(c => c.Geolcode == 3).Id,
             ConditionsId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Single(c => c.Geolcode == 2).Id,
@@ -165,7 +165,7 @@ public class WaterIngressControllerTests
             ToDepthMasl = 2633.2,
             CompletionFinished = false,
             Comment = "New test comment",
-            BoreholeId = 1006493,
+            BoreholeId = 1002296,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
             QuantityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Single(c => c.Geolcode == 2).Id,
             ConditionsId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Single(c => c.Geolcode == 3).Id,
@@ -186,7 +186,7 @@ public class WaterIngressControllerTests
         Assert.AreEqual(newWaterIngress.ToDepthMasl, 2633.2);
         Assert.AreEqual(newWaterIngress.CompletionFinished, false);
         Assert.AreEqual(newWaterIngress.Comment, "New test comment");
-        Assert.AreEqual(newWaterIngress.BoreholeId, 1006493);
+        Assert.AreEqual(newWaterIngress.BoreholeId, 1002296);
         Assert.AreEqual(newWaterIngress.ReliabilityId, 15203158);
         Assert.AreEqual(newWaterIngress.QuantityId, 15203161);
         Assert.AreEqual(newWaterIngress.ConditionsId, 15203167);

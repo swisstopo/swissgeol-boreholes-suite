@@ -31,7 +31,7 @@ public class LayerControllerTest
         var response = await controller.GetAsync().ConfigureAwait(false);
         IEnumerable<Layer>? layers = response?.Value;
         Assert.IsNotNull(layers);
-        Assert.AreEqual(100000, layers.Count());
+        Assert.AreEqual(30_000, layers.Count());
     }
 
     [TestMethod]
