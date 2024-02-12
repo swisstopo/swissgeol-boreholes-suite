@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "db": "StartWithoutDebugging",
+        "minio": "StartWithoutDebugging",
+        "oidc-server": "StartWithoutDebugging",
+        "pgadmin": "StartWithoutDebugging",
+        "api-legacy": "StartWithoutDebugging",
+        "api": "DoNotStart",
+        "client": "DoNotStart"
+      }
+    }
+  }
+}
