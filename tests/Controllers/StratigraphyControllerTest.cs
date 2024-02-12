@@ -260,6 +260,7 @@ public class StratigraphyControllerTest
             BoreholeId = boreholeWithoutStratigraphy.Id,
             Name = "KODACLUSTER",
             Notes = "ARGONTITAN",
+            QualityId = 9003,
         };
 
         var createResult = await controller.CreateAsync(stratigraphyToAdd);
@@ -267,7 +268,7 @@ public class StratigraphyControllerTest
 
         var createdStratigraphy = (Stratigraphy?)((OkObjectResult)createResult.Result!).Value;
         createdStratigraphy = GetStratigraphy(createdStratigraphy.Id);
-        AssertStratigraphy(createdStratigraphy, boreholeWithoutStratigraphy.Id, "KODACLUSTER", "ARGONTITAN");
+        AssertStratigraphy(createdStratigraphy, boreholeWithoutStratigraphy.Id, "KODACLUSTER", "ARGONTITAN", 9003);
 
         // Because the stratigraphy is the first one for the borehole, it is automatically the primary stratigraphy.
         Assert.AreEqual(true, createdStratigraphy.IsPrimary);
@@ -405,6 +406,7 @@ public class StratigraphyControllerTest
         stratigraphyToEdit.Date = new DateTime(1999, 9, 9).ToUniversalTime();
         stratigraphyToEdit.Name = "ERRONEOUS";
         stratigraphyToEdit.Notes = "REDPOINT";
+        stratigraphyToEdit.QualityId = 9000;
 
         var editResult = await controller.EditAsync(stratigraphyToEdit);
         var editedStratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>(editResult.Result);
@@ -414,6 +416,7 @@ public class StratigraphyControllerTest
         Assert.AreEqual(new DateTime(1999, 9, 9).ToUniversalTime(), editedStratigraphy.Date);
         Assert.AreEqual("ERRONEOUS", editedStratigraphy.Name);
         Assert.AreEqual("REDPOINT", editedStratigraphy.Notes);
+        Assert.AreEqual(9000, editedStratigraphy.QualityId);
     }
 
     [TestMethod]
@@ -467,12 +470,16 @@ public class StratigraphyControllerTest
         ActionResultAssert.IsInternalServerError(editResult.Result, "locked");
     }
 
-    private void AssertStratigraphy(Stratigraphy actual, int expectedBoreholeId, string exptectedName, string expectedNotes)
+    private void AssertStratigraphy(Stratigraphy actual, int expectedBoreholeId, string exptectedName, string expectedNotes, int qualityId = -1)
     {
         Assert.AreEqual(StratigraphyController.StratigraphyKindId, actual.KindId);
         Assert.AreEqual(expectedBoreholeId, actual.BoreholeId);
         Assert.AreEqual(exptectedName, actual.Name);
         Assert.AreEqual(expectedNotes, actual.Notes);
+        if (qualityId > -1)
+        {
+            Assert.AreEqual(qualityId, actual.QualityId);
+        }
     }
 
     private void SetupControllerWithAlwaysLockedBorehole()

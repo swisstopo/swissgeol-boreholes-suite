@@ -17,6 +17,7 @@ class GetProfile(Action):
             stratigraphy.kind_id_cli as kind,
             COALESCE(name_sty, '') as name,
             primary_sty as primary,
+            quality_id_sty as quality,
             to_char(
                 date_sty,
                 'YYYY-MM-DD'

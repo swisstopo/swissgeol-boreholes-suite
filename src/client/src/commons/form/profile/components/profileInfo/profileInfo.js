@@ -36,6 +36,7 @@ const ProfileInfo = props => {
       date: null,
       date_abd: null,
       notes: null,
+      quality: null,
     },
   });
   const setData = useCallback(id => {

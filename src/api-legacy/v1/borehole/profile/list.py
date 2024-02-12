@@ -13,6 +13,7 @@ class ListProfiles(Action):
             stratigraphy.kind_id_cli AS kind,
             name_sty as name,
             primary_sty as primary,
+            quality_id_sty as quality,
             to_char(
                 date_sty,
                 'YYYY-MM-DD'

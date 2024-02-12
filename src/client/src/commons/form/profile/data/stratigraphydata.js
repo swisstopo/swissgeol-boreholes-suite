@@ -13,6 +13,13 @@ export const stratigraphyData = {
       label: "date",
       value: "date",
     },
+    {
+      id: 2,
+      type: "Dropdown",
+      label: "stratigraphy_quality",
+      value: "qualityId",
+      schema: "qt_description",
+    },
   ],
   profileAttribute: [
     {

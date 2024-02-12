@@ -338,6 +338,7 @@
   "statusvalid": "In validation",
   "stratigraphy": "Stratigraphy",
   "stratigraphy_name": "Name / Version",
+  "stratigraphy_quality": "Quality of the borehole profile",
   "lithologyfields": "Lithology fields",
   "submit": "Submit",
   "submitted": "Submitted",

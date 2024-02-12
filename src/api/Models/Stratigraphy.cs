@@ -75,6 +75,17 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     public Codelist? Kind { get; set; }
 
     /// <summary>
+    /// Gets or sets the <see cref="Stratigraphy"/>'s quality id.
+    /// </summary>
+    [Column("quality_id_sty")]
+    public int? QualityId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Stratigraphy"/>'s quality.
+    /// </summary>
+    public Codelist? Quality { get; set; }
+
+    /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s notes.
     /// </summary>
     [Column("notes_sty")]
