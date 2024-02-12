@@ -197,14 +197,14 @@ describe("completion crud tests", () => {
     isTabSelected(1);
 
     // check hash updates on tab switch
-    cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
+    cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.location().should(location => {
       expect(location.pathname).to.eq(
         `/editor/${boreholeId}/completion/${completion2Id}`,
       );
       expect(location.hash).to.eq("#instrumentation");
     });
-    cy.get("[data-cy=completion-content-header-tab-Backfill]").click();
+    cy.get("[data-cy=completion-content-header-tab-backfill]").click();
     cy.location().should(location => {
       expect(location.pathname).to.eq(
         `/editor/${boreholeId}/completion/${completion2Id}`,

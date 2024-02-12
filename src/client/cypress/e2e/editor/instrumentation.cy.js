@@ -27,7 +27,7 @@ describe("Instrumentation crud tests", () => {
     startBoreholeEditing();
 
     // Precondition: Create casing to later link in instrumentation
-    cy.get("[data-cy=completion-content-header-tab-Casing]").click();
+    cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
     cy.get('[data-cy="addCasing-button"]').click({ force: true });
@@ -46,7 +46,7 @@ describe("Instrumentation crud tests", () => {
     cy.get('[data-cy="save-button"]').click();
     cy.wait("@casing_GET");
 
-    cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
+    cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
     // create instrumentation

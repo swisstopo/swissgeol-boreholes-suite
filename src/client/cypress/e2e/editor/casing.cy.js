@@ -31,7 +31,7 @@ describe("Casing crud tests", () => {
     startBoreholeEditing();
 
     // select casing tab
-    cy.get("[data-cy=completion-content-header-tab-Casing]").click();
+    cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
     // create casing
@@ -77,7 +77,7 @@ describe("Casing crud tests", () => {
 
     // delete casing
     // Precondition: instrumentation with reference to casing
-    cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
+    cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
     cy.get('[data-cy="addInstrument-button"]').click({ force: true });
@@ -92,14 +92,14 @@ describe("Casing crud tests", () => {
     setSelect("casingId", 1);
     cy.get('[data-cy="save-button"]').click({ force: true });
 
-    cy.get("[data-cy=completion-content-header-tab-Casing]").click();
+    cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
     cy.get('[data-cy="delete-button"]').click({ force: true });
     cy.wait("@casing_DELETE");
     cy.contains("casing-1 updated").should("not.exist");
 
-    cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
+    cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
     evaluateDisplayValue("casingName", "-");
   });
