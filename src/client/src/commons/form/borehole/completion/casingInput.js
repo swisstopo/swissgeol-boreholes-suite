@@ -97,14 +97,14 @@ const CasingInput = ({ item, setSelected, parentId, addData, updateData }) => {
       <Stack direction="row">
         <FormInput
           fieldName="innerDiameter"
-          label="casing_inner_diameter"
+          label="casingInnerDiameter"
           value={item.innerDiameter}
           type="number"
           required={true}
         />
         <FormInput
           fieldName="outerDiameter"
-          label="casing_outer_diameter"
+          label="casingOuterDiameter"
           value={item.outerDiameter}
           type="number"
           required={true}

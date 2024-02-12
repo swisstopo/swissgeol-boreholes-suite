@@ -31,7 +31,7 @@ describe("Casing crud tests", () => {
     startBoreholeEditing();
 
     // select casing tab
-    cy.get("[data-cy=completion-content-header-tab-Casing]").click();
+    cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
     // create casing
@@ -59,8 +59,8 @@ describe("Casing crud tests", () => {
     evaluateDisplayValue("materialCasingLayer", "steel");
     evaluateDisplayValue("dateStartCasing", "01. Jan. 2021");
     evaluateDisplayValue("dateFinishCasing", "02. Jan. 2021");
-    evaluateDisplayValue("casing_inner_diameter", "3");
-    evaluateDisplayValue("casing_outer_diameter", "4");
+    evaluateDisplayValue("casingInnerDiameter", "3");
+    evaluateDisplayValue("casingOuterDiameter", "4");
     evaluateDisplayValue("notes", "Lorem.");
 
     // update casing
@@ -73,11 +73,11 @@ describe("Casing crud tests", () => {
     cy.get('[data-cy="save-button"]').click({ force: true });
     evaluateDisplayValue("name", "casing-1 updated");
     evaluateDisplayValue("materialCasingLayer", "concrete");
-    evaluateDisplayValue("casing_inner_diameter", "3");
+    evaluateDisplayValue("casingInnerDiameter", "3");
 
     // delete casing
     // Precondition: instrumentation with reference to casing
-    cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
+    cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
     cy.get('[data-cy="addInstrument-button"]').click({ force: true });
@@ -92,14 +92,14 @@ describe("Casing crud tests", () => {
     setSelect("casingId", 1);
     cy.get('[data-cy="save-button"]').click({ force: true });
 
-    cy.get("[data-cy=completion-content-header-tab-Casing]").click();
+    cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
     cy.get('[data-cy="delete-button"]').click({ force: true });
     cy.wait("@casing_DELETE");
     cy.contains("casing-1 updated").should("not.exist");
 
-    cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
+    cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
     evaluateDisplayValue("casingName", "-");
   });

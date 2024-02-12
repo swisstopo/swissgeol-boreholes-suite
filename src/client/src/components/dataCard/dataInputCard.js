@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import { Stack } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SaveIcon from "@mui/icons-material/Save";
 import { DataCardButtonContainer } from "../dataCard/dataCard";
 import { BdmsIconButton } from "../buttons/buttons";
+import { StackFullWidth } from "../baseComponents";
 
 export const DataInputCard = props => {
   const { item, setSelected, addData, updateData, prepareFormDataForSubmit } =
@@ -41,9 +41,7 @@ export const DataInputCard = props => {
   return (
     <FormProvider {...formMethods}>
       <form onSubmit={formMethods.handleSubmit(submitForm)}>
-        <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-          {props.children}
-        </Stack>
+        <StackFullWidth spacing={1}>{props.children}</StackFullWidth>
         <DataCardButtonContainer>
           <BdmsIconButton
             icon={<CancelIcon />}

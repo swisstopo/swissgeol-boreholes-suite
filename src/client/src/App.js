@@ -19,7 +19,7 @@ import { AlertBanner } from "./components/alert/alertBanner";
 
 const queryClient = new QueryClient();
 
-const theme = createTheme({
+export const theme = createTheme({
   palette: {
     primary: {
       main: "#007CC3",

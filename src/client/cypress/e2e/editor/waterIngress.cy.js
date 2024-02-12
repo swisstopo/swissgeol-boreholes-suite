@@ -31,7 +31,7 @@ describe("Tests for the wateringress editor.", () => {
     // start editing session
     startBoreholeEditing();
 
-    cy.get("[data-cy=completion-content-header-tab-Casing]").click();
+    cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
     cy.get('[data-cy="addCasing-button"]').click({ force: true });

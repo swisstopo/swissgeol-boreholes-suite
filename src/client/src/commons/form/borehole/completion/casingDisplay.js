@@ -43,14 +43,8 @@ const CasingDisplay = props => {
         />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay
-          label="casing_inner_diameter"
-          value={item?.innerDiameter}
-        />
-        <FormDisplay
-          label="casing_outer_diameter"
-          value={item?.outerDiameter}
-        />
+        <FormDisplay label="casingInnerDiameter" value={item?.innerDiameter} />
+        <FormDisplay label="casingOuterDiameter" value={item?.outerDiameter} />
       </StackFullWidth>
       <FormDisplay label="notes" value={item?.notes} />
     </DataDisplayCard>

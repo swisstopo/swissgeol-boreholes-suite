@@ -27,7 +27,7 @@ describe("Backfill crud tests", () => {
     startBoreholeEditing();
 
     // select backfill tab
-    cy.get("[data-cy=completion-content-header-tab-Backfill]").click();
+    cy.get("[data-cy=completion-content-header-tab-backfill]").click();
     cy.wait("@backfill_GET");
 
     // add new backfill card
