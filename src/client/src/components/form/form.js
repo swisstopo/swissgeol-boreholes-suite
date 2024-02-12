@@ -1,8 +1,9 @@
 import { TextField } from "@mui/material";
 import { styled } from "@mui/system";
+import { theme } from "../../App";
 
 export const getInputFieldBackgroundColor = errorFieldName =>
-  Boolean(errorFieldName) ? "#fff6f6" : "transparent";
+  Boolean(errorFieldName) ? theme.palette.error.background : "transparent";
 
 export const FormField = styled(TextField)(() => ({
   borderRadius: "4px",
