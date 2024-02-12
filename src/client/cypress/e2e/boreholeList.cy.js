@@ -68,8 +68,8 @@ describe("Borehole list tests", () => {
 
     cy.contains("div", "End of drilling date").click();
     cy.wait("@borehole");
-    cy.get("tbody").children().eq(0).contains("td", "31.12.2021");
-    cy.get("tbody").children().eq(1).contains("td", "31.12.2021");
+    cy.get("tbody").children().eq(0).contains("td", "01.01.2022");
+    cy.get("tbody").children().eq(1).contains("td", "01.01.2022");
     cy.get("tbody").children().eq(2).contains("td", "31.12.2021");
 
     // sort by borehole type (column of original name)
@@ -104,7 +104,7 @@ describe("Borehole list tests", () => {
         }
       });
 
-    cy.get("tbody").children().eq(0).contains("td", "31.12.2021");
+    cy.get("tbody").children().eq(0).contains("td", "01.01.2022");
     cy.get("tbody").children().eq(1).contains("td", "31.12.2021");
     cy.get("tbody").children().eq(2).contains("td", "31.12.2021");
 
