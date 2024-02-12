@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { Stack } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import CancelIcon from "@mui/icons-material/Cancel";
 import SaveIcon from "@mui/icons-material/Save";
 import { DataCardButtonContainer } from "../dataCard/dataCard";
 import { BdmsIconButton } from "../buttons/buttons";
@@ -46,7 +46,7 @@ export const DataInputCard = props => {
         </Stack>
         <DataCardButtonContainer>
           <BdmsIconButton
-            icon={<CloseIcon />}
+            icon={<CancelIcon />}
             tooltipLabel={"cancel"}
             onClick={() => {
               formMethods.reset();

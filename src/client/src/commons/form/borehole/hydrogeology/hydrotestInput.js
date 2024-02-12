@@ -7,7 +7,7 @@ import {
   FormSelect,
 } from "../../../../components/form/form";
 import { StackHalfWidth } from "../../../../components/baseComponents";
-import CloseIcon from "@mui/icons-material/Close";
+import CancelIcon from "@mui/icons-material/Cancel";
 import SaveIcon from "@mui/icons-material/Save";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import {
@@ -380,7 +380,7 @@ const HydrotestInput = props => {
         </Stack>
         <DataCardButtonContainer>
           <BdmsIconButton
-            icon={<CloseIcon />}
+            icon={<CancelIcon />}
             tooltipLabel={"cancel"}
             onClick={() => {
               formMethods.reset();
