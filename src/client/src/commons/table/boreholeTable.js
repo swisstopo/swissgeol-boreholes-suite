@@ -190,12 +190,12 @@ class BoreholeTable extends TableComponent {
             color: "#787878",
             fontSize: "0.8em",
           }}>
-          {_.isNil(item.extended.purpose) ? null : (
+          {_.isNil(item.drilling_purpose) ? null : (
             <span>
               (
               <DomainText
-                id={item.extended.purpose}
-                schema="extended.purpose"
+                id={item.drilling_purpose}
+                schema="drilling_purpose"
               />
               )
             </span>

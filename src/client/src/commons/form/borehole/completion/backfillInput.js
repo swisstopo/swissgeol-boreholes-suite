@@ -79,7 +79,7 @@ const BackfillInput = ({
                 required={true}
                 values={domains?.data
                   ?.filter(
-                    d => d.schema === completionSchemaConstants.backfillKind,
+                    d => d.schema === completionSchemaConstants.backfillType,
                   )
                   .sort((a, b) => a.order - b.order)
                   .map(d => ({

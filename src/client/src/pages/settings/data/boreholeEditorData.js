@@ -12,12 +12,12 @@ export const boreholeEditorData = [
   {
     id: 2,
     label: "purpose",
-    value: "extended.purpose",
+    value: "drilling_purpose",
   },
   {
     id: 3,
     label: "cuttings",
-    value: "custom.cuttings",
+    value: "borehole_cuttings_core",
   },
   {
     id: 4,
@@ -37,7 +37,7 @@ export const boreholeEditorData = [
   {
     id: 7,
     label: "boreholestatus",
-    value: "extended.status",
+    value: "borehole_status",
   },
   {
     id: 8,

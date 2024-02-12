@@ -45,14 +45,10 @@ const BoreholeGeneralSegment = props => {
                 </label>
                 <DomainDropdown
                   onSelected={selected => {
-                    updateChange(
-                      "extended.drilling_method",
-                      selected.id,
-                      false,
-                    );
+                    updateChange("drilling_method", selected.id, false);
                   }}
-                  schema="extended.drilling_method"
-                  selected={borehole.data.extended.drilling_method}
+                  schema="drilling_method"
+                  selected={borehole.data.drilling_method}
                   readOnly={!isEditable}
                 />
               </Form.Field>
@@ -62,10 +58,10 @@ const BoreholeGeneralSegment = props => {
                 </label>
                 <DomainDropdown
                   onSelected={selected => {
-                    updateChange("extended.purpose", selected.id, false);
+                    updateChange("drilling_purpose", selected.id, false);
                   }}
-                  schema="extended.purpose"
-                  selected={borehole.data.extended.purpose}
+                  schema="drilling_purpose"
+                  selected={borehole.data.drilling_purpose}
                   readOnly={!isEditable}
                 />
               </Form.Field>
@@ -83,10 +79,14 @@ const BoreholeGeneralSegment = props => {
                   </label>
                   <DomainDropdown
                     onSelected={selected => {
-                      updateChange("custom.cuttings", selected.id, false);
+                      updateChange(
+                        "borehole_cuttings_core",
+                        selected.id,
+                        false,
+                      );
                     }}
-                    schema="custom.cuttings"
-                    selected={borehole.data.custom.cuttings}
+                    schema="borehole_cuttings_core"
+                    selected={borehole.data.borehole_cuttings_core}
                     readOnly={!isEditable}
                   />
                 </Form.Field>
@@ -177,10 +177,10 @@ const BoreholeGeneralSegment = props => {
                 </label>
                 <DomainDropdown
                   onSelected={selected => {
-                    updateChange("extended.status", selected.id, false);
+                    updateChange("borehole_status", selected.id, false);
                   }}
-                  schema="extended.status"
-                  selected={borehole.data.extended.status}
+                  schema="borehole_status"
+                  selected={borehole.data.borehole_status}
                   readOnly={!isEditable}
                 />
               </Form.Field>
@@ -238,10 +238,10 @@ const BoreholeGeneralSegment = props => {
                 </label>
                 <DomainDropdown
                   onSelected={selected => {
-                    updateChange("custom.qt_bore_inc_dir", selected.id, false);
+                    updateChange("inclination_precision", selected.id, false);
                   }}
-                  schema="custom.qt_bore_inc_dir"
-                  selected={borehole.data.custom.qt_bore_inc_dir}
+                  schema="inclination_precision"
+                  selected={borehole.data.inclination_precision}
                   readOnly={!isEditable}
                 />
               </Form.Field>

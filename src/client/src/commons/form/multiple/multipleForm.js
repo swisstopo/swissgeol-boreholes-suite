@@ -55,22 +55,22 @@ class MultipleForm extends React.Component {
           value: null,
         },
         kind: { api: "kind", value: null },
-        drilling_method: { api: "extended.drilling_method", value: null },
-        purpose: { api: "extended.purpose", value: null },
-        cuttings: { api: "custom.cuttings", value: null },
+        drilling_method: { api: "drilling_method", value: null },
+        purpose: { api: "drilling_purpose", value: null },
+        cuttings: { api: "borehole_cuttings_core", value: null },
         spud_date: { api: "spud_date", value: null },
         drilling_end_date: { api: "drilling_date", value: null },
         drill_diameter: { api: "custom.drill_diameter", value: null },
-        boreholestatus: { api: "extended.status", value: null },
+        boreholestatus: { api: "borehole_status", value: null },
         inclination: { api: "inclination", value: null },
         inclination_direction: { api: "inclination_direction", value: null },
-        qt_bore_inc_dir: { api: "custom.qt_bore_inc_dir", value: null },
+        qt_bore_inc_dir: { api: "inclination_precision", value: null },
         totaldepth: { api: "total_depth", value: null },
-        qt_depth: { api: "custom.qt_top_bedrock", value: null },
+        qt_depth: { api: "depth_precision", value: null },
         total_depth_tvd: { api: "total_depth_tvd", value: null },
         total_depth_tvd_qt: { api: "qt_total_depth_tvd", value: null },
         top_bedrock: { api: "extended.top_bedrock", value: null },
-        qt_top_bedrock: { api: "custom.qt_top_bedrock", value: null },
+        qt_top_bedrock: { api: "depth_precision", value: null },
         top_bedrock_tvd: { api: "extended.top_bedrock_tvd", value: null },
         top_bedrock_tvd_qt: { api: "custom.qt_top_bedrock_tvd", value: null },
         groundwater: { api: "extended.groundwater", value: null },
@@ -439,7 +439,7 @@ class MultipleForm extends React.Component {
             ])}
             {this.getGroup([
               this.getInput("total_depth_tvd", "number"),
-              this.getDomain("total_depth_tvd_qt", "custom.qt_top_bedrock"),
+              this.getDomain("total_depth_tvd_qt", "depth_precision"),
             ])}
             {this.getGroup([
               this.getInput("top_bedrock", "number"),
@@ -447,7 +447,7 @@ class MultipleForm extends React.Component {
             ])}
             {this.getGroup([
               this.getInput("top_bedrock_tvd", "number"),
-              this.getDomain("top_bedrock_tvd_qt", "custom.qt_top_bedrock"),
+              this.getDomain("top_bedrock_tvd_qt", "depth_precision"),
             ])}
             {this.getRadio("groundwater")}
             {this.getDomain(

@@ -148,8 +148,8 @@ class DetailsComponent extends React.Component {
                       fontSize: "1.1em",
                     }}>
                     <DomainText
-                      id={detail.borehole.extended.purpose}
-                      schema={"extended.purpose"}
+                      id={detail.borehole.drilling_purpose}
+                      schema={"drilling_purpose"}
                     />
                   </div>
                   <div

@@ -315,8 +315,8 @@ class MetaComponent extends React.Component {
             <div style={flexRowStyle}>
               {this.getDomainRow("kind", data.kind)}
               {this.getDomainRow(
-                "extended.purpose",
-                data.extended.purpose,
+                "drilling_purpose",
+                data.drilling_purpose,
                 "purpose",
               )}
               {this.getTextRow("spud_date", data.spud_date)}
@@ -331,27 +331,27 @@ class MetaComponent extends React.Component {
                 data.inclination !== null ? data.inclination : null,
               )}
               {this.getDomainRow(
-                "custom.qt_bore_inc_dir",
-                data.custom.qt_bore_inc_dir,
+                "inclination_precision",
+                data.inclination_precision,
                 "qt_bore_inc_dir",
               )}
             </div>
             <div style={flexRowStyle}>
               {this.getDomainRow(
-                "extended.drilling_method",
-                data.extended.drilling_method,
+                "drilling_method",
+                data.drilling_method,
                 "drilling_method",
               )}
 
               {this.getDomainRow(
-                "custom.cuttings",
-                data.custom.cuttings,
+                "borehole_cuttings_core",
+                data.borehole_cuttings_core,
                 "cuttings",
               )}
               {this.getTextRow("drilling_end_date", data.drilling_date)}
               {this.getDomainRow(
-                "extended.status",
-                data.extended.status,
+                "borehole_status",
+                data.borehole_status,
                 "boreholestatus",
               )}
               {this.getTextRow(
@@ -402,20 +402,18 @@ class MetaComponent extends React.Component {
           </div>
           <div data-cy="qt_depth-label" style={flexRowStyle}>
             {this.getDomainRow(
-              "custom.qt_top_bedrock",
+              "depth_precision",
               data.custom.qt_depth,
               "qt_depth",
             )}
             {this.getDomainRow(
-              "custom.qt_top_bedrock",
+              "depth_precision",
               data.qt_total_depth_tvd,
               "total_depth_tvd_qt",
             )}
             {this.getNumericTextRow(
               "qt_top_bedrock",
-              data.custom.qt_top_bedrock !== null
-                ? data.custom.qt_top_bedrock
-                : null,
+              data.depth_precision !== null ? data.depth_precision : null,
             )}
             {this.getNumericTextRow(
               "top_bedrock_tvd_qt",
