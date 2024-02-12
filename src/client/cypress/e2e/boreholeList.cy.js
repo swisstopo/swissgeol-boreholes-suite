@@ -104,9 +104,9 @@ describe("Borehole list tests", () => {
         }
       });
 
-    cy.get("tbody").children().eq(0).contains("td", "08.02.2024");
-    cy.get("tbody").children().eq(1).contains("td", "08.02.2024");
-    cy.get("tbody").children().eq(2).contains("td", "08.02.2024");
+    cy.get("tbody").children().eq(0).contains("td", "31.12.2021");
+    cy.get("tbody").children().eq(1).contains("td", "31.12.2021");
+    cy.get("tbody").children().eq(2).contains("td", "31.12.2021");
 
     cy.contains("th", "Creation date").click();
     cy.wait("@editorBorehole");
