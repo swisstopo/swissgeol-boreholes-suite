@@ -1,18 +1,16 @@
 import React from "react";
-import { Stack } from "@mui/material";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { DataCardButtonContainer } from "../dataCard/dataCard";
 import { BdmsIconButton, ButtonColor } from "../buttons/buttons";
+import { StackFullWidth } from "../baseComponents";
 
 export const DataDisplayCard = props => {
   const { item, selected, setSelected, deleteData, isEditable } = props;
 
   return (
     <>
-      <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-        {props.children}
-      </Stack>
+      <StackFullWidth spacing={1}>{props.children}</StackFullWidth>
       {isEditable && (
         <DataCardButtonContainer>
           <BdmsIconButton
