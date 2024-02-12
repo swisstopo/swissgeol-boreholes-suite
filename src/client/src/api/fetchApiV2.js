@@ -530,60 +530,20 @@ export const deleteCompletion = async id => {
   return await fetchApiV2(`completion?id=${id}`, "DELETE");
 };
 
-export const hydrotestQueryKey = "hydrotests";
+export const getHydrotests = async boreholeId => {
+  return await fetchApiV2(`hydrotest?boreholeId=${boreholeId}`, "GET");
+};
 
-export const useHydrotests = boreholeId =>
-  useQuery({
-    queryKey: [hydrotestQueryKey, boreholeId],
-    queryFn: async () => {
-      return await fetchApiV2(`hydrotest?boreholeId=${boreholeId}`, "GET");
-    },
-  });
+export const addHydrotest = async hydrotest => {
+  return await fetchApiV2("hydrotest", "POST", hydrotest);
+};
 
-export const useHydrotestMutations = () => {
-  const queryClient = useQueryClient();
-  const useAddHydrotests = useMutation(
-    async hydrotest => {
-      return await fetchApiV2("hydrotest", "POST", hydrotest);
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [hydrotestQueryKey],
-        });
-      },
-    },
-  );
-  const useUpdateHydrotests = useMutation(
-    async hydrotest => {
-      return await fetchApiV2("hydrotest", "PUT", hydrotest);
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [hydrotestQueryKey],
-        });
-      },
-    },
-  );
-  const useDeleteHydrotests = useMutation(
-    async hydrotestId => {
-      return await fetchApiV2(`hydrotest?id=${hydrotestId}`, "DELETE");
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [hydrotestQueryKey],
-        });
-      },
-    },
-  );
+export const updateHydrotest = async hydrotest => {
+  return await fetchApiV2("hydrotest", "PUT", hydrotest);
+};
 
-  return {
-    add: useAddHydrotests,
-    update: useUpdateHydrotests,
-    delete: useDeleteHydrotests,
-  };
+export const deleteHydrotest = async id => {
+  return await fetchApiV2(`hydrotest?id=${id}`, "DELETE");
 };
 
 export const getInstrumentation = async completionId => {

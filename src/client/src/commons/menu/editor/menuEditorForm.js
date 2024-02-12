@@ -435,7 +435,9 @@ class MenuEditorForm extends React.Component {
                   }}
                 />
                 <List.Content>
-                  <List.Header as="h3" data-cy="hydrogeology-menu-item">
+                  <List.Header
+                    as="h3"
+                    data-cy="groundwaterlevelmeasurement-menu-item">
                     <TranslationText
                       firstUpperCase
                       id="groundwater_level_measurement_word_break"
@@ -473,7 +475,7 @@ class MenuEditorForm extends React.Component {
                   }}
                 />
                 <List.Content>
-                  <List.Header as="h3" data-cy="hydrogeology-menu-item">
+                  <List.Header as="h3" data-cy="fieldmeasurement-menu-item">
                     <TranslationText firstUpperCase id="field_measurement" />
                   </List.Header>
                 </List.Content>

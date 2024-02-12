@@ -16,5 +16,6 @@ export const FormField = styled(TextField)(() => ({
 
 export { FormInput } from "./formInput";
 export { FormSelect } from "./formSelect";
+export { FormMultiSelect } from "./formMultiSelect";
 export { FormCheckbox } from "./formCheckbox";
 export { FormDisplay, FormDisplayType } from "./formDisplay";
