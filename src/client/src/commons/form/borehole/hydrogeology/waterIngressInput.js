@@ -18,6 +18,9 @@ const WaterIngressInput = props => {
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
     data.type = ObservationType.waterIngress;
     data.boreholeId = parentId;
+    if (data.casingId == null) {
+      data.casingId = item.casingId;
+    }
     return data;
   };
 
