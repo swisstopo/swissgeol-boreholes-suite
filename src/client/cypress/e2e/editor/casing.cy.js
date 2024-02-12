@@ -59,8 +59,8 @@ describe("Casing crud tests", () => {
     evaluateDisplayValue("materialCasingLayer", "steel");
     evaluateDisplayValue("dateStartCasing", "01. Jan. 2021");
     evaluateDisplayValue("dateFinishCasing", "02. Jan. 2021");
-    evaluateDisplayValue("casing_inner_diameter", "3");
-    evaluateDisplayValue("casing_outer_diameter", "4");
+    evaluateDisplayValue("casingInnerDiameter", "3");
+    evaluateDisplayValue("casingOuterDiameter", "4");
     evaluateDisplayValue("notes", "Lorem.");
 
     // update casing
@@ -73,7 +73,7 @@ describe("Casing crud tests", () => {
     cy.get('[data-cy="save-button"]').click({ force: true });
     evaluateDisplayValue("name", "casing-1 updated");
     evaluateDisplayValue("materialCasingLayer", "concrete");
-    evaluateDisplayValue("casing_inner_diameter", "3");
+    evaluateDisplayValue("casingInnerDiameter", "3");
 
     // delete casing
     // Precondition: instrumentation with reference to casing
