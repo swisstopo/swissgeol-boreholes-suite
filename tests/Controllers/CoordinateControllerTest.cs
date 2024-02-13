@@ -64,7 +64,7 @@ public class CoordinateControllerTest
             (b.OriginalReferenceSystem == ReferenceSystem.LV95 && b.LocationX != null && b.LocationY != null) ||
             (b.OriginalReferenceSystem == ReferenceSystem.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null)).Count();
 
-        await AssertMigrateCoordinatesAsync(onlyMissing: false, boreholesWithSetSourceCoordinates, 10004, () =>
+        await AssertMigrateCoordinatesAsync(onlyMissing: false, boreholesWithSetSourceCoordinates, 3004, () =>
         {
             AssertLV95BoreholeWithAllCoordinatesSet(lV95BoreholeWithAllCoordinatesSet);
             AssertLV95BoreholeWithMissingDestCoordinates(lV95BoreholeWithMissingDestCoordinates);
@@ -97,7 +97,7 @@ public class CoordinateControllerTest
                 (b.LocationX == null || b.LocationY == null)))
             .Count();
 
-        await AssertMigrateCoordinatesAsync(onlyMissing: true, boreholesWithMissingSourceCoordinates, 10004, () =>
+        await AssertMigrateCoordinatesAsync(onlyMissing: true, boreholesWithMissingSourceCoordinates, 3004, () =>
         {
             AssertUnchanged(lV95BoreholeWithAllCoordinatesSet);
             AssertLV95BoreholeWithMissingDestCoordinates(lV95BoreholeWithMissingDestCoordinates);
