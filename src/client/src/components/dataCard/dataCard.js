@@ -45,7 +45,7 @@ export const DataCard = forwardRef((props, ref) => {
     width: "100%",
     border: "1px solid lightgrey",
     borderRadius: "3px",
-    padding: "12px 12px 16px 12px",
+    padding: "16px 12px 16px 22px",
     marginBottom: "8px",
   }));
 
@@ -58,7 +58,14 @@ export const DataCard = forwardRef((props, ref) => {
 
 export const DataCardButtonContainer = forwardRef((props, ref) => {
   return (
-    <Box sx={{ mb: 2, marginBottom: 0, flex: "0 1 auto" }}>
+    <Box
+      sx={{
+        mb: 2,
+        marginBottom: 0,
+        flex: "0 1 auto",
+        marginTop: "15px",
+        marginRight: "10px",
+      }}>
       <Stack direction="row" justifyContent="flex-end" alignItems="center">
         {props.children}
       </Stack>

@@ -14,6 +14,14 @@ import {
   evaluateCheckbox,
   evaluateDisplayValue,
 } from "../helpers/formHelpers";
+import {
+  addItem,
+  startEditing,
+  cancelEditing,
+  saveForm,
+  deleteItem,
+  copyItem,
+} from "../helpers/buttonHelpers";
 
 const toggleHeaderOpen = () => {
   cy.get('[data-cy="completion-header-display"]')
@@ -26,44 +34,28 @@ const toggleHeaderOpen = () => {
 };
 
 const addCompletion = () => {
-  cy.get('[data-cy="add-completion-button"]').click({
-    force: true,
-  });
+  addItem("addCompletion");
   cy.wait("@codelist_GET");
 };
 
-const startEditing = () => {
+const startEdit = () => {
   toggleHeaderOpen();
-  cy.get('[data-cy="edit-button"]').click({
-    force: true,
-  });
-};
-
-const cancelEditing = () => {
-  cy.get('[data-cy="cancel-button"]').click({
-    force: true,
-  });
+  startEditing();
 };
 
 const saveChanges = () => {
-  cy.get('[data-cy="save-button"]').click({
-    force: true,
-  });
+  saveForm();
   cy.wait("@get-completions-by-boreholeId");
 };
 
 const copyCompletion = () => {
   toggleHeaderOpen();
-  cy.get('[data-cy="copy-button"]').click({
-    force: true,
-  });
+  copyItem();
 };
 
 const deleteCompletion = () => {
   toggleHeaderOpen();
-  cy.get('[data-cy="delete-button"]').click({
-    force: true,
-  });
+  deleteItem();
 };
 
 const setTab = index => {
@@ -117,16 +109,16 @@ describe("completion crud tests", () => {
     cy.contains("Compl-1 (Clone)");
 
     // edit completion
-    startEditing();
+    startEdit();
     setSelect("kindId", 1);
     cancelEditing();
     cy.contains("telescopic");
-    startEditing();
+    startEdit();
     setInput("name", "Compl-2");
     toggleCheckbox("isPrimary");
     saveChanges();
     cy.contains("Compl-2");
-    startEditing();
+    startEdit();
     evaluateCheckbox("isPrimary", true);
     cancelEditing();
 
@@ -214,7 +206,7 @@ describe("completion crud tests", () => {
 
     // switch tabs
     // existing editing to other existing: no prompt should be displayed when no changes have been made
-    startEditing();
+    startEdit();
     setTab(0);
     cy.get('[data-cy="prompt"]').should("not.exist");
     isTabSelected(0);
@@ -226,7 +218,7 @@ describe("completion crud tests", () => {
     });
 
     // existing editing to other existing: tab switching can be canceled in prompt
-    startEditing();
+    startEdit();
     setInput("name", "Compl-1 updated");
     setTab(1);
     handlePrompt("Unsaved changes", "cancel");
@@ -252,7 +244,7 @@ describe("completion crud tests", () => {
     });
 
     // existing editing to other existing: changes can be saved in prompt
-    startEditing();
+    startEdit();
     setInput("name", "Compl-2 updated");
     setTab(0);
     handlePrompt("Unsaved changes", "save");
@@ -339,7 +331,7 @@ describe("completion crud tests", () => {
       );
       expect(location.hash).to.eq("#casing");
     });
-    startEditing();
+    startEdit();
     cy.get(`[data-cy="name-formInput"]`).click();
     addCompletion();
     evaluateInput("name", "");
@@ -359,7 +351,7 @@ describe("completion crud tests", () => {
       );
       expect(location.hash).to.eq("#casing");
     });
-    startEditing();
+    startEdit();
     setInput("name", "Reset compl-1");
     addCompletion();
     handlePrompt("Unsaved changes", "reset");
@@ -377,7 +369,7 @@ describe("completion crud tests", () => {
       );
       expect(location.hash).to.eq("#casing");
     });
-    startEditing();
+    startEdit();
     setInput("name", "Reset compl-1");
     addCompletion();
     handlePrompt("Unsaved changes", "save");

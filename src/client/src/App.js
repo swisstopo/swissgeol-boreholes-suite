@@ -79,7 +79,7 @@ export const theme = createTheme({
           fontFamily: "Lato",
           fontWeight: "bold",
           textTransform: "none",
-          marginLeft: "0.5em",
+          marginLeft: "5px",
           boxShadow: "none",
           "&:hover": {
             boxShadow: "none",

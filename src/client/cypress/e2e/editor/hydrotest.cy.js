@@ -11,6 +11,12 @@ import {
   toggleMultiSelect,
   evaluateMultiSelect,
 } from "../helpers/formHelpers";
+import {
+  addItem,
+  startEditing,
+  saveForm,
+  deleteItem,
+} from "../helpers/buttonHelpers";
 
 describe("Tests for the hydrotest editor.", () => {
   it("Creates, updates and deletes hydrotests", () => {
@@ -28,7 +34,7 @@ describe("Tests for the hydrotest editor.", () => {
     cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
-    cy.get('[data-cy="addCasing-button"]').click({ force: true });
+    addItem("addCasing");
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1");
@@ -41,7 +47,7 @@ describe("Tests for the hydrotest editor.", () => {
     setInput("innerDiameter", "3");
     setInput("outerDiameter", "4");
 
-    cy.get('[data-cy="save-button"]').click();
+    saveForm();
     cy.wait("@casing_GET");
 
     cy.get('[data-cy="hydrogeology-menu-item"]').click({ force: true });
@@ -52,7 +58,7 @@ describe("Tests for the hydrotest editor.", () => {
     cy.contains("span", "DE").click({ force: true });
 
     // create hydrotest
-    cy.get('[data-cy="addHydrotest-button"]').click({ force: true });
+    addItem("addHydrotest");
     cy.wait("@casing_GET");
 
     setSelect("reliabilityId", 1);
@@ -60,19 +66,19 @@ describe("Tests for the hydrotest editor.", () => {
     setSelect("casingId", 1);
     toggleMultiSelect("testKindId", [2]);
 
-    cy.get('[data-cy="save-button"]').click({ force: true });
+    saveForm();
     cy.wait("@hydrotest_GET");
     evaluateDisplayValue("reliability", "fraglich");
     evaluateDisplayValue("casingName", "casing-1");
     evaluateDisplayValue("testKind", "Pump-/Injektionsversuch, variable Rate");
 
     // update hydrotest
-    cy.get('[data-cy="edit-button"]').click({ force: true });
+    startEditing();
 
     toggleMultiSelect("flowDirectionId", [1, 0], 3);
     toggleMultiSelect("evaluationMethodId", [1, 0], 4);
 
-    cy.get('[data-cy="addHydrotestResult-button"]').click({ force: true });
+    addItem("addHydrotestResult");
     setSelect("hydrotestResults.0.parameterId", 0);
 
     toggleMultiSelect("testKindId", [2]);
@@ -83,12 +89,12 @@ describe("Tests for the hydrotest editor.", () => {
     toggleMultiSelect("testKindId", [2]);
     toggleMultiSelect("flowDirectionId", [1, 0], 3);
     toggleMultiSelect("evaluationMethodId", [1, 0], 4);
-    cy.get('[data-cy="addHydrotestResult-button"]').click({ force: true });
+    addItem("addHydrotestResult");
     setSelect("hydrotestResults.0.parameterId", 0, 6);
     setInput("hydrotestResults.0.value", "10");
     setInput("hydrotestResults.0.minValue", "5");
     setInput("hydrotestResults.0.maxValue", "15");
-    cy.get('[data-cy="save-button"]').click({ force: true });
+    saveForm();
     cy.wait("@hydrotest_GET");
 
     evaluateDisplayValue("casingName", "casing-1");
@@ -101,7 +107,7 @@ describe("Tests for the hydrotest editor.", () => {
     evaluateDisplayValue("hydrotestResult.0.maxValue", "15 m/s");
 
     // delete hydrotest
-    cy.get('[data-cy="delete-button"]').click({ force: true });
+    deleteItem();
     cy.wait("@hydrotest_GET");
     cy.get("body").should(
       "not.contain",

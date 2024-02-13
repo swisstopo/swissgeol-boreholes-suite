@@ -13,12 +13,11 @@ import {
   FormSelect,
 } from "../../../../components/form/form";
 import { StackHalfWidth } from "../../../../components/baseComponents";
-import CancelIcon from "@mui/icons-material/Cancel";
-import SaveIcon from "@mui/icons-material/Save";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import {
   AddButton,
-  BdmsIconButton,
+  CancelButton,
+  SaveButton,
 } from "../../../../components/buttons/buttons";
 import ObservationInput from "./observationInput";
 import { useTranslation } from "react-i18next";
@@ -301,12 +300,11 @@ const HydrotestInput = props => {
                   {t("hydrotestResult")}
                 </Typography>
                 <AddButton
-                  data-cy="addHydrotestResult-button"
+                  label="addHydrotestResult"
                   onClick={e => {
                     append();
-                  }}>
-                  {t("addHydrotestResult")}
-                </AddButton>
+                  }}
+                />
               </Stack>
               {fields.map((field, index) => (
                 <Stack
@@ -387,19 +385,17 @@ const HydrotestInput = props => {
           )}
         </Stack>
         <DataCardButtonContainer>
-          <BdmsIconButton
-            icon={<CancelIcon />}
-            tooltipLabel={"cancel"}
+          <CancelButton
             onClick={() => {
               formMethods.reset();
               setSelected(null);
             }}
           />
-          <BdmsIconButton
-            icon={<SaveIcon />}
-            tooltipLabel={"save"}
+          <SaveButton
             disabled={!formMethods.formState.isValid}
-            onClick={() => closeFormIfCompleted()}
+            onClick={() => {
+              closeFormIfCompleted();
+            }}
           />
         </DataCardButtonContainer>
       </form>

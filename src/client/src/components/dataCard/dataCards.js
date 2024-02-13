@@ -109,8 +109,7 @@ export const DataCards = props => {
       <DataCardButtonContainer>
         {isEditable && (
           <AddButton
-            sx={{ marginRight: "8px" }}
-            data-cy={addLabel + "-button"}
+            label={addLabel}
             onClick={e => {
               e.stopPropagation();
               if (!selected) {
@@ -118,9 +117,8 @@ export const DataCards = props => {
                 setDisplayed([...state.data, temp]);
                 setSelected(temp);
               }
-            }}>
-            {t(addLabel)}
-          </AddButton>
+            }}
+          />
         )}
       </DataCardButtonContainer>
       {state.isLoadingData ? (

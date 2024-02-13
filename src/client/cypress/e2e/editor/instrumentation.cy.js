@@ -5,6 +5,12 @@ import {
   createCompletion,
 } from "../helpers/testHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
+import {
+  addItem,
+  startEditing,
+  saveForm,
+  deleteItem,
+} from "../helpers/buttonHelpers";
 
 describe("Instrumentation crud tests", () => {
   it("add, edit and delete instrumentations", () => {
@@ -30,7 +36,7 @@ describe("Instrumentation crud tests", () => {
     cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
-    cy.get('[data-cy="addCasing-button"]').click({ force: true });
+    addItem("addCasing");
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1");
@@ -43,14 +49,14 @@ describe("Instrumentation crud tests", () => {
     setInput("innerDiameter", "3");
     setInput("outerDiameter", "4");
 
-    cy.get('[data-cy="save-button"]').click();
+    saveForm();
     cy.wait("@casing_GET");
 
     cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
     // create instrumentation
-    cy.get('[data-cy="addInstrument-button"]').click({ force: true });
+    addItem("addInstrument");
     cy.wait("@casing_GET");
 
     // fill out form
@@ -62,7 +68,7 @@ describe("Instrumentation crud tests", () => {
     setSelect("statusId", 1);
 
     // save instrumentation
-    cy.get('[data-cy="save-button"]').click();
+    saveForm();
 
     // check if instrumentation is saved
     cy.contains("123456");
@@ -73,7 +79,7 @@ describe("Instrumentation crud tests", () => {
     cy.contains("inactive");
 
     // edit instrumentation
-    cy.get('[data-cy="edit-button"]').click({ force: true });
+    startEditing();
 
     // We need the casings for the casing name dropdown
     cy.wait("@casing_GET");
@@ -81,13 +87,13 @@ describe("Instrumentation crud tests", () => {
     setSelect("casingId", 1);
 
     // close editing mask
-    cy.get('[data-cy="save-button"]').click({ force: true });
+    saveForm();
     cy.contains("casing-1");
     cy.contains("222");
     cy.contains("inactive");
 
     // delete instrumentation
-    cy.get('[data-cy="delete-button"]').click({ force: true });
+    deleteItem();
     cy.contains("From depth").should("not.exist");
   });
 });

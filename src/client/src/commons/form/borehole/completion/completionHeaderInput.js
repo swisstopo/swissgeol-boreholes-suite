@@ -2,16 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack } from "@mui/material";
-import CancelIcon from "@mui/icons-material/Cancel";
-import SaveIcon from "@mui/icons-material/Save";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
-import { BdmsIconButton } from "../../../../components/buttons/buttons";
+import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import {
   FormInput,
   FormSelect,
   FormCheckbox,
 } from "../../../../components/form/form";
+import {
+  CancelButton,
+  SaveButton,
+} from "../../../../components/buttons/buttons";
 import Prompt from "../../../../components/prompt/prompt";
 
 const CompletionHeaderInput = props => {
@@ -128,28 +130,22 @@ const CompletionHeaderInput = props => {
                 sx={{ flex: "0 0 400px" }}
               />
             </Stack>
-            <Stack
-              direction="row"
-              sx={{ marginLeft: "auto", paddingTop: "5px" }}>
-              <BdmsIconButton
-                icon={<CancelIcon />}
-                tooltipLabel={"cancel"}
+            <DataCardButtonContainer>
+              <CancelButton
                 onClick={e => {
                   e.stopPropagation();
                   formMethods.reset(selectedCompletion);
                   cancelChanges();
                 }}
               />
-              <BdmsIconButton
-                icon={<SaveIcon />}
-                tooltipLabel={"save"}
+              <SaveButton
                 disabled={!formMethods.formState.isValid}
                 onClick={e => {
                   e.stopPropagation();
                   formMethods.handleSubmit(submitForm)();
                 }}
               />
-            </Stack>
+            </DataCardButtonContainer>
           </Stack>
         </form>
       </FormProvider>

@@ -9,6 +9,12 @@ import {
   setInput,
   setSelect,
 } from "../helpers/formHelpers";
+import {
+  addItem,
+  startEditing,
+  saveForm,
+  deleteItem,
+} from "../helpers/buttonHelpers";
 
 describe("Tests for the groundwater level measurement editor.", () => {
   it("Creates, updates and deletes groundwater level measurement", () => {
@@ -26,7 +32,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
-    cy.get('[data-cy="addCasing-button"]').click({ force: true });
+    addItem("addCasing");
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1");
@@ -39,7 +45,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     setInput("innerDiameter", "3");
     setInput("outerDiameter", "4");
 
-    cy.get('[data-cy="save-button"]').click();
+    saveForm();
     cy.wait("@casing_GET");
 
     cy.get('[data-cy="hydrogeology-menu-item"]').click({ force: true });
@@ -52,9 +58,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     cy.contains("span", "DE").click({ force: true });
 
     // create groundwater level measurement
-    cy.get('[data-cy="addGroundwaterLevelMeasurement-button"]').click({
-      force: true,
-    });
+    addItem("addGroundwaterLevelMeasurement");
     cy.wait("@groundwaterlevelmeasurement_GET");
 
     setSelect("kindId", 2);
@@ -65,7 +69,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     setInput("levelMasl", "5.4567");
 
     // close editing mask
-    cy.get('[data-cy="save-button"]').click({ force: true });
+    saveForm();
     evaluateDisplayValue("casingName", "casing-1");
     evaluateDisplayValue("gwlm_kind", "Manometer");
     evaluateDisplayValue("gwlm_levelm", "789.12");
@@ -73,14 +77,14 @@ describe("Tests for the groundwater level measurement editor.", () => {
     evaluateDisplayValue("reliability", "fraglich");
 
     // edit groundwater level measurement
-    cy.get('[data-cy="edit-button"]').click({ force: true });
+    startEditing();
     setSelect("kindId", 1);
-    cy.get('[data-cy="save-button"]').click({ force: true });
+    saveForm();
     evaluateDisplayValue("gwlm_kind", "Drucksonde");
     evaluateDisplayValue("casingName", "casing-1");
 
     // delete groundwater level measurement
-    cy.get('[data-cy="delete-button"]').click({ force: true });
+    deleteItem();
     cy.wait("@groundwaterlevelmeasurement_DELETE");
     cy.get("body").should("not.contain", "Drucksonde");
   });

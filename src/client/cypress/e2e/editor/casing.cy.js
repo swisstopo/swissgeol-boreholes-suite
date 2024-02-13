@@ -9,6 +9,12 @@ import {
   setInput,
   setSelect,
 } from "../helpers/formHelpers";
+import {
+  addItem,
+  startEditing,
+  saveForm,
+  deleteItem,
+} from "../helpers/buttonHelpers";
 
 describe("Casing crud tests", () => {
   it("add, edit and delete casings", () => {
@@ -35,7 +41,7 @@ describe("Casing crud tests", () => {
     cy.wait("@casing_GET");
 
     // create casing
-    cy.get('[data-cy="addCasing-button"]').click();
+    addItem("addCasing");
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1");
@@ -49,7 +55,7 @@ describe("Casing crud tests", () => {
     setInput("outerDiameter", "4");
     setInput("notes", "Lorem.");
 
-    cy.get('[data-cy="save-button"]').click();
+    saveForm();
     cy.wait("@casing_GET");
 
     evaluateDisplayValue("name", "casing-1");
@@ -64,13 +70,13 @@ describe("Casing crud tests", () => {
     evaluateDisplayValue("notes", "Lorem.");
 
     // update casing
-    cy.get('[data-cy="edit-button"]').click();
+    startEditing();
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1 updated");
     setSelect("materialId", 5);
 
-    cy.get('[data-cy="save-button"]').click({ force: true });
+    saveForm();
     evaluateDisplayValue("name", "casing-1 updated");
     evaluateDisplayValue("materialCasingLayer", "concrete");
     evaluateDisplayValue("casingInnerDiameter", "3");
@@ -80,7 +86,7 @@ describe("Casing crud tests", () => {
     cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
-    cy.get('[data-cy="addInstrument-button"]').click({ force: true });
+    addItem("addInstrument");
     cy.wait("@casing_GET");
 
     setInput("notes", "Lorem.");
@@ -90,12 +96,12 @@ describe("Casing crud tests", () => {
     setSelect("kindId", 2);
     setSelect("statusId", 1);
     setSelect("casingId", 1);
-    cy.get('[data-cy="save-button"]').click({ force: true });
+    saveForm();
 
     cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
-    cy.get('[data-cy="delete-button"]').click({ force: true });
+    deleteItem();
     cy.wait("@casing_DELETE");
     cy.contains("casing-1 updated").should("not.exist");
 

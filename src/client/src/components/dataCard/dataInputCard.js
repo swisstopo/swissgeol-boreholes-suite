@@ -1,10 +1,8 @@
 import React, { useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import CancelIcon from "@mui/icons-material/Cancel";
-import SaveIcon from "@mui/icons-material/Save";
 import { DataCardButtonContainer } from "../dataCard/dataCard";
-import { BdmsIconButton } from "../buttons/buttons";
 import { StackFullWidth } from "../baseComponents";
+import { CancelButton, SaveButton } from "../buttons/buttons";
 
 export const DataInputCard = props => {
   const { item, setSelected, addData, updateData, prepareFormDataForSubmit } =
@@ -43,17 +41,13 @@ export const DataInputCard = props => {
       <form onSubmit={formMethods.handleSubmit(submitForm)}>
         <StackFullWidth spacing={1}>{props.children}</StackFullWidth>
         <DataCardButtonContainer>
-          <BdmsIconButton
-            icon={<CancelIcon />}
-            tooltipLabel={"cancel"}
+          <CancelButton
             onClick={() => {
               formMethods.reset();
               setSelected(null);
             }}
           />
-          <BdmsIconButton
-            icon={<SaveIcon />}
-            tooltipLabel={"save"}
+          <SaveButton
             disabled={!formMethods.formState.isValid}
             onClick={() => closeFormIfCompleted()}
           />

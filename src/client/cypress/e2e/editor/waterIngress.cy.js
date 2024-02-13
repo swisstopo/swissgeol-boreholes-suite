@@ -9,6 +9,12 @@ import {
   setInput,
   setSelect,
 } from "../helpers/formHelpers";
+import {
+  addItem,
+  startEditing,
+  saveForm,
+  deleteItem,
+} from "../helpers/buttonHelpers";
 
 describe("Tests for the wateringress editor.", () => {
   it("Creates, updates and deletes wateringresses", () => {
@@ -34,7 +40,7 @@ describe("Tests for the wateringress editor.", () => {
     cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
-    cy.get('[data-cy="addCasing-button"]').click({ force: true });
+    addItem("addCasing");
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1");
@@ -47,7 +53,7 @@ describe("Tests for the wateringress editor.", () => {
     setInput("innerDiameter", "3");
     setInput("outerDiameter", "4");
 
-    cy.get('[data-cy="save-button"]').click();
+    saveForm();
     cy.wait("@casing_GET");
 
     cy.get('[data-cy="hydrogeology-menu-item"]').click({ force: true });
@@ -60,7 +66,7 @@ describe("Tests for the wateringress editor.", () => {
     cy.contains("span", "DE").click({ force: true });
 
     // create wateringress
-    cy.get('[data-cy="addWaterIngress-button"]').click({ force: true });
+    addItem("addWaterIngress");
     cy.wait("@casing_GET");
 
     setSelect("quantityId", 2);
@@ -70,7 +76,7 @@ describe("Tests for the wateringress editor.", () => {
     setInput("startTime", "2012-11-14T12:06");
 
     // close editing mask
-    cy.get('[data-cy="save-button"]').click({ force: true });
+    saveForm();
 
     evaluateDisplayValue("quantity", "viel (> 120 l/min)");
     evaluateDisplayValue("conditions", "frei/ungespannt");
@@ -78,14 +84,14 @@ describe("Tests for the wateringress editor.", () => {
     evaluateDisplayValue("casingName", "casing-1");
 
     // edit wateringress
-    cy.get('[data-cy="edit-button"]').click({ force: true });
+    startEditing();
     setSelect("quantityId", 1);
-    cy.get('[data-cy="save-button"]').click({ force: true });
+    saveForm();
     evaluateDisplayValue("quantity", "mittel (30 - 120 l/min)");
     evaluateDisplayValue("casingName", "casing-1");
 
     // delete wateringress
-    cy.get('[data-cy="delete-button"]').click({ force: true });
+    deleteItem();
     cy.wait("@wateringress_DELETE");
     cy.get("body").should("not.contain", "mittel (30 - 120 l/min)");
   });

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
+import { CircularProgress, Stack, Typography } from "@mui/material";
 import {
   CompletionBox,
   CompletionTabs,
@@ -269,16 +269,13 @@ const Completion = props => {
                 })}
             </CompletionTabs>
             {isEditable && (
-              <Tooltip title={t("add")}>
-                <AddButton
-                  sx={{ marginRight: "5px" }}
-                  data-cy="add-completion-button"
-                  onClick={e => {
-                    handleCompletionChanged(e, -1);
-                  }}>
-                  {t("addCompletion")}
-                </AddButton>
-              </Tooltip>
+              <AddButton
+                label="addCompletion"
+                sx={{ marginRight: "5px" }}
+                onClick={e => {
+                  handleCompletionChanged(e, -1);
+                }}
+              />
             )}
           </Stack>
           {state.selected != null && (

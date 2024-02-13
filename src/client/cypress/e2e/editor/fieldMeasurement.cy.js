@@ -9,6 +9,12 @@ import {
   setInput,
   setSelect,
 } from "../helpers/formHelpers";
+import {
+  addItem,
+  startEditing,
+  saveForm,
+  deleteItem,
+} from "../helpers/buttonHelpers";
 
 describe("Tests for the field measurement editor.", () => {
   it("Creates, updates and deletes field measurement", () => {
@@ -26,7 +32,7 @@ describe("Tests for the field measurement editor.", () => {
     cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
-    cy.get('[data-cy="addCasing-button"]').click({ force: true });
+    addItem("addCasing");
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1");
@@ -39,7 +45,7 @@ describe("Tests for the field measurement editor.", () => {
     setInput("innerDiameter", "3");
     setInput("outerDiameter", "4");
 
-    cy.get('[data-cy="save-button"]').click();
+    saveForm();
     cy.wait("@casing_GET");
 
     cy.get('[data-cy="hydrogeology-menu-item"]').click({ force: true });
@@ -50,9 +56,7 @@ describe("Tests for the field measurement editor.", () => {
     cy.contains("span", "DE").click({ force: true });
 
     // create field measurement
-    cy.get('[data-cy="addFieldmeasurement-button"]').click({
-      force: true,
-    });
+    addItem("addFieldmeasurement");
     cy.wait("@fieldmeasurement_GET");
 
     setSelect("reliabilityId", 1);
@@ -63,7 +67,7 @@ describe("Tests for the field measurement editor.", () => {
     setInput("value", "77.1045");
 
     // close editing mask
-    cy.get('[data-cy="save-button"]').click({ force: true });
+    saveForm();
 
     //assert field measurementis displayed
     evaluateDisplayValue("casingName", "casing-1");
@@ -72,14 +76,14 @@ describe("Tests for the field measurement editor.", () => {
     evaluateDisplayValue("value", "77.1045 %");
 
     // edit field measurement
-    cy.get('[data-cy="edit-button"]').click({ force: true });
+    startEditing();
     setSelect("sampleTypeId", 0);
-    cy.get('[data-cy="save-button"]').click({ force: true });
+    saveForm();
     evaluateDisplayValue("field_measurement_sample_type", "Pumpprobe");
     evaluateDisplayValue("casingName", "casing-1");
 
     // delete field measurement
-    cy.get('[data-cy="delete-button"]').click({ force: true });
+    deleteItem();
     cy.wait("@fieldmeasurement_DELETE");
     cy.get("body").should("not.contain", "Pumpprobe");
   });
