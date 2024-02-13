@@ -316,7 +316,7 @@ const Completion = props => {
               alignItems="center"
               justifyContent="center"
               sx={{ flexGrow: 1 }}>
-              <CircularProgress color="inherit" />
+              <CircularProgress />
             </Stack>
           ) : state.selected === null ? (
             <Stack

@@ -27,9 +27,11 @@ const DescriptionDeleteDialog = props => {
       <Typography sx={{ color: theme.palette.error.main }} variant="subtitle2">
         {t("deletelayerconfirmation")}
       </Typography>
-      <Box alignSelf="flex-end" sx={{ marginTop: "auto" }}>
+      <Box
+        alignSelf="flex-end"
+        sx={{ marginTop: "auto", marginRight: "0.5em", marginBottom: "0.5em" }}>
         <Button
-          variant="cancel"
+          variant="outlined"
           size="small"
           startIcon={<ClearIcon />}
           onClick={e => {
@@ -39,8 +41,9 @@ const DescriptionDeleteDialog = props => {
           {t("cancel")}
         </Button>
         <Button
-          variant="delete"
+          variant="contained"
           size="small"
+          color="error"
           startIcon={<DeleteIcon />}
           onClick={e => {
             e.stopPropagation();

@@ -125,7 +125,7 @@ export const DataCards = props => {
       </DataCardButtonContainer>
       {state.isLoadingData ? (
         <FullPageCentered>
-          <CircularProgress color="inherit" />
+          <CircularProgress />
         </FullPageCentered>
       ) : displayed?.length > 0 ? (
         <DataCardContainer>

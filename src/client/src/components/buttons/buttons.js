@@ -4,53 +4,18 @@ import { Button, IconButton, Tooltip } from "@mui/material";
 import { styled } from "@mui/system";
 import AddIcon from "@mui/icons-material/Add";
 
-export const ButtonColor = {
-  default: "rgba(0, 0, 0, 0.8)",
-  success: "rgba(0, 128, 0, 0.8)",
-  error: "rgba(255, 0, 0, 0.8)",
-};
-
-export const BaseButton = styled(Button)({
-  fontFamily: "Lato",
-  textTransform: "none",
-  color: ButtonColor.default,
-  borderColor: ButtonColor.default,
-  marginBottom: "6px",
-  "&:hover, &.Mui-focusVisible, &:active, &:focus, &:focus-visible": {
-    borderColor: ButtonColor.default,
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
-  },
-  "& .MuiTouchRipple-root": {
-    display: "none",
-  },
-});
-
 export const AddButton = forwardRef((props, ref) => {
   const { t } = useTranslation();
   return (
     <Tooltip title={t("add")}>
-      <BaseButton
-        ref={ref}
-        {...props}
-        variant="outlined"
-        startIcon={<AddIcon />}>
+      <Button ref={ref} {...props} variant="outlined" startIcon={<AddIcon />}>
         {props.children}
-      </BaseButton>
+      </Button>
     </Tooltip>
   );
 });
 
-export const BaseIconButton = styled(IconButton)({
-  color: ButtonColor.default,
-  "&:hover, &.Mui-focusVisible, &:active, &:focus, &:focus-visible": {
-    backgroundColor: "rgba(0, 0, 0, 0.0)",
-  },
-  "& .MuiTouchRipple-root": {
-    display: "none",
-  },
-});
-
-export const IconButtonWithMargin = styled(BaseIconButton)({
+export const IconButtonWithMargin = styled(IconButton)({
   marginLeft: "5px",
 });
 
@@ -62,17 +27,17 @@ export const BdmsIconButton = ({
   onClick,
 }) => {
   const { t } = useTranslation();
-  var colorToUse = color ? color : ButtonColor.default;
+  var colorToUse = color ? color : "primary";
   return (
     <Tooltip title={t(tooltipLabel)}>
       <span>
-        <BaseIconButton
+        <IconButton
           data-cy={tooltipLabel + "-button"}
-          sx={{ color: colorToUse }}
+          color={colorToUse}
           disabled={disabled}
           onClick={onClick}>
           {icon}
-        </BaseIconButton>
+        </IconButton>
       </span>
     </Tooltip>
   );

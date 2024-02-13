@@ -1,9 +1,10 @@
 import React from "react";
 import { Box, Tabs, Tab } from "@mui/material";
 import { styled } from "@mui/system";
+import { theme } from "../../../../App";
 
 export const CompletionBox = styled(Box)(() => ({
-  backgroundColor: "rgb(242,242,242)",
+  backgroundColor: theme.palette.secondary.background,
   borderRadius: "3px",
   padding: "10px 10px 5px 10px",
   margin: "0 5px 10px 5px",
@@ -22,14 +23,8 @@ export const CompletionTabs = styled(Tabs)({
 
 export const CompletionTab = styled(props => <Tab disableRipple {...props} />)(
   () => ({
-    color: "rgba(0, 0, 0, 0.6)",
-    fontFamily: "Lato",
-    fontWeight: "bold",
-    textTransform: "none",
-    fontSize: "16px",
     "&.Mui-selected": {
-      color: "rgba(0, 0, 0, 1) !important",
-      backgroundColor: "rgb(242,242,242)",
+      backgroundColor: theme.palette.secondary.background,
       borderRadius: "3px",
     },
     "&.Mui-focusVisible": {

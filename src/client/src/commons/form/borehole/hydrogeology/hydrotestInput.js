@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import { Box, InputAdornment, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  InputAdornment,
+  Stack,
+  Typography,
+} from "@mui/material";
 import {
   FormInput,
   FormMultiSelect,
@@ -12,9 +18,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import {
   AddButton,
-  BaseIconButton,
   BdmsIconButton,
-  ButtonColor,
 } from "../../../../components/buttons/buttons";
 import ObservationInput from "./observationInput";
 import { useTranslation } from "react-i18next";
@@ -369,14 +373,14 @@ const HydrotestInput = props => {
                       ),
                     }}
                   />
-                  <BaseIconButton
+                  <IconButton
                     onClick={() => remove(index)}
+                    color="error"
                     sx={{
-                      color: ButtonColor.error,
                       marginTop: "10px !important",
                     }}>
                     <Delete />
-                  </BaseIconButton>
+                  </IconButton>
                 </Stack>
               ))}
             </Box>
