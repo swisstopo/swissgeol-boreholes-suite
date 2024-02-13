@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useMemo, createRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { CircularProgress, Typography } from "@mui/material";
 import {
-  Box,
-  CircularProgress,
-  Grid,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { AddButton, CompletionCard } from "./styledComponents";
+  DataCard,
+  DataCardItem,
+  DataCardContainer,
+  DataCardButtonContainer,
+} from "./dataCard";
+import { AddButton } from "../buttons/buttons";
+import { FullPage, FullPageCentered } from "../baseComponents";
 
-export const CompletionContentTab = props => {
+export const DataCards = props => {
   const {
     isEditable,
-    completionId,
+    parentId,
     getData,
     addData,
     updateData,
@@ -35,8 +35,8 @@ export const CompletionContentTab = props => {
 
   const loadData = index => {
     setState({ ...state, isLoadingData: true });
-    if (completionId && mounted.current) {
-      getData(completionId).then(response => {
+    if (parentId && mounted.current) {
+      getData(parentId).then(response => {
         if (response?.length > 0) {
           setState({
             index: index,
@@ -51,7 +51,7 @@ export const CompletionContentTab = props => {
           });
         }
       });
-    } else if (completionId === null) {
+    } else if (parentId === null) {
       setState({
         index: 0,
         data: [],
@@ -65,13 +65,20 @@ export const CompletionContentTab = props => {
   };
 
   useEffect(() => {
+    if (selected === null) {
+      setDisplayed(state.data);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected]);
+
+  useEffect(() => {
     mounted.current = true;
     loadData(0);
     return () => {
       mounted.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [completionId]);
+  }, [parentId]);
 
   useEffect(() => {
     setDisplayed(state.data);
@@ -98,69 +105,41 @@ export const CompletionContentTab = props => {
   }, [displayed, dataRefs]);
 
   return (
-    <Stack sx={{ flex: "1 0 0" }}>
-      <Box sx={{ mb: 2, marginBottom: 0, flex: "0 1 auto" }}>
-        <Stack direction="row" justifyContent="flex-end" alignItems="center">
-          {isEditable && (
-            <Tooltip title={t("add")}>
-              <AddButton
-                sx={{ marginRight: "8px" }}
-                data-cy={addLabel + "-button"}
-                onClick={e => {
-                  e.stopPropagation();
-                  if (!selected) {
-                    const temp = { id: 0 };
-                    setDisplayed([...state.data, temp]);
-                    setSelected(temp);
-                  }
-                }}>
-                {t(addLabel)}
-              </AddButton>
-            </Tooltip>
-          )}
-        </Stack>
-      </Box>
+    <FullPage>
+      <DataCardButtonContainer>
+        {isEditable && (
+          <AddButton
+            label={addLabel}
+            onClick={e => {
+              e.stopPropagation();
+              if (!selected) {
+                const temp = { id: 0 };
+                setDisplayed([...state.data, temp]);
+                setSelected(temp);
+              }
+            }}
+          />
+        )}
+      </DataCardButtonContainer>
       {state.isLoadingData ? (
-        <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
-          <CircularProgress color="inherit" />
-        </Stack>
+        <FullPageCentered>
+          <CircularProgress />
+        </FullPageCentered>
       ) : displayed?.length > 0 ? (
-        <Grid
-          container
-          columnSpacing={{ xs: 2 }}
-          rowSpacing={{ xs: 2 }}
-          sx={{
-            flex: "1 0 0",
-            alignContent: "flex-start",
-            width: "100% !important",
-            borderWidth: "1px",
-            borderColor: "black",
-            padding: "0",
-            marginBottom: "10px",
-            marginTop: "10px !important",
-            marginLeft: "0 !important",
-            overflow: "auto",
-          }}>
+        <DataCardContainer>
           {displayed
             .sort((a, b) => a.fromDepthM - b.fromDepthM)
             .map((item, index) => {
               const isSelected = selected?.id === item.id;
               const isTemp = item.id === 0;
               return (
-                <Grid
-                  item
-                  md={12}
-                  lg={12}
-                  xl={6}
-                  key={item.id}
-                  ref={dataRefs[index]}
-                  sx={{ padding: "0 8px 8px 8px !important" }}>
-                  <CompletionCard key={item.id}>
+                <DataCardItem key={item.id} ref={dataRefs[index]}>
+                  <DataCard key={item.id}>
                     {isEditable && isSelected
                       ? renderInput({
                           item: item,
                           setSelected: setSelected,
-                          completionId: completionId,
+                          parentId: parentId,
                           updateData: (item, data) => {
                             updateData(item, data).then(() => {
                               handleDataChange();
@@ -184,16 +163,16 @@ export const CompletionContentTab = props => {
                             });
                           },
                         })}
-                  </CompletionCard>
-                </Grid>
+                  </DataCard>
+                </DataCardItem>
               );
             })}
-        </Grid>
+        </DataCardContainer>
       ) : (
-        <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
+        <FullPageCentered>
           <Typography variant="fullPageMessage">{t(emptyLabel)}</Typography>
-        </Stack>
+        </FullPageCentered>
       )}
-    </Stack>
+    </FullPage>
   );
 };

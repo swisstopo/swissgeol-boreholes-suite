@@ -1,139 +1,28 @@
-import React, { useState, useEffect, useMemo, createRef } from "react";
-import { useTranslation } from "react-i18next";
+import React from "react";
 import {
-  CircularProgress,
-  Grid,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-
-import {
-  useWaterIngressMutations,
-  useWaterIngresses,
+  getWaterIngress,
+  addWaterIngress,
+  updateWaterIngress,
+  deleteWaterIngress,
 } from "../../../../api/fetchApiV2";
 import WaterIngressInput from "./waterIngressInput";
 import WaterIngressDisplay from "./waterIngressDisplay";
+import { DataCards } from "../../../../components/dataCard/dataCards";
 
-const WaterIngress = props => {
-  const { isEditable, boreholeId } = props;
-  const { data: waterIngresses, isSuccess } = useWaterIngresses(boreholeId);
-  const { t } = useTranslation();
-  const {
-    add: { mutate: addWaterIngress },
-    update: { mutate: updateWaterIngress },
-    delete: { mutate: deleteWaterIngress },
-  } = useWaterIngressMutations();
-  const [selectedWaterIngress, setSelectedWaterIngress] = useState(null);
-  const [displayedWaterIngresses, setDisplayedWaterIngresses] = useState([]);
-
-  useEffect(() => {
-    setDisplayedWaterIngresses(waterIngresses);
-  }, [waterIngresses]);
-
-  // scroll to newly added item
-  const waterIngressRefs = useMemo(
-    () =>
-      Array(displayedWaterIngresses?.length)
-        .fill(null)
-        .map(() => createRef(null)),
-    [displayedWaterIngresses],
-  );
-
-  useEffect(() => {
-    if (displayedWaterIngresses?.length > 0) {
-      const lastWaterIngressRef =
-        waterIngressRefs[displayedWaterIngresses?.length - 1];
-      if (displayedWaterIngresses[displayedWaterIngresses?.length - 1].id === 0)
-        lastWaterIngressRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-    }
-  }, [displayedWaterIngresses, waterIngressRefs]);
-
+const WaterIngress = ({ isEditable, boreholeId }) => {
   return (
-    <Stack sx={{ flexGrow: 1 }}>
-      <Stack direction="row" sx={{ mb: 2 }}>
-        <Stack
-          direction="row"
-          sx={{ visibility: isEditable ? "visible" : "hidden" }}>
-          <Typography sx={{ mr: 1 }}>{t("water_ingress")}</Typography>
-          <Tooltip title={t("add")}>
-            <AddCircleIcon
-              data-cy="add-wateringress-button"
-              color={selectedWaterIngress === null ? "black" : "disabled"}
-              onClick={e => {
-                e.stopPropagation();
-                if (selectedWaterIngress === null) {
-                  const tempWaterIngress = { id: 0 };
-                  setDisplayedWaterIngresses([
-                    ...waterIngresses,
-                    tempWaterIngress,
-                  ]);
-                  setSelectedWaterIngress(tempWaterIngress);
-                }
-              }}
-            />
-          </Tooltip>
-        </Stack>
-      </Stack>
-      {displayedWaterIngresses?.length === 0 && (
-        <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
-          <Typography variant="fullPageMessage">
-            {t("msgWateringressesEmpty")}
-          </Typography>
-        </Stack>
-      )}
-      <Grid
-        container
-        alignItems="stretch"
-        columnSpacing={{ xs: 2 }}
-        rowSpacing={{ xs: 2 }}
-        sx={{ overflow: "auto", maxHeight: "85vh" }}>
-        {displayedWaterIngresses?.length > 0 &&
-          displayedWaterIngresses
-            ?.sort((a, b) => a.fromDepthM - b.fromDepthM)
-            .map((waterIngress, index) => {
-              const isSelected = selectedWaterIngress?.id === waterIngress.id;
-              const isTempWateringress = waterIngress.id === 0;
-              return (
-                <Grid
-                  item
-                  md={12}
-                  lg={12}
-                  xl={6}
-                  key={index}
-                  ref={waterIngressRefs[index]}>
-                  {isSuccess ? (
-                    isEditable && isSelected ? (
-                      <WaterIngressInput
-                        waterIngress={waterIngress}
-                        setSelectedWaterIngress={setSelectedWaterIngress}
-                        updateWaterIngress={updateWaterIngress}
-                        addWaterIngress={addWaterIngress}
-                        boreholeId={boreholeId}
-                      />
-                    ) : (
-                      !isTempWateringress && (
-                        <WaterIngressDisplay
-                          waterIngress={waterIngress}
-                          selectedWaterIngress={selectedWaterIngress}
-                          setSelectedWaterIngress={setSelectedWaterIngress}
-                          isEditable={isEditable}
-                          deleteWaterIngress={deleteWaterIngress}
-                        />
-                      )
-                    )
-                  ) : (
-                    <CircularProgress />
-                  )}
-                </Grid>
-              );
-            })}
-      </Grid>
-    </Stack>
+    <DataCards
+      isEditable={isEditable}
+      parentId={boreholeId}
+      getData={getWaterIngress}
+      addData={addWaterIngress}
+      updateData={updateWaterIngress}
+      deleteData={deleteWaterIngress}
+      addLabel="addWaterIngress"
+      emptyLabel="msgWateringressesEmpty"
+      renderInput={props => <WaterIngressInput {...props} />}
+      renderDisplay={props => <WaterIngressDisplay {...props} />}
+    />
   );
 };
 export default WaterIngress;

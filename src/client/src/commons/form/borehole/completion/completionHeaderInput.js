@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Stack, Tooltip } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import SaveIcon from "@mui/icons-material/Save";
+import { Stack } from "@mui/material";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
-import { IconButtonWithMargin } from "./styledComponents";
+import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import {
   FormInput,
   FormSelect,
   FormCheckbox,
 } from "../../../../components/form/form";
+import {
+  CancelButton,
+  SaveButton,
+} from "../../../../components/buttons/buttons";
 import Prompt from "../../../../components/prompt/prompt";
 
 const CompletionHeaderInput = props => {
@@ -24,7 +26,7 @@ const CompletionHeaderInput = props => {
   } = props;
   const domains = useDomains();
   const formMethods = useForm({ mode: "all" });
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const [selectedCompletion, setSelectedCompletion] = useState({
     ...completion,
@@ -128,34 +130,22 @@ const CompletionHeaderInput = props => {
                 sx={{ flex: "0 0 400px" }}
               />
             </Stack>
-            <Stack
-              direction="row"
-              sx={{ marginLeft: "auto", paddingTop: "5px" }}>
-              <Tooltip title={t("cancel")}>
-                <IconButtonWithMargin
-                  data-cy="cancel-button"
-                  onClick={e => {
-                    e.stopPropagation();
-                    formMethods.reset(selectedCompletion);
-                    cancelChanges();
-                  }}>
-                  <CloseIcon />
-                </IconButtonWithMargin>
-              </Tooltip>
-              <Tooltip title={t("save")}>
-                <span>
-                  <IconButtonWithMargin
-                    disabled={!formMethods.formState.isValid}
-                    data-cy="save-button"
-                    onClick={e => {
-                      e.stopPropagation();
-                      formMethods.handleSubmit(submitForm)();
-                    }}>
-                    <SaveIcon />
-                  </IconButtonWithMargin>
-                </span>
-              </Tooltip>
-            </Stack>
+            <DataCardButtonContainer>
+              <CancelButton
+                onClick={e => {
+                  e.stopPropagation();
+                  formMethods.reset(selectedCompletion);
+                  cancelChanges();
+                }}
+              />
+              <SaveButton
+                disabled={!formMethods.formState.isValid}
+                onClick={e => {
+                  e.stopPropagation();
+                  formMethods.handleSubmit(submitForm)();
+                }}
+              />
+            </DataCardButtonContainer>
           </Stack>
         </form>
       </FormProvider>
