@@ -5,6 +5,12 @@ import {
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
+import {
+  addItem,
+  startEditing,
+  saveForm,
+  deleteItem,
+} from "../helpers/buttonHelpers";
 
 describe("Backfill crud tests", () => {
   it("add, edit and delete backfills", () => {
@@ -27,10 +33,11 @@ describe("Backfill crud tests", () => {
     startBoreholeEditing();
 
     // select backfill tab
-    cy.get("[data-cy=completion-content-header-tab-Backfill]").click();
+    cy.get("[data-cy=completion-content-header-tab-backfill]").click();
     cy.wait("@backfill_GET");
 
     // add new backfill card
+    addItem("addFilling");
     cy.get('[data-cy="addFilling-button"]').click({ force: true });
     cy.wait("@codelist_GET");
 
@@ -42,7 +49,7 @@ describe("Backfill crud tests", () => {
     setSelect("materialId", 1);
 
     // save backfill
-    cy.get('[data-cy="save-icon"]').click();
+    saveForm();
 
     // check if backfill is saved
     cy.contains("123456");
@@ -52,18 +59,18 @@ describe("Backfill crud tests", () => {
     cy.contains("filter gravel");
 
     // edit backfill
-    cy.get('[data-cy="edit-icon"]').click({ force: true });
+    startEditing();
     cy.wait("@codelist_GET");
 
     setInput("fromDepth", "222");
 
     // close editing mask
-    cy.get('[data-cy="save-icon"]').click({ force: true });
+    saveForm();
     cy.contains("222");
     cy.contains("inactive");
 
     // delete backfill
-    cy.get('[data-cy="delete-icon"]').click({ force: true });
+    deleteItem();
     cy.contains("From depth").should("not.exist");
   });
 });

@@ -5,15 +5,15 @@ import {
   updateCasing,
   deleteCasing,
 } from "../../../../api/fetchApiV2";
-import { CompletionContentTab } from "./completionContentTab";
+import { DataCards } from "../../../../components/dataCard/dataCards";
 import CasingInput from "./casingInput";
 import CasingDisplay from "./casingDisplay";
 
 const Casing = ({ isEditable, completionId }) => {
   return (
-    <CompletionContentTab
+    <DataCards
       isEditable={isEditable}
-      completionId={completionId}
+      parentId={completionId}
       getData={getCasings}
       addData={addCasing}
       updateData={updateCasing}

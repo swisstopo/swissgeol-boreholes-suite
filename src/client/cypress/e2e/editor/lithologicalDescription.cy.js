@@ -1,4 +1,5 @@
 import { newEditableBorehole } from "../helpers/testHelpers";
+import { deleteItem } from "../helpers/buttonHelpers";
 
 describe("Tests for the lithological description column.", () => {
   it("Creates, updates and deletes lithological descriptions ", () => {
@@ -103,7 +104,7 @@ describe("Tests for the lithological description column.", () => {
     // delete last layer
     cy.get('[data-cy="description-1"] [data-testid="DeleteIcon"] ').click();
 
-    cy.contains("Confirm").click();
+    deleteItem();
     cy.wait("@lithological_description"); // delete request
     cy.wait("@lithological_description"); // updated get request
     cy.wait(5000);
@@ -136,7 +137,7 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="description-1"]').contains(
       "You are about to delete this layer, how do you want to proceed?",
     );
-    cy.contains("Confirm").click();
+    deleteItem();
     cy.wait("@lithological_description"); // delete request
     cy.wait("@lithological_description"); // updated get request
     cy.get('[data-cy="description-1"]').contains(

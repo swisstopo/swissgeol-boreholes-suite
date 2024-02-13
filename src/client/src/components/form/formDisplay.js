@@ -12,33 +12,41 @@ export const FormDisplay = props => {
   const { label, value, type, sx } = props;
   const { t, i18n } = useTranslation();
 
+  const convert = value => {
+    if (type === FormDisplayType.Date) {
+      const date = new Date(value);
+      const dateTimeFormat = new Intl.DateTimeFormat("de-CH", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+      });
+      return dateTimeFormat.format(date);
+    } else if (type === FormDisplayType.DateTime) {
+      const date = new Date(value);
+      const dateTimeFormat = new Intl.DateTimeFormat("de-CH", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "UTC",
+      });
+      return dateTimeFormat.format(date);
+    } else if (type === FormDisplayType.Boolean) {
+      return value ? t("yes") : t("no");
+    } else if (type === FormDisplayType.Domain) {
+      return value?.[i18n.language];
+    } else {
+      return value;
+    }
+  };
+
   const formatValue = value => {
     if (value != null || value === 0) {
-      if (type === FormDisplayType.Date) {
-        const date = new Date(value);
-        const dateTimeFormat = new Intl.DateTimeFormat("de-CH", {
-          year: "numeric",
-          month: "short",
-          day: "2-digit",
-        });
-        return dateTimeFormat.format(date);
-      } else if (type === FormDisplayType.DateTime) {
-        const date = new Date(value);
-        const dateTimeFormat = new Intl.DateTimeFormat("de-CH", {
-          year: "numeric",
-          month: "short",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          timeZone: "UTC",
-        });
-        return dateTimeFormat.format(date);
-      } else if (type === FormDisplayType.Boolean) {
-        return value ? t("yes") : t("no");
-      } else if (type === FormDisplayType.Domain) {
-        return value?.[i18n.language] || "-";
+      if (Array.isArray(value)) {
+        return value.map(v => convert(v)).join(", ");
       } else {
-        return value;
+        return convert(value);
       }
     } else {
       return "-";
