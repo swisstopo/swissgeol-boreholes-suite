@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack, Tooltip } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import CancelIcon from "@mui/icons-material/Cancel";
 import SaveIcon from "@mui/icons-material/Save";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
@@ -139,7 +139,7 @@ const CompletionHeaderInput = props => {
                     formMethods.reset(selectedCompletion);
                     cancelChanges();
                   }}>
-                  <CloseIcon />
+                  <CancelIcon />
                 </IconButtonWithMargin>
               </Tooltip>
               <Tooltip title={t("save")}>
