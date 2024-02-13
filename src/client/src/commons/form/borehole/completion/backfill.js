@@ -5,15 +5,15 @@ import {
   updateBackfill,
   deleteBackfill,
 } from "../../../../api/fetchApiV2";
-import { CompletionContentTab } from "./completionContentTab";
+import { DataCards } from "../../../../components/dataCard/dataCards";
 import BackfillInput from "./backfillInput";
 import BackfillDisplay from "./backfillDisplay";
 
 const Backfill = ({ isEditable, completionId }) => {
   return (
-    <CompletionContentTab
+    <DataCards
       isEditable={isEditable}
-      completionId={completionId}
+      parentId={completionId}
       getData={getBackfills}
       addData={addBackfill}
       updateData={updateBackfill}

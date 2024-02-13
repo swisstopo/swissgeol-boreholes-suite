@@ -25,6 +25,7 @@
 - Use reusable form components for hydrogeology.
 - Replaced label for layer description quality.
 - Reduced number of seeded boreholes for development from 10'000 to 3'000.
+- Use reusable card components for hydrogeology.
 
 ### Fixed
 

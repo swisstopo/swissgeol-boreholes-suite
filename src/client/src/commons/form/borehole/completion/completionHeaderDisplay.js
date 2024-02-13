@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Stack, Tooltip } from "@mui/material";
-import { IconButtonWithMargin } from "./styledComponents";
+import { IconButton, Stack } from "@mui/material";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
+import {
+  EditButton,
+  CopyButton,
+  DeleteButton,
+} from "../../../../components/buttons/buttons";
+import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import CopyIcon from "@mui/icons-material/ContentCopy";
-import DeleteIcon from "@mui/icons-material/Delete";
 
 const CompletionHeaderDisplay = props => {
   const {
@@ -17,7 +18,6 @@ const CompletionHeaderDisplay = props => {
     copyCompletion,
     deleteCompletion,
   } = props;
-  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const toggleHeader = () => {
     setExpanded(!expanded);
@@ -74,52 +74,36 @@ const CompletionHeaderDisplay = props => {
                 sx={{ flex: "0 0 400px" }}
               />
             </Stack>
-            <Stack
-              direction="row"
-              sx={{
-                marginLeft: "auto",
-                visibility: isEditable ? "visible" : "hidden",
-              }}>
-              <Tooltip title={t("edit")}>
-                <IconButtonWithMargin
-                  data-cy="edit-button"
+            {isEditable && (
+              <DataCardButtonContainer>
+                <EditButton
                   onClick={e => {
                     e.stopPropagation();
                     setEditing(true);
-                  }}>
-                  <ModeEditIcon />
-                </IconButtonWithMargin>
-              </Tooltip>
-              <Tooltip title={t("copy")}>
-                <IconButtonWithMargin
-                  data-cy="copy-button"
+                  }}
+                />
+                <CopyButton
                   onClick={e => {
                     e.stopPropagation();
                     copyCompletion();
-                  }}>
-                  <CopyIcon />
-                </IconButtonWithMargin>
-              </Tooltip>
-              <Tooltip title={t("delete")}>
-                <IconButtonWithMargin
-                  sx={{ color: "red !important", opacity: 0.9 }}
-                  data-cy="delete-button"
+                  }}
+                />
+                <DeleteButton
                   onClick={e => {
                     e.stopPropagation();
                     deleteCompletion();
-                  }}>
-                  <DeleteIcon />
-                </IconButtonWithMargin>
-              </Tooltip>
-            </Stack>
+                  }}
+                />
+              </DataCardButtonContainer>
+            )}
           </>
         )}
-        <IconButtonWithMargin
+        <IconButton
           onClick={toggleHeader}
           sx={{ paddingBottom: "0" }}
           data-cy="completion-toggle-header">
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        </IconButtonWithMargin>
+        </IconButton>
       </Stack>
     </>
   );

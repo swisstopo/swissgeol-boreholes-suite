@@ -59,7 +59,7 @@ const CompletionContent = ({ completion, isEditable }) => {
           {tabs.map((tab, index) => {
             return (
               <CompletionTab
-                data-cy={"completion-content-header-tab-" + tab.label}
+                data-cy={"completion-content-header-tab-" + tab.hash}
                 label={
                   tab.label === null || tab.label === ""
                     ? t("common:np")
