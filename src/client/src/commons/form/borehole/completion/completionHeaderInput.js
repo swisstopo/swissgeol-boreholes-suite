@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Stack, Tooltip } from "@mui/material";
+import { Stack } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SaveIcon from "@mui/icons-material/Save";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
-import { IconButtonWithMargin } from "../../../../components/buttons/buttons";
+import { BdmsIconButton } from "../../../../components/buttons/buttons";
 import {
   FormInput,
   FormSelect,
@@ -24,7 +24,7 @@ const CompletionHeaderInput = props => {
   } = props;
   const domains = useDomains();
   const formMethods = useForm({ mode: "all" });
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const [selectedCompletion, setSelectedCompletion] = useState({
     ...completion,
@@ -131,30 +131,24 @@ const CompletionHeaderInput = props => {
             <Stack
               direction="row"
               sx={{ marginLeft: "auto", paddingTop: "5px" }}>
-              <Tooltip title={t("cancel")}>
-                <IconButtonWithMargin
-                  data-cy="cancel-button"
-                  onClick={e => {
-                    e.stopPropagation();
-                    formMethods.reset(selectedCompletion);
-                    cancelChanges();
-                  }}>
-                  <CancelIcon />
-                </IconButtonWithMargin>
-              </Tooltip>
-              <Tooltip title={t("save")}>
-                <span>
-                  <IconButtonWithMargin
-                    disabled={!formMethods.formState.isValid}
-                    data-cy="save-button"
-                    onClick={e => {
-                      e.stopPropagation();
-                      formMethods.handleSubmit(submitForm)();
-                    }}>
-                    <SaveIcon />
-                  </IconButtonWithMargin>
-                </span>
-              </Tooltip>
+              <BdmsIconButton
+                icon={<CancelIcon />}
+                tooltipLabel={"cancel"}
+                onClick={e => {
+                  e.stopPropagation();
+                  formMethods.reset(selectedCompletion);
+                  cancelChanges();
+                }}
+              />
+              <BdmsIconButton
+                icon={<SaveIcon />}
+                tooltipLabel={"save"}
+                disabled={!formMethods.formState.isValid}
+                onClick={e => {
+                  e.stopPropagation();
+                  formMethods.handleSubmit(submitForm)();
+                }}
+              />
             </Stack>
           </Stack>
         </form>

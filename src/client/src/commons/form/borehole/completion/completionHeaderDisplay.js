@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Stack, Tooltip } from "@mui/material";
-import { IconButtonWithMargin } from "../../../../components/buttons/buttons";
+import { Stack } from "@mui/material";
+import {
+  BdmsIconButton,
+  IconButtonWithMargin,
+} from "../../../../components/buttons/buttons";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -17,7 +19,6 @@ const CompletionHeaderDisplay = props => {
     copyCompletion,
     deleteCompletion,
   } = props;
-  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const toggleHeader = () => {
     setExpanded(!expanded);
@@ -80,37 +81,31 @@ const CompletionHeaderDisplay = props => {
                 marginLeft: "auto",
                 visibility: isEditable ? "visible" : "hidden",
               }}>
-              <Tooltip title={t("edit")}>
-                <IconButtonWithMargin
-                  data-cy="edit-button"
-                  onClick={e => {
-                    e.stopPropagation();
-                    setEditing(true);
-                  }}>
-                  <ModeEditIcon />
-                </IconButtonWithMargin>
-              </Tooltip>
-              <Tooltip title={t("copy")}>
-                <IconButtonWithMargin
-                  data-cy="copy-button"
-                  onClick={e => {
-                    e.stopPropagation();
-                    copyCompletion();
-                  }}>
-                  <CopyIcon />
-                </IconButtonWithMargin>
-              </Tooltip>
-              <Tooltip title={t("delete")}>
-                <IconButtonWithMargin
-                  sx={{ color: "red !important", opacity: 0.9 }}
-                  data-cy="delete-button"
-                  onClick={e => {
-                    e.stopPropagation();
-                    deleteCompletion();
-                  }}>
-                  <DeleteIcon />
-                </IconButtonWithMargin>
-              </Tooltip>
+              <BdmsIconButton
+                icon={<ModeEditIcon />}
+                tooltipLabel={"edit"}
+                onClick={e => {
+                  e.stopPropagation();
+                  setEditing(true);
+                }}
+              />
+              <BdmsIconButton
+                icon={<CopyIcon />}
+                tooltipLabel={"copy"}
+                onClick={e => {
+                  e.stopPropagation();
+                  copyCompletion();
+                }}
+              />
+              <BdmsIconButton
+                icon={<DeleteIcon />}
+                tooltipLabel={"delete"}
+                color="error"
+                onClick={e => {
+                  e.stopPropagation();
+                  deleteCompletion();
+                }}
+              />
             </Stack>
           </>
         )}
