@@ -1,4 +1,7 @@
-import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/helpers/testHelpers";
+import {
+  loginAsAdmin,
+  loginAsEditorInViewerMode,
+} from "../e2e/helpers/testHelpers";
 
 describe("Borehole list tests", () => {
   it("Boreholes are displayed in correct order with editor login", () => {
@@ -24,49 +27,49 @@ describe("Borehole list tests", () => {
     cy.wait("@borehole");
 
     // contains names
-    cy.contains("td", "Aaron Grimes");
-    cy.contains("td", "Aaron Konopelski");
-    cy.contains("td", "Aaron Metz");
-    cy.contains("td", "Abagail Brown");
+    cy.contains("td", "Aaron Bartell");
+    cy.contains("td", "Aaron Kautzer");
+    cy.contains("td", "Aaron Rempel");
+    cy.contains("td", "Abigail Kihn");
 
     // contains date (restriction date)
-    cy.contains("td", "10.11.2022");
+    cy.contains("td", "01.04.2021");
 
     // contains total depth
-    cy.contains("td", "1'957.2661798248375");
-    cy.contains("td", "1'663.9287349134352");
+    cy.contains("td", "567.0068294587577");
+    cy.contains("td", "1'529.783236575212");
 
     // sort by name descending
     cy.contains("div", "Original name").click();
     cy.wait("@borehole");
-    cy.get("tbody").children().eq(0).contains("td", "Zita Veum");
-    cy.get("tbody").children().eq(1).contains("td", "Zita Sauer");
-    cy.get("tbody").children().eq(2).contains("td", "Zita Kreiger");
+    cy.get("tbody").children().eq(0).contains("td", "Zena Rath");
+    cy.get("tbody").children().eq(1).contains("td", "Zena Mraz");
+    cy.get("tbody").children().eq(2).contains("td", "Zena Halvorson");
 
     // sort by total depth
     cy.contains("div", "Borehole length [m MD]").click();
     cy.wait("@borehole");
-    cy.get("tbody").children().eq(0).contains("td", "0.07517728958054319");
-    cy.get("tbody").children().eq(1).contains("td", "0.21360907713585026");
-    cy.get("tbody").children().eq(2).contains("td", "0.501133501763052");
+    cy.get("tbody").children().eq(0).contains("td", "0.362701714207745");
+    cy.get("tbody").children().eq(1).contains("td", "0.6502261388349468");
+    cy.get("tbody").children().eq(2).contains("td", "2.9397606863359735");
 
     cy.contains("div", "Borehole length [m MD]").click();
     cy.wait("@borehole");
-    cy.get("tbody").children().eq(0).contains("td", "1'999.7876528649533");
-    cy.get("tbody").children().eq(1).contains("td", "1'999.5001284403263");
-    cy.get("tbody").children().eq(2).contains("td", "1'999.3616966527707");
+    cy.get("tbody").children().eq(0).contains("td", "1'998.0731671667068");
+    cy.get("tbody").children().eq(1).contains("td", "1'997.7856427420795");
+    cy.get("tbody").children().eq(2).contains("td", "1'995.4961081945785");
 
     // sort by drilling date
     cy.contains("div", "End of drilling date").click();
     cy.wait("@borehole");
     cy.get("tbody").children().eq(0).contains("td", "01.01.2021");
     cy.get("tbody").children().eq(1).contains("td", "01.01.2021");
-    cy.get("tbody").children().eq(2).contains("td", "01.01.2021");
+    cy.get("tbody").children().eq(2).contains("td", "02.01.2021");
 
     cy.contains("div", "End of drilling date").click();
     cy.wait("@borehole");
     cy.get("tbody").children().eq(0).contains("td", "01.01.2022");
-    cy.get("tbody").children().eq(1).contains("td", "31.12.2021");
+    cy.get("tbody").children().eq(1).contains("td", "01.01.2022");
     cy.get("tbody").children().eq(2).contains("td", "31.12.2021");
 
     // sort by borehole type (column of original name)
@@ -101,7 +104,7 @@ describe("Borehole list tests", () => {
         }
       });
 
-    cy.get("tbody").children().eq(0).contains("td", "31.12.2021");
+    cy.get("tbody").children().eq(0).contains("td", "01.01.2022");
     cy.get("tbody").children().eq(1).contains("td", "31.12.2021");
     cy.get("tbody").children().eq(2).contains("td", "31.12.2021");
 
@@ -148,7 +151,7 @@ describe("Borehole list tests", () => {
 
     cy.get("tbody").children().eq(0).contains("td", "Aaliyah Casper");
     cy.get("tbody").children().eq(1).contains("td", "Aaliyah Lynch");
-    cy.get("tbody").children().eq(2).contains("td", "Aaron Cruickshank");
+    cy.get("tbody").children().eq(2).contains("td", "Aaron Bartell");
 
     // sort by borehole type
     cy.contains("th", "Borehole type").click();
@@ -167,9 +170,9 @@ describe("Borehole list tests", () => {
     // sort by total depth
     cy.contains("th", "Borehole length").click();
     cy.wait("@editorBorehole");
-    cy.get("tbody").children().eq(0).contains("td", "1'999.7876528649533");
-    cy.get("tbody").children().eq(1).contains("td", "1'999.5001284403263");
-    cy.get("tbody").children().eq(2).contains("td", "1'999.3616966527707");
+    cy.get("tbody").children().eq(0).contains("td", "1'998.0731671667068");
+    cy.get("tbody").children().eq(1).contains("td", "1'997.7856427420795");
+    cy.get("tbody").children().eq(2).contains("td", "1'995.4961081945785");
   });
 
   it("preserves column sorting and active page when navigating", () => {
@@ -191,18 +194,22 @@ describe("Borehole list tests", () => {
 
     cy.get("tbody").children().eq(0).contains("td", "Aaliyah Casper");
     cy.get("tbody").children().eq(1).contains("td", "Aaliyah Lynch");
-    cy.get("tbody").children().eq(2).contains("td", "Aaron Cruickshank");
+    cy.get("tbody").children().eq(2).contains("td", "Aaron Bartell");
 
     // navigate to page 4
     cy.get("a").should("have.class", "item").contains("4").click();
     cy.wait("@borehole");
 
-    cy.get("tbody").children().eq(0).contains("td", "Alfred Sanford");
-    cy.get("tbody").children().eq(1).contains("td", "Alfred Upton");
-    cy.get("tbody").children().eq(2).contains("td", "Alfreda Block");
+    cy.get("tbody").children().eq(0).contains("td", "Christine Schuster");
+    cy.get("tbody").children().eq(1).contains("td", "Christine Wilderman");
+    cy.get("tbody").children().eq(2).contains("td", "Christop Keebler");
 
     // open first borehole
-    cy.get("tbody").children().eq(0).contains("td", "Alfred Sanford").click();
+    cy.get("tbody")
+      .children()
+      .eq(0)
+      .contains("td", "Christine Schuster")
+      .click();
     cy.wait("@borehole");
 
     // verify current page is 4
@@ -214,8 +221,8 @@ describe("Borehole list tests", () => {
 
     // verify current page is still 4
     cy.get("a").should("have.class", "active item").contains("4");
-    cy.get("tbody").children().eq(0).contains("td", "Alfred Sanford");
-    cy.get("tbody").children().eq(1).contains("td", "Alfred Upton");
-    cy.get("tbody").children().eq(2).contains("td", "Alfreda Block");
+    cy.get("tbody").children().eq(0).contains("td", "Christine Schuster");
+    cy.get("tbody").children().eq(1).contains("td", "Christine Wilderman");
+    cy.get("tbody").children().eq(2).contains("td", "Christop Keebler");
   });
 });
