@@ -17,9 +17,9 @@ namespace BDMS.Controllers;
 [TestClass]
 public class UploadControllerTest
 {
-    private const int MaxBoreholeSeedId = 1009999;
-    private const int MaxStratigraphySeedId = 6009999;
-    private const int MaxLayerSeedId = 7099999;
+    private const int MaxBoreholeSeedId = 1002999;
+    private const int MaxStratigraphySeedId = 6002999;
+    private const int MaxLayerSeedId = 7029999;
 
     private BdmsContext context;
     private UploadController controller;

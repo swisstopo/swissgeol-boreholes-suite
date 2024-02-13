@@ -53,25 +53,25 @@ public class GroundwaterLevelMeasurementControllerTest
     [TestMethod]
     public async Task GetEntriesByBoreholeId()
     {
-        var response = await controller.GetAsync(1003486).ConfigureAwait(false);
+        var response = await controller.GetAsync(1000595).ConfigureAwait(false);
         IEnumerable<GroundwaterLevelMeasurement>? groundwaterLevelMeasurements = response;
         Assert.IsNotNull(groundwaterLevelMeasurements);
         Assert.AreEqual(1, groundwaterLevelMeasurements.Count());
         var groundwaterLevelMeasurement = groundwaterLevelMeasurements.Single();
 
-        Assert.AreEqual(groundwaterLevelMeasurement.Id, 12000038);
+        Assert.AreEqual(groundwaterLevelMeasurement.Id, 12000009);
         Assert.AreEqual(groundwaterLevelMeasurement.Type, ObservationType.GroundwaterLevelMeasurement);
-        Assert.AreEqual(groundwaterLevelMeasurement.Duration, 1700.4810961715325);
-        Assert.AreEqual(groundwaterLevelMeasurement.FromDepthM, 419.68191535290418);
-        Assert.AreEqual(groundwaterLevelMeasurement.ToDepthM, 2290.306989747708);
-        Assert.AreEqual(groundwaterLevelMeasurement.FromDepthMasl, 3115.1974325017995);
-        Assert.AreEqual(groundwaterLevelMeasurement.ToDepthMasl, 2383.621127038552);
-        Assert.AreEqual(groundwaterLevelMeasurement.CompletionFinished, true);
-        Assert.AreEqual(groundwaterLevelMeasurement.Comment, "Ut sint cum deleniti nisi et.");
+        Assert.AreEqual(groundwaterLevelMeasurement.Duration, 3955.791535689864);
+        Assert.AreEqual(groundwaterLevelMeasurement.FromDepthM, 2480.3481396256702);
+        Assert.AreEqual(groundwaterLevelMeasurement.ToDepthM, 3821.0916134552526);
+        Assert.AreEqual(groundwaterLevelMeasurement.FromDepthMasl, 1289.6360662978311);
+        Assert.AreEqual(groundwaterLevelMeasurement.ToDepthMasl, 4179.667294897915);
+        Assert.AreEqual(groundwaterLevelMeasurement.CompletionFinished, false);
+        Assert.AreEqual(groundwaterLevelMeasurement.Comment, "Libero voluptate corrupti et iste iure.");
         Assert.AreEqual(groundwaterLevelMeasurement.ReliabilityId, 15203157);
-        Assert.AreEqual(groundwaterLevelMeasurement.KindId, 15203205);
-        Assert.AreEqual(groundwaterLevelMeasurement.LevelM, 1892.1894153515759);
-        Assert.AreEqual(groundwaterLevelMeasurement.LevelMasl, 1077.2712865179737);
+        Assert.AreEqual(groundwaterLevelMeasurement.KindId, 15203204);
+        Assert.AreEqual(groundwaterLevelMeasurement.LevelM, 4345.999004703014);
+        Assert.AreEqual(groundwaterLevelMeasurement.LevelMasl, 4723.28331899237);
     }
 
     [TestMethod]
@@ -90,7 +90,7 @@ public class GroundwaterLevelMeasurementControllerTest
             ToDepthMasl = 78.0043,
             CompletionFinished = true,
             Comment = "Test comment",
-            BoreholeId = 1008104,
+            BoreholeId = 1000595,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
             KindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Single(c => c.Geolcode == 3).Id,
             LevelM = 0.0,
@@ -110,7 +110,7 @@ public class GroundwaterLevelMeasurementControllerTest
             ToDepthMasl = 27603.2,
             CompletionFinished = true,
             Comment = "Updated test comment",
-            BoreholeId = 1008105,
+            BoreholeId = 1000595,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
             KindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Single(c => c.Geolcode == 1).Id,
             LevelM = 1.1,
@@ -168,7 +168,7 @@ public class GroundwaterLevelMeasurementControllerTest
             ToDepthMasl = 2633.2,
             CompletionFinished = false,
             Comment = "New test comment",
-            BoreholeId = 1006493,
+            BoreholeId = 1000595,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
             KindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Single(c => c.Geolcode == 2).Id,
             LevelM = 348.4563,
@@ -190,7 +190,7 @@ public class GroundwaterLevelMeasurementControllerTest
         Assert.AreEqual(newGroundwaterLevelMeasurement.ToDepthMasl, 2633.2);
         Assert.AreEqual(newGroundwaterLevelMeasurement.CompletionFinished, false);
         Assert.AreEqual(newGroundwaterLevelMeasurement.Comment, "New test comment");
-        Assert.AreEqual(newGroundwaterLevelMeasurement.BoreholeId, 1006493);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.BoreholeId, 1000595);
         Assert.AreEqual(newGroundwaterLevelMeasurement.ReliabilityId, 15203158);
         Assert.AreEqual(newGroundwaterLevelMeasurement.KindId, 15203204);
         Assert.AreEqual(newGroundwaterLevelMeasurement.LevelM, 348.4563);
