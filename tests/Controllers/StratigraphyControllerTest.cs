@@ -38,7 +38,7 @@ public class StratigraphyControllerTest
     {
         var stratigraphies = await controller.GetAsync();
         Assert.IsNotNull(stratigraphies);
-        Assert.AreEqual(10000, stratigraphies.Count());
+        Assert.AreEqual(3000, stratigraphies.Count());
     }
 
     [TestMethod]
@@ -71,11 +71,11 @@ public class StratigraphyControllerTest
 
         Assert.AreEqual(1000017, stratigraphy.BoreholeId);
         Assert.AreEqual(3000, stratigraphy.KindId);
-        Assert.AreEqual("Chauncey Borer", stratigraphy.Name);
-        Assert.AreEqual("i use it from now on when i'm in my safehouse.", stratigraphy.Notes);
-        Assert.AreEqual(2, stratigraphy.CreatedById);
+        Assert.AreEqual("Kailee Wisozk", stratigraphy.Name);
+        Assert.AreEqual("It only works when I'm Wake Island.", stratigraphy.Notes);
+        Assert.AreEqual(1, stratigraphy.CreatedById);
         Assert.AreEqual(3, stratigraphy.UpdatedById);
-        Assert.AreEqual(true, stratigraphy.IsPrimary);
+        Assert.AreEqual(false, stratigraphy.IsPrimary);
     }
 
     [TestMethod]
@@ -84,7 +84,7 @@ public class StratigraphyControllerTest
         var stratigraphyResult = await controller.GetByIdAsync(StratigraphyId);
 
         var stratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>(stratigraphyResult.Result);
-        Assert.AreEqual(1008078, stratigraphy.BoreholeId);
+        Assert.AreEqual(1002423, stratigraphy.BoreholeId);
         Assert.AreEqual("Virginia Ortiz", stratigraphy.Name);
         Assert.AreEqual("I saw one of these in Grenada and I bought one.", stratigraphy.Notes);
     }

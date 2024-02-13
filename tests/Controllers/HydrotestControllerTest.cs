@@ -52,30 +52,30 @@ public class HydrotestControllerTests
     [TestMethod]
     public async Task GetEntriesByBoreholeId()
     {
-        IEnumerable<Hydrotest>? hydrotests = await controller.GetAsync(1005438).ConfigureAwait(false);
+        IEnumerable<Hydrotest>? hydrotests = await controller.GetAsync(1002658).ConfigureAwait(false);
         Assert.IsNotNull(hydrotests);
         Assert.AreEqual(1, hydrotests.Count());
         var hydrotest = hydrotests.Single();
 
-        Assert.AreEqual(hydrotest.Id, 12000069);
+        Assert.AreEqual(hydrotest.Id, 12000441);
         Assert.AreEqual(hydrotest.Type, ObservationType.Hydrotest);
-        Assert.AreEqual(hydrotest.Duration, 4461.0113159967641);
-        Assert.AreEqual(hydrotest.FromDepthM, 4594.9352618199473);
-        Assert.AreEqual(hydrotest.ToDepthM, 4446.2958402672293);
-        Assert.AreEqual(hydrotest.FromDepthMasl, 2308.5906170646617);
-        Assert.AreEqual(hydrotest.ToDepthMasl, 3394.1579820854395);
+        Assert.AreEqual(hydrotest.Duration, 2594.3739538995428);
+        Assert.AreEqual(hydrotest.FromDepthM, 4707.9754194244624);
+        Assert.AreEqual(hydrotest.ToDepthM, 324.16204650148848);
+        Assert.AreEqual(hydrotest.FromDepthMasl, 2627.3088318190112);
+        Assert.AreEqual(hydrotest.ToDepthMasl, 523.60024264808749);
         Assert.AreEqual(hydrotest.CompletionFinished, false);
-        Assert.AreEqual(hydrotest.Comment, "Libero debitis impedit cumque sit dolorum dignissimos.");
-        Assert.AreEqual(hydrotest.ReliabilityId, 15203156);
+        Assert.AreEqual(hydrotest.Comment, "Inventore velit vitae laboriosam.");
+        Assert.AreEqual(hydrotest.ReliabilityId, 15203157);
 
         // Assert hydrotestresult
-        Assert.AreEqual(hydrotest.HydrotestResults.Count, 10);
-        var testResult = hydrotest.HydrotestResults.Single(r => r.Id == 13000375);
-        Assert.AreEqual(testResult.ParameterId, 15203201);
-        Assert.AreEqual(testResult.Value, 4390.010689483961);
-        Assert.AreEqual(testResult.MaxValue, 3484.6578809254142);
-        Assert.AreEqual(testResult.MinValue, 3823.8737230477263);
-        Assert.AreEqual(testResult.HydrotestId, 12000069);
+        Assert.AreEqual(hydrotest.HydrotestResults.Count, 11);
+        var testResult = hydrotest.HydrotestResults.Single(r => r.Id == 13000009);
+        Assert.AreEqual(testResult.ParameterId, 15203199);
+        Assert.AreEqual(testResult.Value, 2434.3317137124632);
+        Assert.AreEqual(testResult.MaxValue, 2884.2150221547181);
+        Assert.AreEqual(testResult.MinValue, 4675.6807535866656);
+        Assert.AreEqual(testResult.HydrotestId, 12000441);
     }
 
     [TestMethod]
@@ -95,7 +95,7 @@ public class HydrotestControllerTests
             ToDepthMasl = 78.0043,
             CompletionFinished = true,
             Comment = "Test comment",
-            BoreholeId = 1008104,
+            BoreholeId = 1002431,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
             CodelistIds = new List<int> { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 1).Id }, // test kind
         };
@@ -113,7 +113,7 @@ public class HydrotestControllerTests
             ToDepthMasl = 27603.2,
             CompletionFinished = true,
             Comment = "Updated test comment",
-            BoreholeId = 1008105,
+            BoreholeId = 1002431,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
             CodelistIds = new List<int> { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 3).Id, 15203187, 15203189 },
         };
@@ -169,7 +169,7 @@ public class HydrotestControllerTests
             ToDepthMasl = 2633.2,
             CompletionFinished = false,
             Comment = "New test comment",
-            BoreholeId = 1006493,
+            BoreholeId = 1002431,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
             CodelistIds = new List<int>() { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id },
             HydrotestResults = new List<HydrotestResult>() { new HydrotestResult { ParameterId = 15203194 } },
@@ -191,7 +191,7 @@ public class HydrotestControllerTests
         Assert.AreEqual(newHydrotest.ToDepthMasl, 2633.2);
         Assert.AreEqual(newHydrotest.CompletionFinished, false);
         Assert.AreEqual(newHydrotest.Comment, "New test comment");
-        Assert.AreEqual(newHydrotest.BoreholeId, 1006493);
+        Assert.AreEqual(newHydrotest.BoreholeId, 1002431);
         Assert.AreEqual(newHydrotest.ReliabilityId, 15203158);
         CollectionAssert.Contains((System.Collections.ICollection)newHydrotest.CodelistIds!, 15203171); // Test kind Id
 
@@ -208,7 +208,7 @@ public class HydrotestControllerTests
         var newHydrotest = new Hydrotest
         {
             Type = ObservationType.Hydrotest,
-            BoreholeId = 1006493,
+            BoreholeId = 1002431,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
             CodelistIds = new List<int>()
             {
