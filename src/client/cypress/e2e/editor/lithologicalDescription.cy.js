@@ -103,7 +103,7 @@ describe("Tests for the lithological description column.", () => {
     // delete last layer
     cy.get('[data-cy="description-1"] [data-testid="DeleteIcon"] ').click();
 
-    cy.contains("Confirm").click();
+    cy.contains("Delete").click();
     cy.wait("@lithological_description"); // delete request
     cy.wait("@lithological_description"); // updated get request
     cy.wait(5000);
