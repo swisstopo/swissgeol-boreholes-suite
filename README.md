@@ -27,7 +27,7 @@ In VS 2022 müssen mehrere Startup-Projects angewählt werden, um die komplette 
 | BDMS.Test      | None                    |
 | docker-compose | Start without debugging |
 
-⚠️ Möglicherweise wird das LaunchProfile von Docker Compose beim ersten Start nicht angewendet und deshalb API sowie Client zusätzlich im Docker gestartet. Dann muss das Projekt _docker-compose_ einmalig als Startprojekt ausgewählt. Anschliessend kann wieder auf _Multiple startup projects_ umgestellt werden.
+⚠️ Möglicherweise wird das LaunchProfile von Docker Compose beim ersten Start nicht angewendet und deshalb API sowie Client zusätzlich im Docker gestartet. Dann muss das Projekt _docker-compose_ einmalig als Startprojekt ausgewählt werden. Anschliessend kann wieder auf _Multiple startup projects_ umgestellt werden.
 
 ### Entwicklung mit Docker
 
