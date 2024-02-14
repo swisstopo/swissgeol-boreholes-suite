@@ -150,7 +150,7 @@ export const lithologySearchData = [
     type: "Dropdown",
     label: "grain_shape",
     value: "grain_shape",
-    schema: "mlpr110",
+    schema: "grain_shape",
     multiple: false,
     search: true,
     isVisibleValue: "layer.grain_shape",

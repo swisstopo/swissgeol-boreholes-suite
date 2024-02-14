@@ -243,7 +243,7 @@ class PatchLayer(Action):
                     schema = 'organic_components'
 
                 elif field == 'grain_shape':
-                    schema = 'mlpr110'
+                    schema = 'grain_shape'
 
                 elif field == 'grain_granularity':
                     schema = 'mlpr115'

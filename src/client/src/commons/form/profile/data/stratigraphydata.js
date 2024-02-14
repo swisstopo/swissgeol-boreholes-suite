@@ -148,7 +148,7 @@ export const stratigraphyData = {
       type: "Dropdown",
       label: "grain_shape",
       value: "grain_shape",
-      schema: "mlpr110",
+      schema: "grain_shape",
       multiple: true,
       search: true,
       isVisibleValue: "grain_shape",

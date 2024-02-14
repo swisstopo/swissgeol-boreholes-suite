@@ -140,7 +140,7 @@ const ProfileLayersList = props => {
 
     let grainshape = [];
     item?.codelists
-      .filter(c => c.schema === "mlpr110")
+      .filter(c => c.schema === "grain_shape")
       .forEach(element => {
         grainshape.push(element[i18n.language]);
       });
