@@ -158,7 +158,7 @@ class PatchLayer(Action):
                     schema = 'custom.lithostratigraphy_top_bedrock'
 
                 elif field == 'plasticity':
-                    schema = 'mlpr101'
+                    schema = 'plasticity'
 
                 elif field == 'humidity':
                     schema = 'mlpr105'

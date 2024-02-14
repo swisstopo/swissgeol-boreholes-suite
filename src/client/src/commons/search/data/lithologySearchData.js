@@ -229,7 +229,7 @@ export const lithologySearchData = [
     type: "Dropdown",
     label: "plasticity",
     value: "plasticity",
-    schema: "mlpr101",
+    schema: "plasticity",
     multiple: false,
     search: false,
     isVisibleValue: "layer.plasticity",

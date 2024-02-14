@@ -226,7 +226,7 @@ export const stratigraphyData = {
       type: "Dropdown",
       label: "plasticity",
       value: "plasticityId",
-      schema: "mlpr101",
+      schema: "plasticity",
       multiple: false,
       search: false,
       isVisibleValue: "plasticity",

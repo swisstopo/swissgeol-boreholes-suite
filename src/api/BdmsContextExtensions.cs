@@ -79,7 +79,7 @@ public static class BdmsContextExtensions
         List<int> instrumentStatusIds = codelists.Where(c => c.Schema == CompletionSchemas.InstrumentationStatusSchema).Select(s => s.Id).ToList();
         List<int> casingTypeIds = codelists.Where(c => c.Schema == CompletionSchemas.CasingTypeSchema).Select(s => s.Id).ToList();
         List<int> casingMaterialIds = codelists.Where(c => c.Schema == CompletionSchemas.CasingMaterialSchema).Select(s => s.Id).ToList();
-        List<int> plasticityIds = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList();
+        List<int> plasticityIds = codelists.Where(c => c.Schema == "plasticity").Select(s => s.Id).ToList();
         List<int> compactnessIds = codelists.Where(c => c.Schema == "mlpr102").Select(s => s.Id).ToList();
         List<int> consistanceIds = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList();
         List<int> humidityIds = codelists.Where(c => c.Schema == "mlpr105").Select(s => s.Id).ToList();
