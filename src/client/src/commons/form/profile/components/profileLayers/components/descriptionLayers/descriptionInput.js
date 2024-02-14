@@ -119,6 +119,7 @@ const DescriptionInput = props => {
         </MenuItem>
         {domains?.data
           ?.filter(d => d.schema === "description_quality")
+          .sort((a, b) => a.order - b.order)
           .map(d => (
             <MenuItem value={d.id}>{d[i18n.language]}</MenuItem>
           ))}
