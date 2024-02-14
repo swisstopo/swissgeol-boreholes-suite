@@ -246,7 +246,7 @@ export const stratigraphyData = {
       type: "Dropdown",
       label: "cohesion",
       value: "cohesionId",
-      schema: "mlpr116",
+      schema: "cohesion",
       multiple: false,
       search: false,
       isVisibleValue: "cohesion",

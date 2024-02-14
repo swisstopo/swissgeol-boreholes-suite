@@ -182,7 +182,7 @@ class PatchLayer(Action):
                     schema = 'grain_size'
 
                 elif field == 'cohesion':
-                    schema = 'mlpr116'
+                    schema = 'cohesion'
 
                 elif field == 'uscs_1':
                     schema = 'uscs_type'

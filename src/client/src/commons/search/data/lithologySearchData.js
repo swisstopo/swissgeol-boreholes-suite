@@ -249,7 +249,7 @@ export const lithologySearchData = [
     type: "Dropdown",
     label: "cohesion",
     value: "cohesion",
-    schema: "mlpr116",
+    schema: "cohesion",
     multiple: false,
     search: false,
     isVisibleValue: "layer.cohesion",
