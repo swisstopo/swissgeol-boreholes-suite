@@ -281,9 +281,9 @@ class MetaComponent extends React.Component {
           </div>
           <div style={flexRowStyle}>
             {this.getDomainRow("location_precision", data.location_precision)}
-            {this.getDomainRow("qt_elevation", data.qt_elevation)}
+            {this.getDomainRow("elevation_precision", data.elevation_precision)}
             {this.getDomainRow(
-              "qt_elevation",
+              "elevation_precision",
               data.qt_reference_elevation,
               "reference_elevation_qt",
             )}

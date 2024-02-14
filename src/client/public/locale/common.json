@@ -282,7 +282,7 @@
   "publish": "",
   "purpose": "",
   "qt_bore_inc_dir": "",
-  "qt_elevation": "",
+  "elevation_precision": "",
   "qt_depth": "",
   "location_precision": "",
   "qt_top_bedrock": "",

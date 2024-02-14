@@ -694,9 +694,9 @@ class Action():
                     elevation_z_bho <= %s
                 """ % self.getIdx())
 
-            if 'qt_elevation' in keys and filter[
-                    'qt_elevation'] not in ['', None]:
-                params.append(int(filter['qt_elevation']))
+            if 'elevation_precision' in keys and filter[
+                    'elevation_precision'] not in ['', None]:
+                params.append(int(filter['elevation_precision']))
                 where.append("""
                     qt_elevation_id_cli = %s
                 """ % self.getIdx())

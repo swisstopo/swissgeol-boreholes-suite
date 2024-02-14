@@ -170,15 +170,15 @@ public class Borehole : IChangeTracking, IIdentifyable
     public Codelist? LocationPrecision { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s QTElevationId.
+    /// Gets or sets the <see cref="Borehole"/>'s elevation precision id.
     /// </summary>
     [Column("qt_elevation_id_cli")]
-    public int? QtElevationId { get; set; }
+    public int? ElevationPrecisionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s QTElevation.
+    /// Gets or sets the <see cref="Borehole"/>'s elevation precision.
     /// </summary>
-    public Codelist? QtElevation { get; set; }
+    public Codelist? ElevationPrecision { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s project name.

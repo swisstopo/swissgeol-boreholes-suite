@@ -56,8 +56,8 @@ export const locationEditorData = [
   },
   {
     id: 11,
-    label: "qt_elevation",
-    value: "qt_elevation",
+    label: "elevation_precision",
+    value: "elevation_precision",
   },
   {
     id: 12,

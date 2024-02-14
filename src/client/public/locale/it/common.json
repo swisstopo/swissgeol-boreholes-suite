@@ -289,7 +289,7 @@
   "purpose": "Scopo della perforazione",
   "qt_bore_inc_dir": "Qualità inclinazione / direzione",
   "qt_depth": "+/- Lunghezza della perforazione [m MD]",
-  "qt_elevation": "+/- Quota livello del terreno [m]",
+  "elevation_precision": "+/- Quota livello del terreno [m]",
   "location_precision": "+/- Coordinate [m]",
   "qt_top_bedrock": "+/- Top del substrato roccioso [m MD]",
   "reference_elevation": "Riferimento della quota [m s.l.m.]",

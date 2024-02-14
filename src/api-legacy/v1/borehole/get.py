@@ -56,7 +56,7 @@ class GetBorehole(Action):
                 qt_location_id_cli as location_precision,
                 elevation_z_bho as elevation_z,
                 hrs_id_cli as hrs,
-                qt_elevation_id_cli as qt_elevation,
+                qt_elevation_id_cli as elevation_precision,
 
                 reference_elevation_bho as reference_elevation,
                 qt_reference_elevation_id_cli as qt_reference_elevation,

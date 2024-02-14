@@ -470,7 +470,7 @@ public class UploadController : ControllerBase
             Map(m => m.NationalInterest).Optional();
             Map(m => m.AlternateName).Optional();
             Map(m => m.LocationPrecisionId).Optional();
-            Map(m => m.QtElevationId).Optional();
+            Map(m => m.ElevationPrecisionId).Optional();
             Map(m => m.ProjectName).Optional();
             Map(m => m.DrillingMethodId).Optional();
             Map(m => m.DrillingDate).Optional();

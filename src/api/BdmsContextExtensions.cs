@@ -67,7 +67,7 @@ public static class BdmsContextExtensions
         List<int> drillingMethodIds = codelists.Where(c => c.Schema == "drilling_method").Select(s => s.Id).ToList();
         List<int> cuttingsIds = codelists.Where(c => c.Schema == "borehole_cuttings_core").Select(s => s.Id).ToList();
         List<int> qtDepthIds = codelists.Where(c => c.Schema == "depth_precision").Select(s => s.Id).ToList();
-        List<int> qtElevationIds = codelists.Where(c => c.Schema == "qt_elevation").Select(s => s.Id).ToList();
+        List<int> elevationPrecisionIds = codelists.Where(c => c.Schema == "elevation_precision").Select(s => s.Id).ToList();
         List<int> layerKindIds = codelists.Where(c => c.Schema == "layer_kind").Select(s => s.Id).ToList();
         List<int> purposeIds = codelists.Where(c => c.Schema == "drilling_purpose").Select(s => s.Id).ToList();
         List<int> statusIds = codelists.Where(c => c.Schema == "borehole_status").Select(s => s.Id).ToList();
@@ -141,8 +141,8 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.AlternateName, f => f.Person.UserName.OrNull(f, .1f))
            .RuleFor(o => o.LocationPrecisionId, f => f.PickRandom(locationPrecisionIds).OrNull(f, .1f))
            .RuleFor(o => o.LocationPrecision, _ => default!)
-           .RuleFor(o => o.QtElevationId, f => f.PickRandom(qtElevationIds).OrNull(f, .1f))
-           .RuleFor(o => o.QtElevation, _ => default!)
+           .RuleFor(o => o.ElevationPrecisionId, f => f.PickRandom(elevationPrecisionIds).OrNull(f, .1f))
+           .RuleFor(o => o.ElevationPrecision, _ => default!)
            .RuleFor(o => o.ProjectName, f => f.Company.CatchPhrase().OrNull(f, .1f))
            .RuleFor(o => o.Country, f => f.Address.Country().OrNull(f, 0.01f))
            .RuleFor(o => o.Canton, f => f.Address.State().OrNull(f, 0.01f))
@@ -175,7 +175,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TopBedrockTvd, f => f.Random.Double(0, 1000).OrNull(f, .05f))
            .RuleFor(o => o.QtTopBedrockTvd, f => f.Random.Double(0, 2).OrNull(f, .05f))
            .RuleFor(o => o.ReferenceElevation, f => f.Random.Double(0, 4500).OrNull(f, .05f))
-           .RuleFor(o => o.QtReferenceElevationId, f => f.PickRandom(qtElevationIds).OrNull(f, .05f))
+           .RuleFor(o => o.QtReferenceElevationId, f => f.PickRandom(elevationPrecisionIds).OrNull(f, .05f))
            .RuleFor(o => o.QtReferenceElevation, _ => default!)
            .RuleFor(o => o.QtInclinationDirectionId, f => f.PickRandom(qtInclinationDirectionIds).OrNull(f, .05f))
            .RuleFor(o => o.QtInclinationDirection, _ => default!)

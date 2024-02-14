@@ -333,7 +333,7 @@ export function borehole() {
         location_precision: null,
         elevation_z: "",
         hrs: null,
-        qt_elevation: null,
+        elevation_precision: null,
         drilling_date: null,
         bore_inc: null,
         bore_inc_dir: null,

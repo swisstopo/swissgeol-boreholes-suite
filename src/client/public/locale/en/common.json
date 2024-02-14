@@ -289,7 +289,7 @@
   "purpose": "Drilling purpose",
   "qt_bore_inc_dir": "Inclin. / direction precision",
   "qt_depth": "+/- Borehole length [m MD]",
-  "qt_elevation": "+/- Ground elevation [m]",
+  "elevation_precision": "+/- Ground elevation [m]",
   "location_precision": "+/- Coordinates [m]",
   "qt_top_bedrock": "+/- Top bedrock [m MD]",
   "reference_elevation": "Reference elevation [m a.s.l.]",
