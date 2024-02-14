@@ -70,7 +70,6 @@ describe("Tests for the wateringress editor.", () => {
     cy.wait("@casing_GET");
 
     setSelect("quantityId", 2);
-    setSelect("conditionsId", 2);
     setSelect("reliabilityId", 1);
     setSelect("casingId", 1);
     setInput("startTime", "2012-11-14T12:06");
@@ -79,15 +78,16 @@ describe("Tests for the wateringress editor.", () => {
     saveForm();
 
     evaluateDisplayValue("quantity", "viel (> 120 l/min)");
-    evaluateDisplayValue("conditions", "frei/ungespannt");
     evaluateDisplayValue("reliability", "fraglich");
     evaluateDisplayValue("casingName", "casing-1");
 
     // edit wateringress
     startEditing();
     setSelect("quantityId", 1);
+    setSelect("conditionsId", 3);
     saveForm();
     evaluateDisplayValue("quantity", "mittel (30 - 120 l/min)");
+    evaluateDisplayValue("conditions", "frei/ungespannt");
     evaluateDisplayValue("casingName", "casing-1");
 
     // delete wateringress
