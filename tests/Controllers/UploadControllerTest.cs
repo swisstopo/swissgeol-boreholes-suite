@@ -110,7 +110,7 @@ public class UploadControllerTest
         var lithology = stratigraphy.Layers.First(l => l.FromDepth == 0.125);
         Assert.AreEqual(100, lithology.ToDepth);
         Assert.AreEqual(false, lithology.IsLast);
-        Assert.AreEqual(null, lithology.DescriptionQualityId);
+        Assert.AreEqual(9001, lithology.DescriptionQualityId);
         Assert.AreEqual(15104448, lithology.LithologyId);
         Assert.AreEqual(15302034, lithology.LithostratigraphyId);
         Assert.AreEqual("Granite", lithology.OriginalUscs);
