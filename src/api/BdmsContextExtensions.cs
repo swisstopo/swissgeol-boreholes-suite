@@ -77,7 +77,7 @@ public static class BdmsContextExtensions
         List<int> lithostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> instrumentKindIds = codelists.Where(c => c.Schema == CompletionSchemas.InstrumentationKindSchema).Select(s => s.Id).ToList();
         List<int> instrumentStatusIds = codelists.Where(c => c.Schema == CompletionSchemas.InstrumentationStatusSchema).Select(s => s.Id).ToList();
-        List<int> casingKindIds = codelists.Where(c => c.Schema == CompletionSchemas.CasingKindSchema).Select(s => s.Id).ToList();
+        List<int> casingKindIds = codelists.Where(c => c.Schema == CompletionSchemas.CasingTypeSchema).Select(s => s.Id).ToList();
         List<int> casingMaterialIds = codelists.Where(c => c.Schema == CompletionSchemas.CasingMaterialSchema).Select(s => s.Id).ToList();
         List<int> plasticityIds = codelists.Where(c => c.Schema == "plasticity").Select(s => s.Id).ToList();
         List<int> compactnessIds = codelists.Where(c => c.Schema == "compactness").Select(s => s.Id).ToList();
@@ -85,7 +85,7 @@ public static class BdmsContextExtensions
         List<int> humidityIds = codelists.Where(c => c.Schema == "humidity").Select(s => s.Id).ToList();
         List<int> alterationIds = codelists.Where(c => c.Schema == "alteration").Select(s => s.Id).ToList();
         List<int> cohesionIds = codelists.Where(c => c.Schema == "cohesion").Select(s => s.Id).ToList();
-        List<int> backfillKindIds = codelists.Where(c => c.Schema == CompletionSchemas.BackfillKindSchema).Select(s => s.Id).ToList();
+        List<int> backfillKindIds = codelists.Where(c => c.Schema == CompletionSchemas.BackfillTypeSchema).Select(s => s.Id).ToList();
         List<int> backfillMaterialIds = codelists.Where(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Select(s => s.Id).ToList();
         List<int> uscsIds = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList();
         List<int> uscsDeterminationIds = codelists.Where(c => c.Schema == "uscs_determination").Select(s => s.Id).ToList();
