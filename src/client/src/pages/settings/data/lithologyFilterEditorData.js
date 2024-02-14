@@ -11,8 +11,8 @@ export const lithologyFilterEditorData = [
   },
   {
     id: 2,
-    label: "qt_description",
-    value: "layer.qt_description",
+    label: "description_quality",
+    value: "layer.description_quality",
   },
   {
     id: 3,

@@ -35,7 +35,7 @@ class GetLayer(Action):
             depth_from_lay AS depth_from,
             depth_to_lay AS depth_to,
             last_lay AS last,
-            layer.qt_description_id_cli AS qt_description,
+            layer.qt_description_id_cli AS description_quality,
             layer.lithology_id_cli AS lithology,
             layer.lithostratigraphy_id_cli AS lithostratigraphy,
             COALESCE(

@@ -65,12 +65,12 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// Gets or sets the id of the quality of the <see cref="Layer"/>'s description.
     /// </summary>
     [Column("qt_description_id_cli")]
-    public int? QtDescriptionId { get; set; }
+    public int? DescriptionQualityId { get; set; }
 
     /// <summary>
     /// Gets or sets the quality of the <see cref="Layer"/>'s description.
     /// </summary>
-    public Codelist? QtDescription { get; set; }
+    public Codelist? DescriptionQuality { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="Layer"/>'s lithology.

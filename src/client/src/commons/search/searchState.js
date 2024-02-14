@@ -84,7 +84,7 @@ const initialState = {
     uscs_determination: null,
     debris: null,
 
-    qt_description: null,
+    description_quality: null,
     uscs_original: "",
     original_lithology: "",
     layer_gradation: null,

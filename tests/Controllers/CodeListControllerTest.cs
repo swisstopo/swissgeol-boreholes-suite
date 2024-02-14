@@ -158,7 +158,7 @@ public class CodeListControllerTest
             DescriptionRo = null,
             Geolcode = 9004,
             Order = 5,
-            Schema = "qt_description",
+            Schema = "description_quality",
             De = "sehr gut",
             En = "very good",
             Fr = "très bonne",
@@ -196,7 +196,7 @@ public class CodeListControllerTest
         Assert.AreEqual(null, codeListToEdit.DescriptionRo);
         Assert.AreEqual(9004, codeListToEdit.Geolcode);
         Assert.AreEqual(5, codeListToEdit.Order);
-        Assert.AreEqual("qt_description", codeListToEdit.Schema);
+        Assert.AreEqual("description_quality", codeListToEdit.Schema);
         Assert.AreEqual("sehr gut", codeListToEdit.De);
         Assert.AreEqual("very good", codeListToEdit.En);
         Assert.AreEqual("très bonne", codeListToEdit.Fr);

@@ -24,7 +24,7 @@ public class LithologicalDescriptionController : BdmsControllerBase<Lithological
     public async Task<IEnumerable<LithologicalDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
     {
         var lithologicalDescriptions = Context.LithologicalDescriptions
-            .Include(l => l.QtDescription)
+            .Include(l => l.DescriptionQuality)
             .AsNoTracking();
 
         if (stratigraphyId != null)
@@ -44,7 +44,7 @@ public class LithologicalDescriptionController : BdmsControllerBase<Lithological
     public async Task<ActionResult<LithologicalDescription>> GetByIdAsync(int id)
     {
         var lithologicalDescription = await Context.LithologicalDescriptions
-            .Include(l => l.QtDescription)
+            .Include(l => l.DescriptionQuality)
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)
             .ConfigureAwait(false);

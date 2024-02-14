@@ -232,7 +232,7 @@ const ProfileView = props => {
                     ? t("common:no")
                     : null,
               )}
-              {getDomainRow(layer.qtDescription, "qt_description")}
+              {getDomainRow(layer.descriptionQuality, "description_quality")}
 
               {getDomainRow(layer.lithology, "lithology")}
               {getTextRow("original_lithology", layer.originalLithology)}

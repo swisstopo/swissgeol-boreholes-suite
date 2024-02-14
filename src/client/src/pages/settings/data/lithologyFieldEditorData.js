@@ -6,8 +6,8 @@ export const lithologyFieldEditorData = [
   },
   {
     id: 1,
-    label: "qt_description",
-    value: "qt_description",
+    label: "description_quality",
+    value: "description_quality",
   },
   {
     id: 2,

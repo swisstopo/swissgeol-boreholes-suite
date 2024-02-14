@@ -389,8 +389,8 @@ class Action():
                 cohesion_id_cli = %s
             """ % self.getIdx())
 
-        if 'qt_description' in keys and filter['qt_description'] not in ['', None]:
-            params.append(filter['qt_description'])
+        if 'description_quality' in keys and filter['description_quality'] not in ['', None]:
+            params.append(filter['description_quality'])
             where.append("""
                 qt_description_id_cli = %s
             """ % self.getIdx())

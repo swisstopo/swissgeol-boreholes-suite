@@ -90,7 +90,7 @@ const initialState = {
     // Lithostratigraphy filter
     lithostratigraphy_id: null,
 
-    qt_description: null,
+    description_quality: null,
     uscs_original: "",
     original_lithology: "",
     layer_gradation: null,

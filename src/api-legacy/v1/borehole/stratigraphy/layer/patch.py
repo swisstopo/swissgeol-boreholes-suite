@@ -20,7 +20,7 @@ class PatchLayer(Action):
         elif field == 'last':
             column = 'last_lay'
 
-        elif field == 'qt_description':
+        elif field == 'description_quality':
             column = 'qt_description_id_cli'
 
         elif field == 'lithology':
@@ -132,7 +132,7 @@ class PatchLayer(Action):
                 """ % column, value, user_id, id)
 
             elif field in [
-                'qt_description',
+                'description_quality',
                 'lithology',
                 'lithostratigraphy',
                 'plasticity',

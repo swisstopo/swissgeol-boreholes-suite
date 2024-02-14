@@ -48,12 +48,12 @@ export const lithologySearchData = [
   {
     id: 4,
     type: "Dropdown",
-    label: "qt_description",
-    value: "qt_description",
-    schema: "qt_description",
+    label: "description_quality",
+    value: "description_quality",
+    schema: "description_quality",
     multiple: false,
     search: false,
-    isVisibleValue: "layer.qt_description",
+    isVisibleValue: "layer.description_quality",
   },
   {
     id: 5,

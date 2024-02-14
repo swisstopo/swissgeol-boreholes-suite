@@ -43,7 +43,7 @@ const ProfileAttributes = props => {
       depth_from: null,
       depth_to: null,
       last: null,
-      qt_description: null,
+      description_quality: null,
       lithology: null,
       color: [],
       plasticity: null,

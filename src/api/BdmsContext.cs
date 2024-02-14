@@ -159,7 +159,7 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Layer>().HasOne(l => l.LithologyTopBedrock).WithMany().HasForeignKey(l => l.LithologyTopBedrockId);
         modelBuilder.Entity<Layer>().HasOne(l => l.Lithostratigraphy).WithMany().HasForeignKey(l => l.LithostratigraphyId);
         modelBuilder.Entity<Layer>().HasOne(l => l.Plasticity).WithMany().HasForeignKey(l => l.PlasticityId);
-        modelBuilder.Entity<Layer>().HasOne(l => l.QtDescription).WithMany().HasForeignKey(l => l.QtDescriptionId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.DescriptionQuality).WithMany().HasForeignKey(l => l.DescriptionQualityId);
         modelBuilder.Entity<Layer>().HasOne(l => l.Uscs1).WithMany().HasForeignKey(l => l.Uscs1Id);
         modelBuilder.Entity<Layer>().HasOne(l => l.Uscs2).WithMany().HasForeignKey(l => l.Uscs2Id);
         modelBuilder.Entity<Layer>().HasOne(l => l.UscsDetermination).WithMany().HasForeignKey(l => l.UscsDeterminationId);

@@ -217,7 +217,7 @@
   "organic_component": "Organic components",
   "plasticity": "Plasticity",
   "completeness": "Completeness of entries",
-  "qt_description": "Quality of the description",
+  "description_quality": "Quality of the description",
   "striae": "Striations",
   "uscs_1": "USCS 1",
   "uscs_2": "USCS 2",
