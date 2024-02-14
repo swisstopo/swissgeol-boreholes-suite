@@ -239,7 +239,7 @@ export const lithologySearchData = [
     type: "Dropdown",
     label: "compactness",
     value: "compactness",
-    schema: "mlpr102",
+    schema: "compactness",
     multiple: false,
     search: false,
     isVisibleValue: "layer.compactness",

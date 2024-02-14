@@ -236,7 +236,7 @@ export const stratigraphyData = {
       type: "Dropdown",
       label: "compactness",
       value: "compactnessId",
-      schema: "mlpr102",
+      schema: "compactness",
       multiple: false,
       search: false,
       isVisibleValue: "compactness",
