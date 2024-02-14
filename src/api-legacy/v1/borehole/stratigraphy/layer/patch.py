@@ -237,7 +237,7 @@ class PatchLayer(Action):
                 schema = field
 
                 if field == 'color':
-                    schema = 'mlpr112'
+                    schema = 'colour'
 
                 elif field == 'organic_component':
                     schema = 'organic_components'

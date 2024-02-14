@@ -39,7 +39,7 @@ class GetLayer(Action):
             layer.lithology_id_cli AS lithology,
             layer.lithostratigraphy_id_cli AS lithostratigraphy,
             COALESCE(
-                mlpr112, '{}'::int[]
+                colour, '{}'::int[]
             ) AS color,
             layer.plasticity_id_cli AS plasticity,
             layer.humidity_id_cli AS humidity,
@@ -135,11 +135,11 @@ class GetLayer(Action):
 
         LEFT JOIN (
             SELECT
-                id_lay_fk, array_agg(id_cli_fk) as mlpr112
+                id_lay_fk, array_agg(id_cli_fk) as colour
             FROM
                 bdms.layer_codelist
             WHERE
-                code_cli = 'mlpr112'
+                code_cli = 'colour'
             GROUP BY id_lay_fk
         ) clr
         ON clr.id_lay_fk = id_lay

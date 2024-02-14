@@ -209,7 +209,7 @@ export const lithologySearchData = [
     type: "Dropdown",
     label: "color",
     value: "color",
-    schema: "mlpr112",
+    schema: "colour",
     multiple: false,
     search: true,
     isVisibleValue: "layer.color",

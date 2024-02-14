@@ -206,7 +206,7 @@ export const stratigraphyData = {
       type: "Dropdown",
       label: "color",
       value: "color",
-      schema: "mlpr112",
+      schema: "colour",
       multiple: true,
       search: true,
       isVisibleValue: "color",

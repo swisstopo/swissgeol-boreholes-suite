@@ -275,7 +275,7 @@ const ProfileView = props => {
                     : null,
               )}
               {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "mlpr112"),
+                layer.codelists.filter(c => c.schema === "colour"),
                 "color",
               )}
               {getDomainRow(layer.consistance, "consistance")}

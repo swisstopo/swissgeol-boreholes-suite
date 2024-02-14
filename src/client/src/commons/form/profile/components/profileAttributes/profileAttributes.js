@@ -100,7 +100,7 @@ const ProfileAttributes = props => {
         "organic_components",
       );
       response["debris"] = mapCodelistToAttribute(response.codelists, "debris");
-      response["color"] = mapCodelistToAttribute(response.codelists, "mlpr112");
+      response["color"] = mapCodelistToAttribute(response.codelists, "colour");
     }
     setState({
       isPatching: false,

@@ -115,7 +115,7 @@ const ProfileLayersList = props => {
     const grainSize1 = item?.grainSize1?.[i18n.language] ?? null;
     let color = [];
     item?.codelists
-      .filter(c => c.schema === "mlpr112")
+      .filter(c => c.schema === "colour")
       .forEach(element => {
         color.push(element[i18n.language]);
       });
