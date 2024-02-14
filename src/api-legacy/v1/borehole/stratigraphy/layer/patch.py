@@ -161,7 +161,7 @@ class PatchLayer(Action):
                     schema = 'plasticity'
 
                 elif field == 'humidity':
-                    schema = 'mlpr105'
+                    schema = 'humidity'
 
                 elif field == 'consistance':
                     schema = 'consistency'

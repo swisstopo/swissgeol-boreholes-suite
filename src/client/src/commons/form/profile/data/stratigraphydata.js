@@ -266,7 +266,7 @@ export const stratigraphyData = {
       type: "Dropdown",
       label: "humidity",
       value: "humidityId",
-      schema: "mlpr105",
+      schema: "humidity",
       multiple: false,
       search: false,
       isVisibleValue: "humidity",

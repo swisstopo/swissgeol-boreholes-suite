@@ -269,7 +269,7 @@ export const lithologySearchData = [
     type: "Dropdown",
     label: "humidity",
     value: "humidity",
-    schema: "mlpr105",
+    schema: "humidity",
     multiple: false,
     search: false,
     isVisibleValue: "layer.humidity",

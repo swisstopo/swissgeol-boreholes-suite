@@ -82,7 +82,7 @@ public static class BdmsContextExtensions
         List<int> plasticityIds = codelists.Where(c => c.Schema == "plasticity").Select(s => s.Id).ToList();
         List<int> compactnessIds = codelists.Where(c => c.Schema == "compactness").Select(s => s.Id).ToList();
         List<int> consistanceIds = codelists.Where(c => c.Schema == "consistency").Select(s => s.Id).ToList();
-        List<int> humidityIds = codelists.Where(c => c.Schema == "mlpr105").Select(s => s.Id).ToList();
+        List<int> humidityIds = codelists.Where(c => c.Schema == "humidity").Select(s => s.Id).ToList();
         List<int> alterationIds = codelists.Where(c => c.Schema == "mlpr106").Select(s => s.Id).ToList();
         List<int> cohesionIds = codelists.Where(c => c.Schema == "mlpr116").Select(s => s.Id).ToList();
         List<int> backfillTypeIds = codelists.Where(c => c.Schema == CompletionSchemas.BackfillTypeSchema).Select(s => s.Id).ToList();
