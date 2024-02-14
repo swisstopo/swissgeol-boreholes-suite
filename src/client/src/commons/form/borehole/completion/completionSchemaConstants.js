@@ -1,6 +1,6 @@
 export const completionSchemaConstants = {
   completionKind: "completion_kind",
-  instrumentationKind: "inst100",
+  instrumentationKind: "instrument_type",
   instrumentationStatus: "inst101",
   backfillType: "backfill_type",
   backfillMaterial: "backfill_material",
