@@ -279,7 +279,7 @@ export const lithologySearchData = [
     type: "Dropdown",
     label: "alteration",
     value: "alteration",
-    schema: "mlpr106",
+    schema: "alteration",
     multiple: false,
     search: false,
     isVisibleValue: "layer.alteration",

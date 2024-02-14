@@ -276,7 +276,7 @@ export const stratigraphyData = {
       type: "Dropdown",
       label: "alteration",
       value: "alterationId",
-      schema: "mlpr106",
+      schema: "alteration",
       multiple: false,
       search: false,
       isVisibleValue: "alteration",
