@@ -259,7 +259,7 @@ const ProfileView = props => {
                 "organic_component",
               )}
               {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "mcla107"),
+                layer.codelists.filter(c => c.schema === "debris"),
                 "debris",
               )}
               {getDomainRow(

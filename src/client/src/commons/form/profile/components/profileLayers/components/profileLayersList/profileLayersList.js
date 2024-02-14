@@ -161,7 +161,7 @@ const ProfileLayersList = props => {
 
     let debris = [];
     item?.codelists
-      .filter(c => c.schema === "mcla107")
+      .filter(c => c.schema === "debris")
       .forEach(element => {
         debris.push(element[i18n.language]);
       });

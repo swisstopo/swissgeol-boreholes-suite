@@ -208,7 +208,7 @@ class GetGeologyLayer(Action):
             ) AS original_lithology,
             uscs_determination_id_cli AS uscs_determination,
             COALESCE(
-                mcla107, '{}'::int[]
+                debris, '{}'::int[]
             ) AS debris,
             layer.lithology_top_bedrock_id_cli AS lithology_top_bedrock,
             COALESCE(
@@ -336,11 +336,11 @@ class GetGeologyLayer(Action):
 
         LEFT JOIN (
             SELECT
-                id_lay_fk, array_agg(id_cli_fk) as mcla107
+                id_lay_fk, array_agg(id_cli_fk) as debris
             FROM
                 bdms.layer_codelist
             WHERE
-                code_cli = 'mcla107'
+                code_cli = 'debris'
             GROUP BY id_lay_fk
         ) dbr
         ON dbr.id_lay_fk = id_lay

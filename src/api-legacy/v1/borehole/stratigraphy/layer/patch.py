@@ -255,7 +255,7 @@ class PatchLayer(Action):
                 #     schema = 'uscs_determination'
 
                 elif field == 'debris':
-                    schema = 'mcla107'
+                    schema = 'debris'
 
                 # elif field == 'lithology_top_bedrock':
                 #     schema = 'custom.lithology_top_bedrock'

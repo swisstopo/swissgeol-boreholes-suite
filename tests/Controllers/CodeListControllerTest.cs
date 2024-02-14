@@ -94,7 +94,7 @@ public class CodeListControllerTest
         {
             Id = id,
             Geolcode = id,
-            Schema = "mcla107",
+            Schema = "debris",
             De = "Tuff",
             Code = "Tuf",
             En = "tufa",

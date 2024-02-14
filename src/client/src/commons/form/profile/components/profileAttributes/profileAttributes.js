@@ -99,10 +99,7 @@ const ProfileAttributes = props => {
         response.codelists,
         "mlpr108",
       );
-      response["debris"] = mapCodelistToAttribute(
-        response.codelists,
-        "mcla107",
-      );
+      response["debris"] = mapCodelistToAttribute(response.codelists, "debris");
       response["color"] = mapCodelistToAttribute(response.codelists, "mlpr112");
     }
     setState({

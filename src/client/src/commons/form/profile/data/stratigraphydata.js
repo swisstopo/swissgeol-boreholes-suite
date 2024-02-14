@@ -178,7 +178,7 @@ export const stratigraphyData = {
       type: "Dropdown",
       label: "debris",
       value: "debris",
-      schema: "mcla107",
+      schema: "debris",
       multiple: true,
       search: true,
       isVisibleValue: "debris",

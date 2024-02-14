@@ -180,7 +180,7 @@ export const lithologySearchData = [
     type: "Dropdown",
     label: "debris",
     value: "debris",
-    schema: "mcla107",
+    schema: "debris",
     multiple: false,
     search: true,
     isVisibleValue: "layer.debris",
