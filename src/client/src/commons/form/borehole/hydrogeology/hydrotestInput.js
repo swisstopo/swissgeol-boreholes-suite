@@ -149,6 +149,18 @@ const HydrotestInput = props => {
       data.codelistIds = [...data.codelistIds, ...data.evaluationMethodId];
     }
 
+    if (data.hydrotestResults) {
+      data.hydrotestResults = data.hydrotestResults.map(r => {
+        return {
+          id: r.id,
+          parameterId: r.parameterId,
+          value: r.value,
+          minValue: r.minValue,
+          maxValue: r.maxValue,
+        };
+      });
+    }
+
     if (data.casingId == null) {
       data.casingId = item.casingId;
     }
