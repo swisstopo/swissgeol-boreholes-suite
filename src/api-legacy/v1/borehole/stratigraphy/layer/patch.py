@@ -164,7 +164,7 @@ class PatchLayer(Action):
                     schema = 'mlpr105'
 
                 elif field == 'consistance':
-                    schema = 'mlpr103'
+                    schema = 'consistency'
 
                 elif field == 'gradation':
                     schema = 'gradation'

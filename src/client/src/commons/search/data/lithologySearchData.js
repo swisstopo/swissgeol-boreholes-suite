@@ -219,7 +219,7 @@ export const lithologySearchData = [
     type: "Dropdown",
     label: "consistance",
     value: "consistance",
-    schema: "mlpr103",
+    schema: "consistency",
     multiple: false,
     search: true,
     isVisibleValue: "layer.consistance",

@@ -216,7 +216,7 @@ export const stratigraphyData = {
       type: "Dropdown",
       label: "consistance",
       value: "consistanceId",
-      schema: "mlpr103",
+      schema: "consistency",
       multiple: false,
       search: true,
       isVisibleValue: "consistance",
