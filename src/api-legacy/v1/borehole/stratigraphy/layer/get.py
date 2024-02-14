@@ -63,7 +63,7 @@ class GetLayer(Action):
             layer.uscs_1_id_cli AS uscs_1,
             layer.uscs_2_id_cli AS uscs_2,
             COALESCE(
-                mcla101, '{}'::int[]
+                uscs_type, '{}'::int[]
             ) AS uscs_3,
             layer.lithology_top_bedrock_id_cli AS lithology_top_bedrock,
             COALESCE(
@@ -179,11 +179,11 @@ class GetLayer(Action):
 
         LEFT JOIN (
             SELECT
-                id_lay_fk, array_agg(id_cli_fk) as mcla101
+                id_lay_fk, array_agg(id_cli_fk) as uscs_type
             FROM
                 bdms.layer_codelist
             WHERE
-                code_cli = 'mcla101'
+                code_cli = 'uscs_type'
             GROUP BY id_lay_fk
         ) gsh
         ON gsh.id_lay_fk = id_lay

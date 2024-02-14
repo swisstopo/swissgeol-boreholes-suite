@@ -133,7 +133,7 @@ const ProfileLayersList = props => {
 
     let uscs3 = [];
     item?.codelists
-      .filter(c => c.schema === "mcla101")
+      .filter(c => c.schema === "uscs_type")
       .forEach(element => {
         uscs3.push(element[i18n.language]);
       });

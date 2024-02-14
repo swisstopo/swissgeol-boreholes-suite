@@ -185,10 +185,10 @@ class PatchLayer(Action):
                     schema = 'mlpr116'
 
                 elif field == 'uscs_1':
-                    schema = 'mcla101'
+                    schema = 'uscs_type'
 
                 elif field == 'uscs_2':
-                    schema = 'mcla101'
+                    schema = 'uscs_type'
 
                 elif field == 'uscs_determination':
                     schema = 'mcla104'
@@ -249,7 +249,7 @@ class PatchLayer(Action):
                     schema = 'mlpr115'
 
                 elif field == 'uscs_3':
-                    schema = 'mcla101'
+                    schema = 'uscs_type'
 
                 # elif field == 'uscs_determination':
                 #     schema = 'mcla104'

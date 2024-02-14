@@ -161,24 +161,24 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     public Codelist? Cohesion { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s Uscs 1.
+    /// Gets or sets the id of the <see cref="Layer"/>'s uscs type id 1.
     /// </summary>
     [Column("uscs_1_id_cli")]
     public int? Uscs1Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s Uscs 1.
+    /// Gets or sets the <see cref="Layer"/>'s uscs type 1.
     /// </summary>
     public Codelist? Uscs1 { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the <see cref="Layer"/>'s Uscs 2.
+    /// Gets or sets the id of the <see cref="Layer"/>'s uscs type id 2.
     /// </summary>
     [Column("uscs_2_id_cli")]
     public int? Uscs2Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Layer"/>'s Uscs 2.
+    /// Gets or sets the <see cref="Layer"/>'s uscs type 2.
     /// </summary>
     public Codelist? Uscs2 { get; set; }
 

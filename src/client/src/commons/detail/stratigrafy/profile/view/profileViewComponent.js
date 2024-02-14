@@ -243,7 +243,7 @@ const ProfileView = props => {
               {getDomainRow(layer.uscs2, "uscs_2")}
               {getDomainRow(layer.grainSize2, "grain_size_2")}
               {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "mcla101"),
+                layer.codelists.filter(c => c.schema === "uscs_type"),
                 "uscs_3",
               )}
               {getDomainRowMultiple(

@@ -85,7 +85,7 @@ const ProfileAttributes = props => {
     if (response?.codelists?.length > 0) {
       response["uscs_3"] = mapCodelistToAttribute(
         response.codelists,
-        "mcla101",
+        "uscs_type",
       );
       response["grain_shape"] = mapCodelistToAttribute(
         response.codelists,

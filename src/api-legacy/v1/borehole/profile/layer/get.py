@@ -198,7 +198,7 @@ class GetGeologyLayer(Action):
             layer.uscs_1_id_cli AS uscs_1,
             layer.uscs_2_id_cli AS uscs_2,
             COALESCE(
-                mcla101, '{}'::int[]
+                uscs_type, '{}'::int[]
             ) AS uscs_3,
             COALESCE(
                 uscs_original_lay, ''
@@ -314,11 +314,11 @@ class GetGeologyLayer(Action):
 
         LEFT JOIN (
             SELECT
-                id_lay_fk, array_agg(id_cli_fk) as mcla101
+                id_lay_fk, array_agg(id_cli_fk) as uscs_type
             FROM
                 bdms.layer_codelist
             WHERE
-                code_cli = 'mcla101'
+                code_cli = 'uscs_type'
             GROUP BY id_lay_fk
         ) us3
         ON us3.id_lay_fk = id_lay

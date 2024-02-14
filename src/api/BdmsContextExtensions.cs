@@ -87,13 +87,13 @@ public static class BdmsContextExtensions
         List<int> cohesionIds = codelists.Where(c => c.Schema == "mlpr116").Select(s => s.Id).ToList();
         List<int> backfillTypeIds = codelists.Where(c => c.Schema == CompletionSchemas.BackfillTypeSchema).Select(s => s.Id).ToList();
         List<int> backfillMaterialIds = codelists.Where(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Select(s => s.Id).ToList();
-        List<int> uscsIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();
+        List<int> uscsIds = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList();
         List<int> uscsDeterminationIds = codelists.Where(c => c.Schema == "mcla104").Select(s => s.Id).ToList();
         List<int> gradationIds = codelists.Where(c => c.Schema == "gradation").Select(s => s.Id).ToList();
-        List<int> soilStateIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> kirostIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
-        List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
+        List<int> soilStateIds = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList();  // unclear which codelist
+        List<int> kirostIds = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList();  // unclear which codelist
+        List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr109").Select(s => s.Id).ToList(); 
+        List<int> grainSize2Ids = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList(); // unclear which codelist
         List<int> referenceElevationTypeIds = codelists.Where(c => c.Schema == "ibor117").Select(s => s.Id).ToList();
         List<int> waterIngressReliabilityIds = codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Select(s => s.Id).ToList();
         List<int> waterIngressQuantityIds = codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Select(s => s.Id).ToList();
@@ -533,7 +533,7 @@ public static class BdmsContextExtensions
             .StrictMode(true)
             .RuleFor(o => o.LayerId, f => f.PickRandom(layerRange))
             .RuleFor(o => o.CodelistId, f => f.PickRandom(uscsIds))
-            .RuleFor(o => o.SchemaName, "mcla101")
+            .RuleFor(o => o.SchemaName, "uscs_type")
             .RuleFor(o => o.Layer, _ => default!)
             .RuleFor(o => o.Codelist, _ => default!);
 
