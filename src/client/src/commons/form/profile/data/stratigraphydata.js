@@ -158,7 +158,7 @@ export const stratigraphyData = {
       type: "Dropdown",
       label: "grain_granularity",
       value: "grain_granularity",
-      schema: "mlpr115",
+      schema: "grain_angularity",
       multiple: true,
       search: true,
       isVisibleValue: "grain_granularity",

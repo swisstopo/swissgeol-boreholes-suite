@@ -160,7 +160,7 @@ export const lithologySearchData = [
     type: "Dropdown",
     label: "grain_granularity",
     value: "grain_granularity",
-    schema: "mlpr115",
+    schema: "grain_angularity",
     multiple: false,
     search: true,
     isVisibleValue: "layer.grain_granularity",

@@ -246,7 +246,7 @@ class PatchLayer(Action):
                     schema = 'grain_shape'
 
                 elif field == 'grain_granularity':
-                    schema = 'mlpr115'
+                    schema = 'grain_angularity'
 
                 elif field == 'uscs_3':
                     schema = 'uscs_type'

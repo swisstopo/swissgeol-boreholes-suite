@@ -147,7 +147,7 @@ const ProfileLayersList = props => {
 
     let angularity = [];
     item?.codelists
-      .filter(c => c.schema === "mlpr115")
+      .filter(c => c.schema === "grain_angularity")
       .forEach(element => {
         angularity.push(element[i18n.language]);
       });

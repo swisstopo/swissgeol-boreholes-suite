@@ -57,7 +57,7 @@ class GetLayer(Action):
                 grain_shape, '{}'::int[]
             ) AS grain_shape,
             COALESCE(
-                mlpr115, '{}'::int[]
+                grain_angularity, '{}'::int[]
             ) AS grain_granularity,
             layer.cohesion_id_cli AS cohesion,
             layer.uscs_1_id_cli AS uscs_1,
@@ -190,11 +190,11 @@ class GetLayer(Action):
 
         LEFT JOIN (
             SELECT
-                id_lay_fk, array_agg(id_cli_fk) as mlpr115
+                id_lay_fk, array_agg(id_cli_fk) as grain_angularity
             FROM
                 bdms.layer_codelist
             WHERE
-                code_cli = 'mlpr115'
+                code_cli = 'grain_angularity'
             GROUP BY id_lay_fk
         ) ggr
         ON ggr.id_lay_fk = id_lay

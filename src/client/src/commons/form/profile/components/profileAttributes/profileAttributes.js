@@ -93,7 +93,7 @@ const ProfileAttributes = props => {
       );
       response["grain_granularity"] = mapCodelistToAttribute(
         response.codelists,
-        "mlpr115",
+        "grain_angularity",
       );
       response["organic_component"] = mapCodelistToAttribute(
         response.codelists,
