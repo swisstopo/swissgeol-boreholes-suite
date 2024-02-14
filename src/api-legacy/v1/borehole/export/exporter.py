@@ -135,13 +135,13 @@ class ExportHandler(Viewer):
                                             COALESCE(
                                                 cli_srs.text_cli_{lan},
                                                 cli_srs.text_cli_{fallback}
-                                            ) as srs,
-                                            -- cli_srs.text_cli_{lan} as srs,
+                                            ) as spatial_reference_system,
+                                            -- cli_srs.text_cli_{lan} as spatial_reference_system,
                                             COALESCE(
                                                 cli_hrs.text_cli_{lan},
                                                 cli_hrs.text_cli_{fallback}
-                                            ) as hrs,
-                                            -- cli_hrs.text_cli_{lan} as hrs,
+                                            ) as height_reference_system,
+                                            -- cli_hrs.text_cli_{lan} as height_reference_system,
                                             total_depth_bho as total_depth,
                                             drilling_date_bho as drilling_date,
                                             spud_date_bho as spud_date,

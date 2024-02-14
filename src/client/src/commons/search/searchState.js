@@ -109,7 +109,7 @@ const initialState = {
     location_precision: null,
     reference_elevation_from: "",
     reference_elevation_to: "",
-    srs: null,
+    spatial_reference_system: null,
   },
 };
 

@@ -564,8 +564,8 @@ class bdmsPdf():
             column_width, box_height,
             'none', 'contentB',  _('reference systems'),
             'content', '{}, {}'.format(
-                self.profile['srs'],
-                self.profile['hrs']
+                self.profile['spatial_reference_system'],
+                self.profile['height_reference_system']
             )
         )
 

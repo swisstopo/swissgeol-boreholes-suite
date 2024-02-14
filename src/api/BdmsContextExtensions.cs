@@ -59,8 +59,8 @@ public static class BdmsContextExtensions
         // local codelists, ordered by id because the order after migrations is not guaranteed
         List<Codelist> codelists = context.Codelists.OrderBy(c => c.Id).ToList();
         List<int> kindIds = codelists.Where(c => c.Schema == "kind").Select(s => s.Id).ToList();
-        List<int> srsIds = codelists.Where(c => c.Schema == "srs").Select(s => s.Id).ToList();
-        List<int> hrsIds = codelists.Where(c => c.Schema == "hrs").Select(s => s.Id).ToList();
+        List<int> srsIds = codelists.Where(c => c.Schema == "spatial_reference_system").Select(s => s.Id).ToList();
+        List<int> hrsIds = codelists.Where(c => c.Schema == "height_reference_system").Select(s => s.Id).ToList();
         List<int> restrictionIds = codelists.Where(c => c.Schema == "restriction").Select(s => s.Id).ToList();
         List<int> locationPrecisionIds = codelists.Where(c => c.Schema == "location_precision").Select(s => s.Id).ToList();
         List<int> descriptionQualityIds = codelists.Where(c => c.Schema == "description_quality").Select(s => s.Id).ToList();

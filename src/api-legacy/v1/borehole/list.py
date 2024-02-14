@@ -40,7 +40,7 @@ class ListBorehole(Action):
                 COALESCE(
                     srd.text_cli_{language},
                     srd.text_cli_{fallback}
-                ) as srs,
+                ) as spatial_reference_system,
                 
                 COALESCE(
                     qtloc.text_cli_{language},
@@ -48,9 +48,9 @@ class ListBorehole(Action):
                 ) as location_precision,
                 elevation_z_bho as elevation_z,
                 COALESCE(
-                    hrs.text_cli_{language},
-                    hrs.text_cli_{fallback}
-                ) as hrs,
+                    height_reference_system.text_cli_{language},
+                    height_reference_system.text_cli_{fallback}
+                ) as height_reference_system,
                 COALESCE(
                     qth.text_cli_{language},
                     qth.text_cli_{fallback}
@@ -134,8 +134,8 @@ class ListBorehole(Action):
             LEFT JOIN bdms.codelist as qtloc
                 ON qtloc.id_cli = qt_location_id_cli
 
-            LEFT JOIN bdms.codelist as hrs
-                ON hrs.id_cli = hrs_id_cli
+            LEFT JOIN bdms.codelist as height_reference_system
+                ON height_reference_system.id_cli = hrs_id_cli
 
             LEFT JOIN bdms.codelist as qth
                 ON qth.id_cli = qt_elevation_id_cli
@@ -228,11 +228,11 @@ class ListBorehole(Action):
                 location_y_bho as location_y,
                 location_x_lv03_bho as location_x_lv03,
                 location_y_lv03_bho as location_y_lv03,
-                srd.geolcode as srs,
+                srd.geolcode as spatial_reference_system,
                 
                 qtloc.geolcode as location_precision,
                 elevation_z_bho as elevation_z,
-                hrs.geolcode as hrs,
+                height_reference_system.geolcode as height_reference_system,
                 qth.geolcode as elevation_precision,
 
                 reference_elevation_bho as reference_elevation,
@@ -328,8 +328,8 @@ class ListBorehole(Action):
             LEFT JOIN bdms.codelist as qtloc
                 ON qtloc.id_cli = qt_location_id_cli
 
-            LEFT JOIN bdms.codelist as hrs
-                ON hrs.id_cli = hrs_id_cli
+            LEFT JOIN bdms.codelist as height_reference_system
+                ON height_reference_system.id_cli = hrs_id_cli
 
             LEFT JOIN bdms.codelist as qth
                 ON qth.id_cli = qt_elevation_id_cli
@@ -392,9 +392,9 @@ class ListBorehole(Action):
                 location_y_bho as location_y,
                 location_x_lv03_bho as location_x_lv03,
                 location_y_lv03_bho as location_y_lv03,
-                srs_id_cli as srs,
+                srs_id_cli as spatial_reference_system,
                 elevation_z_bho as elevation_z,
-                hrs_id_cli as hrs,
+                hrs_id_cli as height_reference_system,
                 drilling_date_bho as drilling_date,
                 spud_date_bho as spud_date,
                 total_depth_bho as total_depth,

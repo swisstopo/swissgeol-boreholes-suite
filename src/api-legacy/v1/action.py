@@ -824,8 +824,8 @@ class Action():
                     qt_depth_id_cli = %s
                 """ % self.getIdx())
 
-            if 'srs' in keys and filter['srs'] not in ['', None]:
-                params.append(int(filter['srs']))
+            if 'spatial_reference_system' in keys and filter['spatial_reference_system'] not in ['', None]:
+                params.append(int(filter['spatial_reference_system']))
                 where.append("""
                     srs_id_cli = %s
                 """ % self.getIdx())

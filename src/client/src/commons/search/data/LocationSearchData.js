@@ -194,9 +194,9 @@ export const LocationSearchData = [
   {
     id: 18,
     type: "ReferenceSystem",
-    label: "srs",
-    value: "srs",
-    isVisibleValue: "srs",
+    label: "spatial_reference_system",
+    value: "spatial_reference_system",
+    isVisibleValue: "spatial_reference_system",
     hasUnknown: true,
     to: false,
   },

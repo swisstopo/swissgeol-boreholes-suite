@@ -116,7 +116,7 @@ class PatchBorehole(Action):
         elif field == 'kind':
             column = 'kind_id_cli'
 
-        elif field == 'srs':
+        elif field == 'spatial_reference_system':
             column = 'srs_id_cli'
 
         elif field == 'location_precision':
@@ -134,7 +134,7 @@ class PatchBorehole(Action):
         elif field == 'reference_elevation_type':
             column = 'reference_elevation_type_id_cli'
 
-        elif field == 'hrs':
+        elif field == 'height_reference_system':
             column = 'hrs_id_cli'
 
         elif field == 'extended.drilling_method':
@@ -272,10 +272,10 @@ class PatchBorehole(Action):
             elif field in [
                 'restriction',
                 'kind',
-                'srs',
+                'spatial_reference_system',
                 'location_precision',
                 'elevation_precision',
-                'hrs',
+                'height_reference_system',
                 'custom.landuse',
                 'extended.drilling_method',
                 'custom.cuttings',
