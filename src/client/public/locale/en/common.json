@@ -193,7 +193,7 @@
   "instrument": "Instrumentation",
   "invertedDepth": "Inverted depths",
   "italian": "Italian",
-  "kind": "Borehole type",
+  "borehole_type": "Borehole type",
   "kindCasingLayer": "Casing type",
   "kindFilling": "Type of backfill / sealing",
   "kindInstrument": "Type of instrument",

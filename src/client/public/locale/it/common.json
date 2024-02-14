@@ -193,7 +193,7 @@
   "instrument": "Strumentazione",
   "invertedDepth": "Profondità invertite",
   "italian": "Italiano",
-  "kind": "Tipologia di perforazione",
+  "borehole_type": "Tipologia di perforazione",
   "kindCasingLayer": "Tipo di tubazione",
   "kindFilling": "Tipo di riempimento",
   "kindInstrument": "Tipo di strumentazione",

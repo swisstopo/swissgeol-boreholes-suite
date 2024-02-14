@@ -128,7 +128,7 @@ class ExportHandler(Viewer):
                                             COALESCE(
                                                 cli_kind.text_cli_{lan},
                                                 cli_kind.text_cli_{fallback}
-                                            ) as kind,
+                                            ) as borehole_type,
                                             location_x_bho as location_e,
                                             location_y_bho as location_n,
                                             COALESCE(elevation_z_bho, 0) as elevation_z,

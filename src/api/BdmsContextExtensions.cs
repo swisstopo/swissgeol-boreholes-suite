@@ -58,7 +58,7 @@ public static class BdmsContextExtensions
 
         // local codelists, ordered by id because the order after migrations is not guaranteed
         List<Codelist> codelists = context.Codelists.OrderBy(c => c.Id).ToList();
-        List<int> kindIds = codelists.Where(c => c.Schema == "kind").Select(s => s.Id).ToList();
+        List<int> kindIds = codelists.Where(c => c.Schema == "borehole_type").Select(s => s.Id).ToList();
         List<int> srsIds = codelists.Where(c => c.Schema == "spatial_reference_system").Select(s => s.Id).ToList();
         List<int> hrsIds = codelists.Where(c => c.Schema == "height_reference_system").Select(s => s.Id).ToList();
         List<int> restrictionIds = codelists.Where(c => c.Schema == "restriction").Select(s => s.Id).ToList();
@@ -129,8 +129,8 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.LocationYLV03, f => { if (borehole_ids % 10 < 5) return f.Random.Int(66750, 310750).OrNull(f, .1f); else return f.Random.Double(66750, 310750).OrNull(f, .1f); })
            .RuleFor(o => o.OriginalReferenceSystem, f => f.PickRandom(ReferenceSystem.LV95, ReferenceSystem.LV03))
            .RuleFor(o => o.ElevationZ, f => f.Random.Double(0, 4500))
-           .RuleFor(o => o.KindId, f => f.PickRandom(kindIds).OrNull(f, .6f))
-           .RuleFor(o => o.Kind, _ => default!)
+           .RuleFor(o => o.TypeId, f => f.PickRandom(kindIds).OrNull(f, .6f))
+           .RuleFor(o => o.Type, _ => default!)
            .RuleFor(o => o.HrsId, f => f.PickRandom(hrsIds).OrNull(f, .1f))
            .RuleFor(o => o.Hrs, _ => default!)
            .RuleFor(o => o.TotalDepth, f => f.Random.Double(0, 2000))

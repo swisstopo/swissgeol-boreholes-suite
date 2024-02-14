@@ -38,15 +38,17 @@ class DetailsComponent extends React.Component {
                     margin: "0px 0px 0.4em",
                   }}>
                   {(() => {
-                    if (!this.props.domains.data.hasOwnProperty("kind")) {
+                    if (
+                      !this.props.domains.data.hasOwnProperty("borehole_type")
+                    ) {
                       return null;
                     }
 
-                    const kind = this.props.domains.data["kind"].find(
-                      function (element) {
-                        return element.id === detail.borehole.kind;
-                      },
-                    );
+                    const borehole_type = this.props.domains.data[
+                      "borehole_type"
+                    ].find(function (element) {
+                      return element.id === detail.borehole.borehole_type;
+                    });
 
                     const restriction = this.props.domains.data[
                       "restriction"
@@ -63,14 +65,14 @@ class DetailsComponent extends React.Component {
                       }
                     }
 
-                    if (kind !== undefined) {
+                    if (borehole_type !== undefined) {
                       return (
                         <img
                           alt=""
                           src={
                             process.env.PUBLIC_URL +
                             "/img/" +
-                            kind.code +
+                            borehole_type.code +
                             "-" +
                             color +
                             ".svg"
@@ -96,7 +98,10 @@ class DetailsComponent extends React.Component {
                       );
                     }
                   })()}{" "}
-                  <DomainText id={detail.borehole.kind} schema={"kind"} />
+                  <DomainText
+                    id={detail.borehole.borehole_type}
+                    schema={"borehole_type"}
+                  />
                 </div>
                 <div
                   style={{

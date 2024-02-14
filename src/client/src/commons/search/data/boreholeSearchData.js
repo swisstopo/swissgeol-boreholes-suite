@@ -4,12 +4,12 @@ export const boreholeSearchData = [
   {
     id: 0,
     type: "Dropdown",
-    label: "kind",
-    value: "kind",
-    schema: "kind",
+    label: "borehole_type",
+    value: "borehole_type",
+    schema: "borehole_type",
     multiple: false,
     search: false,
-    isVisibleValue: "kind",
+    isVisibleValue: "borehole_type",
   },
   {
     id: 1,

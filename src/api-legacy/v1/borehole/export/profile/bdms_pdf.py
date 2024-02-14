@@ -657,8 +657,8 @@ class bdmsPdf():
         self.drawLeftTextBox2(
             2*column_width, current_y,
             column_width, box_height,
-            'none', 'contentB',  _('kind'),
-            'content', '{}'.format(self.profile['kind'] or '-')
+            'none', 'contentB',  _('borehole_type'),
+            'content', '{}'.format(self.profile['borehole_type'] or '-')
         )
 
         current_y += box_height

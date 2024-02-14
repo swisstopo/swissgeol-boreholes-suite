@@ -1,8 +1,8 @@
 export const boreholeEditorData = [
   {
     id: 0,
-    label: "kind",
-    value: "kind",
+    label: "borehole_type",
+    value: "borehole_type",
   },
   {
     id: 1,

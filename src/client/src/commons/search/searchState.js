@@ -15,7 +15,7 @@ const initialState = {
     original_name: "",
     alternate_name: "",
     project_name: "",
-    kind: null,
+    borehole_type: null,
     method: null,
     purpose: null,
     landuse: null,

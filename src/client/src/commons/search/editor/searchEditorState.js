@@ -11,7 +11,7 @@ const initialState = {
     workgroup: "all",
     original_name: "",
     alternate_name: "",
-    kind: null,
+    borehole_type: null,
     method: null,
     restriction: null,
     project_name: "",

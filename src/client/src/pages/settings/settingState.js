@@ -45,7 +45,7 @@ const initialState = {
     filter: {
       mapfilter: true,
       zoom2selected: true,
-      kind: true,
+      borehole_type: true,
       restriction: true,
       restriction_until: true,
       national_interest: true,
@@ -112,7 +112,7 @@ const initialState = {
       },
     },
     efilter: {
-      kind: true,
+      borehole_type: true,
       restriction: true,
       restriction_until: true,
       national_interest: true,

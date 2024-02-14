@@ -240,7 +240,7 @@ class BoreholeEditorTable extends TTable {
         {this.getHeaderLabel("creationdate")}
         {this.getHeaderLabel("createdBy")}
         {this.getHeaderLabel("original_name")}
-        {this.getHeaderLabel("kind")}
+        {this.getHeaderLabel("borehole_type")}
         {this.getHeaderLabel("restriction")}
         {this.getHeaderLabel("elevation_z")}
         {this.getHeaderLabel("drilling_end_date")}
@@ -296,7 +296,7 @@ class BoreholeEditorTable extends TTable {
         {item.original_name}
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
-        <DomainText id={item.kind} schema="kind" />
+        <DomainText id={item.borehole_type} schema="borehole_type" />
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         <DomainText id={item.restriction} schema="restriction" />

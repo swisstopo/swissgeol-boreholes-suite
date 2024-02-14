@@ -113,7 +113,7 @@ class PatchBorehole(Action):
         elif field == 'national_interest':
             column = 'national_interest'
 
-        elif field == 'kind':
+        elif field == 'borehole_type':
             column = 'kind_id_cli'
 
         elif field == 'spatial_reference_system':
@@ -271,7 +271,7 @@ class PatchBorehole(Action):
 
             elif field in [
                 'restriction',
-                'kind',
+                'borehole_type',
                 'spatial_reference_system',
                 'location_precision',
                 'elevation_precision',

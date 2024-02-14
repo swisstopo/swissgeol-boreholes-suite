@@ -83,7 +83,7 @@ class ListEditingBorehole(Action):
                     )
                 END AS lock,
                 original_name_bho as original_name,
-                kind_id_cli as kind,
+                kind_id_cli as borehole_type,
                 restriction_id_cli as restriction,
                 to_char(
                     restriction_until_bho,
@@ -185,7 +185,7 @@ class ListEditingBorehole(Action):
                         array_agg(
                             json_build_object(
                                 'id', id,
-                                'kind', kind,
+                                'borehole_type', borehole_type,
                                 'layers', layers,
                                 'date', date
                             )

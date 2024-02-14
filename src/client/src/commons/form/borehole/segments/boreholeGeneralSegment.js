@@ -26,16 +26,16 @@ const BoreholeGeneralSegment = props => {
           <Form autoComplete="off" error size={size}>
             <Form.Group widths="equal">
               {/* drilling type in Borehole */}
-              <Form.Field error={borehole.data.kind === null} required>
+              <Form.Field error={borehole.data.borehole_type === null} required>
                 <label>
-                  <TranslationText id="kind" />
+                  <TranslationText id="borehole_type" />
                 </label>
                 <DomainDropdown
                   onSelected={selected => {
-                    updateChange("kind", selected.id, false);
+                    updateChange("borehole_type", selected.id, false);
                   }}
-                  schema="kind"
-                  selected={borehole.data.kind}
+                  schema="borehole_type"
+                  selected={borehole.data.borehole_type}
                   readOnly={!isEditable}
                 />
               </Form.Field>

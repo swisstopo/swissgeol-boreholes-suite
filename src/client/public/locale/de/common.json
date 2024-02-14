@@ -193,7 +193,7 @@
   "instrument": "Instrumentierung",
   "invertedDepth": "Umgekehrte Tiefen",
   "italian": "Italienisch",
-  "kind": "Bohrtyp",
+  "borehole_type": "Bohrtyp",
   "kindCasingLayer": "Rohrtyp",
   "kindFilling": "Hinterfüllungs-/Verfüllungstyp",
   "kindInstrument": "Instrumentierungstyp",

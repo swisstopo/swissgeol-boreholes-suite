@@ -22,7 +22,7 @@ class ListBorehole(Action):
                 COALESCE(
                     knd.text_cli_{language},
                     knd.text_cli_{fallback}
-                ) as kind,
+                ) as borehole_type,
 
                 COALESCE(
                     rest.text_cli_{language},
@@ -215,7 +215,7 @@ class ListBorehole(Action):
                 original_name_bho as original_name,
                 project_name_bho as project_name,
                 alternate_name_bho as alternate_name,
-                knd.geolcode as kind,
+                knd.geolcode as borehole_type,
 
                 rest.geolcode as restriction,
                 to_char(
@@ -381,7 +381,7 @@ class ListBorehole(Action):
                     ) t
                 ) as creator,
                 original_name_bho as original_name,
-                kind_id_cli as kind,
+                kind_id_cli as borehole_type,
                 restriction_id_cli as restriction,
                 to_char(
                     restriction_until_bho,

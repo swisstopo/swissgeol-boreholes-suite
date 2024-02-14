@@ -193,7 +193,7 @@
   "instrument": "Instrumentation",
   "invertedDepth": "Profondeurs inversées",
   "italian": "Italien",
-  "kind": "Type de forage",
+  "borehole_type": "Type de forage",
   "kindCasingLayer": "Type de tubage",
   "kindFilling": "Type de remplissage",
   "kindInstrument": "Type d'instrument",

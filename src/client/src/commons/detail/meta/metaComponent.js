@@ -316,7 +316,7 @@ class MetaComponent extends React.Component {
               flexDirection: "row",
             }}>
             <div style={flexRowStyle}>
-              {this.getDomainRow("kind", data.kind)}
+              {this.getDomainRow("borehole_type", data.borehole_type)}
               {this.getDomainRow(
                 "extended.purpose",
                 data.extended.purpose,

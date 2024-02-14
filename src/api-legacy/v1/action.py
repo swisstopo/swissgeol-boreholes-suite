@@ -72,7 +72,7 @@ class Action():
         elif orderby == 'length':
             _orderby = 'total_depth'
 
-        elif orderby == 'kind':
+        elif orderby == 'borehole_type':
             _orderby = 'kind_id_cli'
 
         elif orderby == 'restriction_until':
@@ -499,8 +499,8 @@ class Action():
                         project_name_bho ILIKE %s
                     """ % self.getIdx())
 
-            if 'kind' in keys and filter['kind'] not in ['', None]:
-                params.append(int(filter['kind']))
+            if 'borehole_type' in keys and filter['borehole_type'] not in ['', None]:
+                params.append(int(filter['borehole_type']))
                 where.append("""
                     kind_id_cli = %s
                 """ % self.getIdx())
