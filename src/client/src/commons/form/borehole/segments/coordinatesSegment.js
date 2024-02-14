@@ -568,14 +568,14 @@ const CoordinatesSegment = props => {
         <Form.Group widths="equal">
           <Form.Field required>
             <label>
-              <TranslationText id="qt_location" />
+              <TranslationText id="location_precision" />
             </label>
             <DomainDropdown
               onSelected={selected => {
-                updateChange("qt_location", selected.id, false);
+                updateChange("location_precision", selected.id, false);
               }}
-              schema="qt_location"
-              selected={borehole.data.qt_location}
+              schema="location_precision"
+              selected={borehole.data.location_precision}
               readOnly={!isEditable}
             />
           </Form.Field>

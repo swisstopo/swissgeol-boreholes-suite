@@ -290,7 +290,7 @@
   "qt_bore_inc_dir": "Ink. / Richtung Genauigkeit",
   "qt_depth": "+/- Bohrlochlänge [m MD]",
   "qt_elevation": "+/- Terrainhöhe [m]",
-  "qt_location": "+/- Koordinaten [m]",
+  "location_precision": "+/- Koordinaten [m]",
   "qt_top_bedrock": "+/- Top Fels [m MD]",
   "reference_elevation": "Referenz Ansatzhöhe [m ü.M.]",
   "reference_elevation_qt": "+/- Referenz Ansatzhöhe [m]",

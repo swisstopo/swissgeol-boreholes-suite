@@ -51,8 +51,8 @@ export const locationEditorData = [
   },
   {
     id: 10,
-    label: "qt_location",
-    value: "qt_location",
+    label: "location_precision",
+    value: "location_precision",
   },
   {
     id: 11,

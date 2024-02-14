@@ -44,7 +44,7 @@ class MultipleForm extends React.Component {
           value: null,
         },
         national_interest: { api: "national_interest", value: null },
-        qt_location: { api: "qt_location", value: null },
+        location_precision: { api: "location_precision", value: null },
         qt_elevation: { api: "qt_elevation", value: null },
         reference_elevation_qt: {
           api: "qt_reference_elevation",
@@ -409,7 +409,7 @@ class MultipleForm extends React.Component {
               </Form.Field>
             ) : null}
             {this.getGroup([
-              this.getDomain("qt_location"),
+              this.getDomain("location_precision"),
               this.getDomain("qt_elevation"),
               this.getDomain("reference_elevation_qt", "qt_elevation"),
               this.getDomain("reference_elevation_type", "ibor117"),

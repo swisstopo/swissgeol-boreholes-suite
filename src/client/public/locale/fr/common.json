@@ -290,7 +290,7 @@
   "qt_bore_inc_dir": "Précision de inclin. / direction",
   "qt_depth": "+/- Longueur du forage [m MD]",
   "qt_elevation": "+/- Niveau du terrain [m]",
-  "qt_location": "+/- Coordonnées [m]",
+  "location_precision": "+/- Coordonnées [m]",
   "qt_top_bedrock": "+/- Toit du rocher [m MD]",
   "reference_elevation": "Référence altitudinale [m s.m.]",
   "reference_elevation_qt": "+/- Référence altitudinale [m]",

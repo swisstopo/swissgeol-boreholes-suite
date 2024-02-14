@@ -163,11 +163,11 @@ public class Borehole : IChangeTracking, IIdentifyable
     public string? AlternateName { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s QTLocationId.
+    /// Gets or sets the <see cref="Borehole"/>'s location precision.
     /// </summary>
     [Column("qt_location_id_cli")]
-    public int? QtLocationId { get; set; }
-    public Codelist? QtLocation { get; set; }
+    public int? LocationPrecisionId { get; set; }
+    public Codelist? LocationPrecision { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s QTElevationId.

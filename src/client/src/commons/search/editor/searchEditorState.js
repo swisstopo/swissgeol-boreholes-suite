@@ -112,7 +112,7 @@ const initialState = {
     reference_elevation_type: null,
     qt_reference_elevation: null,
     qt_elevation: null,
-    qt_location: null,
+    location_precision: null,
     reference_elevation_from: "",
     reference_elevation_to: "",
     srs: null,

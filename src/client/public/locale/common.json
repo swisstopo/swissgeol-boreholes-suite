@@ -284,7 +284,7 @@
   "qt_bore_inc_dir": "",
   "qt_elevation": "",
   "qt_depth": "",
-  "qt_location": "",
+  "location_precision": "",
   "qt_top_bedrock": "",
   "refElevationCasing": "",
   "refresh": "",

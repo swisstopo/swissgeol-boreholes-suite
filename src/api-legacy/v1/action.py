@@ -649,11 +649,11 @@ class Action():
                     drilling_diameter_bho <= %s
                 """ % self.getIdx())
 
-            if 'qt_location' in keys and filter[
-                    'qt_location'] not in ['', None]:
-                params.append(int(filter['qt_location']))
+            if 'location_precision' in keys and filter[
+                    'location_precision'] not in ['', None]:
+                params.append(int(filter['location_precision']))
                 where.append("""
-                    qt_location_id_cli = %s
+                    location_precision_id_cli = %s
                 """ % self.getIdx())
 
             if 'reference_elevation_from' in keys and filter['reference_elevation_from'] not in ['', None]:

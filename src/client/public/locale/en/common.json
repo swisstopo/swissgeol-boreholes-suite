@@ -290,7 +290,7 @@
   "qt_bore_inc_dir": "Inclin. / direction precision",
   "qt_depth": "+/- Borehole length [m MD]",
   "qt_elevation": "+/- Ground elevation [m]",
-  "qt_location": "+/- Coordinates [m]",
+  "location_precision": "+/- Coordinates [m]",
   "qt_top_bedrock": "+/- Top bedrock [m MD]",
   "reference_elevation": "Reference elevation [m a.s.l.]",
   "reference_elevation_qt": "+/- Reference elevation [m]",

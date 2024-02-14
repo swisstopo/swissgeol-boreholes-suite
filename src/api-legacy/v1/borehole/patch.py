@@ -119,7 +119,7 @@ class PatchBorehole(Action):
         elif field == 'srs':
             column = 'srs_id_cli'
 
-        elif field == 'qt_location':
+        elif field == 'location_precision':
             column = 'qt_location_id_cli'
 
         elif field == 'qt_elevation':
@@ -273,7 +273,7 @@ class PatchBorehole(Action):
                 'restriction',
                 'kind',
                 'srs',
-                'qt_location',
+                'location_precision',
                 'qt_elevation',
                 'hrs',
                 'custom.landuse',

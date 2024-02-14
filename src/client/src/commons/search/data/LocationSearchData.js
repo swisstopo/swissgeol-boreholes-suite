@@ -157,12 +157,12 @@ export const LocationSearchData = [
   {
     id: 14,
     type: "Dropdown",
-    label: "qt_location",
-    value: "qt_location",
-    schema: "qt_location",
+    label: "location_precision",
+    value: "location_precision",
+    schema: "location_precision",
     multiple: false,
     search: false,
-    isVisibleValue: "qt_location",
+    isVisibleValue: "location_precision",
   },
   {
     id: 15,

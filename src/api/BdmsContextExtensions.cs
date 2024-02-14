@@ -62,7 +62,7 @@ public static class BdmsContextExtensions
         List<int> srsIds = codelists.Where(c => c.Schema == "srs").Select(s => s.Id).ToList();
         List<int> hrsIds = codelists.Where(c => c.Schema == "hrs").Select(s => s.Id).ToList();
         List<int> restrictionIds = codelists.Where(c => c.Schema == "restriction").Select(s => s.Id).ToList();
-        List<int> qtLocationnIds = codelists.Where(c => c.Schema == "qt_location").Select(s => s.Id).ToList();
+        List<int> locationPrecisionIds = codelists.Where(c => c.Schema == "location_precision").Select(s => s.Id).ToList();
         List<int> qtDescriptionIds = codelists.Where(c => c.Schema == "qt_description").Select(s => s.Id).ToList();
         List<int> drillingMethodIds = codelists.Where(c => c.Schema == "drilling_method").Select(s => s.Id).ToList();
         List<int> cuttingsIds = codelists.Where(c => c.Schema == "borehole_cuttings_core").Select(s => s.Id).ToList();
@@ -139,8 +139,8 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.RestrictionUntil, f => f.Date.Future().ToUniversalTime().OrNull(f, .9f))
            .RuleFor(o => o.OriginalName, f => f.Name.FullName())
            .RuleFor(o => o.AlternateName, f => f.Person.UserName.OrNull(f, .1f))
-           .RuleFor(o => o.QtLocationId, f => f.PickRandom(qtLocationnIds).OrNull(f, .1f))
-           .RuleFor(o => o.QtLocation, _ => default!)
+           .RuleFor(o => o.LocationPrecisionId, f => f.PickRandom(locationPrecisionIds).OrNull(f, .1f))
+           .RuleFor(o => o.LocationPrecision, _ => default!)
            .RuleFor(o => o.QtElevationId, f => f.PickRandom(qtElevationIds).OrNull(f, .1f))
            .RuleFor(o => o.QtElevation, _ => default!)
            .RuleFor(o => o.ProjectName, f => f.Company.CatchPhrase().OrNull(f, .1f))

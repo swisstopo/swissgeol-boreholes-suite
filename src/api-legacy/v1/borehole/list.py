@@ -45,7 +45,7 @@ class ListBorehole(Action):
                 COALESCE(
                     qtloc.text_cli_{language},
                     qtloc.text_cli_{fallback}
-                ) as qt_location,
+                ) as location_precision,
                 elevation_z_bho as elevation_z,
                 COALESCE(
                     hrs.text_cli_{language},
@@ -230,7 +230,7 @@ class ListBorehole(Action):
                 location_y_lv03_bho as location_y_lv03,
                 srd.geolcode as srs,
                 
-                qtloc.geolcode as qt_location,
+                qtloc.geolcode as location_precision,
                 elevation_z_bho as elevation_z,
                 hrs.geolcode as hrs,
                 qth.geolcode as qt_elevation,

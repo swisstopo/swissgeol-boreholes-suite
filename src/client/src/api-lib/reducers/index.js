@@ -330,7 +330,7 @@ export function borehole() {
         location_x: "",
         location_y: "",
         srs: null,
-        qt_location: null,
+        location_precision: null,
         elevation_z: "",
         hrs: null,
         qt_elevation: null,
