@@ -106,6 +106,12 @@ describe("Tests for the hydrotest editor.", () => {
     evaluateDisplayValue("hydrotestResult.0.minValue", "5 m/s");
     evaluateDisplayValue("hydrotestResult.0.maxValue", "15 m/s");
 
+    startEditing();
+    setInput("comment", "Lorem.");
+    saveForm();
+    cy.wait("@hydrotest_GET");
+    evaluateDisplayValue("comment", "Lorem.");
+
     // delete hydrotest
     deleteItem();
     cy.wait("@hydrotest_GET");
