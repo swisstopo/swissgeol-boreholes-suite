@@ -255,7 +255,7 @@ const ProfileView = props => {
                 "grain_granularity",
               )}
               {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "mlpr108"),
+                layer.codelists.filter(c => c.schema === "organic_components"),
                 "organic_component",
               )}
               {getDomainRowMultiple(

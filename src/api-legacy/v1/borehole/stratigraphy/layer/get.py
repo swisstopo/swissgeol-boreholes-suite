@@ -48,7 +48,7 @@ class GetLayer(Action):
             layer.alteration_id_cli AS alteration,
             layer.compactness_id_cli AS compactness,
             COALESCE(
-                mlpr108, '{}'::int[]
+                organic_components, '{}'::int[]
             ) AS organic_component,
             striae_lay AS striae,
             layer.grain_size_1_id_cli AS grain_size_1,
@@ -157,11 +157,11 @@ class GetLayer(Action):
 
         LEFT JOIN (
             SELECT
-                id_lay_fk, array_agg(id_cli_fk) as mlpr108
+                id_lay_fk, array_agg(id_cli_fk) as organic_components
             FROM
                 bdms.layer_codelist
             WHERE
-                code_cli = 'mlpr108'
+                code_cli = 'organic_components'
             GROUP BY id_lay_fk
         ) oco
         ON oco.id_lay_fk = id_lay

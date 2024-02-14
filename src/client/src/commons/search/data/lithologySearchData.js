@@ -170,7 +170,7 @@ export const lithologySearchData = [
     type: "Dropdown",
     label: "organic_component",
     value: "organic_component",
-    schema: "mlpr108",
+    schema: "organic_components",
     multiple: false,
     search: true,
     isVisibleValue: "layer.organic_component",

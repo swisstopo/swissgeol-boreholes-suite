@@ -97,7 +97,7 @@ const ProfileAttributes = props => {
       );
       response["organic_component"] = mapCodelistToAttribute(
         response.codelists,
-        "mlpr108",
+        "organic_components",
       );
       response["debris"] = mapCodelistToAttribute(response.codelists, "debris");
       response["color"] = mapCodelistToAttribute(response.codelists, "mlpr112");

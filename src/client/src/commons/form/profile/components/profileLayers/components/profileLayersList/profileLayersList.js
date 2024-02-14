@@ -154,7 +154,7 @@ const ProfileLayersList = props => {
 
     let organicCompounds = [];
     item?.codelists
-      .filter(c => c.schema === "mlpr108")
+      .filter(c => c.schema === "organic_components")
       .forEach(element => {
         organicCompounds.push(element[i18n.language]);
       });

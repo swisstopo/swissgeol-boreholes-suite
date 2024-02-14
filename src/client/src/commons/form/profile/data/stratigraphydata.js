@@ -168,7 +168,7 @@ export const stratigraphyData = {
       type: "Dropdown",
       label: "organic_component",
       value: "organic_component",
-      schema: "mlpr108",
+      schema: "organic_components",
       multiple: true,
       search: true,
       isVisibleValue: "organic_component",
