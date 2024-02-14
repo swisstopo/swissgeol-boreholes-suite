@@ -29,7 +29,7 @@ public class LithologicalDescriptionControllerTest
         var response = await controller.GetAsync().ConfigureAwait(false);
         IEnumerable<LithologicalDescription>? lithologicalDescriptions = response;
         Assert.IsNotNull(lithologicalDescriptions);
-        Assert.AreEqual(100_000, lithologicalDescriptions.Count());
+        Assert.AreEqual(30_000, lithologicalDescriptions.Count());
     }
 
     [TestMethod]

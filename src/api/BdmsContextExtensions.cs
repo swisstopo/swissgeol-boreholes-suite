@@ -107,7 +107,7 @@ public static class BdmsContextExtensions
 
         // Seed Boreholes
         var borehole_ids = 1_000_000;
-        var boreholeRange = Enumerable.Range(borehole_ids, 10000).ToList();
+        var boreholeRange = Enumerable.Range(borehole_ids, 3000).ToList();
         var fakeBoreholes = new Faker<Borehole>()
            .StrictMode(true)
            .RuleFor(o => o.Id, f => borehole_ids++)

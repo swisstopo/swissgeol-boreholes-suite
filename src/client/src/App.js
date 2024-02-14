@@ -19,25 +19,33 @@ import { AlertBanner } from "./components/alert/alertBanner";
 
 const queryClient = new QueryClient();
 
-const theme = createTheme({
+export const theme = createTheme({
   palette: {
     primary: {
-      main: "#007CC3",
-      contrastText: "#fff",
+      main: "#212121",
+      contrastText: "#ffffff",
+    },
+    secondary: {
+      main: "#424242",
+      contrastText: "#ffffff",
+      background: "#eeeeee",
     },
     error: {
-      main: "#9f3a38",
-      background: "#fff6f6",
+      main: "#f44336",
+      dark: "#d32f2f",
+      contrastText: "#ffffff",
+      background: "#ffebee",
     },
     neutral: {
       main: "#d8d8d8",
+      contrastText: "#000000",
     },
   },
   typography: {
     fontFamily: "Lato",
     subtitle1: {
       fontSize: "13px",
-      color: "black",
+      color: "#000000",
       lineHeight: "1.4em",
     },
     subtitle2: {
@@ -47,7 +55,7 @@ const theme = createTheme({
     },
     fullPageMessage: {
       fontSize: "23px",
-      color: "black",
+      color: "#000000",
     },
   },
   breakpoints: {
@@ -60,42 +68,46 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiButtonBase: {
+      defaultProps: {
+        disableRipple: true,
+      },
+    },
     MuiButton: {
-      variants: [
-        {
-          props: { variant: "delete" },
-          style: {
-            backgroundColor: "rgb(219, 40, 40)",
-            color: "white",
-            textTransform: "none",
-            fontWeight: "bold",
-            fontSize: "0.8em",
-            height: "2.5em",
-            marginRight: "0.5em",
-            marginBottom: "0.5em",
-            "&:hover": {
-              backgroundColor: "rgba(219, 40, 40, 0.6)",
-            },
+      styleOverrides: {
+        root: {
+          fontFamily: "Lato",
+          fontWeight: "bold",
+          textTransform: "none",
+          marginLeft: "5px",
+          boxShadow: "none",
+          "&:hover": {
+            boxShadow: "none",
           },
         },
-        {
-          props: { variant: "cancel" },
-          style: {
-            color: "rgba(0, 0, 0, 0.6)",
-            borderColor: "rgba(0, 0, 0, 0.6)",
-            textTransform: "none",
-            fontWeight: "bold",
-            fontSize: "0.8em",
-            height: "2.5em",
-            marginRight: "0.5em",
-            marginBottom: "0.5em",
-            border: "1px solid rgba(0, 0, 0, 0.6)",
-            "&:hover": {
-              backgroundColor: "white",
-            },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          "&:hover, &.Mui-focusVisible, &:active, &:focus, &:focus-visible": {
+            backgroundColor: "rgba(0, 0, 0, 0.0)",
+          },
+          "& .MuiTouchRipple-root": {
+            display: "none",
           },
         },
-      ],
+      },
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          fontFamily: "Lato",
+          fontWeight: "bold",
+          textTransform: "none",
+          fontSize: "16px",
+        },
+      },
     },
   },
 });

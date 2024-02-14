@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
+import { CircularProgress, Stack, Typography } from "@mui/material";
 import {
-  AddButton,
   CompletionBox,
   CompletionTabs,
   CompletionTab,
@@ -19,6 +18,8 @@ import CompletionContent from "./completionContent";
 import CompletionHeaderInput from "./completionHeaderInput";
 import CompletionHeaderDisplay from "./completionHeaderDisplay";
 import Prompt from "../../../../components/prompt/prompt";
+import { AddButton } from "../../../../components/buttons/buttons";
+import { FullPage } from "../../../../components/baseComponents";
 
 const Completion = props => {
   const { isEditable } = props;
@@ -243,7 +244,7 @@ const Completion = props => {
 
   return (
     <>
-      <Stack direction="column" flex="1">
+      <FullPage>
         <Stack flex="0 1 auto">
           <Stack
             direction="row"
@@ -268,16 +269,13 @@ const Completion = props => {
                 })}
             </CompletionTabs>
             {isEditable && (
-              <Tooltip title={t("add")}>
-                <AddButton
-                  sx={{ marginRight: "5px" }}
-                  data-cy="add-completion-button"
-                  onClick={e => {
-                    handleCompletionChanged(e, -1);
-                  }}>
-                  {t("addCompletion")}
-                </AddButton>
-              </Tooltip>
+              <AddButton
+                label="addCompletion"
+                sx={{ marginRight: "5px" }}
+                onClick={e => {
+                  handleCompletionChanged(e, -1);
+                }}
+              />
             )}
           </Stack>
           {state.selected != null && (
@@ -315,7 +313,7 @@ const Completion = props => {
               alignItems="center"
               justifyContent="center"
               sx={{ flexGrow: 1 }}>
-              <CircularProgress color="inherit" />
+              <CircularProgress />
             </Stack>
           ) : state.selected === null ? (
             <Stack
@@ -335,7 +333,7 @@ const Completion = props => {
             )
           )}
         </Stack>
-      </Stack>
+      </FullPage>
       <Prompt
         open={showDeletePrompt}
         setOpen={setShowDeletePrompt}

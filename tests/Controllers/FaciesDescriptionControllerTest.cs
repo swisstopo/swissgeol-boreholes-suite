@@ -29,7 +29,7 @@ public class FaciesDescriptionControllerTest
         var response = await controller.GetAsync().ConfigureAwait(false);
         IEnumerable<FaciesDescription>? faciesDescriptions = response;
         Assert.IsNotNull(faciesDescriptions);
-        Assert.AreEqual(100_000, faciesDescriptions.Count());
+        Assert.AreEqual(30_000, faciesDescriptions.Count());
     }
 
     [TestMethod]

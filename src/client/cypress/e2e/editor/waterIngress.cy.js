@@ -1,6 +1,6 @@
 import {
   createBorehole,
-  bearerAuth,
+  createCompletion,
   startBoreholeEditing,
   loginAsAdmin,
 } from "../helpers/testHelpers";
@@ -9,33 +9,22 @@ import {
   setInput,
   setSelect,
 } from "../helpers/formHelpers";
+import {
+  addItem,
+  startEditing,
+  saveForm,
+  deleteItem,
+} from "../helpers/buttonHelpers";
 
 describe("Tests for the wateringress editor.", () => {
   it("Creates, updates and deletes wateringresses", () => {
     // Precondition: Create casing to later link in observation
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id =>
-        cy.get("@id_token").then(token => {
-          cy.request({
-            method: "POST",
-            url: "/api/v2/completion",
-            cache: "no-cache",
-            credentials: "same-origin",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: {
-              boreholeId: id,
-              isPrimary: true,
-              kindId: 16000002,
-            },
-            auth: bearerAuth(token),
-          }).then(response => {
-            expect(response).to.have.property("status", 200);
-          });
-        }),
-      );
+      .then(id => createCompletion("test wateringress", id, 16000002, true))
+      .then(response => {
+        expect(response).to.have.property("status", 200);
+      });
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
@@ -48,10 +37,10 @@ describe("Tests for the wateringress editor.", () => {
     // start editing session
     startBoreholeEditing();
 
-    cy.get("[data-cy=completion-content-header-tab-Casing]").click();
+    cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
-    cy.get('[data-cy="addCasing-button"]').click({ force: true });
+    addItem("addCasing");
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1");
@@ -64,7 +53,7 @@ describe("Tests for the wateringress editor.", () => {
     setInput("innerDiameter", "3");
     setInput("outerDiameter", "4");
 
-    cy.get('[data-cy="save-icon"]').click();
+    saveForm();
     cy.wait("@casing_GET");
 
     cy.get('[data-cy="hydrogeology-menu-item"]').click({ force: true });
@@ -77,17 +66,17 @@ describe("Tests for the wateringress editor.", () => {
     cy.contains("span", "DE").click({ force: true });
 
     // create wateringress
-    cy.get('[data-cy="add-wateringress-button"]').click({ force: true });
+    addItem("addWaterIngress");
     cy.wait("@casing_GET");
 
     setSelect("quantityId", 2);
-    setSelect("conditionsId", 3);
+    setSelect("conditionsId", 2);
     setSelect("reliabilityId", 1);
     setSelect("casingId", 1);
     setInput("startTime", "2012-11-14T12:06");
 
     // close editing mask
-    cy.get('[data-cy="close-icon"]').click({ force: true });
+    saveForm();
 
     evaluateDisplayValue("quantity", "viel (> 120 l/min)");
     evaluateDisplayValue("conditions", "frei/ungespannt");
@@ -95,13 +84,14 @@ describe("Tests for the wateringress editor.", () => {
     evaluateDisplayValue("casingName", "casing-1");
 
     // edit wateringress
-    cy.get('[data-cy="edit-icon"]').click({ force: true });
+    startEditing();
     setSelect("quantityId", 1);
-    cy.get('[data-cy="close-icon"]').click({ force: true });
+    saveForm();
     evaluateDisplayValue("quantity", "mittel (30 - 120 l/min)");
+    evaluateDisplayValue("casingName", "casing-1");
 
     // delete wateringress
-    cy.get('[data-cy="delete-icon"]').click({ force: true });
+    deleteItem();
     cy.wait("@wateringress_DELETE");
     cy.get("body").should("not.contain", "mittel (30 - 120 l/min)");
   });

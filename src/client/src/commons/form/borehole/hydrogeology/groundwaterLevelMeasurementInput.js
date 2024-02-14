@@ -1,148 +1,71 @@
-import React, { useEffect, useContext } from "react";
-import { useForm, FormProvider } from "react-hook-form";
-import { Box, Card, Stack, Tooltip } from "@mui/material";
+import React from "react";
+import { Stack } from "@mui/material";
 import { FormInput, FormSelect } from "../../../../components/form/form";
+import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
 import { useDomains } from "../../../../api/fetchApiV2";
-import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
-import { AlertContext } from "../../../../components/alert/alertContext";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 
 const GroundwaterLevelMeasurementInput = props => {
-  const {
-    groundwaterLevelMeasurement,
-    setSelectedGroundwaterLevelMeasurement,
-    boreholeId,
-    addGroundwaterLevelMeasurement,
-    updateGroundwaterLevelMeasurement,
-  } = props;
+  const { item, setSelected, parentId, addData, updateData } = props;
   const domains = useDomains();
-  const { t, i18n } = useTranslation();
-  const formMethods = useForm();
-  const alertContext = useContext(AlertContext);
+  const { i18n } = useTranslation();
 
-  // submit values on unmount with useEffect clean up function.
-  useEffect(() => {
-    return () => {
-      formMethods.handleSubmit(submitForm)();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formMethods.handleSubmit]);
-
-  // trigger form validation on mount
-  useEffect(() => {
-    formMethods.trigger();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formMethods.trigger]);
-
-  const submitForm = data => {
-    //convert dates to IsoStrings
+  const prepareFormDataForSubmit = data => {
     data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
-    if (data.startTime && data.kindId && data.reliabilityId) {
-      if (groundwaterLevelMeasurement.id === 0) {
-        addGroundwaterLevelMeasurement({
-          ...data,
-          type: ObservationType.groundwaterLevelMeasurement,
-          boreholeId: boreholeId,
-        });
-      } else {
-        delete groundwaterLevelMeasurement.casing;
-        delete groundwaterLevelMeasurement.kind;
-        delete groundwaterLevelMeasurement.reliability;
-        updateGroundwaterLevelMeasurement({
-          ...groundwaterLevelMeasurement,
-          ...data,
-        });
-      }
-    } else {
-      setSelectedGroundwaterLevelMeasurement(null);
+    data.type = ObservationType.groundwaterLevelMeasurement;
+    data.boreholeId = parentId;
+    if (data.casingId == null) {
+      data.casingId = item.casingId;
     }
-  };
-
-  const closeFormIfCompleted = () => {
-    const formValues = formMethods.getValues();
-    if (
-      !formValues.reliabilityId ||
-      !formValues.kindId ||
-      !formValues.startTime
-    ) {
-      alertContext.error(t("gwlmRequiredFieldsAlert"));
-    } else {
-      setSelectedGroundwaterLevelMeasurement(null);
-    }
+    return data;
   };
 
   return (
-    <Card
-      sx={{
-        border: "1px solid lightgrey",
-        borderRadius: "3px",
-        p: 1.5,
-        mb: 2,
-        height: "100%",
-      }}>
-      <FormProvider {...formMethods}>
-        <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <Stack direction="row" sx={{ width: "100%" }}>
-            <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
-              <ObservationInput
-                observation={groundwaterLevelMeasurement}
-                boreholeId={boreholeId}
-              />
-              <Stack direction="row" sx={{ paddingTop: "10px" }}>
-                <FormSelect
-                  fieldName="kindId"
-                  label="gwlm_kind"
-                  selected={groundwaterLevelMeasurement.kindId}
-                  required={true}
-                  values={domains?.data
-                    ?.filter(
-                      d =>
-                        d.schema ===
-                        hydrogeologySchemaConstants.groundwaterLevelMeasurementKind,
-                    )
-                    .sort((a, b) => a.order - b.order)
-                    .map(d => ({
-                      key: d.id,
-                      name: d[i18n.language],
-                    }))}
-                />
-              </Stack>
-              <Stack direction="row">
-                <FormInput
-                  fieldName="levelMasl"
-                  label="gwlm_levelmasl"
-                  value={groundwaterLevelMeasurement.levelMasl}
-                  type="number"
-                />
-                <FormInput
-                  fieldName="levelM"
-                  label="gwlm_levelm"
-                  value={groundwaterLevelMeasurement.levelM}
-                  type="number"
-                />
-              </Stack>
-            </Stack>
-            <Box sx={{ marginLeft: "auto" }}>
-              <Tooltip title={t("close")}>
-                <CheckIcon
-                  sx={{
-                    color: formMethods.formState.isValid
-                      ? "#0080008c"
-                      : "disabled",
-                  }}
-                  data-cy="close-icon"
-                  onClick={() => closeFormIfCompleted()}
-                />
-              </Tooltip>
-            </Box>
-          </Stack>
-        </form>
-      </FormProvider>
-    </Card>
+    <DataInputCard
+      item={item}
+      setSelected={setSelected}
+      addData={addData}
+      updateData={updateData}
+      prepareFormDataForSubmit={prepareFormDataForSubmit}>
+      <ObservationInput observation={item} boreholeId={parentId} />
+      <Stack direction="row" sx={{ paddingTop: "10px" }}>
+        <FormSelect
+          fieldName="kindId"
+          label="gwlm_kind"
+          selected={item.kindId}
+          required={true}
+          values={domains?.data
+            ?.filter(
+              d =>
+                d.schema ===
+                hydrogeologySchemaConstants.groundwaterLevelMeasurementKind,
+            )
+            .sort((a, b) => a.order - b.order)
+            .map(d => ({
+              key: d.id,
+              name: d[i18n.language],
+            }))}
+        />
+      </Stack>
+      <Stack direction="row">
+        <FormInput
+          fieldName="levelMasl"
+          label="gwlm_levelmasl"
+          value={item.levelMasl}
+          type="number"
+        />
+        <FormInput
+          fieldName="levelM"
+          label="gwlm_levelm"
+          value={item.levelM}
+          type="number"
+        />
+      </Stack>
+    </DataInputCard>
   );
 };
 

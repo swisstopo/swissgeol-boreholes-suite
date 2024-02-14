@@ -9,6 +9,12 @@ import {
   setInput,
   setSelect,
 } from "../helpers/formHelpers";
+import {
+  addItem,
+  startEditing,
+  saveForm,
+  deleteItem,
+} from "../helpers/buttonHelpers";
 
 describe("Casing crud tests", () => {
   it("add, edit and delete casings", () => {
@@ -31,11 +37,11 @@ describe("Casing crud tests", () => {
     startBoreholeEditing();
 
     // select casing tab
-    cy.get("[data-cy=completion-content-header-tab-Casing]").click();
+    cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
     // create casing
-    cy.get('[data-cy="addCasing-button"]').click();
+    addItem("addCasing");
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1");
@@ -49,7 +55,7 @@ describe("Casing crud tests", () => {
     setInput("outerDiameter", "4");
     setInput("notes", "Lorem.");
 
-    cy.get('[data-cy="save-icon"]').click();
+    saveForm();
     cy.wait("@casing_GET");
 
     evaluateDisplayValue("name", "casing-1");
@@ -59,28 +65,28 @@ describe("Casing crud tests", () => {
     evaluateDisplayValue("materialCasingLayer", "steel");
     evaluateDisplayValue("dateStartCasing", "01. Jan. 2021");
     evaluateDisplayValue("dateFinishCasing", "02. Jan. 2021");
-    evaluateDisplayValue("casing_inner_diameter", "3");
-    evaluateDisplayValue("casing_outer_diameter", "4");
+    evaluateDisplayValue("casingInnerDiameter", "3");
+    evaluateDisplayValue("casingOuterDiameter", "4");
     evaluateDisplayValue("notes", "Lorem.");
 
     // update casing
-    cy.get('[data-cy="edit-icon"]').click();
+    startEditing();
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1 updated");
     setSelect("materialId", 5);
 
-    cy.get('[data-cy="save-icon"]').click({ force: true });
+    saveForm();
     evaluateDisplayValue("name", "casing-1 updated");
     evaluateDisplayValue("materialCasingLayer", "concrete");
-    evaluateDisplayValue("casing_inner_diameter", "3");
+    evaluateDisplayValue("casingInnerDiameter", "3");
 
     // delete casing
     // Precondition: instrumentation with reference to casing
-    cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
+    cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
-    cy.get('[data-cy="addInstrument-button"]').click({ force: true });
+    addItem("addInstrument");
     cy.wait("@casing_GET");
 
     setInput("notes", "Lorem.");
@@ -90,16 +96,16 @@ describe("Casing crud tests", () => {
     setSelect("kindId", 2);
     setSelect("statusId", 1);
     setSelect("casingId", 1);
-    cy.get('[data-cy="save-icon"]').click({ force: true });
+    saveForm();
 
-    cy.get("[data-cy=completion-content-header-tab-Casing]").click();
+    cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
 
-    cy.get('[data-cy="delete-icon"]').click({ force: true });
+    deleteItem();
     cy.wait("@casing_DELETE");
     cy.contains("casing-1 updated").should("not.exist");
 
-    cy.get("[data-cy=completion-content-header-tab-Instrumentation]").click();
+    cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
     evaluateDisplayValue("casingName", "-");
   });

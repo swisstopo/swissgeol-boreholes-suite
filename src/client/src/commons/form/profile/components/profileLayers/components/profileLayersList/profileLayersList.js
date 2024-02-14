@@ -345,7 +345,7 @@ const ProfileLayersList = props => {
                     </Tooltip>
                     <Tooltip title={t("delete")}>
                       <DeleteIcon
-                        sx={{ color: "red", opacity: 0.7 }}
+                        color="error"
                         onClick={e => {
                           e.stopPropagation();
                           isStratigraphy

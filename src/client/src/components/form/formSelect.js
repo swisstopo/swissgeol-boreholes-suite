@@ -4,7 +4,16 @@ import { useFormContext } from "react-hook-form";
 import { FormField, getInputFieldBackgroundColor } from "./form";
 
 export const FormSelect = props => {
-  const { fieldName, label, required, disabled, selected, values, sx } = props;
+  const {
+    fieldName,
+    label,
+    required,
+    disabled,
+    selected,
+    values,
+    sx,
+    onUpdate,
+  } = props;
   const { t } = useTranslation();
   const { formState, register, setValue } = useFormContext();
 
@@ -40,6 +49,9 @@ export const FormSelect = props => {
         required: required || false,
         onChange: e => {
           setValue(fieldName, e.target.value, { shouldValidate: true });
+          if (onUpdate) {
+            onUpdate(e.target.value);
+          }
         },
       })}
       defaultValue={selected || ""}
