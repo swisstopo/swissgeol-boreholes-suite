@@ -412,7 +412,10 @@ class MultipleForm extends React.Component {
               this.getDomain("location_precision"),
               this.getDomain("elevation_precision"),
               this.getDomain("reference_elevation_qt", "elevation_precision"),
-              this.getDomain("reference_elevation_type", "ibor117"),
+              this.getDomain(
+                "reference_elevation_type",
+                "reference_elevation_type",
+              ),
             ])}
             {this.getGroup([
               this.getDomain("kind"),

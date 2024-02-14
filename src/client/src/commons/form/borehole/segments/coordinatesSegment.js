@@ -671,7 +671,7 @@ const CoordinatesSegment = props => {
               onSelected={selected => {
                 updateChange("reference_elevation_type", selected.id, false);
               }}
-              schema="ibor117"
+              schema="reference_elevation_type"
               selected={borehole.data.reference_elevation_type}
               readOnly={!isEditable}
             />

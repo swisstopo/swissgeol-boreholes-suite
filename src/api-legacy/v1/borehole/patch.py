@@ -310,7 +310,7 @@ class PatchBorehole(Action):
                     schema = 'elevation_precision'
 
                 elif field == 'reference_elevation_type':
-                    schema = 'ibor117'
+                    schema = 'reference_elevation_type'
 
                 elif field == 'qt_total_depth_tvd':
                     schema = 'depth_precision'

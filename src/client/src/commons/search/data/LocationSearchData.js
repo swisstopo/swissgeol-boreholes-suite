@@ -149,7 +149,7 @@ export const LocationSearchData = [
     type: "Dropdown",
     label: "reference_elevation_type",
     value: "reference_elevation_type",
-    schema: "ibor117",
+    schema: "reference_elevation_type",
     multiple: false,
     search: false,
     isVisibleValue: "reference_elevation_type",

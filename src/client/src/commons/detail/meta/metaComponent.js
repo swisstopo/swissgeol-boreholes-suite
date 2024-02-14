@@ -274,7 +274,7 @@ class MetaComponent extends React.Component {
               data.reference_elevation,
             )}
             {this.getDomainRow(
-              "ibor117",
+              "reference_elevation_type",
               data.reference_elevation_type,
               "reference_elevation_type",
             )}

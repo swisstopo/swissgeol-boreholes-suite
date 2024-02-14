@@ -17,7 +17,7 @@ public partial class RenameCodelists : Migration
             UPDATE bdms.codelist SET schema_cli = 'backfill_material' WHERE schema_cli = 'fill200';
             UPDATE bdms.codelist SET schema_cli = 'location_precision' WHERE schema_cli = 'qt_location';
             UPDATE bdms.codelist SET schema_cli = 'elevation_precision' WHERE schema_cli = 'qt_elevation';
-            UPDATE bdms.codelist SET schema_cli = 'reference_elevation_type' WHERE schema_cli = 'ibore117';
+            UPDATE bdms.codelist SET schema_cli = 'reference_elevation_type' WHERE schema_cli = 'ibor117';
             UPDATE bdms.codelist SET schema_cli = 'instrument_type' WHERE schema_cli = 'inst100';
             UPDATE bdms.codelist SET schema_cli = 'instrument_status' WHERE schema_cli = 'inst101';
             UPDATE bdms.codelist SET schema_cli = 'uscs_type' WHERE schema_cli = 'mcla101';
