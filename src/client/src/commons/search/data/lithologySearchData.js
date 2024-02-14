@@ -90,7 +90,7 @@ export const lithologySearchData = [
     type: "Dropdown",
     label: "uscs_determination",
     value: "uscs_determination",
-    schema: "mcla104",
+    schema: "uscs_determination",
     multiple: false,
     search: true,
     isVisibleValue: "layer.uscs_determination",

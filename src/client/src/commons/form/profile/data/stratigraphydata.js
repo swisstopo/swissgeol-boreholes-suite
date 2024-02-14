@@ -88,7 +88,7 @@ export const stratigraphyData = {
       type: "Dropdown",
       label: "uscs_determination",
       value: "uscsDeterminationId",
-      schema: "mcla104",
+      schema: "uscs_determination",
       multiple: false,
       search: true,
       isVisibleValue: "uscs_determination",
