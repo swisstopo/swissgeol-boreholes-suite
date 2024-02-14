@@ -69,7 +69,7 @@ public class InstrumentationControllerTest
             Name = "REDWALK",
             CompletionId = completionId,
             StatusId = context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationStatusSchema).Id,
-            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationKindSchema).Id,
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationTypeSchema).Id,
             Notes = "ARGONSHIP",
             FromDepth = 0,
             ToDepth = 100,
@@ -86,7 +86,7 @@ public class InstrumentationControllerTest
         Assert.AreEqual(0, instrumentation.FromDepth);
         Assert.AreEqual(100, instrumentation.ToDepth);
         Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationStatusSchema).Id, instrumentation.StatusId);
-        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationKindSchema).Id, instrumentation.KindId);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationTypeSchema).Id, instrumentation.KindId);
     }
 
     [TestMethod]
@@ -97,7 +97,7 @@ public class InstrumentationControllerTest
 
         instrumentation.Name = "OCTAVEBOOK";
         instrumentation.StatusId = context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationStatusSchema).Id;
-        instrumentation.KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationKindSchema).Id;
+        instrumentation.KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationTypeSchema).Id;
         instrumentation.Notes = "COLLAR";
         instrumentation.FromDepth = 50;
         instrumentation.ToDepth = 200;
@@ -113,7 +113,7 @@ public class InstrumentationControllerTest
         Assert.AreEqual(50, instrumentation.FromDepth);
         Assert.AreEqual(200, instrumentation.ToDepth);
         Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationStatusSchema).Id, instrumentation.StatusId);
-        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationKindSchema).Id, instrumentation.KindId);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationTypeSchema).Id, instrumentation.KindId);
     }
 
     [TestMethod]
