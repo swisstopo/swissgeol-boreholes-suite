@@ -261,7 +261,7 @@ class GetBorehole(Action):
                         array_agg(
                             json_build_object(
                                 'id', id,
-                                'borehole_type', borehole_type,
+                                'kind', kind,
                                 'name', "name",
                                 'primary', "primary",
                                 'layers', layers,
