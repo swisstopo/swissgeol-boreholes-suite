@@ -1,7 +1,4 @@
-import {
-  loginAsAdmin,
-  loginAsEditorInViewerMode,
-} from "../e2e/helpers/testHelpers";
+import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/helpers/testHelpers";
 
 describe("Codelist translations tests", () => {
   it("Admin can open codelist translation section", () => {
@@ -98,14 +95,10 @@ describe("Codelist translations tests", () => {
       .find("button")
       .click();
 
-    cy.contains("p", "borehole_cuttings_core").click();
-    cy.get("div[name='borehole_cuttings_core']")
-      .children()
-      .should("have.length", 5);
-    cy.get("div[name='borehole_cuttings_core']").first().should("contain", 1);
-    cy.get("div[name='borehole_cuttings_core']")
-      .first()
-      .should("contain", "Bohrkern");
+    cy.contains("p", "custom.cuttings").click();
+    cy.get("div[name='custom.cuttings']").children().should("have.length", 5);
+    cy.get("div[name='custom.cuttings']").first().should("contain", 1);
+    cy.get("div[name='custom.cuttings']").first().should("contain", "Bohrkern");
 
     // click on record.
     cy.contains("div", "Bohrkern").click();
@@ -117,22 +110,17 @@ describe("Codelist translations tests", () => {
     cy.get("input[name=order-input]").click().clear().type("6");
     cy.contains("button", "Save").click();
 
-    cy.get("div[name='borehole_cuttings_core']")
-      .children()
-      .should("have.length", 5);
-    cy.get("div[name='borehole_cuttings_core']")
+    cy.get("div[name='custom.cuttings']").children().should("have.length", 5);
+    cy.get("div[name='custom.cuttings']")
       .children()
       .first()
       .should("contain", 2);
-    cy.get("div[name='borehole_cuttings_core']")
+    cy.get("div[name='custom.cuttings']")
       .children()
       .first()
       .should("contain", "Bohrklein");
-    cy.get("div[name='borehole_cuttings_core']")
-      .children()
-      .eq(4)
-      .should("contain", 6);
-    cy.get("div[name='borehole_cuttings_core']")
+    cy.get("div[name='custom.cuttings']").children().eq(4).should("contain", 6);
+    cy.get("div[name='custom.cuttings']")
       .children()
       .eq(4)
       .should("contain", "Bohrkern");
@@ -142,6 +130,6 @@ describe("Codelist translations tests", () => {
     cy.contains("button", "Save").click();
 
     // order was updated
-    cy.get("div[name='borehole_cuttings_core']").first().should("contain", 1);
+    cy.get("div[name='custom.cuttings']").first().should("contain", 1);
   });
 });

@@ -137,25 +137,25 @@ class PatchBorehole(Action):
         elif field == 'hrs':
             column = 'hrs_id_cli'
 
-        elif field == 'drilling_method':
+        elif field == 'extended.drilling_method':
             column = 'drilling_method_id_cli'
 
-        elif field == 'borehole_cuttings_core':
+        elif field == 'custom.cuttings':
             column = 'cuttings_id_cli'
 
-        elif field == 'drilling_purpose':
+        elif field == 'extended.purpose':
             column = 'purpose_id_cli'
 
-        elif field == 'borehole_status':
+        elif field == 'extended.status':
             column = 'status_id_cli'
 
-        elif field == 'inclination_precision':
+        elif field == 'custom.qt_bore_inc_dir':
             column = 'qt_inclination_direction_id_cli'
 
         elif field == 'custom.qt_depth':
             column = 'qt_depth_id_cli'
 
-        elif field == 'depth_precision':
+        elif field == 'custom.qt_top_bedrock':
             column = 'qt_top_bedrock'
 
         elif field == 'custom.qt_top_bedrock_tvd':
@@ -207,7 +207,7 @@ class PatchBorehole(Action):
                 'total_depth_tvd',
                 'extended.top_bedrock',
                 'extended.top_bedrock_tvd',
-                'depth_precision',
+                'custom.qt_top_bedrock',
                 'custom.qt_top_bedrock_tvd',
                 'extended.groundwater',
                 'custom.mistakes',
@@ -277,11 +277,11 @@ class PatchBorehole(Action):
                 'elevation_precision',
                 'hrs',
                 'custom.landuse',
-                'drilling_method',
-                'borehole_cuttings_core',
-                'drilling_purpose',
-                'borehole_status',
-                'inclination_precision',
+                'extended.drilling_method',
+                'custom.cuttings',
+                'extended.purpose',
+                'extended.status',
+                'custom.qt_bore_inc_dir',
                 'custom.qt_depth',
                 'custom.processing_status',
                 'custom.lithology_top_bedrock',
@@ -304,7 +304,7 @@ class PatchBorehole(Action):
                     schema = 'custom.chronostratigraphy_top_bedrock'
 
                 elif field == 'custom.qt_top_bedrock_tvd':
-                    schema = 'depth_precision'
+                    schema = 'custom.qt_top_bedrock'
 
                 elif field == 'qt_reference_elevation':
                     schema = 'elevation_precision'
@@ -313,10 +313,10 @@ class PatchBorehole(Action):
                     schema = 'reference_elevation_type'
 
                 elif field == 'qt_total_depth_tvd':
-                    schema = 'depth_precision'
+                    schema = 'custom.qt_top_bedrock'
                 
                 elif field == 'custom.qt_depth':
-                    schema = 'depth_precision'
+                    schema = 'custom.qt_top_bedrock'
 
                 # Check if domain is extracted from the correct schema
                 if value is not None and schema != (

@@ -322,7 +322,7 @@ class BoreholeEditorTable extends TTable {
         <DateText date={item.drilling_date} />
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
-        <DomainText id={item.borehole_status} schema="borehole_status" />
+        <DomainText id={item.extended.status} schema="extended.status" />
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         {_.isNil(item.total_depth) ? null : (
