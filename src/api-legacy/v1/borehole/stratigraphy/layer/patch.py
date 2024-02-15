@@ -229,9 +229,7 @@ class PatchLayer(Action):
                 'grain_shape',
                 'grain_granularity',
                 'uscs_3',
-                # 'uscs_determination',
                 'debris',
-                # 'lithology_top_bedrock'
             ]:
 
                 schema = field
@@ -251,14 +249,8 @@ class PatchLayer(Action):
                 elif field == 'uscs_3':
                     schema = 'uscs_type'
 
-                # elif field == 'uscs_determination':
-                #     schema = 'uscs_determination'
-
                 elif field == 'debris':
                     schema = 'debris'
-
-                # elif field == 'lithology_top_bedrock':
-                #     schema = 'custom.lithology_top_bedrock'
 
                 await self.conn.execute("""
                     DELETE FROM bdms.layer_codelist
