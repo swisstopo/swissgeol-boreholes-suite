@@ -1337,7 +1337,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("QtInclinationDirectionId");
 
-                    b.HasOne("BDMS.Models.Codelist", "LocationPrecision")
+                    b.HasOne("BDMS.Models.Codelist", "QtLocation")
                         .WithMany()
                         .HasForeignKey("QtLocationId");
 
@@ -1403,7 +1403,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("QtInclinationDirection");
 
-                    b.Navigation("LocationPrecision");
+                    b.Navigation("QtLocation");
 
                     b.Navigation("QtReferenceElevation");
 
