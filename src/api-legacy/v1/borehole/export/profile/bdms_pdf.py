@@ -564,8 +564,8 @@ class bdmsPdf():
             column_width, box_height,
             'none', 'contentB',  _('reference systems'),
             'content', '{}, {}'.format(
-                self.profile['srs'],
-                self.profile['hrs']
+                self.profile['spatial_reference_system'],
+                self.profile['height_reference_system']
             )
         )
 
@@ -657,8 +657,8 @@ class bdmsPdf():
         self.drawLeftTextBox2(
             2*column_width, current_y,
             column_width, box_height,
-            'none', 'contentB',  _('kind'),
-            'content', '{}'.format(self.profile['kind'] or '-')
+            'none', 'contentB',  _('borehole_type'),
+            'content', '{}'.format(self.profile['borehole_type'] or '-')
         )
 
         current_y += box_height

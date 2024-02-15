@@ -461,7 +461,7 @@ public class UploadController : ControllerBase
             Map(m => m.LockedById).Optional();
             Map(m => m.WorkgroupId).Optional();
             Map(m => m.IsPublic).Optional();
-            Map(m => m.KindId).Optional();
+            Map(m => m.TypeId).Optional();
             Map(m => m.ElevationZ).Optional();
             Map(m => m.HrsId).Optional();
             Map(m => m.TotalDepth).Optional();

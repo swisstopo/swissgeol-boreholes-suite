@@ -11,7 +11,7 @@ const initialState = {
     workgroup: "all",
     original_name: "",
     alternate_name: "",
-    kind: null,
+    borehole_type: null,
     method: null,
     restriction: null,
     project_name: "",
@@ -115,7 +115,7 @@ const initialState = {
     location_precision: null,
     reference_elevation_from: "",
     reference_elevation_to: "",
-    srs: null,
+    spatial_reference_system: null,
 
     created_by: "",
     created_date_from: null,

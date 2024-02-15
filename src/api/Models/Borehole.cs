@@ -71,15 +71,15 @@ public class Borehole : IChangeTracking, IIdentifyable
     public bool? IsPublic { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s kind id.
+    /// Gets or sets the <see cref="Borehole"/>'s type id.
     /// </summary>
     [Column("kind_id_cli")]
-    public int? KindId { get; set; }
+    public int? TypeId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s kind.
+    /// Gets or sets the <see cref="Borehole"/>'s type.
     /// </summary>
-    public Codelist? Kind { get; set; }
+    public Codelist? Type { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s X-location using LV95 coordinates.

@@ -287,7 +287,10 @@ class MetaComponent extends React.Component {
               data.qt_reference_elevation,
               "reference_elevation_qt",
             )}
-            {this.getDomainRow("hrs", data.hrs)}
+            {this.getDomainRow(
+              "height_reference_system",
+              data.height_reference_system,
+            )}
           </div>
         </div>
 
@@ -313,7 +316,7 @@ class MetaComponent extends React.Component {
               flexDirection: "row",
             }}>
             <div style={flexRowStyle}>
-              {this.getDomainRow("kind", data.kind)}
+              {this.getDomainRow("borehole_type", data.borehole_type)}
               {this.getDomainRow(
                 "extended.purpose",
                 data.extended.purpose,

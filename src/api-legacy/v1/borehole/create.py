@@ -8,10 +8,10 @@ class CreateBorehole(Action):
     async def execute(self, id, user, role=EDIT, done=False):
 
         # Default SRS (2056)
-        srs = 20104001
+        spatial_reference_system = 20104001
 
         # Default HRS (LN02)
-        hrs = 20106001
+        height_reference_system = 20106001
 
         bid = await self.conn.fetchval("""
             INSERT INTO bdms.borehole(
@@ -24,7 +24,7 @@ class CreateBorehole(Action):
             VALUES (
                 $1, $2, $3, $4, $5
             ) RETURNING id_bho
-        """, user['id'], user['id'], id, srs, hrs)
+        """, user['id'], user['id'], id, spatial_reference_system, height_reference_system)
 
         if done is True:
             await self.conn.execute("""
