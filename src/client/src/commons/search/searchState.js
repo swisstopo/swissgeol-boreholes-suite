@@ -15,7 +15,7 @@ const initialState = {
     original_name: "",
     alternate_name: "",
     project_name: "",
-    kind: null,
+    borehole_type: null,
     method: null,
     purpose: null,
     landuse: null,
@@ -109,7 +109,7 @@ const initialState = {
     location_precision: null,
     reference_elevation_from: "",
     reference_elevation_to: "",
-    srs: null,
+    spatial_reference_system: null,
   },
 };
 

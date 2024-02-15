@@ -71,7 +71,7 @@ export const locationEditorData = [
   },
   {
     id: 14,
-    label: "srs",
-    value: "srs",
+    label: "spatial_reference_system",
+    value: "spatial_reference_system",
   },
 ];

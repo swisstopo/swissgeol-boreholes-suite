@@ -44,7 +44,9 @@ const CoordinatesSegment = props => {
     setMapPointChange,
   } = props;
 
-  const [referenceSystem, setReferenceSystem] = useState(borehole.data.srs);
+  const [referenceSystem, setReferenceSystem] = useState(
+    borehole.data.spatial_reference_system,
+  );
   const [boreholeId, setBoreholeId] = useState();
 
   const { control, reset, trigger, setValue, getValues } = useForm({
@@ -157,13 +159,13 @@ const CoordinatesSegment = props => {
           borehole.data.location_x_lv03,
           borehole.data.location_y_lv03,
         );
-      setReferenceSystem(parseFloat(borehole.data.srs));
+      setReferenceSystem(parseFloat(borehole.data.spatial_reference_system));
       setBoreholeId(borehole.data.id);
     }
     //recalculate LV03 coordinates when LV95 coordinates were changed from map.
     if (mapPointChange) {
       setReferenceSystem(referenceSystems.LV95.code);
-      updateNumber("srs", referenceSystems.LV95.code);
+      updateNumber("spatial_reference_system", referenceSystems.LV95.code);
       if (isEditable && borehole.data.location_x && borehole.data.location_y) {
         transformCoodinates(
           "LV95",
@@ -214,7 +216,7 @@ const CoordinatesSegment = props => {
       { keepErrors: true },
     );
     updateCoordinates(null, null, null, null);
-    updateNumber("srs", value);
+    updateNumber("spatial_reference_system", value);
     setReferenceSystem(parseFloat(value));
     setValuesForReferenceSystem("LV03", null, null);
     setValuesForReferenceSystem("LV95", null, null);
@@ -373,10 +375,10 @@ const CoordinatesSegment = props => {
         <Form.Group widths="equal">
           <Form.Field required>
             <label>
-              <TranslationText id="srs" />
+              <TranslationText id="spatial_reference_system" />
             </label>
             <Controller
-              name="srs"
+              name="spatial_reference_system"
               control={control}
               defaultValue={referenceSystems.LV95.code}
               render={({ field }) => (
@@ -392,7 +394,7 @@ const CoordinatesSegment = props => {
                       label={
                         <DomainText
                           id={referenceSystems.LV95.code}
-                          schema="srs"
+                          schema="spatial_reference_system"
                         />
                       }
                     />
@@ -403,7 +405,7 @@ const CoordinatesSegment = props => {
                       label={
                         <DomainText
                           id={referenceSystems.LV03.code}
-                          schema="srs"
+                          schema="spatial_reference_system"
                         />
                       }
                     />
@@ -678,7 +680,7 @@ const CoordinatesSegment = props => {
           </Form.Field>
           <Form.Field required>
             <label>
-              <TranslationText id="hrs" />
+              <TranslationText id="height_reference_system" />
             </label>
             <div
               style={{
@@ -687,7 +689,10 @@ const CoordinatesSegment = props => {
                 alignItems: "center",
               }}>
               <div>
-                <DomainText id={borehole.data.hrs} schema="hrs" />
+                <DomainText
+                  id={borehole.data.height_reference_system}
+                  schema="hrs"
+                />
               </div>
             </div>
           </Form.Field>

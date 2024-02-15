@@ -53,7 +53,7 @@ class BoreholeTable extends TableComponent {
       <Table.Row>
         <Table.HeaderCell verticalAlign="top">
           {this.getIcon("original_name")}
-          {this.getIcon("kind", true)}
+          {this.getIcon("borehole_type", true)}
         </Table.HeaderCell>
         <Table.HeaderCell verticalAlign="top">
           {this.getIcon("restriction")}
@@ -78,13 +78,15 @@ class BoreholeTable extends TableComponent {
     return [
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         {(() => {
-          if (!this.props.domains.data.hasOwnProperty("kind")) {
+          if (!this.props.domains.data.hasOwnProperty("borehole_type")) {
             return null;
           }
 
-          const kind = this.props.domains.data["kind"].find(function (element) {
-            return element.id === item.kind;
-          });
+          const borehole_type = this.props.domains.data["borehole_type"].find(
+            function (element) {
+              return element.id === item.borehole_type;
+            },
+          );
 
           const restriction = this.props.domains.data["restriction"].find(
             function (element) {
@@ -101,14 +103,14 @@ class BoreholeTable extends TableComponent {
             }
           }
 
-          if (kind !== undefined) {
+          if (borehole_type !== undefined) {
             return (
               <img
                 alt=""
                 src={
                   process.env.PUBLIC_URL +
                   "/img/" +
-                  kind.code +
+                  borehole_type.code +
                   "-" +
                   color +
                   ".svg"
@@ -141,7 +143,7 @@ class BoreholeTable extends TableComponent {
             color: "#787878",
             fontSize: "0.8em",
           }}>
-          <DomainText id={item.kind} schema="kind" />
+          <DomainText id={item.borehole_type} schema="borehole_type" />
         </span>
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>

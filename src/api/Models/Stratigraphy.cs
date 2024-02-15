@@ -77,7 +77,7 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s quality id.
     /// </summary>
-    [Column("quality_id_sty")]
+    [Column("quality_id")]
     public int? QualityId { get; set; }
 
     /// <summary>

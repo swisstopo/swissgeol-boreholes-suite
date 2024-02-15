@@ -48,7 +48,7 @@ public class BoreholeControllerTest
         Assert.AreEqual(DefaultWorkgroupId, copiedBorehole.Workgroup.Id);
         Assert.AreEqual(1, copiedBorehole.Workflows.Count);
         Assert.AreEqual(Role.Editor, copiedBorehole.Workflows.First().Role);
-        Assert.AreSame(originalBorehole.Kind, copiedBorehole.Kind);
+        Assert.AreSame(originalBorehole.Type, copiedBorehole.Type);
         Assert.AreEqual(originalBorehole.Country, copiedBorehole.Country);
         Assert.AreEqual(originalBorehole.Canton, copiedBorehole.Canton);
         Assert.AreEqual(originalBorehole.Municipality, copiedBorehole.Municipality);
@@ -101,7 +101,7 @@ public class BoreholeControllerTest
             .Include(b => b.CreatedBy)
             .Include(b => b.UpdatedBy)
             .Include(b => b.LockedBy)
-            .Include(b => b.Kind)
+            .Include(b => b.Type)
             .Single(b => b.Id == id);
     }
 
@@ -120,7 +120,7 @@ public class BoreholeControllerTest
             .Include(b => b.CreatedBy)
             .Include(b => b.UpdatedBy)
             .Include(b => b.LockedBy)
-            .Include(b => b.Kind)
+            .Include(b => b.Type)
 
             // Conditions
             .Where(b =>

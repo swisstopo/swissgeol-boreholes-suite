@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240214125248_RenameMoreCodelists")]
+    partial class RenameMoreCodelists
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1564,10 +1567,6 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("notes_sty");
 
-                    b.Property<int?>("QualityId")
-                        .HasColumnType("integer")
-                        .HasColumnName("quality_id");
-
                     b.Property<DateTime?>("Updated")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("update_sty");
@@ -1583,8 +1582,6 @@ namespace BDMS.Migrations
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("KindId");
-
-                    b.HasIndex("QualityId");
 
                     b.HasIndex("UpdatedById");
 
@@ -2586,10 +2583,6 @@ namespace BDMS.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BDMS.Models.Codelist", "Quality")
-                        .WithMany()
-                        .HasForeignKey("QualityId");
-
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
@@ -2599,8 +2592,6 @@ namespace BDMS.Migrations
                     b.Navigation("CreatedBy");
 
                     b.Navigation("Kind");
-
-                    b.Navigation("Quality");
 
                     b.Navigation("UpdatedBy");
                 });

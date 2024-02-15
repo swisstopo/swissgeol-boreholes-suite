@@ -54,7 +54,7 @@ class MultipleForm extends React.Component {
           api: "reference_elevation_type",
           value: null,
         },
-        kind: { api: "kind", value: null },
+        borehole_type: { api: "borehole_type", value: null },
         drilling_method: { api: "extended.drilling_method", value: null },
         purpose: { api: "extended.purpose", value: null },
         cuttings: { api: "custom.cuttings", value: null },
@@ -415,7 +415,7 @@ class MultipleForm extends React.Component {
               this.getDomain("reference_elevation_type"),
             ])}
             {this.getGroup([
-              this.getDomain("kind"),
+              this.getDomain("borehole_type"),
               this.getDomain("drilling_method"),
               this.getDomain("purpose"),
             ])}
