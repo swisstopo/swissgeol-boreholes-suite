@@ -16,13 +16,3 @@ export function getProfileLayers(id, withValidation = false) {
     withValidation: withValidation,
   });
 }
-
-// Update the attributes of a single layer by its id, field name and value
-export function patchProfile(id, field, value) {
-  return fetch("/borehole/profile/edit", {
-    action: "PATCH",
-    id: id,
-    field: field,
-    value: value,
-  });
-}
