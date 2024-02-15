@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import * as Styled from "./styles";
 import { Button } from "semantic-ui-react";
 import TranslationText from "./../../../translationText";
-import { getData, createNewStratigraphy } from "./api";
+import { createNewStratigraphy } from "./api";
+import { fetchStratigraphyByBoreholeId } from "../../../../../api/fetchApiV2";
 import { profileKind } from "../../constance";
 import ProfileHeaderList from "./components/profileHeaderList";
 
@@ -56,9 +57,9 @@ const ProfileHeader = props => {
   );
 
   const setData = useCallback(
-    (id, kind) => {
+    id => {
       setIsLoadingData(true);
-      getData(id, kind).then(data => {
+      fetchStratigraphyByBoreholeId(id).then(data => {
         setProfiles(data);
         setSpecialData(data);
         setIsLoadingData(false);
@@ -69,9 +70,9 @@ const ProfileHeader = props => {
 
   useEffect(() => {
     if (boreholeID) {
-      setData(boreholeID, kind);
+      setData(boreholeID);
     }
-  }, [boreholeID, reloadHeader, kind, setData]);
+  }, [boreholeID, reloadHeader, setData]);
 
   useEffect(() => {
     setProfiles([]);

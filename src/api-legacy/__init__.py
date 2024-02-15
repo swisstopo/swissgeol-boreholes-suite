@@ -34,9 +34,6 @@ from bms.v1.borehole.identifier import IdentifierProducerHandler
 from bms.v1.borehole.identifier import IdentifierAdminHandler
 from bms.v1.borehole.identifier import IdentifierViewerHandler
 
-# Profiles's ACTION Handlers
-from bms.v1.borehole.profile.viewer import ProfileViewerHandler
-
 # Profiles layers's ACTION Handlers
 from bms.v1.borehole.profile.layer.viewer import ProfileLayerViewerHandler
 from bms.v1.borehole.profile.layer.producer import ProfileLayerProducerHandler

@@ -38,7 +38,7 @@ const ProfileAttributeList = props => {
   );
 
   return (
-    <Styled.Container>
+    <Styled.Container data-cy="profile-attribute-list">
       {attribute.map((item, key) => (
         <Form autoComplete="false" error key={key}>
           <Styled.AttributesContainer required={item.require}>

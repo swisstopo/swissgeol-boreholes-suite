@@ -5,6 +5,7 @@
 ### Added
 
 - Reusable form components.
+- Quality attribute for stratigraphy.
 
 ### Changed
 

@@ -163,6 +163,10 @@ export const fetchStratigraphy = async id => {
   return await fetchApiV2(`stratigraphy/${id}`, "GET");
 };
 
+export const fetchStratigraphyByBoreholeId = async boreholeId => {
+  return await fetchApiV2(`stratigraphy?boreholeId=${boreholeId}`, "GET");
+};
+
 export const copyStratigraphy = async id => {
   return await fetchApiV2(`stratigraphy/copy?id=${id}`, "POST");
 };

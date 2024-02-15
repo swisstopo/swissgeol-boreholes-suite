@@ -144,9 +144,6 @@ if __name__ == "__main__":
         LayerViewerHandler,
         LayerProducerHandler,
 
-        # Profile handlers
-        ProfileViewerHandler,
-
         # Layer handlers
         ProfileLayerViewerHandler,
 
@@ -217,9 +214,6 @@ if __name__ == "__main__":
         # Layer handlers (will be deprecated)
         (r'/api/v1/borehole/stratigraphy/layer', LayerViewerHandler),
         (r'/api/v1/borehole/stratigraphy/layer/edit', LayerProducerHandler),
-
-        # Profile handlers
-        (r'/api/v1/borehole/profile', ProfileViewerHandler),
 
         # Profile Layer handlers
         (r'/api/v1/borehole/profile/layer', ProfileLayerViewerHandler),

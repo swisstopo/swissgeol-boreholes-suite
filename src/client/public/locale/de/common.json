@@ -343,6 +343,7 @@
   "statusvalid": "In Validierung",
   "stratigraphy": "Stratigraphie",
   "stratigraphy_name": "Name / Version",
+  "stratigraphy_quality": "Qualität der Bohrprofilaufnahme",
   "lithologyfields": "Lithologiefelder",
   "submit": "Weiterleiten",
   "submitted": "Eingereicht",

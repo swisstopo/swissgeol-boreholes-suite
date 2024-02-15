@@ -343,6 +343,7 @@
   "statusvalid": "En cours de validation",
   "stratigraphy": "Stratigraphie",
   "stratigraphy_name": "Nom / Version",
+  "stratigraphy_quality": "Qualité relevé profil de forage",
   "lithologyfields": "Champs lithologie",
   "submit": "Soumettre",
   "submitted": "Soumis",
