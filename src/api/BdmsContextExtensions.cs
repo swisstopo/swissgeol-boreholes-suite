@@ -290,6 +290,8 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Date, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
             .RuleFor(o => o.KindId, f => f.PickRandom(layerKindIds))
             .RuleFor(o => o.Kind, _ => default!)
+            .RuleFor(o => o.QualityId, f => f.PickRandom(qtDescriptionIds).OrNull(f, .05f))
+            .RuleFor(o => o.Quality, _ => default!)
             .RuleFor(o => o.Name, f => f.Name.FullName())
             .RuleFor(o => o.Notes, f => f.Rant.Review())
             .RuleFor(o => o.IsPrimary, f => f.Random.Bool())
