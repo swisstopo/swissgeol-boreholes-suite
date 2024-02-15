@@ -18,7 +18,7 @@ export const stratigraphyData = {
       type: "Dropdown",
       label: "stratigraphy_quality",
       value: "qualityId",
-      schema: "qt_description",
+      schema: "description_quality",
     },
   ],
   profileAttribute: [
