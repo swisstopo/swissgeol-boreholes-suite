@@ -232,8 +232,8 @@ public class LayerControllerTest
             OriginalUscs = "Bedfordshire",
             Plasticity = null,
             PlasticityId = 21101005,
-            QtDescription = null,
-            QtDescriptionId = null,
+            DescriptionQuality = null,
+            DescriptionQualityId = null,
             Stratigraphy = null,
             StratigraphyId = 6_000_008,
             ToDepth = 100,
@@ -271,7 +271,7 @@ public class LayerControllerTest
         Assert.AreEqual(layerToAdd.Notes, addedLayer.Notes);
         Assert.AreEqual(layerToAdd.OriginalUscs, addedLayer.OriginalUscs);
         Assert.AreEqual(layerToAdd.PlasticityId, addedLayer.PlasticityId);
-        Assert.AreEqual(layerToAdd.QtDescriptionId, addedLayer.QtDescriptionId);
+        Assert.AreEqual(layerToAdd.DescriptionQualityId, addedLayer.DescriptionQualityId);
         Assert.AreEqual(layerToAdd.StratigraphyId, addedLayer.StratigraphyId);
         Assert.AreEqual(layerToAdd.ToDepth, addedLayer.ToDepth);
         Assert.AreEqual(layerToAdd.Uscs1Id, addedLayer.Uscs1Id);

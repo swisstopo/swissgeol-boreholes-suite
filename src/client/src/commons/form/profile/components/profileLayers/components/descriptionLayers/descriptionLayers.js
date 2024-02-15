@@ -25,7 +25,7 @@ const DescriptionLayers = props => {
   const [fromDepth, setFromDepth] = useState(null);
   const [toDepth, setToDepth] = useState(null);
   const [description, setDescription] = useState(null);
-  const [qtDescriptionId, setQtDescriptionId] = useState(null);
+  const [descriptionQualityId, setDescriptionQualityId] = useState(null);
   const [displayDescriptions, setDisplayDescriptions] = useState(null);
   const [descriptionIdSelectedForDelete, setDescriptionIdSelectedForDelete] =
     useState(0);
@@ -92,7 +92,7 @@ const DescriptionLayers = props => {
                 <WarningIcon />
               </Stack>
             ),
-            qtDescription: null,
+            descriptionQuality: null,
           });
         }
         tempDescriptions.push(description);
@@ -142,19 +142,19 @@ const DescriptionLayers = props => {
         draft.fromDepth = parseFloat(fromDepth);
         draft.toDepth = parseFloat(toDepth);
         draft.description = description;
-        draft.qtDescriptionId = parseInt(qtDescriptionId);
+        draft.descriptionQualityId = parseInt(descriptionQualityId);
       });
       updateMutation.mutate(updatedDescription);
     }
     // eslint-disable-next-line
-  }, [description, qtDescriptionId, toDepth, fromDepth]);
+  }, [description, descriptionQualityId, toDepth, fromDepth]);
 
   const selectItem = item => {
     if (item) {
       setFromDepth(item.fromDepth);
       setToDepth(item.toDepth);
       setDescription(item.description);
-      setQtDescriptionId(item.qtDescriptionId);
+      setDescriptionQualityId(item.descriptionQualityId);
     }
     setSelectedDescription(item);
   };
@@ -273,12 +273,12 @@ const DescriptionLayers = props => {
                       <DescriptionInput
                         setFromDepth={setFromDepth}
                         description={description}
-                        qtDescriptionId={qtDescriptionId}
+                        descriptionQualityId={descriptionQualityId}
                         fromDepth={fromDepth}
                         toDepth={toDepth}
                         setDescription={setDescription}
                         setToDepth={setToDepth}
-                        setQtDescriptionId={setQtDescriptionId}
+                        setDescriptionQualityId={setDescriptionQualityId}
                         selectableDepths={selectableDepths}
                         descriptions={descriptions}
                         item={item}

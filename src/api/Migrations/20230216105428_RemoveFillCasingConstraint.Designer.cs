@@ -1353,7 +1353,7 @@ partial class RemoveFillCasingConstraint
                     .WithMany()
                     .HasForeignKey("QtInclinationDirectionId");
 
-                b.HasOne("BDMS.Models.Codelist", "QtLocation")
+                b.HasOne("BDMS.Models.Codelist", "LocationPrecision")
                     .WithMany()
                     .HasForeignKey("QtLocationId");
 
@@ -1419,7 +1419,7 @@ partial class RemoveFillCasingConstraint
 
                 b.Navigation("QtInclinationDirection");
 
-                b.Navigation("QtLocation");
+                b.Navigation("LocationPrecision");
 
                 b.Navigation("QtReferenceElevation");
 

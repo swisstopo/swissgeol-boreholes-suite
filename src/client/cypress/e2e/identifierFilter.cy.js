@@ -108,7 +108,7 @@ describe("Tests for filtering data by identifier.", () => {
       .find('[role="option"]')
       .eq(1)
       .click({ force: true });
-    cy.get("tbody").children().should("have.length", 3);
+    cy.get("tbody").children().should("have.length", 2);
 
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });

@@ -232,7 +232,7 @@ const ProfileView = props => {
                     ? t("common:no")
                     : null,
               )}
-              {getDomainRow(layer.qtDescription, "qt_description")}
+              {getDomainRow(layer.descriptionQuality, "description_quality")}
 
               {getDomainRow(layer.lithology, "lithology")}
               {getTextRow("original_lithology", layer.originalLithology)}
@@ -243,23 +243,23 @@ const ProfileView = props => {
               {getDomainRow(layer.uscs2, "uscs_2")}
               {getDomainRow(layer.grainSize2, "grain_size_2")}
               {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "mcla101"),
+                layer.codelists.filter(c => c.schema === "uscs_type"),
                 "uscs_3",
               )}
               {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "mlpr110"),
+                layer.codelists.filter(c => c.schema === "grain_shape"),
                 "grain_shape",
               )}
               {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "mlpr115"),
+                layer.codelists.filter(c => c.schema === "grain_angularity"),
                 "grain_granularity",
               )}
               {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "mlpr108"),
+                layer.codelists.filter(c => c.schema === "organic_components"),
                 "organic_component",
               )}
               {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "mcla107"),
+                layer.codelists.filter(c => c.schema === "debris"),
                 "debris",
               )}
               {getDomainRow(
@@ -275,7 +275,7 @@ const ProfileView = props => {
                     : null,
               )}
               {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "mlpr112"),
+                layer.codelists.filter(c => c.schema === "colour"),
                 "color",
               )}
               {getDomainRow(layer.consistance, "consistance")}

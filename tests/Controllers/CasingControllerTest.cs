@@ -72,7 +72,7 @@ public class CasingControllerTest
             FromDepth = 0,
             ToDepth = 100,
             MaterialId = context.Codelists.First(c => c.Schema == CompletionSchemas.CasingMaterialSchema).Id,
-            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CasingKindSchema).Id,
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CasingTypeSchema).Id,
             DateStart = new DateOnly(2021, 1, 1),
             DateFinish = new DateOnly(2021, 1, 2),
             InnerDiameter = 3,
@@ -90,7 +90,7 @@ public class CasingControllerTest
         Assert.AreEqual(0, casing.FromDepth);
         Assert.AreEqual(100, casing.ToDepth);
         Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.CasingMaterialSchema).Id, casing.MaterialId);
-        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.CasingKindSchema).Id, casing.KindId);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.CasingTypeSchema).Id, casing.KindId);
         Assert.AreEqual(3, casing.InnerDiameter);
         Assert.AreEqual(4, casing.OuterDiameter);
         Assert.AreEqual(new DateOnly(2021, 1, 1), casing.DateStart);
@@ -104,7 +104,7 @@ public class CasingControllerTest
         var completionId = casing.CompletionId;
 
         casing.MaterialId = context.Codelists.First(c => c.Schema == CompletionSchemas.CasingMaterialSchema).Id;
-        casing.KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CasingKindSchema).Id;
+        casing.KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.CasingTypeSchema).Id;
         casing.Notes = "COLLAR";
         casing.FromDepth = 50;
         casing.ToDepth = 200;
@@ -119,7 +119,7 @@ public class CasingControllerTest
         Assert.AreEqual(50, casing.FromDepth);
         Assert.AreEqual(200, casing.ToDepth);
         Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.CasingMaterialSchema).Id, casing.MaterialId);
-        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.CasingKindSchema).Id, casing.KindId);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.CasingTypeSchema).Id, casing.KindId);
     }
 
     [TestMethod]

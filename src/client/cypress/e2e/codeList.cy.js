@@ -26,10 +26,10 @@ describe("Codelist translations tests", () => {
       .find("button")
       .click();
 
-    cy.contains("p", "mlpr102").click();
-    cy.get("div[name=mlpr102]").children().should("have.length", 6);
-    cy.contains("p", "mcla107").click();
-    cy.get("div[name=mcla107]").children().should("have.length", 6);
+    cy.contains("p", "compactness").click();
+    cy.get("div[name=compactness]").children().should("have.length", 6);
+    cy.contains("p", "debris").click();
+    cy.get("div[name=debris]").children().should("have.length", 6);
 
     // assure input fields are empty
     cy.get("input[name=german-input]").should("have.value", "");

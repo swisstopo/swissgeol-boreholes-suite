@@ -6,10 +6,10 @@
 public static class CompletionSchemas
 {
     public const string CompletionKindSchema = "completion_kind";
-    public const string InstrumentationKindSchema = "inst100";
-    public const string InstrumentationStatusSchema = "inst101";
-    public const string BackfillKindSchema = "fill100";
-    public const string BackfillMaterialSchema = "fill200";
-    public const string CasingKindSchema = "casi200";
-    public const string CasingMaterialSchema = "casi201";
+    public const string InstrumentationTypeSchema = "instrument_type";
+    public const string InstrumentationStatusSchema = "instrument_status";
+    public const string BackfillTypeSchema = "backfill_type";
+    public const string BackfillMaterialSchema = "backfill_material";
+    public const string CasingTypeSchema = "casing_type";
+    public const string CasingMaterialSchema = "casing_material";
 }

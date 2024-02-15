@@ -257,7 +257,7 @@ export const loginAndResetState = () => {
       auth: bearerAuth(token),
     }).then(response => {
       response.body.data
-        .filter(id => id > 1009999) // max id in seed data.
+        .filter(id => id > 1002999) // max id in seed data.
         .forEach(id => {
           deleteBorehole(id);
         });

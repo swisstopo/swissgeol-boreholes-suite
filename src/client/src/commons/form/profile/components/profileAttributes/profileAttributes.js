@@ -43,7 +43,7 @@ const ProfileAttributes = props => {
       depth_from: null,
       depth_to: null,
       last: null,
-      qt_description: null,
+      description_quality: null,
       lithology: null,
       color: [],
       plasticity: null,
@@ -85,25 +85,22 @@ const ProfileAttributes = props => {
     if (response?.codelists?.length > 0) {
       response["uscs_3"] = mapCodelistToAttribute(
         response.codelists,
-        "mcla101",
+        "uscs_type",
       );
       response["grain_shape"] = mapCodelistToAttribute(
         response.codelists,
-        "mlpr110",
+        "grain_shape",
       );
       response["grain_granularity"] = mapCodelistToAttribute(
         response.codelists,
-        "mlpr115",
+        "grain_angularity",
       );
       response["organic_component"] = mapCodelistToAttribute(
         response.codelists,
-        "mlpr108",
+        "organic_components",
       );
-      response["debris"] = mapCodelistToAttribute(
-        response.codelists,
-        "mcla107",
-      );
-      response["color"] = mapCodelistToAttribute(response.codelists, "mlpr112");
+      response["debris"] = mapCodelistToAttribute(response.codelists, "debris");
+      response["color"] = mapCodelistToAttribute(response.codelists, "colour");
     }
     setState({
       isPatching: false,

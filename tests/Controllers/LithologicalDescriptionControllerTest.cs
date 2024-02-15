@@ -67,7 +67,7 @@ public class LithologicalDescriptionControllerTest
         Assert.AreEqual(50, lithologicalDescription.FromDepth);
         Assert.AreEqual(60, lithologicalDescription.ToDepth);
         Assert.AreEqual("Metrics Mountains Practical", lithologicalDescription.Description);
-        Assert.AreEqual(9000, lithologicalDescription.QtDescriptionId);
+        Assert.AreEqual(9000, lithologicalDescription.DescriptionQualityId);
         Assert.AreEqual(6_000_001, lithologicalDescription.StratigraphyId);
     }
 
@@ -85,8 +85,8 @@ public class LithologicalDescriptionControllerTest
             ToDepth = 100,
             Id = 9_000_069,
             IsLast = true,
-            QtDescription = null,
-            QtDescriptionId = 9001,
+            DescriptionQuality = null,
+            DescriptionQualityId = 9001,
             Updated = new DateTime(2021, 3, 31, 16, 55, 02).ToUniversalTime(),
             UpdatedBy = null,
             UpdatedById = 5,
@@ -101,7 +101,7 @@ public class LithologicalDescriptionControllerTest
             Created = new DateTime(2021, 2, 14, 8, 55, 34).ToUniversalTime(),
             StratigraphyId = 6_000_010,
             Description = "Freddy ate more cucumber than Maria.",
-            QtDescriptionId = 9003,
+            DescriptionQualityId = 9003,
         };
 
         var lithologicalDescriptionToEdit = context.LithologicalDescriptions.Single(c => c.Id == id);
@@ -121,7 +121,7 @@ public class LithologicalDescriptionControllerTest
         Assert.AreEqual(1, updatedLithologicalDescription.UpdatedById);
         Assert.AreEqual(6_000_010, updatedLithologicalDescription.StratigraphyId);
         Assert.AreEqual("Freddy ate more cucumber than Maria.", updatedLithologicalDescription.Description);
-        Assert.AreEqual(9003, updatedLithologicalDescription.QtDescriptionId);
+        Assert.AreEqual(9003, updatedLithologicalDescription.DescriptionQualityId);
     }
 
     [TestMethod]
@@ -155,7 +155,7 @@ public class LithologicalDescriptionControllerTest
             Created = new DateTime(2022, 11, 3, 14, 20, 09).ToUniversalTime(),
             StratigraphyId = 6_000_010,
             Description = "SPOLYP",
-            QtDescriptionId = 9003,
+            DescriptionQualityId = 9003,
         };
 
         var response = await controller.CreateAsync(lithologicalDescription);

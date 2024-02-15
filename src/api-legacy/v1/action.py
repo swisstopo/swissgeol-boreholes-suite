@@ -389,8 +389,8 @@ class Action():
                 cohesion_id_cli = %s
             """ % self.getIdx())
 
-        if 'qt_description' in keys and filter['qt_description'] not in ['', None]:
-            params.append(filter['qt_description'])
+        if 'description_quality' in keys and filter['description_quality'] not in ['', None]:
+            params.append(filter['description_quality'])
             where.append("""
                 qt_description_id_cli = %s
             """ % self.getIdx())
@@ -649,11 +649,11 @@ class Action():
                     drilling_diameter_bho <= %s
                 """ % self.getIdx())
 
-            if 'qt_location' in keys and filter[
-                    'qt_location'] not in ['', None]:
-                params.append(int(filter['qt_location']))
+            if 'location_precision' in keys and filter[
+                    'location_precision'] not in ['', None]:
+                params.append(int(filter['location_precision']))
                 where.append("""
-                    qt_location_id_cli = %s
+                    location_precision_id_cli = %s
                 """ % self.getIdx())
 
             if 'reference_elevation_from' in keys and filter['reference_elevation_from'] not in ['', None]:
@@ -694,9 +694,9 @@ class Action():
                     elevation_z_bho <= %s
                 """ % self.getIdx())
 
-            if 'qt_elevation' in keys and filter[
-                    'qt_elevation'] not in ['', None]:
-                params.append(int(filter['qt_elevation']))
+            if 'elevation_precision' in keys and filter[
+                    'elevation_precision'] not in ['', None]:
+                params.append(int(filter['elevation_precision']))
                 where.append("""
                     qt_elevation_id_cli = %s
                 """ % self.getIdx())

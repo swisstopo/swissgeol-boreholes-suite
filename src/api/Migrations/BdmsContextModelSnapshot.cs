@@ -139,6 +139,10 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("drilling_method_id_cli");
 
+                    b.Property<int?>("ElevationPrecisionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_elevation_id_cli");
+
                     b.Property<double?>("ElevationZ")
                         .HasColumnType("double precision")
                         .HasColumnName("elevation_z_bho");
@@ -178,6 +182,10 @@ namespace BDMS.Migrations
                     b.Property<int?>("LithostratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("lithostrat_id_cli");
+
+                    b.Property<int?>("LocationPrecisionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_location_id_cli");
 
                     b.Property<double?>("LocationX")
                         .HasColumnType("double precision")
@@ -231,17 +239,9 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("qt_depth_id_cli");
 
-                    b.Property<int?>("QtElevationId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_elevation_id_cli");
-
                     b.Property<int?>("QtInclinationDirectionId")
                         .HasColumnType("integer")
                         .HasColumnName("qt_inclination_direction_id_cli");
-
-                    b.Property<int?>("QtLocationId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_location_id_cli");
 
                     b.Property<int?>("QtReferenceElevationId")
                         .HasColumnType("integer")
@@ -325,6 +325,8 @@ namespace BDMS.Migrations
 
                     b.HasIndex("DrillingMethodId");
 
+                    b.HasIndex("ElevationPrecisionId");
+
                     b.HasIndex("HrsId");
 
                     b.HasIndex("KindId");
@@ -333,17 +335,15 @@ namespace BDMS.Migrations
 
                     b.HasIndex("LithostratigraphyId");
 
+                    b.HasIndex("LocationPrecisionId");
+
                     b.HasIndex("LockedById");
 
                     b.HasIndex("PurposeId");
 
                     b.HasIndex("QtDepthId");
 
-                    b.HasIndex("QtElevationId");
-
                     b.HasIndex("QtInclinationDirectionId");
-
-                    b.HasIndex("QtLocationId");
 
                     b.HasIndex("QtReferenceElevationId");
 
@@ -841,6 +841,10 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
+                    b.Property<int?>("DescriptionQualityId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_description_id");
+
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
@@ -848,10 +852,6 @@ namespace BDMS.Migrations
                     b.Property<bool?>("IsLast")
                         .HasColumnType("boolean")
                         .HasColumnName("is_last");
-
-                    b.Property<int?>("QtDescriptionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_description_id");
 
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
@@ -873,7 +873,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("QtDescriptionId");
+                    b.HasIndex("DescriptionQualityId");
 
                     b.HasIndex("StratigraphyId");
 
@@ -1152,6 +1152,10 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("creator_lay");
 
+                    b.Property<int?>("DescriptionQualityId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_description_id_cli");
+
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from_lay");
@@ -1212,10 +1216,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("plasticity_id_cli");
 
-                    b.Property<int?>("QtDescriptionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_description_id_cli");
-
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("id_sty_fk");
@@ -1256,6 +1256,8 @@ namespace BDMS.Migrations
 
                     b.HasIndex("CreatedById");
 
+                    b.HasIndex("DescriptionQualityId");
+
                     b.HasIndex("GradationId");
 
                     b.HasIndex("GrainSize1Id");
@@ -1271,8 +1273,6 @@ namespace BDMS.Migrations
                     b.HasIndex("LithostratigraphyId");
 
                     b.HasIndex("PlasticityId");
-
-                    b.HasIndex("QtDescriptionId");
 
                     b.HasIndex("StratigraphyId");
 
@@ -1330,6 +1330,10 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
+                    b.Property<int?>("DescriptionQualityId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_description_id");
+
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
@@ -1337,10 +1341,6 @@ namespace BDMS.Migrations
                     b.Property<bool?>("IsLast")
                         .HasColumnType("boolean")
                         .HasColumnName("is_last");
-
-                    b.Property<int?>("QtDescriptionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_description_id");
 
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
@@ -1362,7 +1362,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("QtDescriptionId");
+                    b.HasIndex("DescriptionQualityId");
 
                     b.HasIndex("StratigraphyId");
 
@@ -1936,6 +1936,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("DrillingMethodId");
 
+                    b.HasOne("BDMS.Models.Codelist", "ElevationPrecision")
+                        .WithMany()
+                        .HasForeignKey("ElevationPrecisionId");
+
                     b.HasOne("BDMS.Models.Codelist", "Hrs")
                         .WithMany()
                         .HasForeignKey("HrsId");
@@ -1952,6 +1956,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("LithostratigraphyId");
 
+                    b.HasOne("BDMS.Models.Codelist", "LocationPrecision")
+                        .WithMany()
+                        .HasForeignKey("LocationPrecisionId");
+
                     b.HasOne("BDMS.Models.User", "LockedBy")
                         .WithMany()
                         .HasForeignKey("LockedById");
@@ -1964,17 +1972,9 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("QtDepthId");
 
-                    b.HasOne("BDMS.Models.Codelist", "QtElevation")
-                        .WithMany()
-                        .HasForeignKey("QtElevationId");
-
                     b.HasOne("BDMS.Models.Codelist", "QtInclinationDirection")
                         .WithMany()
                         .HasForeignKey("QtInclinationDirectionId");
-
-                    b.HasOne("BDMS.Models.Codelist", "QtLocation")
-                        .WithMany()
-                        .HasForeignKey("QtLocationId");
 
                     b.HasOne("BDMS.Models.Codelist", "QtReferenceElevation")
                         .WithMany()
@@ -2012,6 +2012,8 @@ namespace BDMS.Migrations
 
                     b.Navigation("DrillingMethod");
 
+                    b.Navigation("ElevationPrecision");
+
                     b.Navigation("Hrs");
 
                     b.Navigation("Kind");
@@ -2020,17 +2022,15 @@ namespace BDMS.Migrations
 
                     b.Navigation("Lithostratigraphy");
 
+                    b.Navigation("LocationPrecision");
+
                     b.Navigation("LockedBy");
 
                     b.Navigation("Purpose");
 
                     b.Navigation("QtDepth");
 
-                    b.Navigation("QtElevation");
-
                     b.Navigation("QtInclinationDirection");
-
-                    b.Navigation("QtLocation");
 
                     b.Navigation("QtReferenceElevation");
 
@@ -2208,9 +2208,9 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Codelist", "QtDescription")
+                    b.HasOne("BDMS.Models.Codelist", "DescriptionQuality")
                         .WithMany()
-                        .HasForeignKey("QtDescriptionId");
+                        .HasForeignKey("DescriptionQualityId");
 
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("FaciesDescriptions")
@@ -2224,7 +2224,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("QtDescription");
+                    b.Navigation("DescriptionQuality");
 
                     b.Navigation("Stratigraphy");
 
@@ -2359,6 +2359,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
+                    b.HasOne("BDMS.Models.Codelist", "DescriptionQuality")
+                        .WithMany()
+                        .HasForeignKey("DescriptionQualityId");
+
                     b.HasOne("BDMS.Models.Codelist", "Gradation")
                         .WithMany()
                         .HasForeignKey("GradationId");
@@ -2390,10 +2394,6 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Plasticity")
                         .WithMany()
                         .HasForeignKey("PlasticityId");
-
-                    b.HasOne("BDMS.Models.Codelist", "QtDescription")
-                        .WithMany()
-                        .HasForeignKey("QtDescriptionId");
 
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("Layers")
@@ -2427,6 +2427,8 @@ namespace BDMS.Migrations
 
                     b.Navigation("CreatedBy");
 
+                    b.Navigation("DescriptionQuality");
+
                     b.Navigation("Gradation");
 
                     b.Navigation("GrainSize1");
@@ -2442,8 +2444,6 @@ namespace BDMS.Migrations
                     b.Navigation("Lithostratigraphy");
 
                     b.Navigation("Plasticity");
-
-                    b.Navigation("QtDescription");
 
                     b.Navigation("Stratigraphy");
 
@@ -2481,9 +2481,9 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Codelist", "QtDescription")
+                    b.HasOne("BDMS.Models.Codelist", "DescriptionQuality")
                         .WithMany()
-                        .HasForeignKey("QtDescriptionId");
+                        .HasForeignKey("DescriptionQualityId");
 
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("LithologicalDescriptions")
@@ -2497,7 +2497,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("QtDescription");
+                    b.Navigation("DescriptionQuality");
 
                     b.Navigation("Stratigraphy");
 

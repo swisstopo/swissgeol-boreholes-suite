@@ -1357,7 +1357,7 @@ partial class SetFaciesQtDescriptionNull
                     .WithMany()
                     .HasForeignKey("QtInclinationDirectionId");
 
-                b.HasOne("BDMS.Models.Codelist", "QtLocation")
+                b.HasOne("BDMS.Models.Codelist", "LocationPrecision")
                     .WithMany()
                     .HasForeignKey("QtLocationId");
 
@@ -1423,7 +1423,7 @@ partial class SetFaciesQtDescriptionNull
 
                 b.Navigation("QtInclinationDirection");
 
-                b.Navigation("QtLocation");
+                b.Navigation("LocationPrecision");
 
                 b.Navigation("QtReferenceElevation");
 

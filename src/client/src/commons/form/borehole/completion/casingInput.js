@@ -57,7 +57,7 @@ const CasingInput = ({ item, setSelected, parentId, addData, updateData }) => {
           selected={item.kindId}
           required={true}
           values={domains?.data
-            ?.filter(d => d.schema === completionSchemaConstants.casingKind)
+            ?.filter(d => d.schema === completionSchemaConstants.casingType)
             .sort((a, b) => a.order - b.order)
             .map(d => ({
               key: d.id,

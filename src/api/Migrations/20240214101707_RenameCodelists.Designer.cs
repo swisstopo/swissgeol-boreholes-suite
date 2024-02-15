@@ -13,18 +13,85 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20230224152425_MigrateChronostratigraphy")]
-    partial class MigrateChronostratigraphy
+    [Migration("20240214101707_RenameCodelists")]
+    partial class RenameCodelists
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("bdms")
-                .HasAnnotation("ProductVersion", "6.0.11")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "ltree");
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("BDMS.Models.Backfill", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompletionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("completion_id");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("creator");
+
+                    b.Property<double?>("FromDepth")
+                        .HasColumnType("double precision")
+                        .HasColumnName("from_depth");
+
+                    b.Property<int?>("KindId")
+                        .HasColumnType("integer")
+                        .HasColumnName("kind_id");
+
+                    b.Property<int?>("MaterialId")
+                        .HasColumnType("integer")
+                        .HasColumnName("material_id");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text")
+                        .HasColumnName("notes");
+
+                    b.Property<double?>("ToDepth")
+                        .HasColumnType("double precision")
+                        .HasColumnName("to_depth");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("updater");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompletionId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("KindId");
+
+                    b.HasIndex("MaterialId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("backfill", "bdms");
+                });
 
             modelBuilder.Entity("BDMS.Models.Borehole", b =>
                 {
@@ -63,12 +130,8 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("cuttings_id_cli");
 
-                    b.Property<DateTime?>("Date")
+                    b.Property<DateTime?>("DrillingDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_bho");
-
-                    b.Property<DateOnly?>("DrillingDate")
-                        .HasColumnType("date")
                         .HasColumnName("drilling_date_bho");
 
                     b.Property<double?>("DrillingDiameter")
@@ -78,6 +141,10 @@ namespace BDMS.Migrations
                     b.Property<int?>("DrillingMethodId")
                         .HasColumnType("integer")
                         .HasColumnName("drilling_method_id_cli");
+
+                    b.Property<int?>("ElevationPrecisionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_elevation_id_cli");
 
                     b.Property<double?>("ElevationZ")
                         .HasColumnType("double precision")
@@ -119,6 +186,10 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("lithostrat_id_cli");
 
+                    b.Property<int?>("LocationPrecisionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_location_id_cli");
+
                     b.Property<double?>("LocationX")
                         .HasColumnType("double precision")
                         .HasColumnName("location_x_bho");
@@ -147,6 +218,10 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("municipality_bho");
 
+                    b.Property<bool?>("NationalInterest")
+                        .HasColumnType("boolean")
+                        .HasColumnName("national_interest");
+
                     b.Property<string>("OriginalName")
                         .HasColumnType("text")
                         .HasColumnName("original_name_bho");
@@ -167,29 +242,21 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("qt_depth_id_cli");
 
-                    b.Property<int?>("QtElevationId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_elevation_id_cli");
-
                     b.Property<int?>("QtInclinationDirectionId")
                         .HasColumnType("integer")
                         .HasColumnName("qt_inclination_direction_id_cli");
-
-                    b.Property<int?>("QtLocationId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_location_id_cli");
 
                     b.Property<int?>("QtReferenceElevationId")
                         .HasColumnType("integer")
                         .HasColumnName("qt_reference_elevation_id_cli");
 
-                    b.Property<int?>("QtTopBedrockId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_top_bedrock_id_cli");
+                    b.Property<double?>("QtTopBedrock")
+                        .HasColumnType("double precision")
+                        .HasColumnName("qt_top_bedrock");
 
-                    b.Property<int?>("QtTopBedrockTvdId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_top_bedrock_tvd_id_cli");
+                    b.Property<double?>("QtTopBedrockTvd")
+                        .HasColumnType("double precision")
+                        .HasColumnName("qt_top_bedrock_tvd");
 
                     b.Property<int?>("QtTotalDepthTvdId")
                         .HasColumnType("integer")
@@ -211,12 +278,12 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("restriction_id_cli");
 
-                    b.Property<DateOnly?>("RestrictionUntil")
-                        .HasColumnType("date")
+                    b.Property<DateTime?>("RestrictionUntil")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("restriction_until_bho");
 
-                    b.Property<DateOnly?>("SpudDate")
-                        .HasColumnType("date")
+                    b.Property<DateTime?>("SpudDate")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("spud_date_bho");
 
                     b.Property<int?>("StatusId")
@@ -261,6 +328,8 @@ namespace BDMS.Migrations
 
                     b.HasIndex("DrillingMethodId");
 
+                    b.HasIndex("ElevationPrecisionId");
+
                     b.HasIndex("HrsId");
 
                     b.HasIndex("KindId");
@@ -269,23 +338,17 @@ namespace BDMS.Migrations
 
                     b.HasIndex("LithostratigraphyId");
 
+                    b.HasIndex("LocationPrecisionId");
+
                     b.HasIndex("LockedById");
 
                     b.HasIndex("PurposeId");
 
                     b.HasIndex("QtDepthId");
 
-                    b.HasIndex("QtElevationId");
-
                     b.HasIndex("QtInclinationDirectionId");
 
-                    b.HasIndex("QtLocationId");
-
                     b.HasIndex("QtReferenceElevationId");
-
-                    b.HasIndex("QtTopBedrockId");
-
-                    b.HasIndex("QtTopBedrockTvdId");
 
                     b.HasIndex("QtTotalDepthTvdId");
 
@@ -300,6 +363,33 @@ namespace BDMS.Migrations
                     b.HasIndex("WorkgroupId");
 
                     b.ToTable("borehole", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.BoreholeCodelist", b =>
+                {
+                    b.Property<int>("BoreholeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_bho_fk");
+
+                    b.Property<int>("CodelistId")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_cli_fk");
+
+                    b.Property<string>("SchemaName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("code_cli");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("value_bco");
+
+                    b.HasKey("BoreholeId", "CodelistId");
+
+                    b.HasIndex("CodelistId");
+
+                    b.ToTable("borehole_codelist", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.BoreholeFile", b =>
@@ -355,6 +445,91 @@ namespace BDMS.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("borehole_files", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Casing", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompletionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("completion_id");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("creator");
+
+                    b.Property<DateOnly>("DateFinish")
+                        .HasColumnType("date")
+                        .HasColumnName("date_finish");
+
+                    b.Property<DateOnly>("DateStart")
+                        .HasColumnType("date")
+                        .HasColumnName("date_start");
+
+                    b.Property<double>("FromDepth")
+                        .HasColumnType("double precision")
+                        .HasColumnName("from_depth");
+
+                    b.Property<double>("InnerDiameter")
+                        .HasColumnType("double precision")
+                        .HasColumnName("inner_diameter");
+
+                    b.Property<int>("KindId")
+                        .HasColumnType("integer")
+                        .HasColumnName("kind_id");
+
+                    b.Property<int>("MaterialId")
+                        .HasColumnType("integer")
+                        .HasColumnName("material_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text")
+                        .HasColumnName("notes");
+
+                    b.Property<double>("OuterDiameter")
+                        .HasColumnType("double precision")
+                        .HasColumnName("outer_diameter");
+
+                    b.Property<double>("ToDepth")
+                        .HasColumnType("double precision")
+                        .HasColumnName("to_depth");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("updater");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompletionId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("KindId");
+
+                    b.HasIndex("MaterialId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("casing", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.ChronostratigraphyLayer", b =>
@@ -483,6 +658,10 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("order_cli");
 
+                    b.Property<string>("Path")
+                        .HasColumnType("ltree")
+                        .HasColumnName("path_cli");
+
                     b.Property<string>("Ro")
                         .HasColumnType("text")
                         .HasColumnName("text_cli_ro");
@@ -494,6 +673,68 @@ namespace BDMS.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("codelist", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Completion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly?>("AbandonDate")
+                        .HasColumnType("date")
+                        .HasColumnName("abandon_date");
+
+                    b.Property<int>("BoreholeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("borehole_id");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("creator");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_primary");
+
+                    b.Property<int>("KindId")
+                        .HasColumnType("integer")
+                        .HasColumnName("kind_id");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text")
+                        .HasColumnName("notes");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("updater");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoreholeId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("KindId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("completion", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.Config", b =>
@@ -603,6 +844,10 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
+                    b.Property<int?>("DescriptionQualityId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_description_id");
+
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
@@ -610,10 +855,6 @@ namespace BDMS.Migrations
                     b.Property<bool?>("IsLast")
                         .HasColumnType("boolean")
                         .HasColumnName("is_last");
-
-                    b.Property<int?>("QtDescriptionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_description_id");
 
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
@@ -635,7 +876,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("QtDescriptionId");
+                    b.HasIndex("DescriptionQualityId");
 
                     b.HasIndex("StratigraphyId");
 
@@ -732,6 +973,155 @@ namespace BDMS.Migrations
                     b.ToTable("files", "bdms");
                 });
 
+            modelBuilder.Entity("BDMS.Models.HydrotestCodelist", b =>
+                {
+                    b.Property<int>("HydrotestId")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_ht_fk");
+
+                    b.Property<int>("CodelistId")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_cli_fk");
+
+                    b.HasKey("HydrotestId", "CodelistId");
+
+                    b.HasIndex("CodelistId");
+
+                    b.ToTable("hydrotest_codelist", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.HydrotestResult", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("creator");
+
+                    b.Property<int>("HydrotestId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hydrotest_id");
+
+                    b.Property<double?>("MaxValue")
+                        .HasColumnType("double precision")
+                        .HasColumnName("max_value");
+
+                    b.Property<double?>("MinValue")
+                        .HasColumnType("double precision")
+                        .HasColumnName("min_value");
+
+                    b.Property<int>("ParameterId")
+                        .HasColumnType("integer")
+                        .HasColumnName("parameter");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("updater");
+
+                    b.Property<double?>("Value")
+                        .HasColumnType("double precision")
+                        .HasColumnName("value");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("HydrotestId");
+
+                    b.HasIndex("ParameterId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("hydrotest_result", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Instrumentation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CasingId")
+                        .HasColumnType("integer")
+                        .HasColumnName("casing_id");
+
+                    b.Property<int>("CompletionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("completion_id");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("creator");
+
+                    b.Property<double?>("FromDepth")
+                        .HasColumnType("double precision")
+                        .HasColumnName("from_depth");
+
+                    b.Property<int?>("KindId")
+                        .HasColumnType("integer")
+                        .HasColumnName("kind_id");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text")
+                        .HasColumnName("notes");
+
+                    b.Property<int?>("StatusId")
+                        .HasColumnType("integer")
+                        .HasColumnName("status_id");
+
+                    b.Property<double?>("ToDepth")
+                        .HasColumnType("double precision")
+                        .HasColumnName("to_depth");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("updater");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CasingId");
+
+                    b.HasIndex("CompletionId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("KindId");
+
+                    b.HasIndex("StatusId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("instrumentation", "bdms");
+                });
+
             modelBuilder.Entity("BDMS.Models.Layer", b =>
                 {
                     b.Property<int>("Id")
@@ -744,38 +1134,6 @@ namespace BDMS.Migrations
                     b.Property<int?>("AlterationId")
                         .HasColumnType("integer")
                         .HasColumnName("alteration_id_cli");
-
-                    b.Property<string>("Casing")
-                        .HasColumnType("text")
-                        .HasColumnName("casng_id");
-
-                    b.Property<DateOnly?>("CasingDateFinish")
-                        .HasColumnType("date")
-                        .HasColumnName("casng_date_finish_lay");
-
-                    b.Property<DateOnly?>("CasingDateSpud")
-                        .HasColumnType("date")
-                        .HasColumnName("casng_date_spud_lay");
-
-                    b.Property<double?>("CasingInnerDiameter")
-                        .HasColumnType("double precision")
-                        .HasColumnName("casng_inner_diameter_lay");
-
-                    b.Property<int?>("CasingKindId")
-                        .HasColumnType("integer")
-                        .HasColumnName("casng_kind_id_cli");
-
-                    b.Property<int?>("CasingMaterialId")
-                        .HasColumnType("integer")
-                        .HasColumnName("casng_material_id_cli");
-
-                    b.Property<double?>("CasingOuterDiameter")
-                        .HasColumnType("double precision")
-                        .HasColumnName("casng_outer_diameter_lay");
-
-                    b.Property<int?>("ChronostratigraphyId")
-                        .HasColumnType("integer")
-                        .HasColumnName("chronostratigraphy_id_cli");
 
                     b.Property<int?>("CohesionId")
                         .HasColumnType("integer")
@@ -797,21 +1155,9 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("creator_lay");
 
-                    b.Property<string>("DescriptionFacies")
-                        .HasColumnType("text")
-                        .HasColumnName("facies_description_lay");
-
-                    b.Property<string>("DescriptionLithological")
-                        .HasColumnType("text")
-                        .HasColumnName("lithological_description_lay");
-
-                    b.Property<int?>("FillKindId")
+                    b.Property<int?>("DescriptionQualityId")
                         .HasColumnType("integer")
-                        .HasColumnName("fill_kind_id_cli");
-
-                    b.Property<int?>("FillMaterialId")
-                        .HasColumnType("integer")
-                        .HasColumnName("fill_material_id_cli");
+                        .HasColumnName("qt_description_id_cli");
 
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
@@ -832,26 +1178,6 @@ namespace BDMS.Migrations
                     b.Property<int?>("HumidityId")
                         .HasColumnType("integer")
                         .HasColumnName("humidity_id_cli");
-
-                    b.Property<string>("Instrument")
-                        .HasColumnType("text")
-                        .HasColumnName("instr_id");
-
-                    b.Property<int?>("InstrumentCasingId")
-                        .HasColumnType("integer")
-                        .HasColumnName("instr_id_sty_fk");
-
-                    b.Property<int?>("InstrumentCasingLayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("instr_id_lay_fk");
-
-                    b.Property<int?>("InstrumentKindId")
-                        .HasColumnType("integer")
-                        .HasColumnName("instr_kind_id_cli");
-
-                    b.Property<int?>("InstrumentStatusId")
-                        .HasColumnType("integer")
-                        .HasColumnName("instr_status_id_cli");
 
                     b.Property<bool?>("IsLast")
                         .HasColumnType("boolean")
@@ -893,10 +1219,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("plasticity_id_cli");
 
-                    b.Property<int?>("QtDescriptionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_description_id_cli");
-
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("id_sty_fk");
@@ -929,12 +1251,6 @@ namespace BDMS.Migrations
 
                     b.HasIndex("AlterationId");
 
-                    b.HasIndex("CasingKindId");
-
-                    b.HasIndex("CasingMaterialId");
-
-                    b.HasIndex("ChronostratigraphyId");
-
                     b.HasIndex("CohesionId");
 
                     b.HasIndex("CompactnessId");
@@ -943,9 +1259,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("FillKindId");
-
-                    b.HasIndex("FillMaterialId");
+                    b.HasIndex("DescriptionQualityId");
 
                     b.HasIndex("GradationId");
 
@@ -955,12 +1269,6 @@ namespace BDMS.Migrations
 
                     b.HasIndex("HumidityId");
 
-                    b.HasIndex("InstrumentCasingId");
-
-                    b.HasIndex("InstrumentKindId");
-
-                    b.HasIndex("InstrumentStatusId");
-
                     b.HasIndex("LithologyId");
 
                     b.HasIndex("LithologyTopBedrockId");
@@ -968,8 +1276,6 @@ namespace BDMS.Migrations
                     b.HasIndex("LithostratigraphyId");
 
                     b.HasIndex("PlasticityId");
-
-                    b.HasIndex("QtDescriptionId");
 
                     b.HasIndex("StratigraphyId");
 
@@ -1027,6 +1333,10 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
+                    b.Property<int?>("DescriptionQualityId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_description_id");
+
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
@@ -1034,10 +1344,6 @@ namespace BDMS.Migrations
                     b.Property<bool?>("IsLast")
                         .HasColumnType("boolean")
                         .HasColumnName("is_last");
-
-                    b.Property<int?>("QtDescriptionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_description_id");
 
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
@@ -1059,13 +1365,165 @@ namespace BDMS.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("QtDescriptionId");
+                    b.HasIndex("DescriptionQualityId");
 
                     b.HasIndex("StratigraphyId");
 
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("lithological_description", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.LithostratigraphyLayer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("creator");
+
+                    b.Property<double?>("FromDepth")
+                        .HasColumnType("double precision")
+                        .HasColumnName("depth_from");
+
+                    b.Property<bool?>("IsLast")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_last");
+
+                    b.Property<int?>("LithostratigraphyId")
+                        .HasColumnType("integer")
+                        .HasColumnName("lithostratigraphy_id");
+
+                    b.Property<int>("StratigraphyId")
+                        .HasColumnType("integer")
+                        .HasColumnName("stratigraphy_id");
+
+                    b.Property<double?>("ToDepth")
+                        .HasColumnType("double precision")
+                        .HasColumnName("depth_to");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("updater");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("LithostratigraphyId");
+
+                    b.HasIndex("StratigraphyId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("lithostratigraphy", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Observation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BoreholeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("borehole_id");
+
+                    b.Property<int?>("CasingId")
+                        .HasColumnType("integer")
+                        .HasColumnName("casing_id");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("text")
+                        .HasColumnName("comment");
+
+                    b.Property<bool?>("CompletionFinished")
+                        .HasColumnType("boolean")
+                        .HasColumnName("completion_finished");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("creator");
+
+                    b.Property<double?>("Duration")
+                        .HasColumnType("double precision")
+                        .HasColumnName("duration");
+
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("end_time");
+
+                    b.Property<double?>("FromDepthM")
+                        .HasColumnType("double precision")
+                        .HasColumnName("from_depth_m");
+
+                    b.Property<double?>("FromDepthMasl")
+                        .HasColumnType("double precision")
+                        .HasColumnName("from_depth_masl");
+
+                    b.Property<int>("ReliabilityId")
+                        .HasColumnType("integer")
+                        .HasColumnName("reliability");
+
+                    b.Property<DateTime?>("StartTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("start_time");
+
+                    b.Property<double?>("ToDepthM")
+                        .HasColumnType("double precision")
+                        .HasColumnName("to_depth_m");
+
+                    b.Property<double?>("ToDepthMasl")
+                        .HasColumnType("double precision")
+                        .HasColumnName("to_depth_masl");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer")
+                        .HasColumnName("observation_type");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("updater");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoreholeId");
+
+                    b.HasIndex("CasingId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("ReliabilityId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("observation", "bdms");
+
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
@@ -1081,14 +1539,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("id_bho_fk");
 
-                    b.Property<string>("Casing")
-                        .HasColumnType("text")
-                        .HasColumnName("casng_id");
-
-                    b.Property<DateOnly?>("CasingDate")
-                        .HasColumnType("date")
-                        .HasColumnName("casng_date_abd_sty");
-
                     b.Property<DateTime?>("Created")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation_sty");
@@ -1097,13 +1547,9 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("author_sty");
 
-                    b.Property<DateOnly?>("Date")
-                        .HasColumnType("date")
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("date_sty");
-
-                    b.Property<int?>("FillCasingId")
-                        .HasColumnType("integer")
-                        .HasColumnName("fill_casng_id_sty_fk");
 
                     b.Property<bool?>("IsPrimary")
                         .HasColumnType("boolean")
@@ -1134,8 +1580,6 @@ namespace BDMS.Migrations
                     b.HasIndex("BoreholeId");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("FillCasingId");
 
                     b.HasIndex("KindId");
 
@@ -1227,6 +1671,11 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("username");
 
+                    b.Property<string>("SubjectId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("subject_id");
+
                     b.HasKey("Id");
 
                     b.ToTable("users", "bdms");
@@ -1306,7 +1755,7 @@ namespace BDMS.Migrations
                         .HasColumnName("notes_wkf");
 
                     b.Property<int?>("Role")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("id_rol_fk");
 
                     b.Property<DateTime?>("Started")
@@ -1361,6 +1810,111 @@ namespace BDMS.Migrations
                     b.ToTable("workgroups", "bdms");
                 });
 
+            modelBuilder.Entity("BDMS.Models.FieldMeasurement", b =>
+                {
+                    b.HasBaseType("BDMS.Models.Observation");
+
+                    b.Property<int>("ParameterId")
+                        .HasColumnType("integer")
+                        .HasColumnName("parameter");
+
+                    b.Property<int>("SampleTypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("sample_type");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("double precision")
+                        .HasColumnName("value");
+
+                    b.HasIndex("ParameterId");
+
+                    b.HasIndex("SampleTypeId");
+
+                    b.ToTable("field_measurement", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.GroundwaterLevelMeasurement", b =>
+                {
+                    b.HasBaseType("BDMS.Models.Observation");
+
+                    b.Property<int>("KindId")
+                        .HasColumnType("integer")
+                        .HasColumnName("kind");
+
+                    b.Property<double?>("LevelM")
+                        .HasColumnType("double precision")
+                        .HasColumnName("level_m");
+
+                    b.Property<double?>("LevelMasl")
+                        .HasColumnType("double precision")
+                        .HasColumnName("level_masl");
+
+                    b.HasIndex("KindId");
+
+                    b.ToTable("groundwater_level_measurement", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Hydrotest", b =>
+                {
+                    b.HasBaseType("BDMS.Models.Observation");
+
+                    b.ToTable("hydrotest", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.WaterIngress", b =>
+                {
+                    b.HasBaseType("BDMS.Models.Observation");
+
+                    b.Property<int?>("ConditionsId")
+                        .HasColumnType("integer")
+                        .HasColumnName("conditions");
+
+                    b.Property<int>("QuantityId")
+                        .HasColumnType("integer")
+                        .HasColumnName("quantity");
+
+                    b.HasIndex("ConditionsId");
+
+                    b.HasIndex("QuantityId");
+
+                    b.ToTable("water_ingress", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Backfill", b =>
+                {
+                    b.HasOne("BDMS.Models.Completion", "Completion")
+                        .WithMany("Backfills")
+                        .HasForeignKey("CompletionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("BDMS.Models.Codelist", "Kind")
+                        .WithMany()
+                        .HasForeignKey("KindId");
+
+                    b.HasOne("BDMS.Models.Codelist", "Material")
+                        .WithMany()
+                        .HasForeignKey("MaterialId");
+
+                    b.HasOne("BDMS.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("Completion");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Kind");
+
+                    b.Navigation("Material");
+
+                    b.Navigation("UpdatedBy");
+                });
+
             modelBuilder.Entity("BDMS.Models.Borehole", b =>
                 {
                     b.HasOne("BDMS.Models.Codelist", "Chronostratigraphy")
@@ -1379,6 +1933,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("DrillingMethodId");
 
+                    b.HasOne("BDMS.Models.Codelist", "ElevationPrecision")
+                        .WithMany()
+                        .HasForeignKey("ElevationPrecisionId");
+
                     b.HasOne("BDMS.Models.Codelist", "Hrs")
                         .WithMany()
                         .HasForeignKey("HrsId");
@@ -1395,6 +1953,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("LithostratigraphyId");
 
+                    b.HasOne("BDMS.Models.Codelist", "LocationPrecision")
+                        .WithMany()
+                        .HasForeignKey("LocationPrecisionId");
+
                     b.HasOne("BDMS.Models.User", "LockedBy")
                         .WithMany()
                         .HasForeignKey("LockedById");
@@ -1407,29 +1969,13 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("QtDepthId");
 
-                    b.HasOne("BDMS.Models.Codelist", "QtElevation")
-                        .WithMany()
-                        .HasForeignKey("QtElevationId");
-
                     b.HasOne("BDMS.Models.Codelist", "QtInclinationDirection")
                         .WithMany()
                         .HasForeignKey("QtInclinationDirectionId");
 
-                    b.HasOne("BDMS.Models.Codelist", "LocationPrecision")
-                        .WithMany()
-                        .HasForeignKey("QtLocationId");
-
                     b.HasOne("BDMS.Models.Codelist", "QtReferenceElevation")
                         .WithMany()
                         .HasForeignKey("QtReferenceElevationId");
-
-                    b.HasOne("BDMS.Models.Codelist", "QtTopBedrock")
-                        .WithMany()
-                        .HasForeignKey("QtTopBedrockId");
-
-                    b.HasOne("BDMS.Models.Codelist", "QtTopBedrockTvd")
-                        .WithMany()
-                        .HasForeignKey("QtTopBedrockTvdId");
 
                     b.HasOne("BDMS.Models.Codelist", "QtTotalDepthTvd")
                         .WithMany()
@@ -1463,6 +2009,8 @@ namespace BDMS.Migrations
 
                     b.Navigation("DrillingMethod");
 
+                    b.Navigation("ElevationPrecision");
+
                     b.Navigation("Hrs");
 
                     b.Navigation("Kind");
@@ -1471,23 +2019,17 @@ namespace BDMS.Migrations
 
                     b.Navigation("Lithostratigraphy");
 
+                    b.Navigation("LocationPrecision");
+
                     b.Navigation("LockedBy");
 
                     b.Navigation("Purpose");
 
                     b.Navigation("QtDepth");
 
-                    b.Navigation("QtElevation");
-
                     b.Navigation("QtInclinationDirection");
 
-                    b.Navigation("LocationPrecision");
-
                     b.Navigation("QtReferenceElevation");
-
-                    b.Navigation("QtTopBedrock");
-
-                    b.Navigation("QtTopBedrockTvd");
 
                     b.Navigation("QtTotalDepthTvd");
 
@@ -1500,6 +2042,25 @@ namespace BDMS.Migrations
                     b.Navigation("UpdatedBy");
 
                     b.Navigation("Workgroup");
+                });
+
+            modelBuilder.Entity("BDMS.Models.BoreholeCodelist", b =>
+                {
+                    b.HasOne("BDMS.Models.Borehole", "Borehole")
+                        .WithMany("BoreholeCodelists")
+                        .HasForeignKey("BoreholeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "Codelist")
+                        .WithMany("BoreholeCodelists")
+                        .HasForeignKey("CodelistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Borehole");
+
+                    b.Navigation("Codelist");
                 });
 
             modelBuilder.Entity("BDMS.Models.BoreholeFile", b =>
@@ -1539,6 +2100,45 @@ namespace BDMS.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BDMS.Models.Casing", b =>
+                {
+                    b.HasOne("BDMS.Models.Completion", "Completion")
+                        .WithMany("Casings")
+                        .HasForeignKey("CompletionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("BDMS.Models.Codelist", "Kind")
+                        .WithMany()
+                        .HasForeignKey("KindId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "Material")
+                        .WithMany()
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("Completion");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Kind");
+
+                    b.Navigation("Material");
+
+                    b.Navigation("UpdatedBy");
+                });
+
             modelBuilder.Entity("BDMS.Models.ChronostratigraphyLayer", b =>
                 {
                     b.HasOne("BDMS.Models.Codelist", "Chronostratigraphy")
@@ -1550,7 +2150,7 @@ namespace BDMS.Migrations
                         .HasForeignKey("CreatedById");
 
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
-                        .WithMany("Chronostratigraphies")
+                        .WithMany("ChronostratigraphyLayers")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1568,15 +2168,46 @@ namespace BDMS.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
+            modelBuilder.Entity("BDMS.Models.Completion", b =>
+                {
+                    b.HasOne("BDMS.Models.Borehole", "Borehole")
+                        .WithMany("Completions")
+                        .HasForeignKey("BoreholeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("BDMS.Models.Codelist", "Kind")
+                        .WithMany()
+                        .HasForeignKey("KindId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("Borehole");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Kind");
+
+                    b.Navigation("UpdatedBy");
+                });
+
             modelBuilder.Entity("BDMS.Models.FaciesDescription", b =>
                 {
                     b.HasOne("BDMS.Models.User", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Codelist", "QtDescription")
+                    b.HasOne("BDMS.Models.Codelist", "DescriptionQuality")
                         .WithMany()
-                        .HasForeignKey("QtDescriptionId");
+                        .HasForeignKey("DescriptionQualityId");
 
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("FaciesDescriptions")
@@ -1590,7 +2221,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("QtDescription");
+                    b.Navigation("DescriptionQuality");
 
                     b.Navigation("Stratigraphy");
 
@@ -1612,23 +2243,102 @@ namespace BDMS.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
+            modelBuilder.Entity("BDMS.Models.HydrotestCodelist", b =>
+                {
+                    b.HasOne("BDMS.Models.Codelist", "Codelist")
+                        .WithMany("HydrotestCodelists")
+                        .HasForeignKey("CodelistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Hydrotest", "Hydrotest")
+                        .WithMany("HydrotestCodelists")
+                        .HasForeignKey("HydrotestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Codelist");
+
+                    b.Navigation("Hydrotest");
+                });
+
+            modelBuilder.Entity("BDMS.Models.HydrotestResult", b =>
+                {
+                    b.HasOne("BDMS.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("BDMS.Models.Hydrotest", "Hydrotest")
+                        .WithMany("HydrotestResults")
+                        .HasForeignKey("HydrotestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "Parameter")
+                        .WithMany()
+                        .HasForeignKey("ParameterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Hydrotest");
+
+                    b.Navigation("Parameter");
+
+                    b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Instrumentation", b =>
+                {
+                    b.HasOne("BDMS.Models.Casing", "Casing")
+                        .WithMany("Instrumentations")
+                        .HasForeignKey("CasingId");
+
+                    b.HasOne("BDMS.Models.Completion", "Completion")
+                        .WithMany("Instrumentations")
+                        .HasForeignKey("CompletionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("BDMS.Models.Codelist", "Kind")
+                        .WithMany()
+                        .HasForeignKey("KindId");
+
+                    b.HasOne("BDMS.Models.Codelist", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId");
+
+                    b.HasOne("BDMS.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("Casing");
+
+                    b.Navigation("Completion");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Kind");
+
+                    b.Navigation("Status");
+
+                    b.Navigation("UpdatedBy");
+                });
+
             modelBuilder.Entity("BDMS.Models.Layer", b =>
                 {
                     b.HasOne("BDMS.Models.Codelist", "Alteration")
                         .WithMany()
                         .HasForeignKey("AlterationId");
-
-                    b.HasOne("BDMS.Models.Codelist", "CasingKind")
-                        .WithMany()
-                        .HasForeignKey("CasingKindId");
-
-                    b.HasOne("BDMS.Models.Codelist", "CasingMaterial")
-                        .WithMany()
-                        .HasForeignKey("CasingMaterialId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Chronostratigraphy")
-                        .WithMany()
-                        .HasForeignKey("ChronostratigraphyId");
 
                     b.HasOne("BDMS.Models.Codelist", "Cohesion")
                         .WithMany()
@@ -1646,13 +2356,9 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Codelist", "FillKind")
+                    b.HasOne("BDMS.Models.Codelist", "DescriptionQuality")
                         .WithMany()
-                        .HasForeignKey("FillKindId");
-
-                    b.HasOne("BDMS.Models.Codelist", "FillMaterial")
-                        .WithMany()
-                        .HasForeignKey("FillMaterialId");
+                        .HasForeignKey("DescriptionQualityId");
 
                     b.HasOne("BDMS.Models.Codelist", "Gradation")
                         .WithMany()
@@ -1670,18 +2376,6 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("HumidityId");
 
-                    b.HasOne("BDMS.Models.Stratigraphy", "InstrumentCasing")
-                        .WithMany()
-                        .HasForeignKey("InstrumentCasingId");
-
-                    b.HasOne("BDMS.Models.Codelist", "InstrumentKind")
-                        .WithMany()
-                        .HasForeignKey("InstrumentKindId");
-
-                    b.HasOne("BDMS.Models.Codelist", "InstrumentStatus")
-                        .WithMany()
-                        .HasForeignKey("InstrumentStatusId");
-
                     b.HasOne("BDMS.Models.Codelist", "Lithology")
                         .WithMany()
                         .HasForeignKey("LithologyId");
@@ -1697,10 +2391,6 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Plasticity")
                         .WithMany()
                         .HasForeignKey("PlasticityId");
-
-                    b.HasOne("BDMS.Models.Codelist", "QtDescription")
-                        .WithMany()
-                        .HasForeignKey("QtDescriptionId");
 
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("Layers")
@@ -1726,12 +2416,6 @@ namespace BDMS.Migrations
 
                     b.Navigation("Alteration");
 
-                    b.Navigation("CasingKind");
-
-                    b.Navigation("CasingMaterial");
-
-                    b.Navigation("Chronostratigraphy");
-
                     b.Navigation("Cohesion");
 
                     b.Navigation("Compactness");
@@ -1740,9 +2424,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("FillKind");
-
-                    b.Navigation("FillMaterial");
+                    b.Navigation("DescriptionQuality");
 
                     b.Navigation("Gradation");
 
@@ -1752,12 +2434,6 @@ namespace BDMS.Migrations
 
                     b.Navigation("Humidity");
 
-                    b.Navigation("InstrumentCasing");
-
-                    b.Navigation("InstrumentKind");
-
-                    b.Navigation("InstrumentStatus");
-
                     b.Navigation("Lithology");
 
                     b.Navigation("LithologyTopBedrock");
@@ -1765,8 +2441,6 @@ namespace BDMS.Migrations
                     b.Navigation("Lithostratigraphy");
 
                     b.Navigation("Plasticity");
-
-                    b.Navigation("QtDescription");
 
                     b.Navigation("Stratigraphy");
 
@@ -1804,9 +2478,9 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Codelist", "QtDescription")
+                    b.HasOne("BDMS.Models.Codelist", "DescriptionQuality")
                         .WithMany()
-                        .HasForeignKey("QtDescriptionId");
+                        .HasForeignKey("DescriptionQualityId");
 
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("LithologicalDescriptions")
@@ -1820,9 +2494,75 @@ namespace BDMS.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("QtDescription");
+                    b.Navigation("DescriptionQuality");
 
                     b.Navigation("Stratigraphy");
+
+                    b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("BDMS.Models.LithostratigraphyLayer", b =>
+                {
+                    b.HasOne("BDMS.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("BDMS.Models.Codelist", "Lithostratigraphy")
+                        .WithMany()
+                        .HasForeignKey("LithostratigraphyId");
+
+                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
+                        .WithMany("LithostratigraphyLayers")
+                        .HasForeignKey("StratigraphyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Lithostratigraphy");
+
+                    b.Navigation("Stratigraphy");
+
+                    b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Observation", b =>
+                {
+                    b.HasOne("BDMS.Models.Borehole", "Borehole")
+                        .WithMany()
+                        .HasForeignKey("BoreholeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Casing", "Casing")
+                        .WithMany("Observations")
+                        .HasForeignKey("CasingId");
+
+                    b.HasOne("BDMS.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("BDMS.Models.Codelist", "Reliability")
+                        .WithMany()
+                        .HasForeignKey("ReliabilityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("Borehole");
+
+                    b.Navigation("Casing");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Reliability");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -1837,10 +2577,6 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Stratigraphy", "FillCasing")
-                        .WithMany()
-                        .HasForeignKey("FillCasingId");
-
                     b.HasOne("BDMS.Models.Codelist", "Kind")
                         .WithMany()
                         .HasForeignKey("KindId")
@@ -1854,8 +2590,6 @@ namespace BDMS.Migrations
                     b.Navigation("Borehole");
 
                     b.Navigation("CreatedBy");
-
-                    b.Navigation("FillCasing");
 
                     b.Navigation("Kind");
 
@@ -1901,18 +2635,116 @@ namespace BDMS.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BDMS.Models.FieldMeasurement", b =>
+                {
+                    b.HasOne("BDMS.Models.Observation", null)
+                        .WithOne()
+                        .HasForeignKey("BDMS.Models.FieldMeasurement", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "Parameter")
+                        .WithMany()
+                        .HasForeignKey("ParameterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "SampleType")
+                        .WithMany()
+                        .HasForeignKey("SampleTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Parameter");
+
+                    b.Navigation("SampleType");
+                });
+
+            modelBuilder.Entity("BDMS.Models.GroundwaterLevelMeasurement", b =>
+                {
+                    b.HasOne("BDMS.Models.Observation", null)
+                        .WithOne()
+                        .HasForeignKey("BDMS.Models.GroundwaterLevelMeasurement", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "Kind")
+                        .WithMany()
+                        .HasForeignKey("KindId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Kind");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Hydrotest", b =>
+                {
+                    b.HasOne("BDMS.Models.Observation", null)
+                        .WithOne()
+                        .HasForeignKey("BDMS.Models.Hydrotest", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BDMS.Models.WaterIngress", b =>
+                {
+                    b.HasOne("BDMS.Models.Codelist", "Conditions")
+                        .WithMany()
+                        .HasForeignKey("ConditionsId");
+
+                    b.HasOne("BDMS.Models.Observation", null)
+                        .WithOne()
+                        .HasForeignKey("BDMS.Models.WaterIngress", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "Quantity")
+                        .WithMany()
+                        .HasForeignKey("QuantityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conditions");
+
+                    b.Navigation("Quantity");
+                });
+
             modelBuilder.Entity("BDMS.Models.Borehole", b =>
                 {
+                    b.Navigation("BoreholeCodelists");
+
                     b.Navigation("BoreholeFiles");
+
+                    b.Navigation("Completions");
 
                     b.Navigation("Stratigraphies");
 
                     b.Navigation("Workflows");
                 });
 
+            modelBuilder.Entity("BDMS.Models.Casing", b =>
+                {
+                    b.Navigation("Instrumentations");
+
+                    b.Navigation("Observations");
+                });
+
             modelBuilder.Entity("BDMS.Models.Codelist", b =>
                 {
+                    b.Navigation("BoreholeCodelists");
+
+                    b.Navigation("HydrotestCodelists");
+
                     b.Navigation("LayerCodelists");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Completion", b =>
+                {
+                    b.Navigation("Backfills");
+
+                    b.Navigation("Casings");
+
+                    b.Navigation("Instrumentations");
                 });
 
             modelBuilder.Entity("BDMS.Models.File", b =>
@@ -1927,13 +2759,15 @@ namespace BDMS.Migrations
 
             modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
                 {
-                    b.Navigation("Chronostratigraphies");
+                    b.Navigation("ChronostratigraphyLayers");
 
                     b.Navigation("FaciesDescriptions");
 
                     b.Navigation("Layers");
 
                     b.Navigation("LithologicalDescriptions");
+
+                    b.Navigation("LithostratigraphyLayers");
                 });
 
             modelBuilder.Entity("BDMS.Models.User", b =>
@@ -1946,6 +2780,13 @@ namespace BDMS.Migrations
             modelBuilder.Entity("BDMS.Models.Workgroup", b =>
                 {
                     b.Navigation("Boreholes");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Hydrotest", b =>
+                {
+                    b.Navigation("HydrotestCodelists");
+
+                    b.Navigation("HydrotestResults");
                 });
 #pragma warning restore 612, 618
         }

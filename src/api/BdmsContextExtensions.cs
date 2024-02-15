@@ -62,12 +62,12 @@ public static class BdmsContextExtensions
         List<int> srsIds = codelists.Where(c => c.Schema == "srs").Select(s => s.Id).ToList();
         List<int> hrsIds = codelists.Where(c => c.Schema == "hrs").Select(s => s.Id).ToList();
         List<int> restrictionIds = codelists.Where(c => c.Schema == "restriction").Select(s => s.Id).ToList();
-        List<int> qtLocationnIds = codelists.Where(c => c.Schema == "qt_location").Select(s => s.Id).ToList();
-        List<int> qtDescriptionIds = codelists.Where(c => c.Schema == "qt_description").Select(s => s.Id).ToList();
+        List<int> locationPrecisionIds = codelists.Where(c => c.Schema == "location_precision").Select(s => s.Id).ToList();
+        List<int> descriptionQualityIds = codelists.Where(c => c.Schema == "description_quality").Select(s => s.Id).ToList();
         List<int> drillingMethodIds = codelists.Where(c => c.Schema == "extended.drilling_method").Select(s => s.Id).ToList();
         List<int> cuttingsIds = codelists.Where(c => c.Schema == "custom.cuttings").Select(s => s.Id).ToList();
         List<int> qtDepthIds = codelists.Where(c => c.Schema == "custom.qt_top_bedrock").Select(s => s.Id).ToList();
-        List<int> qtElevationIds = codelists.Where(c => c.Schema == "qt_elevation").Select(s => s.Id).ToList();
+        List<int> elevationPrecisionIds = codelists.Where(c => c.Schema == "elevation_precision").Select(s => s.Id).ToList();
         List<int> layerKindIds = codelists.Where(c => c.Schema == "layer_kind").Select(s => s.Id).ToList();
         List<int> purposeIds = codelists.Where(c => c.Schema == "extended.purpose").Select(s => s.Id).ToList();
         List<int> statusIds = codelists.Where(c => c.Schema == "extended.status").Select(s => s.Id).ToList();
@@ -75,26 +75,26 @@ public static class BdmsContextExtensions
         List<int> qtInclinationDirectionIds = codelists.Where(c => c.Schema == "custom.qt_bore_inc_dir").Select(s => s.Id).ToList();
         List<int> chronostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.chronostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> lithostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithostratigraphy_top_bedrock").Select(s => s.Id).ToList();
-        List<int> instrumentKindIds = codelists.Where(c => c.Schema == CompletionSchemas.InstrumentationKindSchema).Select(s => s.Id).ToList();
+        List<int> instrumentKindIds = codelists.Where(c => c.Schema == CompletionSchemas.InstrumentationTypeSchema).Select(s => s.Id).ToList();
         List<int> instrumentStatusIds = codelists.Where(c => c.Schema == CompletionSchemas.InstrumentationStatusSchema).Select(s => s.Id).ToList();
-        List<int> casingKindIds = codelists.Where(c => c.Schema == CompletionSchemas.CasingKindSchema).Select(s => s.Id).ToList();
+        List<int> casingKindIds = codelists.Where(c => c.Schema == CompletionSchemas.CasingTypeSchema).Select(s => s.Id).ToList();
         List<int> casingMaterialIds = codelists.Where(c => c.Schema == CompletionSchemas.CasingMaterialSchema).Select(s => s.Id).ToList();
-        List<int> plasticityIds = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList();
-        List<int> compactnessIds = codelists.Where(c => c.Schema == "mlpr102").Select(s => s.Id).ToList();
-        List<int> consistanceIds = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList();
-        List<int> humidityIds = codelists.Where(c => c.Schema == "mlpr105").Select(s => s.Id).ToList();
-        List<int> alterationIds = codelists.Where(c => c.Schema == "mlpr106").Select(s => s.Id).ToList();
-        List<int> cohesionIds = codelists.Where(c => c.Schema == "mlpr116").Select(s => s.Id).ToList();
-        List<int> backfillKindIds = codelists.Where(c => c.Schema == CompletionSchemas.BackfillKindSchema).Select(s => s.Id).ToList();
+        List<int> plasticityIds = codelists.Where(c => c.Schema == "plasticity").Select(s => s.Id).ToList();
+        List<int> compactnessIds = codelists.Where(c => c.Schema == "compactness").Select(s => s.Id).ToList();
+        List<int> consistanceIds = codelists.Where(c => c.Schema == "consistency").Select(s => s.Id).ToList();
+        List<int> humidityIds = codelists.Where(c => c.Schema == "humidity").Select(s => s.Id).ToList();
+        List<int> alterationIds = codelists.Where(c => c.Schema == "alteration").Select(s => s.Id).ToList();
+        List<int> cohesionIds = codelists.Where(c => c.Schema == "cohesion").Select(s => s.Id).ToList();
+        List<int> backfillKindIds = codelists.Where(c => c.Schema == CompletionSchemas.BackfillTypeSchema).Select(s => s.Id).ToList();
         List<int> backfillMaterialIds = codelists.Where(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Select(s => s.Id).ToList();
-        List<int> uscsIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();
-        List<int> uscsDeterminationIds = codelists.Where(c => c.Schema == "mcla104").Select(s => s.Id).ToList();
+        List<int> uscsIds = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList();
+        List<int> uscsDeterminationIds = codelists.Where(c => c.Schema == "uscs_determination").Select(s => s.Id).ToList();
         List<int> gradationIds = codelists.Where(c => c.Schema == "gradation").Select(s => s.Id).ToList();
-        List<int> soilStateIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> kirostIds = codelists.Where(c => c.Schema == "mcla101").Select(s => s.Id).ToList();  // unclear with codelist
-        List<int> grainSize1Ids = codelists.Where(c => c.Schema == "mlpr101").Select(s => s.Id).ToList(); // unclear with codelist
-        List<int> grainSize2Ids = codelists.Where(c => c.Schema == "mlpr103").Select(s => s.Id).ToList(); // unclear with codelist
-        List<int> referenceElevationTypeIds = codelists.Where(c => c.Schema == "ibor117").Select(s => s.Id).ToList();
+        List<int> soilStateIds = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList();  // unclear which codelist
+        List<int> kirostIds = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList();  // unclear which codelist
+        List<int> grainSize1Ids = codelists.Where(c => c.Schema == "grain_size").Select(s => s.Id).ToList();
+        List<int> grainSize2Ids = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList(); // unclear which codelist
+        List<int> referenceElevationTypeIds = codelists.Where(c => c.Schema == "reference_elevation_type").Select(s => s.Id).ToList();
         List<int> waterIngressReliabilityIds = codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Select(s => s.Id).ToList();
         List<int> waterIngressQuantityIds = codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Select(s => s.Id).ToList();
         List<int> waterIngressConditionsIds = codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Select(s => s.Id).ToList();
@@ -139,10 +139,10 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.RestrictionUntil, f => f.Date.Future().ToUniversalTime().OrNull(f, .9f))
            .RuleFor(o => o.OriginalName, f => f.Name.FullName())
            .RuleFor(o => o.AlternateName, f => f.Person.UserName.OrNull(f, .1f))
-           .RuleFor(o => o.QtLocationId, f => f.PickRandom(qtLocationnIds).OrNull(f, .1f))
-           .RuleFor(o => o.QtLocation, _ => default!)
-           .RuleFor(o => o.QtElevationId, f => f.PickRandom(qtElevationIds).OrNull(f, .1f))
-           .RuleFor(o => o.QtElevation, _ => default!)
+           .RuleFor(o => o.LocationPrecisionId, f => f.PickRandom(locationPrecisionIds).OrNull(f, .1f))
+           .RuleFor(o => o.LocationPrecision, _ => default!)
+           .RuleFor(o => o.ElevationPrecisionId, f => f.PickRandom(elevationPrecisionIds).OrNull(f, .1f))
+           .RuleFor(o => o.ElevationPrecision, _ => default!)
            .RuleFor(o => o.ProjectName, f => f.Company.CatchPhrase().OrNull(f, .1f))
            .RuleFor(o => o.Country, f => f.Address.Country().OrNull(f, 0.01f))
            .RuleFor(o => o.Canton, f => f.Address.State().OrNull(f, 0.01f))
@@ -175,7 +175,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TopBedrockTvd, f => f.Random.Double(0, 1000).OrNull(f, .05f))
            .RuleFor(o => o.QtTopBedrockTvd, f => f.Random.Double(0, 2).OrNull(f, .05f))
            .RuleFor(o => o.ReferenceElevation, f => f.Random.Double(0, 4500).OrNull(f, .05f))
-           .RuleFor(o => o.QtReferenceElevationId, f => f.PickRandom(qtElevationIds).OrNull(f, .05f))
+           .RuleFor(o => o.QtReferenceElevationId, f => f.PickRandom(elevationPrecisionIds).OrNull(f, .05f))
            .RuleFor(o => o.QtReferenceElevation, _ => default!)
            .RuleFor(o => o.QtInclinationDirectionId, f => f.PickRandom(qtInclinationDirectionIds).OrNull(f, .05f))
            .RuleFor(o => o.QtInclinationDirection, _ => default!)
@@ -344,8 +344,8 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Lithostratigraphy, _ => default!)
             .RuleFor(o => o.PlasticityId, f => f.PickRandom(plasticityIds).OrNull(f, .05f))
             .RuleFor(o => o.Plasticity, _ => default!)
-            .RuleFor(o => o.QtDescriptionId, f => f.PickRandom(qtDescriptionIds).OrNull(f, .05f))
-            .RuleFor(o => o.QtDescription, _ => default!)
+            .RuleFor(o => o.DescriptionQualityId, f => f.PickRandom(descriptionQualityIds).OrNull(f, .05f))
+            .RuleFor(o => o.DescriptionQuality, _ => default!)
             .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(layer_ids, 7_000_000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.IsStriae, f => f.Random.Bool())
@@ -404,8 +404,8 @@ public static class BdmsContextExtensions
             .StrictMode(true)
             .RuleFor(o => o.FromDepth, f => (lithologicalDescription_ids % 10) * 10)
             .RuleFor(o => o.ToDepth, f => ((lithologicalDescription_ids % 10) + 1) * 10)
-            .RuleFor(o => o.QtDescriptionId, f => f.PickRandom(qtDescriptionIds).OrNull(f, .05f))
-            .RuleFor(o => o.QtDescription, _ => default!)
+            .RuleFor(o => o.DescriptionQualityId, f => f.PickRandom(descriptionQualityIds).OrNull(f, .05f))
+            .RuleFor(o => o.DescriptionQuality, _ => default!)
             .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(lithologicalDescription_ids, 9_000_000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.Description, f => f.Random.Words(3).OrNull(f, .05f))
@@ -437,8 +437,8 @@ public static class BdmsContextExtensions
             .StrictMode(true)
             .RuleFor(o => o.FromDepth, f => (faciesDescription_ids % 10) * 10)
             .RuleFor(o => o.ToDepth, f => ((faciesDescription_ids % 10) + 1) * 10)
-            .RuleFor(o => o.QtDescriptionId, f => f.PickRandom(qtDescriptionIds).OrNull(f, .05f))
-            .RuleFor(o => o.QtDescription, _ => default!)
+            .RuleFor(o => o.DescriptionQualityId, f => f.PickRandom(descriptionQualityIds).OrNull(f, .05f))
+            .RuleFor(o => o.DescriptionQuality, _ => default!)
             .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(faciesDescription_ids, 10_000_000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.Description, f => f.Random.Words(3).OrNull(f, .05f))
@@ -535,7 +535,7 @@ public static class BdmsContextExtensions
             .StrictMode(true)
             .RuleFor(o => o.LayerId, f => f.PickRandom(layerRange))
             .RuleFor(o => o.CodelistId, f => f.PickRandom(uscsIds))
-            .RuleFor(o => o.SchemaName, "mcla101")
+            .RuleFor(o => o.SchemaName, "uscs_type")
             .RuleFor(o => o.Layer, _ => default!)
             .RuleFor(o => o.Codelist, _ => default!);
 

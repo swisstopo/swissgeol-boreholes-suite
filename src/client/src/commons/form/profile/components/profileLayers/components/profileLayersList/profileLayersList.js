@@ -115,7 +115,7 @@ const ProfileLayersList = props => {
     const grainSize1 = item?.grainSize1?.[i18n.language] ?? null;
     let color = [];
     item?.codelists
-      .filter(c => c.schema === "mlpr112")
+      .filter(c => c.schema === "colour")
       .forEach(element => {
         color.push(element[i18n.language]);
       });
@@ -133,35 +133,35 @@ const ProfileLayersList = props => {
 
     let uscs3 = [];
     item?.codelists
-      .filter(c => c.schema === "mcla101")
+      .filter(c => c.schema === "uscs_type")
       .forEach(element => {
         uscs3.push(element[i18n.language]);
       });
 
     let grainshape = [];
     item?.codelists
-      .filter(c => c.schema === "mlpr110")
+      .filter(c => c.schema === "grain_shape")
       .forEach(element => {
         grainshape.push(element[i18n.language]);
       });
 
     let angularity = [];
     item?.codelists
-      .filter(c => c.schema === "mlpr115")
+      .filter(c => c.schema === "grain_angularity")
       .forEach(element => {
         angularity.push(element[i18n.language]);
       });
 
     let organicCompounds = [];
     item?.codelists
-      .filter(c => c.schema === "mlpr108")
+      .filter(c => c.schema === "organic_components")
       .forEach(element => {
         organicCompounds.push(element[i18n.language]);
       });
 
     let debris = [];
     item?.codelists
-      .filter(c => c.schema === "mcla107")
+      .filter(c => c.schema === "debris")
       .forEach(element => {
         debris.push(element[i18n.language]);
       });

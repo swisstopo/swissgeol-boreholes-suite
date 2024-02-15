@@ -35,11 +35,11 @@ class GetLayer(Action):
             depth_from_lay AS depth_from,
             depth_to_lay AS depth_to,
             last_lay AS last,
-            layer.qt_description_id_cli AS qt_description,
+            layer.qt_description_id_cli AS description_quality,
             layer.lithology_id_cli AS lithology,
             layer.lithostratigraphy_id_cli AS lithostratigraphy,
             COALESCE(
-                mlpr112, '{}'::int[]
+                colour, '{}'::int[]
             ) AS color,
             layer.plasticity_id_cli AS plasticity,
             layer.humidity_id_cli AS humidity,
@@ -48,22 +48,22 @@ class GetLayer(Action):
             layer.alteration_id_cli AS alteration,
             layer.compactness_id_cli AS compactness,
             COALESCE(
-                mlpr108, '{}'::int[]
+                organic_components, '{}'::int[]
             ) AS organic_component,
             striae_lay AS striae,
             layer.grain_size_1_id_cli AS grain_size_1,
             layer.grain_size_2_id_cli AS grain_size_2,
             COALESCE(
-                mlpr110, '{}'::int[]
+                grain_shape, '{}'::int[]
             ) AS grain_shape,
             COALESCE(
-                mlpr115, '{}'::int[]
+                grain_angularity, '{}'::int[]
             ) AS grain_granularity,
             layer.cohesion_id_cli AS cohesion,
             layer.uscs_1_id_cli AS uscs_1,
             layer.uscs_2_id_cli AS uscs_2,
             COALESCE(
-                mcla101, '{}'::int[]
+                uscs_type, '{}'::int[]
             ) AS uscs_3,
             layer.lithology_top_bedrock_id_cli AS lithology_top_bedrock,
             COALESCE(
@@ -74,7 +74,7 @@ class GetLayer(Action):
             ) AS original_lithology,
             uscs_determination_id_cli AS uscs_determination,
             COALESCE(
-                mcla107, '{}'::int[]
+                debris, '{}'::int[]
             ) AS debris,
             COALESCE(
                 notes_lay, ''
@@ -135,11 +135,11 @@ class GetLayer(Action):
 
         LEFT JOIN (
             SELECT
-                id_lay_fk, array_agg(id_cli_fk) as mlpr112
+                id_lay_fk, array_agg(id_cli_fk) as colour
             FROM
                 bdms.layer_codelist
             WHERE
-                code_cli = 'mlpr112'
+                code_cli = 'colour'
             GROUP BY id_lay_fk
         ) clr
         ON clr.id_lay_fk = id_lay
@@ -157,55 +157,55 @@ class GetLayer(Action):
 
         LEFT JOIN (
             SELECT
-                id_lay_fk, array_agg(id_cli_fk) as mlpr108
+                id_lay_fk, array_agg(id_cli_fk) as organic_components
             FROM
                 bdms.layer_codelist
             WHERE
-                code_cli = 'mlpr108'
+                code_cli = 'organic_components'
             GROUP BY id_lay_fk
         ) oco
         ON oco.id_lay_fk = id_lay
 
         LEFT JOIN (
             SELECT
-                id_lay_fk, array_agg(id_cli_fk) as mlpr110
+                id_lay_fk, array_agg(id_cli_fk) as grain_shape
             FROM
                 bdms.layer_codelist
             WHERE
-                code_cli = 'mlpr110'
+                code_cli = 'grain_shape'
             GROUP BY id_lay_fk
         ) us3
         ON us3.id_lay_fk = id_lay
 
         LEFT JOIN (
             SELECT
-                id_lay_fk, array_agg(id_cli_fk) as mcla101
+                id_lay_fk, array_agg(id_cli_fk) as uscs_type
             FROM
                 bdms.layer_codelist
             WHERE
-                code_cli = 'mcla101'
+                code_cli = 'uscs_type'
             GROUP BY id_lay_fk
         ) gsh
         ON gsh.id_lay_fk = id_lay
 
         LEFT JOIN (
             SELECT
-                id_lay_fk, array_agg(id_cli_fk) as mlpr115
+                id_lay_fk, array_agg(id_cli_fk) as grain_angularity
             FROM
                 bdms.layer_codelist
             WHERE
-                code_cli = 'mlpr115'
+                code_cli = 'grain_angularity'
             GROUP BY id_lay_fk
         ) ggr
         ON ggr.id_lay_fk = id_lay
 
         LEFT JOIN (
             SELECT
-                id_lay_fk, array_agg(id_cli_fk) as mcla107
+                id_lay_fk, array_agg(id_cli_fk) as debris
             FROM
                 bdms.layer_codelist
             WHERE
-                code_cli = 'mcla107'
+                code_cli = 'debris'
             GROUP BY id_lay_fk
         ) dbr
         ON dbr.id_lay_fk = id_lay

@@ -81,7 +81,7 @@ const InstrumentationInput = ({
           required={true}
           values={domains?.data
             ?.filter(
-              d => d.schema === completionSchemaConstants.instrumentationKind,
+              d => d.schema === completionSchemaConstants.instrumentationType,
             )
             .sort((a, b) => a.order - b.order)
             .map(d => ({
