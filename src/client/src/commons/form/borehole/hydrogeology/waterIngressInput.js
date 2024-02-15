@@ -21,6 +21,9 @@ const WaterIngressInput = props => {
     if (data.casingId == null) {
       data.casingId = item.casingId;
     }
+    if (data.conditionsId === "") {
+      data.conditionsId = null;
+    }
     return data;
   };
 
@@ -53,7 +56,6 @@ const WaterIngressInput = props => {
           fieldName="conditionsId"
           label="conditions"
           selected={item.conditionsId}
-          required={true}
           values={domains?.data
             ?.filter(
               d =>
