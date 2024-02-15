@@ -11,7 +11,7 @@ public partial class AddStratigraphyQuality : Migration
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.AddColumn<int>(
-            name: "quality_id_sty",
+            name: "quality_id",
             schema: "bdms",
             table: "stratigraphy",
             type: "integer",
@@ -21,13 +21,13 @@ public partial class AddStratigraphyQuality : Migration
             name: "IX_stratigraphy_quality_id_sty",
             schema: "bdms",
             table: "stratigraphy",
-            column: "quality_id_sty");
+            column: "quality_id");
 
         migrationBuilder.AddForeignKey(
             name: "FK_stratigraphy_codelist_quality_id_sty",
             schema: "bdms",
             table: "stratigraphy",
-            column: "quality_id_sty",
+            column: "quality_id",
             principalSchema: "bdms",
             principalTable: "codelist",
             principalColumn: "id_cli");

@@ -1569,7 +1569,7 @@ namespace BDMS.Migrations
 
                     b.Property<int?>("QualityId")
                         .HasColumnType("integer")
-                        .HasColumnName("quality_id_sty");
+                        .HasColumnName("quality_id");
 
                     b.Property<DateTime?>("Updated")
                         .HasColumnType("timestamp with time zone")
