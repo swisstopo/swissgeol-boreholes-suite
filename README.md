@@ -11,7 +11,7 @@ Folgende Komponenten müssen auf dem Entwicklungsrechner installiert sein:
 ✔️ Git  
 ✔️ Docker  
 ✔️ Visual Studio 2022  
-✔️ Node.js 20 LTS
+✔️ Node.js 20 LTS  
 ✔️ Optional, um die Onlinehilfe zu erstellen: [MkDocs](https://www.mkdocs.org/)
 
 ### Entwicklung mit Visual Studio 2022
@@ -27,9 +27,11 @@ In VS 2022 müssen mehrere Startup-Projects angewählt werden, um die komplette 
 | BDMS.Test      | None                    |
 | docker-compose | Start without debugging |
 
+⚠️ Möglicherweise wird das LaunchProfile von Docker Compose beim ersten Start nicht angewendet und deshalb API sowie Client zusätzlich im Docker gestartet. Dann muss das Projekt _docker-compose_ einmalig als Startprojekt ausgewählt werden. Anschliessend kann wieder auf _Multiple startup projects_ umgestellt werden.
+
 ### Entwicklung mit Docker
 
-Mit `docker-compose up` kann eine funktionierende Infrastruktur hochgefahren werden. Sie unterstützt Hot-Reload und lädt den Code aus dem lokalen Verzeichnis. Unter Windows mit Docker-Desktop kann die Synchronisierung in  den  _mounted volumes_ zu Performance-Problemen führen.
+Mit `docker-compose up` kann eine funktionierende Infrastruktur hochgefahren werden. Sie unterstützt Hot-Reload und lädt den Code aus dem lokalen Verzeichnis. Unter Windows mit Docker-Desktop kann die Synchronisierung in den _mounted volumes_ zu Performance-Problemen führen.
 
 **Folgende Dienste/Anwendungen sind anschliessend wie folgt verfügbar**
 
