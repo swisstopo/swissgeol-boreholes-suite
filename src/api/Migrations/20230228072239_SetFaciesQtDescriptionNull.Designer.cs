@@ -175,7 +175,7 @@ partial class SetFaciesQtDescriptionNull
                     .HasColumnType("integer")
                     .HasColumnName("qt_inclination_direction_id_cli");
 
-                b.Property<int?>("LocationPrecisionId")
+                b.Property<int?>("QtLocationId")
                     .HasColumnType("integer")
                     .HasColumnName("qt_location_id_cli");
 
@@ -279,7 +279,7 @@ partial class SetFaciesQtDescriptionNull
 
                 b.HasIndex("QtInclinationDirectionId");
 
-                b.HasIndex("LocationPrecisionId");
+                b.HasIndex("QtLocationId");
 
                 b.HasIndex("QtReferenceElevationId");
 
@@ -1359,7 +1359,7 @@ partial class SetFaciesQtDescriptionNull
 
                 b.HasOne("BDMS.Models.Codelist", "LocationPrecision")
                     .WithMany()
-                    .HasForeignKey("LocationPrecisionId");
+                    .HasForeignKey("QtLocationId");
 
                 b.HasOne("BDMS.Models.Codelist", "QtReferenceElevation")
                     .WithMany()

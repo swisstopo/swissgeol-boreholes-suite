@@ -178,7 +178,7 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("qt_inclination_direction_id_cli");
 
-                    b.Property<int?>("LocationPrecisionId")
+                    b.Property<int?>("QtLocationId")
                         .HasColumnType("integer")
                         .HasColumnName("qt_location_id_cli");
 
@@ -282,7 +282,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("QtInclinationDirectionId");
 
-                    b.HasIndex("LocationPrecisionId");
+                    b.HasIndex("QtLocationId");
 
                     b.HasIndex("QtReferenceElevationId");
 
@@ -1858,9 +1858,9 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("QtInclinationDirectionId");
 
-                    b.HasOne("BDMS.Models.Codelist", "LocationPrecision")
+                    b.HasOne("BDMS.Models.Codelist", "QtLocation")
                         .WithMany()
-                        .HasForeignKey("LocationPrecisionId");
+                        .HasForeignKey("QtLocationId");
 
                     b.HasOne("BDMS.Models.Codelist", "QtReferenceElevation")
                         .WithMany()
@@ -1916,7 +1916,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("QtInclinationDirection");
 
-                    b.Navigation("LocationPrecision");
+                    b.Navigation("QtLocation");
 
                     b.Navigation("QtReferenceElevation");
 
