@@ -7,7 +7,6 @@ import ProfileLayers from "./components/profileLayers";
 import ProfileAttributes from "./components/profileAttributes";
 import { stratigraphyData } from "./data/stratigraphydata";
 import TranslationText from "../translationText";
-import { profileKind } from "./constance";
 import { Loader } from "semantic-ui-react";
 
 const Profile = props => {
@@ -15,7 +14,6 @@ const Profile = props => {
     borehole: state.core_borehole,
     user: state.core_user,
   }));
-  const { kind } = props;
 
   const [isEditable, setIsEditable] = useState(false);
   const [selectedStratigraphy, setSelectedStratigraphy] = useState(null);
@@ -24,7 +22,6 @@ const Profile = props => {
   const [reloadHeader, setReloadHeader] = useState(0);
   const [reloadAttribute, setReloadAttribute] = useState(0);
   const [attributesBasedKind, setAttributesBasedKind] = useState(null);
-  const [stratigraphyKind, setStratigraphyKind] = useState(null);
   const [isLoadingData, setIsLoadingData] = useState(false);
 
   const onUpdated = attribute => {
@@ -60,25 +57,6 @@ const Profile = props => {
       setReloadAttribute(reloadAttribute => reloadAttribute + 1);
   };
 
-  const setKind = useCallback(kind => {
-    switch (kind) {
-      case "stratigraphy":
-        setAttributesBasedKind(stratigraphyData);
-        setStratigraphyKind(profileKind.STRATIGRAPHY);
-        break;
-      case "hydrogeology":
-        setAttributesBasedKind(stratigraphyData);
-        setStratigraphyKind(profileKind.HYDROGEOLOGY);
-        break;
-      case "chronostratigraphy":
-        break;
-      default:
-        setAttributesBasedKind(stratigraphyData);
-        setStratigraphyKind(profileKind.STRATIGRAPHY);
-    }
-    onUpdated("newAttribute");
-  }, []);
-
   useEffect(() => {
     if (
       !(
@@ -91,8 +69,9 @@ const Profile = props => {
     } else {
       setIsEditable(false);
     }
-    setKind(kind);
-  }, [setIsEditable, borehole, user, kind, setKind]);
+    setAttributesBasedKind(stratigraphyData);
+    onUpdated("newAttribute");
+  }, [setIsEditable, borehole, user]);
 
   const set = useCallback(
     e => {
@@ -108,10 +87,9 @@ const Profile = props => {
 
   return (
     <Styled.MainContainer>
-      {stratigraphyKind && borehole.data.id && (
+      {borehole.data.id && (
         <ProfileHeader
           boreholeID={borehole.data.id}
-          kind={stratigraphyKind}
           isEditable={isEditable}
           reloadHeader={reloadHeader}
           selectedStratigraphy={selectedStratigraphy}
@@ -133,54 +111,50 @@ const Profile = props => {
         </Styled.Empty>
       )}
 
-      {!isLoadingData &&
-        stratigraphyKind !== profileKind.INSTRUMENT &&
-        selectedStratigraphy && (
-          <Styled.Container>
-            <Styled.FirstColumn>
-              <ProfileInfo
+      {!isLoadingData && selectedStratigraphy && (
+        <Styled.Container>
+          <Styled.FirstColumn>
+            <ProfileInfo
+              data={{
+                selectedStratigraphyID: selectedStratigraphy
+                  ? selectedStratigraphy.id
+                  : null,
+                isEditable,
+                onUpdated,
+                attribute: attributesBasedKind?.profileInfo,
+              }}
+            />
+            <ProfileLayers
+              data={{
+                selectedStratigraphyID: selectedStratigraphy
+                  ? selectedStratigraphy.id
+                  : null,
+                isEditable,
+                selectedLayer,
+                setSelectedLayer: e => {
+                  setSelectedLayer(e);
+                },
+                reloadLayer,
+                onUpdated,
+              }}
+            />
+          </Styled.FirstColumn>
+          {selectedLayer !== null && (
+            <Styled.SecondColumn>
+              <ProfileAttributes
                 data={{
-                  kind: stratigraphyKind,
-                  selectedStratigraphyID: selectedStratigraphy
-                    ? selectedStratigraphy.id
-                    : null,
+                  id: selectedLayer ? selectedLayer.id : null,
+                  selectedStratigraphyID: selectedStratigraphy?.id,
                   isEditable,
                   onUpdated,
-                  attribute: attributesBasedKind?.profileInfo,
+                  reloadAttribute,
+                  attribute: attributesBasedKind?.profileAttribute,
                 }}
               />
-              <ProfileLayers
-                data={{
-                  selectedStratigraphyID: selectedStratigraphy
-                    ? selectedStratigraphy.id
-                    : null,
-                  isEditable,
-                  selectedLayer,
-                  setSelectedLayer: e => {
-                    setSelectedLayer(e);
-                  },
-                  reloadLayer,
-                  onUpdated,
-                  stratigraphyKind,
-                }}
-              />
-            </Styled.FirstColumn>
-            {selectedLayer !== null && (
-              <Styled.SecondColumn>
-                <ProfileAttributes
-                  data={{
-                    id: selectedLayer ? selectedLayer.id : null,
-                    selectedStratigraphyID: selectedStratigraphy?.id,
-                    isEditable,
-                    onUpdated,
-                    reloadAttribute,
-                    attribute: attributesBasedKind?.profileAttribute,
-                  }}
-                />
-              </Styled.SecondColumn>
-            )}
-          </Styled.Container>
-        )}
+            </Styled.SecondColumn>
+          )}
+        </Styled.Container>
+      )}
     </Styled.MainContainer>
   );
 };

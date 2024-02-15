@@ -15,7 +15,6 @@ export const ProfileLayersValidation = props => {
     setShowDelete,
     selectedStratigraphyID,
     setSelectedLayer,
-    isStratigraphy,
   } = props.data;
   const { setDeleteParams } = props;
   const [previousLength, setPreviousLength] = useState(0);
@@ -114,8 +113,6 @@ export const ProfileLayersValidation = props => {
                 showDelete,
                 setShowDelete,
                 setSelectedLayer,
-                isStratigraphy,
-                onUpdated,
               }}
             />
 

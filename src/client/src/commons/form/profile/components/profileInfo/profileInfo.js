@@ -20,7 +20,6 @@ const ProfileInfo = props => {
     isEditable,
     onUpdated,
     attribute,
-    kind,
   } = props.data;
 
   const mounted = useRef(false);
@@ -31,7 +30,6 @@ const ProfileInfo = props => {
     updateAttributeDelay: {},
     profileInfo: {
       id: null,
-      kind: null,
       name: null,
       primary: false,
       date: null,
@@ -109,7 +107,6 @@ const ProfileInfo = props => {
 
       <InfoCheckBox
         data={{
-          kind,
           profileInfo: state.profileInfo,
           updateChange,
           isEditable,

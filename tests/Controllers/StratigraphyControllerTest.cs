@@ -62,9 +62,9 @@ public class StratigraphyControllerTest
     }
 
     [TestMethod]
-    public async Task GetStratigraphyByBoreholeIdAndKind()
+    public async Task GetStratigraphyByBoreholeId()
     {
-        var stratigraphies = await controller.GetAsync(1000017, 3000).ConfigureAwait(false);
+        var stratigraphies = await controller.GetAsync(1000017).ConfigureAwait(false);
         Assert.IsNotNull(stratigraphies);
         Assert.AreEqual(1, stratigraphies.Count());
         var stratigraphy = stratigraphies.Single();

@@ -41,7 +41,6 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { withTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "react-query";
 import { AlertContext } from "../../../../../components/alert/alertContext";
-import { profileKind } from "../../constance";
 
 const ProfileLayers = props => {
   const {
@@ -51,7 +50,6 @@ const ProfileLayers = props => {
     setSelectedLayer,
     reloadLayer,
     onUpdated,
-    stratigraphyKind,
   } = props.data;
   const { t } = props;
   const [layersWithValidation, setLayersWithValidation] = useState(null);
@@ -216,7 +214,6 @@ const ProfileLayers = props => {
   };
 
   const isLayerSelected = selectedLayer !== null;
-  const isStratigraphy = stratigraphyKind === profileKind.STRATIGRAPHY;
   const hasLayers = layersWithValidation?.data?.length > 0;
   const hasLithoDescriptions = lithoDescQuery?.data?.length > 0;
   const hasFaciesDescriptions = faciesDescQuery?.data?.length > 0;
@@ -257,7 +254,7 @@ const ProfileLayers = props => {
                   )}
                 </Stack>
               </TableCell>
-              {isStratigraphy && !isLayerSelected && (
+              {!isLayerSelected && (
                 <TableCell>
                   <Stack direction="row">
                     <Typography>{t("lithological_description")}</Typography>
@@ -278,7 +275,7 @@ const ProfileLayers = props => {
                   </Stack>
                 </TableCell>
               )}
-              {isStratigraphy && !isLayerSelected && (
+              {!isLayerSelected && (
                 <TableCell>
                   <Stack direction="row">
                     <Typography>{t("facies_description")}</Typography>
@@ -316,13 +313,12 @@ const ProfileLayers = props => {
                       setShowDelete,
                       selectedStratigraphyID,
                       setSelectedLayer: setSelectedLayerFunc,
-                      isStratigraphy,
                     }}
                     setDeleteParams={setDeleteParams}
                   />
                 )}
               </td>
-              {isStratigraphy && !isLayerSelected && hasLithoDescriptions && (
+              {!isLayerSelected && hasLithoDescriptions && (
                 <td style={cellStyle}>
                   <DescriptionLayers
                     isEditable={isEditable}
@@ -338,7 +334,7 @@ const ProfileLayers = props => {
                   />
                 </td>
               )}
-              {isStratigraphy && !isLayerSelected && hasFaciesDescriptions && (
+              {!isLayerSelected && hasFaciesDescriptions && (
                 <td style={cellStyle}>
                   <DescriptionLayers
                     isEditable={isEditable}

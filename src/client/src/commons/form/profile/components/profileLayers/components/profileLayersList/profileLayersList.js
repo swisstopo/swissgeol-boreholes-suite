@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-  useMemo,
-  useContext,
-} from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { Icon, Popup } from "semantic-ui-react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
@@ -14,8 +8,6 @@ import TranslationText from "../../../../../translationText";
 import { NumericFormat } from "react-number-format";
 import { withTranslation } from "react-i18next";
 import * as Styled from "./styles";
-import { deleteLayer } from "../../../../../../../api-lib";
-import { AlertContext } from "../../../../../../../components/alert/alertContext";
 import { useLithostratigraphies } from "../../../../../../../api/fetchApiV2";
 
 const ProfileLayersList = props => {
@@ -27,15 +19,12 @@ const ProfileLayersList = props => {
     setSelectedLayer,
     itemWithValidation,
     item,
-    isStratigraphy,
-    onUpdated,
   } = props.data;
   const { t, i18n } = props;
   const [isTopHasWarning, setIsTopHasWarning] = useState(false);
   const [isBottomHasWarning, setIsBottomHasWarning] = useState(false);
   const [showTopPopup, setShowTopPopup] = useState(false);
   const [showBottomPopup, setShowBottomPopup] = useState(false);
-  const alertContext = useContext(AlertContext);
 
   const { data: lithostrati } = useLithostratigraphies(item?.stratigraphyId);
   const [lithostratiColor, setLithostratiColor] = useState([255, 255, 255]);
@@ -202,20 +191,6 @@ const ProfileLayersList = props => {
 
   const isItemSelected = selectedLayer?.id === itemWithValidation?.id;
 
-  const immediatelyDelete = id => {
-    deleteLayer(id, 0)
-      .then(response => {
-        if (response.data.success) {
-          onUpdated("deleteLayer");
-        } else {
-          alertContext.error(response.data.message);
-        }
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
-  };
-
   return (
     <>
       <Styled.MyCard
@@ -348,9 +323,7 @@ const ProfileLayersList = props => {
                         color="error"
                         onClick={e => {
                           e.stopPropagation();
-                          isStratigraphy
-                            ? setShowDelete(itemWithValidation?.id)
-                            : immediatelyDelete(itemWithValidation?.id);
+                          setShowDelete(itemWithValidation?.id);
                         }}
                       />
                     </Tooltip>

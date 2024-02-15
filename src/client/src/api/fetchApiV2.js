@@ -175,10 +175,9 @@ export const deleteStratigraphy = async id => {
   return await fetchApiV2(`stratigraphy?id=${id}`, "DELETE");
 };
 
-export const createStratigraphy = async (boreholeId, kindId) => {
+export const createStratigraphy = async boreholeId => {
   return await fetchApiV2("stratigraphy", "POST", {
     boreholeId: boreholeId,
-    kindId: kindId,
   });
 };
 

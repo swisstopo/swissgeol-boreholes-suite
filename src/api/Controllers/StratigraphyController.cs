@@ -42,23 +42,17 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Stratigraphy"/>s, optionally filtered by <paramref name="boreholeId"/> and <paramref name="kindId"/>.
+    /// Asynchronously gets the <see cref="Stratigraphy"/>s, optionally filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole containing the stratigraphies to get.</param>
-    /// <param name="kindId">The kind of the stratigraphies to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Stratigraphy>> GetAsync([FromQuery] int? boreholeId = null, int? kindId = null)
+    public async Task<IEnumerable<Stratigraphy>> GetAsync([FromQuery] int? boreholeId = null)
     {
         var stratigraphies = Context.Stratigraphies.AsNoTracking();
         if (boreholeId != null)
         {
             stratigraphies = stratigraphies.Where(l => l.BoreholeId == boreholeId);
-        }
-
-        if (kindId != null)
-        {
-            stratigraphies = stratigraphies.Where(l => l.KindId == kindId);
         }
 
         return await stratigraphies.ToListAsync().ConfigureAwait(false);
@@ -192,6 +186,8 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
                 .ConfigureAwait(false);
 
             entity.IsPrimary = !hasBoreholeExistingStratigraphy;
+
+            entity.KindId = StratigraphyKindId;
 
             return await base.CreateAsync(entity).ConfigureAwait(false);
         }
