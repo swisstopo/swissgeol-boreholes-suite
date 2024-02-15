@@ -9,7 +9,8 @@ import * as Styled from "./styles";
 import InfoList from "./components/infoList";
 import InfoCheckBox from "./components/infoCheckBox";
 import { useTranslation } from "react-i18next";
-import { getData, sendProfile } from "./api";
+import { sendProfile } from "./api";
+import { fetchStratigraphy } from "../../../../../api/fetchApiV2";
 import _ from "lodash";
 import { AlertContext } from "../../../../../components/alert/alertContext";
 
@@ -40,7 +41,7 @@ const ProfileInfo = props => {
     },
   });
   const setData = useCallback(id => {
-    getData(id).then(data => {
+    fetchStratigraphy(id).then(data => {
       if (mounted.current) setState({ profileInfo: data });
     });
   }, []);

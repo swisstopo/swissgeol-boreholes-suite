@@ -81,7 +81,7 @@ import {
   getLayers,
 } from "./actions/stratigraphy";
 
-import { getProfile, getProfileLayers } from "./actions/profile";
+import { getProfileLayers } from "./actions/profile";
 
 import { loadDomains, patchCodeConfig } from "./actions/domains";
 
@@ -155,7 +155,6 @@ export {
   deleteLayer,
   gapLayer,
   getLayers,
-  getProfile,
   getProfileLayers,
   loadDomains,
   patchCodeConfig,
