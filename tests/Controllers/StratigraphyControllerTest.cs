@@ -470,16 +470,13 @@ public class StratigraphyControllerTest
         ActionResultAssert.IsInternalServerError(editResult.Result, "locked");
     }
 
-    private void AssertStratigraphy(Stratigraphy actual, int expectedBoreholeId, string exptectedName, string expectedNotes, int qualityId = -1)
+    private void AssertStratigraphy(Stratigraphy actual, int expectedBoreholeId, string exptectedName, string expectedNotes, int? qualityId = null)
     {
         Assert.AreEqual(StratigraphyController.StratigraphyKindId, actual.KindId);
         Assert.AreEqual(expectedBoreholeId, actual.BoreholeId);
         Assert.AreEqual(exptectedName, actual.Name);
         Assert.AreEqual(expectedNotes, actual.Notes);
-        if (qualityId > -1)
-        {
-            Assert.AreEqual(qualityId, actual.QualityId);
-        }
+        Assert.AreEqual(qualityId, actual.QualityId);
     }
 
     private void SetupControllerWithAlwaysLockedBorehole()
