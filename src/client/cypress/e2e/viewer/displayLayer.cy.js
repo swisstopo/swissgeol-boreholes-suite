@@ -37,7 +37,7 @@ describe("Test for the borehole form.", () => {
     cy.get('[data-cy="toDepth"]').click().clear().type(50);
 
     // fill all dropdowns in layer
-    cy.get('[data-cy="domain-dropdown"]')
+    cy.get('[data-cy="profile-attribute-list"] [data-cy="domain-dropdown"]')
       .should("have.length", 20)
       .each((el, index, list) =>
         cy
