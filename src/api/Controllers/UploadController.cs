@@ -469,8 +469,8 @@ public class UploadController : ControllerBase
             Map(m => m.RestrictionUntil).Optional();
             Map(m => m.NationalInterest).Optional();
             Map(m => m.AlternateName).Optional();
-            Map(m => m.QtLocationId).Optional();
-            Map(m => m.QtElevationId).Optional();
+            Map(m => m.LocationPrecisionId).Optional();
+            Map(m => m.ElevationPrecisionId).Optional();
             Map(m => m.ProjectName).Optional();
             Map(m => m.DrillingMethodId).Optional();
             Map(m => m.DrillingDate).Optional();
@@ -573,7 +573,7 @@ public class UploadController : ControllerBase
             Map(m => m.Updated).Optional();
             Map(m => m.IsUndefined).Optional();
             Map(m => m.IsLast).Optional();
-            Map(m => m.QtDescriptionId).Optional();
+            Map(m => m.DescriptionQualityId).Optional();
             Map(m => m.LithologyId).Optional();
             Map(m => m.PlasticityId).Optional();
             Map(m => m.ConsistanceId).Optional();

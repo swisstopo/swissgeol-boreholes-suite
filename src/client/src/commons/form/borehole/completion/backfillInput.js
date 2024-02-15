@@ -51,7 +51,7 @@ const BackfillInput = ({
           selected={item.kindId}
           required={true}
           values={domains?.data
-            ?.filter(d => d.schema === completionSchemaConstants.backfillKind)
+            ?.filter(d => d.schema === completionSchemaConstants.backfillType)
             .sort((a, b) => a.order - b.order)
             .map(d => ({
               key: d.id,

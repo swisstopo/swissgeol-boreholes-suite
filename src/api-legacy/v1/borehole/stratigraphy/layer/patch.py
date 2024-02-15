@@ -20,7 +20,7 @@ class PatchLayer(Action):
         elif field == 'last':
             column = 'last_lay'
 
-        elif field == 'qt_description':
+        elif field == 'description_quality':
             column = 'qt_description_id_cli'
 
         elif field == 'lithology':
@@ -132,7 +132,7 @@ class PatchLayer(Action):
                 """ % column, value, user_id, id)
 
             elif field in [
-                'qt_description',
+                'description_quality',
                 'lithology',
                 'lithostratigraphy',
                 'plasticity',
@@ -158,40 +158,40 @@ class PatchLayer(Action):
                     schema = 'custom.lithostratigraphy_top_bedrock'
 
                 elif field == 'plasticity':
-                    schema = 'mlpr101'
+                    schema = 'plasticity'
 
                 elif field == 'humidity':
-                    schema = 'mlpr105'
+                    schema = 'humidity'
 
                 elif field == 'consistance':
-                    schema = 'mlpr103'
+                    schema = 'consistency'
 
                 elif field == 'gradation':
                     schema = 'gradation'
 
                 elif field == 'alteration':
-                    schema = 'mlpr106'
+                    schema = 'alteration'
 
                 elif field == 'compactness':
-                    schema = 'mlpr102'
+                    schema = 'compactness'
 
                 elif field == 'grain_size_1':
-                    schema = 'mlpr109'
+                    schema = 'grain_size'
 
                 elif field == 'grain_size_2':
-                    schema = 'mlpr109'
+                    schema = 'grain_size'
 
                 elif field == 'cohesion':
-                    schema = 'mlpr116'
+                    schema = 'cohesion'
 
                 elif field == 'uscs_1':
-                    schema = 'mcla101'
+                    schema = 'uscs_type'
 
                 elif field == 'uscs_2':
-                    schema = 'mcla101'
+                    schema = 'uscs_type'
 
                 elif field == 'uscs_determination':
-                    schema = 'mcla104'
+                    schema = 'uscs_determination'
 
                 elif field == 'lithology_top_bedrock':
                     schema = 'custom.lithology_top_bedrock'
@@ -229,36 +229,28 @@ class PatchLayer(Action):
                 'grain_shape',
                 'grain_granularity',
                 'uscs_3',
-                # 'uscs_determination',
                 'debris',
-                # 'lithology_top_bedrock'
             ]:
 
                 schema = field
 
                 if field == 'color':
-                    schema = 'mlpr112'
+                    schema = 'colour'
 
                 elif field == 'organic_component':
-                    schema = 'mlpr108'
+                    schema = 'organic_components'
 
                 elif field == 'grain_shape':
-                    schema = 'mlpr110'
+                    schema = 'grain_shape'
 
                 elif field == 'grain_granularity':
-                    schema = 'mlpr115'
+                    schema = 'grain_angularity'
 
                 elif field == 'uscs_3':
-                    schema = 'mcla101'
-
-                # elif field == 'uscs_determination':
-                #     schema = 'mcla104'
+                    schema = 'uscs_type'
 
                 elif field == 'debris':
-                    schema = 'mcla107'
-
-                # elif field == 'lithology_top_bedrock':
-                #     schema = 'custom.lithology_top_bedrock'
+                    schema = 'debris'
 
                 await self.conn.execute("""
                     DELETE FROM bdms.layer_codelist

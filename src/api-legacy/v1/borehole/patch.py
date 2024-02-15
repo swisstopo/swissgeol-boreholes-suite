@@ -119,10 +119,10 @@ class PatchBorehole(Action):
         elif field == 'srs':
             column = 'srs_id_cli'
 
-        elif field == 'qt_location':
+        elif field == 'location_precision':
             column = 'qt_location_id_cli'
 
-        elif field == 'qt_elevation':
+        elif field == 'elevation_precision':
             column = 'qt_elevation_id_cli'
 
         elif field == 'reference_elevation':
@@ -273,8 +273,8 @@ class PatchBorehole(Action):
                 'restriction',
                 'kind',
                 'srs',
-                'qt_location',
-                'qt_elevation',
+                'location_precision',
+                'elevation_precision',
                 'hrs',
                 'custom.landuse',
                 'extended.drilling_method',
@@ -307,10 +307,10 @@ class PatchBorehole(Action):
                     schema = 'custom.qt_top_bedrock'
 
                 elif field == 'qt_reference_elevation':
-                    schema = 'qt_elevation'
+                    schema = 'elevation_precision'
 
                 elif field == 'reference_elevation_type':
-                    schema = 'ibor117'
+                    schema = 'reference_elevation_type'
 
                 elif field == 'qt_total_depth_tvd':
                     schema = 'custom.qt_top_bedrock'

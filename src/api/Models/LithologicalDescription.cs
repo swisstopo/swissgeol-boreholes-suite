@@ -53,12 +53,12 @@ public class LithologicalDescription : ILayerDescription, IChangeTracking, IIden
     /// Gets or sets the id of the quality of the <see cref="LithologicalDescription"/>'s description.
     /// </summary>
     [Column("qt_description_id")]
-    public int? QtDescriptionId { get; set; }
+    public int? DescriptionQualityId { get; set; }
 
     /// <summary>
     /// Gets or sets the quality of the <see cref="LithologicalDescription"/>'s description.
     /// </summary>
-    public Codelist? QtDescription { get; set; }
+    public Codelist? DescriptionQuality { get; set; }
 
     /// <inheritdoc />
     [Column("depth_from")]

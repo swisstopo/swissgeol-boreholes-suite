@@ -127,7 +127,7 @@ public class LayerController : BdmsControllerBase<Layer>
     private IQueryable<Layer> GetLayersWithIncludes()
     {
         return Context.Layers
-            .Include(l => l.QtDescription)
+            .Include(l => l.DescriptionQuality)
             .Include(l => l.Lithology)
             .Include(l => l.Plasticity)
             .Include(l => l.Consistance)

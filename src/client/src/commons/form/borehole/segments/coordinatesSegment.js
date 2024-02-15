@@ -568,14 +568,14 @@ const CoordinatesSegment = props => {
         <Form.Group widths="equal">
           <Form.Field required>
             <label>
-              <TranslationText id="qt_location" />
+              <TranslationText id="location_precision" />
             </label>
             <DomainDropdown
               onSelected={selected => {
-                updateChange("qt_location", selected.id, false);
+                updateChange("location_precision", selected.id, false);
               }}
-              schema="qt_location"
-              selected={borehole.data.qt_location}
+              schema="location_precision"
+              selected={borehole.data.location_precision}
               readOnly={!isEditable}
             />
           </Form.Field>
@@ -604,14 +604,14 @@ const CoordinatesSegment = props => {
 
           <Form.Field required>
             <label>
-              <TranslationText id="qt_elevation" />
+              <TranslationText id="elevation_precision" />
             </label>
             <DomainDropdown
               onSelected={selected => {
-                updateChange("qt_elevation", selected.id, false);
+                updateChange("elevation_precision", selected.id, false);
               }}
-              schema="qt_elevation"
-              selected={borehole.data.qt_elevation}
+              schema="elevation_precision"
+              selected={borehole.data.elevation_precision}
               readOnly={!isEditable}
             />
           </Form.Field>
@@ -654,7 +654,7 @@ const CoordinatesSegment = props => {
               onSelected={selected => {
                 updateChange("qt_reference_elevation", selected.id, false);
               }}
-              schema="qt_elevation"
+              schema="elevation_precision"
               selected={borehole.data.qt_reference_elevation}
               readOnly={!isEditable}
             />
@@ -671,7 +671,7 @@ const CoordinatesSegment = props => {
               onSelected={selected => {
                 updateChange("reference_elevation_type", selected.id, false);
               }}
-              schema="ibor117"
+              schema="reference_elevation_type"
               selected={borehole.data.reference_elevation_type}
               readOnly={!isEditable}
             />

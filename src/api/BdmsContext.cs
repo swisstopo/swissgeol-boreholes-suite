@@ -124,9 +124,9 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Borehole>().HasOne(l => l.Lithostratigraphy).WithMany().HasForeignKey(l => l.LithostratigraphyId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.Purpose).WithMany().HasForeignKey(l => l.PurposeId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.QtDepth).WithMany().HasForeignKey(l => l.QtDepthId);
-        modelBuilder.Entity<Borehole>().HasOne(l => l.QtElevation).WithMany().HasForeignKey(l => l.QtElevationId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.ElevationPrecision).WithMany().HasForeignKey(l => l.ElevationPrecisionId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.QtInclinationDirection).WithMany().HasForeignKey(l => l.QtInclinationDirectionId);
-        modelBuilder.Entity<Borehole>().HasOne(l => l.QtLocation).WithMany().HasForeignKey(l => l.QtLocationId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.LocationPrecision).WithMany().HasForeignKey(l => l.LocationPrecisionId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.QtTotalDepthTvd).WithMany().HasForeignKey(l => l.QtTotalDepthTvdId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.QtReferenceElevation).WithMany().HasForeignKey(l => l.QtReferenceElevationId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.ReferenceElevationType).WithMany().HasForeignKey(l => l.ReferenceElevationTypeId);
@@ -159,7 +159,7 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Layer>().HasOne(l => l.LithologyTopBedrock).WithMany().HasForeignKey(l => l.LithologyTopBedrockId);
         modelBuilder.Entity<Layer>().HasOne(l => l.Lithostratigraphy).WithMany().HasForeignKey(l => l.LithostratigraphyId);
         modelBuilder.Entity<Layer>().HasOne(l => l.Plasticity).WithMany().HasForeignKey(l => l.PlasticityId);
-        modelBuilder.Entity<Layer>().HasOne(l => l.QtDescription).WithMany().HasForeignKey(l => l.QtDescriptionId);
+        modelBuilder.Entity<Layer>().HasOne(l => l.DescriptionQuality).WithMany().HasForeignKey(l => l.DescriptionQualityId);
         modelBuilder.Entity<Layer>().HasOne(l => l.Uscs1).WithMany().HasForeignKey(l => l.Uscs1Id);
         modelBuilder.Entity<Layer>().HasOne(l => l.Uscs2).WithMany().HasForeignKey(l => l.Uscs2Id);
         modelBuilder.Entity<Layer>().HasOne(l => l.UscsDetermination).WithMany().HasForeignKey(l => l.UscsDeterminationId);

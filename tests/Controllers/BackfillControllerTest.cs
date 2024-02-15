@@ -68,7 +68,7 @@ public class BackfillControllerTest
         {
             CompletionId = completionId,
             MaterialId = context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Id,
-            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillKindSchema).Id,
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillTypeSchema).Id,
             Notes = "ARGONSHIP",
             FromDepth = 0,
             ToDepth = 100,
@@ -84,7 +84,7 @@ public class BackfillControllerTest
         Assert.AreEqual(0, backfill.FromDepth);
         Assert.AreEqual(100, backfill.ToDepth);
         Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Id, backfill.MaterialId);
-        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillKindSchema).Id, backfill.KindId);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillTypeSchema).Id, backfill.KindId);
     }
 
     [TestMethod]
@@ -94,7 +94,7 @@ public class BackfillControllerTest
         var completionId = backfill.CompletionId;
 
         backfill.MaterialId = context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Id;
-        backfill.KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillKindSchema).Id;
+        backfill.KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillTypeSchema).Id;
         backfill.Notes = "COLLAR";
         backfill.FromDepth = 50;
         backfill.ToDepth = 200;
@@ -109,7 +109,7 @@ public class BackfillControllerTest
         Assert.AreEqual(50, backfill.FromDepth);
         Assert.AreEqual(200, backfill.ToDepth);
         Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Id, backfill.MaterialId);
-        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillKindSchema).Id, backfill.KindId);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillTypeSchema).Id, backfill.KindId);
     }
 
     [TestMethod]

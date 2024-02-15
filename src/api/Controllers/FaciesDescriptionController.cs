@@ -24,7 +24,7 @@ public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
     public async Task<IEnumerable<FaciesDescription>> GetAsync([FromQuery] int? stratigraphyId = null)
     {
         var faciesDescriptions = Context.FaciesDescriptions
-            .Include(l => l.QtDescription)
+            .Include(l => l.DescriptionQuality)
             .AsNoTracking();
 
         if (stratigraphyId != null)
@@ -44,7 +44,7 @@ public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
     public async Task<ActionResult<FaciesDescription>> GetByIdAsync(int id)
     {
         var faciesDescription = await Context.FaciesDescriptions
-            .Include(l => l.QtDescription)
+            .Include(l => l.DescriptionQuality)
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)
             .ConfigureAwait(false);

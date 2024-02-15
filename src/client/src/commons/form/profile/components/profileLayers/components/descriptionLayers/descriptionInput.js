@@ -9,7 +9,7 @@ const DescriptionInput = props => {
     setFromDepth,
     setDescription,
     setToDepth,
-    setQtDescriptionId,
+    setDescriptionQualityId,
     selectableDepths,
     descriptions,
   } = props;
@@ -106,19 +106,20 @@ const DescriptionInput = props => {
         sx={{ flex: "1", margin: "10px" }}
         variant="outlined"
         size="small"
-        label={t("qt_description")}
-        defaultValue={item.qtDescriptionId || ""}
+        label={t("description_quality")}
+        defaultValue={item.descriptionQualityId || ""}
         data-cy="qt-decription-select"
         InputLabelProps={{ shrink: true }}
         onChange={e => {
           e.stopPropagation();
-          setQtDescriptionId(e.target.value);
+          setDescriptionQualityId(e.target.value);
         }}>
         <MenuItem value="">
           <em>{t("reset")}</em>
         </MenuItem>
         {domains?.data
-          ?.filter(d => d.schema === "qt_description")
+          ?.filter(d => d.schema === "description_quality")
+          .sort((a, b) => a.order - b.order)
           .map(d => (
             <MenuItem value={d.id}>{d[i18n.language]}</MenuItem>
           ))}

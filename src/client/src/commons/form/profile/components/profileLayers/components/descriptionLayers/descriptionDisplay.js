@@ -31,8 +31,8 @@ const DescriptionDisplay = props => {
           </Typography>
           {item.id !== null && (
             <Typography variant="subtitle2">
-              {t("qt_description")}:{" "}
-              {item.qtDescription?.[i18n.language] ?? "-"}
+              {t("description_quality")}:{" "}
+              {item.descriptionQuality?.[i18n.language] ?? "-"}
             </Typography>
           )}
         </>

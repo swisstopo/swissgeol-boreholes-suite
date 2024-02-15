@@ -33,7 +33,7 @@ public class CodeListControllerTest
     public async Task GetAllEntriesAsync()
     {
         var codeLists = await controller.GetAsync();
-        Assert.AreEqual(2431, codeLists.Count());
+        Assert.AreEqual(2416, codeLists.Count());
     }
 
     [TestMethod]
@@ -94,7 +94,7 @@ public class CodeListControllerTest
         {
             Id = id,
             Geolcode = id,
-            Schema = "mcla107",
+            Schema = "debris",
             De = "Tuff",
             Code = "Tuf",
             En = "tufa",
@@ -158,7 +158,7 @@ public class CodeListControllerTest
             DescriptionRo = null,
             Geolcode = 9004,
             Order = 5,
-            Schema = "qt_description",
+            Schema = "description_quality",
             De = "sehr gut",
             En = "very good",
             Fr = "très bonne",
@@ -196,7 +196,7 @@ public class CodeListControllerTest
         Assert.AreEqual(null, codeListToEdit.DescriptionRo);
         Assert.AreEqual(9004, codeListToEdit.Geolcode);
         Assert.AreEqual(5, codeListToEdit.Order);
-        Assert.AreEqual("qt_description", codeListToEdit.Schema);
+        Assert.AreEqual("description_quality", codeListToEdit.Schema);
         Assert.AreEqual("sehr gut", codeListToEdit.De);
         Assert.AreEqual("very good", codeListToEdit.En);
         Assert.AreEqual("très bonne", codeListToEdit.Fr);
@@ -267,6 +267,6 @@ public class CodeListControllerTest
         var expectedHeader = "id_cli,schema_cli,code_cli,text_cli_en,description_cli_en,text_cli_de,description_cli_de,text_cli_fr,description_cli_fr,text_cli_it,description_cli_it,text_cli_ro,description_cli_ro";
 
         Assert.AreEqual(expectedHeader, response.Content.Split('\n')[0]);
-        Assert.AreEqual(2433, response.Content.Split('\n').Length);
+        Assert.AreEqual(2418, response.Content.Split('\n').Length);
     }
 }

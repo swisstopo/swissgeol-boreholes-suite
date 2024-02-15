@@ -120,7 +120,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | from_depth               | Zahl           | Ja          | Von Tiefe der Schicht                                                                                         |
 | to_depth                 | Zahl           | Ja          | Bis Tiefe der Schicht                                                                                         |
 | is_last                  | True/False     | Nein        | Ist die Schicht die letzte in der Stratigraphie?                                                              |
-| qt_description_id        | ID (Codeliste) | Nein        | Qualität der Beschreibung                                                                                     |
+| description_quality_id   | ID (Codeliste) | Nein        | Qualität der Beschreibung                                                                                     |
 | lithology_id             | ID (Codeliste) | Nein        | Lithologie                                                                                                    |
 | original_uscs            | Text           | Nein        | USCS Originalklassifikation                                                                                   |
 | uscs_determination_id    | ID (Codeliste) | Nein        | USCS Bestimmungsmethode                                                                                       |
