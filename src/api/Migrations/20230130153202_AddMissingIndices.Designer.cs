@@ -1353,7 +1353,7 @@ partial class AddMissingIndices
                     .WithMany()
                     .HasForeignKey("QtInclinationDirectionId");
 
-                b.HasOne("BDMS.Models.Codelist", "LocationPrecision")
+                b.HasOne("BDMS.Models.Codelist", "QtLocation")
                     .WithMany()
                     .HasForeignKey("QtLocationId");
 
@@ -1419,7 +1419,7 @@ partial class AddMissingIndices
 
                 b.Navigation("QtInclinationDirection");
 
-                b.Navigation("LocationPrecision");
+                b.Navigation("QtLocation");
 
                 b.Navigation("QtReferenceElevation");
 
