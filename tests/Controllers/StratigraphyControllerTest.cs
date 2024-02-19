@@ -71,10 +71,10 @@ public class StratigraphyControllerTest
 
         Assert.AreEqual(1000017, stratigraphy.BoreholeId);
         Assert.AreEqual("Vladimir Pagac", stratigraphy.Name);
-        Assert.AreEqual("i use it for 10 weeks when i'm in my jail.", stratigraphy.Notes);
+        Assert.AreEqual("It only works when I'm Bahrain.", stratigraphy.Notes);
         Assert.AreEqual(1, stratigraphy.CreatedById);
         Assert.AreEqual(2, stratigraphy.UpdatedById);
-        Assert.AreEqual(false, stratigraphy.IsPrimary);
+        Assert.AreEqual(true, stratigraphy.IsPrimary);
     }
 
     [TestMethod]
@@ -85,7 +85,7 @@ public class StratigraphyControllerTest
         var stratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>(stratigraphyResult.Result);
         Assert.AreEqual(1002423, stratigraphy.BoreholeId);
         Assert.AreEqual("Marcellus Kshlerin", stratigraphy.Name);
-        Assert.AreEqual("It only works when I'm Kuwait.", stratigraphy.Notes);
+        Assert.AreEqual("this product is tasty.", stratigraphy.Notes);
     }
 
     [TestMethod]
@@ -114,7 +114,7 @@ public class StratigraphyControllerTest
 
         Assert.AreEqual("Marcellus Kshlerin (Clone)", copiedStratigraphy.Name);
         Assert.AreEqual("sub_admin", copiedStratigraphy.CreatedBy.SubjectId);
-        Assert.AreEqual("sub_controller", copiedStratigraphy.UpdatedBy.SubjectId);
+        Assert.AreEqual("sub_editor", copiedStratigraphy.UpdatedBy.SubjectId);
         Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
 
         Assert.AreNotEqual(originalStratigraphy.Id, copiedStratigraphy.Id);
