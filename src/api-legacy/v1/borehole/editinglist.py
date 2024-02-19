@@ -299,6 +299,8 @@ class ListEditingBorehole(Action):
 
                     {}
 
+                    {}
+
                 ) as strt2
                 ON 
                     borehole.id_bho = strt2.id_bho_fk
@@ -332,6 +334,8 @@ class ListEditingBorehole(Action):
 
                     {}
 
+                    {}
+
                 ) as chronostratigraphy
                 ON 
                     borehole.id_bho = chronostratigraphy.id_bho_fk
@@ -362,6 +366,8 @@ class ListEditingBorehole(Action):
                         bdms.lithostratigraphy
                     ON
                         stratigraphy_id = id_sty
+
+                    {}
 
                     {}
 
