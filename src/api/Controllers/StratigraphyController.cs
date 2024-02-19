@@ -146,10 +146,10 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 
         // If the stratigraphy to delete is the primary stratigraphy of a borehole,
         // then we need to set the latest stratigraphy as the primary stratigraphy, if possible.
-        if (stratigraphyToDelete.IsPrimary.GetValueOrDefault() && stratigraphyToDelete.KindId == StratigraphyKindId)
+        if (stratigraphyToDelete.IsPrimary.GetValueOrDefault())
         {
             var latestStratigraphy = await Context.Stratigraphies
-                .Where(s => s.BoreholeId == stratigraphyToDelete.BoreholeId && s.KindId == StratigraphyKindId)
+                .Where(s => s.BoreholeId == stratigraphyToDelete.BoreholeId)
                 .OrderByDescending(s => s.Created)
                 .FirstOrDefaultAsync()
                 .ConfigureAwait(false);
@@ -186,8 +186,6 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
                 .ConfigureAwait(false);
 
             entity.IsPrimary = !hasBoreholeExistingStratigraphy;
-
-            entity.KindId = StratigraphyKindId;
 
             return await base.CreateAsync(entity).ConfigureAwait(false);
         }

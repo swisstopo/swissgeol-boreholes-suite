@@ -79,7 +79,6 @@ class GetLayer(Action):
             COALESCE(
                 notes_lay, ''
             ) AS notes,
-            stratigraphy.kind_id_cli AS kind
 
         FROM
             bdms.layer

@@ -270,12 +270,6 @@ class Action():
                 stratigraphy.id_bho_fk = %s
             """ % self.getIdx())
 
-        if 'layer_kind' in keys and filter['layer_kind'] not in ['', None]:
-            params.append(filter['layer_kind'])
-            where.append("""
-                stratigraphy.kind_id_cli = %s
-            """ % self.getIdx())
-
         if 'layer_depth_from' in keys and filter['layer_depth_from'] not in ['', None]:
             params.append(float(filter['layer_depth_from']))
             where.append("""

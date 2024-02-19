@@ -46,7 +46,7 @@ public class LayerControllerTest
     [TestMethod]
     public async Task GetEntriesByProfileIdExistingIdNoLayers()
     {
-        var emptyStratigraphy = new Stratigraphy { KindId = 3000 };
+        var emptyStratigraphy = new Stratigraphy();
 
         context.Stratigraphies.Add(emptyStratigraphy);
         await context.SaveChangesAsync().ConfigureAwait(false);

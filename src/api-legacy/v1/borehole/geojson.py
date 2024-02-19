@@ -48,10 +48,6 @@ class ListGeojson(Action):
 
                     {}
 
-                    WHERE
-                        kind_id_cli = 3000
-
-                    {}
                 ) as strt
                 ON 
                     borehole.id_bho = strt.id_bho_fk
@@ -83,10 +79,6 @@ class ListGeojson(Action):
                         id_sty_fk = id_sty
                     {}
 
-                    WHERE
-                        kind_id_cli = 3000
-
-                    {}
                 ) as chronostratigraphy
                 ON 
                     borehole.id_bho = chronostratigraphy.id_bho_fk
@@ -118,10 +110,6 @@ class ListGeojson(Action):
                         stratigraphy_id = id_sty
                     {}
 
-                    WHERE
-                        kind_id_cli = 3000
-
-                    {}
                 ) as lithostratigraphy
                 ON 
                     borehole.id_bho = lithostratigraphy.id_bho_fk

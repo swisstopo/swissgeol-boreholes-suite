@@ -1,79 +1,7 @@
 # -*- coding: utf-8 -*-
 from bms.v1.action import Action
 
-
 class GetProfile(Action):
-
-    sql = """
-        SELECT
-            (
-                select row_to_json(t)
-                FROM (
-                    SELECT
-                        id_bho as id
-                ) t
-            ) as borehole,
-            id_sty as id,
-            stratigraphy.kind_id_cli as kind,
-            COALESCE(name_sty, '') as name,
-            primary_sty as primary,
-            quality_id as quality,
-            to_char(
-                date_sty,
-                'YYYY-MM-DD'
-            ) as date,
-            to_char(
-                update_sty,
-                'YYYY-MM-DD'
-            ) as updated,
-            to_char(
-                creation_sty,
-                'YYYY-MM-DD'
-            ) as created
-
-        FROM
-            bdms.stratigraphy
-
-        INNER JOIN bdms.borehole
-            ON stratigraphy.id_bho_fk = id_bho
-
-        INNER JOIN (
-            SELECT
-                id_bho_fk,
-                array_agg(
-                    json_build_object(
-                        'workflow', id_wkf,
-                        'role', name_rol,
-                        'username', username,
-                        'started', started,
-                        'finished', finished
-                    )
-                ) as status
-            FROM (
-                SELECT
-                    id_bho_fk,
-                    name_rol,
-                    id_wkf,
-                    username,
-                    started_wkf as started,
-                    finished_wkf as finished
-                FROM
-                    bdms.workflow,
-                    bdms.roles,
-                    bdms.users
-                WHERE
-                    id_rol = id_rol_fk
-                AND
-                    id_usr = id_usr_fk
-                ORDER BY
-                    id_bho_fk asc, id_wkf asc
-            ) t
-            GROUP BY
-                id_bho_fk
-        ) as v
-        ON
-            v.id_bho_fk = id_bho
-    """
 
     async def execute(self, id, user=None):
 
@@ -86,19 +14,7 @@ class GetProfile(Action):
                 self.filterPermission(user)
             )
 
-        kind = await self.conn.fetchval(f"""
-            SELECT
-                kind_id_cli
-            FROM
-                bdms.stratigraphy
-            WHERE
-                id_sty = $1
-        """, id)
-
-        sql = GetProfile.sql
-
-        if kind == 3000:
-            sql = GetGeologyProfile.sql
+        sql = GetGeologyProfile.sql
 
         rec = await self.conn.fetchrow(f"""
             SELECT
@@ -131,7 +47,6 @@ class GetGeologyProfile(Action):
                 ) t
             ) as borehole,
             id_sty as id,
-            stratigraphy.kind_id_cli as kind,
             COALESCE(name_sty, '') as name,
             primary_sty as primary,
             to_char(

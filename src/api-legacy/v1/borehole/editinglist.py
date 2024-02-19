@@ -185,7 +185,6 @@ class ListEditingBorehole(Action):
                         array_agg(
                             json_build_object(
                                 'id', id,
-                                'kind', kind,
                                 'layers', layers,
                                 'date', date
                             )
@@ -195,7 +194,6 @@ class ListEditingBorehole(Action):
                     SELECT
                         id_bho_fk,
                         id_sty AS id,
-                        stratigraphy.kind_id_cli AS kind,
                         to_char(
                             date_sty, 'YYYY-MM-DD'
                         ) AS date,
@@ -204,7 +202,7 @@ class ListEditingBorehole(Action):
                         bdms.stratigraphy
                     LEFT JOIN bdms.layer
                         ON layer.id_sty_fk = id_sty
-                    GROUP BY id_bho_fk, id_sty, kind, date_sty
+                    GROUP BY id_bho_fk, id_sty, date_sty
                     ORDER BY date_sty DESC, id_sty DESC
                 ) t
                 GROUP BY id_bho_fk
@@ -301,10 +299,6 @@ class ListEditingBorehole(Action):
 
                     {}
 
-                    WHERE
-                        kind_id_cli = 3000
-
-                    {}
                 ) as strt2
                 ON 
                     borehole.id_bho = strt2.id_bho_fk
@@ -338,10 +332,6 @@ class ListEditingBorehole(Action):
 
                     {}
 
-                    WHERE
-                        kind_id_cli = 3000
-
-                    {}
                 ) as chronostratigraphy
                 ON 
                     borehole.id_bho = chronostratigraphy.id_bho_fk
@@ -375,10 +365,6 @@ class ListEditingBorehole(Action):
 
                     {}
 
-                    WHERE
-                        kind_id_cli = 3000
-
-                    {}
                 ) as lithostratigraphy
                 ON 
                     borehole.id_bho = lithostratigraphy.id_bho_fk

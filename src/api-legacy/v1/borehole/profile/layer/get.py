@@ -34,7 +34,6 @@ class GetLayer(Action):
             ) as updater,
             depth_from_lay AS depth_from,
             depth_to_lay AS depth_to,
-            stratigraphy.kind_id_cli as kind
 
         FROM
             bdms.layer
@@ -101,23 +100,7 @@ class GetLayer(Action):
                 self.filterPermission(user)
             )
 
-        kind = await self.conn.fetchval(f"""
-            SELECT
-                stratigraphy.kind_id_cli
-            FROM
-                bdms.layer
-            INNER JOIN
-                bdms.stratigraphy
-            ON
-                layer.id_sty_fk = stratigraphy.id_sty
-            WHERE
-                id_lay = $1
-        """, id)
-
-        sql = GetLayer.sql
-
-        if kind == 3000:
-            sql = GetGeologyLayer.sql
+        sql = GetGeologyLayer.sql
 
         rec = await self.conn.fetchrow(f"""
             SELECT row_to_json(t)
@@ -214,7 +197,6 @@ class GetGeologyLayer(Action):
             COALESCE(
                 notes_lay, ''
             ) AS notes,
-            stratigraphy.kind_id_cli as kind
 
         FROM
             bdms.layer

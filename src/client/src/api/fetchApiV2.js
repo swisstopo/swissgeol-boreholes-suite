@@ -259,14 +259,10 @@ export const useFaciesDescription = selectedStratigraphyID =>
   });
 
 export const useLithologyStratigraphies = boreholeId => {
-  const kindId = 3000; // stratigraphy
   return useQuery({
     queryKey: ["lithologyStratigraphies", boreholeId],
     queryFn: async () => {
-      return await fetchApiV2(
-        `stratigraphy?kindId=${kindId}&boreholeId=${boreholeId}`,
-        "GET",
-      );
+      return await fetchApiV2(`stratigraphy?boreholeId=${boreholeId}`, "GET");
     },
   });
 };
