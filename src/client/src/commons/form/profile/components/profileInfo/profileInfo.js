@@ -31,7 +31,7 @@ const ProfileInfo = props => {
     profileInfo: {
       id: null,
       name: null,
-      primary: false,
+      isPrimary: false,
       date: null,
       date_abd: null,
       notes: null,

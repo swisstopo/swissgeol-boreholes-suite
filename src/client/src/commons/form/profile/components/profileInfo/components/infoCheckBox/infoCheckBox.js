@@ -14,11 +14,11 @@ const InfoCheckBox = props => {
     <Styled.CheckBoxContainer>
       <Styled.FormContainer size="small">
         <Checkbox
-          checked={profileInfo && profileInfo?.primary}
+          checked={profileInfo && profileInfo?.isPrimary}
           label=""
           onChange={(ev, data) => {
             if (data.checked === true) {
-              updateChange("primary", data.checked, false);
+              updateChange("isPrimary", data.checked, false);
             }
           }}
           toggle
