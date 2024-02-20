@@ -11,8 +11,6 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 {
-    internal const int StratigraphyKindId = 3000;
-
     private readonly IBoreholeLockService boreholeLockService;
 
     public StratigraphyController(BdmsContext context, ILogger<Stratigraphy> logger, IBoreholeLockService boreholeLockService)
