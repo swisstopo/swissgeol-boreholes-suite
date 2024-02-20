@@ -62,20 +62,19 @@ public class StratigraphyControllerTest
     }
 
     [TestMethod]
-    public async Task GetStratigraphyByBoreholeIdAndKind()
+    public async Task GetStratigraphyByBoreholeId()
     {
-        var stratigraphies = await controller.GetAsync(1000017, 3000).ConfigureAwait(false);
+        var stratigraphies = await controller.GetAsync(1000017).ConfigureAwait(false);
         Assert.IsNotNull(stratigraphies);
         Assert.AreEqual(1, stratigraphies.Count());
         var stratigraphy = stratigraphies.Single();
 
         Assert.AreEqual(1000017, stratigraphy.BoreholeId);
-        Assert.AreEqual(3000, stratigraphy.KindId);
-        Assert.AreEqual("Marie Parker", stratigraphy.Name);
-        Assert.AreEqual("i use it for 10 weeks when i'm in my jail.", stratigraphy.Notes);
+        Assert.AreEqual("Vladimir Pagac", stratigraphy.Name);
+        Assert.AreEqual("It only works when I'm Bahrain.", stratigraphy.Notes);
         Assert.AreEqual(1, stratigraphy.CreatedById);
         Assert.AreEqual(2, stratigraphy.UpdatedById);
-        Assert.AreEqual(false, stratigraphy.IsPrimary);
+        Assert.AreEqual(true, stratigraphy.IsPrimary);
     }
 
     [TestMethod]
@@ -85,8 +84,8 @@ public class StratigraphyControllerTest
 
         var stratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>(stratigraphyResult.Result);
         Assert.AreEqual(1002423, stratigraphy.BoreholeId);
-        Assert.AreEqual("Jaycee Beahan", stratigraphy.Name);
-        Assert.AreEqual("It only works when I'm Kuwait.", stratigraphy.Notes);
+        Assert.AreEqual("Marcellus Kshlerin", stratigraphy.Name);
+        Assert.AreEqual("this product is tasty.", stratigraphy.Notes);
     }
 
     [TestMethod]
@@ -113,11 +112,10 @@ public class StratigraphyControllerTest
         Assert.IsInstanceOfType(copiedStratigraphyId, typeof(int));
         var copiedStratigraphy = GetStratigraphy((int)copiedStratigraphyId);
 
-        Assert.AreEqual("Jaycee Beahan (Clone)", copiedStratigraphy.Name);
+        Assert.AreEqual("Marcellus Kshlerin (Clone)", copiedStratigraphy.Name);
         Assert.AreEqual("sub_admin", copiedStratigraphy.CreatedBy.SubjectId);
-        Assert.AreEqual("sub_controller", copiedStratigraphy.UpdatedBy.SubjectId);
+        Assert.AreEqual("sub_editor", copiedStratigraphy.UpdatedBy.SubjectId);
         Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
-        Assert.AreSame(originalStratigraphy.Kind, copiedStratigraphy.Kind);
 
         Assert.AreNotEqual(originalStratigraphy.Id, copiedStratigraphy.Id);
         Assert.AreNotSame(originalStratigraphy.Layers, copiedStratigraphy.Layers);
@@ -144,7 +142,6 @@ public class StratigraphyControllerTest
         return context.Stratigraphies
             .Include(s => s.CreatedBy)
             .Include(s => s.UpdatedBy)
-            .Include(s => s.Kind)
             .Include(s => s.Layers).ThenInclude(l => l.LayerCodelists)
             .Include(s => s.LithologicalDescriptions)
             .Include(s => s.FaciesDescriptions)
@@ -212,7 +209,7 @@ public class StratigraphyControllerTest
         // Precondition: Find a group of three stratigraphies with one main stratigraphy
         var stratigraphies = await controller.GetAsync();
         var stratigraphyTestCandidates = stratigraphies
-            .Where(x => x.KindId == StratigraphyController.StratigraphyKindId && x.BoreholeId != null)
+            .Where(x => x.BoreholeId != null)
             .GroupBy(x => x.BoreholeId)
             .Where(g => g.Count(s => s.IsPrimary == true) == 0)
             .ToList();
@@ -220,7 +217,6 @@ public class StratigraphyControllerTest
         var primaryStratigraphy = new Stratigraphy
         {
             Id = stratigraphies.Max(x => x.Id) + 1,
-            KindId = StratigraphyController.StratigraphyKindId,
             BoreholeId = stratigraphyTestCandidates.First().Key,
             IsPrimary = true,
             Name = "KODACLUSTER",
@@ -256,7 +252,6 @@ public class StratigraphyControllerTest
 
         var stratigraphyToAdd = new Stratigraphy
         {
-            KindId = StratigraphyController.StratigraphyKindId,
             BoreholeId = boreholeWithoutStratigraphy.Id,
             Name = "KODACLUSTER",
             Notes = "ARGONTITAN",
@@ -284,7 +279,6 @@ public class StratigraphyControllerTest
 
         var stratigraphyToAdd = new Stratigraphy
         {
-            KindId = StratigraphyController.StratigraphyKindId,
             BoreholeId = boreholeWithExistingStratigraphy.Id,
             Name = "STORMSTEED",
             Notes = "GALAXYJEEP",
@@ -341,7 +335,6 @@ public class StratigraphyControllerTest
         var boreholeWithBedrock = await context.Boreholes.FirstAsync(x => x.TopBedrock.HasValue);
         var stratigraphyWithoutBedrockLayer = new Stratigraphy
         {
-            KindId = StratigraphyController.StratigraphyKindId,
             BoreholeId = boreholeWithBedrock.Id,
             Name = "MAESTROHEART",
             Notes = "BATONTOPPER",
@@ -371,7 +364,6 @@ public class StratigraphyControllerTest
         var boreholeWithoutBedrock = await context.Boreholes.FirstAsync(x => !x.TopBedrock.HasValue);
         var stratigraphyWithoutBedrockLayer = new Stratigraphy
         {
-            KindId = StratigraphyController.StratigraphyKindId,
             BoreholeId = boreholeWithoutBedrock.Id,
             Name = "CHIPPEWARECORD",
             Notes = "FIREFALCON",
@@ -401,7 +393,6 @@ public class StratigraphyControllerTest
         var borehole = await context.Boreholes.OrderBy(x => x.CreatedById).LastAsync();
         var stratigraphyToEdit = await context.Stratigraphies.FirstAsync();
         stratigraphyToEdit.BoreholeId = borehole.Id;
-        stratigraphyToEdit.KindId = StratigraphyController.StratigraphyKindId;
         stratigraphyToEdit.IsPrimary = false;
         stratigraphyToEdit.Date = new DateTime(1999, 9, 9).ToUniversalTime();
         stratigraphyToEdit.Name = "ERRONEOUS";
@@ -411,7 +402,6 @@ public class StratigraphyControllerTest
         var editResult = await controller.EditAsync(stratigraphyToEdit);
         var editedStratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>(editResult.Result);
         Assert.AreEqual(borehole.Id, editedStratigraphy.BoreholeId);
-        Assert.AreEqual(StratigraphyController.StratigraphyKindId, editedStratigraphy.KindId);
         Assert.AreEqual(false, editedStratigraphy.IsPrimary);
         Assert.AreEqual(new DateTime(1999, 9, 9).ToUniversalTime(), editedStratigraphy.Date);
         Assert.AreEqual("ERRONEOUS", editedStratigraphy.Name);
@@ -432,7 +422,6 @@ public class StratigraphyControllerTest
         var firstStratigraphy = new Stratigraphy
         {
             IsPrimary = true,
-            KindId = StratigraphyController.StratigraphyKindId,
             BoreholeId = boreholeWithoutStratigraphy.Id,
             Name = "FALLOUT-VII",
         };
@@ -440,7 +429,6 @@ public class StratigraphyControllerTest
         var secondStratigraphy = new Stratigraphy
         {
             IsPrimary = false,
-            KindId = StratigraphyController.StratigraphyKindId,
             BoreholeId = boreholeWithoutStratigraphy.Id,
             Name = "KARMACANDID",
         };
@@ -472,7 +460,6 @@ public class StratigraphyControllerTest
 
     private void AssertStratigraphy(Stratigraphy actual, int expectedBoreholeId, string exptectedName, string expectedNotes, int? qualityId = null)
     {
-        Assert.AreEqual(StratigraphyController.StratigraphyKindId, actual.KindId);
         Assert.AreEqual(expectedBoreholeId, actual.BoreholeId);
         Assert.AreEqual(exptectedName, actual.Name);
         Assert.AreEqual(expectedNotes, actual.Notes);

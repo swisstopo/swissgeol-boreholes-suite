@@ -261,7 +261,6 @@ class GetBorehole(Action):
                         array_agg(
                             json_build_object(
                                 'id', id,
-                                'kind', kind,
                                 'name', "name",
                                 'primary', "primary",
                                 'layers', layers,
@@ -273,7 +272,6 @@ class GetBorehole(Action):
                     SELECT
                         id_bho_fk,
                         id_sty AS id,
-                        stratigraphy.kind_id_cli AS kind,
                         name_sty AS "name",
                         primary_sty as "primary",
                         to_char(
@@ -287,10 +285,7 @@ class GetBorehole(Action):
                     LEFT JOIN bdms.layer
                         ON layer.id_sty_fk = id_sty
 
-                    WHERE
-                        kind_id_cli = 3000
-
-                    GROUP BY id_bho_fk, id_sty, date_sty, kind_id_cli
+                    GROUP BY id_bho_fk, id_sty, date_sty
 
                     ORDER BY date_sty DESC, id_sty DESC
                 ) t

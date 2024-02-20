@@ -17,18 +17,9 @@ class CreateLayer(Action):
                 id_sty_fk = $1
         """, id)
 
-        kind = await self.conn.fetchval(f"""
-            SELECT
-                stratigraphy.kind_id_cli
-            FROM
-                bdms.stratigraphy
-            WHERE
-                id_sty = $1
-        """, id)
-
         depth_from = 0
 
-        if cnt > 0 and kind == 3000:
+        if cnt > 0:
 
             # Check if bedrock inserted
             bedrock = await self.conn.fetchrow("""

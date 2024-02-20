@@ -11,8 +11,7 @@ class ValidateProfile(Action):
         result = {}
 
         if (
-            profile["kind"] == 3000
-            and borehole["extended"]["top_bedrock"] is not None
+            borehole["extended"]["top_bedrock"] is not None
         ):
             validators.append(ValidateGeologyLayer(borehole))
 
@@ -44,41 +43,40 @@ class ValidateProfile(Action):
                 if borehole["total_depth"] and layer["depth_to"] != borehole["total_depth"]:
                     result["wrongDepth"] = True
 
-            if profile["kind"] == 3000:
-                if depth_to is None:
-                    validation["missingTo"] = True
+            if depth_to is None:
+                validation["missingTo"] = True
 
-                if depth_from is None:
-                    validation["missingFrom"] = True
+            if depth_from is None:
+                validation["missingFrom"] = True
 
+            if (
+                depth_from is not None
+                and depth_to is not None
+            ):
+                if depth_from > depth_to:
+                    validation["invertedDepth"] = True
+
+            # Is not the first layer
+            if idx > 0:
                 if (
                     depth_from is not None
-                    and depth_to is not None
+                    and layers[idx - 1]["depth_to"] is not None
                 ):
-                    if depth_from > depth_to:
-                        validation["invertedDepth"] = True
+                    if depth_from > layers[idx - 1]["depth_to"]:
+                        validation["topDisjoint"] = True
+                    elif depth_from < layers[idx - 1]["depth_to"]:
+                        validation["topOverlap"] = True
 
-                # Is not the first layer
-                if idx > 0:
-                    if (
-                        depth_from is not None
-                        and layers[idx - 1]["depth_to"] is not None
-                    ):
-                        if depth_from > layers[idx - 1]["depth_to"]:
-                            validation["topDisjoint"] = True
-                        elif depth_from < layers[idx - 1]["depth_to"]:
-                            validation["topOverlap"] = True
-
-                # Is not the last layer
-                if idx < len(layers) - 1:
-                    if (
-                        depth_to is not None
-                        and layers[(idx+1)]["depth_from"] is not None
-                    ):
-                        if depth_to < layers[(idx+1)]["depth_from"]:
-                            validation["bottomDisjoint"] = True
-                        elif depth_to > layers[(idx+1)]["depth_from"]:
-                            validation["bottomOverlap"] = True
+            # Is not the last layer
+            if idx < len(layers) - 1:
+                if (
+                    depth_to is not None
+                    and layers[(idx+1)]["depth_from"] is not None
+                ):
+                    if depth_to < layers[(idx+1)]["depth_from"]:
+                        validation["bottomDisjoint"] = True
+                    elif depth_to > layers[(idx+1)]["depth_from"]:
+                        validation["bottomOverlap"] = True
 
             # check if validation is not empty
             if validation:

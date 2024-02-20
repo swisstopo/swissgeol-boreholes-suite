@@ -175,10 +175,9 @@ export const deleteStratigraphy = async id => {
   return await fetchApiV2(`stratigraphy?id=${id}`, "DELETE");
 };
 
-export const createStratigraphy = async (boreholeId, kindId) => {
+export const createStratigraphy = async boreholeId => {
   return await fetchApiV2("stratigraphy", "POST", {
     boreholeId: boreholeId,
-    kindId: kindId,
   });
 };
 
@@ -260,14 +259,10 @@ export const useFaciesDescription = selectedStratigraphyID =>
   });
 
 export const useLithologyStratigraphies = boreholeId => {
-  const kindId = 3000; // stratigraphy
   return useQuery({
     queryKey: ["lithologyStratigraphies", boreholeId],
     queryFn: async () => {
-      return await fetchApiV2(
-        `stratigraphy?kindId=${kindId}&boreholeId=${boreholeId}`,
-        "GET",
-      );
+      return await fetchApiV2(`stratigraphy?boreholeId=${boreholeId}`, "GET");
     },
   });
 };

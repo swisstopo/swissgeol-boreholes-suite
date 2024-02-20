@@ -11,8 +11,6 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 {
-    internal const int StratigraphyKindId = 3000;
-
     private readonly IBoreholeLockService boreholeLockService;
 
     public StratigraphyController(BdmsContext context, ILogger<Stratigraphy> logger, IBoreholeLockService boreholeLockService)
@@ -42,23 +40,17 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Stratigraphy"/>s, optionally filtered by <paramref name="boreholeId"/> and <paramref name="kindId"/>.
+    /// Asynchronously gets the <see cref="Stratigraphy"/>s, optionally filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole containing the stratigraphies to get.</param>
-    /// <param name="kindId">The kind of the stratigraphies to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<Stratigraphy>> GetAsync([FromQuery] int? boreholeId = null, int? kindId = null)
+    public async Task<IEnumerable<Stratigraphy>> GetAsync([FromQuery] int? boreholeId = null)
     {
         var stratigraphies = Context.Stratigraphies.AsNoTracking();
         if (boreholeId != null)
         {
             stratigraphies = stratigraphies.Where(l => l.BoreholeId == boreholeId);
-        }
-
-        if (kindId != null)
-        {
-            stratigraphies = stratigraphies.Where(l => l.KindId == kindId);
         }
 
         return await stratigraphies.ToListAsync().ConfigureAwait(false);
@@ -152,10 +144,10 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 
         // If the stratigraphy to delete is the primary stratigraphy of a borehole,
         // then we need to set the latest stratigraphy as the primary stratigraphy, if possible.
-        if (stratigraphyToDelete.IsPrimary.GetValueOrDefault() && stratigraphyToDelete.KindId == StratigraphyKindId)
+        if (stratigraphyToDelete.IsPrimary.GetValueOrDefault())
         {
             var latestStratigraphy = await Context.Stratigraphies
-                .Where(s => s.BoreholeId == stratigraphyToDelete.BoreholeId && s.KindId == StratigraphyKindId)
+                .Where(s => s.BoreholeId == stratigraphyToDelete.BoreholeId)
                 .OrderByDescending(s => s.Created)
                 .FirstOrDefaultAsync()
                 .ConfigureAwait(false);

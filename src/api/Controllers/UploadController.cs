@@ -197,7 +197,6 @@ public class UploadController : ControllerBase
                             BoreholeId = boreholeImports.Single(bhi => bhi.ImportId == boreholeLithologies.Key).Id,
                             Date = stratiGroup.First().StratiDate != null ? DateTime.SpecifyKind(stratiGroup.First().StratiDate!.Value, DateTimeKind.Utc) : null,
                             Name = stratiGroup.First().StratiName,
-                            KindId = lithoStratiKindId,
                         };
 
                         // Create a lithology for each record in the group (same strati id) and assign it to the new stratigraphy.

@@ -77,15 +77,6 @@ class ListLayers(Action):
             "title": "custom.lithostratigraphy_top_bedrock",
             "description": "custom.lithology_top_bedrock"
         }
-        kind = await self.conn.fetchval(f"""
-            SELECT
-                kind_id_cli,
-                id_bho_fk
-            FROM
-                bdms.stratigraphy
-            WHERE
-                id_sty = $1
-        """, id)
 
         permissions = ''
         if user is not None:
@@ -95,10 +86,7 @@ class ListLayers(Action):
                 self.filterPermission(user)
             )
 
-        sql = ListLayers.sql
-
-        if kind == 3000:
-            sql = ListGeologyLayers.sql
+        sql = ListGeologyLayers.sql
 
         rec = await self.conn.fetchval(f"""
             SELECT
@@ -141,8 +129,7 @@ class ListLayers(Action):
             )
 
             validation.update({
-                "config": config,
-                "kind": kind
+                "config": config
             })
 
             return validation
@@ -151,8 +138,7 @@ class ListLayers(Action):
 
             return {
                 "config": config,
-                "data": data,
-                "kind": kind
+                "data": data
             }
 
 

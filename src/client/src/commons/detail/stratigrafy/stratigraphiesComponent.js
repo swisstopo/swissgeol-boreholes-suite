@@ -173,7 +173,7 @@ class StratigraphiesComponent extends React.Component {
                   borderTop: "none",
                   padding: "1em",
                 }}>
-                <ProfileContainer id={item.id} stratigraphy={item} />
+                <ProfileContainer id={item.id} />
               </div>
             ),
           }

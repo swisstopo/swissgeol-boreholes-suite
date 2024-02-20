@@ -5,7 +5,7 @@ import { fetchLayerById, useLayers } from "../../../../api/fetchApiV2";
 const ProfileContainer = props => {
   const [selectedLayer, setSelectedLayer] = useState(null);
   const [isFetching, setIsFetching] = useState(null);
-  const { id, stratigraphy } = props;
+  const { id } = props;
 
   const layers = useLayers(id);
 
@@ -25,8 +25,6 @@ const ProfileContainer = props => {
       data={layers.data}
       handleSelected={selectLayer}
       isFetchingLayer={isFetching}
-      kind={stratigraphy.kind}
-      kinds={stratigraphy.kinds}
       layer={selectedLayer}
     />
   );

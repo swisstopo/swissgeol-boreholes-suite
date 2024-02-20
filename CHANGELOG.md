@@ -28,6 +28,7 @@
 - Reduced number of seeded boreholes for development from 10'000 to 3'000.
 - Use reusable card components for hydrogeology.
 - Renamed various codelists to have more evocative names (e.g. `location_precision` instead of `qt_location`, `plasticity` instead of `mlpr101`, …)
+- Remove stratigraphy kind.
 
 ### Fixed
 

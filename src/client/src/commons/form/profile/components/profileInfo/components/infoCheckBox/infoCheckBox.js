@@ -2,33 +2,28 @@ import React from "react";
 import * as Styled from "./styles";
 import { Checkbox, Popup, Button, Icon } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
-import { profileKind } from "../../../../constance";
 import {
   copyStratigraphy,
   deleteStratigraphy,
 } from "../../../../../../../api/fetchApiV2";
 
 const InfoCheckBox = props => {
-  const { kind, profileInfo, updateChange, isEditable, onUpdated } = props.data;
+  const { profileInfo, updateChange, isEditable, onUpdated } = props.data;
 
   return (
     <Styled.CheckBoxContainer>
       <Styled.FormContainer size="small">
-        {kind !== profileKind.FILLING && (
-          <>
-            <Checkbox
-              checked={profileInfo && profileInfo?.primary}
-              label=""
-              onChange={(ev, data) => {
-                if (data.checked === true) {
-                  updateChange("primary", data.checked, false);
-                }
-              }}
-              toggle
-            />
-            <TranslationText id="mainStratigraphy" />
-          </>
-        )}
+        <Checkbox
+          checked={profileInfo && profileInfo?.primary}
+          label=""
+          onChange={(ev, data) => {
+            if (data.checked === true) {
+              updateChange("primary", data.checked, false);
+            }
+          }}
+          toggle
+        />
+        <TranslationText id="mainStratigraphy" />
       </Styled.FormContainer>
       {isEditable && (
         <div style={{ display: "flex" }} data-cy="clone-and-delete-buttons">

@@ -64,17 +64,6 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     public string? Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/>'s kind id.
-    /// </summary>
-    [Column("kind_id_cli")]
-    public int KindId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/>'s kind.
-    /// </summary>
-    public Codelist? Kind { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s quality id.
     /// </summary>
     [Column("quality_id")]

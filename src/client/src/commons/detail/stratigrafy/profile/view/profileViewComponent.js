@@ -10,7 +10,7 @@ import { useDomains } from "../../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 
 const ProfileView = props => {
-  const { data, handleSelected, layer, kind } = props;
+  const { data, handleSelected, layer } = props;
   const [allFields, setAllFields] = useState(false);
   const { t, i18n } = useTranslation();
   const domains = useDomains();
@@ -55,10 +55,10 @@ const ProfileView = props => {
   }
 
   function getVisibleFields() {
-    const filtered = layerKindDomains.filter(d => d.id === kind);
-    if (layer === null || filtered.length > 1) return null;
+    const filtered = layerKindDomains[0];
+    if (layer === null || filtered == null) return null;
     return {
-      fields: { ...JSON.parse(filtered[0].conf).viewerFields },
+      fields: { ...JSON.parse(filtered.conf).viewerFields },
     };
   }
 

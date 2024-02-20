@@ -615,10 +615,6 @@ class ListBorehole(Action):
 
                     {}
 
-                    WHERE
-                        kind_id_cli = 3000
-
-                    {}
                 ) as strt2
                 ON 
                     borehole.id_bho = strt2.id_bho_fk

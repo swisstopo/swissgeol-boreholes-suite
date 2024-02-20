@@ -359,7 +359,6 @@ class BoreholeForm extends React.Component {
             render={() => (
               <Profile
                 id={parseInt(this.props.match.params.id, 10)}
-                kind="stratigraphy"
                 unlocked={isEditable}
               />
             )}
