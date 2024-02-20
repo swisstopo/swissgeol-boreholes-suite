@@ -139,7 +139,7 @@ describe("Search filter tests", () => {
     // check content of table
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
-      .should("have.length", 9);
+      .should("have.length", 21);
   });
 
   it("filters boreholes by creation date", () => {
