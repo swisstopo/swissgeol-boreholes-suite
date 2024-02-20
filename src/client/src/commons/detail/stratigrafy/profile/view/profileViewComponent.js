@@ -56,9 +56,9 @@ const ProfileView = props => {
 
   function getVisibleFields() {
     const filtered = layerKindDomains[0];
-    if (layer === null || filtered.length > 1) return null;
+    if (layer === null || filtered == null) return null;
     return {
-      fields: { ...JSON.parse(filtered[0].conf).viewerFields },
+      fields: { ...JSON.parse(filtered.conf).viewerFields },
     };
   }
 
