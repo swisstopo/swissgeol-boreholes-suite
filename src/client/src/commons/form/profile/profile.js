@@ -42,6 +42,7 @@ const Profile = props => {
     if (
       attribute === "isPrimary" ||
       attribute === "name" ||
+      attribute === "quality" ||
       attribute === "date" ||
       attribute === "cloneStratigraphy"
     )
