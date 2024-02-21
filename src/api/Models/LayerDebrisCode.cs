@@ -3,10 +3,10 @@
 namespace BDMS.Models;
 
 /// <summary>
-/// Join table entity for a <see cref="Models.Codelist"/> attached to a <see cref="Models.Layer"/>.
+/// Join table entity for a <see cref="Models.Codelist"/> with the schemaName 'debris' attached to a <see cref="Models.Layer"/>.
 /// </summary>
-[Table("layer_codelist")]
-public class LayerCodelist
+[Table("layer_debris_codelist")]
+public class LayerDebrisCode : ILayerCode
 {
     [Column("id_lay_fk")]
     public int LayerId { get; set; }
@@ -15,7 +15,4 @@ public class LayerCodelist
     [Column("id_cli_fk")]
     public int CodelistId { get; set; }
     public Codelist Codelist { get; set; }
-
-    [Column("code_cli")]
-    public string SchemaName { get; set; }
 }

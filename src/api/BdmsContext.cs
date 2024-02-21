@@ -133,19 +133,95 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Borehole>().HasOne(l => l.Restriction).WithMany().HasForeignKey(l => l.RestrictionId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.Status).WithMany().HasForeignKey(l => l.StatusId);
 
+        // Join table for layer and codelists with schema name 'color'
         modelBuilder.Entity<Layer>()
-                .HasMany(l => l.Codelists)
-                .WithMany(c => c.Layers)
-                .UsingEntity<LayerCodelist>(
+                .HasMany(l => l.ColorCodelists)
+                .WithMany()
+                .UsingEntity<LayerColorCode>(
                     j => j
                         .HasOne(lc => lc.Codelist)
-                        .WithMany(c => c.LayerCodelists)
+                        .WithMany(c => c.LayerColorCodes)
                         .HasForeignKey(lc => lc.CodelistId),
                     j => j
                         .HasOne(lc => lc.Layer)
-                        .WithMany(b => b.LayerCodelists)
+                        .WithMany(b => b.LayerColorCodes)
                         .HasForeignKey(l => l.LayerId),
                     j => j.HasKey(lc => new { lc.LayerId, lc.CodelistId }));
+
+          // Join table for layer and codelists with schema name 'debris'
+        modelBuilder.Entity<Layer>()
+                    .HasMany(l => l.DebrisCodelists)
+                    .WithMany()
+                    .UsingEntity<LayerDebrisCode>(
+                        j => j
+                            .HasOne(lc => lc.Codelist)
+                            .WithMany(c => c.LayerDebrisCodes)
+                            .HasForeignKey(lc => lc.CodelistId),
+                        j => j
+                            .HasOne(lc => lc.Layer)
+                            .WithMany(b => b.LayerDebrisCodes)
+                            .HasForeignKey(l => l.LayerId),
+                        j => j.HasKey(lc => new { lc.LayerId, lc.CodelistId }));
+
+         // Join table for layer and codelists with schema name 'grain_shape'
+        modelBuilder.Entity<Layer>()
+                    .HasMany(l => l.GrainShapeCodelists)
+                    .WithMany()
+                    .UsingEntity<LayerGrainShapeCode>(
+                        j => j
+                            .HasOne(lc => lc.Codelist)
+                            .WithMany(c => c.LayerGrainShapeCodes)
+                            .HasForeignKey(lc => lc.CodelistId),
+                        j => j
+                            .HasOne(lc => lc.Layer)
+                            .WithMany(b => b.LayerGrainShapeCodes)
+                            .HasForeignKey(l => l.LayerId),
+                        j => j.HasKey(lc => new { lc.LayerId, lc.CodelistId }));
+
+        // Join table for layer and codelists with schema name 'grain_angularity'
+        modelBuilder.Entity<Layer>()
+                    .HasMany(l => l.GrainAngularityCodelists)
+                    .WithMany()
+                    .UsingEntity<LayerGrainAngularityCode>(
+                        j => j
+                            .HasOne(lc => lc.Codelist)
+                            .WithMany(c => c.LayerGrainAngularityCodes)
+                            .HasForeignKey(lc => lc.CodelistId),
+                        j => j
+                            .HasOne(lc => lc.Layer)
+                            .WithMany(b => b.LayerGrainAngularityCodes)
+                            .HasForeignKey(l => l.LayerId),
+                        j => j.HasKey(lc => new { lc.LayerId, lc.CodelistId }));
+
+        // Join table for layer and codelists with schema name 'organic_components'
+        modelBuilder.Entity<Layer>()
+                    .HasMany(l => l.OrganicComponentCodelists)
+                    .WithMany()
+                    .UsingEntity<LayerOrganicComponentCode>(
+                        j => j
+                            .HasOne(lc => lc.Codelist)
+                            .WithMany(c => c.LayerOrganicComponentCodes)
+                            .HasForeignKey(lc => lc.CodelistId),
+                        j => j
+                            .HasOne(lc => lc.Layer)
+                            .WithMany(b => b.LayerOrganicComponentCodes)
+                            .HasForeignKey(l => l.LayerId),
+                        j => j.HasKey(lc => new { lc.LayerId, lc.CodelistId }));
+
+        // Join table for layer and codelists with schema name 'uscs3'
+        modelBuilder.Entity<Layer>()
+            .HasMany(l => l.Uscs3Codelists)
+            .WithMany()
+            .UsingEntity<LayerUscs3Code>(
+                j => j
+                    .HasOne(lc => lc.Codelist)
+                    .WithMany(c => c.LayerUscs3Codes)
+                    .HasForeignKey(lc => lc.CodelistId),
+                j => j
+                    .HasOne(lc => lc.Layer)
+                    .WithMany(b => b.LayerUscs3Codes)
+                    .HasForeignKey(l => l.LayerId),
+                j => j.HasKey(lc => new { lc.LayerId, lc.CodelistId }));
 
         modelBuilder.Entity<Layer>().HasOne(l => l.Alteration).WithMany().HasForeignKey(l => l.AlterationId);
         modelBuilder.Entity<Layer>().HasOne(l => l.Cohesion).WithMany().HasForeignKey(l => l.CohesionId);
@@ -163,6 +239,8 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Layer>().HasOne(l => l.Uscs1).WithMany().HasForeignKey(l => l.Uscs1Id);
         modelBuilder.Entity<Layer>().HasOne(l => l.Uscs2).WithMany().HasForeignKey(l => l.Uscs2Id);
         modelBuilder.Entity<Layer>().HasOne(l => l.UscsDetermination).WithMany().HasForeignKey(l => l.UscsDeterminationId);
+
+        modelBuilder.Entity<Codelist>().Ignore(c => c.Layers);
 
         modelBuilder.Entity<WaterIngress>().ToTable("water_ingress").HasBaseType<Observation>();
 
