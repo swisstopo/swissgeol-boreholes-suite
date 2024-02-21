@@ -100,7 +100,10 @@ public class StratigraphyControllerTest
     {
         var originalStratigraphy = GetStratigraphy(StratigraphyId);
         Assert.IsNotNull(originalStratigraphy?.Layers, "Precondition: Stratigraphy has Layers");
-        Assert.IsTrue(originalStratigraphy?.Layers.Any(x => x.LayerCodelists?.Any() ?? false), "Precondition: Stratigraphy has layers with multiple codelist values");
+        Assert.IsTrue(originalStratigraphy?.Layers.Any(x => x.LayerGrainAngularityCodes?.Any() ?? false), "Precondition: Stratigraphy has layers with multiple grain angularity values");
+        Assert.IsTrue(originalStratigraphy?.Layers.Any(x => x.LayerColorCodes?.Any() ?? false), "Precondition: Stratigraphy has layers with multiple color values");
+        Assert.IsTrue(originalStratigraphy?.Layers.Any(x => x.LayerUscs3Codes?.Any() ?? false), "Precondition: Stratigraphy has layers with multiple uscs3 values");
+
         Assert.IsNotNull(originalStratigraphy?.LithologicalDescriptions, "Precondition: Stratigraphy has LithologicalDescriptions");
         Assert.IsNotNull(originalStratigraphy?.FaciesDescriptions, "Precondition: Stratigraphy has FaciesDescriptions");
 
@@ -133,8 +136,14 @@ public class StratigraphyControllerTest
         Assert.AreNotEqual(originalStratigraphy.ChronostratigraphyLayers.First().Id, copiedStratigraphy.ChronostratigraphyLayers.First().Id);
         Assert.AreEqual(15001144, copiedStratigraphy.ChronostratigraphyLayers.First().ChronostratigraphyId);
 
-        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerCodelists, copiedStratigraphy.Layers.First().LayerCodelists);
-        Assert.AreEqual(originalStratigraphy.Layers.First().LayerCodelists.Count, copiedStratigraphy.Layers.First().LayerCodelists.Count);
+        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerGrainAngularityCodes, copiedStratigraphy.Layers.First().LayerGrainAngularityCodes);
+        Assert.AreEqual(originalStratigraphy.Layers.First().LayerGrainAngularityCodes.Count, copiedStratigraphy.Layers.First().LayerGrainAngularityCodes.Count);
+
+        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerColorCodes, copiedStratigraphy.Layers.First().LayerColorCodes);
+        Assert.AreEqual(originalStratigraphy.Layers.First().LayerColorCodes.Count, copiedStratigraphy.Layers.First().LayerColorCodes.Count);
+
+        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerUscs3Codes, copiedStratigraphy.Layers.First().LayerUscs3Codes);
+        Assert.AreEqual(originalStratigraphy.Layers.First().LayerUscs3Codes.Count, copiedStratigraphy.Layers.First().LayerUscs3Codes.Count);
     }
 
     private Stratigraphy? GetStratigraphy(int id)
@@ -142,7 +151,12 @@ public class StratigraphyControllerTest
         return context.Stratigraphies
             .Include(s => s.CreatedBy)
             .Include(s => s.UpdatedBy)
-            .Include(s => s.Layers).ThenInclude(l => l.LayerCodelists)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
             .Include(s => s.LithologicalDescriptions)
             .Include(s => s.FaciesDescriptions)
             .Include(s => s.ChronostratigraphyLayers)

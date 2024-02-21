@@ -79,7 +79,12 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         }
 
         var stratigraphy = await Context.Stratigraphies
-            .Include(s => s.Layers).ThenInclude(l => l.LayerCodelists)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
             .Include(s => s.LithologicalDescriptions)
             .Include(s => s.FaciesDescriptions)
             .Include(s => s.ChronostratigraphyLayers)
@@ -98,10 +103,12 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         foreach (var layer in stratigraphy.Layers)
         {
             layer.Id = 0;
-            foreach (var layerCode in layer.LayerCodelists)
-            {
-                layerCode.LayerId = 0;
-            }
+            if (layer.LayerColorCodes != null) ResetLayerIds(layer.LayerColorCodes);
+            if (layer.LayerDebrisCodes != null) ResetLayerIds(layer.LayerDebrisCodes);
+            if (layer.LayerGrainShapeCodes != null) ResetLayerIds(layer.LayerGrainShapeCodes);
+            if (layer.LayerGrainAngularityCodes != null) ResetLayerIds(layer.LayerGrainAngularityCodes);
+            if (layer.LayerOrganicComponentCodes != null) ResetLayerIds(layer.LayerOrganicComponentCodes);
+            if (layer.LayerUscs3Codes != null) ResetLayerIds(layer.LayerUscs3Codes);
         }
 
         foreach (var lithologicalDescription in stratigraphy.LithologicalDescriptions)
@@ -126,6 +133,14 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         await Context.SaveChangesAsync().ConfigureAwait(false);
 
         return Ok(entityEntry.Entity.Id);
+    }
+
+    private void ResetLayerIds(IEnumerable<ILayerCode> layerCodes)
+    {
+        foreach (var layerCode in layerCodes)
+        {
+            layerCode.LayerId = 0;
+        }
     }
 
     /// <inheritdoc />
