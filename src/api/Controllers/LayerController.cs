@@ -62,38 +62,29 @@ public class LayerController : BdmsControllerBase<Layer>
             return BadRequest(ModelState);
         }
 
-        var existingLayer = Context.Layers.Include(l => l.LayerCodelists).Include(c => c.Codelists).SingleOrDefault(l => l.Id == entity.Id);
-        var codelistIds = entity.CodelistIds?.ToList() ?? new List<int>();
-        if (existingLayer != default)
-        {
-            Context.Entry(existingLayer).CurrentValues.SetValues(entity);
-        }
-        else
+        var existingLayer = Context.Layers
+            .Include(l => l.LayerColorCodes)
+            .Include(l => l.LayerDebrisCodes)
+            .Include(l => l.LayerGrainShapeCodes)
+            .Include(l => l.LayerGrainAngularityCodes)
+            .Include(l => l.LayerOrganicComponentCodes)
+            .Include(l => l.LayerUscs3Codes)
+            .SingleOrDefault(l => l.Id == entity.Id);
+
+        if (existingLayer == null)
         {
             return NotFound();
         }
 
-        foreach (var layerCodelist in existingLayer.LayerCodelists)
-        {
-            if (!codelistIds.Contains(layerCodelist.CodelistId))
-            {
-                Context.Remove(layerCodelist);
-            }
-        }
+        Context.Entry(existingLayer).CurrentValues.SetValues(entity);
 
-        foreach (var id in codelistIds)
-        {
-            if (!existingLayer.LayerCodelists.Any(lc => lc.CodelistId == id))
-            {
-                var codelist = await Context.Codelists.FindAsync(id).ConfigureAwait(false);
-                if (codelist != null)
-                {
-                    existingLayer.LayerCodelists ??= new List<LayerCodelist>();
-
-                    existingLayer.LayerCodelists.Add(new LayerCodelist { Codelist = codelist, CodelistId = codelist.Id, SchemaName = codelist.Schema! });
-                }
-            }
-        }
+        // Update each join table
+        await UpdateLayerCodesAsync(existingLayer.LayerColorCodes ?? new List<LayerColorCode>(), entity.ColorCodelistIds ?? new List<int>(), existingLayer.Id).ConfigureAwait(false);
+        await UpdateLayerCodesAsync(existingLayer.LayerDebrisCodes ?? new List<LayerDebrisCode>(), entity.DebrisCodelistIds ?? new List<int>(), existingLayer.Id).ConfigureAwait(false);
+        await UpdateLayerCodesAsync(existingLayer.LayerGrainShapeCodes ?? new List<LayerGrainShapeCode>(), entity.GrainShapeCodelistIds ?? new List<int>(), existingLayer.Id).ConfigureAwait(false);
+        await UpdateLayerCodesAsync(existingLayer.LayerGrainAngularityCodes ?? new List<LayerGrainAngularityCode>(), entity.GrainAngularityCodelistIds ?? new List<int>(), existingLayer.Id).ConfigureAwait(false);
+        await UpdateLayerCodesAsync(existingLayer.LayerOrganicComponentCodes ?? new List<LayerOrganicComponentCode>(), entity.OrganicComponentCodelistIds ?? new List<int>(), existingLayer.Id).ConfigureAwait(false);
+        await UpdateLayerCodesAsync(existingLayer.LayerUscs3Codes ?? new List<LayerUscs3Code>(), entity.Uscs3CodelistIds ?? new List<int>(), existingLayer.Id).ConfigureAwait(false);
 
         try
         {
@@ -108,18 +99,64 @@ public class LayerController : BdmsControllerBase<Layer>
         }
     }
 
+    private async Task UpdateLayerCodesAsync<T>(IList<T> existingLayerCodes, ICollection<int> newCodelistIds, int layerId)
+        where T : class, ILayerCode, new()
+    {
+        var codelistIds = newCodelistIds?.ToList() ?? new List<int>();
+
+        foreach (var layerCode in existingLayerCodes)
+        {
+            if (!codelistIds.Contains(layerCode.CodelistId))
+            {
+                Context.Remove(layerCode);
+            }
+        }
+
+        foreach (var id in codelistIds)
+        {
+            if (!existingLayerCodes.Any(lc => lc.CodelistId == id))
+            {
+                var codelist = await Context.Codelists.FindAsync(id).ConfigureAwait(false);
+                if (codelist != null)
+                {
+                    var newLayerCode = CreateLayerCode<T>(codelist, layerId);
+                    existingLayerCodes.Add(newLayerCode);
+                }
+            }
+        }
+    }
+
+    private T CreateLayerCode<T>(Codelist codelist, int layerId)
+        where T : class, ILayerCode, new()
+    {
+        var layerCode = new T();
+        typeof(T).GetProperty("CodelistId")?.SetValue(layerCode, codelist.Id);
+        typeof(T).GetProperty("LayerId")?.SetValue(layerCode, layerId);
+        return layerCode;
+    }
+
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> DeleteAsync(int id)
-        => base.DeleteAsync(id);
+    public override Task<IActionResult> DeleteAsync(int id) => base.DeleteAsync(id);
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
     public override async Task<ActionResult<Layer>> CreateAsync(Layer entity)
     {
         // Create a layer code list entry for each provided code list id.
-        var codeLists = await Context.Codelists.Where(c => entity.CodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-        entity.LayerCodelists = codeLists.Where(c => c.Schema != null).Select(c => new LayerCodelist { Codelist = c, CodelistId = c.Id, SchemaName = c.Schema! }).ToList();
+        var colorCodes = await Context.Codelists.Where(c => entity.ColorCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+        var debrisCodes = await Context.Codelists.Where(c => entity.DebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+        var grainShapeCodes = await Context.Codelists.Where(c => entity.GrainShapeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+        var grainAngularityCodes = await Context.Codelists.Where(c => entity.GrainAngularityCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+        var organicComponentCodes = await Context.Codelists.Where(c => entity.OrganicComponentCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+        var uscs3Codes = await Context.Codelists.Where(c => entity.Uscs3CodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+
+        entity.LayerColorCodes = colorCodes.Select(c => new LayerColorCode { Codelist = c, CodelistId = c.Id }).ToList();
+        entity.LayerDebrisCodes = debrisCodes.Select(c => new LayerDebrisCode { Codelist = c, CodelistId = c.Id }).ToList();
+        entity.LayerGrainShapeCodes = grainShapeCodes.Select(c => new LayerGrainShapeCode { Codelist = c, CodelistId = c.Id }).ToList();
+        entity.LayerGrainAngularityCodes = grainAngularityCodes.Select(c => new LayerGrainAngularityCode { Codelist = c, CodelistId = c.Id }).ToList();
+        entity.LayerOrganicComponentCodes = organicComponentCodes.Select(c => new LayerOrganicComponentCode { Codelist = c, CodelistId = c.Id }).ToList();
+        entity.LayerUscs3Codes = uscs3Codes.Select(c => new LayerUscs3Code { Codelist = c, CodelistId = c.Id }).ToList();
 
         return await base.CreateAsync(entity).ConfigureAwait(false);
     }
@@ -143,7 +180,17 @@ public class LayerController : BdmsControllerBase<Layer>
             .Include(l => l.Humidity)
             .Include(l => l.Gradation)
             .Include(l => l.LithologyTopBedrock)
-            .Include(l => l.LayerCodelists)
-            .Include(l => l.Codelists);
+            .Include(l => l.LayerColorCodes)
+            .Include(l => l.ColorCodelists)
+            .Include(l => l.LayerGrainShapeCodes)
+            .Include(l => l.GrainShapeCodelists)
+            .Include(l => l.LayerDebrisCodes)
+            .Include(l => l.DebrisCodelists)
+            .Include(l => l.LayerGrainAngularityCodes)
+            .Include(l => l.GrainAngularityCodelists)
+            .Include(l => l.LayerUscs3Codes)
+            .Include(l => l.Uscs3Codelists)
+            .Include(l => l.LayerOrganicComponentCodes)
+            .Include(l => l.OrganicComponentCodelists);
     }
 }
