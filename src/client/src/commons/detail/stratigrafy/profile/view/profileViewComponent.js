@@ -37,7 +37,7 @@ const ProfileView = props => {
 
   function getDomainRowMultiple(codes, fieldName) {
     const text =
-      codes.length > 0
+      codes?.length > 0
         ? codes.map(code => code[i18n.language]).join(",")
         : null;
     return getRowIfVisible(fieldName, getRow(text, fieldName));
@@ -242,26 +242,17 @@ const ProfileView = props => {
               {getDomainRow(layer.grainSize1, "grain_size_1")}
               {getDomainRow(layer.uscs2, "uscs_2")}
               {getDomainRow(layer.grainSize2, "grain_size_2")}
+              {getDomainRowMultiple(layer.uscs3Codelists, "uscs_3")}
+              {getDomainRowMultiple(layer.grainShapeCodelists, "grain_shape")}
               {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "uscs_type"),
-                "uscs_3",
-              )}
-              {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "grain_shape"),
-                "grain_shape",
-              )}
-              {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "grain_angularity"),
+                layer.grainAngularityCodelists,
                 "grain_granularity",
               )}
               {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "organic_components"),
+                layer.organicComponentsCodelists,
                 "organic_component",
               )}
-              {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "debris"),
-                "debris",
-              )}
+              {getDomainRowMultiple(layer.debrisCodelists, "debris")}
               {getDomainRow(
                 layer.lithologyTopBedrock,
                 "layer_lithology_top_bedrock",
@@ -274,10 +265,7 @@ const ProfileView = props => {
                     ? t("common:no")
                     : null,
               )}
-              {getDomainRowMultiple(
-                layer.codelists.filter(c => c.schema === "colour"),
-                "color",
-              )}
+              {getDomainRowMultiple(layer.colorCodelists, "color")}
               {getDomainRow(layer.consistance, "consistance")}
               {getDomainRow(layer.plasticity, "plasticity")}
               {getDomainRow(layer.compactness, "compactness")}
