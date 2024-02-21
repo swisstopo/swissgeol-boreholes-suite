@@ -562,16 +562,6 @@ public static class BdmsContextExtensions
         var organicComponentCombinations = GetCombinations(layerRange, organicComponentIds);
         var uscs3Combinations = GetCombinations(layerRange, uscsIds);
 
-        #pragma warning disable CA5394
-        var random = new Random();
-        colorCombinations = colorCombinations.OrderBy(x => random.Next()).ToList();
-        debrisCombinations = debrisCombinations.OrderBy(x => random.Next()).ToList();
-        grainShapeCombinations = grainShapeCombinations.OrderBy(x => random.Next()).ToList();
-        grainAngularityCombinations = grainAngularityCombinations.OrderBy(x => random.Next()).ToList();
-        organicComponentCombinations = organicComponentCombinations.OrderBy(x => random.Next()).ToList();
-        uscs3Combinations = uscs3Combinations.OrderBy(x => random.Next()).ToList();
-        #pragma warning restore CA5394
-
         Faker<T> CreateFaker<T>(List<(int LayerId, int CodelistId)> combinations)
             where T : class, ILayerCode, new() => new Faker<T>()
                 .StrictMode(false)

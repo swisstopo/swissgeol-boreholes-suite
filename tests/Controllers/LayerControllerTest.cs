@@ -145,12 +145,12 @@ public class LayerControllerTest
             .Include(c => c.GrainAngularityCodelists)
             .Include(c => c.OrganicComponentCodelists)
             .Single(c => c.Id == id);
-        Assert.AreEqual(1, layerToEdit.Uscs3Codelists.Count);
+        Assert.AreEqual(0, layerToEdit.Uscs3Codelists.Count);
         Assert.AreEqual(0, layerToEdit.ColorCodelists.Count);
-        Assert.AreEqual(2, layerToEdit.DebrisCodelists.Count);
+        Assert.AreEqual(1, layerToEdit.DebrisCodelists.Count);
         Assert.AreEqual(1, layerToEdit.GrainShapeCodelists.Count);
         Assert.AreEqual(1, layerToEdit.GrainAngularityCodelists.Count);
-        Assert.AreEqual(1, layerToEdit.OrganicComponentCodelists.Count);
+        Assert.AreEqual(0, layerToEdit.OrganicComponentCodelists.Count);
 
         // Update Layer
         var response = await controller.EditAsync(layerWithChanges);
