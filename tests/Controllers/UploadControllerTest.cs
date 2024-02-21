@@ -95,7 +95,15 @@ public class UploadControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.LayerCodelists).ToList().Find(b => b.OriginalName == "Seth Patel");
+        var borehole = context.Boreholes
+            .Include(b => b.BoreholeCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.ColorCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.DebrisCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.GrainAngularityCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.GrainShapeCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.OrganicComponentCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.Uscs3Codelists)
+            .ToList().Find(b => b.OriginalName == "Seth Patel");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Seth Patel", borehole.OriginalName);
 
@@ -130,8 +138,13 @@ public class UploadControllerTest
         Assert.AreEqual("trace back Peso", lithology.OriginalLithology);
         Assert.AreEqual(30000018, lithology.GradationId);
         Assert.AreEqual(15101001, lithology.LithologyTopBedrockId);
-        var lithoCodeLists = lithology.LayerCodelists;
-        Assert.AreEqual(14, lithoCodeLists.Count);
+        Assert.AreEqual(2, lithology.ColorCodelists.Count);
+        Assert.AreEqual(2, lithology.DebrisCodelists.Count);
+        Assert.AreEqual(2, lithology.GrainAngularityCodelists.Count);
+        Assert.AreEqual(2, lithology.GrainShapeCodelists.Count);
+        Assert.AreEqual(3, lithology.OrganicComponentCodelists.Count);
+        Assert.AreEqual(3, lithology.Uscs3Codelists.Count);
+
         lithology = stratigraphy.Layers.First(l => l.FromDepth == 11);
         Assert.AreEqual(12, lithology.ToDepth);
 
@@ -161,7 +174,15 @@ public class UploadControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.LayerCodelists).ToList().Find(b => b.OriginalName == "Seth Patel");
+        var borehole = context.Boreholes
+            .Include(b => b.BoreholeCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.ColorCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.DebrisCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.GrainAngularityCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.GrainShapeCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.OrganicComponentCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.Uscs3Codelists)
+            .ToList().Find(b => b.OriginalName == "Seth Patel");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Seth Patel", borehole.OriginalName);
 
@@ -173,10 +194,20 @@ public class UploadControllerTest
         Assert.AreEqual(2, stratigraphy.Layers.Count);
         var lithology = stratigraphy.Layers.First(l => l.FromDepth == 0.125);
         Assert.AreEqual(100, lithology.ToDepth);
-        Assert.AreEqual(16, lithology.LayerCodelists.Count);
+        Assert.AreEqual(2, lithology.ColorCodelists.Count);
+        Assert.AreEqual(2, lithology.DebrisCodelists.Count);
+        Assert.AreEqual(3, lithology.GrainAngularityCodelists.Count);
+        Assert.AreEqual(3, lithology.GrainShapeCodelists.Count);
+        Assert.AreEqual(3, lithology.OrganicComponentCodelists.Count);
+        Assert.AreEqual(3, lithology.Uscs3Codelists.Count);
         lithology = stratigraphy.Layers.First(l => l.FromDepth == 11);
         Assert.AreEqual(12, lithology.ToDepth);
-        Assert.AreEqual(1, lithology.LayerCodelists.Count);
+        Assert.AreEqual(0, lithology.ColorCodelists.Count);
+        Assert.AreEqual(1, lithology.DebrisCodelists.Count);
+        Assert.AreEqual(0, lithology.GrainAngularityCodelists.Count);
+        Assert.AreEqual(0, lithology.GrainShapeCodelists.Count);
+        Assert.AreEqual(0, lithology.OrganicComponentCodelists.Count);
+        Assert.AreEqual(0, lithology.Uscs3Codelists.Count);
 
         // Second stratigraphy
         stratigraphy = borehole.Stratigraphies.Skip(1).First();
@@ -184,7 +215,12 @@ public class UploadControllerTest
         lithology = stratigraphy.Layers.First();
         Assert.AreEqual(55, lithology.FromDepth);
         Assert.AreEqual(55.23, lithology.ToDepth);
-        Assert.AreEqual(2, lithology.LayerCodelists.Count);
+        Assert.AreEqual(0, lithology.ColorCodelists.Count);
+        Assert.AreEqual(0, lithology.DebrisCodelists.Count);
+        Assert.AreEqual(0, lithology.GrainAngularityCodelists.Count);
+        Assert.AreEqual(0, lithology.GrainShapeCodelists.Count);
+        Assert.AreEqual(0, lithology.OrganicComponentCodelists.Count);
+        Assert.AreEqual(2, lithology.Uscs3Codelists.Count);
     }
 
     [TestMethod]
@@ -932,12 +968,5 @@ public class UploadControllerTest
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);
         Assert.AreEqual("POINT (2000000 1000000)", borehole.Geometry.ToString());
-    }
-
-    [TestMethod]
-    public void ParseMultiValueCodeListIds()
-    {
-        CollectionAssert.AreEquivalent(new List<int>() { 500, 200 }, controller.ParseMultiValueCodeListIds(new LithologyImport() { OrganicComponentIds = "500,200" }));
-        CollectionAssert.AreEquivalent(new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }, controller.ParseMultiValueCodeListIds(new LithologyImport() { ColorIds = "1,2", OrganicComponentIds = "3,4", GrainShapeIds = "5,6", GrainGranularityIds = "7,8", Uscs3Ids = "9,10", DebrisIds = "11,12" }));
     }
 }
