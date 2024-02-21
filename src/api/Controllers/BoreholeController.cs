@@ -44,7 +44,12 @@ public class BoreholeController : ControllerBase
         }
 
         var borehole = await context.Boreholes
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerCodelists)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
+            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
@@ -69,10 +74,12 @@ public class BoreholeController : ControllerBase
             foreach (var layer in stratigraphy.Layers)
             {
                 layer.Id = 0;
-                foreach (var layerCode in layer.LayerCodelists)
-                {
-                    layerCode.LayerId = 0;
-                }
+                if (layer.LayerColorCodes != null) ResetLayerIds(layer.LayerColorCodes);
+                if (layer.LayerDebrisCodes != null) ResetLayerIds(layer.LayerDebrisCodes);
+                if (layer.LayerGrainShapeCodes != null) ResetLayerIds(layer.LayerGrainShapeCodes);
+                if (layer.LayerGrainAngularityCodes != null) ResetLayerIds(layer.LayerGrainAngularityCodes);
+                if (layer.LayerOrganicComponentCodes != null) ResetLayerIds(layer.LayerOrganicComponentCodes);
+                if (layer.LayerUscs3Codes != null) ResetLayerIds(layer.LayerUscs3Codes);
             }
 
             foreach (var lithologicalDescription in stratigraphy.LithologicalDescriptions)
@@ -112,5 +119,13 @@ public class BoreholeController : ControllerBase
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         return Ok(entityEntry.Entity.Id);
+    }
+
+    private void ResetLayerIds(IEnumerable<ILayerCode> layerCodes)
+    {
+        foreach (var layerCode in layerCodes)
+        {
+            layerCode.LayerId = 0;
+        }
     }
 }
