@@ -547,15 +547,20 @@ public static class BdmsContextExtensions
         context.BulkInsert(lithostratigraphiesToInsert, bulkConfig);
 
         // Seed layer codelist join tables
-        List<int> layerRange = (List<int>)Enumerable.Range(7_000_000, 20_000);
+        var layerRange = Enumerable.Range(7_000_000, 20_000);
+
+        List<(int LayerId, int CodelistId)> GetCombinations(IEnumerable<int> layerRange, IEnumerable<int> codelistIds)
+        {
+            return layerRange.SelectMany(layerId => codelistIds.Select(codelistId => (LayerId: layerId, CodelistId: codelistId))).Distinct().ToList();
+        }
 
         // Generate all combinations of LayerId and CodelistId for each code list
-        var colorCombinations = layerRange.SelectMany(layerId => colorIds.Select(colorId => (LayerId: layerId, CodelistId: colorId))).Distinct().ToList();
-        var debrisCombinations = layerRange.SelectMany(layerId => debrisIds.Select(codelistId => (LayerId: layerId, CodelistId: codelistId))).Distinct().ToList();
-        var grainShapeCombinations = layerRange.SelectMany(layerId => grainShapeIds.Select(codelistId => (LayerId: layerId, CodelistId: codelistId))).Distinct().ToList();
-        var grainAngularityCombinations = layerRange.SelectMany(layerId => grainAngularityIds.Select(codelistId => (LayerId: layerId, CodelistId: codelistId))).Distinct().ToList();
-        var organicComponentCombinations = layerRange.SelectMany(layerId => organicComponentIds.Select(codelistId => (LayerId: layerId, CodelistId: codelistId))).Distinct().ToList();
-        var uscs3Combinations = layerRange.SelectMany(layerId => uscsIds.Select(codelistId => (LayerId: layerId, CodelistId: codelistId))).Distinct().ToList();
+        var colorCombinations = GetCombinations(layerRange, colorIds);
+        var debrisCombinations = GetCombinations(layerRange, debrisIds);
+        var grainShapeCombinations = GetCombinations(layerRange, grainShapeIds);
+        var grainAngularityCombinations = GetCombinations(layerRange, grainAngularityIds);
+        var organicComponentCombinations = GetCombinations(layerRange, organicComponentIds);
+        var uscs3Combinations = GetCombinations(layerRange, uscsIds);
 
         #pragma warning disable CA5394
         var random = new Random();
