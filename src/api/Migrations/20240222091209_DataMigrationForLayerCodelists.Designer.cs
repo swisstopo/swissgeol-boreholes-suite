@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240222091209_DataMigrationForLayerCodelists")]
+    partial class DataMigrationForLayerCodelists
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1287,6 +1290,28 @@ namespace BDMS.Migrations
                     b.ToTable("layer", "bdms");
                 });
 
+            modelBuilder.Entity("BDMS.Models.LayerCodelist", b =>
+                {
+                    b.Property<int>("LayerId")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_lay_fk");
+
+                    b.Property<int>("CodelistId")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_cli_fk");
+
+                    b.Property<string>("SchemaName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("code_cli");
+
+                    b.HasKey("LayerId", "CodelistId");
+
+                    b.HasIndex("CodelistId");
+
+                    b.ToTable("layer_codelist", "bdms");
+                });
+
             modelBuilder.Entity("BDMS.Models.LayerColorCode", b =>
                 {
                     b.Property<int>("LayerId")
@@ -2530,6 +2555,25 @@ namespace BDMS.Migrations
                     b.Navigation("UscsDetermination");
                 });
 
+            modelBuilder.Entity("BDMS.Models.LayerCodelist", b =>
+                {
+                    b.HasOne("BDMS.Models.Codelist", "Codelist")
+                        .WithMany("LayerCodelists")
+                        .HasForeignKey("CodelistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Layer", "Layer")
+                        .WithMany("LayerCodelists")
+                        .HasForeignKey("LayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Codelist");
+
+                    b.Navigation("Layer");
+                });
+
             modelBuilder.Entity("BDMS.Models.LayerColorCode", b =>
                 {
                     b.HasOne("BDMS.Models.Codelist", "Codelist")
@@ -2905,6 +2949,8 @@ namespace BDMS.Migrations
 
                     b.Navigation("HydrotestCodelists");
 
+                    b.Navigation("LayerCodelists");
+
                     b.Navigation("LayerColorCodes");
 
                     b.Navigation("LayerDebrisCodes");
@@ -2934,6 +2980,8 @@ namespace BDMS.Migrations
 
             modelBuilder.Entity("BDMS.Models.Layer", b =>
                 {
+                    b.Navigation("LayerCodelists");
+
                     b.Navigation("LayerColorCodes");
 
                     b.Navigation("LayerDebrisCodes");
