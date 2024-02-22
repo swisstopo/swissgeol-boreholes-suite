@@ -94,14 +94,13 @@ public class BoreholeControllerTest
 
     private Borehole GetBorehole(int id)
     {
-        return IncludeBoreholeData(context.Boreholes).Single(b => b.Id == id);
+        return GetBoreholeWithIncludes(context.Boreholes).Single(b => b.Id == id);
     }
 
     // Get the id of a borehole with certain conditions.
     private int GetBoreholeIdToCopy()
     {
-        var borehole = IncludeBoreholeData(context.Boreholes)
-
+        var borehole = GetBoreholeWithIncludes(context.Boreholes)
             // Conditions
             .Where(b =>
                 b.Stratigraphies.First().Layers != null &&
@@ -122,7 +121,7 @@ public class BoreholeControllerTest
         return borehole.Id;
     }
 
-    private IQueryable<Borehole> IncludeBoreholeData(IQueryable<Borehole> query)
+    private IQueryable<Borehole> GetBoreholeWithIncludes(IQueryable<Borehole> query)
     {
         return query
             .Include(b => b.BoreholeFiles)

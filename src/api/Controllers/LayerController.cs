@@ -79,12 +79,12 @@ public class LayerController : BdmsControllerBase<Layer>
         Context.Entry(existingLayer).CurrentValues.SetValues(entity);
 
         // Update each join table
-        await UpdateLayerCodesAsync(existingLayer.LayerColorCodes ?? new List<LayerColorCode>(), entity.ColorCodelistIds ?? new List<int>(), existingLayer.Id).ConfigureAwait(false);
-        await UpdateLayerCodesAsync(existingLayer.LayerDebrisCodes ?? new List<LayerDebrisCode>(), entity.DebrisCodelistIds ?? new List<int>(), existingLayer.Id).ConfigureAwait(false);
-        await UpdateLayerCodesAsync(existingLayer.LayerGrainShapeCodes ?? new List<LayerGrainShapeCode>(), entity.GrainShapeCodelistIds ?? new List<int>(), existingLayer.Id).ConfigureAwait(false);
-        await UpdateLayerCodesAsync(existingLayer.LayerGrainAngularityCodes ?? new List<LayerGrainAngularityCode>(), entity.GrainAngularityCodelistIds ?? new List<int>(), existingLayer.Id).ConfigureAwait(false);
-        await UpdateLayerCodesAsync(existingLayer.LayerOrganicComponentCodes ?? new List<LayerOrganicComponentCode>(), entity.OrganicComponentCodelistIds ?? new List<int>(), existingLayer.Id).ConfigureAwait(false);
-        await UpdateLayerCodesAsync(existingLayer.LayerUscs3Codes ?? new List<LayerUscs3Code>(), entity.Uscs3CodelistIds ?? new List<int>(), existingLayer.Id).ConfigureAwait(false);
+        await UpdateLayerCodesAsync(existingLayer.LayerColorCodes!, entity.ColorCodelistIds!, existingLayer.Id).ConfigureAwait(false);
+        await UpdateLayerCodesAsync(existingLayer.LayerDebrisCodes!, entity.DebrisCodelistIds!, existingLayer.Id).ConfigureAwait(false);
+        await UpdateLayerCodesAsync(existingLayer.LayerGrainShapeCodes!, entity.GrainShapeCodelistIds!, existingLayer.Id).ConfigureAwait(false);
+        await UpdateLayerCodesAsync(existingLayer.LayerGrainAngularityCodes!, entity.GrainAngularityCodelistIds!, existingLayer.Id).ConfigureAwait(false);
+        await UpdateLayerCodesAsync(existingLayer.LayerOrganicComponentCodes!, entity.OrganicComponentCodelistIds!, existingLayer.Id).ConfigureAwait(false);
+        await UpdateLayerCodesAsync(existingLayer.LayerUscs3Codes!, entity.Uscs3CodelistIds!, existingLayer.Id).ConfigureAwait(false);
 
         try
         {
@@ -102,17 +102,18 @@ public class LayerController : BdmsControllerBase<Layer>
     private async Task UpdateLayerCodesAsync<T>(IList<T> existingLayerCodes, ICollection<int> newCodelistIds, int layerId)
         where T : class, ILayerCode, new()
     {
-        var codelistIds = newCodelistIds?.ToList() ?? new List<int>();
+        newCodelistIds = newCodelistIds?.ToList() ?? new List<int>();
+        existingLayerCodes ??= new List<T>();
 
         foreach (var layerCode in existingLayerCodes)
         {
-            if (!codelistIds.Contains(layerCode.CodelistId))
+            if (!newCodelistIds.Contains(layerCode.CodelistId))
             {
                 Context.Remove(layerCode);
             }
         }
 
-        foreach (var id in codelistIds)
+        foreach (var id in newCodelistIds)
         {
             if (!existingLayerCodes.Any(lc => lc.CodelistId == id))
             {
@@ -129,10 +130,11 @@ public class LayerController : BdmsControllerBase<Layer>
     private T CreateLayerCode<T>(Codelist codelist, int layerId)
         where T : class, ILayerCode, new()
     {
-        var layerCode = new T();
-        typeof(T).GetProperty("CodelistId")?.SetValue(layerCode, codelist.Id);
-        typeof(T).GetProperty("LayerId")?.SetValue(layerCode, layerId);
-        return layerCode;
+        return new T
+        {
+            CodelistId = codelist.Id,
+            LayerId = layerId,
+        };
     }
 
     /// <inheritdoc />

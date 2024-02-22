@@ -8,11 +8,18 @@ namespace BDMS.Models;
 [Table("layer_uscs3_codelist")]
 public class LayerUscs3Code : ILayerCode
 {
+    /// <inheritdoc/>
     [Column("id_lay_fk")]
     public int LayerId { get; set; }
+
+    /// <inheritdoc/>
     public Layer Layer { get; set; }
 
+
+    /// <inheritdoc/>
     [Column("id_cli_fk")]
     public int CodelistId { get; set; }
+
+    /// <inheritdoc/>
     public Codelist Codelist { get; set; }
 }

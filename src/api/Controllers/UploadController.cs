@@ -250,14 +250,21 @@ public class UploadController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Parses a string of <see cref="Codelist"/> IDs into a list of integers.
+    /// </summary>
+    /// <param name="ids">The string of <see cref="Codelist"/> IDs to parse. IDs are expected to be separated by commas.</param>
+    /// <returns>A list of integers parsed from the input string.</returns>
     internal List<int> ParseIds(string ids)
+
     {
         if (string.IsNullOrEmpty(ids))
         {
             return new List<int>();
         }
 
-        return ids.Split(',')
+        return ids
+            .Split(',')
             .Select(s =>
             {
                 if (!int.TryParse(s, out var num))

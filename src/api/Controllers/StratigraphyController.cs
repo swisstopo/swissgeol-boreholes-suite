@@ -103,12 +103,12 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         foreach (var layer in stratigraphy.Layers)
         {
             layer.Id = 0;
-            if (layer.LayerColorCodes != null) ResetLayerIds(layer.LayerColorCodes);
-            if (layer.LayerDebrisCodes != null) ResetLayerIds(layer.LayerDebrisCodes);
-            if (layer.LayerGrainShapeCodes != null) ResetLayerIds(layer.LayerGrainShapeCodes);
-            if (layer.LayerGrainAngularityCodes != null) ResetLayerIds(layer.LayerGrainAngularityCodes);
-            if (layer.LayerOrganicComponentCodes != null) ResetLayerIds(layer.LayerOrganicComponentCodes);
-            if (layer.LayerUscs3Codes != null) ResetLayerIds(layer.LayerUscs3Codes);
+            layer.LayerColorCodes?.ResetLayerIds();
+            layer.LayerDebrisCodes?.ResetLayerIds();
+            layer.LayerGrainShapeCodes?.ResetLayerIds();
+            layer.LayerGrainAngularityCodes?.ResetLayerIds();
+            layer.LayerOrganicComponentCodes?.ResetLayerIds();
+            layer.LayerUscs3Codes?.ResetLayerIds();
         }
 
         foreach (var lithologicalDescription in stratigraphy.LithologicalDescriptions)
