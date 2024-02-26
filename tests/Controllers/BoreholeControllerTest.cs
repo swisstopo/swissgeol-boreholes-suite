@@ -101,7 +101,6 @@ public class BoreholeControllerTest
     private int GetBoreholeIdToCopy()
     {
         var borehole = GetBoreholeWithIncludes(context.Boreholes)
-            // Conditions
             .Where(b =>
                 b.Stratigraphies.First().Layers != null &&
                 b.Stratigraphies.First().Layers.Any(x => x.LayerColorCodes != null && x.LayerColorCodes.Any()) &&

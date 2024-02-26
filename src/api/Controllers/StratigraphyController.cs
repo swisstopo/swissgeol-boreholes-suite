@@ -135,14 +135,6 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         return Ok(entityEntry.Entity.Id);
     }
 
-    private void ResetLayerIds(IEnumerable<ILayerCode> layerCodes)
-    {
-        foreach (var layerCode in layerCodes)
-        {
-            layerCode.LayerId = 0;
-        }
-    }
-
     /// <inheritdoc />
     /// <remarks>Automatically sets the remaining and latest stratigraphy as the primary stratigraphy, if possible.</remarks>
     [Authorize(Policy = PolicyNames.Viewer)]

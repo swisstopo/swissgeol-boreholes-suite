@@ -120,15 +120,4 @@ public class BoreholeController : ControllerBase
 
         return Ok(entityEntry.Entity.Id);
     }
-
-    private void ResetLayerIds(IEnumerable<ILayerCode> layerCodes)
-    {
-        if (layerCodes != null)
-        {
-            foreach (var layerCode in layerCodes)
-            {
-                layerCode.LayerId = 0;
-            }
-        }
-    }
 }

@@ -256,7 +256,6 @@ public class UploadController : ControllerBase
     /// <param name="ids">The string of <see cref="Codelist"/> IDs to parse. IDs are expected to be separated by commas.</param>
     /// <returns>A list of integers parsed from the input string.</returns>
     internal List<int> ParseIds(string ids)
-
     {
         if (string.IsNullOrEmpty(ids))
         {
@@ -291,10 +290,9 @@ public class UploadController : ControllerBase
     internal List<int> ParseMultiValueCodeListIds(LithologyImport lithologyImport)
     {
         // Select all code list ids of all multi value code list properties.
-        var splittedList = new[] { lithologyImport.ColorIds, lithologyImport.OrganicComponentIds, lithologyImport.GrainShapeIds, lithologyImport.GrainGranularityIds, lithologyImport.Uscs3Ids, lithologyImport.DebrisIds }
+        return new[] { lithologyImport.ColorIds, lithologyImport.OrganicComponentIds, lithologyImport.GrainShapeIds, lithologyImport.GrainGranularityIds, lithologyImport.Uscs3Ids, lithologyImport.DebrisIds }
             .SelectMany(str => str.Split(','))
-            .ToList();
-        return splittedList.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
+            .Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
     }
 
     private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, IList<IFormFile>? attachments = null)
