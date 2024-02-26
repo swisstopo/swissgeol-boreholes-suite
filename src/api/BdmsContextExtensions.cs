@@ -88,6 +88,11 @@ public static class BdmsContextExtensions
         List<int> backfillKindIds = codelists.Where(c => c.Schema == CompletionSchemas.BackfillTypeSchema).Select(s => s.Id).ToList();
         List<int> backfillMaterialIds = codelists.Where(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Select(s => s.Id).ToList();
         List<int> uscsIds = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList();
+        List<int> colorIds = codelists.Where(c => c.Schema == "colour").Select(s => s.Id).ToList();
+        List<int> debrisIds = codelists.Where(c => c.Schema == "debris").Select(s => s.Id).ToList();
+        List<int> grainShapeIds = codelists.Where(c => c.Schema == "grain_shape").Select(s => s.Id).ToList();
+        List<int> grainAngularityIds = codelists.Where(c => c.Schema == "grain_angularity").Select(s => s.Id).ToList();
+        List<int> organicComponentIds = codelists.Where(c => c.Schema == "organic_components").Select(s => s.Id).ToList();
         List<int> uscsDeterminationIds = codelists.Where(c => c.Schema == "uscs_determination").Select(s => s.Id).ToList();
         List<int> gradationIds = codelists.Where(c => c.Schema == "gradation").Select(s => s.Id).ToList();
         List<int> soilStateIds = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList();  // unclear which codelist
@@ -360,10 +365,25 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Notes, f => f.Random.Words(4).OrNull(f, .05f))
             .RuleFor(o => o.OriginalUscs, f => f.Random.Word().OrNull(f, .05f))
             .RuleFor(o => o.OriginalLithology, f => f.Random.Words(5).OrNull(f, .05f))
-            .RuleFor(o => o.LayerCodelists, _ => new Collection<LayerCodelist>())
-            .RuleFor(o => o.Codelists, _ => new Collection<Codelist>())
-            .RuleFor(o => o.Id, f => layer_ids++)
-            .RuleFor(o => o.CodelistIds, new List<int>());
+            .RuleFor(o => o.ColorCodelists, new Collection<Codelist>())
+            .RuleFor(o => o.ColorCodelistIds, new List<int>())
+            .RuleFor(o => o.LayerColorCodes, _ => new Collection<LayerColorCode>())
+            .RuleFor(o => o.DebrisCodelistIds, _ => new List<int>())
+            .RuleFor(o => o.DebrisCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.LayerDebrisCodes, _ => new Collection<LayerDebrisCode>())
+            .RuleFor(o => o.GrainShapeCodelistIds, _ => new List<int>())
+            .RuleFor(o => o.GrainShapeCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.LayerGrainShapeCodes, _ => new Collection<LayerGrainShapeCode>())
+            .RuleFor(o => o.GrainAngularityCodelistIds, _ => new List<int>())
+            .RuleFor(o => o.GrainAngularityCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.LayerGrainAngularityCodes, _ => new Collection<LayerGrainAngularityCode>())
+            .RuleFor(o => o.OrganicComponentCodelistIds, _ => new List<int>())
+            .RuleFor(o => o.OrganicComponentCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.LayerOrganicComponentCodes, _ => new Collection<LayerOrganicComponentCode>())
+            .RuleFor(o => o.Uscs3CodelistIds, _ => new List<int>())
+            .RuleFor(o => o.Uscs3Codelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.LayerUscs3Codes, _ => new Collection<LayerUscs3Code>())
+            .RuleFor(o => o.Id, f => layer_ids++);
 
         Layer SeededLayers(int seed) => fakelayers.UseSeed(seed).Generate();
 
@@ -526,19 +546,56 @@ public static class BdmsContextExtensions
 
         context.BulkInsert(lithostratigraphiesToInsert, bulkConfig);
 
-        // Seed layer_codelist table (only for a limited number of layers)
-        var layerRange = Enumerable.Range(7_000_000, 10_000);
-        var layerCodelistRange = Enumerable.Range(0, layerRange.Count() * 3); // Multiply layer range by 3 to generate multiple entries per layer
-        var fakeLayerCodelists = new Faker<LayerCodelist>()
-            .StrictMode(true)
-            .RuleFor(o => o.LayerId, f => f.PickRandom(layerRange))
-            .RuleFor(o => o.CodelistId, f => f.PickRandom(uscsIds))
-            .RuleFor(o => o.SchemaName, "uscs_type")
-            .RuleFor(o => o.Layer, _ => default!)
-            .RuleFor(o => o.Codelist, _ => default!);
+        // Seed layer codelist join tables
+        var layerRange = Enumerable.Range(7_000_000, 20_000);
 
-        LayerCodelist SeededLayerCodelist(int seed) => fakeLayerCodelists.UseSeed(seed).Generate();
-        context.BulkInsert(layerCodelistRange.Select(SeededLayerCodelist).ToList(), bulkConfig);
+        List<(int LayerId, int CodelistId)> GetCombinations(IEnumerable<int> codelistIds)
+        {
+            return layerRange.SelectMany(layerId => codelistIds.Select(codelistId => (LayerId: layerId, CodelistId: codelistId))).Distinct().ToList();
+        }
+
+        // Generate all combinations of LayerId and CodelistId for each code list
+        var colorCombinations = GetCombinations(colorIds);
+        var debrisCombinations = GetCombinations(debrisIds);
+        var grainShapeCombinations = GetCombinations(grainShapeIds);
+        var grainAngularityCombinations = GetCombinations(grainAngularityIds);
+        var organicComponentCombinations = GetCombinations(organicComponentIds);
+        var uscs3Combinations = GetCombinations(uscsIds);
+
+        Faker<T> CreateFaker<T>(List<(int LayerId, int CodelistId)> combinations)
+            where T : class, ILayerCode,
+            new() => new Faker<T>()
+                .StrictMode(false)
+                .Rules((f, o) =>
+                {
+                    var combination = f.PickRandom(combinations);
+                    combinations.Remove(combination);
+                    o.LayerId = combination.LayerId;
+                    o.CodelistId = combination.CodelistId;
+                    o.Layer = default!;
+                    o.Codelist = default!;
+                });
+
+        var fakeLayerColorCodes = CreateFaker<LayerColorCode>(colorCombinations);
+        var fakeLayerDebrisCodes = CreateFaker<LayerDebrisCode>(debrisCombinations);
+        var fakeLayerGrainShapeCodes = CreateFaker<LayerGrainShapeCode>(grainShapeCombinations);
+        var fakeLayerGrainAngularityCodes = CreateFaker<LayerGrainAngularityCode>(grainAngularityCombinations);
+        var fakeLayerOrganicComponentCodes = CreateFaker<LayerOrganicComponentCode>(organicComponentCombinations);
+        var fakeLayerUscs3Codes = CreateFaker<LayerUscs3Code>(uscs3Combinations);
+
+        void SeedCodelists<T>(Faker<T> faker)
+            where T : class, ILayerCode, new()
+        {
+            T SeededData(int seed) => faker.UseSeed(seed).Generate();
+            context.BulkInsert(Enumerable.Range(0, 10_000).Select(SeededData), bulkConfig);
+        }
+
+        SeedCodelists(fakeLayerColorCodes);
+        SeedCodelists(fakeLayerDebrisCodes);
+        SeedCodelists(fakeLayerGrainShapeCodes);
+        SeedCodelists(fakeLayerGrainAngularityCodes);
+        SeedCodelists(fakeLayerOrganicComponentCodes);
+        SeedCodelists(fakeLayerUscs3Codes);
 
         // Seed completions
         var completion_ids = 14_000_000;

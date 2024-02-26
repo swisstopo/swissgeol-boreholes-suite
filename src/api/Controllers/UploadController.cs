@@ -6,6 +6,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
 using System.Globalization;
 using System.Net;
 
@@ -202,20 +203,21 @@ public class UploadController : ControllerBase
                         // Create a lithology for each record in the group (same strati id) and assign it to the new stratigraphy.
                         var lithologies = stratiGroup.Select(sg =>
                         {
-                            var codeListIds = new List<int>();
-
-                            try
-                            {
-                                codeListIds = ParseMultiValueCodeListIds(sg);
-                            }
-                            catch (Exception ex)
-                            {
-                                logger.LogError(ex, "Invalid code list value of any multi code list property.");
-                                throw;
-                            }
-
                             var lithology = (Layer)sg;
-                            lithology.LayerCodelists = codeLists.Where(c => codeListIds.Contains(c.Id) && c.Schema != null).Select(c => new LayerCodelist { Codelist = c, CodelistId = c.Id, SchemaName = c.Schema! }).ToList();
+                            lithology.ColorCodelistIds = ParseIds(sg.ColorIds);
+                            lithology.DebrisCodelistIds = ParseIds(sg.DebrisIds);
+                            lithology.GrainShapeCodelistIds = ParseIds(sg.GrainShapeIds);
+                            lithology.GrainAngularityCodelistIds = ParseIds(sg.GrainGranularityIds);
+                            lithology.OrganicComponentCodelistIds = ParseIds(sg.OrganicComponentIds);
+                            lithology.Uscs3CodelistIds = ParseIds(sg.Uscs3Ids);
+
+                            lithology.LayerColorCodes = CreateLayerCodes<LayerColorCode>(GetCodelists(lithology.ColorCodelistIds));
+                            lithology.LayerDebrisCodes = CreateLayerCodes<LayerDebrisCode>(GetCodelists(lithology.DebrisCodelistIds));
+                            lithology.LayerGrainShapeCodes = CreateLayerCodes<LayerGrainShapeCode>(GetCodelists(lithology.GrainShapeCodelistIds));
+                            lithology.LayerGrainAngularityCodes = CreateLayerCodes<LayerGrainAngularityCode>(GetCodelists(lithology.GrainAngularityCodelistIds));
+                            lithology.LayerOrganicComponentCodes = CreateLayerCodes<LayerOrganicComponentCode>(GetCodelists(lithology.OrganicComponentCodelistIds));
+                            lithology.LayerUscs3Codes = CreateLayerCodes<LayerUscs3Code>(GetCodelists(lithology.Uscs3CodelistIds));
+
                             lithology.Stratigraphy = strati;
                             return lithology;
                         }).ToList();
@@ -248,14 +250,49 @@ public class UploadController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Parses a string of <see cref="Codelist"/> IDs into a list of integers.
+    /// </summary>
+    /// <param name="ids">The string of <see cref="Codelist"/> IDs to parse. IDs are expected to be separated by commas.</param>
+    /// <returns>A list of integers parsed from the input string.</returns>
+    internal List<int> ParseIds(string ids)
+    {
+        if (string.IsNullOrEmpty(ids))
+        {
+            return new List<int>();
+        }
+
+        return ids
+            .Split(',')
+            .Select(s =>
+            {
+                if (!int.TryParse(s, out var num))
+                {
+                    logger.LogError($"Invalid code list value: {s}");
+                    throw new FormatException($"Invalid code list value: {s}");
+                }
+
+                return num;
+            }).ToList();
+    }
+
+    internal List<Codelist> GetCodelists(ICollection<int> codelistIds)
+    {
+        return context.Codelists.Where(c => codelistIds.Contains(c.Id)).ToList();
+    }
+
+    internal List<T> CreateLayerCodes<T>(List<Codelist> codelists)
+        where T : ILayerCode, new()
+    {
+        return codelists.Select(c => new T { Codelist = c, CodelistId = c.Id }).ToList();
+    }
+
     internal List<int> ParseMultiValueCodeListIds(LithologyImport lithologyImport)
     {
         // Select all code list ids of all multi value code list properties.
-        var splittedList = new[] { lithologyImport.ColorIds, lithologyImport.OrganicComponentIds, lithologyImport.GrainShapeIds, lithologyImport.GrainGranularityIds, lithologyImport.Uscs3Ids, lithologyImport.DebrisIds }
+        return new[] { lithologyImport.ColorIds, lithologyImport.OrganicComponentIds, lithologyImport.GrainShapeIds, lithologyImport.GrainGranularityIds, lithologyImport.Uscs3Ids, lithologyImport.DebrisIds }
             .SelectMany(str => str.Split(','))
-            .ToList();
-
-        return splittedList.Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
+            .Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
     }
 
     private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, IList<IFormFile>? attachments = null)

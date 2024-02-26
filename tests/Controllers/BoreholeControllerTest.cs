@@ -1,7 +1,6 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -82,53 +81,34 @@ public class BoreholeControllerTest
         Assert.AreEqual(originalBorehole.BoreholeFiles.First().FileId, copiedBorehole.BoreholeFiles.First().FileId);
         Assert.AreEqual(originalBorehole.BoreholeFiles.First().Description, copiedBorehole.BoreholeFiles.First().Description);
 
-        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerCodelists, copiedstratigraphy.Layers.First().LayerCodelists);
-        Assert.AreEqual(originalStratigraphy.Layers.First().LayerCodelists.Count, copiedstratigraphy.Layers.First().LayerCodelists.Count);
+        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerColorCodes, copiedstratigraphy.Layers.First().LayerColorCodes);
+        Assert.AreEqual(originalStratigraphy.Layers.First().LayerColorCodes.Count, copiedstratigraphy.Layers.First().LayerColorCodes.Count);
+
+        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerGrainShapeCodes, copiedstratigraphy.Layers.First().LayerGrainShapeCodes);
+        Assert.AreEqual(originalStratigraphy.Layers.First().LayerGrainShapeCodes.Count, copiedstratigraphy.Layers.First().LayerGrainShapeCodes.Count);
+
+        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerUscs3Codes, copiedstratigraphy.Layers.First().LayerUscs3Codes);
+        Assert.AreEqual(originalStratigraphy.Layers.First().LayerUscs3Codes.Count, copiedstratigraphy.Layers.First().LayerUscs3Codes.Count);
     }
 
     private Borehole GetBorehole(int id)
     {
-        return context.Boreholes
-            .Include(b => b.BoreholeFiles)
-            .Include(b => b.Files)
-            .Include(b => b.Workflows)
-            .Include(b => b.Workgroup)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithostratigraphyLayers)
-            .Include(b => b.CreatedBy)
-            .Include(b => b.UpdatedBy)
-            .Include(b => b.LockedBy)
-            .Include(b => b.Type)
-            .Single(b => b.Id == id);
+        return GetBoreholesWithIncludes(context.Boreholes).Single(b => b.Id == id);
     }
 
     // Get the id of a borehole with certain conditions.
     private int GetBoreholeIdToCopy()
     {
-        var borehole = context.Boreholes
-            .Include(b => b.BoreholeFiles)
-            .Include(b => b.Files)
-            .Include(b => b.Workflows)
-            .Include(b => b.Workgroup)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
-            .Include(b => b.CreatedBy)
-            .Include(b => b.UpdatedBy)
-            .Include(b => b.LockedBy)
-            .Include(b => b.Type)
-
-            // Conditions
+        var borehole = GetBoreholesWithIncludes(context.Boreholes)
             .Where(b =>
                 b.Stratigraphies.First().Layers != null &&
-                b.Stratigraphies.First().Layers.Any(x => x.LayerCodelists != null && x.LayerCodelists.Any()) &&
+                b.Stratigraphies.First().Layers.Any(x => x.LayerColorCodes != null && x.LayerColorCodes.Any()) &&
+                b.Stratigraphies.First().Layers.Any(x => x.LayerGrainShapeCodes != null && x.LayerGrainShapeCodes.Any()) &&
+                b.Stratigraphies.First().Layers.Any(x => x.LayerUscs3Codes != null && x.LayerUscs3Codes.Any()) &&
                 b.Stratigraphies.First().LithologicalDescriptions != null &&
                 b.Stratigraphies.First().FaciesDescriptions != null &&
                 b.Stratigraphies.First().ChronostratigraphyLayers != null &&
+                b.Stratigraphies.First().LithostratigraphyLayers != null &&
                 b.BoreholeFiles.First().File != null &&
                 b.Canton != null &&
                 b.Stratigraphies.First().ChronostratigraphyLayers.First().ChronostratigraphyId != null)

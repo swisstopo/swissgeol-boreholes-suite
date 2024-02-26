@@ -79,7 +79,12 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         }
 
         var stratigraphy = await Context.Stratigraphies
-            .Include(s => s.Layers).ThenInclude(l => l.LayerCodelists)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
+            .Include(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
             .Include(s => s.LithologicalDescriptions)
             .Include(s => s.FaciesDescriptions)
             .Include(s => s.ChronostratigraphyLayers)
@@ -98,10 +103,12 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         foreach (var layer in stratigraphy.Layers)
         {
             layer.Id = 0;
-            foreach (var layerCode in layer.LayerCodelists)
-            {
-                layerCode.LayerId = 0;
-            }
+            layer.LayerColorCodes?.ResetLayerIds();
+            layer.LayerDebrisCodes?.ResetLayerIds();
+            layer.LayerGrainShapeCodes?.ResetLayerIds();
+            layer.LayerGrainAngularityCodes?.ResetLayerIds();
+            layer.LayerOrganicComponentCodes?.ResetLayerIds();
+            layer.LayerUscs3Codes?.ResetLayerIds();
         }
 
         foreach (var lithologicalDescription in stratigraphy.LithologicalDescriptions)

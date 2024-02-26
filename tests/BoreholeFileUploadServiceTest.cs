@@ -1,7 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -67,10 +66,7 @@ public class BoreholeFileUploadServiceTest
         await boreholeFileUploadService.UploadFileAndLinkToBorehole(firstPdfFormFile, minBoreholeId);
 
         // Get borehole with file linked from db
-        var borehole = context.Boreholes
-           .Include(b => b.BoreholeFiles)
-           .ThenInclude(bf => bf.File)
-           .Single(b => b.Id == minBoreholeId);
+        var borehole = GetBoreholesWithIncludes(context.Boreholes).Single(b => b.Id == minBoreholeId);
 
         // Check if file is linked to borehole
         Assert.AreEqual(borehole.BoreholeFiles.First().File.Name, fileName);

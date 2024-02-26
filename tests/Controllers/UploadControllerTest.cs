@@ -95,7 +95,7 @@ public class UploadControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.LayerCodelists).ToList().Find(b => b.OriginalName == "Seth Patel");
+        var borehole = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Seth Patel");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Seth Patel", borehole.OriginalName);
 
@@ -130,8 +130,13 @@ public class UploadControllerTest
         Assert.AreEqual("trace back Peso", lithology.OriginalLithology);
         Assert.AreEqual(30000018, lithology.GradationId);
         Assert.AreEqual(15101001, lithology.LithologyTopBedrockId);
-        var lithoCodeLists = lithology.LayerCodelists;
-        Assert.AreEqual(14, lithoCodeLists.Count);
+        Assert.AreEqual(2, lithology.ColorCodelists.Count);
+        Assert.AreEqual(2, lithology.DebrisCodelists.Count);
+        Assert.AreEqual(2, lithology.GrainAngularityCodelists.Count);
+        Assert.AreEqual(2, lithology.GrainShapeCodelists.Count);
+        Assert.AreEqual(3, lithology.OrganicComponentCodelists.Count);
+        Assert.AreEqual(3, lithology.Uscs3Codelists.Count);
+
         lithology = stratigraphy.Layers.First(l => l.FromDepth == 11);
         Assert.AreEqual(12, lithology.ToDepth);
 
@@ -161,7 +166,8 @@ public class UploadControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.LayerCodelists).ToList().Find(b => b.OriginalName == "Seth Patel");
+        var borehole = GetBoreholesWithIncludes(context.Boreholes)
+            .ToList().Find(b => b.OriginalName == "Seth Patel");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Seth Patel", borehole.OriginalName);
 
@@ -173,10 +179,20 @@ public class UploadControllerTest
         Assert.AreEqual(2, stratigraphy.Layers.Count);
         var lithology = stratigraphy.Layers.First(l => l.FromDepth == 0.125);
         Assert.AreEqual(100, lithology.ToDepth);
-        Assert.AreEqual(16, lithology.LayerCodelists.Count);
+        Assert.AreEqual(2, lithology.ColorCodelists.Count);
+        Assert.AreEqual(2, lithology.DebrisCodelists.Count);
+        Assert.AreEqual(3, lithology.GrainAngularityCodelists.Count);
+        Assert.AreEqual(3, lithology.GrainShapeCodelists.Count);
+        Assert.AreEqual(3, lithology.OrganicComponentCodelists.Count);
+        Assert.AreEqual(3, lithology.Uscs3Codelists.Count);
         lithology = stratigraphy.Layers.First(l => l.FromDepth == 11);
         Assert.AreEqual(12, lithology.ToDepth);
-        Assert.AreEqual(1, lithology.LayerCodelists.Count);
+        Assert.AreEqual(0, lithology.ColorCodelists.Count);
+        Assert.AreEqual(1, lithology.DebrisCodelists.Count);
+        Assert.AreEqual(0, lithology.GrainAngularityCodelists.Count);
+        Assert.AreEqual(0, lithology.GrainShapeCodelists.Count);
+        Assert.AreEqual(0, lithology.OrganicComponentCodelists.Count);
+        Assert.AreEqual(0, lithology.Uscs3Codelists.Count);
 
         // Second stratigraphy
         stratigraphy = borehole.Stratigraphies.Skip(1).First();
@@ -184,7 +200,12 @@ public class UploadControllerTest
         lithology = stratigraphy.Layers.First();
         Assert.AreEqual(55, lithology.FromDepth);
         Assert.AreEqual(55.23, lithology.ToDepth);
-        Assert.AreEqual(2, lithology.LayerCodelists.Count);
+        Assert.AreEqual(0, lithology.ColorCodelists.Count);
+        Assert.AreEqual(0, lithology.DebrisCodelists.Count);
+        Assert.AreEqual(0, lithology.GrainAngularityCodelists.Count);
+        Assert.AreEqual(0, lithology.GrainShapeCodelists.Count);
+        Assert.AreEqual(0, lithology.OrganicComponentCodelists.Count);
+        Assert.AreEqual(2, lithology.Uscs3Codelists.Count);
     }
 
     [TestMethod]
@@ -204,7 +225,7 @@ public class UploadControllerTest
         Assert.AreEqual(6, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).ToList().Find(b => b.OriginalName == "Unit_Test_6");
+        var borehole = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_6");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Unit_Test_6_a", borehole.AlternateName);
         Assert.AreEqual(null, borehole.IsPublic);
@@ -245,7 +266,7 @@ public class UploadControllerTest
         Assert.AreEqual(6, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).ToList().Find(b => b.OriginalName == "Unit_Test_2");
+        var borehole = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_2");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual(null, borehole.AlternateName);
         Assert.AreEqual(null, borehole.IsPublic);
@@ -293,7 +314,7 @@ public class UploadControllerTest
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
 
-        var borehole = context.Boreholes.Include(b => b.BoreholeFiles).Single(b => b.OriginalName == "ACORNFLEA");
+        var borehole = GetBoreholesWithIncludes(context.Boreholes).Single(b => b.OriginalName == "ACORNFLEA");
         Assert.AreEqual(10, borehole.BoreholeFiles.Count);
     }
 
@@ -532,9 +553,7 @@ public class UploadControllerTest
         // Get latest borehole Ids
         var latestBoreholeId = context.Boreholes.OrderByDescending(b => b.Id).First().Id;
 
-        var borehole = context.Boreholes
-            .Include(b => b.BoreholeFiles)
-            .ThenInclude(bf => bf.File)
+        var borehole = GetBoreholesWithIncludes(context.Boreholes)
             .Single(b => b.Id == latestBoreholeId);
 
         Assert.AreEqual(borehole.BoreholeFiles.First().File.Name, firstAttachmentFileName);
@@ -932,12 +951,5 @@ public class UploadControllerTest
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);
         Assert.AreEqual("POINT (2000000 1000000)", borehole.Geometry.ToString());
-    }
-
-    [TestMethod]
-    public void ParseMultiValueCodeListIds()
-    {
-        CollectionAssert.AreEquivalent(new List<int>() { 500, 200 }, controller.ParseMultiValueCodeListIds(new LithologyImport() { OrganicComponentIds = "500,200" }));
-        CollectionAssert.AreEquivalent(new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }, controller.ParseMultiValueCodeListIds(new LithologyImport() { ColorIds = "1,2", OrganicComponentIds = "3,4", GrainShapeIds = "5,6", GrainGranularityIds = "7,8", Uscs3Ids = "9,10", DebrisIds = "11,12" }));
     }
 }

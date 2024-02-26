@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240222095309_DropGenericLayerCodelistsJoinTable")]
+    partial class DropGenericLayerCodelistsJoinTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1291,11 +1294,11 @@ namespace BDMS.Migrations
                 {
                     b.Property<int>("LayerId")
                         .HasColumnType("integer")
-                        .HasColumnName("layer_id");
+                        .HasColumnName("id_lay_fk");
 
                     b.Property<int>("CodelistId")
                         .HasColumnType("integer")
-                        .HasColumnName("color_id");
+                        .HasColumnName("id_cli_fk");
 
                     b.HasKey("LayerId", "CodelistId");
 
@@ -1308,11 +1311,11 @@ namespace BDMS.Migrations
                 {
                     b.Property<int>("LayerId")
                         .HasColumnType("integer")
-                        .HasColumnName("layer_id");
+                        .HasColumnName("id_lay_fk");
 
                     b.Property<int>("CodelistId")
                         .HasColumnType("integer")
-                        .HasColumnName("debris_id");
+                        .HasColumnName("id_cli_fk");
 
                     b.HasKey("LayerId", "CodelistId");
 
@@ -1325,11 +1328,11 @@ namespace BDMS.Migrations
                 {
                     b.Property<int>("LayerId")
                         .HasColumnType("integer")
-                        .HasColumnName("layer_id");
+                        .HasColumnName("id_lay_fk");
 
                     b.Property<int>("CodelistId")
                         .HasColumnType("integer")
-                        .HasColumnName("grain_angularity_id");
+                        .HasColumnName("id_cli_fk");
 
                     b.HasKey("LayerId", "CodelistId");
 
@@ -1342,11 +1345,11 @@ namespace BDMS.Migrations
                 {
                     b.Property<int>("LayerId")
                         .HasColumnType("integer")
-                        .HasColumnName("layer_id");
+                        .HasColumnName("id_lay_fk");
 
                     b.Property<int>("CodelistId")
                         .HasColumnType("integer")
-                        .HasColumnName("grain_shape_id");
+                        .HasColumnName("id_cli_fk");
 
                     b.HasKey("LayerId", "CodelistId");
 
@@ -1359,11 +1362,11 @@ namespace BDMS.Migrations
                 {
                     b.Property<int>("LayerId")
                         .HasColumnType("integer")
-                        .HasColumnName("layer_id");
+                        .HasColumnName("id_lay_fk");
 
                     b.Property<int>("CodelistId")
                         .HasColumnType("integer")
-                        .HasColumnName("organic_components_id");
+                        .HasColumnName("id_cli_fk");
 
                     b.HasKey("LayerId", "CodelistId");
 
@@ -1376,11 +1379,11 @@ namespace BDMS.Migrations
                 {
                     b.Property<int>("LayerId")
                         .HasColumnType("integer")
-                        .HasColumnName("layer_id");
+                        .HasColumnName("id_lay_fk");
 
                     b.Property<int>("CodelistId")
                         .HasColumnType("integer")
-                        .HasColumnName("uscs3_id");
+                        .HasColumnName("id_cli_fk");
 
                     b.HasKey("LayerId", "CodelistId");
 

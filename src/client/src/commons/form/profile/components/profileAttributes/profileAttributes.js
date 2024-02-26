@@ -77,31 +77,17 @@ const ProfileAttributes = props => {
 
   const mounted = useRef(false);
 
-  const mapCodelistToAttribute = (codelists, schema) => {
-    return codelists.filter(x => x.schema === schema).map(x => x.id);
-  };
-
   const mapResponseToLayer = useCallback(response => {
-    if (response?.codelists?.length > 0) {
-      response["uscs_3"] = mapCodelistToAttribute(
-        response.codelists,
-        "uscs_type",
-      );
-      response["grain_shape"] = mapCodelistToAttribute(
-        response.codelists,
-        "grain_shape",
-      );
-      response["grain_granularity"] = mapCodelistToAttribute(
-        response.codelists,
-        "grain_angularity",
-      );
-      response["organic_component"] = mapCodelistToAttribute(
-        response.codelists,
-        "organic_components",
-      );
-      response["debris"] = mapCodelistToAttribute(response.codelists, "debris");
-      response["color"] = mapCodelistToAttribute(response.codelists, "colour");
-    }
+    response["uscs_3"] = response.uscs3Codelists.map(x => x.id);
+    response["grain_shape"] = response.grainShapeCodelists.map(x => x.id);
+    response["grain_granularity"] = response.grainAngularityCodelists.map(
+      x => x.id,
+    );
+    response["organic_component"] = response.organicComponentCodelists.map(
+      x => x.id,
+    );
+    response["debris"] = response.debrisCodelists.map(x => x.id);
+    response["color"] = response.colorCodelists.map(x => x.id);
     setState({
       isPatching: false,
       layer: response,
@@ -139,26 +125,12 @@ const ProfileAttributes = props => {
       [attribute]: value,
     };
 
-    var codelistIds = [];
-    if (updatedLayer["uscs_3"]) {
-      codelistIds = codelistIds.concat(updatedLayer["uscs_3"]);
-    }
-    if (updatedLayer["grain_shape"]) {
-      codelistIds = codelistIds.concat(updatedLayer["grain_shape"]);
-    }
-    if (updatedLayer["grain_granularity"]) {
-      codelistIds = codelistIds.concat(updatedLayer["grain_granularity"]);
-    }
-    if (updatedLayer["organic_component"]) {
-      codelistIds = codelistIds.concat(updatedLayer["organic_component"]);
-    }
-    if (updatedLayer["debris"]) {
-      codelistIds = codelistIds.concat(updatedLayer["debris"]);
-    }
-    if (updatedLayer["color"]) {
-      codelistIds = codelistIds.concat(updatedLayer["color"]);
-    }
-    updatedLayer["codelistIds"] = codelistIds;
+    updatedLayer.colorCodelistIds = updatedLayer.color;
+    updatedLayer.debrisCodelistIds = updatedLayer.debris;
+    updatedLayer.organicComponentCodelistIds = updatedLayer.organic_component;
+    updatedLayer.grainAngularityCodelistIds = updatedLayer.grain_granularity;
+    updatedLayer.grainShapeCodelistIds = updatedLayer.grain_shape;
+    updatedLayer.uscs3CodelistIds = updatedLayer.uscs_3;
 
     updateLayer(updatedLayer).then(response => {
       mapResponseToLayer(response);

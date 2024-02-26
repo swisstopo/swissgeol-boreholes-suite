@@ -255,23 +255,111 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     /// </summary>
     public Codelist? LithologyTopBedrock { get; set; }
 
+    /// <summary>
+    /// Gets or sets the original lithology of the <see cref="Layer"/>.
+    /// </summary>
     [Column("original_lithology")]
     public string? OriginalLithology { get; set; }
 
     /// <summary>
-    /// Gets or sets the code list ids of the <see cref="Layer"/>'s many to many code list relations.
-    /// </summary>
-    [NotMapped]
-    public ICollection<int>? CodelistIds { get; set; } = new List<int>();
-
-    /// <summary>
-    /// Gets the <see cref="Codelist"/>s used by the <see cref="Layer"/>.
-    /// </summary>
-    public ICollection<Codelist>? Codelists { get; }
-
-    /// <summary>
-    /// Gets the<see cref= "LayerCodelist"/> join table entities.
+    /// Gets or sets the <see cref="LayerColorCode"/> join table entities.
     /// </summary>
     [JsonIgnore]
-    public IList<LayerCodelist>? LayerCodelists { get; set; }
+    public IList<LayerColorCode>? LayerColorCodes { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="LayerDebrisCode"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public IList<LayerDebrisCode>? LayerDebrisCodes { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="LayerGrainShapeCode"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public IList<LayerGrainShapeCode>? LayerGrainShapeCodes { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="LayerGrainAngularityCode"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public IList<LayerGrainAngularityCode>? LayerGrainAngularityCodes { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="LayerOrganicComponentCode"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public IList<LayerOrganicComponentCode>? LayerOrganicComponentCodes { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="LayerUscs3Code"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public IList<LayerUscs3Code>? LayerUscs3Codes { get; set; }
+
+    /// <summary>
+    /// Gets or sets the code list ids with schema name 'colour' of the <see cref="Layer"/>'s many to many code list relations.
+    /// </summary>
+    [NotMapped]
+    public ICollection<int>? ColorCodelistIds { get; set; } = new List<int>();
+
+    /// <summary>
+    /// Gets the <see cref="Codelist"/>s with schema name 'colour' used by the <see cref="Layer"/>.
+    /// </summary>
+    public ICollection<Codelist>? ColorCodelists { get; }
+
+    /// <summary>
+    /// Gets or sets the code list ids with schema name 'debris' of the <see cref="Layer"/>'s many to many code list relations.
+    /// </summary>
+    [NotMapped]
+    public ICollection<int>? DebrisCodelistIds { get; set; } = new List<int>();
+
+    /// <summary>
+    /// Gets the <see cref="Codelist"/>s with schema name 'debris' used by the <see cref="Layer"/>.
+    /// </summary>
+    public ICollection<Codelist>? DebrisCodelists { get; set; }
+
+    /// <summary>
+    /// Gets or sets the code list ids with schema name 'grain_shape' of the <see cref="Layer"/>'s many to many code list relations.
+    /// </summary>
+    [NotMapped]
+    public ICollection<int>? GrainShapeCodelistIds { get; set; } = new List<int>();
+
+    /// <summary>
+    /// Gets the <see cref="Codelist"/>s with schema name 'grain_shape' used by the <see cref="Layer"/>.
+    /// </summary>
+    public ICollection<Codelist>? GrainShapeCodelists { get; set; }
+
+    /// <summary>
+    /// Gets or sets the code list ids with schema name 'grain_angularity' of the <see cref="Layer"/>'s many to many code list relations.
+    /// </summary>
+    [NotMapped]
+    public ICollection<int>? GrainAngularityCodelistIds { get; set; } = new List<int>();
+
+    /// <summary>
+    /// Gets the <see cref="Codelist"/>s with schema name 'grain_angularity' used by the <see cref="Layer"/>.
+    /// </summary>
+    public ICollection<Codelist>? GrainAngularityCodelists { get; set; }
+
+    /// <summary>
+    /// Gets or sets the code list ids with schema name 'organic_components' of the <see cref="Layer"/>'s many to many code list relations.
+    /// </summary>
+    [NotMapped]
+    public ICollection<int>? OrganicComponentCodelistIds { get; set; } = new List<int>();
+
+    /// <summary>
+    /// Gets the <see cref="Codelist"/>s with schema name 'organic_components' used by the <see cref="Layer"/>.
+    /// </summary>
+    public ICollection<Codelist>? OrganicComponentCodelists { get; set; }
+
+    /// <summary>
+    /// Gets or sets the code list ids with schema name 'uscs3' of the <see cref="Layer"/>'s many to many code list relations.
+    /// </summary>
+    [NotMapped]
+    public ICollection<int>? Uscs3CodelistIds { get; set; } = new List<int>();
+
+    /// <summary>
+    /// Gets the <see cref="Codelist"/>s with schema name 'uscs3' used by the <see cref="Layer"/>.
+    /// </summary>
+    public ICollection<Codelist>? Uscs3Codelists { get; set; }
 }

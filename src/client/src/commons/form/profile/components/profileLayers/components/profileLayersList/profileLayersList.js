@@ -102,12 +102,7 @@ const ProfileLayersList = props => {
     const lithology = item?.lithology?.[i18n.language] ?? null;
     const uscs1 = item?.uscs1?.[i18n.language] ?? null;
     const grainSize1 = item?.grainSize1?.[i18n.language] ?? null;
-    let color = [];
-    item?.codelists
-      .filter(c => c.schema === "colour")
-      .forEach(element => {
-        color.push(element[i18n.language]);
-      });
+    let color = item?.colorCodelists?.map(c => c[i18n.language]) ?? [];
     const strings = [lithology, uscs1, grainSize1, color];
 
     return strings
@@ -120,41 +115,14 @@ const ProfileLayersList = props => {
     const uscs2 = item?.uscs2?.[i18n.language] ?? null;
     const grainSize2 = item?.grainSize2?.[i18n.language] ?? null;
 
-    let uscs3 = [];
-    item?.codelists
-      .filter(c => c.schema === "uscs_type")
-      .forEach(element => {
-        uscs3.push(element[i18n.language]);
-      });
-
-    let grainshape = [];
-    item?.codelists
-      .filter(c => c.schema === "grain_shape")
-      .forEach(element => {
-        grainshape.push(element[i18n.language]);
-      });
-
-    let angularity = [];
-    item?.codelists
-      .filter(c => c.schema === "grain_angularity")
-      .forEach(element => {
-        angularity.push(element[i18n.language]);
-      });
-
-    let organicCompounds = [];
-    item?.codelists
-      .filter(c => c.schema === "organic_components")
-      .forEach(element => {
-        organicCompounds.push(element[i18n.language]);
-      });
-
-    let debris = [];
-    item?.codelists
-      .filter(c => c.schema === "debris")
-      .forEach(element => {
-        debris.push(element[i18n.language]);
-      });
-
+    let uscs3 = item?.uscs3Codelists?.map(c => c[i18n.language]) ?? [];
+    let grainshape =
+      item?.grainShapeCodelists?.map(c => c[i18n.language]) ?? [];
+    let angularity =
+      item?.grainAngularityCodelists?.map(c => c[i18n.language]) ?? [];
+    let organicComponents =
+      item?.organicComponentCodelists?.map(c => c[i18n.language]) ?? [];
+    let debris = item?.debrisCodelists?.map(c => c[i18n.language]) ?? [];
     const striae = item?.isStriae ? t("striae") : null;
 
     const consistance = item?.consistance?.[i18n.language] ?? null;
@@ -171,7 +139,7 @@ const ProfileLayersList = props => {
       uscs3,
       grainshape,
       angularity,
-      organicCompounds,
+      organicComponents,
       debris,
       striae,
       consistance,
