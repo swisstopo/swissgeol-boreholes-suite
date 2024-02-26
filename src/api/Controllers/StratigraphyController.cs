@@ -260,6 +260,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
                 return Problem("The borehole is locked by another user or you are missing permissions.");
             }
 
+            entity.Date = entity.Date != null ? DateTime.SpecifyKind(entity.Date.Value, DateTimeKind.Utc) : null;
             var editResult = await base.EditAsync(entity).ConfigureAwait(false);
             if (editResult.Result is not OkObjectResult) return editResult;
 
