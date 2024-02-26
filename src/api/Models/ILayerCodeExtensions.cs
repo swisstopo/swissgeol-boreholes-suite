@@ -3,7 +3,7 @@
 /// <summary>
 /// Provides extension methods for the ILayerCode interface.
 /// </summary>
-public static class ILayerCodeExtensions
+public static class LayerCodeExtensions
 {
     /// <summary>
     /// Resets the LayerId of each ILayerCode in the provided collection to 0.
