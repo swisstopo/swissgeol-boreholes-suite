@@ -1,6 +1,5 @@
 ﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -137,14 +136,7 @@ public class LayerControllerTest
             Uscs3CodelistIds = new List<int> { 23101017, 23101018, 23101001 },
         };
 
-        var layerToEdit = context.Layers
-            .Include(c => c.Uscs3Codelists)
-            .Include(c => c.ColorCodelists)
-            .Include(c => c.DebrisCodelists)
-            .Include(c => c.GrainShapeCodelists)
-            .Include(c => c.GrainAngularityCodelists)
-            .Include(c => c.OrganicComponentCodelists)
-            .Single(c => c.Id == id);
+        var layerToEdit = GetLayersWithIncludes(context.Layers).Single(c => c.Id == id);
         Assert.AreEqual(0, layerToEdit.Uscs3Codelists.Count);
         Assert.AreEqual(0, layerToEdit.ColorCodelists.Count);
         Assert.AreEqual(1, layerToEdit.DebrisCodelists.Count);
@@ -311,14 +303,7 @@ public class LayerControllerTest
         var response = await controller.CreateAsync(layerToAdd);
         var okResult = response.Result as OkObjectResult;
 
-        var addedLayer = context.Layers
-            .Include(l => l.ColorCodelists)
-            .Include(l => l.DebrisCodelists)
-            .Include(l => l.GrainShapeCodelists)
-            .Include(l => l.GrainAngularityCodelists)
-            .Include(l => l.OrganicComponentCodelists)
-            .Include(l => l.Uscs3Codelists)
-            .Single(c => c.Id == layerToAdd.Id);
+        var addedLayer = GetLayersWithIncludes(context.Layers).Single(c => c.Id == layerToAdd.Id);
 
         Assert.AreEqual(layerToAdd.AlterationId, addedLayer.AlterationId);
         Assert.AreEqual(layerToAdd.CohesionId, addedLayer.CohesionId);

@@ -1,7 +1,6 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -94,13 +93,13 @@ public class BoreholeControllerTest
 
     private Borehole GetBorehole(int id)
     {
-        return GetBoreholeWithIncludes(context.Boreholes).Single(b => b.Id == id);
+        return GetBoreholesWithIncludes(context.Boreholes).Single(b => b.Id == id);
     }
 
     // Get the id of a borehole with certain conditions.
     private int GetBoreholeIdToCopy()
     {
-        var borehole = GetBoreholeWithIncludes(context.Boreholes)
+        var borehole = GetBoreholesWithIncludes(context.Boreholes)
             .Where(b =>
                 b.Stratigraphies.First().Layers != null &&
                 b.Stratigraphies.First().Layers.Any(x => x.LayerColorCodes != null && x.LayerColorCodes.Any()) &&
@@ -118,29 +117,6 @@ public class BoreholeControllerTest
         Assert.IsNotNull(borehole != null, "Precondition: No borehole for conditions found.");
 
         return borehole.Id;
-    }
-
-    private IQueryable<Borehole> GetBoreholeWithIncludes(IQueryable<Borehole> query)
-    {
-        return query
-            .Include(b => b.BoreholeFiles)
-            .Include(b => b.Files)
-            .Include(b => b.Workflows)
-            .Include(b => b.Workgroup)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainAngularityCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithologicalDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.LithostratigraphyLayers)
-            .Include(b => b.CreatedBy)
-            .Include(b => b.UpdatedBy)
-            .Include(b => b.LockedBy)
-            .Include(b => b.Type);
     }
 
     [TestMethod]

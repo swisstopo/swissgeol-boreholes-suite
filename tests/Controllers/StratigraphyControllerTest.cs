@@ -259,10 +259,7 @@ public class StratigraphyControllerTest
     [TestMethod]
     public async Task Create()
     {
-        var boreholeWithoutStratigraphy = await context
-            .Boreholes
-            .Include(b => b.Stratigraphies)
-            .FirstAsync(b => !b.Stratigraphies.Any());
+        var boreholeWithoutStratigraphy = await GetBoreholesWithIncludes(context.Boreholes).FirstAsync(b => !b.Stratigraphies.Any());
 
         var stratigraphyToAdd = new Stratigraphy
         {
@@ -286,10 +283,7 @@ public class StratigraphyControllerTest
     [TestMethod]
     public async Task CreateAdditionalStratigraphyForExistingBorehole()
     {
-        var boreholeWithExistingStratigraphy = await context
-            .Boreholes
-            .Include(b => b.Stratigraphies)
-            .FirstAsync(b => b.Stratigraphies.Any());
+        var boreholeWithExistingStratigraphy = await GetBoreholesWithIncludes(context.Boreholes).FirstAsync(b => b.Stratigraphies.Any());
 
         var stratigraphyToAdd = new Stratigraphy
         {
@@ -428,10 +422,7 @@ public class StratigraphyControllerTest
     {
         // Precondition: Create two stratigraphies for the same borehole,
         // one of which is the main stratigraphy.
-        var boreholeWithoutStratigraphy = await context
-            .Boreholes
-            .Include(b => b.Stratigraphies)
-            .FirstAsync(b => !b.Stratigraphies.Any());
+        var boreholeWithoutStratigraphy = await GetBoreholesWithIncludes(context.Boreholes).FirstAsync(b => !b.Stratigraphies.Any());
 
         var firstStratigraphy = new Stratigraphy
         {

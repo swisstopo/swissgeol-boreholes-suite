@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using static BDMS.Helpers;
 
 namespace BDMS;
 
@@ -102,9 +103,7 @@ public class BoreholeLockServiceTest
     {
         bool LockedCondition(Borehole borehole) => lockedByAdmin ? borehole.LockedById == AdminUserId : borehole.LockedById != AdminUserId;
 
-        return context
-            .Boreholes
-            .Include(b => b.Workflows)
+        return GetBoreholesWithIncludes(context.Boreholes)
             .Where(b => b.Workflows.Any(w => w.UserId == AdminUserId))
             .AsEnumerable()
             .First(b => b.Locked.HasValue && LockedCondition(b));

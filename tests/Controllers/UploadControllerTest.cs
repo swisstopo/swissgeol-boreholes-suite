@@ -95,15 +95,7 @@ public class UploadControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes
-            .Include(b => b.BoreholeCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.ColorCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.DebrisCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.GrainAngularityCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.GrainShapeCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.OrganicComponentCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.Uscs3Codelists)
-            .ToList().Find(b => b.OriginalName == "Seth Patel");
+        var borehole = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Seth Patel");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Seth Patel", borehole.OriginalName);
 
@@ -174,14 +166,7 @@ public class UploadControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes
-            .Include(b => b.BoreholeCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.ColorCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.DebrisCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.GrainAngularityCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.GrainShapeCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.OrganicComponentCodelists)
-            .Include(b => b.Stratigraphies).ThenInclude(s => s.Layers).ThenInclude(lay => lay.Uscs3Codelists)
+        var borehole = GetBoreholesWithIncludes(context.Boreholes)
             .ToList().Find(b => b.OriginalName == "Seth Patel");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Seth Patel", borehole.OriginalName);
@@ -240,7 +225,7 @@ public class UploadControllerTest
         Assert.AreEqual(6, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).ToList().Find(b => b.OriginalName == "Unit_Test_6");
+        var borehole = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_6");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Unit_Test_6_a", borehole.AlternateName);
         Assert.AreEqual(null, borehole.IsPublic);
@@ -281,7 +266,7 @@ public class UploadControllerTest
         Assert.AreEqual(6, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Include(b => b.BoreholeCodelists).ToList().Find(b => b.OriginalName == "Unit_Test_2");
+        var borehole = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_2");
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual(null, borehole.AlternateName);
         Assert.AreEqual(null, borehole.IsPublic);
@@ -329,7 +314,7 @@ public class UploadControllerTest
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(1, okResult.Value);
 
-        var borehole = context.Boreholes.Include(b => b.BoreholeFiles).Single(b => b.OriginalName == "ACORNFLEA");
+        var borehole = GetBoreholesWithIncludes(context.Boreholes).Single(b => b.OriginalName == "ACORNFLEA");
         Assert.AreEqual(10, borehole.BoreholeFiles.Count);
     }
 
@@ -568,9 +553,7 @@ public class UploadControllerTest
         // Get latest borehole Ids
         var latestBoreholeId = context.Boreholes.OrderByDescending(b => b.Id).First().Id;
 
-        var borehole = context.Boreholes
-            .Include(b => b.BoreholeFiles)
-            .ThenInclude(bf => bf.File)
+        var borehole = GetBoreholesWithIncludes(context.Boreholes)
             .Single(b => b.Id == latestBoreholeId);
 
         Assert.AreEqual(borehole.BoreholeFiles.First().File.Name, firstAttachmentFileName);
