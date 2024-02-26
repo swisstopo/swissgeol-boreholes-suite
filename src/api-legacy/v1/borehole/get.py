@@ -41,7 +41,7 @@ class GetBorehole(Action):
                     ) t2
                 ) as creator,
                 {sql_lock}
-                kind_id_cli as kind,
+                kind_id_cli as borehole_type,
                 restriction_id_cli as restriction,
                 to_char(
                     restriction_until_bho,
