@@ -9,14 +9,14 @@ namespace BDMS.Models;
 public class LayerGrainShapeCode : ILayerCode
 {
     /// <inheritdoc/>
-    [Column("id_lay_fk")]
+    [Column("layer_id")]
     public int LayerId { get; set; }
 
     /// <inheritdoc/>
     public Layer Layer { get; set; }
 
     /// <inheritdoc/>
-    [Column("id_cli_fk")]
+    [Column("grain_shape_id")]
     public int CodelistId { get; set; }
 
     /// <inheritdoc/>

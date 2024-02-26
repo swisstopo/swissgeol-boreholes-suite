@@ -9,14 +9,14 @@ namespace BDMS.Models;
 public class LayerDebrisCode : ILayerCode
 {
     /// <inheritdoc/>
-    [Column("id_lay_fk")]
+    [Column("layer_id")]
     public int LayerId { get; set; }
 
     /// <inheritdoc/>
     public Layer Layer { get; set; }
-    [Column("id_cli_fk")]
 
     /// <inheritdoc/>
+    [Column("debris_id")]
     public int CodelistId { get; set; }
 
     /// <inheritdoc/>
