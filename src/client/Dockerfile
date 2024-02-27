@@ -1,7 +1,7 @@
 FROM cypress/included:13.6.0 AS development
 ARG VERSION
 ARG REVISION
-ENV REACT_APP_VERSION ${VERSION}+${REVISION}
+ENV VITE_APP_VERSION ${VERSION}+${REVISION}
 RUN apt-get -y update
 RUN apt-get -y install git vim curl htop python3 python3-pip
 RUN mkdir -p /app/src/client
@@ -21,7 +21,7 @@ ENTRYPOINT npm run start
 FROM node:20-buster-slim AS deploy
 ARG VERSION
 ARG REVISION
-ENV REACT_APP_VERSION ${VERSION}+${REVISION}
+ENV VITE_APP_VERSION ${VERSION}+${REVISION}
 RUN apt-get -y update
 RUN apt-get -y install git
 

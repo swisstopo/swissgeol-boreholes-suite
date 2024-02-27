@@ -353,7 +353,7 @@ class DomainTree extends React.Component {
                         marginLeft: "1em",
                         backgroundImage:
                           'url("' +
-                          process.env.PUBLIC_URL +
+                          import.meta.env.PUBLIC_URL +
                           "/img/lit/" +
                           domain.conf.image +
                           '")',
@@ -367,7 +367,7 @@ class DomainTree extends React.Component {
                   domain.conf !== null
                     ? domain.conf.hasOwnProperty("img")
                       ? 'url("' +
-                        process.env.PUBLIC_URL +
+                        import.meta.env.PUBLIC_URL +
                         "/img/lit/" +
                         domain.conf.img +
                         '")'

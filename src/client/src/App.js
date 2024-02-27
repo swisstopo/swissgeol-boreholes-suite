@@ -157,13 +157,13 @@ class App extends React.Component {
                   }}
                   exact={false}
                   key={0}
-                  path={process.env.PUBLIC_URL + "/editor"}
+                  path={import.meta.env.PUBLIC_URL + "/editor"}
                 />
                 <Route
                   render={props => <SettingCmp {...props} mode={mode} />}
                   exact={true}
                   key={1}
-                  path={process.env.PUBLIC_URL + "/setting/:id"}
+                  path={import.meta.env.PUBLIC_URL + "/setting/:id"}
                 />
                 <Route
                   render={props => {
@@ -171,13 +171,13 @@ class App extends React.Component {
                     return <HomeComponent {...props} />;
                   }}
                   key={2}
-                  path={process.env.PUBLIC_URL + "/"}
+                  path={import.meta.env.PUBLIC_URL + "/"}
                 />
                 <Route
                   component={r => (
                     <Redirect
                       to={{
-                        pathname: process.env.PUBLIC_URL + "/",
+                        pathname: import.meta.env.PUBLIC_URL + "/",
                       }}
                     />
                   )}

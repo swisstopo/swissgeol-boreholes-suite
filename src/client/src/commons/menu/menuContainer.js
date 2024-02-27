@@ -10,11 +10,11 @@ class MenuContainer extends React.Component {
       <MenuComponent
         handleModeChange={mode => {
           if (mode === "editor") {
-            history.push(`${process.env.PUBLIC_URL}/editor`);
+            history.push(`${import.meta.env.PUBLIC_URL}/editor`);
           } else if (mode === "viewer") {
-            history.push(process.env.PUBLIC_URL);
+            history.push(import.meta.env.PUBLIC_URL);
           } else if (mode.indexOf("setting") >= 0) {
-            history.push(`${process.env.PUBLIC_URL}/${mode}`);
+            history.push(`${import.meta.env.PUBLIC_URL}/${mode}`);
           }
         }}
         mode={(() => {

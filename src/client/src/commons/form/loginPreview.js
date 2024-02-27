@@ -27,7 +27,7 @@ class LoginPreview extends React.Component {
             }}>
             <img
               alt="Swiss Logo"
-              src={process.env.PUBLIC_URL + "/logo.svg"}
+              src={import.meta.env.PUBLIC_URL + "/logo.svg"}
               style={{
                 height: "100px",
               }}

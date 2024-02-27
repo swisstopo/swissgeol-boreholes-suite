@@ -73,7 +73,7 @@ jobs:
           wait-on-timeout: 120
           working-directory: ./src/client
         env:
-          REACT_APP_VERSION: 0.0.99+dev
+          VITE_APP_VERSION: 0.0.99+dev
           TZ: Europe/Zurich
           # Pass the GitHub token lets this action correctly
           # determine the unique run id necessary to re-run the checks

@@ -52,7 +52,7 @@ const Completion = props => {
 
   const updateHistory = selectedId => {
     var newLocation =
-      process.env.PUBLIC_URL +
+      import.meta.env.PUBLIC_URL +
       "/editor/" +
       boreholeId +
       "/completion/" +
@@ -104,7 +104,10 @@ const Completion = props => {
         var newCompletionList = state.displayed.slice(0, -1);
         if (newCompletionList.length === 0) {
           history.push(
-            process.env.PUBLIC_URL + "/editor/" + boreholeId + "/completion",
+            import.meta.env.PUBLIC_URL +
+              "/editor/" +
+              boreholeId +
+              "/completion",
           );
           resetState();
         } else {
@@ -155,7 +158,7 @@ const Completion = props => {
       var index = newCompletionList.length - 1;
       if (newCompletionList.length === 0) {
         history.push(
-          process.env.PUBLIC_URL + "/editor/" + boreholeId + "/completion",
+          import.meta.env.PUBLIC_URL + "/editor/" + boreholeId + "/completion",
         );
       } else {
         updateHistory(newCompletionList[index].id);
@@ -229,7 +232,7 @@ const Completion = props => {
     } else {
       resetState();
       history.push(
-        process.env.PUBLIC_URL + "/editor/" + boreholeId + "/completion",
+        import.meta.env.PUBLIC_URL + "/editor/" + boreholeId + "/completion",
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

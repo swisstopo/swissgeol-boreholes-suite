@@ -35,7 +35,7 @@ class MenuComponent extends React.Component {
         }}>
         <img
           alt="ch logo"
-          src={process.env.PUBLIC_URL + "/logo.svg"}
+          src={import.meta.env.PUBLIC_URL + "/logo.svg"}
           style={{
             height: "45px",
             width: "auto",
@@ -246,7 +246,9 @@ class MenuComponent extends React.Component {
                 </List.Content>
               </List.Item>
               <List.Item
-                onClick={() => window.open(`${process.env.PUBLIC_URL}/help`)}
+                onClick={() =>
+                  window.open(`${import.meta.env.PUBLIC_URL}/help`)
+                }
                 style={{
                   padding: "0.5em",
                 }}>
@@ -288,16 +290,16 @@ class MenuComponent extends React.Component {
                   <List.Description>
                     <TranslationText id="version" />
                     :&nbsp;
-                    {process.env.REACT_APP_VERSION}
+                    {import.meta.env.VITE_APP_VERSION}
                   </List.Description>
-                  {process.env.NODE_ENV !== "production" && (
+                  {import.meta.env.NODE_ENV !== "production" && (
                     <List.Description
                       style={{
                         color: "darkred",
                       }}>
                       <TranslationText id="header_environment_identifier" />
                       :&nbsp;
-                      {process.env.NODE_ENV}
+                      {import.meta.env.NODE_ENV}
                     </List.Description>
                   )}
                 </List.Content>

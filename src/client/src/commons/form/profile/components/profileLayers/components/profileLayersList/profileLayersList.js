@@ -174,7 +174,7 @@ const ProfileLayersList = props => {
           style={{
             backgroundImage: itemWithValidation?.pattern
               ? 'url("' +
-                process.env.PUBLIC_URL +
+                import.meta.env.PUBLIC_URL +
                 "/img/lit/" +
                 itemWithValidation?.pattern +
                 '")'

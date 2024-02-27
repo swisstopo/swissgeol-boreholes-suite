@@ -44,27 +44,27 @@ const SettingCmp = props => {
           <Switch>
             <Route
               component={ExplorerSettings}
-              path={process.env.PUBLIC_URL + "/setting/explorer"}
+              path={import.meta.env.PUBLIC_URL + "/setting/explorer"}
             />
             <Route
               component={EditorSettings}
-              path={process.env.PUBLIC_URL + "/setting/editor"}
+              path={import.meta.env.PUBLIC_URL + "/setting/editor"}
             />
             <Route
               component={AdminSettings}
-              path={process.env.PUBLIC_URL + "/setting/admin"}
+              path={import.meta.env.PUBLIC_URL + "/setting/admin"}
             />
             <Route
               component={TermSettings}
-              path={process.env.PUBLIC_URL + "/setting/term"}
+              path={import.meta.env.PUBLIC_URL + "/setting/term"}
             />
             <Route
               component={LoginScreen}
-              path={process.env.PUBLIC_URL + "/setting/login"}
+              path={import.meta.env.PUBLIC_URL + "/setting/login"}
             />
             <Route
               component={AboutSettings}
-              path={process.env.PUBLIC_URL + "/setting/about"}
+              path={import.meta.env.PUBLIC_URL + "/setting/about"}
             />
           </Switch>
         </div>

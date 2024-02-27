@@ -49,7 +49,7 @@ class MenuExplorer extends React.Component {
       <Switch>
         <Route
           exact
-          path={process.env.PUBLIC_URL + "/:id"}
+          path={import.meta.env.PUBLIC_URL + "/:id"}
           render={() => (
             <div
               style={{
@@ -59,7 +59,7 @@ class MenuExplorer extends React.Component {
                 fluid
                 icon
                 onClick={e => {
-                  history.push(process.env.PUBLIC_URL);
+                  history.push(import.meta.env.PUBLIC_URL);
                 }}
                 primary
                 data-cy="back-to-list-button">
@@ -117,7 +117,7 @@ class MenuExplorer extends React.Component {
         />
         <Route
           exact
-          path={process.env.PUBLIC_URL}
+          path={import.meta.env.PUBLIC_URL}
           render={() => [
             <div
               key="sb-em-1"

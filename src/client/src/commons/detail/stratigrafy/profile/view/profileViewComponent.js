@@ -74,7 +74,7 @@ const ProfileView = props => {
     if (domain !== undefined && domain.conf !== null) {
       const config = JSON.parse(domain.conf);
       return (
-        'url("' + process.env.PUBLIC_URL + "/img/lit/" + config.image + '")'
+        'url("' + import.meta.env.PUBLIC_URL + "/img/lit/" + config.image + '")'
       );
     } else {
       return null;

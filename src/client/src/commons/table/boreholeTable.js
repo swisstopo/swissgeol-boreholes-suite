@@ -108,7 +108,7 @@ class BoreholeTable extends TableComponent {
               <img
                 alt=""
                 src={
-                  process.env.PUBLIC_URL +
+                  import.meta.env.PUBLIC_URL +
                   "/img/" +
                   borehole_type.code +
                   "-" +
@@ -126,7 +126,7 @@ class BoreholeTable extends TableComponent {
             return (
               <img
                 alt=""
-                src={process.env.PUBLIC_URL + "/img/a-" + color + ".svg"}
+                src={import.meta.env.PUBLIC_URL + "/img/a-" + color + ".svg"}
                 style={{
                   height: "0.6em",
                   marginRight: "0.5em",

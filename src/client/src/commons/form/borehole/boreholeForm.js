@@ -288,7 +288,7 @@ class BoreholeForm extends React.Component {
         <Switch>
           <Route
             exact
-            path={process.env.PUBLIC_URL + "/editor/:id"}
+            path={import.meta.env.PUBLIC_URL + "/editor/:id"}
             render={() => (
               <div
                 style={{
@@ -328,7 +328,7 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={process.env.PUBLIC_URL + "/editor/:id/borehole"}
+            path={import.meta.env.PUBLIC_URL + "/editor/:id/borehole"}
             render={() => (
               <div
                 style={{
@@ -355,7 +355,7 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={process.env.PUBLIC_URL + "/editor/:id/stratigraphy"}
+            path={import.meta.env.PUBLIC_URL + "/editor/:id/stratigraphy"}
             render={() => (
               <Profile
                 id={parseInt(this.props.match.params.id, 10)}
@@ -366,7 +366,7 @@ class BoreholeForm extends React.Component {
           <Route
             exact
             path={
-              process.env.PUBLIC_URL +
+              import.meta.env.PUBLIC_URL +
               "/editor/:id/stratigraphy/chronostratigraphy"
             }
             render={() => (
@@ -379,7 +379,7 @@ class BoreholeForm extends React.Component {
           <Route
             exact
             path={
-              process.env.PUBLIC_URL +
+              import.meta.env.PUBLIC_URL +
               "/editor/:id/stratigraphy/lithostratigraphy"
             }
             render={() => (
@@ -391,7 +391,7 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={process.env.PUBLIC_URL + "/editor/:id/attachments"}
+            path={import.meta.env.PUBLIC_URL + "/editor/:id/attachments"}
             render={() => (
               <EditorBoreholeFilesTable
                 id={parseInt(this.props.match.params.id, 10)}
@@ -402,7 +402,8 @@ class BoreholeForm extends React.Component {
           <Route
             exact
             path={
-              process.env.PUBLIC_URL + "/editor/:id/hydrogeology/wateringress"
+              import.meta.env.PUBLIC_URL +
+              "/editor/:id/hydrogeology/wateringress"
             }
             render={() => (
               <WaterIngress
@@ -414,7 +415,7 @@ class BoreholeForm extends React.Component {
           <Route
             exact
             path={
-              process.env.PUBLIC_URL +
+              import.meta.env.PUBLIC_URL +
               "/editor/:id/hydrogeology/groundwaterlevelmeasurement"
             }
             render={() => (
@@ -427,7 +428,7 @@ class BoreholeForm extends React.Component {
           <Route
             exact
             path={
-              process.env.PUBLIC_URL +
+              import.meta.env.PUBLIC_URL +
               "/editor/:id/hydrogeology/fieldmeasurement"
             }
             render={() => (
@@ -439,7 +440,9 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={process.env.PUBLIC_URL + "/editor/:id/hydrogeology/hydrotest"}
+            path={
+              import.meta.env.PUBLIC_URL + "/editor/:id/hydrogeology/hydrotest"
+            }
             render={() => (
               <Hydrotest
                 isEditable={isEditable}
@@ -450,7 +453,7 @@ class BoreholeForm extends React.Component {
           <Route
             exact
             path={
-              process.env.PUBLIC_URL +
+              import.meta.env.PUBLIC_URL +
               "/editor/:id/hydrogeology/groundwaterlevelmeasurement"
             }
             render={() => (
@@ -462,13 +465,13 @@ class BoreholeForm extends React.Component {
           />
           <Route
             path={
-              process.env.PUBLIC_URL +
+              import.meta.env.PUBLIC_URL +
               "/editor/:boreholeId/completion/:completionId"
             }
             render={() => <Completion isEditable={isEditable} />}
           />
           <Route
-            path={process.env.PUBLIC_URL + "/editor/:boreholeId/completion"}
+            path={import.meta.env.PUBLIC_URL + "/editor/:boreholeId/completion"}
             render={() => <Completion isEditable={isEditable} />}
           />
         </Switch>

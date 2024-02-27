@@ -73,9 +73,9 @@ class HomeComponent extends React.Component {
           }}
           selected={id => {
             if (id === null) {
-              history.push(process.env.PUBLIC_URL);
+              history.push(import.meta.env.PUBLIC_URL);
             } else {
-              history.push(process.env.PUBLIC_URL + "/" + id);
+              history.push(import.meta.env.PUBLIC_URL + "/" + id);
             }
           }}
           zoomto={
@@ -156,9 +156,9 @@ class HomeComponent extends React.Component {
           }}
           onSelected={borehole => {
             if (borehole === null) {
-              history.push(process.env.PUBLIC_URL);
+              history.push(import.meta.env.PUBLIC_URL);
             } else {
-              history.push(process.env.PUBLIC_URL + "/" + borehole.id);
+              history.push(import.meta.env.PUBLIC_URL + "/" + borehole.id);
             }
           }}
           scrollPosition={this.state.tableScrollPosition}
@@ -213,7 +213,7 @@ class HomeComponent extends React.Component {
                     <Switch>
                       <Route
                         exact
-                        path={process.env.PUBLIC_URL + "/:id"}
+                        path={import.meta.env.PUBLIC_URL + "/:id"}
                         render={props => {
                           return (
                             <DetailsContainer
@@ -265,7 +265,7 @@ class HomeComponent extends React.Component {
                         }}>
                         <Switch>
                           <Route
-                            path={`${process.env.PUBLIC_URL}/:id?`}
+                            path={`${import.meta.env.PUBLIC_URL}/:id?`}
                             render={p => {
                               if (p.match.params.id === undefined)
                                 return this.getTable();
@@ -278,7 +278,7 @@ class HomeComponent extends React.Component {
                     <Switch>
                       <Route
                         exact
-                        path={process.env.PUBLIC_URL + "/:id"}
+                        path={import.meta.env.PUBLIC_URL + "/:id"}
                         render={props => {
                           return (
                             <DetailsContainer
@@ -289,7 +289,7 @@ class HomeComponent extends React.Component {
                       />
                       <Route
                         exact
-                        path={process.env.PUBLIC_URL}
+                        path={import.meta.env.PUBLIC_URL}
                         render={() => (
                           <div
                             style={{
@@ -333,7 +333,7 @@ class HomeComponent extends React.Component {
                       <Switch>
                         <Route
                           exact
-                          path={process.env.PUBLIC_URL + "/:id"}
+                          path={import.meta.env.PUBLIC_URL + "/:id"}
                           render={props => {
                             return (
                               <DetailsContainer
@@ -345,7 +345,7 @@ class HomeComponent extends React.Component {
 
                         <Route
                           exact
-                          path={`${process.env.PUBLIC_URL}/:id?`}
+                          path={`${import.meta.env.PUBLIC_URL}/:id?`}
                           render={p => {
                             if (p.match.params.id === undefined)
                               return this.getTable();
@@ -375,7 +375,7 @@ class HomeComponent extends React.Component {
                       }}>
                       <Switch>
                         <Route
-                          path={`${process.env.PUBLIC_URL}/:id?`}
+                          path={`${import.meta.env.PUBLIC_URL}/:id?`}
                           render={p => {
                             if (p.match.params.id === undefined)
                               return this.getTable();
@@ -394,7 +394,7 @@ class HomeComponent extends React.Component {
                       <Switch>
                         <Route
                           exact
-                          path={process.env.PUBLIC_URL + "/:id"}
+                          path={import.meta.env.PUBLIC_URL + "/:id"}
                           render={props => {
                             return (
                               <DetailsContainer
@@ -405,7 +405,7 @@ class HomeComponent extends React.Component {
                         />
                         <Route
                           exact
-                          path={process.env.PUBLIC_URL}
+                          path={import.meta.env.PUBLIC_URL}
                           render={() => this.getMap()}
                         />
                       </Switch>
@@ -432,7 +432,7 @@ class HomeComponent extends React.Component {
                       <Switch>
                         <Route
                           exact
-                          path={process.env.PUBLIC_URL + "/:id"}
+                          path={import.meta.env.PUBLIC_URL + "/:id"}
                           render={h => {
                             return (
                               <DetailsContainer
@@ -443,7 +443,7 @@ class HomeComponent extends React.Component {
                         />
                         <Route
                           exact
-                          path={process.env.PUBLIC_URL}
+                          path={import.meta.env.PUBLIC_URL}
                           render={() => this.getMap()}
                         />
                       </Switch>
@@ -457,7 +457,7 @@ class HomeComponent extends React.Component {
                       }}>
                       <Switch>
                         <Route
-                          path={`${process.env.PUBLIC_URL}/:id?`}
+                          path={`${import.meta.env.PUBLIC_URL}/:id?`}
                           render={p => {
                             if (p.match.params.id === undefined)
                               return this.getTable();
@@ -488,7 +488,7 @@ class HomeComponent extends React.Component {
                       <Switch>
                         <Route
                           exact
-                          path={process.env.PUBLIC_URL + "/:id"}
+                          path={import.meta.env.PUBLIC_URL + "/:id"}
                           render={props => {
                             return (
                               <DetailsContainer
@@ -500,7 +500,7 @@ class HomeComponent extends React.Component {
 
                         <Route
                           exact
-                          path={`${process.env.PUBLIC_URL}/:id?`}
+                          path={`${import.meta.env.PUBLIC_URL}/:id?`}
                           render={p => {
                             if (p.match.params.id === undefined)
                               return this.getTable();
