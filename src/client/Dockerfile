@@ -38,6 +38,6 @@ RUN npm run build
 # Generate license and copyright notice for Node.js packages
 RUN npx license-checker --json --production \
   --customPath licenseCustomFormat.json \
-  --out /app/build/license.json
+  --out /app/dist/license.json
 
 ENTRYPOINT ["node", "server.js"]

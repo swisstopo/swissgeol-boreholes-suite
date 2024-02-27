@@ -14,14 +14,14 @@ var limiter = RateLimit({
 // apply rate limiter to all requests
 app.use(limiter);
 
-app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(path.join(__dirname, "dist")));
 
 app.get("/help/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "help", "index.html"));
+  res.sendFile(path.join(__dirname, "dist", "help", "index.html"));
 });
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 app.listen(PORT, () => {
