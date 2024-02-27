@@ -27,8 +27,14 @@ module.exports = defineConfig({
       });
     },
   },
+  component: {
+    devServer: {
+      framework: "react",
+      bundler: "vite",
+    },
+  },
   defaultCommandTimeout: 10000,
   waitForAnimations: false,
   animationDistanceThreshold: 50,
-  retries: 3
+  retries: 3,
 });
