@@ -196,11 +196,7 @@ class DomainDropdown extends React.Component {
                       flex: "1 1 100%",
                       marginLeft: "1em",
                       backgroundImage:
-                        'url("' +
-                        import.meta.env.PUBLIC_URL +
-                        "/img/lit/" +
-                        domain.conf.image +
-                        '")',
+                        'url("' + "/img/lit/" + domain.conf.image + '")',
                     }}
                   />
                 ) : null}

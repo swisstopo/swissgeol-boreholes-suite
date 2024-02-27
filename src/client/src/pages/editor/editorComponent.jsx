@@ -56,15 +56,8 @@ class EditorComponent extends React.Component {
               width: "250px",
             }}>
             <Switch>
-              <Route
-                component={MenuEditorSearch}
-                exact
-                path={import.meta.env.PUBLIC_URL + "/editor"}
-              />
-              <Route
-                component={MenuEditorForm}
-                path={import.meta.env.PUBLIC_URL + "/editor/:id"}
-              />
+              <Route component={MenuEditorSearch} exact path={"/editor"} />
+              <Route component={MenuEditorForm} path={"/editor/:id"} />
             </Switch>
           </div>
 
@@ -78,7 +71,7 @@ class EditorComponent extends React.Component {
             <Switch>
               <Route
                 exact
-                path={import.meta.env.PUBLIC_URL + "/editor"}
+                path={"/editor"}
                 render={() => (
                   <div
                     style={{
@@ -197,7 +190,7 @@ class EditorComponent extends React.Component {
               />
               <Route
                 exact={false}
-                path={import.meta.env.PUBLIC_URL + "/editor/:id"}
+                path={"/editor/:id"}
                 render={() => (
                   <div
                     style={{
@@ -227,7 +220,7 @@ class EditorComponent extends React.Component {
                   <WorkflowForm id={parseInt(match.params.id, 10)} />
                 </div>
               )}
-              path={import.meta.env.PUBLIC_URL + "/editor/:id"}
+              path={"/editor/:id"}
             />
           </Switch>
         </div>
@@ -295,7 +288,7 @@ const mapDispatchToProps = (dispatch, ownprops) => {
         type: "CLEAR",
         path: "/borehole",
       });
-      ownprops.history.push(import.meta.env.PUBLIC_URL + "/editor/" + id);
+      ownprops.history.push("/editor/" + id);
     },
     multipleSelected: (selection, filter = null) => {
       dispatch({

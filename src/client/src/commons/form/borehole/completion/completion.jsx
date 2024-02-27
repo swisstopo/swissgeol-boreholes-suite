@@ -51,12 +51,7 @@ const Completion = props => {
   };
 
   const updateHistory = selectedId => {
-    var newLocation =
-      import.meta.env.PUBLIC_URL +
-      "/editor/" +
-      boreholeId +
-      "/completion/" +
-      selectedId;
+    var newLocation = "/editor/" + boreholeId + "/completion/" + selectedId;
     if (selectedId !== "new") {
       newLocation += "#casing";
     }
@@ -103,12 +98,7 @@ const Completion = props => {
       } else if (state.selected.id === 0) {
         var newCompletionList = state.displayed.slice(0, -1);
         if (newCompletionList.length === 0) {
-          history.push(
-            import.meta.env.PUBLIC_URL +
-              "/editor/" +
-              boreholeId +
-              "/completion",
-          );
+          history.push("/editor/" + boreholeId + "/completion");
           resetState();
         } else {
           updateHistory(newCompletionList[state.switchTabTo].id);
@@ -157,9 +147,7 @@ const Completion = props => {
       var newCompletionList = state.displayed.slice(0, -1);
       var index = newCompletionList.length - 1;
       if (newCompletionList.length === 0) {
-        history.push(
-          import.meta.env.PUBLIC_URL + "/editor/" + boreholeId + "/completion",
-        );
+        history.push("/editor/" + boreholeId + "/completion");
       } else {
         updateHistory(newCompletionList[index].id);
       }
@@ -231,9 +219,7 @@ const Completion = props => {
       }
     } else {
       resetState();
-      history.push(
-        import.meta.env.PUBLIC_URL + "/editor/" + boreholeId + "/completion",
-      );
+      history.push("/editor/" + boreholeId + "/completion");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completions, completionId]);

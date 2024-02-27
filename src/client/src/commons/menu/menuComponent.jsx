@@ -35,7 +35,7 @@ class MenuComponent extends React.Component {
         }}>
         <img
           alt="ch logo"
-          src={import.meta.env.PUBLIC_URL + "/logo.svg"}
+          src={"/logo.svg"}
           style={{
             height: "45px",
             width: "auto",
@@ -246,9 +246,7 @@ class MenuComponent extends React.Component {
                 </List.Content>
               </List.Item>
               <List.Item
-                onClick={() =>
-                  window.open(`${import.meta.env.PUBLIC_URL}/help`)
-                }
+                onClick={() => window.open(`/help`)}
                 style={{
                   padding: "0.5em",
                 }}>

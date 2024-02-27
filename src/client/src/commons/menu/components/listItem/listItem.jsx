@@ -8,9 +8,9 @@ const ListItem = props => {
     <Styled.Container>
       <List divided relaxed selection>
         <List.Item
-          active={location.pathname === import.meta.env.PUBLIC_URL + path}
+          active={location.pathname === path}
           onClick={() => {
-            history.push(import.meta.env.PUBLIC_URL + path);
+            history.push(path);
           }}
           style={{
             padding: "1em",

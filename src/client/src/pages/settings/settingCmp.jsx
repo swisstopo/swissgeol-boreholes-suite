@@ -42,30 +42,12 @@ const SettingCmp = props => {
             overflowY: "auto",
           }}>
           <Switch>
-            <Route
-              component={ExplorerSettings}
-              path={import.meta.env.PUBLIC_URL + "/setting/explorer"}
-            />
-            <Route
-              component={EditorSettings}
-              path={import.meta.env.PUBLIC_URL + "/setting/editor"}
-            />
-            <Route
-              component={AdminSettings}
-              path={import.meta.env.PUBLIC_URL + "/setting/admin"}
-            />
-            <Route
-              component={TermSettings}
-              path={import.meta.env.PUBLIC_URL + "/setting/term"}
-            />
-            <Route
-              component={LoginScreen}
-              path={import.meta.env.PUBLIC_URL + "/setting/login"}
-            />
-            <Route
-              component={AboutSettings}
-              path={import.meta.env.PUBLIC_URL + "/setting/about"}
-            />
+            <Route component={ExplorerSettings} path={"/setting/explorer"} />
+            <Route component={EditorSettings} path={"/setting/editor"} />
+            <Route component={AdminSettings} path={"/setting/admin"} />
+            <Route component={TermSettings} path={"/setting/term"} />
+            <Route component={LoginScreen} path={"/setting/login"} />
+            <Route component={AboutSettings} path={"/setting/about"} />
           </Switch>
         </div>
       </div>

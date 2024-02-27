@@ -242,7 +242,7 @@ class MenuEditorSearch extends React.Component {
           <Header as="h4" floated="right">
             <span>
               <a
-                href={`${import.meta.env.PUBLIC_URL}/help/import`}
+                href={`/help/import`}
                 rel="noopener noreferrer"
                 target="_BLANK">
                 <TranslationText id="header_help" />
@@ -492,11 +492,7 @@ class MenuEditorSearch extends React.Component {
                               modal: false,
                             },
                             () => {
-                              history.push(
-                                import.meta.env.PUBLIC_URL +
-                                  "/editor/" +
-                                  response.data.id,
-                              );
+                              history.push("/editor/" + response.data.id);
                             },
                           );
                         } else {

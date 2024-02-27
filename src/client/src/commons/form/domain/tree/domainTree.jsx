@@ -352,11 +352,7 @@ class DomainTree extends React.Component {
                         flex: "1 1 100%",
                         marginLeft: "1em",
                         backgroundImage:
-                          'url("' +
-                          import.meta.env.PUBLIC_URL +
-                          "/img/lit/" +
-                          domain.conf.image +
-                          '")',
+                          'url("' + "/img/lit/" + domain.conf.image + '")',
                       }}
                     />
                   ) : null}
@@ -366,11 +362,7 @@ class DomainTree extends React.Component {
                 backgroundImage:
                   domain.conf !== null
                     ? domain.conf.hasOwnProperty("img")
-                      ? 'url("' +
-                        import.meta.env.PUBLIC_URL +
-                        "/img/lit/" +
-                        domain.conf.img +
-                        '")'
+                      ? 'url("' + "/img/lit/" + domain.conf.img + '")'
                       : null
                     : null,
               }}

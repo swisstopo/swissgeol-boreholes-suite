@@ -173,11 +173,7 @@ const ProfileLayersList = props => {
           b={lithostratiColor[2]}
           style={{
             backgroundImage: itemWithValidation?.pattern
-              ? 'url("' +
-                import.meta.env.PUBLIC_URL +
-                "/img/lit/" +
-                itemWithValidation?.pattern +
-                '")'
+              ? 'url("' + "/img/lit/" + itemWithValidation?.pattern + '")'
               : "",
           }}
         />

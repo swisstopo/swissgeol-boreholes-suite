@@ -85,7 +85,7 @@ class MenuEditorForm extends React.Component {
                   delete: false,
                 },
                 () => {
-                  history.push(import.meta.env.PUBLIC_URL + "/editor");
+                  history.push("/editor");
                 },
               );
             }}
@@ -100,20 +100,14 @@ class MenuEditorForm extends React.Component {
             </List.Content>
           </List.Item>
           <List.Item
-            active={
-              location.pathname ===
-              import.meta.env.PUBLIC_URL + "/editor/" + match.params.id
-            }
+            active={location.pathname === "/editor/" + match.params.id}
             onClick={() => {
-              history.push(
-                import.meta.env.PUBLIC_URL + "/editor/" + match.params.id,
-              );
+              history.push("/editor/" + match.params.id);
             }}
             style={{
               padding: "1em",
               borderLeft:
-                location.pathname ===
-                import.meta.env.PUBLIC_URL + "/editor/" + match.params.id
+                location.pathname === "/editor/" + match.params.id
                   ? "0.25em solid rgb(237, 29, 36)"
                   : null,
             }}>
@@ -125,24 +119,14 @@ class MenuEditorForm extends React.Component {
             </List.Content>
           </List.Item>
           <List.Item
-            active={
-              location.pathname ===
-              `${import.meta.env.PUBLIC_URL}/editor/${match.params.id}/borehole`
-            }
+            active={location.pathname === `/editor/${match.params.id}/borehole`}
             onClick={() => {
-              history.push(
-                `${import.meta.env.PUBLIC_URL}/editor/${
-                  match.params.id
-                }/borehole`,
-              );
+              history.push(`/editor/${match.params.id}/borehole`);
             }}
             style={{
               padding: "1em",
               borderLeft:
-                location.pathname ===
-                `${import.meta.env.PUBLIC_URL}/editor/${
-                  match.params.id
-                }/borehole`
+                location.pathname === `/editor/${match.params.id}/borehole`
                   ? "0.25em solid rgb(237, 29, 36)"
                   : null,
             }}>
@@ -164,15 +148,9 @@ class MenuEditorForm extends React.Component {
               padding: "1em",
               display: "flex",
               borderLeft: [
-                `${import.meta.env.PUBLIC_URL}/editor/${
-                  match.params.id
-                }/stratigraphy`,
-                `${import.meta.env.PUBLIC_URL}/editor/${
-                  match.params.id
-                }/stratigraphy/chronostratigraphy`,
-                `${import.meta.env.PUBLIC_URL}/editor/${
-                  match.params.id
-                }/stratigraphy/lithostratigraphy`,
+                `/editor/${match.params.id}/stratigraphy`,
+                `/editor/${match.params.id}/stratigraphy/chronostratigraphy`,
+                `/editor/${match.params.id}/stratigraphy/lithostratigraphy`,
               ].includes(location.pathname)
                 ? "0.25em solid rgb(237, 29, 36)"
                 : null,
@@ -205,16 +183,10 @@ class MenuEditorForm extends React.Component {
               <List.Item
                 active={
                   location.pathname ===
-                  `${import.meta.env.PUBLIC_URL}/editor/${
-                    match.params.id
-                  }/stratigraphy`
+                  `/editor/${match.params.id}/stratigraphy`
                 }
                 onClick={() => {
-                  history.push(
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/stratigraphy`,
-                  );
+                  history.push(`/editor/${match.params.id}/stratigraphy`);
                 }}
                 style={{
                   padding: "1em",
@@ -222,9 +194,7 @@ class MenuEditorForm extends React.Component {
                   display: "flex",
                   borderLeft:
                     location.pathname ===
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/stratigraphy`
+                    `/editor/${match.params.id}/stratigraphy`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -242,15 +212,11 @@ class MenuEditorForm extends React.Component {
               <List.Item
                 active={
                   location.pathname ===
-                  `${import.meta.env.PUBLIC_URL}/editor/${
-                    match.params.id
-                  }/stratigraphy/chronostratigraphy`
+                  `/editor/${match.params.id}/stratigraphy/chronostratigraphy`
                 }
                 onClick={() => {
                   history.push(
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/stratigraphy/chronostratigraphy`,
+                    `/editor/${match.params.id}/stratigraphy/chronostratigraphy`,
                   );
                 }}
                 style={{
@@ -259,9 +225,7 @@ class MenuEditorForm extends React.Component {
                   display: "flex",
                   borderLeft:
                     location.pathname ===
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/stratigraphy/chronostratigraphy`
+                    `/editor/${match.params.id}/stratigraphy/chronostratigraphy`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -279,15 +243,11 @@ class MenuEditorForm extends React.Component {
               <List.Item
                 active={
                   location.pathname ===
-                  `${import.meta.env.PUBLIC_URL}/editor/${
-                    match.params.id
-                  }/stratigraphy/lithostratigraphy`
+                  `/editor/${match.params.id}/stratigraphy/lithostratigraphy`
                 }
                 onClick={() => {
                   history.push(
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/stratigraphy/lithostratigraphy`,
+                    `/editor/${match.params.id}/stratigraphy/lithostratigraphy`,
                   );
                 }}
                 style={{
@@ -296,9 +256,7 @@ class MenuEditorForm extends React.Component {
                   display: "flex",
                   borderLeft:
                     location.pathname ===
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/stratigraphy/lithostratigraphy`
+                    `/editor/${match.params.id}/stratigraphy/lithostratigraphy`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -325,16 +283,14 @@ class MenuEditorForm extends React.Component {
               padding: "1em",
               display: "flex",
               borderLeft: [
-                `${import.meta.env.PUBLIC_URL}/editor/${
-                  match.params.id
-                }/hydrogeology/watgeringress`,
+                `/editor/${match.params.id}/hydrogeology/watgeringress`,
               ].includes(location.pathname)
                 ? "0.25em solid rgb(237, 29, 36)"
                 : null,
             }}>
             <img
               alt="Hydrogeology"
-              src={import.meta.env.PUBLIC_URL + "/img/Hydrogeology.png"}
+              src={"/img/Hydrogeology.png"}
               style={{
                 height: "1.5em",
                 paddingRight: "1em",
@@ -364,15 +320,11 @@ class MenuEditorForm extends React.Component {
               <List.Item
                 active={
                   location.pathname ===
-                  `${import.meta.env.PUBLIC_URL}/editor/${
-                    match.params.id
-                  }/hydrogeology/wateringress`
+                  `/editor/${match.params.id}/hydrogeology/wateringress`
                 }
                 onClick={() => {
                   history.push(
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/hydrogeology/wateringress`,
+                    `/editor/${match.params.id}/hydrogeology/wateringress`,
                   );
                 }}
                 style={{
@@ -381,15 +333,13 @@ class MenuEditorForm extends React.Component {
                   display: "flex",
                   borderLeft:
                     location.pathname ===
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/hydrogeology/wateringress`
+                    `/editor/${match.params.id}/hydrogeology/wateringress`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
                 <img
                   alt="Water ingress"
-                  src={import.meta.env.PUBLIC_URL + "/img/Hydrogeology.png"}
+                  src={"/img/Hydrogeology.png"}
                   style={{
                     height: "1.5em",
                     paddingRight: "1em",
@@ -405,15 +355,11 @@ class MenuEditorForm extends React.Component {
               <List.Item
                 active={
                   location.pathname ===
-                  `${import.meta.env.PUBLIC_URL}/editor/${
-                    match.params.id
-                  }/hydrogeology/hydrotest`
+                  `/editor/${match.params.id}/hydrogeology/hydrotest`
                 }
                 onClick={() => {
                   history.push(
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/hydrogeology/hydrotest`,
+                    `/editor/${match.params.id}/hydrogeology/hydrotest`,
                   );
                 }}
                 style={{
@@ -422,15 +368,13 @@ class MenuEditorForm extends React.Component {
                   display: "flex",
                   borderLeft:
                     location.pathname ===
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/hydrogeology/hydrotest`
+                    `/editor/${match.params.id}/hydrogeology/hydrotest`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
                 <img
                   alt="Hydrotest"
-                  src={import.meta.env.PUBLIC_URL + "/img/Hydrogeology.png"}
+                  src={"/img/Hydrogeology.png"}
                   style={{
                     height: "21px",
                     paddingRight: "1em",
@@ -450,15 +394,11 @@ class MenuEditorForm extends React.Component {
               <List.Item
                 active={
                   location.pathname ===
-                  `${import.meta.env.PUBLIC_URL}/editor/${
-                    match.params.id
-                  }/hydrogeology/groundwaterlevelmeasurement`
+                  `/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`
                 }
                 onClick={() => {
                   history.push(
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/hydrogeology/groundwaterlevelmeasurement`,
+                    `/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`,
                   );
                 }}
                 style={{
@@ -467,15 +407,13 @@ class MenuEditorForm extends React.Component {
                   display: "flex",
                   borderLeft:
                     location.pathname ===
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/hydrogeology/groundwaterlevelmeasurement`
+                    `/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
                 <img
                   alt="Groundwater Level Measurement"
-                  src={import.meta.env.PUBLIC_URL + "/img/Hydrogeology.png"}
+                  src={"/img/Hydrogeology.png"}
                   style={{
                     height: "1.5em",
                     paddingRight: "1em",
@@ -496,15 +434,11 @@ class MenuEditorForm extends React.Component {
               <List.Item
                 active={
                   location.pathname ===
-                  `${import.meta.env.PUBLIC_URL}/editor/${
-                    match.params.id
-                  }/hydrogeology/fieldmeasurement`
+                  `/editor/${match.params.id}/hydrogeology/fieldmeasurement`
                 }
                 onClick={() => {
                   history.push(
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/hydrogeology/fieldmeasurement`,
+                    `/editor/${match.params.id}/hydrogeology/fieldmeasurement`,
                   );
                 }}
                 style={{
@@ -513,15 +447,13 @@ class MenuEditorForm extends React.Component {
                   display: "flex",
                   borderLeft:
                     location.pathname ===
-                    `${import.meta.env.PUBLIC_URL}/editor/${
-                      match.params.id
-                    }/hydrogeology/fieldmeasurement`
+                    `/editor/${match.params.id}/hydrogeology/fieldmeasurement`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
                 <img
                   alt="Field Measurement"
-                  src={import.meta.env.PUBLIC_URL + "/img/Hydrogeology.png"}
+                  src={"/img/Hydrogeology.png"}
                   style={{
                     height: "1.5em",
                     paddingRight: "1em",
@@ -538,39 +470,28 @@ class MenuEditorForm extends React.Component {
           )}
           <List.Item
             active={location.pathname.includes(
-              `${import.meta.env.PUBLIC_URL}/editor/${
-                match.params.id
-              }/completion`,
+              `/editor/${match.params.id}/completion`,
             )}
             onClick={() => {
-              history.push(
-                `${import.meta.env.PUBLIC_URL}/editor/${
-                  match.params.id
-                }/completion`,
-              );
+              history.push(`/editor/${match.params.id}/completion`);
             }}
             style={{
               padding: "1em",
               display: "flex",
               borderLeft: location.pathname.includes(
-                `${import.meta.env.PUBLIC_URL}/editor/${
-                  match.params.id
-                }/completion`,
+                `/editor/${match.params.id}/completion`,
               )
                 ? "0.25em solid rgb(237, 29, 36)"
                 : null,
             }}>
             <img
               alt="completion"
-              src={import.meta.env.PUBLIC_URL + "/img/Completion.png"}
+              src={"/img/Completion.png"}
               style={{
                 height: "1.5em",
                 paddingRight: "1em",
                 opacity:
-                  location.pathname ===
-                  `${import.meta.env.PUBLIC_URL}/editor/${
-                    match.params.id
-                  }/completion`
+                  location.pathname === `/editor/${match.params.id}/completion`
                     ? 1
                     : 0.5,
               }}
@@ -583,25 +504,15 @@ class MenuEditorForm extends React.Component {
           </List.Item>
           <List.Item
             active={
-              location.pathname ===
-              `${import.meta.env.PUBLIC_URL}/editor/${
-                match.params.id
-              }/attachments`
+              location.pathname === `/editor/${match.params.id}/attachments`
             }
             onClick={() => {
-              history.push(
-                `${import.meta.env.PUBLIC_URL}/editor/${
-                  match.params.id
-                }/attachments`,
-              );
+              history.push(`/editor/${match.params.id}/attachments`);
             }}
             style={{
               padding: "1em",
               borderLeft:
-                location.pathname ===
-                `${import.meta.env.PUBLIC_URL}/editor/${
-                  match.params.id
-                }/attachments`
+                location.pathname === `/editor/${match.params.id}/attachments`
                   ? "0.25em solid rgb(237, 29, 36)"
                   : null,
             }}>
@@ -949,7 +860,7 @@ class MenuEditorForm extends React.Component {
                     },
                     () => {
                       deleteBorehole(borehole.data.id).then(function () {
-                        history.push(import.meta.env.PUBLIC_URL + "/editor");
+                        history.push("/editor");
                       });
                     },
                   );

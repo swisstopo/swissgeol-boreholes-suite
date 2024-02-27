@@ -70,12 +70,7 @@ class DetailsComponent extends React.Component {
                         <img
                           alt=""
                           src={
-                            import.meta.env.PUBLIC_URL +
-                            "/img/" +
-                            borehole_type.code +
-                            "-" +
-                            color +
-                            ".svg"
+                            "/img/" + borehole_type.code + "-" + color + ".svg"
                           }
                           style={{
                             height: "0.75em",
@@ -87,12 +82,7 @@ class DetailsComponent extends React.Component {
                       return (
                         <img
                           alt=""
-                          src={
-                            import.meta.env.PUBLIC_URL +
-                            "/img/a-" +
-                            color +
-                            ".svg"
-                          }
+                          src={"/img/a-" + color + ".svg"}
                           style={{
                             height: "0.75em",
                             width: "auto",

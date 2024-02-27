@@ -27,7 +27,7 @@ export function getHeight(easting, northing) {
 
 export function downloadFile(path, params) {
   return new Promise((resolve, reject) => {
-    return axios(import.meta.env.PUBLIC_URL + path, {
+    return axios(path, {
       timeout: 120000,
       responseType: "blob",
       headers: getAuthorizationHeaders(),
@@ -58,7 +58,7 @@ export function downloadFilePost(path, action) {
     return axios(
       path.includes("http://") || path.includes("https://")
         ? path
-        : import.meta.env.PUBLIC_URL + "/api/v1" + path,
+        : "/api/v1" + path,
       {
         timeout: 120000,
         responseType: "blob",
@@ -102,7 +102,7 @@ export function fetch(path, action, method = "post", auth = null) {
     url:
       path.includes("http://") || path.includes("https://")
         ? path
-        : import.meta.env.PUBLIC_URL + "/api/v1" + path,
+        : "/api/v1" + path,
     headers: getAuthorizationHeaders(),
     timeout: 120000,
     method: method,

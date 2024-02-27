@@ -105,7 +105,7 @@ class DataLoader extends React.Component {
                 }}>
                 <img
                   alt="Swiss Logo"
-                  src={import.meta.env.PUBLIC_URL + "/logo.svg"}
+                  src={"/logo.svg"}
                   style={{
                     height: "70px",
                   }}
