@@ -89,7 +89,6 @@
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
       "prettier"
     ],
     "rules": {
