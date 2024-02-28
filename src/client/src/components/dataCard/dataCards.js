@@ -22,6 +22,7 @@ export const DataCards = props => {
     emptyLabel,
     renderInput,
     renderDisplay,
+    sortDisplayed,
   } = props;
   const { t } = useTranslation();
   const mounted = useRef(false);
@@ -127,46 +128,44 @@ export const DataCards = props => {
         </FullPageCentered>
       ) : displayed?.length > 0 ? (
         <DataCardContainer>
-          {displayed
-            .sort((a, b) => a.fromDepthM - b.fromDepthM)
-            .map((item, index) => {
-              const isSelected = selected?.id === item.id;
-              const isTemp = item.id === 0;
-              return (
-                <DataCardItem key={item.id} ref={dataRefs[index]}>
-                  <DataCard key={item.id}>
-                    {isEditable && isSelected
-                      ? renderInput({
-                          item: item,
-                          setSelected: setSelected,
-                          parentId: parentId,
-                          updateData: (item, data) => {
-                            updateData(item, data).then(() => {
-                              handleDataChange();
-                            });
-                          },
-                          addData: data => {
-                            addData(data).then(() => {
-                              handleDataChange();
-                            });
-                          },
-                        })
-                      : !isTemp &&
-                        renderDisplay({
-                          item: item,
-                          selected: selected,
-                          setSelected: setSelected,
-                          isEditable: isEditable,
-                          deleteData: id => {
-                            deleteData(id).then(() => {
-                              handleDataChange();
-                            });
-                          },
-                        })}
-                  </DataCard>
-                </DataCardItem>
-              );
-            })}
+          {displayed.sort(sortDisplayed).map((item, index) => {
+            const isSelected = selected?.id === item.id;
+            const isTemp = item.id === 0;
+            return (
+              <DataCardItem key={item.id} ref={dataRefs[index]}>
+                <DataCard key={item.id}>
+                  {isEditable && isSelected
+                    ? renderInput({
+                        item: item,
+                        setSelected: setSelected,
+                        parentId: parentId,
+                        updateData: (item, data) => {
+                          updateData(item, data).then(() => {
+                            handleDataChange();
+                          });
+                        },
+                        addData: data => {
+                          addData(data).then(() => {
+                            handleDataChange();
+                          });
+                        },
+                      })
+                    : !isTemp &&
+                      renderDisplay({
+                        item: item,
+                        selected: selected,
+                        setSelected: setSelected,
+                        isEditable: isEditable,
+                        deleteData: id => {
+                          deleteData(id).then(() => {
+                            handleDataChange();
+                          });
+                        },
+                      })}
+                </DataCard>
+              </DataCardItem>
+            );
+          })}
         </DataCardContainer>
       ) : (
         <FullPageCentered>

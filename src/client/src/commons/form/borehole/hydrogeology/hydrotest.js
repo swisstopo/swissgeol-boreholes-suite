@@ -22,6 +22,14 @@ const Hydrotest = ({ isEditable, boreholeId }) => {
       emptyLabel="msgHydrotestEmpty"
       renderInput={props => <HydrotestInput {...props} />}
       renderDisplay={props => <HydrotestDisplay {...props} />}
+      sortDisplayed={(a, b) => {
+        var minDiff = a.fromDepthM - b.fromDepthM;
+        if (minDiff !== 0) {
+          return minDiff;
+        } else {
+          return a.toDepthM - b.toDepthM;
+        }
+      }}
     />
   );
 };

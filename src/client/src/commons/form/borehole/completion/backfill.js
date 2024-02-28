@@ -22,6 +22,14 @@ const Backfill = ({ isEditable, completionId }) => {
       emptyLabel="msgFillingEmpty"
       renderInput={props => <BackfillInput {...props} />}
       renderDisplay={props => <BackfillDisplay {...props} />}
+      sortDisplayed={(a, b) => {
+        var minDiff = a.fromDepth - b.fromDepth;
+        if (minDiff !== 0) {
+          return minDiff;
+        } else {
+          return a.toDepth - b.toDepth;
+        }
+      }}
     />
   );
 };

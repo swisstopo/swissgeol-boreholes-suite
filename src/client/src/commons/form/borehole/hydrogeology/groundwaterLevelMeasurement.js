@@ -22,6 +22,14 @@ const GroundwaterLevelMeasurement = ({ isEditable, boreholeId }) => {
       emptyLabel="msgGroundwaterLevelMeasurementsEmpty"
       renderInput={props => <GroundwaterLevelMeasurementInput {...props} />}
       renderDisplay={props => <GroundwaterLevelMeasurementDisplay {...props} />}
+      sortDisplayed={(a, b) => {
+        var minDiff = a.fromDepthM - b.fromDepthM;
+        if (minDiff !== 0) {
+          return minDiff;
+        } else {
+          return a.toDepthM - b.toDepthM;
+        }
+      }}
     />
   );
 };

@@ -22,6 +22,14 @@ const FieldMeasurement = ({ isEditable, boreholeId }) => {
       emptyLabel="msgFieldMeasurementsEmpty"
       renderInput={props => <FieldMeasurementInput {...props} />}
       renderDisplay={props => <FieldMeasurementDisplay {...props} />}
+      sortDisplayed={(a, b) => {
+        var minDiff = a.fromDepthM - b.fromDepthM;
+        if (minDiff !== 0) {
+          return minDiff;
+        } else {
+          return a.toDepthM - b.toDepthM;
+        }
+      }}
     />
   );
 };

@@ -22,6 +22,14 @@ const Instrumentation = ({ isEditable, completionId }) => {
       emptyLabel="msgInstrumentsEmpty"
       renderInput={props => <InstrumentationInput {...props} />}
       renderDisplay={props => <InstrumentationDisplay {...props} />}
+      sortDisplayed={(a, b) => {
+        var minDiff = a.fromDepth - b.fromDepth;
+        if (minDiff !== 0) {
+          return minDiff;
+        } else {
+          return a.toDepth - b.toDepth;
+        }
+      }}
     />
   );
 };

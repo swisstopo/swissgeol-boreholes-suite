@@ -22,6 +22,14 @@ const WaterIngress = ({ isEditable, boreholeId }) => {
       emptyLabel="msgWateringressesEmpty"
       renderInput={props => <WaterIngressInput {...props} />}
       renderDisplay={props => <WaterIngressDisplay {...props} />}
+      sortDisplayed={(a, b) => {
+        var minDiff = a.fromDepthM - b.fromDepthM;
+        if (minDiff !== 0) {
+          return minDiff;
+        } else {
+          return a.toDepthM - b.toDepthM;
+        }
+      }}
     />
   );
 };
