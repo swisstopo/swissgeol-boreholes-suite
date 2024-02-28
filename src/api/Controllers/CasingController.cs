@@ -27,9 +27,6 @@ public class CasingController : BdmsControllerBase<Casing>
     {
         var casings = Context.Casings
             .Include(c => c.CasingElements)
-                .ThenInclude(e => e.Material)
-            .Include(c => c.CasingElements)
-                .ThenInclude(e => e.Kind)
             .Include(c => c.Completion)
             .AsNoTracking();
 
@@ -54,9 +51,6 @@ public class CasingController : BdmsControllerBase<Casing>
     {
         var casing = await Context.Casings
             .Include(c => c.CasingElements)
-                .ThenInclude(e => e.Material)
-            .Include(c => c.CasingElements)
-                .ThenInclude(e => e.Kind)
             .AsNoTracking()
             .SingleOrDefaultAsync(i => i.Id == id)
             .ConfigureAwait(false);
@@ -114,7 +108,8 @@ public class CasingController : BdmsControllerBase<Casing>
             Context.Entry(existingEntity).CurrentValues.SetValues(entity);
             existingEntity.CasingElements = entity.CasingElements;
 
-            return await base.EditAsync(entity).ConfigureAwait(false);
+            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            return Ok(entity);
         }
         catch (Exception ex)
         {
