@@ -59,7 +59,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     // create groundwater level measurement
     addItem("addGroundwaterLevelMeasurement");
-    cy.wait("@groundwaterlevelmeasurement_GET");
+    cy.wait("@casing_GET");
 
     setSelect("kindId", 2);
     setSelect("reliabilityId", 1);

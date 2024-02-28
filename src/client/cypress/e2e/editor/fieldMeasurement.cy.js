@@ -57,7 +57,7 @@ describe("Tests for the field measurement editor.", () => {
 
     // create field measurement
     addItem("addFieldmeasurement");
-    cy.wait("@fieldmeasurement_GET");
+    cy.wait("@casing_GET");
 
     setSelect("reliabilityId", 1);
     setInput("startTime", "2012-11-14T12:06");
