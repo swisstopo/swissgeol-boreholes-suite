@@ -127,8 +127,5 @@ class AboutSettings extends React.Component {
   }
 }
 
-AboutSettings.defaultProps = {
-  license: [],
-};
-
-export default withTranslation(["common"])(AboutSettings);
+const AboutSettingsWithTranslation = withTranslation(["common"])(AboutSettings);
+export default AboutSettingsWithTranslation;

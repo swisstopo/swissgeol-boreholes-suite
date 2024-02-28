@@ -296,4 +296,8 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common", "messages"])(LoginScreen));
+const ConnectedLoginScreen = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslation(["common", "messages"])(LoginScreen));
+export default ConnectedLoginScreen;

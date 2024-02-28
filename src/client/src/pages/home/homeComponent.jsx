@@ -551,4 +551,7 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(HomeComponent)));
+const ConnectedHomeComponent = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(HomeComponent)),
+);
+export default ConnectedHomeComponent;

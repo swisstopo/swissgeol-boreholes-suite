@@ -99,4 +99,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(DomainText));
+const ConnectedDomainText = connect(mapStateToProps, mapDispatchToProps)(withTranslation()(DomainText));
+export default ConnectedDomainText;

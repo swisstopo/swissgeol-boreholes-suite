@@ -463,4 +463,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MultipleForm));
+const ConnectedMultipleForm = connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MultipleForm));
+export default ConnectedMultipleForm;

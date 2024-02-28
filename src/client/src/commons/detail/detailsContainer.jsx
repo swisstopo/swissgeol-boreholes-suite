@@ -82,4 +82,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DetailsContainer);
+const ConnectedDetailsContainer = connect(mapStateToProps, mapDispatchToProps)(DetailsContainer);
+export default ConnectedDetailsContainer;

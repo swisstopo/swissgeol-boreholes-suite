@@ -87,4 +87,7 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MenuSettings)));
+const ConnectedMenuSettings = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MenuSettings)),
+);
+export default ConnectedMenuSettings;

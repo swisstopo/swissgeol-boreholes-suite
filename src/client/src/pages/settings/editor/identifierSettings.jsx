@@ -293,4 +293,8 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(IdentifierSettings));
+const ConnectedIdentifierSettings = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslation(["common"])(IdentifierSettings));
+export default ConnectedIdentifierSettings;

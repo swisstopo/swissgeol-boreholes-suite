@@ -31,4 +31,5 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, null)(withTranslation()(CommentArea));
+const ConnectedCommentArea = connect(mapStateToProps, null)(withTranslation()(CommentArea));
+export default ConnectedCommentArea;

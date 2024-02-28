@@ -16,7 +16,7 @@ const getMax = obj => {
  * @param {Number} max The upper boundary
  * @returns A number between min and max
  */
-export const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
 export class NavState {
   #maxContent;

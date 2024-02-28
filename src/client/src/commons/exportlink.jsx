@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 
 import { Icon } from "semantic-ui-react";
@@ -59,16 +58,5 @@ class ExportLink extends React.Component {
   }
 }
 
-ExportLink.propTypes = {
-  i18n: PropTypes.shape({
-    language: PropTypes.string,
-  }),
-  id: PropTypes.array,
-  style: PropTypes.object,
-};
-
-ExportLink.defaultProps = {
-  id: [],
-};
-
-export default withTranslation()(ExportLink);
+const TranslatedExportLink = withTranslation()(ExportLink);
+export default TranslatedExportLink;

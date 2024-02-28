@@ -444,4 +444,7 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(BoreholeForm)));
+const ConnectedBoreholeForm = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(BoreholeForm)),
+);
+export default ConnectedBoreholeForm;

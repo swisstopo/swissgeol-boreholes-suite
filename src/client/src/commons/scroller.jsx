@@ -75,4 +75,6 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, null)(Scroller);
+const ConnectedScroller = connect(mapStateToProps, null)(Scroller);
+
+export default ConnectedScroller;

@@ -339,4 +339,5 @@ const HydrotestInput = props => {
   );
 };
 
-export default React.memo(HydrotestInput);
+const MemoizedHydrotestInput = React.memo(HydrotestInput);
+export default MemoizedHydrotestInput;

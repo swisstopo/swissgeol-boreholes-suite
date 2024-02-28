@@ -813,4 +813,8 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MenuEditorForm)));
+const ConnectedMenuEditorForm = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MenuEditorForm)),
+);
+
+export default ConnectedMenuEditorForm;

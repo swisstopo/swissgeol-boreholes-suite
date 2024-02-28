@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import { withAuth } from "react-oidc-context";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
@@ -332,10 +331,8 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-MenuComponent.propTypes = {
-  handleModeChange: PropTypes.func,
-  mode: PropTypes.string,
-  user: PropTypes.object,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(withAuth(withTranslation(["common"])(MenuComponent)));
+const ConnectedMenuComponent = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withAuth(withTranslation(["common"])(MenuComponent)));
+export default ConnectedMenuComponent;

@@ -20,4 +20,5 @@ const Backfill = ({ isEditable, completionId }) => {
     />
   );
 };
-export default React.memo(Backfill);
+const MemoizedBackfill = React.memo(Backfill);
+export default MemoizedBackfill;

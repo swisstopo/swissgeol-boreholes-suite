@@ -83,4 +83,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(StatusFilter));
+const ConnectedStatusFilter = connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(StatusFilter));
+export default ConnectedStatusFilter;

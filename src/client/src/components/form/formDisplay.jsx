@@ -1,12 +1,6 @@
 import { Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-
-export const FormDisplayType = {
-  Date: "date",
-  DateTime: "datetime",
-  Boolean: "boolean",
-  Domain: "domain",
-};
+import { FormDisplayType } from "./formDisplayType";
 
 export const FormDisplay = props => {
   const { label, value, type, sx } = props;

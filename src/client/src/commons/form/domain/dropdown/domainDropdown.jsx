@@ -267,4 +267,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(DomainDropdown));
+const ConnectedDomainDropdown = connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(DomainDropdown));
+export default ConnectedDomainDropdown;

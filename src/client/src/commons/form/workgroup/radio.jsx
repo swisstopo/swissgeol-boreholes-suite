@@ -56,4 +56,6 @@ WorkgroupRadioGroup.defaultProps = {
   nameKey: "workgroup",
 };
 
-export default withTranslation(["common"])(WorkgroupRadioGroup);
+const TranslatedWorkgroupRadioGroup = withTranslation(["common"])(WorkgroupRadioGroup);
+
+export default TranslatedWorkgroupRadioGroup;

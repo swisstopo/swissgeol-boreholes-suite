@@ -54,4 +54,5 @@ const SettingCmp = props => {
   );
 };
 
-export default withRouter(withTranslation("common")(SettingCmp));
+const SettingCmpWithTranslation = withRouter(withTranslation("common")(SettingCmp));
+export default SettingCmpWithTranslation;

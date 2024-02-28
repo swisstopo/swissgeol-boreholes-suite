@@ -333,4 +333,8 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(SearchEditorComponent));
+const ConnectedSearchEditorComponent = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslation(["common"])(SearchEditorComponent));
+export default ConnectedSearchEditorComponent;

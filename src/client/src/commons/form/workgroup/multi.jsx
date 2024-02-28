@@ -93,4 +93,6 @@ WorkgroupMultiselect.defaultProps = {
   nameKey: "workgroup",
 };
 
-export default withTranslation(["common"])(WorkgroupMultiselect);
+const TranslatedWorkgroupMultiselect = withTranslation(["common"])(WorkgroupMultiselect);
+
+export default TranslatedWorkgroupMultiselect;

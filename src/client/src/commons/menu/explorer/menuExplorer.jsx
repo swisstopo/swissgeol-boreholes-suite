@@ -211,4 +211,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MenuExplorer));
+const ConnectedMenuExplorer = withRouter(connect(mapStateToProps, mapDispatchToProps)(MenuExplorer));
+export default ConnectedMenuExplorer;

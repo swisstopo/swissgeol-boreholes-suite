@@ -507,4 +507,8 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(BoreholeEditorTable));
+const ConnectedBoreholeEditorTable = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslation(["common"])(BoreholeEditorTable));
+export default ConnectedBoreholeEditorTable;

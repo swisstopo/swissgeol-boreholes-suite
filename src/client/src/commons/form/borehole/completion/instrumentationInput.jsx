@@ -85,4 +85,5 @@ const InstrumentationInput = ({ item, setSelected, parentId, addData, updateData
   );
 };
 
-export default React.memo(InstrumentationInput);
+const MemoizedInstrumentationInput = React.memo(InstrumentationInput);
+export default MemoizedInstrumentationInput;

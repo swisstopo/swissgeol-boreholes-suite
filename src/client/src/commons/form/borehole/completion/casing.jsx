@@ -20,4 +20,5 @@ const Casing = ({ isEditable, completionId }) => {
     />
   );
 };
-export default React.memo(Casing);
+const MemoizedCasing = React.memo(Casing);
+export default MemoizedCasing;

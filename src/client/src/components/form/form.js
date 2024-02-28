@@ -19,4 +19,5 @@ export { FormInput } from "./formInput";
 export { FormSelect } from "./formSelect";
 export { FormMultiSelect } from "./formMultiSelect";
 export { FormCheckbox } from "./formCheckbox";
-export { FormDisplay, FormDisplayType } from "./formDisplay";
+export { FormDisplay } from "./formDisplay";
+export { FormDisplayType } from "./formDisplayType";

@@ -59,4 +59,5 @@ const TranslationKeys = prop => {
   );
 };
 
-export default withTranslation("common")(TranslationKeys);
+const TranslatedKeys = withTranslation("common")(TranslationKeys);
+export default TranslatedKeys;

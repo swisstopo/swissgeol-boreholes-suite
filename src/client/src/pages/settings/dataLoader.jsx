@@ -242,4 +242,8 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withAuth(withTranslation("common")(DataLoader)));
+const DataLoaderConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withAuth(withTranslation("common")(DataLoader)));
+export default DataLoaderConnected;

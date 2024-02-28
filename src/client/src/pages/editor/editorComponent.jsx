@@ -297,4 +297,5 @@ const mapDispatchToProps = (dispatch, ownprops) => {
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EditorComponent));
+const ConnectedEditorComponent = withRouter(connect(mapStateToProps, mapDispatchToProps)(EditorComponent));
+export default ConnectedEditorComponent;

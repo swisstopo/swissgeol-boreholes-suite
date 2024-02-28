@@ -580,4 +580,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(DomainTree));
+const ConnectedDomainTree = connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(DomainTree));
+export default ConnectedDomainTree;

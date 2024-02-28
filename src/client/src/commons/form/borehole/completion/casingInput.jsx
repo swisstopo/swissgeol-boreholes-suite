@@ -94,4 +94,5 @@ const CasingInput = ({ item, setSelected, parentId, addData, updateData }) => {
   );
 };
 
-export default React.memo(CasingInput);
+const MemoizedCasingInput = React.memo(CasingInput);
+export default MemoizedCasingInput;

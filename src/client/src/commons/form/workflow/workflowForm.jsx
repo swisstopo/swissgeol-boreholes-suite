@@ -699,4 +699,5 @@ const mapDispatchToProps = (dispatch, props) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(WorkflowForm));
+const ConnectedWorkflowForm = connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(WorkflowForm));
+export default ConnectedWorkflowForm;

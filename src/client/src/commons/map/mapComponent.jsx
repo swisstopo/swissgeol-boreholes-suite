@@ -912,4 +912,5 @@ MapComponent.defaultProps = {
   centerto: null,
 };
 
-export default withTranslation(["common"])(MapComponent);
+const TranslatedMapComponent = withTranslation(["common"])(MapComponent);
+export default TranslatedMapComponent;

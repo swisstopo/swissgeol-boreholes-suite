@@ -88,4 +88,6 @@ DateField.defaultProps = {
   isEditable: true,
 };
 
-export default withTranslation()(DateField);
+const TranslatedDateField = withTranslation()(DateField);
+
+export default TranslatedDateField;

@@ -327,4 +327,5 @@ const ProfileLayers = props => {
   );
 };
 
-export default withTranslation()(ProfileLayers);
+const TranslatedProfileLayers = withTranslation()(ProfileLayers);
+export default TranslatedProfileLayers;

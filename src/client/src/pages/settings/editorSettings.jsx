@@ -16,8 +16,6 @@ import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData";
 import { locationEditorData } from "./data/locationEditorData";
 import { registrationEditorData } from "./data/registrationEditorData";
 
-export const fields = [];
-
 class EditorSettings extends React.Component {
   constructor(props) {
     super(props);
@@ -291,4 +289,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(EditorSettings));
+const ConnectedEditorSettings = connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(EditorSettings));
+export default ConnectedEditorSettings;

@@ -129,4 +129,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(Feedback));
+const ConnectedFeedback = connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(Feedback));
+export default ConnectedFeedback;

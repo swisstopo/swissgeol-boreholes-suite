@@ -201,4 +201,5 @@ class EditorBoreholeFilesTable extends Component {
   }
 }
 
-export default withTranslation(["common"])(EditorBoreholeFilesTable);
+const TranslatedEditorBoreholeFilesTable = withTranslation(["common"])(EditorBoreholeFilesTable);
+export default TranslatedEditorBoreholeFilesTable;

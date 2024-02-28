@@ -61,4 +61,5 @@ const BackfillInput = ({ item, setSelected, parentId, addData, updateData }) => 
   );
 };
 
-export default React.memo(BackfillInput);
+const MemoizedBackfillInput = React.memo(BackfillInput);
+export default MemoizedBackfillInput;

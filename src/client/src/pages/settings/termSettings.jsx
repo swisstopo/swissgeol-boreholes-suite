@@ -257,4 +257,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(TermSettings));
+const ConnectedTermSettings = connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(TermSettings));
+export default ConnectedTermSettings;

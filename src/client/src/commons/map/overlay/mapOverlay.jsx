@@ -84,4 +84,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(MapOverlay);
+const ConnectedMapOverlay = connect(mapStateToProps, mapDispatchToProps)(MapOverlay);
+export default ConnectedMapOverlay;

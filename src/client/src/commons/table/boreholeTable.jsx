@@ -235,4 +235,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(BoreholeTable));
+const ConnectedBoreholeTable = connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(BoreholeTable));
+export default ConnectedBoreholeTable;

@@ -25,4 +25,5 @@ const Instrumentation = ({ isEditable, completionId }) => {
     />
   );
 };
-export default React.memo(Instrumentation);
+const MemoizedInstrumentation = React.memo(Instrumentation);
+export default MemoizedInstrumentation;

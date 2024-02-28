@@ -1128,4 +1128,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(AdminSettings));
+const ConnectedAdminSettings = connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(AdminSettings));
+export default ConnectedAdminSettings;

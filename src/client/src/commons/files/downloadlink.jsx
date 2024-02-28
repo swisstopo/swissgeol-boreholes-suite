@@ -62,4 +62,6 @@ DownloadLink.defaultProps = {
   onDownload: null,
 };
 
-export default withTranslation()(DownloadLink);
+const TranslatedDownloadLink = withTranslation()(DownloadLink);
+
+export default TranslatedDownloadLink;

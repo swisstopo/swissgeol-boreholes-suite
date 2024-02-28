@@ -42,4 +42,6 @@ MenuContainer.propTypes = {
   }).isRequired,
 };
 
-export default withRouter(MenuContainer);
+const MenuContainerWithRouter = withRouter(MenuContainer);
+
+export default MenuContainerWithRouter;

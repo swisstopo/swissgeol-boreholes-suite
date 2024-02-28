@@ -1,5 +1,6 @@
 import { StackFullWidth } from "../../../../components/baseComponents";
-import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
+import { FormDisplay } from "../../../../components/form/form";
+import { FormDisplayType } from "../../../../components/form/FormDisplayType";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import ObservationDisplay from "./observationDisplay";
 

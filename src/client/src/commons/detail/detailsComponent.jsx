@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import StratigraphiesComponent from "./stratigrafy/stratigraphiesComponent";
 import DomainText from "../form/domain/domainText";
 import DateText from "../form/dateText";
@@ -245,14 +244,5 @@ const mapStateToProps = state => {
   };
 };
 
-DetailsComponent.propTypes = {
-  detail: PropTypes.object,
-  domains: PropTypes.object,
-  developer: PropTypes.shape({
-    debug: PropTypes.bool,
-  }),
-  i18n: PropTypes.shape({
-    t: PropTypes.func,
-  }),
-};
-export default connect(mapStateToProps, null)(DetailsComponent);
+const ConnectedDetailsComponent = connect(mapStateToProps, null)(DetailsComponent);
+export default ConnectedDetailsComponent;

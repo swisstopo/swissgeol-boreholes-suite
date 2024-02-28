@@ -467,4 +467,8 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(ExplorerSettings));
+const ConnectedExplorerSettings = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslation("common")(ExplorerSettings));
+export default ConnectedExplorerSettings;

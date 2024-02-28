@@ -140,4 +140,6 @@ FilesTableComponent.defaultProps = {
   unlocked: false,
 };
 
-export default withTranslation("common")(FilesTableComponent);
+const NamedFilesTableComponent = withTranslation("common")(FilesTableComponent);
+
+export default NamedFilesTableComponent;
