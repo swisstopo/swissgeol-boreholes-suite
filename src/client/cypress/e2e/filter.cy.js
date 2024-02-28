@@ -151,7 +151,7 @@ describe("Search filter tests", () => {
     // input values
     cy.contains("Creation date")
       .next()
-      .find(".react-datepicker-wrapper input")
+      .find(".react-datepicker-wrapper .datepicker-input")
       .click();
 
     cy.get(".react-datepicker__year-select").select("2021");
@@ -164,7 +164,7 @@ describe("Search filter tests", () => {
       .parent()
       .parent()
       .next()
-      .find(".react-datepicker-wrapper input")
+      .find(".react-datepicker-wrapper .datepicker-input")
       .click();
 
     cy.get(".react-datepicker__year-select").select("2021");
