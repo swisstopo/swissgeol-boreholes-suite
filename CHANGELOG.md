@@ -30,6 +30,7 @@
 - Renamed various codelists to have more evocative names (e.g. `location_precision` instead of `qt_location`, `plasticity` instead of `mlpr101`, …)
 - Remove stratigraphy kind.
 - Split generic join table `layer_codelists` into 6 separate join tables for each many to many relationship between layer and codelist.
+- Prevent typing dates in profile and filter, only allow selecting date in datepicker.
 
 ### Fixed
 
