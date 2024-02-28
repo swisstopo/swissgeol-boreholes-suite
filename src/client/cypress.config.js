@@ -1,4 +1,5 @@
 const { defineConfig } = require("cypress");
+import vitePreprocessor from "cypress-vite";
 
 module.exports = defineConfig({
   projectId: "gv8yue",
@@ -9,6 +10,8 @@ module.exports = defineConfig({
     viewportHeight: 1080,
     supportFile: "cypress/support/e2e.js",
     setupNodeEvents(on, config) {
+      on("file:preprocessor", vitePreprocessor());
+
       on("task", {
         log(message) {
           console.log(message);
