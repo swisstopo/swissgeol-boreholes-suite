@@ -1,7 +1,4 @@
-import {
-  fetchStratigraphy,
-  updateStratigraphy,
-} from "../../../../../../api/fetchApiV2";
+import { fetchStratigraphy, updateStratigraphy } from "../../../../../../api/fetchApiV2";
 
 export const sendProfile = async (id, attribute, value) => {
   let success = false;

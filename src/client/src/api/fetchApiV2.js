@@ -11,21 +11,14 @@ import { getAuthorizationHeader } from "./authentication";
  * @returns The HTTP response as JSON.
  */
 
-export async function fetchApiV2(
-  url,
-  method,
-  payload = null,
-  isFileUpload = false,
-  isFileDownload = false,
-) {
+export async function fetchApiV2(url, method, payload = null, isFileUpload = false, isFileDownload = false) {
   const baseUrl = "/api/v2/";
   const authentication = store.getState().core_user.authentication;
   const body = isFileUpload ? payload : JSON.stringify(payload);
   let headers = {
     Authorization: getAuthorizationHeader(authentication),
   };
-  if (!isFileUpload && !isFileDownload)
-    headers = { ...headers, "Content-Type": "application/json" };
+  if (!isFileUpload && !isFileDownload) headers = { ...headers, "Content-Type": "application/json" };
   const response = await fetch(baseUrl + url, {
     method: method,
     cache: "no-cache",
@@ -44,10 +37,7 @@ export async function fetchApiV2(
     }
 
     const fileName =
-      response.headers
-        .get("content-disposition")
-        ?.split("; ")[1]
-        ?.replace("filename=", "") ?? "export.pdf";
+      response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? "export.pdf";
     const blob = await response.blob();
     const downLoadUrl = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -72,27 +62,17 @@ export async function fetchApiV2(
 
 // boreholes
 export const importBoreholes = async (workgroupId, combinedFormData) => {
-  return await fetchApiV2(
-    `upload?workgroupId=${workgroupId}`,
-    "POST",
-    combinedFormData,
-    true,
-  );
+  return await fetchApiV2(`upload?workgroupId=${workgroupId}`, "POST", combinedFormData, true);
 };
 
 export const copyBorehole = async (boreholeId, workgroupId) => {
-  return await fetchApiV2(
-    `borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`,
-    "POST",
-  );
+  return await fetchApiV2(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };
 
 // layers
-export const fetchLayerById = async id =>
-  await fetchApiV2(`layer/${id}`, "GET");
+export const fetchLayerById = async id => await fetchApiV2(`layer/${id}`, "GET");
 
-export const fetchLayersByProfileId = async profileId =>
-  await fetchApiV2(`layer?profileId=${profileId}`, "GET");
+export const fetchLayersByProfileId = async profileId => await fetchApiV2(`layer?profileId=${profileId}`, "GET");
 
 export const updateLayer = async layer => {
   // remove derived objects
@@ -102,34 +82,21 @@ export const updateLayer = async layer => {
 };
 
 // codelists
-export const fetchAllCodeLists = async () =>
-  await fetchApiV2("codelist", "GET");
+export const fetchAllCodeLists = async () => await fetchApiV2("codelist", "GET");
 
-export const updateCodeLists = async codelist =>
-  await fetchApiV2("codelist", "PUT", codelist);
+export const updateCodeLists = async codelist => await fetchApiV2("codelist", "PUT", codelist);
 
 // lithological descriptions
 export const fetchLithologicalDescriptionsByProfileId = async profileId => {
-  return await fetchApiV2(
-    `lithologicaldescription?stratigraphyId=${profileId}`,
-    "GET",
-  );
+  return await fetchApiV2(`lithologicaldescription?stratigraphyId=${profileId}`, "GET");
 };
 
 export const addLithologicalDescription = async lithologicalDescription => {
-  return await fetchApiV2(
-    "lithologicaldescription",
-    "POST",
-    lithologicalDescription,
-  );
+  return await fetchApiV2("lithologicaldescription", "POST", lithologicalDescription);
 };
 
 export const updateLithologicalDescription = async lithologicalDescription => {
-  return await fetchApiV2(
-    "lithologicaldescription",
-    "PUT",
-    lithologicalDescription,
-  );
+  return await fetchApiV2("lithologicaldescription", "PUT", lithologicalDescription);
 };
 
 export const deleteLithologicalDescription = async id => {
@@ -138,10 +105,7 @@ export const deleteLithologicalDescription = async id => {
 
 // facies descriptions
 export const fetchFaciesDescriptionsByProfileId = async profileId => {
-  return await fetchApiV2(
-    `faciesdescription?stratigraphyId=${profileId}`,
-    "GET",
-  );
+  return await fetchApiV2(`faciesdescription?stratigraphyId=${profileId}`, "GET");
 };
 
 export const addFaciesDescription = async faciesDescription => {
@@ -246,8 +210,7 @@ export const lithologicalDescriptionQueryKey = "lithoDesc";
 export const useLithoDescription = selectedStratigraphyID =>
   useQuery({
     queryKey: [lithologicalDescriptionQueryKey, selectedStratigraphyID],
-    queryFn: () =>
-      fetchLithologicalDescriptionsByProfileId(selectedStratigraphyID),
+    queryFn: () => fetchLithologicalDescriptionsByProfileId(selectedStratigraphyID),
   });
 
 export const faciesDescriptionQueryKey = "faciesDesc";
@@ -273,10 +236,7 @@ export const useChronostratigraphies = stratigraphyID =>
   useQuery({
     queryKey: [chronostratigraphiesQueryKey, stratigraphyID],
     queryFn: async () => {
-      return await fetchApiV2(
-        `chronostratigraphy?stratigraphyId=${stratigraphyID}`,
-        "GET",
-      );
+      return await fetchApiV2(`chronostratigraphy?stratigraphyId=${stratigraphyID}`, "GET");
     },
     enabled: !!stratigraphyID,
   });
@@ -309,10 +269,7 @@ export const useChronostratigraphyMutations = () => {
   );
   const useDeleteChronostratigraphy = useMutation(
     async chronostratigraphyId => {
-      return await fetchApiV2(
-        `chronostratigraphy?id=${chronostratigraphyId}`,
-        "DELETE",
-      );
+      return await fetchApiV2(`chronostratigraphy?id=${chronostratigraphyId}`, "DELETE");
     },
     {
       onSuccess: () => {
@@ -336,10 +293,7 @@ export const useLithostratigraphies = stratigraphyID =>
   useQuery({
     queryKey: [lithostratigraphiesQueryKey, stratigraphyID],
     queryFn: async () => {
-      return await fetchApiV2(
-        `lithostratigraphy?stratigraphyId=${stratigraphyID}`,
-        "GET",
-      );
+      return await fetchApiV2(`lithostratigraphy?stratigraphyId=${stratigraphyID}`, "GET");
     },
     enabled: !!stratigraphyID,
   });
@@ -372,10 +326,7 @@ export const useLithostratigraphyMutations = () => {
   );
   const useDeleteLithostratigraphy = useMutation(
     async lithostratigraphyId => {
-      return await fetchApiV2(
-        `lithostratigraphy?id=${lithostratigraphyId}`,
-        "DELETE",
-      );
+      return await fetchApiV2(`lithostratigraphy?id=${lithostratigraphyId}`, "DELETE");
     },
     {
       onSuccess: () => {
@@ -410,29 +361,16 @@ export const deleteWaterIngress = async id => {
 };
 
 export const getGroundwaterLevelMeasurements = async boreholeId => {
-  return await fetchApiV2(
-    `groundwaterlevelmeasurement?boreholeId=${boreholeId}`,
-    "GET",
-  );
+  return await fetchApiV2(`groundwaterlevelmeasurement?boreholeId=${boreholeId}`, "GET");
 };
 
-export const addGroundwaterLevelMeasurement =
-  async groundwaterLevelMeasurement => {
-    return await fetchApiV2(
-      "groundwaterlevelmeasurement",
-      "POST",
-      groundwaterLevelMeasurement,
-    );
-  };
+export const addGroundwaterLevelMeasurement = async groundwaterLevelMeasurement => {
+  return await fetchApiV2("groundwaterlevelmeasurement", "POST", groundwaterLevelMeasurement);
+};
 
-export const updateGroundwaterLevelMeasurement =
-  async groundwaterLevelMeasurement => {
-    return await fetchApiV2(
-      "groundwaterlevelmeasurement",
-      "PUT",
-      groundwaterLevelMeasurement,
-    );
-  };
+export const updateGroundwaterLevelMeasurement = async groundwaterLevelMeasurement => {
+  return await fetchApiV2("groundwaterlevelmeasurement", "PUT", groundwaterLevelMeasurement);
+};
 
 export const deleteGroundwaterLevelMeasurement = async id => {
   return await fetchApiV2(`groundwaterlevelmeasurement?id=${id}`, "DELETE");
@@ -456,48 +394,26 @@ export const deleteFieldMeasurement = async id => {
 
 // Upload borehole attachment
 export const uploadBoreholeAttachment = async (boreholeId, attachment) => {
-  return await fetchApiV2(
-    `boreholefile/upload?boreholeId=${boreholeId}`,
-    "POST",
-    attachment,
-    true,
-  );
+  return await fetchApiV2(`boreholefile/upload?boreholeId=${boreholeId}`, "POST", attachment, true);
 };
 
 // Detach borehole attachment
 export const detachBoreholeAttachment = async (boreholeId, boreholeFileId) => {
-  return await fetchApiV2(
-    `boreholefile/detachFile?boreholeId=${boreholeId}&boreholeFileId=${boreholeFileId}`,
-    "POST",
-  );
+  return await fetchApiV2(`boreholefile/detachFile?boreholeId=${boreholeId}&boreholeFileId=${boreholeFileId}`, "POST");
 };
 
 // Get borehole attachment list
 export const getBoreholeAttachments = async boreholeId => {
-  return await fetchApiV2(
-    `boreholefile/getAllForBorehole?boreholeId=${boreholeId}`,
-    "GET",
-  );
+  return await fetchApiV2(`boreholefile/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
 };
 
 // Download borehole attachment
 export const downloadBoreholeAttachment = async boreholeFileId => {
-  return await fetchApiV2(
-    `boreholefile/download?boreholeFileId=${boreholeFileId}`,
-    "GET",
-    null,
-    false,
-    true,
-  );
+  return await fetchApiV2(`boreholefile/download?boreholeFileId=${boreholeFileId}`, "GET", null, false, true);
 };
 
 // Update borehole attachment
-export const updateBoreholeAttachment = async (
-  boreholeId,
-  fileId,
-  description,
-  isPublic,
-) => {
+export const updateBoreholeAttachment = async (boreholeId, fileId, description, isPublic) => {
   return await fetchApiV2(
     `boreholefile/update?boreholeId=${boreholeId}&boreholeFileId=${fileId}`,
     "PUT",
@@ -546,10 +462,7 @@ export const deleteHydrotest = async id => {
 };
 
 export const getInstrumentation = async completionId => {
-  return await fetchApiV2(
-    `instrumentation?completionId=${completionId}`,
-    "GET",
-  );
+  return await fetchApiV2(`instrumentation?completionId=${completionId}`, "GET");
 };
 
 export const addInstrumentation = async instrumentation => {
@@ -600,5 +513,4 @@ export const deleteCasing = async id => {
   return await fetchApiV2(`casing?id=${id}`, "DELETE");
 };
 
-export const downloadCodelistCsv = () =>
-  fetchApiV2(`codelist/csv`, "GET", null, false, true);
+export const downloadCodelistCsv = () => fetchApiV2(`codelist/csv`, "GET", null, false, true);

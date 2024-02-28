@@ -5,7 +5,7 @@ import { getAuthorizationHeader } from "../../api/authentication";
 function getAuthorizationHeaders(headers = {}) {
   if (
     store.getState() &&
-    store.getState().hasOwnProperty("core_user") &&
+    Object.prototype.hasOwnProperty.call(store.getState(), "core_user") &&
     store.getState().core_user.authentication !== null
   ) {
     const authentication = store.getState().core_user.authentication;
@@ -35,9 +35,8 @@ export function downloadFile(path, params) {
     })
       .then(response => {
         const fileName =
-          response.headers["content-disposition"]
-            ?.split("; ")[1]
-            ?.replace("filename=", "") ?? "export-" + params.id + ".pdf";
+          response.headers["content-disposition"]?.split("; ")[1]?.replace("filename=", "") ??
+          "export-" + params.id + ".pdf";
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement("a");
         link.href = url;
@@ -47,6 +46,7 @@ export function downloadFile(path, params) {
         resolve(response);
       })
       .catch(function (error) {
+        // eslint-disable-next-line no-debugger
         debugger;
         reject(error);
       });
@@ -55,18 +55,13 @@ export function downloadFile(path, params) {
 
 export function downloadFilePost(path, action) {
   return new Promise((resolve, reject) => {
-    return axios(
-      path.includes("http://") || path.includes("https://")
-        ? path
-        : "/api/v1" + path,
-      {
-        timeout: 120000,
-        responseType: "blob",
-        headers: getAuthorizationHeaders(),
-        data: action,
-        method: "POST",
-      },
-    )
+    return axios(path.includes("http://") || path.includes("https://") ? path : "/api/v1" + path, {
+      timeout: 120000,
+      responseType: "blob",
+      headers: getAuthorizationHeaders(),
+      data: action,
+      method: "POST",
+    })
       .then(response => {
         if (response.headers["content-type"].includes("application/json")) {
           let fileReader = new FileReader();
@@ -75,9 +70,7 @@ export function downloadFilePost(path, action) {
           };
           fileReader.readAsText(new Blob([response.data]));
         } else {
-          const fileName = response.headers["content-disposition"]
-            .split("; ")[1]
-            .replace("filename=", "");
+          const fileName = response.headers["content-disposition"].split("; ")[1].replace("filename=", "");
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
@@ -99,10 +92,7 @@ export function downloadBorehole(params) {
 
 export function fetch(path, action, method = "post", auth = null) {
   const conf = {
-    url:
-      path.includes("http://") || path.includes("https://")
-        ? path
-        : "/api/v1" + path,
+    url: path.includes("http://") || path.includes("https://") ? path : "/api/v1" + path,
     headers: getAuthorizationHeaders(),
     timeout: 120000,
     method: method,
@@ -110,13 +100,13 @@ export function fetch(path, action, method = "post", auth = null) {
   if (auth !== null) {
     conf["auth"] = auth;
   }
-  if (action.hasOwnProperty("action")) {
+  if (Object.prototype.hasOwnProperty.call(action, "action")) {
     if (method === "post") {
       conf["responseType"] = "json";
       conf["data"] = action;
     } else if (method === "get") {
       conf["responseType"] = "xml";
-      if (action.hasOwnProperty("params")) {
+      if (Object.prototype.hasOwnProperty.call(action, "params")) {
         conf["params"] = action.params;
       }
     }
@@ -140,7 +130,7 @@ export function fetch(path, action, method = "post", auth = null) {
         conf["data"] = json;
       } else if (method === "get") {
         conf["responseType"] = "xml";
-        if (action.hasOwnProperty("params")) {
+        if (Object.prototype.hasOwnProperty.call(action, "params")) {
           conf["params"] = action.params;
         }
       }
