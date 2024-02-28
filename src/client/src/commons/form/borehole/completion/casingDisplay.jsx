@@ -1,6 +1,5 @@
 import { StackFullWidth } from "../../../../components/baseComponents";
-import { FormDisplay } from "../../../../components/form/form";
-import { FormDisplayType } from "../../../../components/form/FormDisplayType";
+import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 
 const CasingDisplay = props => {

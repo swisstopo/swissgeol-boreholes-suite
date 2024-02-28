@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Box, Button, ButtonGroup, useTheme } from "@mui/material";
-import { NavState, clamp } from "./navigationContainer";
+import { NavState } from "./navigationContainer";
+import { clamp } from "./clamp";
 import { KeyboardArrowUp, KeyboardArrowDown } from "@mui/icons-material";
 import DraggableCore from "react-draggable";
 import { NumericFormat } from "react-number-format";

@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Stack } from "@mui/material";
 import useResizeObserver from "@react-hook/resize-observer";
+import { clamp } from "./clamp";
 
 const getMax = obj => {
   const childValues = Object.values(obj);
@@ -16,8 +17,6 @@ const getMax = obj => {
  * @param {Number} max The upper boundary
  * @returns A number between min and max
  */
-const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
-
 export class NavState {
   #maxContent;
   #maxHeader;

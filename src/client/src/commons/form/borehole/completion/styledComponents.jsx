@@ -1,6 +1,6 @@
 import { Box, Tabs, Tab } from "@mui/material";
 import { styled } from "@mui/system";
-import { theme } from "../../../../App";
+import { theme } from "../../../../AppTheme.js";
 
 export const CompletionBox = styled(Box)(() => ({
   backgroundColor: theme.palette.secondary.background,

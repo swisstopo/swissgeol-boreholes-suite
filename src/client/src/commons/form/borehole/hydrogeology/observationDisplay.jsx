@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { StackFullWidth } from "../../../../components/baseComponents";
-import { FormDisplay } from "../../../../components/form/form";
-import { FormDisplayType } from "../../../../components/form/FormDisplayType";
+import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 
 const ObservationDisplay = props => {
   const { observation } = props;

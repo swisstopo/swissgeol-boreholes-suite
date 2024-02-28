@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { IconButton, Stack } from "@mui/material";
-import { FormDisplay } from "../../../../components/form/form";
-import { FormDisplayType } from "../../../../components/form/FormDisplayType";
+import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import { EditButton, CopyButton, DeleteButton } from "../../../../components/buttons/buttons";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";

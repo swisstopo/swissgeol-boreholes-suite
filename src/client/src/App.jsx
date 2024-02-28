@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-d
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ThemeProvider } from "@mui/material/styles";
-import theme from "./AppTheme.js";
+import { theme } from "./AppTheme.js";
 import HomeComponent from "./pages/home/homeComponent";
 import EditorComponent from "./pages/editor/editorComponent";
 import SettingCmp from "./pages/settings/settingCmp";

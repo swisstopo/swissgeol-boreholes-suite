@@ -1,6 +1,6 @@
 import { TextField } from "@mui/material";
 import { styled } from "@mui/system";
-import { theme } from "../../App";
+import { theme } from "../../AppTheme.js";
 
 export const getInputFieldBackgroundColor = errorFieldName =>
   errorFieldName ? theme.palette.error.background : "transparent";
