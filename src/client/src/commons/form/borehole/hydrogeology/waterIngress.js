@@ -18,6 +18,7 @@ const WaterIngress = ({ isEditable, boreholeId }) => {
       addData={addWaterIngress}
       updateData={updateWaterIngress}
       deleteData={deleteWaterIngress}
+      cyLabel="waterIngress"
       addLabel="addWaterIngress"
       emptyLabel="msgWateringressesEmpty"
       renderInput={props => <WaterIngressInput {...props} />}

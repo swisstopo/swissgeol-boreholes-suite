@@ -37,6 +37,7 @@ const Casing = ({ isEditable, completionId }) => {
       addData={addCasing}
       updateData={updateCasing}
       deleteData={deleteCasing}
+      cyLabel="casing"
       addLabel="addCasing"
       emptyLabel="msgCasingEmpty"
       renderInput={props => <CasingInput {...props} />}

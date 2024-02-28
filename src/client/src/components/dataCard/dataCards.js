@@ -18,6 +18,7 @@ export const DataCards = props => {
     addData,
     updateData,
     deleteData,
+    cyLabel,
     addLabel,
     emptyLabel,
     renderInput,
@@ -106,7 +107,7 @@ export const DataCards = props => {
   }, [displayed, dataRefs]);
 
   return (
-    <FullPage>
+    <FullPage data-cy={`${cyLabel}-content`}>
       <DataCardButtonContainer>
         {isEditable && (
           <AddButton
@@ -133,7 +134,7 @@ export const DataCards = props => {
             const isTemp = item.id === 0;
             return (
               <DataCardItem key={item.id} ref={dataRefs[index]}>
-                <DataCard key={item.id}>
+                <DataCard key={item.id} data-cy={`${cyLabel}-card.${index}`}>
                   {isEditable && isSelected
                     ? renderInput({
                         item: item,

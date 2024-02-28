@@ -18,6 +18,7 @@ const Hydrotest = ({ isEditable, boreholeId }) => {
       addData={addHydrotest}
       updateData={updateHydrotest}
       deleteData={deleteHydrotest}
+      cyLabel="hydrotest"
       addLabel="addHydrotest"
       emptyLabel="msgHydrotestEmpty"
       renderInput={props => <HydrotestInput {...props} />}

@@ -18,6 +18,7 @@ const GroundwaterLevelMeasurement = ({ isEditable, boreholeId }) => {
       addData={addGroundwaterLevelMeasurement}
       updateData={updateGroundwaterLevelMeasurement}
       deleteData={deleteGroundwaterLevelMeasurement}
+      cyLabel="groundwaterLevelMeasurement"
       addLabel="addGroundwaterLevelMeasurement"
       emptyLabel="msgGroundwaterLevelMeasurementsEmpty"
       renderInput={props => <GroundwaterLevelMeasurementInput {...props} />}

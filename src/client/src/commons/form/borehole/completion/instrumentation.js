@@ -18,6 +18,7 @@ const Instrumentation = ({ isEditable, completionId }) => {
       addData={addInstrumentation}
       updateData={updateInstrumentation}
       deleteData={deleteInstrumentation}
+      cyLabel="instrumentation"
       addLabel="addInstrument"
       emptyLabel="msgInstrumentsEmpty"
       renderInput={props => <InstrumentationInput {...props} />}

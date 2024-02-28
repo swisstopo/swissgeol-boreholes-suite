@@ -18,6 +18,7 @@ const Backfill = ({ isEditable, completionId }) => {
       addData={addBackfill}
       updateData={updateBackfill}
       deleteData={deleteBackfill}
+      cyLabel="backfill"
       addLabel="addFilling"
       emptyLabel="msgFillingEmpty"
       renderInput={props => <BackfillInput {...props} />}
