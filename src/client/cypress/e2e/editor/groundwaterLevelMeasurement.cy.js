@@ -88,4 +88,74 @@ describe("Tests for the groundwater level measurement editor.", () => {
     cy.wait("@groundwaterlevelmeasurement_DELETE");
     cy.get("body").should("not.contain", "Drucksonde");
   });
+
+  it("sort groundwaterlevelmeasurement", () => {
+    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      loginAsAdmin();
+      cy.visit(`/editor/${id}/hydrogeology/groundwaterlevelmeasurement`);
+    });
+    startBoreholeEditing();
+
+    addItem("addGroundwaterLevelMeasurement");
+    cy.wait("@casing_GET");
+    setInput("fromDepthM", 0);
+    setInput("toDepthM", 10);
+    setSelect("kindId", 2);
+    setSelect("reliabilityId", 1);
+    setInput("startTime", "2012-11-14T12:06");
+    setInput("levelM", "789.12");
+    setInput("levelMasl", "5.4567");
+    saveForm();
+    cy.wait("@groundwaterlevelmeasurement_GET");
+
+    addItem("addGroundwaterLevelMeasurement");
+    cy.wait("@casing_GET");
+    setInput("fromDepthM", 0);
+    setInput("toDepthM", 12);
+    setSelect("kindId", 2);
+    setSelect("reliabilityId", 1);
+    setInput("startTime", "2012-11-14T12:06");
+    setInput("levelM", "789.12");
+    setInput("levelMasl", "5.4567");
+    saveForm();
+    cy.wait("@groundwaterlevelmeasurement_GET");
+
+    cy.get(
+      '[data-cy="groundwaterLevelMeasurement-card.0"] [data-cy="todepth-formDisplay"]',
+    ).contains("10");
+    cy.get(
+      '[data-cy="groundwaterLevelMeasurement-card.1"] [data-cy="todepth-formDisplay"]',
+    ).contains("12");
+
+    cy.get(
+      '[data-cy="groundwaterLevelMeasurement-card.1"] [data-cy="edit-button"]',
+    ).click({
+      force: true,
+    });
+    setInput("toDepthM", "8");
+    saveForm();
+    cy.wait("@groundwaterlevelmeasurement_GET");
+    cy.get(
+      '[data-cy="groundwaterLevelMeasurement-card.0"] [data-cy="todepth-formDisplay"]',
+    ).contains("8");
+    cy.get(
+      '[data-cy="groundwaterLevelMeasurement-card.1"] [data-cy="todepth-formDisplay"]',
+    ).contains("10");
+
+    cy.get(
+      '[data-cy="groundwaterLevelMeasurement-card.0"] [data-cy="edit-button"]',
+    ).click({
+      force: true,
+    });
+    setInput("fromDepthM", "5");
+    saveForm();
+    cy.wait("@groundwaterlevelmeasurement_GET");
+    cy.get(
+      '[data-cy="groundwaterLevelMeasurement-card.0"] [data-cy="fromdepth-formDisplay"]',
+    ).contains("0");
+    cy.get(
+      '[data-cy="groundwaterLevelMeasurement-card.1"] [data-cy="fromdepth-formDisplay"]',
+    ).contains("5");
+  });
 });

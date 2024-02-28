@@ -13,7 +13,7 @@ import {
 } from "../helpers/buttonHelpers";
 
 describe("Instrumentation crud tests", () => {
-  it("add, edit and delete instrumentations", () => {
+  beforeEach(() => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
       .then(id => createCompletion("test instr.", id, 16000002, true))
@@ -31,7 +31,9 @@ describe("Instrumentation crud tests", () => {
 
     // start editing session
     startBoreholeEditing();
+  });
 
+  it("add, edit and delete instrumentations", () => {
     // Precondition: Create casing to later link in instrumentation
     cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
@@ -94,5 +96,65 @@ describe("Instrumentation crud tests", () => {
     // delete instrumentation
     deleteItem();
     cy.contains("From depth").should("not.exist");
+  });
+
+  it("sort instrumentation", () => {
+    cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
+    cy.wait("@instrumentation_GET");
+
+    addItem("addInstrument");
+    cy.wait("@casing_GET");
+    setInput("notes", "Lorem.");
+    setInput("name", "Inst-1");
+    setInput("fromDepth", "0");
+    setInput("toDepth", "10");
+    setSelect("kindId", 2);
+    setSelect("statusId", 1);
+    saveForm();
+    cy.wait("@instrumentation_GET");
+
+    addItem("addInstrument");
+    cy.wait("@casing_GET");
+    setInput("notes", "Lorem.");
+    setInput("name", "Inst-2");
+    setInput("fromDepth", "0");
+    setInput("toDepth", "12");
+    setSelect("kindId", 2);
+    setSelect("statusId", 1);
+    saveForm();
+    cy.wait("@instrumentation_GET");
+
+    cy.get(
+      '[data-cy="instrumentation-card.0"] [data-cy="name-formDisplay"]',
+    ).contains("Inst-1");
+    cy.get(
+      '[data-cy="instrumentation-card.1"] [data-cy="name-formDisplay"]',
+    ).contains("Inst-2");
+
+    cy.get('[data-cy="instrumentation-card.1"] [data-cy="edit-button"]').click({
+      force: true,
+    });
+    setInput("toDepth", "8");
+    saveForm();
+    cy.wait("@instrumentation_GET");
+    cy.get(
+      '[data-cy="instrumentation-card.0"] [data-cy="name-formDisplay"]',
+    ).contains("Inst-2");
+    cy.get(
+      '[data-cy="instrumentation-card.1"] [data-cy="name-formDisplay"]',
+    ).contains("Inst-1");
+
+    cy.get('[data-cy="instrumentation-card.0"] [data-cy="edit-button"]').click({
+      force: true,
+    });
+    setInput("fromDepth", "5");
+    saveForm();
+    cy.wait("@instrumentation_GET");
+    cy.get(
+      '[data-cy="instrumentation-card.0"] [data-cy="name-formDisplay"]',
+    ).contains("Inst-1");
+    cy.get(
+      '[data-cy="instrumentation-card.1"] [data-cy="name-formDisplay"]',
+    ).contains("Inst-2");
   });
 });
