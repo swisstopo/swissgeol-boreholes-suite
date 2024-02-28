@@ -1,6 +1,7 @@
 {
   "name": "suite-bdms",
   "version": "1.0.6",
+  "type": "module",
   "description": "Bohrehole Data Management System",
   "private": true,
   "author": "GeoWerkstatt <office@geowerkstatt.ch> (https://github.com/geowerkstatt)",

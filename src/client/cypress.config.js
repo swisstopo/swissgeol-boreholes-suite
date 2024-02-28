@@ -1,7 +1,7 @@
-const { defineConfig } = require("cypress");
+import { defineConfig } from "cypress";
 import vitePreprocessor from "cypress-vite";
 
-module.exports = defineConfig({
+export default defineConfig({
   projectId: "gv8yue",
   e2e: {
     baseUrl: "http://localhost:3000",
@@ -9,7 +9,7 @@ module.exports = defineConfig({
     viewportWidth: 1920,
     viewportHeight: 1080,
     supportFile: "cypress/support/e2e.js",
-    setupNodeEvents(on, config) {
+    setupNodeEvents(on) {
       on("file:preprocessor", vitePreprocessor());
 
       on("task", {

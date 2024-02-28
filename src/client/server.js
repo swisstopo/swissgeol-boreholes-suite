@@ -1,12 +1,12 @@
-const express = require("express");
-const path = require("path");
+import { express } from "express";
+import { path } from "path";
+import { RateLimit } from "express-rate-limit";
 
 const app = express();
 const PORT = import.meta.env.PORT || 3000;
 
 // set up rate limiter: maximum of 1000 requests per minute
-var RateLimit = require("express-rate-limit");
-var limiter = RateLimit({
+const limiter = RateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 1000,
 });
