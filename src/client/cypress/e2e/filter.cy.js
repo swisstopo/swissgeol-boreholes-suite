@@ -144,7 +144,7 @@ describe("Search filter tests", () => {
     cy.contains("Show all fields").children(".checkbox").click();
 
     // input values
-    cy.contains("Creation date").next().find(".react-datepicker-wrapper input").click();
+    cy.contains("Creation date").next().find(".react-datepicker-wrapper .datepicker-input").click();
 
     cy.get(".react-datepicker__year-select").select("2021");
     cy.get(".react-datepicker__month-select").select("November");
@@ -152,7 +152,7 @@ describe("Search filter tests", () => {
 
     cy.wait("@edit_list");
 
-    cy.contains("Creation date").parent().parent().next().find(".react-datepicker-wrapper input").click();
+    cy.contains("Creation date").parent().parent().next().find(".react-datepicker-wrapper .datepicker-input").click();
 
     cy.get(".react-datepicker__year-select").select("2021");
     cy.get(".react-datepicker__month-select").select("November");

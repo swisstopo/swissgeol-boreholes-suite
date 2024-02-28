@@ -84,7 +84,7 @@ describe("Test the borehole bulk edit feature.", () => {
       .should("have.length", 8)
       .each((el, index) => cy.wrap(el).scrollIntoView().type(`A${index}`));
 
-    cy.get("form .field > .react-datepicker-wrapper input")
+    cy.get("form .field > .react-datepicker-wrapper .datepicker-input")
       .should("have.length", 3)
       .each(el => {
         cy.wrap(el).click();

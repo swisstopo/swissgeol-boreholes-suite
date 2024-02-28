@@ -32,6 +32,7 @@
 - Split generic join table `layer_codelists` into 6 separate join tables for each many to many relationship between layer and codelist.
 - Replaced create-react-app (react-scripts) with vite for frontend tooling.
 - Included typescript configuration.
+- Prevent typing dates in profile and filter, only allow selecting date in datepicker.
 
 ### Fixed
 

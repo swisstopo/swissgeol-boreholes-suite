@@ -48,7 +48,9 @@ class DateField extends React.Component {
               iconPosition="left"
               placeholder={placeholder}
               spellCheck="false"
+              className="datepicker-input"
               value={moment(this.state.date).isValid() ? moment(this.state.date).format("DD.MM.YYYY") : ""}
+              disabled={true}
               readOnly={!isEditable}
             />
           </div>
