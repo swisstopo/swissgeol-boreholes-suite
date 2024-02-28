@@ -21,6 +21,7 @@ const InstrumentationInput = ({
     if (data.casingId === "") {
       data.casingId = null;
     }
+    data.casing = null;
     data.completionId = parentId;
     return data;
   };

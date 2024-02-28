@@ -164,6 +164,7 @@ const HydrotestInput = props => {
     if (data.casingId == null) {
       data.casingId = item.casingId;
     }
+    data.casing = null;
 
     delete data.testKindId;
     delete data.flowDirectionId;

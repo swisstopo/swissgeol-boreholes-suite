@@ -21,6 +21,7 @@ const WaterIngressInput = props => {
     if (data.casingId == null) {
       data.casingId = item.casingId;
     }
+    data.casing = null;
     if (data.conditionsId === "") {
       data.conditionsId = null;
     }
