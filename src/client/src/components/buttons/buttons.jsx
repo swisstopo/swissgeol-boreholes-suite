@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 import TranslationText from "../../commons/form/translationText";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -23,38 +23,23 @@ export const BdmsBaseButton = forwardRef((props, ref) => {
 });
 
 export const AddButton = forwardRef((props, ref) => {
-  return (
-    <BdmsBaseButton
-      ref={ref}
-      {...props}
-      label={props.label}
-      icon={<AddIcon />}
-    />
-  );
+  return <BdmsBaseButton ref={ref} {...props} label={props.label} icon={<AddIcon />} />;
 });
 
 export const EditButton = forwardRef((props, ref) => {
-  return (
-    <BdmsBaseButton ref={ref} {...props} label="edit" icon={<ModeEditIcon />} />
-  );
+  return <BdmsBaseButton ref={ref} {...props} label="edit" icon={<ModeEditIcon />} />;
 });
 
 export const CopyButton = forwardRef((props, ref) => {
-  return (
-    <BdmsBaseButton ref={ref} {...props} label="copy" icon={<CopyIcon />} />
-  );
+  return <BdmsBaseButton ref={ref} {...props} label="copy" icon={<CopyIcon />} />;
 });
 
 export const CancelButton = forwardRef((props, ref) => {
-  return (
-    <BdmsBaseButton ref={ref} {...props} label="cancel" icon={<CloseIcon />} />
-  );
+  return <BdmsBaseButton ref={ref} {...props} label="cancel" icon={<CloseIcon />} />;
 });
 
 export const SaveButton = forwardRef((props, ref) => {
-  return (
-    <BdmsBaseButton ref={ref} {...props} label="save" icon={<SaveIcon />} />
-  );
+  return <BdmsBaseButton ref={ref} {...props} label="save" icon={<SaveIcon />} />;
 });
 
 export const DeleteButton = forwardRef((props, ref) => {

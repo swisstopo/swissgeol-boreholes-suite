@@ -1,12 +1,7 @@
-import React, { useState, useEffect, useMemo, createRef, useRef } from "react";
+import { useState, useEffect, useMemo, createRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Typography } from "@mui/material";
-import {
-  DataCard,
-  DataCardItem,
-  DataCardContainer,
-  DataCardButtonContainer,
-} from "./dataCard";
+import { DataCard, DataCardItem, DataCardContainer, DataCardButtonContainer } from "./dataCard";
 import { AddButton } from "../buttons/buttons";
 import { FullPage, FullPageCentered } from "../baseComponents";
 

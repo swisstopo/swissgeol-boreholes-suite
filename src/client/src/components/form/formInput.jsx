@@ -3,18 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { FormField, getInputFieldBackgroundColor } from "./form";
 
 export const FormInput = props => {
-  const {
-    fieldName,
-    label,
-    required,
-    disabled,
-    type,
-    multiline,
-    rows,
-    value,
-    sx,
-    inputProps,
-  } = props;
+  const { fieldName, label, required, disabled, type, multiline, rows, value, sx, inputProps } = props;
   const { t } = useTranslation();
   const { formState, register, setValue } = useFormContext();
 
@@ -36,9 +25,7 @@ export const FormInput = props => {
       name={fieldName}
       required={required || false}
       sx={{
-        backgroundColor: getInputFieldBackgroundColor(
-          formState.errors[fieldName],
-        ),
+        backgroundColor: getInputFieldBackgroundColor(formState.errors[fieldName]),
         ...sx,
       }}
       type={type || "text"}

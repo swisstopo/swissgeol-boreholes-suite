@@ -20,12 +20,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.visit("/");
     goToViewerLocationFilter();
 
-    cy.contains("div", "Spatial reference system")
-      .children()
-      .first()
-      .children()
-      .first()
-      .as("checkbox");
+    cy.contains("div", "Spatial reference system").children().first().children().first().as("checkbox");
     cy.get("@checkbox").check({ force: true });
     cy.get("@checkbox").should("be.checked");
 
@@ -49,12 +44,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.visit("/editor");
     goToEditorLocationFilter();
 
-    cy.contains("div", "Spatial reference system")
-      .children()
-      .first()
-      .children()
-      .first()
-      .as("checkbox");
+    cy.contains("div", "Spatial reference system").children().first().children().first().as("checkbox");
     cy.get("@checkbox").check({ force: true });
     cy.get("@checkbox").should("be.checked");
 
@@ -91,11 +81,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.wait(["@edit_list", "@borehole"]);
 
     cy.contains("span", "Location").click();
-    cy.get('[class="ui fitted toggle checkbox"]')
-      .eq(1)
-      .children()
-      .first()
-      .check({ force: true });
+    cy.get('[class="ui fitted toggle checkbox"]').eq(1).children().first().check({ force: true });
     cy.get('[data-cy="radiobutton-all"]').click();
     cy.get("tbody").children().should("have.length", 100);
 
@@ -108,11 +94,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get("tbody").children().should("have.length", 100);
 
     // click reset label
-    cy.get('[data-cy="spatial-reference-filter"]')
-      .next()
-      .children()
-      .first()
-      .click({ force: true });
+    cy.get('[data-cy="spatial-reference-filter"]').next().children().first().click({ force: true });
     cy.get("tbody").children().should("have.length", 100);
   });
 });

@@ -1,23 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { IconButton, Stack } from "@mui/material";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
-import {
-  EditButton,
-  CopyButton,
-  DeleteButton,
-} from "../../../../components/buttons/buttons";
+import { EditButton, CopyButton, DeleteButton } from "../../../../components/buttons/buttons";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 const CompletionHeaderDisplay = props => {
-  const {
-    completion,
-    isEditable,
-    setEditing,
-    copyCompletion,
-    deleteCompletion,
-  } = props;
+  const { completion, isEditable, setEditing, copyCompletion, deleteCompletion } = props;
   const [expanded, setExpanded] = useState(false);
   const toggleHeader = () => {
     setExpanded(!expanded);
@@ -25,48 +15,18 @@ const CompletionHeaderDisplay = props => {
 
   return (
     <>
-      <Stack
-        data-cy="completion-header-display"
-        direction="column"
-        aria-expanded={expanded}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          flexWrap="wrap">
-          <FormDisplay
-            label="name"
-            value={completion?.name}
-            sx={{ flex: "1 1 180px" }}
-          />
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            flex={"0 0 400px"}>
-            <FormDisplay
-              label="completionKind"
-              value={completion?.kind}
-              type={FormDisplayType.Domain}
-            />
-            <FormDisplay
-              label="mainCompletion"
-              value={completion?.isPrimary}
-              type={FormDisplayType.Boolean}
-            />
+      <Stack data-cy="completion-header-display" direction="column" aria-expanded={expanded}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap">
+          <FormDisplay label="name" value={completion?.name} sx={{ flex: "1 1 180px" }} />
+          <Stack direction="row" justifyContent="space-between" alignItems="center" flex={"0 0 400px"}>
+            <FormDisplay label="completionKind" value={completion?.kind} type={FormDisplayType.Domain} />
+            <FormDisplay label="mainCompletion" value={completion?.isPrimary} type={FormDisplayType.Boolean} />
           </Stack>
         </Stack>
         {expanded && (
           <>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              flexWrap="wrap">
-              <FormDisplay
-                label="notes"
-                value={completion?.notes}
-                sx={{ flex: "1 1 180px" }}
-              />
+            <Stack direction="row" justifyContent="space-between" flexWrap="wrap">
+              <FormDisplay label="notes" value={completion?.notes} sx={{ flex: "1 1 180px" }} />
               <FormDisplay
                 label="dateAbandonmentCompletion"
                 value={completion?.abandonDate}
@@ -98,10 +58,7 @@ const CompletionHeaderDisplay = props => {
             )}
           </>
         )}
-        <IconButton
-          onClick={toggleHeader}
-          sx={{ paddingBottom: "0" }}
-          data-cy="completion-toggle-header">
+        <IconButton onClick={toggleHeader} sx={{ paddingBottom: "0" }} data-cy="completion-toggle-header">
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </Stack>

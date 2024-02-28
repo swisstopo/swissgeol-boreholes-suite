@@ -1,4 +1,3 @@
-import React from "react";
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
@@ -16,11 +15,7 @@ const GroundwaterLevelMeasurementDisplay = props => {
       deleteData={deleteData}>
       <ObservationDisplay observation={item} />
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay
-          label="gwlm_kind"
-          value={item?.kind}
-          type={FormDisplayType.Domain}
-        />
+        <FormDisplay label="gwlm_kind" value={item?.kind} type={FormDisplayType.Domain} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay label="gwlm_levelm" value={item?.levelM} />

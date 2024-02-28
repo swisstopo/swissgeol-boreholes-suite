@@ -41,14 +41,13 @@ class DomainDropdown extends React.Component {
 
   componentDidMount() {
     const { domains, schema } = this.props;
-    if (!domains.data.hasOwnProperty(schema) && domains.isFetching === false) {
+    if (!Object.prototype.hasOwnProperty.call(domains.data, schema) && domains.isFetching === false) {
       this.props.loadDomains();
     }
   }
 
   handleChange(event, data) {
-    const { onSelected, domains, schema, multiple, additionalValues } =
-      this.props;
+    const { onSelected, domains, schema, multiple, additionalValues } = this.props;
     if (multiple === true) {
       const selection = [];
       for (let i = 0; i < domains.data[schema].length; i++) {
@@ -107,14 +106,13 @@ class DomainDropdown extends React.Component {
   }
 
   render() {
-    const { domains, schema, search, multiple, additionalValues, readOnly } =
-        this.props,
+    const { domains, schema, search, multiple, additionalValues, readOnly } = this.props,
       { selected } = this.state;
-    if (!domains.data.hasOwnProperty(schema)) {
+    if (!Object.prototype.hasOwnProperty.call(domains.data, schema)) {
       if (domains.isFetching === true) {
         return "loading translations";
       }
-      return <div style={{ color: "red" }}>"{schema}" not in codelist</div>;
+      return <div style={{ color: "red" }}>&quot;{schema}&quot; not in codelist</div>;
     }
     let options = [];
     if (this.props.reset) {
@@ -135,18 +133,14 @@ class DomainDropdown extends React.Component {
     let data = [];
     // console.log("exclude: ", this.props.exclude);
     if (this.props.exclude !== undefined) {
-      data = domains.data[schema].filter(
-        el => !this.props.exclude.includes(el.id),
-      );
+      data = domains.data[schema].filter(el => !this.props.exclude.includes(el.id));
     } else {
       data = domains.data[schema];
     }
     if (additionalValues !== undefined) {
       additionalValues.forEach(value => {
         if (value.translationId !== undefined) {
-          value[this.state.language].text = this.props.t(
-            "common:" + value.translationId,
-          );
+          value[this.state.language].text = this.props.t("common:" + value.translationId);
         }
       });
       data = data.concat(additionalValues);
@@ -165,7 +159,7 @@ class DomainDropdown extends React.Component {
                   display: "flex",
                   flexDirection: "row",
                 }}>
-                {domain.conf !== null && domain.conf.hasOwnProperty("color") ? (
+                {domain.conf !== null && Object.prototype.hasOwnProperty.call(domain.conf, "color") ? (
                   <div
                     style={{
                       width: "1em",
@@ -183,20 +177,18 @@ class DomainDropdown extends React.Component {
                 <div
                   style={{
                     flex:
-                      domain.conf !== null &&
-                      domain.conf.hasOwnProperty("image")
+                      domain.conf !== null && Object.prototype.hasOwnProperty.call(domain.conf, "image")
                         ? null
                         : "1 1 100%",
                   }}>
                   {domain[this.state.language].text}
                 </div>
-                {domain.conf !== null && domain.conf.hasOwnProperty("image") ? (
+                {domain.conf !== null && Object.prototype.hasOwnProperty.call(domain.conf, "image") ? (
                   <div
                     style={{
                       flex: "1 1 100%",
                       marginLeft: "1em",
-                      backgroundImage:
-                        'url("' + "/img/lit/" + domain.conf.image + '")',
+                      backgroundImage: 'url("' + "/img/lit/" + domain.conf.image + '")',
                     }}
                   />
                 ) : null}
@@ -249,10 +241,7 @@ DomainDropdown.propTypes = {
   schema: PropTypes.string,
   search: PropTypes.bool,
   additionalValues: PropTypes.array,
-  selected: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.arrayOf(PropTypes.number),
-  ]),
+  selected: PropTypes.oneOfType([PropTypes.number, PropTypes.arrayOf(PropTypes.number)]),
   readOnly: PropTypes.bool,
 };
 
@@ -262,14 +251,14 @@ DomainDropdown.defaultProps = {
   reset: true,
 };
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = state => {
   return {
     developer: state.developer,
     domains: state.core_domain_list,
   };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
     loadDomains: () => {
@@ -278,7 +267,4 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation("common")(DomainDropdown));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(DomainDropdown));

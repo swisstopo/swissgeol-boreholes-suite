@@ -81,11 +81,7 @@ class EditorComponent extends React.Component {
                     }}>
                     <Modal
                       onUnmount={() => {
-                        props.loadEditingBoreholes(
-                          props.editor.page,
-                          props.search.filter,
-                          props.editor.direction,
-                        );
+                        props.loadEditingBoreholes(props.editor.page, props.search.filter, props.editor.direction);
                       }}
                       open={Array.isArray(props.store.mselected)}>
                       <Modal.Content>
@@ -102,9 +98,7 @@ class EditorComponent extends React.Component {
                         searchState={{
                           ...props.search,
                         }}
-                        highlighted={
-                          this.state.hover !== null ? [this.state.hover.id] : []
-                        }
+                        highlighted={this.state.hover !== null ? [this.state.hover.id] : []}
                         hover={id => {
                           this.setState({
                             maphover: id,
@@ -133,11 +127,7 @@ class EditorComponent extends React.Component {
                         overflowY: "auto",
                       }}>
                       <BoreholeEditorTable
-                        activeItem={
-                          !_.isNil(props.store.bselected)
-                            ? props.store.bselected.id
-                            : null
-                        }
+                        activeItem={!_.isNil(props.store.bselected) ? props.store.bselected.id : null}
                         filter={{
                           ...props.search.filter,
                         }}
@@ -157,10 +147,7 @@ class EditorComponent extends React.Component {
                           }, 250);
                         }}
                         onMultiple={selection => {
-                          props.multipleSelected(
-                            selection,
-                            props.search.filter,
-                          );
+                          props.multipleSelected(selection, props.search.filter);
                         }}
                         onSelected={borehole => {
                           // Lock borehole
@@ -310,6 +297,4 @@ const mapDispatchToProps = (dispatch, ownprops) => {
   };
 };
 
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(EditorComponent),
-);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EditorComponent));

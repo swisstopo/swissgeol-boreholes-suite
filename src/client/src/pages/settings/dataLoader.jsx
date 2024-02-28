@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
@@ -9,13 +9,7 @@ import TranslationKeys from "../../commons/translationKeys";
 import { Button } from "semantic-ui-react";
 import Alert from "@mui/material/Alert";
 
-import {
-  loadDomains,
-  loadBoreholes,
-  loadSettings,
-  loadUser,
-  getContent,
-} from "../../api-lib/index";
+import { loadDomains, loadBoreholes, loadSettings, loadUser, getContent } from "../../api-lib/index";
 
 class DataLoader extends React.Component {
   constructor(props) {
@@ -62,13 +56,9 @@ class DataLoader extends React.Component {
 
   render() {
     const { t } = this.props;
-    const isLoading =
-      !this.props.auth ||
-      this.props.auth.isLoading ||
-      this.props.user?.authentication;
+    const isLoading = !this.props.auth || this.props.auth.isLoading || this.props.user?.authentication;
 
-    const authorizationFailed =
-      this.props.user?.authentication && this.props.user.error;
+    const authorizationFailed = this.props.user?.authentication && this.props.user.error;
     return (
       <div
         style={{
@@ -136,10 +126,8 @@ class DataLoader extends React.Component {
                 style={{
                   paddingTop: "2em",
                 }}>
-                {this.state.body.hasOwnProperty(this.props.i18n.language) ? (
-                  <Markdown>
-                    {this.state.body[this.props.i18n.language]}
-                  </Markdown>
+                {Object.prototype.hasOwnProperty.call(this.state.body, this.props.i18n.language) ? (
+                  <Markdown>{this.state.body[this.props.i18n.language]}</Markdown>
                 ) : null}
               </div>
             </div>
@@ -164,9 +152,7 @@ class DataLoader extends React.Component {
                   fluid
                   onClick={() => {
                     this.props.auth.signinRedirect({
-                      url_state: btoa(
-                        JSON.stringify({ href: window.location.href }),
-                      ),
+                      url_state: btoa(JSON.stringify({ href: window.location.href })),
                     });
                   }}
                   size="small"
@@ -256,7 +242,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withAuth(withTranslation("common")(DataLoader)));
+export default connect(mapStateToProps, mapDispatchToProps)(withAuth(withTranslation("common")(DataLoader)));

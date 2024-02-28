@@ -6,12 +6,7 @@ import { AlertContext } from "../../../components/alert/alertContext";
 
 import { Button, Icon, Form, Modal, Header } from "semantic-ui-react";
 
-import {
-  listIdentifier,
-  createIdentifier,
-  deleteIdentifier,
-  updateIdentifier,
-} from "../../../api-lib/index";
+import { listIdentifier, createIdentifier, deleteIdentifier, updateIdentifier } from "../../../api-lib/index";
 import TranslationText from "../../../commons/form/translationText";
 
 class IdentifierSettings extends React.Component {
@@ -128,7 +123,7 @@ class IdentifierSettings extends React.Component {
                         fr: this.state.fr,
                         it: this.state.it,
                         en: this.state.en,
-                      }).then(response => {
+                      }).then(() => {
                         this.props.listIdentifier();
                       });
                     } else {
@@ -137,7 +132,7 @@ class IdentifierSettings extends React.Component {
                         fr: this.state.fr,
                         it: this.state.it,
                         en: this.state.en,
-                      }).then(response => {
+                      }).then(() => {
                         this.reset();
                         this.props.listIdentifier();
                       });
@@ -147,11 +142,7 @@ class IdentifierSettings extends React.Component {
                     style={{
                       whiteSpace: "nowrap",
                     }}>
-                    {this.state.id !== null && this.state.id !== "" ? (
-                      <Icon name="save" />
-                    ) : (
-                      <Icon name="plus" />
-                    )}{" "}
+                    {this.state.id !== null && this.state.id !== "" ? <Icon name="save" /> : <Icon name="plus" />}{" "}
                     {this.state.id !== null && this.state.id !== "" ? (
                       <TranslationText id="save" />
                     ) : (
@@ -169,7 +160,7 @@ class IdentifierSettings extends React.Component {
         </div>
         <hr />
         <div>
-          {domains.data.hasOwnProperty("borehole_identifier") &&
+          {Object.prototype.hasOwnProperty.call(domains.data, "borehole_identifier") &&
           domains.data["borehole_identifier"].length > 0
             ? domains.data["borehole_identifier"].map((val, idx) => (
                 <div
@@ -194,8 +185,7 @@ class IdentifierSettings extends React.Component {
                     flex: 1,
                     flexDirection: "row",
                     paddingBottom: "0.5em",
-                    backgroundColor:
-                      this.state.id === val.id ? "#595959" : null,
+                    backgroundColor: this.state.id === val.id ? "#595959" : null,
                     color: this.state.id === val.id ? "white" : null,
                   }}>
                   <div
@@ -247,11 +237,7 @@ class IdentifierSettings extends React.Component {
               ))
             : "Empty"}
         </div>
-        <Modal
-          closeIcon
-          onClose={this.handleCloseConfirmDelete}
-          open={this.state.isOpenConfirmDelete}
-          size="mini">
+        <Modal closeIcon onClose={this.handleCloseConfirmDelete} open={this.state.isOpenConfirmDelete} size="mini">
           <Header content={<TranslationText id="deleteForever" />} />
           <Modal.Content>
             <p>
@@ -307,7 +293,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation(["common"])(IdentifierSettings));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(IdentifierSettings));

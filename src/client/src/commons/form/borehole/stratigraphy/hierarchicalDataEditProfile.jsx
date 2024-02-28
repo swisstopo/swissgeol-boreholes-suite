@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -41,9 +41,7 @@ const HierarchicalDataEditProfile = ({
 
   const [id] = useState(Math.random().toString(36).substring(2, 10));
   const [options, setOptions] = useState(null);
-  const [header, setHeader] = useState(
-    headerLabels.map(h => ({ title: h, isVisible: true })),
-  );
+  const [header, setHeader] = useState(headerLabels.map(h => ({ title: h, isVisible: true })));
 
   const { data: schemaData } = useDomainSchema(domainSchemaName);
 
@@ -77,10 +75,7 @@ const HierarchicalDataEditProfile = ({
   if (layers) {
     layers.forEach((layer, index) => {
       const previousLayerToDepth = index === 0 ? 0 : layers[index - 1]?.toDepth;
-      const nextLayerFromDepth =
-        index === layers.length - 1
-          ? Number.MAX_VALUE
-          : layers[index + 1]?.fromDepth;
+      const nextLayerFromDepth = index === layers.length - 1 ? Number.MAX_VALUE : layers[index + 1]?.fromDepth;
 
       if (layer.fromDepth > previousLayerToDepth) {
         layerDisplayStack.push(
@@ -91,10 +86,7 @@ const HierarchicalDataEditProfile = ({
             previousLayer={layers[index - 1]}
             nextLayer={layers[index]}
             isEditable={isEditable}
-            height={
-              (layers[index].fromDepth - previousLayerToDepth) *
-              navState.pixelPerMeter
-            }
+            height={(layers[index].fromDepth - previousLayerToDepth) * navState.pixelPerMeter}
           />,
         );
       }
@@ -133,11 +125,7 @@ const HierarchicalDataEditProfile = ({
               });
 
               // adjust navigation state to make new layer visible
-              setNavState(prevState =>
-                prevState.setLensStart(
-                  Math.max(0, newToDepth - navState.lensSize),
-                ),
-              );
+              setNavState(prevState => prevState.setLensStart(Math.max(0, newToDepth - navState.lensSize)));
             }}
             data-cy="add-layer-button">
             <AddCircle />
@@ -154,11 +142,7 @@ const HierarchicalDataEditProfile = ({
               sx={{ paddingLeft: "1em" }}
               onClick={() => {
                 setHeader(
-                  header.map((h, headerIndex) =>
-                    index === headerIndex
-                      ? { ...h, isVisible: !h.isVisible }
-                      : h,
-                  ),
+                  header.map((h, headerIndex) => (index === headerIndex ? { ...h, isVisible: !h.isVisible } : h)),
                 );
               }}
               data-cy={`column-visibility-${index}`}>
@@ -195,11 +179,7 @@ const HierarchicalDataEditProfile = ({
   );
 
   return (
-    <NavigationChild
-      sx={{ ...sx }}
-      navState={navState}
-      setNavState={setNavState}
-      header={headerElement}>
+    <NavigationChild sx={{ ...sx }} navState={navState} setNavState={setNavState} header={headerElement}>
       {layers ? layerDisplayStack : <LinearProgress />}
     </NavigationChild>
   );

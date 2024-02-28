@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
@@ -41,33 +41,25 @@ class StatusFilter extends Component {
             <TranslationText firstUpperCase id="alls" />
           </span>
         </Form.Field>
-        {["statusedit", "statuscontrol", "statusvalid", "statuspublic"].map(
-          (role, idx) => (
-            <Form.Field key={"sec-" + role}>
-              <Radio
-                checked={
-                  search.filter.role ===
-                  role.replace("status", "").toUpperCase()
-                }
-                label={""}
-                name="radioGroup"
-                onChange={() => {
-                  this.props.setFilter(
-                    "role",
-                    role.replace("status", "").toUpperCase(),
-                  );
-                }}
-              />
-              <span
-                style={{
-                  color: "black",
-                  fontSize: "1.1em",
-                }}>
-                <TranslationText firstUpperCase id={role} />
-              </span>
-            </Form.Field>
-          ),
-        )}
+        {["statusedit", "statuscontrol", "statusvalid", "statuspublic"].map(role => (
+          <Form.Field key={"sec-" + role}>
+            <Radio
+              checked={search.filter.role === role.replace("status", "").toUpperCase()}
+              label={""}
+              name="radioGroup"
+              onChange={() => {
+                this.props.setFilter("role", role.replace("status", "").toUpperCase());
+              }}
+            />
+            <span
+              style={{
+                color: "black",
+                fontSize: "1.1em",
+              }}>
+              <TranslationText firstUpperCase id={role} />
+            </span>
+          </Form.Field>
+        ))}
       </Form>
     );
   }
@@ -79,19 +71,16 @@ StatusFilter.propTypes = {
   settings: PropTypes.object,
 };
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = state => {
   return {
     developer: state.developer,
   };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation(["common"])(StatusFilter));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(StatusFilter));

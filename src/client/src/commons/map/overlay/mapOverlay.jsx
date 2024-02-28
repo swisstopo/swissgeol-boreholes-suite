@@ -1,4 +1,3 @@
-import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
@@ -42,11 +41,10 @@ const mapDispatchToProps = dispatch => {
     dispatch: dispatch,
     toggleVisibility: layer => {
       dispatch(
-        patchSettings(
-          "map.explorer",
-          layer.visibility !== undefined ? !layer.visibility : true,
-          [layer.Identifier, "visibility"],
-        ),
+        patchSettings("map.explorer", layer.visibility !== undefined ? !layer.visibility : true, [
+          layer.Identifier,
+          "visibility",
+        ]),
       );
     },
     setTransparency: (layer, value) => {
@@ -59,31 +57,28 @@ const mapDispatchToProps = dispatch => {
         key: [layer.Identifier, "transparency"],
       });
     },
-    saveTransparency: (layer, index) => {
+    saveTransparency: layer => {
       dispatch(
-        patchSettings(
-          "map.explorer",
-          layer.transparency !== undefined ? layer.transparency : 0,
-          [layer.Identifier, "transparency"],
-        ),
+        patchSettings("map.explorer", layer.transparency !== undefined ? layer.transparency : 0, [
+          layer.Identifier,
+          "transparency",
+        ]),
       );
     },
     moveDown: layer => {
       dispatch(
-        patchSettings(
-          "map.explorer",
-          layer.position !== undefined ? layer.position - 1 : 0,
-          [layer.Identifier, "position"],
-        ),
+        patchSettings("map.explorer", layer.position !== undefined ? layer.position - 1 : 0, [
+          layer.Identifier,
+          "position",
+        ]),
       );
     },
     moveUp: layer => {
       dispatch(
-        patchSettings(
-          "map.explorer",
-          layer.position !== undefined ? layer.position + 1 : 0,
-          [layer.Identifier, "position"],
-        ),
+        patchSettings("map.explorer", layer.position !== undefined ? layer.position + 1 : 0, [
+          layer.Identifier,
+          "position",
+        ]),
       );
     },
   };

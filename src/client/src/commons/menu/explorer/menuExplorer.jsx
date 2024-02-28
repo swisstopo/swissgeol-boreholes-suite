@@ -58,7 +58,7 @@ class MenuExplorer extends React.Component {
               <Button
                 fluid
                 icon
-                onClick={e => {
+                onClick={() => {
                   history.push("/");
                 }}
                 primary
@@ -75,9 +75,7 @@ class MenuExplorer extends React.Component {
                   <TranslationText id="name" />:
                 </span>
                 <Header style={{ margin: "auto" }}>
-                  {_.hasIn(detail.borehole, "extended.original_name")
-                    ? detail.borehole.extended.original_name
-                    : null}
+                  {_.hasIn(detail.borehole, "extended.original_name") ? detail.borehole.extended.original_name : null}
                 </Header>
                 <div
                   style={{
@@ -91,9 +89,7 @@ class MenuExplorer extends React.Component {
                     <TranslationText id="createdBy" />:
                   </span>
                   <br />
-                  {_.hasIn(detail.borehole, "creator.username")
-                    ? detail.borehole.creator.username
-                    : null}
+                  {_.hasIn(detail.borehole, "creator.username") ? detail.borehole.creator.username : null}
                 </div>
                 <div
                   style={{
@@ -129,11 +125,7 @@ class MenuExplorer extends React.Component {
               {boreholes.isFetching ? (
                 <Icon loading name="spinner" />
               ) : (
-                <NumericFormat
-                  value={boreholes.dlen}
-                  thousandSeparator="'"
-                  displayType="text"
-                />
+                <NumericFormat value={boreholes.dlen} thousandSeparator="'" displayType="text" />
               )}
             </div>,
             <div
@@ -146,10 +138,7 @@ class MenuExplorer extends React.Component {
                 display: "flex",
                 flexDirection: "column",
                 overflowY: "hidden",
-                marginRight:
-                  this.state.scroller === true
-                    ? this.props.setting.scrollbar
-                    : "0px",
+                marginRight: this.state.scroller === true ? this.props.setting.scrollbar : "0px",
               }}>
               <SearchComponent />
             </div>,
@@ -222,6 +211,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(MenuExplorer),
-);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MenuExplorer));

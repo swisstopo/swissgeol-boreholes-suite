@@ -1,11 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -174,7 +169,7 @@ class App extends React.Component {
                   path={"/"}
                 />
                 <Route
-                  component={r => (
+                  component={() => (
                     <Redirect
                       to={{
                         pathname: "/",
@@ -192,7 +187,7 @@ class App extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = state => {
   return {
     loader: state.dataLoaderState,
   };

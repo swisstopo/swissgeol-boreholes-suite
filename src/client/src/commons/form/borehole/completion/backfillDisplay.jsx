@@ -1,4 +1,3 @@
-import React from "react";
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
@@ -18,16 +17,8 @@ const BackfillDisplay = props => {
         <FormDisplay label="todepth" value={item?.toDepth} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay
-          label="kindFilling"
-          value={item?.kind}
-          type={FormDisplayType.Domain}
-        />
-        <FormDisplay
-          label="materialFilling"
-          value={item?.material}
-          type={FormDisplayType.Domain}
-        />
+        <FormDisplay label="kindFilling" value={item?.kind} type={FormDisplayType.Domain} />
+        <FormDisplay label="materialFilling" value={item?.material} type={FormDisplayType.Domain} />
       </StackFullWidth>
       <FormDisplay label="notes" value={item?.notes} />
     </DataDisplayCard>

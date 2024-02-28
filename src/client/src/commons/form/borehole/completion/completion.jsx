@@ -1,12 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Stack, Typography } from "@mui/material";
-import {
-  CompletionBox,
-  CompletionTabs,
-  CompletionTab,
-} from "./styledComponents";
+import { CompletionBox, CompletionTabs, CompletionTab } from "./styledComponents";
 import {
   getCompletions,
   addCompletion,
@@ -120,10 +116,7 @@ const Completion = props => {
       addCompletion(completion).then(() => {
         setState({
           ...state,
-          switchTabTo:
-            state.switchTabTo === null
-              ? state.displayed.length - 1
-              : state.switchTabTo,
+          switchTabTo: state.switchTabTo === null ? state.displayed.length - 1 : state.switchTabTo,
         });
         loadData();
       });
@@ -235,23 +228,14 @@ const Completion = props => {
     <>
       <FullPage>
         <Stack flex="0 1 auto">
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center">
-            <CompletionTabs
-              value={state.index}
-              onChange={handleCompletionChanged}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <CompletionTabs value={state.index} onChange={handleCompletionChanged}>
               {state.displayed?.length > 0 &&
                 state.displayed.map((item, index) => {
                   return (
                     <CompletionTab
                       data-cy={"completion-header-tab-" + index}
-                      label={
-                        item.name === null || item.name === ""
-                          ? t("common:np")
-                          : item.name
-                      }
+                      label={item.name === null || item.name === "" ? t("common:np") : item.name}
                       key={index}
                     />
                   );
@@ -285,9 +269,7 @@ const Completion = props => {
                   <CompletionHeaderDisplay
                     completion={state.selected}
                     isEditable={isEditable}
-                    setEditing={shouldEdit =>
-                      setState({ ...state, editing: shouldEdit })
-                    }
+                    setEditing={shouldEdit => setState({ ...state, editing: shouldEdit })}
                     copyCompletion={copySelectedCompletion}
                     deleteCompletion={deleteSelectedCompletion}
                   />
@@ -298,28 +280,15 @@ const Completion = props => {
         </Stack>
         <Stack flex="1 0 0" marginTop="10px">
           {isLoading ? (
-            <Stack
-              alignItems="center"
-              justifyContent="center"
-              sx={{ flexGrow: 1 }}>
+            <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
               <CircularProgress />
             </Stack>
           ) : state.selected === null ? (
-            <Stack
-              alignItems="center"
-              justifyContent="center"
-              sx={{ flexGrow: 1 }}>
-              <Typography variant="fullPageMessage">
-                {t("msgCompletionEmpty")}
-              </Typography>
+            <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
+              <Typography variant="fullPageMessage">{t("msgCompletionEmpty")}</Typography>
             </Stack>
           ) : (
-            state.selected?.id > 0 && (
-              <CompletionContent
-                completion={state.selected}
-                isEditable={isEditable}
-              />
-            )
+            state.selected?.id > 0 && <CompletionContent completion={state.selected} isEditable={isEditable} />
           )}
         </Stack>
       </FullPage>

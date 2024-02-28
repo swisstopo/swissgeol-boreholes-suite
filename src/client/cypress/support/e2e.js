@@ -1,7 +1,4 @@
-import {
-  interceptApiCalls,
-  loginAndResetState,
-} from "../e2e/helpers/testHelpers";
+import { interceptApiCalls, loginAndResetState } from "../e2e/helpers/testHelpers";
 
 Cypress.on("uncaught:exception", () => {
   // returning false here prevents Cypress from

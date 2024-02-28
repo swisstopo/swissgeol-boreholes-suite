@@ -15,11 +15,7 @@ const ChronostratigraphyPanel = ({ id: selectedBoreholeId, isEditable }) => {
   return (
     <StratigraphySelection
       id={selectedBoreholeId}
-      noStratigraphiesMessageKey={
-        isEditable
-          ? "msgChronostratigraphyEmptyEditing"
-          : "msgChronostratigraphyEmpty"
-      }
+      noStratigraphiesMessageKey={isEditable ? "msgChronostratigraphyEmptyEditing" : "msgChronostratigraphyEmpty"}
       renderItem={stratigraphyId => (
         <NavigationContainer
           sx={{ gap: "0.5em" }}
@@ -61,11 +57,7 @@ const ChronostratigraphyPanel = ({ id: selectedBoreholeId, isEditable }) => {
                     navState={navState}
                     setNavState={setNavState}
                   />
-                  <LithologyViewProfile
-                    stratigraphyId={stratigraphyId}
-                    navState={navState}
-                    setNavState={setNavState}
-                  />
+                  <LithologyViewProfile stratigraphyId={stratigraphyId} navState={navState} setNavState={setNavState} />
                 </NavigationChild>
                 <NavigationChild
                   sx={{ flex: "0 0 4em" }}

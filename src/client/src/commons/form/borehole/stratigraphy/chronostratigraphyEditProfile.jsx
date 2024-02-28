@@ -1,21 +1,11 @@
-import React from "react";
-import {
-  useChronostratigraphies,
-  useChronostratigraphyMutations,
-} from "../../../../api/fetchApiV2";
+import { useChronostratigraphies, useChronostratigraphyMutations } from "../../../../api/fetchApiV2";
 import HierarchicalDataEditProfile from "./hierarchicalDataEditProfile";
 import { useTranslation } from "react-i18next";
 
 /**
  * Manages the chronostratigraphy data and mutations.
  */
-const ChronostratigraphyEditProfile = ({
-  selectedStratigraphyID,
-  isEditable,
-  sx,
-  navState,
-  setNavState,
-}) => {
+const ChronostratigraphyEditProfile = ({ selectedStratigraphyID, isEditable, sx, navState, setNavState }) => {
   const { t } = useTranslation();
 
   const { data: layers } = useChronostratigraphies(selectedStratigraphyID);
@@ -31,15 +21,7 @@ const ChronostratigraphyEditProfile = ({
       addLayer={addLayer}
       deleteLayer={deleteLayer}
       updateLayer={updateLayer}
-      headerLabels={[
-        "eon",
-        "era",
-        "period",
-        "epoch",
-        "subepoch",
-        "age",
-        "subage",
-      ]}
+      headerLabels={["eon", "era", "period", "epoch", "subepoch", "age", "subage"]}
       domainSchemaName="custom.chronostratigraphy_top_bedrock"
       dataProperty="chronostratigraphyId"
       titel={t("chronostratigraphy")}

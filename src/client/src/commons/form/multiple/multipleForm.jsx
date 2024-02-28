@@ -11,12 +11,7 @@ import DateField from "../dateField";
 import TranslationText from "../translationText";
 
 import { Header, Input, Button, Form } from "semantic-ui-react";
-import {
-  FormControl,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-} from "@mui/material";
+import { FormControl, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 
 import { patchBoreholes } from "../../../api-lib/index";
 
@@ -111,12 +106,9 @@ class MultipleForm extends React.Component {
 
   save() {
     const { undo } = this.props;
-    const fields = this.state.fields.map(field => [
-      this.state.data[field].api,
-      this.state.data[field].value,
-    ]);
+    const fields = this.state.fields.map(field => [this.state.data[field].api, this.state.data[field].value]);
     patchBoreholes(this.props.selected, fields)
-      .then(response => {
+      .then(() => {
         undo();
       })
       .catch(function (error) {
@@ -130,7 +122,7 @@ class MultipleForm extends React.Component {
       <Button
         key={fields[0]}
         active={this.isActive(fields[0])}
-        onClick={e => {
+        onClick={() => {
           this.toggle(fields);
         }}
         size="mini"
@@ -157,13 +149,7 @@ class MultipleForm extends React.Component {
     if (!this.isActive(field)) {
       return null;
     }
-    if (
-      [
-        "lithology_top_bedrock",
-        "lithostratigraphy_top_bedrock",
-        "chronostratigraphy_top_bedrock",
-      ].includes(field)
-    ) {
+    if (["lithology_top_bedrock", "lithostratigraphy_top_bedrock", "chronostratigraphy_top_bedrock"].includes(field)) {
       return (
         <Form.Field key={field}>
           <label>{t(field)}</label>
@@ -244,19 +230,10 @@ class MultipleForm extends React.Component {
           <RadioGroup
             row
             value={
-              this.state.data[field].value === true
-                ? "TRUE"
-                : this.state.data[field].value === false
-                  ? "FALSE"
-                  : "NULL"
+              this.state.data[field].value === true ? "TRUE" : this.state.data[field].value === false ? "FALSE" : "NULL"
             }
             onChange={e => {
-              let newValue =
-                e.target.value === "TRUE"
-                  ? true
-                  : e.target.value === "FALSE"
-                    ? false
-                    : null;
+              let newValue = e.target.value === "TRUE" ? true : e.target.value === "FALSE" ? false : null;
               this.setState({
                 ...this.state,
                 data: {
@@ -328,9 +305,7 @@ class MultipleForm extends React.Component {
 
   render() {
     const { t } = this.props;
-    const workgroups = this.props.user.data.workgroups.filter(
-      w => w.disabled === null && w.supplier === false,
-    );
+    const workgroups = this.props.user.data.workgroups.filter(w => w.disabled === null && w.supplier === false);
     return (
       <div
         style={{
@@ -364,17 +339,12 @@ class MultipleForm extends React.Component {
             overflowY: "auto",
             padding: "0.5em",
           }}>
-          {this.state.fields.length === 0
-            ? "Please Select the Fields to Edit"
-            : null}
+          {this.state.fields.length === 0 ? "Please Select the Fields to Edit" : null}
           <Form autoComplete="off" error>
             {this.getInput("project_name")}
             {this.getGroup([
               this.getDomain("restriction"),
-              this.getDate(
-                "restriction_until",
-                this.state.data.restriction.value === 20111003,
-              ),
+              this.getDate("restriction_until", this.state.data.restriction.value === 20111003),
             ])}
             {this.getRadio("national_interest")}
             {this.isActive("workgroup") ? (
@@ -419,49 +389,27 @@ class MultipleForm extends React.Component {
               this.getDomain("drilling_method"),
               this.getDomain("purpose"),
             ])}
-            {this.getGroup([
-              this.getDomain("cuttings"),
-              this.getDate("spud_date"),
-              this.getDate("drilling_end_date"),
-            ])}
-            {this.getGroup([
-              this.getInput("drill_diameter", "number"),
-              this.getDomain("boreholestatus"),
-            ])}
+            {this.getGroup([this.getDomain("cuttings"), this.getDate("spud_date"), this.getDate("drilling_end_date")])}
+            {this.getGroup([this.getInput("drill_diameter", "number"), this.getDomain("boreholestatus")])}
             {this.getGroup([
               this.getInput("inclination", "number"),
               this.getInput("inclination_direction", "number"),
               this.getDomain("qt_bore_inc_dir"),
             ])}
-            {this.getGroup([
-              this.getInput("totaldepth", "number"),
-              this.getDomain("qt_depth"),
-            ])}
+            {this.getGroup([this.getInput("totaldepth", "number"), this.getDomain("qt_depth")])}
             {this.getGroup([
               this.getInput("total_depth_tvd", "number"),
               this.getDomain("total_depth_tvd_qt", "custom.qt_top_bedrock"),
             ])}
-            {this.getGroup([
-              this.getInput("top_bedrock", "number"),
-              this.getDomain("qt_top_bedrock"),
-            ])}
+            {this.getGroup([this.getInput("top_bedrock", "number"), this.getDomain("qt_top_bedrock")])}
             {this.getGroup([
               this.getInput("top_bedrock_tvd", "number"),
               this.getDomain("top_bedrock_tvd_qt", "custom.qt_top_bedrock"),
             ])}
             {this.getRadio("groundwater")}
-            {this.getDomain(
-              "lithology_top_bedrock",
-              "custom.lithology_top_bedrock",
-            )}
-            {this.getDomain(
-              "lithostratigraphy_top_bedrock",
-              "custom.lithostratigraphy_top_bedrock",
-            )}
-            {this.getDomain(
-              "chronostratigraphy_top_bedrock",
-              "custom.chronostratigraphy_top_bedrock",
-            )}
+            {this.getDomain("lithology_top_bedrock", "custom.lithology_top_bedrock")}
+            {this.getDomain("lithostratigraphy_top_bedrock", "custom.lithostratigraphy_top_bedrock")}
+            {this.getDomain("chronostratigraphy_top_bedrock", "custom.chronostratigraphy_top_bedrock")}
           </Form>
         </div>
         <div
@@ -503,7 +451,7 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
     undo: () => {
@@ -515,7 +463,4 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation(["common"])(MultipleForm));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MultipleForm));

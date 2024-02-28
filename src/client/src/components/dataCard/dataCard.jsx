@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 import { Box, Card, Grid, Stack } from "@mui/material";
 import { styled } from "@mui/system";
 
@@ -17,12 +17,7 @@ export const DataCardContainer = forwardRef((props, ref) => {
   }));
 
   return (
-    <StyledTextField
-      container
-      columnSpacing={{ xs: 2 }}
-      rowSpacing={{ xs: 2 }}
-      ref={ref}
-      {...props}>
+    <StyledTextField container columnSpacing={{ xs: 2 }} rowSpacing={{ xs: 2 }} ref={ref} {...props}>
       {props.children}
     </StyledTextField>
   );
@@ -56,7 +51,7 @@ export const DataCard = forwardRef((props, ref) => {
   );
 });
 
-export const DataCardButtonContainer = forwardRef((props, ref) => {
+export const DataCardButtonContainer = forwardRef(props => {
   return (
     <Box
       sx={{

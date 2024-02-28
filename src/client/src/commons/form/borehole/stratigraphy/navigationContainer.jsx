@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { Stack } from "@mui/material";
 import useResizeObserver from "@react-hook/resize-observer";
 
@@ -63,9 +63,7 @@ export class NavState {
   }
 
   setContentHeightFromLayers(name, layers) {
-    const height = !layers
-      ? 0
-      : layers.reduce((a, x) => (x.toDepth > a ? x.toDepth : a), 0);
+    const height = !layers ? 0 : layers.reduce((a, x) => (x.toDepth > a ? x.toDepth : a), 0);
     return this.setContentHeight(name, height);
   }
 
@@ -125,9 +123,7 @@ const NavigationContainer = ({ renderItems, sx }) => {
   const [navState, setNavState] = useState(new NavState());
 
   const containerRef = useRef(null);
-  useResizeObserver(containerRef, entry =>
-    setNavState(prevState => prevState.setHeight(entry.contentRect.height)),
-  );
+  useResizeObserver(containerRef, entry => setNavState(prevState => prevState.setHeight(entry.contentRect.height)));
 
   const handleOnWheel = event => {
     event.stopPropagation();
@@ -140,9 +136,7 @@ const NavigationContainer = ({ renderItems, sx }) => {
     const clampedLensStart = clamp(
       navState.lensStart +
         (navState.lensSize - clampedLensSize) *
-          ((event.pageY -
-            event.currentTarget.getBoundingClientRect().top -
-            navState.maxHeader) /
+          ((event.pageY - event.currentTarget.getBoundingClientRect().top - navState.maxHeader) /
             (navState.height - navState.maxHeader)),
       0,
       navState.maxContent - clampedLensSize,
@@ -159,11 +153,7 @@ const NavigationContainer = ({ renderItems, sx }) => {
   };
 
   return (
-    <Stack
-      ref={containerRef}
-      direction="row"
-      sx={{ flex: "1", overflowX: "auto", ...sx }}
-      onWheel={handleOnWheel}>
+    <Stack ref={containerRef} direction="row" sx={{ flex: "1", overflowX: "auto", ...sx }} onWheel={handleOnWheel}>
       {renderItems(navState, setNavState)}
     </Stack>
   );

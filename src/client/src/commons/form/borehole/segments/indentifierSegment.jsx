@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import _ from "lodash";
 
 import DomainDropdown from "../../domain/dropdown/domainDropdown";
@@ -10,21 +10,12 @@ import { removeIdentifier, addIdentifier } from "../../../../api-lib";
 import { useTranslation } from "react-i18next";
 
 const IdentifierSegment = props => {
-  const {
-    borehole,
-    identifier,
-    identifierValue,
-    updateBorehole,
-    setState,
-    user,
-  } = props;
+  const { borehole, identifier, identifierValue, updateBorehole, setState, user } = props;
   const { t } = useTranslation();
   const alertContext = useContext(AlertContext);
 
   const isEditable =
-    borehole?.data.role === "EDIT" &&
-    borehole?.data.lock !== null &&
-    borehole?.data.lock?.id === user?.data.id;
+    borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   return (
     <Segment>
@@ -40,9 +31,7 @@ const IdentifierSegment = props => {
         <div className="flex_fill">
           <TranslationText id="borehole_identifier_value" />
         </div>
-        <div>
-          {borehole.data.lock !== null ? <TranslationText id="delete" /> : null}
-        </div>
+        <div>{borehole.data.lock !== null ? <TranslationText id="delete" /> : null}</div>
       </div>
       <div
         className="flex_row"
@@ -81,22 +70,17 @@ const IdentifierSegment = props => {
                   <div
                     className="linker"
                     onClick={() => {
-                      removeIdentifier(borehole.data.id, identifier.id).then(
-                        response => {
-                          if (response.data.success) {
-                            const tmp = _.cloneDeep(borehole.data);
-                            if (tmp.custom.identifiers.length === 1) {
-                              tmp.custom.identifiers = [];
-                            } else {
-                              tmp.custom.identifiers =
-                                tmp.custom.identifiers.filter(
-                                  el => el.id !== identifier.id,
-                                );
-                            }
-                            updateBorehole(tmp);
+                      removeIdentifier(borehole.data.id, identifier.id).then(response => {
+                        if (response.data.success) {
+                          const tmp = _.cloneDeep(borehole.data);
+                          if (tmp.custom.identifiers.length === 1) {
+                            tmp.custom.identifiers = [];
+                          } else {
+                            tmp.custom.identifiers = tmp.custom.identifiers.filter(el => el.id !== identifier.id);
                           }
-                        },
-                      );
+                          updateBorehole(tmp);
+                        }
+                      });
                     }}>
                     <TranslationText id="delete" />
                   </div>
@@ -112,8 +96,7 @@ const IdentifierSegment = props => {
               data-cy="identifier-dropdown"
               error={
                 identifier === null &&
-                (borehole.data?.custom?.identifiers === null ||
-                  borehole.data.custom.identifiers.length === 0)
+                (borehole.data?.custom?.identifiers === null || borehole.data.custom.identifiers.length === 0)
               }>
               <label>&nbsp;</label>
               <DomainDropdown
@@ -131,8 +114,7 @@ const IdentifierSegment = props => {
               data-cy="identifier-value"
               error={
                 identifierValue === "" &&
-                (borehole.data?.custom?.identifiers === null ||
-                  borehole.data.custom.identifiers.length === 0)
+                (borehole.data?.custom?.identifiers === null || borehole.data.custom.identifiers.length === 0)
               }>
               <label>&nbsp;</label>
               <Input
@@ -167,11 +149,7 @@ const IdentifierSegment = props => {
                   if (alreadySet.includes(identifier)) {
                     alertContext.error(t("msgIdentifierAlreadyUsed"));
                   } else {
-                    addIdentifier(
-                      borehole.data.id,
-                      identifier,
-                      identifierValue,
-                    ).then(response => {
+                    addIdentifier(borehole.data.id, identifier, identifierValue).then(response => {
                       if (response.data.success) {
                         setState(
                           {

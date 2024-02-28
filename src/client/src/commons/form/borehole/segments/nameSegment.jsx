@@ -1,4 +1,3 @@
-import React from "react";
 import TranslationText from "../../translationText";
 import { Form, Input, Segment } from "semantic-ui-react";
 
@@ -6,17 +5,13 @@ const NameSegment = props => {
   const { size, borehole, updateChange, user } = props;
 
   const isEditable =
-    borehole?.data.role === "EDIT" &&
-    borehole?.data.lock !== null &&
-    borehole?.data.lock?.id === user?.data.id;
+    borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   return (
     <Segment>
       <Form autoComplete="off" error size={size}>
         <Form.Group widths="equal">
-          <Form.Field
-            error={borehole.data.extended.original_name === ""}
-            required>
+          <Form.Field error={borehole.data.extended.original_name === ""} required>
             <label>
               <TranslationText id="original_name" />
             </label>

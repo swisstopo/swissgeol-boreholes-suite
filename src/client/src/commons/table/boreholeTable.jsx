@@ -1,4 +1,3 @@
-import React from "react";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
@@ -41,9 +40,7 @@ class BoreholeTable extends TableComponent {
           this.reorder(orderby);
         }}
         style={style}>
-        {store.orderby === orderby ? (
-          <Icon name={store.direction === "DESC" ? "sort down" : "sort up"} />
-        ) : null}
+        {store.orderby === orderby ? <Icon name={store.direction === "DESC" ? "sort down" : "sort up"} /> : null}
         <TranslationText id={orderby} />
       </div>
     );
@@ -67,9 +64,7 @@ class BoreholeTable extends TableComponent {
           {this.getIcon("drilling_end_date")}
           {this.getIcon("purpose", true)}
         </Table.HeaderCell>
-        <Table.HeaderCell
-          style={{ width: "4em" }}
-          verticalAlign="top"></Table.HeaderCell>
+        <Table.HeaderCell style={{ width: "4em" }} verticalAlign="top"></Table.HeaderCell>
       </Table.Row>
     );
   }
@@ -78,21 +73,17 @@ class BoreholeTable extends TableComponent {
     return [
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         {(() => {
-          if (!this.props.domains.data.hasOwnProperty("borehole_type")) {
+          if (!Object.prototype.hasOwnProperty.call(this.props.domains.data, "borehole_type")) {
             return null;
           }
 
-          const borehole_type = this.props.domains.data["borehole_type"].find(
-            function (element) {
-              return element.id === item.borehole_type;
-            },
-          );
+          const borehole_type = this.props.domains.data["borehole_type"].find(function (element) {
+            return element.id === item.borehole_type;
+          });
 
-          const restriction = this.props.domains.data["restriction"].find(
-            function (element) {
-              return element.id === item.restriction;
-            },
-          );
+          const restriction = this.props.domains.data["restriction"].find(function (element) {
+            return element.id === item.restriction;
+          });
 
           let color = "black";
           if (restriction !== undefined) {
@@ -154,11 +145,7 @@ class BoreholeTable extends TableComponent {
         {_.isNil(item.total_depth) ? (
           "n/p"
         ) : (
-          <NumericFormat
-            value={item.total_depth}
-            thousandSeparator="'"
-            displayType="text"
-          />
+          <NumericFormat value={item.total_depth} thousandSeparator="'" displayType="text" />
         )}
         <br />
         <span
@@ -169,11 +156,7 @@ class BoreholeTable extends TableComponent {
           {_.isNil(item.extended.top_bedrock) ? (
             ""
           ) : (
-            <NumericFormat
-              value={item.extended.top_bedrock}
-              thousandSeparator="'"
-              displayType="text"
-            />
+            <NumericFormat value={item.extended.top_bedrock} thousandSeparator="'" displayType="text" />
           )}
         </span>
       </Table.Cell>,
@@ -188,11 +171,7 @@ class BoreholeTable extends TableComponent {
           {_.isNil(item.extended.purpose) ? null : (
             <span>
               (
-              <DomainText
-                id={item.extended.purpose}
-                schema="extended.purpose"
-              />
-              )
+              <DomainText id={item.extended.purpose} schema="extended.purpose" />)
             </span>
           )}
         </span>
@@ -204,16 +183,8 @@ class BoreholeTable extends TableComponent {
           textAlign: "center",
         }}>
         <Button
-          color={
-            _.findIndex(this.props.checkout.cart, ["id", item.id]) >= 0
-              ? "grey"
-              : "black"
-          }
-          icon={
-            _.findIndex(this.props.checkout.cart, ["id", item.id]) >= 0
-              ? "minus"
-              : "plus"
-          }
+          color={_.findIndex(this.props.checkout.cart, ["id", item.id]) >= 0 ? "grey" : "black"}
+          icon={_.findIndex(this.props.checkout.cart, ["id", item.id]) >= 0 ? "minus" : "plus"}
           onClick={e => {
             e.stopPropagation();
             this.props.toggleCart(item);
@@ -264,7 +235,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation("common")(BoreholeTable));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(BoreholeTable));

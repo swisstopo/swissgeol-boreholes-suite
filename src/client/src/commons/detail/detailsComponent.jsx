@@ -38,21 +38,15 @@ class DetailsComponent extends React.Component {
                     margin: "0px 0px 0.4em",
                   }}>
                   {(() => {
-                    if (
-                      !this.props.domains.data.hasOwnProperty("borehole_type")
-                    ) {
+                    if (!Object.prototype.hasOwnProperty.call(this.props.domains.data, "borehole_type")) {
                       return null;
                     }
 
-                    const borehole_type = this.props.domains.data[
-                      "borehole_type"
-                    ].find(function (element) {
+                    const borehole_type = this.props.domains.data["borehole_type"].find(function (element) {
                       return element.id === detail.borehole.borehole_type;
                     });
 
-                    const restriction = this.props.domains.data[
-                      "restriction"
-                    ].find(function (element) {
+                    const restriction = this.props.domains.data["restriction"].find(function (element) {
                       return element.id === detail.borehole.restriction;
                     });
 
@@ -69,9 +63,7 @@ class DetailsComponent extends React.Component {
                       return (
                         <img
                           alt=""
-                          src={
-                            "/img/" + borehole_type.code + "-" + color + ".svg"
-                          }
+                          src={"/img/" + borehole_type.code + "-" + color + ".svg"}
                           style={{
                             height: "0.75em",
                             width: "auto",
@@ -91,10 +83,7 @@ class DetailsComponent extends React.Component {
                       );
                     }
                   })()}{" "}
-                  <DomainText
-                    id={detail.borehole.borehole_type}
-                    schema={"borehole_type"}
-                  />
+                  <DomainText id={detail.borehole.borehole_type} schema={"borehole_type"} />
                 </div>
                 <div
                   style={{
@@ -110,8 +99,7 @@ class DetailsComponent extends React.Component {
                     paddingTop: "0.4em",
                   }}>
                   {detail.borehole.custom.municipality}
-                  {detail.borehole.custom.municipality !== null &&
-                  detail.borehole.custom.municipality !== ""
+                  {detail.borehole.custom.municipality !== null && detail.borehole.custom.municipality !== ""
                     ? ",  "
                     : " "}
                   {detail.borehole.custom.canton}
@@ -132,8 +120,7 @@ class DetailsComponent extends React.Component {
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "flex-end",
-                  flexWrap:
-                    this.props.developer.debug === true ? "wrap" : "nowrap",
+                  flexWrap: this.props.developer.debug === true ? "wrap" : "nowrap",
                 }}>
                 <div
                   style={{
@@ -145,10 +132,7 @@ class DetailsComponent extends React.Component {
                       fontWeight: "bold",
                       fontSize: "1.1em",
                     }}>
-                    <DomainText
-                      id={detail.borehole.extended.purpose}
-                      schema={"extended.purpose"}
-                    />
+                    <DomainText id={detail.borehole.extended.purpose} schema={"extended.purpose"} />
                   </div>
                   <div
                     style={{
@@ -168,11 +152,7 @@ class DetailsComponent extends React.Component {
                       fontWeight: "bold",
                       fontSize: "1.1em",
                     }}>
-                    <NumericFormat
-                      value={detail.borehole.total_depth}
-                      thousandSeparator="'"
-                      displayType="text"
-                    />
+                    <NumericFormat value={detail.borehole.total_depth} thousandSeparator="'" displayType="text" />
                   </div>
                   <div
                     style={{
@@ -192,11 +172,7 @@ class DetailsComponent extends React.Component {
                       fontWeight: "bold",
                       fontSize: "1.1em",
                     }}>
-                    <NumericFormat
-                      value={detail.borehole.elevation_z}
-                      thousandSeparator="'"
-                      displayType="text"
-                    />
+                    <NumericFormat value={detail.borehole.elevation_z} thousandSeparator="'" displayType="text" />
                   </div>
                   <div
                     style={{

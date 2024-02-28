@@ -53,11 +53,7 @@ class ExportLink extends React.Component {
           Download Profile
         </span>
         &nbsp;
-        {this.state.downloading === true ? (
-          <Icon loading name="spinner" />
-        ) : (
-          <Icon name="arrow circle down" />
-        )}
+        {this.state.downloading === true ? <Icon loading name="spinner" /> : <Icon name="arrow circle down" />}
       </span>
     );
   }

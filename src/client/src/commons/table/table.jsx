@@ -105,7 +105,7 @@ class TTable extends React.Component {
     console.error("Please overwrite getHeader method");
   }
 
-  getCols(item, idx) {
+  getCols() {
     console.error("Please overwrite getCols method");
   }
 
@@ -113,8 +113,7 @@ class TTable extends React.Component {
     const { scrollPosition, onScrollChange } = this.props;
 
     // remember current scroll position
-    var currentScrollPosition =
-      document.getElementById("borehole-table").scrollTop;
+    var currentScrollPosition = document.getElementById("borehole-table").scrollTop;
     if (scrollPosition !== currentScrollPosition) {
       onScrollChange(currentScrollPosition);
     }
@@ -154,11 +153,9 @@ class TTable extends React.Component {
             <Table.Body>
               {store.data.map((item, idx) => (
                 <Table.Row
-                  active={
-                    activeItem === item.id || this.props.highlight === item.id
-                  }
+                  active={activeItem === item.id || this.props.highlight === item.id}
                   key={this.uid + "_" + idx}
-                  onClick={e => {
+                  onClick={() => {
                     if (all === true || selected.length > 0) {
                       this.add2selection(item.id);
                     } else {

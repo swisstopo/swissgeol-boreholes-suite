@@ -1,26 +1,14 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import * as Styled from "./styles";
 import { Icon, Radio } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
 import { gapLayer, deleteLayer } from "../../../../../../../api-lib/index";
-import {
-  fetchLayerById,
-  addBedrock,
-} from "../../../../../../../api/fetchApiV2";
+import { fetchLayerById, addBedrock } from "../../../../../../../api/fetchApiV2";
 import ErrorTypes from "./errorTypes";
 import { AlertContext } from "../../../../../../../components/alert/alertContext";
 
 const ProfileLayersError = props => {
-  const {
-    title,
-    isEditable,
-    id,
-    isInside,
-    onUpdated,
-    layerIndex,
-    layerLength,
-    closeDelete,
-  } = props.data;
+  const { title, isEditable, id, isInside, onUpdated, layerIndex, layerLength, closeDelete } = props.data;
   const { setDeleteParams } = props;
   const [showSolution, setShowSolution] = useState();
   const [error, setError] = useState();
@@ -64,16 +52,8 @@ const ProfileLayersError = props => {
   }, [title, id]);
 
   const resolving = title => {
-    if (
-      title === "errorGapSolution_fillWithUndefined" ||
-      title === "deletelayer"
-    )
-      return 0;
-    if (
-      title === "errorGapSolution_extendUpperLayer" ||
-      title === "extendupper"
-    )
-      return 1;
+    if (title === "errorGapSolution_fillWithUndefined" || title === "deletelayer") return 0;
+    if (title === "errorGapSolution_extendUpperLayer" || title === "extendupper") return 1;
     if (
       title === "errorGapSolution_extendLowerToZero" ||
       title === "errorGapSolution_extendLowerLayer" ||
@@ -137,9 +117,7 @@ const ProfileLayersError = props => {
     }
   };
   return (
-    <Styled.ErrorCard
-      isDelete={isDelete}
-      isFirstInList={error?.messageId === "errorStartWrong"}>
+    <Styled.ErrorCard isDelete={isDelete} isFirstInList={error?.messageId === "errorStartWrong"}>
       {!isDelete && (
         <Styled.Row
           onClick={() => {
@@ -264,12 +242,7 @@ const ProfileLayersError = props => {
               <Icon name="cancel" />
               <TranslationText id="cancel" />
             </Styled.CardButton>
-            <Styled.CardButton
-              disabled={resolvingAction === null}
-              icon
-              negative
-              onClick={sendDataToServer}
-              size="mini">
+            <Styled.CardButton disabled={resolvingAction === null} icon negative onClick={sendDataToServer} size="mini">
               <Icon name="trash" />
               <TranslationText id="confirm" />
             </Styled.CardButton>

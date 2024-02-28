@@ -5,19 +5,9 @@ import { useFormContext, Controller } from "react-hook-form";
 import { FormField, getInputFieldBackgroundColor } from "./form";
 
 export const FormMultiSelect = props => {
-  const {
-    fieldName,
-    label,
-    tooltipLabel,
-    required,
-    disabled,
-    selected,
-    values,
-    sx,
-  } = props;
+  const { fieldName, label, tooltipLabel, required, disabled, selected, values, sx } = props;
   const { t } = useTranslation();
-  const { formState, register, setValue, getValues, control } =
-    useFormContext();
+  const { formState, register, setValue, getValues, control } = useFormContext();
 
   const ChipBox = selection => {
     return (
@@ -28,9 +18,7 @@ export const FormMultiSelect = props => {
           gap: 0.5,
         }}>
         {selection.map(selectedValue => {
-          const selectedOption = values?.find(
-            value => value.key === selectedValue,
-          );
+          const selectedOption = values?.find(value => value.key === selectedValue);
           return (
             <Chip
               sx={{ height: "26px" }}
@@ -42,9 +30,7 @@ export const FormMultiSelect = props => {
               onDelete={e => {
                 e.stopPropagation();
                 var selectedValues = getValues()[fieldName];
-                var updatedValues = selectedValues.filter(
-                  value => value !== selectedValue,
-                );
+                var updatedValues = selectedValues.filter(value => value !== selectedValue);
                 setValue(fieldName, updatedValues, { shouldValidate: true });
               }}
             />
@@ -73,9 +59,7 @@ export const FormMultiSelect = props => {
               }}
               required={required || false}
               sx={{
-                backgroundColor: getInputFieldBackgroundColor(
-                  formState.errors[fieldName],
-                ),
+                backgroundColor: getInputFieldBackgroundColor(formState.errors[fieldName]),
                 ...sx,
               }}
               size="small"
@@ -102,9 +86,7 @@ export const FormMultiSelect = props => {
               {...field}
               required={required || false}
               sx={{
-                backgroundColor: getInputFieldBackgroundColor(
-                  formState.errors[fieldName],
-                ),
+                backgroundColor: getInputFieldBackgroundColor(formState.errors[fieldName]),
                 ...sx,
               }}
               size="small"

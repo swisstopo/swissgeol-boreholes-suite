@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import * as Styled from "./styles";
 import PropTypes from "prop-types";
 import Draggable from "react-draggable";
@@ -37,21 +37,16 @@ const Stratigraphy = props => {
   });
 
   useEffect(() => {
-    // eslint-disable-next-line
     updateDimensions();
-    // eslint-disable-next-line
+
     window.addEventListener("resize", updateDimensions, { passive: true });
     return () => {
-      // eslint-disable-next-line
       window.removeEventListener("resize", updateDimensions);
     };
     // eslint-disable-next-line
   }, []);
 
-  const sortedData = useMemo(
-    () => data.slice().sort((a, b) => a.fromDepth - b.fromDepth),
-    [data],
-  );
+  const sortedData = useMemo(() => data.slice().sort((a, b) => a.fromDepth - b.fromDepth), [data]);
 
   const handleTitle = layer => {
     if (getTitle !== undefined && typeof getTitle === "function") {
@@ -125,7 +120,7 @@ const Stratigraphy = props => {
     }
     return `url('${layer[mapping.pattern]}')`;
   };
-  const handleStart = (e, data) => {
+  const handleStart = () => {
     setState(prevState => ({
       ...prevState,
       minimapCursor: "grabbing",
@@ -138,7 +133,7 @@ const Stratigraphy = props => {
     }
   };
 
-  const handleStop = (e, data) => {
+  const handleStop = () => {
     setState(prevState => ({
       ...prevState,
       minimapCursor: "grab",
@@ -147,8 +142,6 @@ const Stratigraphy = props => {
 
   const updateDimensions = () => {
     if (element !== undefined && element !== null) {
-      if (sortedData.length > 0) {
-      }
       setState(prevState => ({
         ...prevState,
         height: element.current?.clientHeight,
@@ -156,9 +149,7 @@ const Stratigraphy = props => {
         pxm:
           sortedData.length > 0
             ? (element.current?.clientHeight - 1.5) /
-              Math.max(
-                ...sortedData.map(l => l[mapping.to]).filter(l => l !== null),
-              )
+              Math.max(...sortedData.map(l => l[mapping.to]).filter(l => l !== null))
             : 0,
       }));
     }
@@ -166,25 +157,17 @@ const Stratigraphy = props => {
 
   const handleLayerClick = layer => {
     if (onSelected !== undefined && typeof onSelected === "function") {
-      onSelected(
-        state?.selected === null || state?.selected.id !== layer[mapping.id]
-          ? layer
-          : null,
-      );
+      onSelected(state?.selected === null || state?.selected.id !== layer[mapping.id] ? layer : null);
     }
     setState(prevState => ({
       ...prevState,
-      selected:
-        state?.selected === null || state?.selected.id !== layer[mapping.id]
-          ? layer
-          : null,
+      selected: state?.selected === null || state?.selected.id !== layer[mapping.id] ? layer : null,
     }));
   };
 
   const rangeHeight = state?.scale * state.height;
 
-  const factor =
-    rangeHeight === 0 ? rangeHeight : state.pxm * (state.height / rangeHeight);
+  const factor = rangeHeight === 0 ? rangeHeight : state.pxm * (state.height / rangeHeight);
 
   const offset = state.top * (state.height / rangeHeight);
 
@@ -202,18 +185,12 @@ const Stratigraphy = props => {
       <Styled.FirstColumn>
         {sortedData?.map((layer, idx) => (
           <div key={"stratigraphy-minimap-layer-" + idx}>
-            {
-              (isLayerSelected =
-                state?.selected !== null &&
-                state?.selected?.id === layer[mapping.id])
-            }
+            {(isLayerSelected = state?.selected !== null && state?.selected?.id === layer[mapping.id])}
             {/*props.minimapSelectedLayerStyle it's a red border*/}
             <Styled.FirstLayerList
               backgroundColor={handleColor(layer)}
               backgroundImage={handlePattern(layer)}
-              height={
-                (layer[mapping.to] - layer[mapping.from]) * state.pxm + "px"
-              }
+              height={(layer[mapping.to] - layer[mapping.from]) * state.pxm + "px"}
               style={{
                 ...(isLayerSelected
                   ? minimapSelectedLayerStyle
@@ -236,9 +213,7 @@ const Stratigraphy = props => {
             y: state.top,
             x: 0,
           }}>
-          <Styled.LensContainer
-            cursor={state.minimapCursor}
-            height={rangeHeight + "px"}>
+          <Styled.LensContainer cursor={state.minimapCursor} height={rangeHeight + "px"}>
             {rangeHeight >= 40 && (
               <>
                 <Styled.LensNumber>
@@ -267,8 +242,7 @@ const Stratigraphy = props => {
       <Styled.ColumnsContainer>
         <Styled.ShakingColumns offset={"-" + offset + "px"}>
           {sortedData.map((layer, idx) => {
-            const layerHeight =
-              factor * (layer[mapping.to] - layer[mapping.from]);
+            const layerHeight = factor * (layer[mapping.to] - layer[mapping.from]);
             return (
               <Styled.LayerInfoList
                 data-cy={"stratigraphy-layer-" + idx}
@@ -279,21 +253,15 @@ const Stratigraphy = props => {
                 height={layerHeight + "px"}
                 style={{
                   // what they are doing??? hoverable?
-                  ...(state?.selected !== null &&
-                  state?.selected.id === layer[mapping.id]
+                  ...(state?.selected !== null && state?.selected.id === layer[mapping.id]
                     ? selectedLayerStyle
                     : state?.selected !== null
                       ? unselectedLayerStyle
                       : null),
-                  ...(state?.over !== null &&
-                  state?.over[mapping.id] === layer[mapping.id]
-                    ? overLayerStyle
-                    : null),
+                  ...(state?.over !== null && state?.over[mapping.id] === layer[mapping.id] ? overLayerStyle : null),
                   // until here
                 }}>
-                <Styled.SecondLayerList
-                  backgroundColor={handleColor(layer)}
-                  backgroundImage={handlePattern(layer)}>
+                <Styled.SecondLayerList backgroundColor={handleColor(layer)} backgroundImage={handlePattern(layer)}>
                   {layerHeight > titleLimit && (
                     <Styled.LayerLength isBig={layerHeight > subTitleLimit}>
                       <NumericFormat
@@ -309,14 +277,10 @@ const Stratigraphy = props => {
                 <Styled.LayerTitleContainer>
                   <Styled.ShakingLayerTitle>
                     {layerHeight > titleLimit && (
-                      <Styled.LayerTitle isBig={layerHeight > subTitleLimit}>
-                        {handleTitle(layer)}
-                      </Styled.LayerTitle>
+                      <Styled.LayerTitle isBig={layerHeight > subTitleLimit}>{handleTitle(layer)}</Styled.LayerTitle>
                     )}
                     {layerHeight > subTitleLimit && (
-                      <Styled.LayerSubtitle>
-                        {handleSubTitle(layer)}
-                      </Styled.LayerSubtitle>
+                      <Styled.LayerSubtitle>{handleSubTitle(layer)}</Styled.LayerSubtitle>
                     )}
                   </Styled.ShakingLayerTitle>
                 </Styled.LayerTitleContainer>

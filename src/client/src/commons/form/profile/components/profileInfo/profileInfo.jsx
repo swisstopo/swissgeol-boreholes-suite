@@ -1,10 +1,4 @@
-import React, {
-  useRef,
-  useState,
-  useCallback,
-  useEffect,
-  useContext,
-} from "react";
+import { useRef, useState, useCallback, useEffect, useContext } from "react";
 import * as Styled from "./styles";
 import InfoList from "./components/infoList";
 import InfoCheckBox from "./components/infoCheckBox";
@@ -15,12 +9,7 @@ import _ from "lodash";
 import { AlertContext } from "../../../../../components/alert/alertContext";
 
 const ProfileInfo = props => {
-  const {
-    selectedStratigraphyID: id,
-    isEditable,
-    onUpdated,
-    attribute,
-  } = props.data;
+  const { selectedStratigraphyID: id, isEditable, onUpdated, attribute } = props.data;
 
   const mounted = useRef(false);
   const { t } = useTranslation();
@@ -55,7 +44,7 @@ const ProfileInfo = props => {
     };
   }, [id, setData]);
 
-  const updateChange = (attribute, value, to = true, isNumber = false) => {
+  const updateChange = (attribute, value, isNumber = false) => {
     if (!isEditable) {
       alertContext.error(t("common:errorStartEditing"));
       return;

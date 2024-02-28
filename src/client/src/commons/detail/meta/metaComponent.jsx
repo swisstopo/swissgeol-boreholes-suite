@@ -52,10 +52,7 @@ class MetaComponent extends React.Component {
     );
   }
   getDateRow(schema, isodate) {
-    return this.getTextRow(
-      schema,
-      _.isNil(isodate) || isodate === "" ? null : <DateText date={isodate} />,
-    );
+    return this.getTextRow(schema, _.isNil(isodate) || isodate === "" ? null : <DateText date={isodate} />);
   }
 
   getNumericTextRow(schema, ...values) {
@@ -63,27 +60,12 @@ class MetaComponent extends React.Component {
     if (values?.length === 2) {
       coordinates = (
         <>
-          <NumericFormat
-            value={values[0] ?? "-"}
-            thousandSeparator="'"
-            displayType="text"
-            suffix=", "
-          />
-          <NumericFormat
-            value={values[1] ?? "-"}
-            thousandSeparator="'"
-            displayType="text"
-          />
+          <NumericFormat value={values[0] ?? "-"} thousandSeparator="'" displayType="text" suffix=", " />
+          <NumericFormat value={values[1] ?? "-"} thousandSeparator="'" displayType="text" />
         </>
       );
     } else {
-      coordinates = (
-        <NumericFormat
-          value={values[0] ?? "-"}
-          thousandSeparator="'"
-          displayType="text"
-        />
-      );
+      coordinates = <NumericFormat value={values[0] ?? "-"} thousandSeparator="'" displayType="text" />;
     }
 
     return (
@@ -105,9 +87,7 @@ class MetaComponent extends React.Component {
             // ns='borehole'
           />
         </div>
-        <div style={rowTextStyle}>
-          {_.isNil(text) || text === "" ? "-" : text}
-        </div>
+        <div style={rowTextStyle}>{_.isNil(text) || text === "" ? "-" : text}</div>
       </div>
     );
   }
@@ -217,10 +197,7 @@ class MetaComponent extends React.Component {
                     ...rowTextStyle,
                   }}>
                   <div style={rowLabelStyle}>
-                    <DomainText
-                      id={identifier.id}
-                      schema="borehole_identifier"
-                    />
+                    <DomainText id={identifier.id} schema="borehole_identifier" />
                   </div>
                   {identifier.value}
                 </div>
@@ -232,17 +209,13 @@ class MetaComponent extends React.Component {
             {this.getTextRow("original_name", data.extended.original_name)}
             {this.getTextRow("alternate_name", data.custom.alternate_name)}
           </div>
-          <div style={flexRowStyle}>
-            {this.getTextRow("project_name", data.custom.project_name)}
-          </div>
+          <div style={flexRowStyle}>{this.getTextRow("project_name", data.custom.project_name)}</div>
         </div>
 
         <div style={rowContainerStyle}>
           <div style={flexRowStyle}>{this.getStatusRow()}</div>
           <div style={flexRowStyle}>
-            {data.role === "PUBLIC" && data.pubblications !== null
-              ? this.getPublicationsRows()
-              : this.getStatusDate()}
+            {data.role === "PUBLIC" && data.pubblications !== null ? this.getPublicationsRows() : this.getStatusDate()}
           </div>
         </div>
 
@@ -258,49 +231,23 @@ class MetaComponent extends React.Component {
 
         <div style={rowContainerStyle}>
           <div data-cy="coordinates-div" style={flexRowStyle}>
-            {this.getNumericTextRow(
-              "coordinatesLV95",
-              data.location_x,
-              data.location_y,
-            )}
-            {this.getNumericTextRow(
-              "coordinatesLV03",
-              data.location_x_lv03,
-              data.location_y_lv03,
-            )}
+            {this.getNumericTextRow("coordinatesLV95", data.location_x, data.location_y)}
+            {this.getNumericTextRow("coordinatesLV03", data.location_x_lv03, data.location_y_lv03)}
             {this.getNumericTextRow("elevation_z", data.elevation_z)}
-            {this.getNumericTextRow(
-              "reference_elevation",
-              data.reference_elevation,
-            )}
-            {this.getDomainRow(
-              "reference_elevation_type",
-              data.reference_elevation_type,
-              "reference_elevation_type",
-            )}
+            {this.getNumericTextRow("reference_elevation", data.reference_elevation)}
+            {this.getDomainRow("reference_elevation_type", data.reference_elevation_type, "reference_elevation_type")}
           </div>
           <div style={flexRowStyle}>
             {this.getDomainRow("location_precision", data.location_precision)}
             {this.getDomainRow("elevation_precision", data.elevation_precision)}
-            {this.getDomainRow(
-              "elevation_precision",
-              data.qt_reference_elevation,
-              "reference_elevation_qt",
-            )}
-            {this.getDomainRow(
-              "height_reference_system",
-              data.height_reference_system,
-            )}
+            {this.getDomainRow("elevation_precision", data.qt_reference_elevation, "reference_elevation_qt")}
+            {this.getDomainRow("height_reference_system", data.height_reference_system)}
           </div>
         </div>
 
         <div style={rowContainerStyle}>
-          <div style={flexRowStyle}>
-            {this.getTextRow("canton", data.custom.canton)}
-          </div>
-          <div style={flexRowStyle}>
-            {this.getTextRow("city", data.custom.municipality)}
-          </div>
+          <div style={flexRowStyle}>{this.getTextRow("canton", data.custom.canton)}</div>
+          <div style={flexRowStyle}>{this.getTextRow("city", data.custom.municipality)}</div>
         </div>
 
         <div
@@ -317,51 +264,24 @@ class MetaComponent extends React.Component {
             }}>
             <div style={flexRowStyle}>
               {this.getDomainRow("borehole_type", data.borehole_type)}
-              {this.getDomainRow(
-                "extended.purpose",
-                data.extended.purpose,
-                "purpose",
-              )}
+              {this.getDomainRow("extended.purpose", data.extended.purpose, "purpose")}
               {this.getTextRow("spud_date", data.spud_date)}
               {this.getNumericTextRow(
                 "drill_diameter",
-                data.custom.drill_diameter !== null
-                  ? data.custom.drill_diameter
-                  : null,
+                data.custom.drill_diameter !== null ? data.custom.drill_diameter : null,
               )}
-              {this.getTextRow(
-                "inclination",
-                data.inclination !== null ? data.inclination : null,
-              )}
-              {this.getDomainRow(
-                "custom.qt_bore_inc_dir",
-                data.custom.qt_bore_inc_dir,
-                "qt_bore_inc_dir",
-              )}
+              {this.getTextRow("inclination", data.inclination !== null ? data.inclination : null)}
+              {this.getDomainRow("custom.qt_bore_inc_dir", data.custom.qt_bore_inc_dir, "qt_bore_inc_dir")}
             </div>
             <div style={flexRowStyle}>
-              {this.getDomainRow(
-                "extended.drilling_method",
-                data.extended.drilling_method,
-                "drilling_method",
-              )}
+              {this.getDomainRow("extended.drilling_method", data.extended.drilling_method, "drilling_method")}
 
-              {this.getDomainRow(
-                "custom.cuttings",
-                data.custom.cuttings,
-                "cuttings",
-              )}
+              {this.getDomainRow("custom.cuttings", data.custom.cuttings, "cuttings")}
               {this.getTextRow("drilling_end_date", data.drilling_date)}
-              {this.getDomainRow(
-                "extended.status",
-                data.extended.status,
-                "boreholestatus",
-              )}
+              {this.getDomainRow("extended.status", data.extended.status, "boreholestatus")}
               {this.getTextRow(
                 "inclination_direction",
-                data.inclination_direction !== null
-                  ? data.inclination_direction
-                  : null,
+                data.inclination_direction !== null ? data.inclination_direction : null,
               )}
             </div>
           </div>
@@ -369,25 +289,15 @@ class MetaComponent extends React.Component {
 
         <div style={rowContainerStyle}>
           <div style={flexRowStyle}>
-            {this.getNumericTextRow(
-              "totaldepth",
-              data.total_depth !== null ? data.total_depth : null,
-            )}
-            {this.getNumericTextRow(
-              "total_depth_tvd",
-              data.total_depth_tvd !== null ? data.total_depth_tvd : null,
-            )}
+            {this.getNumericTextRow("totaldepth", data.total_depth !== null ? data.total_depth : null)}
+            {this.getNumericTextRow("total_depth_tvd", data.total_depth_tvd !== null ? data.total_depth_tvd : null)}
             {this.getNumericTextRow(
               "top_bedrock",
-              data.extended.top_bedrock !== null
-                ? data.extended.top_bedrock
-                : null,
+              data.extended.top_bedrock !== null ? data.extended.top_bedrock : null,
             )}
             {this.getNumericTextRow(
               "top_bedrock_tvd",
-              data.extended.top_bedrock_tvd !== null
-                ? data.extended.top_bedrock_tvd
-                : null,
+              data.extended.top_bedrock_tvd !== null ? data.extended.top_bedrock_tvd : null,
             )}
             {this.getTextRow(
               "groundwater",
@@ -404,27 +314,15 @@ class MetaComponent extends React.Component {
             )}
           </div>
           <div data-cy="qt_depth-label" style={flexRowStyle}>
-            {this.getDomainRow(
-              "custom.qt_top_bedrock",
-              data.custom.qt_depth,
-              "qt_depth",
-            )}
-            {this.getDomainRow(
-              "custom.qt_top_bedrock",
-              data.qt_total_depth_tvd,
-              "total_depth_tvd_qt",
-            )}
+            {this.getDomainRow("custom.qt_top_bedrock", data.custom.qt_depth, "qt_depth")}
+            {this.getDomainRow("custom.qt_top_bedrock", data.qt_total_depth_tvd, "total_depth_tvd_qt")}
             {this.getNumericTextRow(
               "qt_top_bedrock",
-              data.custom.qt_top_bedrock !== null
-                ? data.custom.qt_top_bedrock
-                : null,
+              data.custom.qt_top_bedrock !== null ? data.custom.qt_top_bedrock : null,
             )}
             {this.getNumericTextRow(
               "top_bedrock_tvd_qt",
-              data.custom.qt_top_bedrock_tvd !== null
-                ? data.custom.qt_top_bedrock_tvd
-                : null,
+              data.custom.qt_top_bedrock_tvd !== null ? data.custom.qt_top_bedrock_tvd : null,
             )}
             {this.getDomainRow(
               "custom.lithology_top_bedrock",
@@ -443,10 +341,7 @@ class MetaComponent extends React.Component {
             margin: margin,
             padding: padding,
           }}>
-          {this.getTextRow(
-            "remarks",
-            data.custom.remarks !== "" ? data.custom.remarks : "-",
-          )}
+          {this.getTextRow("remarks", data.custom.remarks !== "" ? data.custom.remarks : "-")}
         </div>
       </div>
     );

@@ -1,10 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Stack } from "@mui/material";
-import {
-  FormInput,
-  FormSelect,
-  FormCheckbox,
-} from "../../../../components/form/form";
+import { FormInput, FormSelect, FormCheckbox } from "../../../../components/form/form";
 import { useDomains, getCasingsByBoreholeId } from "../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
@@ -27,32 +23,12 @@ const ObservationInput = props => {
   return (
     <>
       <Stack direction="row">
-        <FormInput
-          fieldName="fromDepthM"
-          label="fromdepth"
-          value={observation.fromDepthM}
-          type="number"
-        />
-        <FormInput
-          fieldName="toDepthM"
-          label="todepth"
-          value={observation.toDepthM}
-          type="number"
-        />
+        <FormInput fieldName="fromDepthM" label="fromdepth" value={observation.fromDepthM} type="number" />
+        <FormInput fieldName="toDepthM" label="todepth" value={observation.toDepthM} type="number" />
       </Stack>
       <Stack direction="row">
-        <FormInput
-          fieldName="fromDepthMasl"
-          label="fromDepthMasl"
-          value={observation.fromDepthMasl}
-          type="number"
-        />
-        <FormInput
-          fieldName="toDepthMasl"
-          label="toDepthMasl"
-          value={observation.toDepthMasl}
-          type="number"
-        />
+        <FormInput fieldName="fromDepthMasl" label="fromDepthMasl" value={observation.fromDepthMasl} type="number" />
+        <FormInput fieldName="toDepthMasl" label="toDepthMasl" value={observation.toDepthMasl} type="number" />
       </Stack>
       <Stack direction="row">
         <FormInput
@@ -62,12 +38,7 @@ const ObservationInput = props => {
           type="datetime-local"
           required={true}
         />
-        <FormInput
-          fieldName="endTime"
-          label="endTime"
-          value={observation.endTime}
-          type="datetime-local"
-        />
+        <FormInput fieldName="endTime" label="endTime" value={observation.endTime} type="datetime-local" />
       </Stack>
       <Stack direction="row">
         <FormSelect
@@ -76,10 +47,7 @@ const ObservationInput = props => {
           selected={observation.reliabilityId}
           required={true}
           values={domains?.data
-            ?.filter(
-              d =>
-                d.schema === hydrogeologySchemaConstants.observationReliability,
-            )
+            ?.filter(d => d.schema === hydrogeologySchemaConstants.observationReliability)
             .sort((a, b) => a.order - b.order)
             .map(d => ({
               key: d.id,
@@ -105,13 +73,7 @@ const ObservationInput = props => {
         />
       </StackHalfWidth>
       <Stack direction="row">
-        <FormInput
-          fieldName="comment"
-          label="comment"
-          multiline={true}
-          rows={3}
-          value={observation?.comment}
-        />
+        <FormInput fieldName="comment" label="comment" multiline={true} rows={3} value={observation?.comment} />
       </Stack>
     </>
   );

@@ -1,4 +1,3 @@
-import React from "react";
 import { Stack, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ClearIcon from "@mui/icons-material/Clear";

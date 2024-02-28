@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, createRef } from "react";
+import { useEffect, useState, useMemo, createRef } from "react";
 import ProfileLayersError from "../profileLayersError";
 import ProfileLayersList from "../profileLayersList";
 import * as Styled from "./styles";
@@ -32,10 +32,7 @@ export const ProfileLayersValidation = props => {
     const layerLength = layersWithValidation?.data?.length;
     const lastLayerRef = layerRefs[layerLength - 1];
     // scroll to the last item in the list
-    if (
-      (lastLayerRef?.current && previousLength === 0) ||
-      (layerLength > previousLength && !selectedLayer)
-    ) {
+    if ((lastLayerRef?.current && previousLength === 0) || (layerLength > previousLength && !selectedLayer)) {
       lastLayerRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
@@ -43,31 +40,25 @@ export const ProfileLayersValidation = props => {
     }
     // update the previous length
     setPreviousLength(layerLength || 0);
-  }, [
-    layerRefs,
-    layersWithValidation?.data?.length,
-    previousLength,
-    selectedLayer,
-  ]);
+  }, [layerRefs, layersWithValidation?.data?.length, previousLength, selectedLayer]);
 
   return (
     <Box data-cy="styled-layer-container">
       {/* validation before all layers */}
-      {layersWithValidation?.validation &&
-        layersWithValidation?.validation?.missingLayers && (
-          <div style={{ flex: "1 1 0px" }}>
-            <ProfileLayersError
-              data={{
-                title: "missingLayers",
-                isEditable,
-                id: layersWithValidation?.data?.[0].id,
-                isInside: false,
-                onUpdated: onUpdated,
-              }}
-              setDeleteParams={setDeleteParams}
-            />
-          </div>
-        )}
+      {layersWithValidation?.validation && layersWithValidation?.validation?.missingLayers && (
+        <div style={{ flex: "1 1 0px" }}>
+          <ProfileLayersError
+            data={{
+              title: "missingLayers",
+              isEditable,
+              id: layersWithValidation?.data?.[0].id,
+              isInside: false,
+              onUpdated: onUpdated,
+            }}
+            setDeleteParams={setDeleteParams}
+          />
+        </div>
+      )}
       {/* layers list */}
       {layersWithValidation?.data &&
         layersWithValidation?.data.map((item, index) => (

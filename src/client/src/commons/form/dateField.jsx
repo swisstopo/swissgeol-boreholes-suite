@@ -48,11 +48,7 @@ class DateField extends React.Component {
               iconPosition="left"
               placeholder={placeholder}
               spellCheck="false"
-              value={
-                moment(this.state.date).isValid()
-                  ? moment(this.state.date).format("DD.MM.YYYY")
-                  : ""
-              }
+              value={moment(this.state.date).isValid() ? moment(this.state.date).format("DD.MM.YYYY") : ""}
               readOnly={!isEditable}
             />
           </div>
@@ -65,11 +61,7 @@ class DateField extends React.Component {
             onChange(date ? moment(date).format("YYYY-MM-DD") : "");
           }
         }}
-        selected={
-          moment(this.state.date).isValid()
-            ? moment(this.state.date).toDate()
-            : null
-        }
+        selected={moment(this.state.date).isValid() ? moment(this.state.date).toDate() : null}
         showMonthDropdown
         showYearDropdown
         style={{

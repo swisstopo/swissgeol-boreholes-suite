@@ -1,6 +1,3 @@
-/* eslint-disable indent */
-/* eslint-disable react/prop-types */
-/* eslint-disable react/jsx-indent */
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
@@ -52,10 +49,7 @@ class SearchComponent extends React.Component {
   componentDidUpdate(prevProps) {
     const { search, onChange } = this.props;
     this.isVisible = this.isVisible.bind(this);
-    if (
-      onChange !== undefined &&
-      !_.isEqual(search.filter, prevProps.search.filter)
-    ) {
+    if (onChange !== undefined && !_.isEqual(search.filter, prevProps.search.filter)) {
       onChange({ ...search.filter });
     }
   }
@@ -72,20 +66,11 @@ class SearchComponent extends React.Component {
 
   handleButtonSelected() {
     let selectedData = null;
-    if (
-      this.state?.searchList?.[0]?.name === "location" &&
-      this.state?.searchList?.[0]?.isSelected
-    ) {
+    if (this.state?.searchList?.[0]?.name === "location" && this.state?.searchList?.[0]?.isSelected) {
       selectedData = LocationSearchData;
-    } else if (
-      this.state?.searchList?.[1]?.name === "borehole" &&
-      this.state?.searchList?.[1]?.isSelected
-    ) {
+    } else if (this.state?.searchList?.[1]?.name === "borehole" && this.state?.searchList?.[1]?.isSelected) {
       selectedData = boreholeSearchData;
-    } else if (
-      this.state?.searchList?.[2]?.name === "lithology" &&
-      this.state?.searchList?.[2]?.isSelected
-    ) {
+    } else if (this.state?.searchList?.[2]?.name === "lithology" && this.state?.searchList?.[2]?.isSelected) {
       selectedData = lithologySearchData;
     } else {
       selectedData = null;
@@ -108,10 +93,7 @@ class SearchComponent extends React.Component {
                   <Form.Field
                     key="msc-1"
                     style={{
-                      display:
-                        search.advanced === true || filter.mapfilter === true
-                          ? "flex"
-                          : "none",
+                      display: search.advanced === true || filter.mapfilter === true ? "flex" : "none",
                       justifyContent: "space-between",
                     }}>
                     <label>
@@ -128,11 +110,7 @@ class SearchComponent extends React.Component {
                   <Form.Group
                     key="msc-2"
                     style={{
-                      display:
-                        search.advanced === true ||
-                        filter.zoom2selected === true
-                          ? null
-                          : "none",
+                      display: search.advanced === true || filter.zoom2selected === true ? null : "none",
                     }}
                     widths="equal">
                     <Form.Field>
@@ -172,8 +150,8 @@ class SearchComponent extends React.Component {
           </Form>
         </div>
         {this.state?.searchList?.map((filter, idx) => (
-          <Fragment>
-            <Styled.FilterContainer key={idx}>
+          <Fragment key={idx}>
+            <Styled.FilterContainer>
               <Styled.FilterButton
                 isLast={idx === this.state?.searchList?.length - 1}
                 isSelected={filter?.isSelected}
@@ -182,16 +160,12 @@ class SearchComponent extends React.Component {
                     ...prevState,
                     // update an array of objects:
                     searchList: prevState.searchList.map(obj =>
-                      obj.id === idx
-                        ? { ...obj, isSelected: !obj.isSelected }
-                        : { ...obj, isSelected: false },
+                      obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj, isSelected: false },
                     ),
                   }));
                 }}>
                 <div>
-                  <Icon
-                    name={`caret ${filter?.isSelected ? "down" : "right"}`}
-                  />
+                  <Icon name={`caret ${filter?.isSelected ? "down" : "right"}`} />
                   <span>
                     <TranslationText id={filter?.translationId} />
                   </span>
@@ -219,16 +193,15 @@ class SearchComponent extends React.Component {
           </Fragment>
         ))}
 
-        {this.state?.searchList?.[3]?.name === "workgroup" &&
-          this.state?.searchList?.[3]?.isSelected && (
-            <WorkgroupRadioGroup
-              filter={search.filter.workgroup}
-              onChange={workgroup => {
-                this.props.setFilter("workgroup", workgroup);
-              }}
-              workgroups={user.data.workgroups}
-            />
-          )}
+        {this.state?.searchList?.[3]?.name === "workgroup" && this.state?.searchList?.[3]?.isSelected && (
+          <WorkgroupRadioGroup
+            filter={search.filter.workgroup}
+            onChange={workgroup => {
+              this.props.setFilter("workgroup", workgroup);
+            }}
+            workgroups={user.data.workgroups}
+          />
+        )}
       </Styled.Container>
     );
   }
@@ -244,7 +217,7 @@ SearchComponent.propTypes = {
   setFilter: PropTypes.func,
 };
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = state => {
   return {
     developer: state.developer,
     search: state.search,
@@ -253,7 +226,7 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
     setmapfilter: active => {
@@ -330,7 +303,4 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation(["common"])(SearchComponent));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(SearchComponent));

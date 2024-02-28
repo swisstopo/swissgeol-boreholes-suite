@@ -1,4 +1,3 @@
-import React from "react";
 import _ from "lodash";
 import moment from "moment";
 
@@ -45,11 +44,7 @@ const BoreholeGeneralSegment = props => {
                 </label>
                 <DomainDropdown
                   onSelected={selected => {
-                    updateChange(
-                      "extended.drilling_method",
-                      selected.id,
-                      false,
-                    );
+                    updateChange("extended.drilling_method", selected.id, false);
                   }}
                   schema="extended.drilling_method"
                   selected={borehole.data.extended.drilling_method}
@@ -139,11 +134,7 @@ const BoreholeGeneralSegment = props => {
                 <Input
                   spellCheck="false"
                   type="number"
-                  value={
-                    _.isNil(borehole.data.custom.drill_diameter)
-                      ? ""
-                      : borehole.data.custom.drill_diameter
-                  }
+                  value={_.isNil(borehole.data.custom.drill_diameter) ? "" : borehole.data.custom.drill_diameter}
                   readOnly={!isEditable}
                 />
               </Form.Field>
@@ -153,18 +144,11 @@ const BoreholeGeneralSegment = props => {
                 </label>
                 <NumericFormat
                   onChange={e => {
-                    updateNumber(
-                      "custom.drill_diameter",
-                      e.target.value === ""
-                        ? null
-                        : parseIfString(e.target.value),
-                    );
+                    updateNumber("custom.drill_diameter", e.target.value === "" ? null : parseIfString(e.target.value));
                   }}
                   spellCheck="false"
                   value={(() => {
-                    const r = _.isNil(borehole.data.custom.drill_diameter)
-                      ? ""
-                      : borehole.data.custom.drill_diameter;
+                    const r = _.isNil(borehole.data.custom.drill_diameter) ? "" : borehole.data.custom.drill_diameter;
                     return r;
                   })()}
                   thousandSeparator="'"
@@ -195,17 +179,10 @@ const BoreholeGeneralSegment = props => {
                   autoComplete="off"
                   autoCorrect="off"
                   onChange={e => {
-                    updateNumber(
-                      "inclination",
-                      e.target.value === "" ? null : e.target.value,
-                    );
+                    updateNumber("inclination", e.target.value === "" ? null : e.target.value);
                   }}
                   spellCheck="false"
-                  value={
-                    _.isNil(borehole.data.inclination)
-                      ? ""
-                      : borehole.data.inclination
-                  }
+                  value={_.isNil(borehole.data.inclination) ? "" : borehole.data.inclination}
                   readOnly={!isEditable}
                 />
               </Form.Field>
@@ -218,17 +195,10 @@ const BoreholeGeneralSegment = props => {
                   autoComplete="off"
                   autoCorrect="off"
                   onChange={e => {
-                    updateNumber(
-                      "inclination_direction",
-                      e.target.value === "" ? null : e.target.value,
-                    );
+                    updateNumber("inclination_direction", e.target.value === "" ? null : e.target.value);
                   }}
                   spellCheck="false"
-                  value={
-                    _.isNil(borehole.data.inclination_direction)
-                      ? ""
-                      : borehole.data.inclination_direction
-                  }
+                  value={_.isNil(borehole.data.inclination_direction) ? "" : borehole.data.inclination_direction}
                   readOnly={!isEditable}
                 />
               </Form.Field>
@@ -258,7 +228,7 @@ const BoreholeGeneralSegment = props => {
             <Form.Field>
               <TranslationText id="remarks" />
               <TextArea
-                onChange={(e, data) => {
+                onChange={e => {
                   updateChange("custom.remarks", e.target.value);
                 }}
                 rows={14}

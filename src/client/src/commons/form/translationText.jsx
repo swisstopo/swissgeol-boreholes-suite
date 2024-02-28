@@ -71,7 +71,4 @@ TranslationText.defaultProps = {
   prepend: "",
   style: {},
 };
-export default connect(
-  mapStateToProps,
-  null,
-)(withTranslation(["common"])(TranslationText));
+export default connect(mapStateToProps, null)(withTranslation(["common"])(TranslationText));

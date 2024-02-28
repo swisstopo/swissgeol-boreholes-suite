@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { express } from "express";
 import { path } from "path";
 import { RateLimit } from "express-rate-limit";

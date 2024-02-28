@@ -1,12 +1,11 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { DataCardButtonContainer } from "../dataCard/dataCard";
 import { StackFullWidth } from "../baseComponents";
 import { CancelButton, SaveButton } from "../buttons/buttons";
 
 export const DataInputCard = props => {
-  const { item, setSelected, addData, updateData, prepareFormDataForSubmit } =
-    props;
+  const { item, setSelected, addData, updateData, prepareFormDataForSubmit } = props;
   const formMethods = useForm();
 
   // trigger form validation on mount
@@ -47,10 +46,7 @@ export const DataInputCard = props => {
               setSelected(null);
             }}
           />
-          <SaveButton
-            disabled={!formMethods.formState.isValid}
-            onClick={() => closeFormIfCompleted()}
-          />
+          <SaveButton disabled={!formMethods.formState.isValid} onClick={() => closeFormIfCompleted()} />
         </DataCardButtonContainer>
       </form>
     </FormProvider>

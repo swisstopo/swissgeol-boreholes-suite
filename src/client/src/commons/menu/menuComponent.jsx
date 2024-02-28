@@ -338,7 +338,4 @@ MenuComponent.propTypes = {
   user: PropTypes.object,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withAuth(withTranslation(["common"])(MenuComponent)));
+export default connect(mapStateToProps, mapDispatchToProps)(withAuth(withTranslation(["common"])(MenuComponent)));

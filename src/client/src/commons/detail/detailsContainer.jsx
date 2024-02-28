@@ -13,11 +13,10 @@ class DetailsContainer extends React.Component {
       this.props.getBorehole(id);
     }
   }
-  componentDidUpdate(prevProps) {
+  componentDidUpdate() {
     const { id, detail } = this.props;
     if (detail.borehole !== null && id !== null && detail.borehole.id !== id) {
       this.props.getBorehole(id);
-    } else if (detail.error !== null) {
     }
   }
   componentWillUnmount() {

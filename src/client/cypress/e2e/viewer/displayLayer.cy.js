@@ -1,9 +1,4 @@
-import {
-  newEditableBorehole,
-  loginAsAdmin,
-  createBorehole,
-  setValueOfInputElement,
-} from "../helpers/testHelpers";
+import { newEditableBorehole, loginAsAdmin, createBorehole, setValueOfInputElement } from "../helpers/testHelpers";
 
 describe("Test for the borehole form.", () => {
   it("Adds complete layer and displays it in viewer mode, checks if fields can be optionally hidden.", () => {
@@ -17,10 +12,7 @@ describe("Test for the borehole form.", () => {
     newEditableBorehole().as("borehole_id");
 
     // enter original name
-    cy.contains("label", "Original name")
-      .next()
-      .children("input")
-      .type("BONES-XVII");
+    cy.contains("label", "Original name").next().children("input").type("BONES-XVII");
     cy.wait("@edit_patch");
 
     // navigate to stratigraphy
@@ -39,26 +31,13 @@ describe("Test for the borehole form.", () => {
     // fill all dropdowns in layer
     cy.get('[data-cy="profile-attribute-list"] [data-cy="domain-dropdown"]')
       .should("have.length", 20)
-      .each((el, index, list) =>
-        cy
-          .wrap(el)
-          .scrollIntoView()
-          .click({ force: true })
-          .find('[role="option"]')
-          .last()
-          .click(),
-      );
+      .each(el => cy.wrap(el).scrollIntoView().click({ force: true }).find('[role="option"]').last().click());
 
     // fill all multiselect dropdowns with an additional value
     cy.get('[aria-multiselectable="true"]')
       .should("have.length", 6)
-      .each((el, index, list) => {
-        cy.wrap(el)
-          .scrollIntoView()
-          .click({ force: true })
-          .find('[role="option"]')
-          .eq(1)
-          .click();
+      .each(el => {
+        cy.wrap(el).scrollIntoView().click({ force: true }).find('[role="option"]').eq(1).click();
         cy.wait("@update-layer");
       });
 
@@ -77,10 +56,7 @@ describe("Test for the borehole form.", () => {
       .click()
       .clear()
       .then(inputElement => {
-        setValueOfInputElement(
-          inputElement,
-          "hipping large amounts of almond sandwiches.",
-        );
+        setValueOfInputElement(inputElement, "hipping large amounts of almond sandwiches.");
       })
       .type("S");
     cy.get('[data-cy="originalLithology"]')
@@ -98,7 +74,7 @@ describe("Test for the borehole form.", () => {
     // Lithology
     cy.get('[data-cy="domain-tree"] > input')
       .should("have.length", 1)
-      .each((el, index, list) => {
+      .each(el => {
         cy.wrap(el).scrollIntoView().click();
         cy.get('.modal [role="listitem"]').eq(5).click();
       });
@@ -145,17 +121,11 @@ describe("Test for the borehole form.", () => {
     cy.get('[data-cy="stratigraphy-layer-0"]').click({ force: true });
 
     // Three detail rows are displayed - two by default plus one that was selected as default field.
-    cy.get('[data-cy="stratigraphy-layer-details"] h6').should(
-      "have.length",
-      3,
-    );
+    cy.get('[data-cy="stratigraphy-layer-details"] h6').should("have.length", 3);
 
     // Show all fields
     cy.get(".PrivateSwitchBase-input").click({ force: true });
-    cy.get('[data-cy="stratigraphy-layer-details"] h6').should(
-      "have.length",
-      28,
-    );
+    cy.get('[data-cy="stratigraphy-layer-details"] h6').should("have.length", 28);
   });
 
   it("Checks if null values are displayed as dash.", () => {

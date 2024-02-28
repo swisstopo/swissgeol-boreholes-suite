@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { InputAdornment, Stack } from "@mui/material";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
@@ -27,9 +27,7 @@ const FieldMeasurementInput = props => {
   };
 
   const getParameterUnit = parameterId => {
-    return FieldMeasurementParameterUnits[
-      domains.data?.find(d => d.id === parameterId)?.geolcode
-    ];
+    return FieldMeasurementParameterUnits[domains.data?.find(d => d.id === parameterId)?.geolcode];
   };
 
   return (
@@ -47,11 +45,7 @@ const FieldMeasurementInput = props => {
           selected={item.sampleTypeId}
           required={true}
           values={domains?.data
-            ?.filter(
-              d =>
-                d.schema ===
-                hydrogeologySchemaConstants.fieldMeasurementSampleType,
-            )
+            ?.filter(d => d.schema === hydrogeologySchemaConstants.fieldMeasurementSampleType)
             .sort((a, b) => a.order - b.order)
             .map(d => ({
               key: d.id,
@@ -64,11 +58,7 @@ const FieldMeasurementInput = props => {
           selected={item.parameterId}
           required={true}
           values={domains?.data
-            ?.filter(
-              d =>
-                d.schema ===
-                hydrogeologySchemaConstants.fieldMeasurementParameter,
-            )
+            ?.filter(d => d.schema === hydrogeologySchemaConstants.fieldMeasurementParameter)
             .sort((a, b) => a.order - b.order)
             .map(d => ({
               key: d.id,
@@ -88,9 +78,7 @@ const FieldMeasurementInput = props => {
           required={true}
           inputProps={{
             endAdornment: (
-              <InputAdornment position="end">
-                {parameterId && getParameterUnit(parameterId)}
-              </InputAdornment>
+              <InputAdornment position="end">{parameterId && getParameterUnit(parameterId)}</InputAdornment>
             ),
           }}
         />

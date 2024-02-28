@@ -78,13 +78,7 @@ class EditorSettings extends React.Component {
     return selectedData;
   }
   render() {
-    const {
-      setting,
-      toggleField,
-      toggleFilter,
-      toggleFieldArray,
-      toggleFilterArray,
-    } = this.props;
+    const { setting, toggleField, toggleFilter, toggleFieldArray, toggleFilterArray } = this.props;
     return (
       <div
         style={{
@@ -99,10 +93,7 @@ class EditorSettings extends React.Component {
                   ...prevState,
                   // update an array of objects:
                   searchList: prevState.searchList.map(
-                    obj =>
-                      obj.id === idx
-                        ? { ...obj, isSelected: !obj.isSelected }
-                        : { ...obj },
+                    obj => (obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj }),
                     // : { ...obj, isSelected: false }, if you want to select only one filter
                   ),
                 }));
@@ -129,22 +120,13 @@ class EditorSettings extends React.Component {
                   textAlign: "right",
                 }}>
                 <Button color="red" size="small">
-                  {filter.isSelected === true ? (
-                    <TranslationText id="collapse" />
-                  ) : (
-                    <TranslationText id="expand" />
-                  )}
+                  {filter.isSelected === true ? <TranslationText id="collapse" /> : <TranslationText id="expand" />}
                 </Button>
               </div>
             </div>
-            {filter.isSelected === true &&
-            this.handleButtonSelected(filter.name, filter.isSelected) !==
-              null ? (
+            {filter.isSelected === true && this.handleButtonSelected(filter.name, filter.isSelected) !== null ? (
               <EditorSettingList
-                attribute={this.handleButtonSelected(
-                  filter.name,
-                  filter.isSelected,
-                )}
+                attribute={this.handleButtonSelected(filter.name, filter.isSelected)}
                 codes={this.props.codes}
                 data={setting.data.efilter}
                 geocode={this.props.geocode}
@@ -309,7 +291,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation("common")(EditorSettings));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(EditorSettings));

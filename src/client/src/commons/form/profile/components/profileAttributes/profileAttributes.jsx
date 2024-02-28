@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useContext,
-} from "react";
+import { useState, useEffect, useRef, useCallback, useContext } from "react";
 import * as Styled from "./styles";
 import { Checkbox } from "semantic-ui-react";
 import TranslationText from "../../../translationText";
@@ -14,21 +8,10 @@ import ProfileAttributeList from "./components/profileAttributeList/profileAttri
 import { useSelector } from "react-redux";
 import { useQueryClient } from "react-query";
 import { AlertContext } from "../../../../../components/alert/alertContext";
-import {
-  fetchLayerById,
-  layerQueryKey,
-  updateLayer,
-} from "../../../../../api/fetchApiV2";
+import { fetchLayerById, layerQueryKey, updateLayer } from "../../../../../api/fetchApiV2";
 
 const ProfileAttributes = props => {
-  const {
-    id,
-    isEditable,
-    onUpdated,
-    attribute,
-    reloadAttribute,
-    selectedStratigraphyID,
-  } = props.data;
+  const { id, isEditable, onUpdated, attribute, reloadAttribute, selectedStratigraphyID } = props.data;
 
   const { codes, geocode } = useSelector(state => ({
     codes: state.core_domain_list,
@@ -38,6 +21,7 @@ const ProfileAttributes = props => {
   const [state, setState] = useState({
     isPatching: false,
     layer: {
+      // eslint-disable-next-line no-prototype-builtins
       id: id?.hasOwnProperty("id") ? id : null,
       kind: null,
       depth_from: null,
@@ -80,12 +64,8 @@ const ProfileAttributes = props => {
   const mapResponseToLayer = useCallback(response => {
     response["uscs_3"] = response.uscs3Codelists.map(x => x.id);
     response["grain_shape"] = response.grainShapeCodelists.map(x => x.id);
-    response["grain_granularity"] = response.grainAngularityCodelists.map(
-      x => x.id,
-    );
-    response["organic_component"] = response.organicComponentCodelists.map(
-      x => x.id,
-    );
+    response["grain_granularity"] = response.grainAngularityCodelists.map(x => x.id);
+    response["organic_component"] = response.organicComponentCodelists.map(x => x.id);
     response["debris"] = response.debrisCodelists.map(x => x.id);
     response["color"] = response.colorCodelists.map(x => x.id);
     setState({
@@ -108,7 +88,7 @@ const ProfileAttributes = props => {
     };
   }, [id, reloadAttribute, mapResponseToLayer]);
 
-  const updateChange = (attribute, value, to = true, isNumber = false) => {
+  const updateChange = (attribute, value, isNumber = false) => {
     if (!isEditable) {
       alertContext.error(t("common:errorStartEditing"));
       return;
@@ -146,10 +126,7 @@ const ProfileAttributes = props => {
       for (let idx = 0; idx < codes.data.layer_kind.length; idx++) {
         const element = codes.data.layer_kind[idx];
         if (element.code === geocode) {
-          if (
-            _.isObject(element.conf) &&
-            _.has(element.conf, `fields.${field}`)
-          ) {
+          if (_.isObject(element.conf) && _.has(element.conf, `fields.${field}`)) {
             return element.conf.fields[field];
           } else {
             return false;
@@ -180,11 +157,7 @@ const ProfileAttributes = props => {
       {showCheckbox() && (
         <Styled.CheckboxContainer>
           <TranslationText id="showallfields" />
-          <Checkbox
-            checked={showAll}
-            onChange={() => setShowAll(!showAll)}
-            toggle
-          />
+          <Checkbox checked={showAll} onChange={() => setShowAll(!showAll)} toggle />
         </Styled.CheckboxContainer>
       )}
 

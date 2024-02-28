@@ -1,4 +1,3 @@
-import React from "react";
 import _ from "lodash";
 
 import DomainDropdown from "../../domain/dropdown/domainDropdown";
@@ -25,17 +24,10 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
-                updateNumber(
-                  "total_depth",
-                  e.target.value === "" ? null : parseIfString(e.target.value),
-                );
+                updateNumber("total_depth", e.target.value === "" ? null : parseIfString(e.target.value));
               }}
               spellCheck="false"
-              value={
-                _.isNil(borehole.data.total_depth)
-                  ? ""
-                  : borehole.data.total_depth
-              }
+              value={_.isNil(borehole.data.total_depth) ? "" : borehole.data.total_depth}
               thousandSeparator="'"
               readOnly={!isEditable}
             />
@@ -64,17 +56,10 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
-                updateNumber(
-                  "total_depth_tvd",
-                  e.target.value === "" ? null : parseIfString(e.target.value),
-                );
+                updateNumber("total_depth_tvd", e.target.value === "" ? null : parseIfString(e.target.value));
               }}
               spellCheck="false"
-              value={
-                _.isNil(borehole.data.total_depth_tvd)
-                  ? ""
-                  : borehole.data.total_depth_tvd
-              }
+              value={_.isNil(borehole.data.total_depth_tvd) ? "" : borehole.data.total_depth_tvd}
               thousandSeparator="'"
               readOnly={!isEditable}
             />
@@ -104,17 +89,10 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
-                updateNumber(
-                  "extended.top_bedrock",
-                  e.target.value === "" ? null : parseIfString(e.target.value),
-                );
+                updateNumber("extended.top_bedrock", e.target.value === "" ? null : parseIfString(e.target.value));
               }}
               spellCheck="false"
-              value={
-                _.isNil(borehole.data.extended.top_bedrock)
-                  ? ""
-                  : borehole.data.extended.top_bedrock
-              }
+              value={_.isNil(borehole.data.extended.top_bedrock) ? "" : borehole.data.extended.top_bedrock}
               thousandSeparator="'"
               readOnly={!isEditable}
             />
@@ -128,10 +106,7 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
-                updateNumber(
-                  "custom.qt_top_bedrock",
-                  e.target.value === "" ? null : parseIfString(e.target.value),
-                );
+                updateNumber("custom.qt_top_bedrock", e.target.value === "" ? null : parseIfString(e.target.value));
               }}
               spellCheck="false"
               value={borehole.data.custom.qt_top_bedrock}
@@ -150,17 +125,10 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
-                updateNumber(
-                  "extended.top_bedrock_tvd",
-                  e.target.value === "" ? null : parseIfString(e.target.value),
-                );
+                updateNumber("extended.top_bedrock_tvd", e.target.value === "" ? null : parseIfString(e.target.value));
               }}
               spellCheck="false"
-              value={
-                _.isNil(borehole.data.extended.top_bedrock_tvd)
-                  ? ""
-                  : borehole.data.extended.top_bedrock_tvd
-              }
+              value={_.isNil(borehole.data.extended.top_bedrock_tvd) ? "" : borehole.data.extended.top_bedrock_tvd}
               thousandSeparator="'"
               readOnly={!isEditable}
             />
@@ -175,10 +143,7 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
-                updateNumber(
-                  "custom.qt_top_bedrock_tvd",
-                  e.target.value === "" ? null : parseIfString(e.target.value),
-                );
+                updateNumber("custom.qt_top_bedrock_tvd", e.target.value === "" ? null : parseIfString(e.target.value));
               }}
               spellCheck="false"
               value={borehole.data.custom.qt_top_bedrock_tvd}
@@ -202,12 +167,7 @@ const BoreholeDetailSegment = props => {
                     : "NULL"
               }
               onChange={e => {
-                let value =
-                  e.target.value === "TRUE"
-                    ? true
-                    : e.target.value === "FALSE"
-                      ? false
-                      : null;
+                let value = e.target.value === "TRUE" ? true : e.target.value === "FALSE" ? false : null;
                 updateChange("extended.groundwater", value, false);
               }}>
               <FormControlLabel
@@ -260,11 +220,7 @@ const BoreholeDetailSegment = props => {
               5: "formation",
             }}
             onSelected={selected => {
-              updateChange(
-                "custom.lithostratigraphy_top_bedrock",
-                selected.id,
-                false,
-              );
+              updateChange("custom.lithostratigraphy_top_bedrock", selected.id, false);
             }}
             schema="custom.lithostratigraphy_top_bedrock"
             selected={borehole.data.custom.lithostratigraphy_top_bedrock}
@@ -286,11 +242,7 @@ const BoreholeDetailSegment = props => {
               6: "6th_order_sub_stage",
             }}
             onSelected={selected => {
-              updateChange(
-                "custom.chronostratigraphy_top_bedrock",
-                selected.id,
-                false,
-              );
+              updateChange("custom.chronostratigraphy_top_bedrock", selected.id, false);
             }}
             schema="custom.chronostratigraphy_top_bedrock"
             selected={borehole.data.custom.chronostratigraphy_top_bedrock}

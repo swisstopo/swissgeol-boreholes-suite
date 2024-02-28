@@ -1,4 +1,3 @@
-import React from "react";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { Button, Checkbox, Icon, Table, TextArea } from "semantic-ui-react";
@@ -66,15 +65,13 @@ const FilesTableComponent = props => {
               <Table.Cell>
                 <DownloadLink
                   caption={boreholeFile.file.name}
-                  onDownload={() =>
-                    downloadBoreholeAttachment(boreholeFile.fileId)
-                  }
+                  onDownload={() => downloadBoreholeAttachment(boreholeFile.fileId)}
                 />
               </Table.Cell>
               <Table.Cell>
                 {props.unlocked === true ? (
                   <TextArea
-                    onChange={(e, data) => {
+                    onChange={e => {
                       props.patchFile(
                         props.id,
                         boreholeFile.fileId,

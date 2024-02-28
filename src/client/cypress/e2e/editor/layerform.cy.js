@@ -19,31 +19,20 @@ describe("Tests for the layer form.", () => {
     // fill all dropdowns with two values
     cy.get('[aria-multiselectable="true"]')
       .should("have.length", 6)
-      .each((el, index, list) => {
-        cy.wrap(el)
-          .scrollIntoView()
-          .click({ force: true })
-          .find('[role="option"]')
-          .last()
-          .scrollIntoView()
-          .click();
+      .each(el => {
+        cy.wrap(el).scrollIntoView().click({ force: true }).find('[role="option"]').last().scrollIntoView().click();
         cy.wait("@update-layer");
       });
 
     cy.get('[aria-multiselectable="true"]')
       .should("have.length", 6)
-      .each((el, index, list) => {
-        cy.wrap(el)
-          .scrollIntoView()
-          .click({ force: true })
-          .find('[role="option"]')
-          .eq(1)
-          .click();
+      .each(el => {
+        cy.wrap(el).scrollIntoView().click({ force: true }).find('[role="option"]').eq(1).click();
         cy.wait("@update-layer");
       });
 
     const multipleDropdownValues = [];
-    cy.get(".ui.fluid.multiple.selection.dropdown").each((el, index, list) => {
+    cy.get(".ui.fluid.multiple.selection.dropdown").each(el => {
       const firstValue = el[0].children[0].text;
       const secondValue = el[0].children[1].text;
       multipleDropdownValues.push(firstValue, secondValue);

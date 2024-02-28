@@ -1,9 +1,4 @@
-import {
-  createBorehole,
-  createStratigraphy,
-  bearerAuth,
-  loginAsAdmin,
-} from "../helpers/testHelpers";
+import { createBorehole, createStratigraphy, bearerAuth, loginAsAdmin } from "../helpers/testHelpers";
 
 describe("Tests for the lithostratigraphy editor.", () => {
   beforeEach(function () {
@@ -77,17 +72,12 @@ describe("Tests for the lithostratigraphy editor.", () => {
 
     // edit lithostratigraphy
     cy.get('[data-cy="layer-card"] [data-testid="EditIcon"]').click();
-    cy.get(
-      '[data-cy="layer-card"] :nth-child(2) > .MuiAutocomplete-root',
-    ).click();
+    cy.get('[data-cy="layer-card"] :nth-child(2) > .MuiAutocomplete-root').click();
 
     // Ensure clone and delete buttons in header are disabled for lithostratigraphy.
     cy.get('[data-cy="clone-and-delete-buttons"]').should("not.exist");
 
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
+    cy.get('.MuiPaper-elevation [role="listbox"]').find('[role="option"]').eq(1).click();
     cy.wait("@lithostratigraphy_PUT");
     cy.get('[data-cy="layer-card"] [data-testid="CloseIcon"]').click();
 

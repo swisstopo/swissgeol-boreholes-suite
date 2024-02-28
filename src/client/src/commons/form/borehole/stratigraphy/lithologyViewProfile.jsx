@@ -1,20 +1,14 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { NumericFormat } from "react-number-format";
 import { useLayers } from "../../../../api/fetchApiV2";
 import { LinearProgress, Box } from "@mui/material";
 
-const handlePattern = layer =>
-  `url(/img/lit/${JSON.parse(layer?.lithology?.conf ?? null)?.image})`;
+const handlePattern = layer => `url(/img/lit/${JSON.parse(layer?.lithology?.conf ?? null)?.image})`;
 
 /**
  * Displays the lithology layers.
  */
-const LithologyViewProfile = ({
-  stratigraphyId,
-  navState,
-  setNavState,
-  minPixelHeightForDepthLabel = 30,
-}) => {
+const LithologyViewProfile = ({ stratigraphyId, navState, setNavState, minPixelHeightForDepthLabel = 30 }) => {
   const { data: layers } = useLayers(stratigraphyId);
 
   useEffect(() => {
@@ -28,8 +22,7 @@ const LithologyViewProfile = ({
   return (
     <>
       {layers.map(layer => {
-        const height =
-          (layer.toDepth - layer.fromDepth) * navState.pixelPerMeter;
+        const height = (layer.toDepth - layer.fromDepth) * navState.pixelPerMeter;
         return !isFinite(height) ||
           height < 1 ||
           layer.fromDepth > navState.lensEnd ||
@@ -57,12 +50,7 @@ const LithologyViewProfile = ({
                       left: 0,
                       right: 0,
                     }}>
-                    <NumericFormat
-                      value={layer.toDepth}
-                      thousandSeparator="'"
-                      displayType="text"
-                      suffix={" [m MD]"}
-                    />
+                    <NumericFormat value={layer.toDepth} thousandSeparator="'" displayType="text" suffix={" [m MD]"} />
                   </Box>
                 )}
               </Box>,

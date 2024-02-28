@@ -32,10 +32,8 @@ const projections = {
     "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs",
   "EPSG:21782":
     "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=0 +y_0=0 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs",
-  "EPSG:4149":
-    "+proj=longlat +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +no_defs",
-  "EPSG:4150":
-    "+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs",
+  "EPSG:4149": "+proj=longlat +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +no_defs",
+  "EPSG:4150": "+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs",
 };
 
 class PointComponent extends React.Component {
@@ -66,14 +64,11 @@ class PointComponent extends React.Component {
 
   componentDidMount() {
     const resolutions = [
-      4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250,
-      1000, 750, 650, 500, 250, 100, 50, 20, 10, 5, 2.5, 2, 1.5, 1, 0.5,
+      4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250, 1000, 750, 650, 500, 250, 100, 50, 20, 10,
+      5, 2.5, 2, 1.5, 1, 0.5,
     ];
     const extent = [2420000, 1030000, 2900000, 1350000];
-    const center = [
-      (extent[2] - extent[0]) / 2 + extent[0],
-      (extent[3] - extent[1]) / 2 + extent[1],
-    ];
+    const center = [(extent[2] - extent[0]) / 2 + extent[0], (extent[3] - extent[1]) / 2 + extent[1]];
     const projection = getProjection(this.srs);
     projection.setExtent(extent);
     const matrixIds = [];
@@ -157,25 +152,17 @@ class PointComponent extends React.Component {
       }),
     );
 
-    this.position.on(
-      "addfeature",
-      e => this.updatePointAndGetAddress(e.feature),
-      this,
-    );
+    this.position.on("addfeature", e => this.updatePointAndGetAddress(e.feature), this);
 
     if (this.props.x !== 0 && this.props.y !== 0) {
       this.manageMapInteractions();
     }
   }
 
-  componentDidUpdate(previousProps, predviousState) {
+  componentDidUpdate(previousProps) {
     const { x, y, isEditable } = this.props;
     // update map if props have changed or no feature is present.
-    if (
-      x !== previousProps.x ||
-      y !== previousProps.y ||
-      this.position.getFeatures().length === 0
-    ) {
+    if (x !== previousProps.x || y !== previousProps.y || this.position.getFeatures().length === 0) {
       if (_.isNumber(x) && _.isNumber(y) && x + y !== 0) {
         const point = [x, y];
         if (!_.isEqual(point, this.state.point)) {
@@ -189,21 +176,11 @@ class PointComponent extends React.Component {
             },
           );
 
-          this.position.un(
-            "addfeature",
-            e => this.updatePointAndGetAddress(e.feature),
-            this,
-          );
+          this.position.un("addfeature", e => this.updatePointAndGetAddress(e.feature), this);
           this.drawOrUpdatePoint(point);
-          this.map
-            .getView()
-            .fit(this.centerFeature.getGeometry(), { resolution: 1 });
+          this.map.getView().fit(this.centerFeature.getGeometry(), { resolution: 1 });
 
-          this.position.on(
-            "addfeature",
-            e => this.updatePointAndGetAddress(e.feature),
-            this,
-          );
+          this.position.on("addfeature", e => this.updatePointAndGetAddress(e.feature), this);
         }
       }
     }
@@ -274,9 +251,7 @@ class PointComponent extends React.Component {
       });
     }
 
-    this.modify.on("modifyend", e =>
-      this.updatePointAndGetAddress(e.features.array_[0]),
-    );
+    this.modify.on("modifyend", e => this.updatePointAndGetAddress(e.features.array_[0]));
 
     this.map.addInteraction(this.modify);
     this.map.removeInteraction(this.draw);
@@ -338,10 +313,7 @@ class PointComponent extends React.Component {
     }
     this.lh = setTimeout(
       async function () {
-        var location = await fetchApiV2(
-          `location/identify?east=${coordinates[0]}&north=${coordinates[1]}`,
-          "GET",
-        );
+        var location = await fetchApiV2(`location/identify?east=${coordinates[0]}&north=${coordinates[1]}`, "GET");
         this.setState({
           address: false,
           ...location,
@@ -351,18 +323,15 @@ class PointComponent extends React.Component {
     );
   }
 
-  styleFunction(feature, resolution) {
+  styleFunction(feature) {
     const { highlighted } = this.props;
 
-    let selected =
-      highlighted !== undefined && highlighted.indexOf(feature.getId()) > -1;
+    let selected = highlighted !== undefined && highlighted.indexOf(feature.getId()) > -1;
 
     let conf = {
       image: new Circle({
         radius: selected ? 10 : 6,
-        fill: selected
-          ? new Fill({ color: "rgba(255, 0, 0, 0.8)" })
-          : new Fill({ color: "rgba(0, 255, 0, 1)" }),
+        fill: selected ? new Fill({ color: "rgba(255, 0, 0, 0.8)" }) : new Fill({ color: "rgba(0, 255, 0, 1)" }),
         stroke: new Stroke({ color: "black", width: 1 }),
       }),
     };
@@ -389,12 +358,12 @@ class PointComponent extends React.Component {
           <Button
             active={satellite}
             color="black"
-            onClick={e => {
+            onClick={() => {
               this.setState(
                 {
                   satellite: !satellite,
                 },
-                a => {
+                () => {
                   const layers = this.map.getLayers().getArray();
                   layers[0].setVisible(!this.state.satellite);
                   layers[1].setVisible(this.state.satellite);
@@ -439,13 +408,8 @@ class PointComponent extends React.Component {
                 : "n/p"}
               <Label.Detail>{this.srs}</Label.Detail>
             </Label>
-            {_.compact([this.state.municipality, this.state.canton]).length >
-            0 ? (
-              <Label color="black">
-                {_.compact([this.state.municipality, this.state.canton]).join(
-                  ", ",
-                )}
-              </Label>
+            {_.compact([this.state.municipality, this.state.canton]).length > 0 ? (
+              <Label color="black">{_.compact([this.state.municipality, this.state.canton]).join(", ")}</Label>
             ) : null}
             {this.state.height !== null ? (
               <Label color="blue">
@@ -457,26 +421,17 @@ class PointComponent extends React.Component {
             <Button.Group size="mini">
               <Button
                 data-cy="apply-button"
-                disabled={
-                  !_.isArray(this.state.point) ||
-                  this.state.address ||
-                  !isEditable
-                }
+                disabled={!_.isArray(this.state.point) || this.state.address || !isEditable}
                 loading={this.state.address}
-                onClick={e => {
+                onClick={() => {
                   if (_.isFunction(this.props.applyChange)) {
-                    if (
-                      this.props.x !== this.state.point[0] ||
-                      this.props.y !== this.state.point[1]
-                    ) {
+                    if (this.props.x !== this.state.point[0] || this.props.y !== this.state.point[1]) {
                       this.props.setMapPointChange(true);
                     }
                     this.props.applyChange(
                       _.round(this.state.point[0], 2),
                       _.round(this.state.point[1], 2),
-                      this.state.height !== null
-                        ? parseFloat(this.state.height)
-                        : null,
+                      this.state.height !== null ? parseFloat(this.state.height) : null,
                       this.state.country,
                       this.state.canton,
                       this.state.municipality,
@@ -489,18 +444,13 @@ class PointComponent extends React.Component {
               <Button
                 disabled={!_.isArray(this.state.point)}
                 icon
-                onClick={e => {
+                onClick={() => {
                   if (_.isFunction(this.props.applyChange)) {
-                    getHeight(this.state.point[0], this.state.point[1]).then(
-                      response => {
-                        this.setState({
-                          height:
-                            response.status === 200
-                              ? response.data.height
-                              : null,
-                        });
-                      },
-                    );
+                    getHeight(this.state.point[0], this.state.point[1]).then(response => {
+                      this.setState({
+                        height: response.status === 200 ? response.data.height : null,
+                      });
+                    });
                   }
                 }}
                 size="mini">
@@ -509,10 +459,8 @@ class PointComponent extends React.Component {
               <Button
                 disabled={false}
                 icon
-                onClick={e => {
-                  this.map
-                    .getView()
-                    .fit(this.centerFeature.getGeometry(), { resolution: 1 });
+                onClick={() => {
+                  this.map.getView().fit(this.centerFeature.getGeometry(), { resolution: 1 });
                 }}
                 size="mini">
                 <Icon name="compress" />

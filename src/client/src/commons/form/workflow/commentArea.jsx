@@ -1,4 +1,3 @@
-import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
@@ -6,15 +5,7 @@ import CommentComponent from "./commentComponent";
 
 const CommentArea = props => {
   const { readOnly, height, onChange, value, border } = props;
-  return (
-    <CommentComponent
-      height={height}
-      onChange={onChange}
-      readOnly={readOnly}
-      value={value}
-      border={border}
-    />
-  );
+  return <CommentComponent height={height} onChange={onChange} readOnly={readOnly} value={value} border={border} />;
 };
 
 CommentArea.propTypes = {

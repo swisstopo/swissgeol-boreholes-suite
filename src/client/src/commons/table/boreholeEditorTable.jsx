@@ -1,4 +1,3 @@
-import React from "react";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
@@ -11,22 +10,9 @@ import { copyBorehole } from "../../api/fetchApiV2";
 
 import TTable from "./table";
 
-import {
-  Button,
-  Table,
-  Icon,
-  Checkbox,
-  Segment,
-  Modal,
-  Header,
-  Dropdown,
-} from "semantic-ui-react";
+import { Button, Table, Icon, Checkbox, Segment, Modal, Header, Dropdown } from "semantic-ui-react";
 
-import {
-  loadEditingBoreholes,
-  getdBoreholeIds,
-  deleteBoreholes,
-} from "../../api-lib/index";
+import { loadEditingBoreholes, getdBoreholeIds, deleteBoreholes } from "../../api-lib/index";
 import { AlertContext } from "../../components/alert/alertContext";
 
 class BoreholeEditorTable extends TTable {
@@ -35,10 +21,7 @@ class BoreholeEditorTable extends TTable {
     super(props);
 
     const wgs = this.props.user.data.workgroups.filter(
-      w =>
-        w.disabled === null &&
-        w.supplier === false &&
-        w.roles.indexOf("EDIT") >= 0,
+      w => w.disabled === null && w.supplier === false && w.roles.indexOf("EDIT") >= 0,
     );
     this.state = {
       ...this.state,
@@ -65,12 +48,7 @@ class BoreholeEditorTable extends TTable {
   componentDidMount() {
     const { filter, store, sort } = this.props;
     this.props.clear();
-    this.props.loadData(
-      store.page,
-      filter,
-      sort?.column ?? "creation",
-      sort?.direction,
-    );
+    this.props.loadData(store.page, filter, sort?.column ?? "creation", sort?.direction);
   }
 
   reorder(orderby) {
@@ -128,9 +106,7 @@ class BoreholeEditorTable extends TTable {
         getdBoreholeIds(filter)
           .then(response => {
             if (response.data.success) {
-              deleteBoreholes(
-                _.pullAll(response.data.data, this.state.selected),
-              ).then(() => {
+              deleteBoreholes(_.pullAll(response.data.data, this.state.selected)).then(() => {
                 this.setState(
                   {
                     confirmDelete: false,
@@ -166,19 +142,17 @@ class BoreholeEditorTable extends TTable {
     }
   }
   async copyBorehole() {
-    await copyBorehole(this.state.selected[0], this.state.workgroup).then(
-      boreholeId => {
-        this.setState(
-          {
-            copy: false,
-            copying: false,
-          },
-          () => {
-            super.handleClick({ id: boreholeId });
-          },
-        );
-      },
-    );
+    await copyBorehole(this.state.selected[0], this.state.workgroup).then(boreholeId => {
+      this.setState(
+        {
+          copy: false,
+          copying: false,
+        },
+        () => {
+          super.handleClick({ id: boreholeId });
+        },
+      );
+    });
   }
   getHeaderLabel(key, disableOrdering = false) {
     const { store } = this.props;
@@ -210,12 +184,7 @@ class BoreholeEditorTable extends TTable {
           <TranslationText id={key} />
         )}
         {key === "workgroup"
-          ? [
-              <br key={"betjs-1-" + key} />,
-              <span key={"betjs-2-" + key}>
-                {key === "workgroup" ? "Status" : key}
-              </span>,
-            ]
+          ? [<br key={"betjs-1-" + key} />, <span key={"betjs-2-" + key}>{key === "workgroup" ? "Status" : key}</span>]
           : null}
       </Table.HeaderCell>
     );
@@ -289,12 +258,8 @@ class BoreholeEditorTable extends TTable {
         <br />
         <DateText date={item.creator.date} />
       </Table.Cell>,
-      <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
-        {item.creator.username}
-      </Table.Cell>,
-      <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
-        {item.original_name}
-      </Table.Cell>,
+      <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>{item.creator.username}</Table.Cell>,
+      <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>{item.original_name}</Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         <DomainText id={item.borehole_type} schema="borehole_type" />
       </Table.Cell>,
@@ -311,11 +276,7 @@ class BoreholeEditorTable extends TTable {
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         {_.isNil(item.elevation_z) ? null : (
-          <NumericFormat
-            value={item.elevation_z}
-            displayType="text"
-            thousandSeparator="'"
-          />
+          <NumericFormat value={item.elevation_z} displayType="text" thousandSeparator="'" />
         )}
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
@@ -326,11 +287,7 @@ class BoreholeEditorTable extends TTable {
       </Table.Cell>,
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         {_.isNil(item.total_depth) ? null : (
-          <NumericFormat
-            value={item.total_depth}
-            thousandSeparator="'"
-            displayType="text"
-          />
+          <NumericFormat value={item.total_depth} thousandSeparator="'" displayType="text" />
         )}
       </Table.Cell>,
     ];
@@ -550,7 +507,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation(["common"])(BoreholeEditorTable));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(BoreholeEditorTable));

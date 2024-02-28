@@ -6,13 +6,7 @@ import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
 
-const BackfillInput = ({
-  item,
-  setSelected,
-  parentId,
-  addData,
-  updateData,
-}) => {
+const BackfillInput = ({ item, setSelected, parentId, addData, updateData }) => {
   const domains = useDomains();
   const { i18n } = useTranslation();
 
@@ -29,20 +23,8 @@ const BackfillInput = ({
       updateData={updateData}
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <Stack direction="row">
-        <FormInput
-          fieldName="fromDepth"
-          label="fromdepth"
-          value={item.fromDepth}
-          type="number"
-          required={true}
-        />
-        <FormInput
-          fieldName="toDepth"
-          label="todepth"
-          value={item.toDepth}
-          type="number"
-          required={true}
-        />
+        <FormInput fieldName="fromDepth" label="fromdepth" value={item.fromDepth} type="number" required={true} />
+        <FormInput fieldName="toDepth" label="todepth" value={item.toDepth} type="number" required={true} />
       </Stack>
       <Stack direction="row">
         <FormSelect
@@ -64,9 +46,7 @@ const BackfillInput = ({
           selected={item.materialId}
           required={true}
           values={domains?.data
-            ?.filter(
-              d => d.schema === completionSchemaConstants.backfillMaterial,
-            )
+            ?.filter(d => d.schema === completionSchemaConstants.backfillMaterial)
             .sort((a, b) => a.order - b.order)
             .map(d => ({
               key: d.id,
@@ -75,12 +55,7 @@ const BackfillInput = ({
         />
       </Stack>
       <Stack direction="row">
-        <FormInput
-          fieldName="notes"
-          label="notes"
-          multiline={true}
-          value={item.notes}
-        />
+        <FormInput fieldName="notes" label="notes" multiline={true} value={item.notes} />
       </Stack>
     </DataInputCard>
   );

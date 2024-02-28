@@ -4,14 +4,7 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
 
-import {
-  Button,
-  Checkbox,
-  Header,
-  Icon,
-  Label,
-  Modal,
-} from "semantic-ui-react";
+import { Button, Checkbox, Header, Icon, Label, Modal } from "semantic-ui-react";
 
 import {
   loadBorehole,
@@ -52,8 +45,7 @@ class WorkflowForm extends React.Component {
   componentDidUpdate(prevProps) {
     if (
       this.props.id !== null &&
-      (this.props.id !== prevProps.id ||
-        this.props.borehole.fcnt !== prevProps.borehole.fcnt)
+      (this.props.id !== prevProps.id || this.props.borehole.fcnt !== prevProps.borehole.fcnt)
     ) {
       this.setState(
         {
@@ -81,10 +73,7 @@ class WorkflowForm extends React.Component {
 
   handleChange(value) {
     const { t } = this.props;
-    if (
-      this.props.borehole.data.lock === null ||
-      this.props.borehole.data.lock.id !== this.props.user.data.id
-    ) {
+    if (this.props.borehole.data.lock === null || this.props.borehole.data.lock.id !== this.props.user.data.id) {
       this.context.error(t("common:errorStartEditing"));
     } else {
       this.props.updateWorkflow(value);
@@ -107,11 +96,9 @@ class WorkflowForm extends React.Component {
 
     const filtered = workflows.data.filter(flow => flow.finished !== null);
 
-    const readOnly =
-      borehole.data.lock === null || borehole.data.lock.id !== user.data.id;
+    const readOnly = borehole.data.lock === null || borehole.data.lock.id !== user.data.id;
 
-    const supplier =
-      borehole.data.workgroup && borehole.data.workgroup.supplier;
+    const supplier = borehole.data.workgroup && borehole.data.workgroup.supplier;
 
     return (
       <div
@@ -128,7 +115,7 @@ class WorkflowForm extends React.Component {
         {filtered.length > 1 ? (
           <div
             className="link"
-            onClick={e => {
+            onClick={() => {
               this.setState({
                 expanded: !this.state.expanded,
               });
@@ -153,10 +140,7 @@ class WorkflowForm extends React.Component {
           }}>
           <div
             style={{
-              borderBottom:
-                this.state.expanded === true
-                  ? "thin solid rgba(0, 0, 0, 0.15)"
-                  : null,
+              borderBottom: this.state.expanded === true ? "thin solid rgba(0, 0, 0, 0.15)" : null,
               overflowX: "hidden",
               flex: "1 1 100%",
             }}>
@@ -164,14 +148,8 @@ class WorkflowForm extends React.Component {
               <div
                 key={"wff-cmt-" + idx}
                 style={{
-                  borderBottom:
-                    idx + 1 < filtered.length
-                      ? "thin solid rgba(0, 0, 0, 0.30)"
-                      : null,
-                  display:
-                    idx + 1 < filtered.length && this.state.expanded === false
-                      ? "none"
-                      : null,
+                  borderBottom: idx + 1 < filtered.length ? "thin solid rgba(0, 0, 0, 0.30)" : null,
+                  display: idx + 1 < filtered.length && this.state.expanded === false ? "none" : null,
                   marginBottom: "1em",
                   padding: "0px 0.5em 0.5em 0.5em",
                 }}>
@@ -193,8 +171,7 @@ class WorkflowForm extends React.Component {
                   style={{
                     fontSize: "0.8em",
                   }}>
-                  <DateText date={flow.finished} fromnow /> -{" "}
-                  <DateText date={flow.finished} hours />
+                  <DateText date={flow.finished} fromnow /> - <DateText date={flow.finished} hours />
                 </div>
                 <div
                   style={{
@@ -204,12 +181,7 @@ class WorkflowForm extends React.Component {
                     overflowX: "hidden",
                   }}>
                   {flow.notes !== null && flow.notes !== "" ? (
-                    <CommentArea
-                      readOnly
-                      value={flow.notes}
-                      border="none"
-                      height={0}
-                    />
+                    <CommentArea readOnly value={flow.notes} border="none" height={0} />
                   ) : (
                     <div
                       style={{
@@ -222,16 +194,12 @@ class WorkflowForm extends React.Component {
                 </div>
               </div>
             ))}
-            {workflow.data === null ||
-            (readOnly === true && workflows.data.length > 1) ? null : (
+            {workflow.data === null || (readOnly === true && workflows.data.length > 1) ? null : (
               <div>
                 <span>
                   <TranslationText id="yourcomments" />
                   &nbsp;
-                  {readOnly ? (
-                    <TranslationText append=")" id="disabled" prepend="(" />
-                  ) : null}
-                  :
+                  {readOnly ? <TranslationText append=")" id="disabled" prepend="(" /> : null}:
                 </span>
                 <CommentArea
                   height={100}
@@ -298,13 +266,7 @@ class WorkflowForm extends React.Component {
                           <div>
                             <Label
                               circular
-                              color={
-                                status[role].finished === null
-                                  ? "orange"
-                                  : current === true
-                                    ? "red"
-                                    : "green"
-                              }
+                              color={status[role].finished === null ? "orange" : current === true ? "red" : "green"}
                             />
                           </div>
                           <div
@@ -313,13 +275,10 @@ class WorkflowForm extends React.Component {
                               whiteSpace: "nowrap",
                             }}>
                             <div className="bdms-header">
-                              <TranslationText
-                                id={`status${role.toLowerCase()}`}
-                              />
+                              <TranslationText id={`status${role.toLowerCase()}`} />
                             </div>
                             {(this.props.user.data.admin === true ||
-                              this.props.user.data?.roles.indexOf("PUBLIC") >=
-                                0) &&
+                              this.props.user.data?.roles.indexOf("PUBLIC") >= 0) &&
                             role === "EDIT" &&
                             this.props.workflow.data.role === "PUBLIC"
                               ? [
@@ -373,18 +332,13 @@ class WorkflowForm extends React.Component {
                               </span>
                             ) : borehole.data.id !== null &&
                               user.data.workgroups
-                                .find(
-                                  workgroup =>
-                                    workgroup.id === borehole.data.workgroup.id,
-                                )
+                                .find(workgroup => workgroup.id === borehole.data.workgroup.id)
                                 ?.roles.indexOf(borehole.data.role) === -1 ? (
                               <span
                                 style={{
                                   fontSize: "0.9em",
                                 }}>
-                                {status[role].finished !== null
-                                  ? "Review started"
-                                  : "Pending review"}
+                                {status[role].finished !== null ? "Review started" : "Pending review"}
                                 <br />
                                 <DateText date={status[role].finished} hours />
                               </span>
@@ -394,10 +348,7 @@ class WorkflowForm extends React.Component {
                         {status[role].finished === null &&
                         borehole.data.id !== null &&
                         user.data.workgroups
-                          .find(
-                            workgroup =>
-                              workgroup.id === borehole.data.workgroup.id,
-                          )
+                          .find(workgroup => workgroup.id === borehole.data.workgroup.id)
                           ?.roles.indexOf(borehole.data.role) > -1 ? (
                           <div
                             style={{
@@ -456,11 +407,7 @@ class WorkflowForm extends React.Component {
                                 }}
                                 open={this.state.modal > 0}
                                 size="mini">
-                                <Header
-                                  content={t(
-                                    `status-submit-msg-${role.toLowerCase()}`,
-                                  )}
-                                />
+                                <Header content={t(`status-submit-msg-${role.toLowerCase()}`)} />
                                 <Modal.Content>
                                   <p>
                                     <TranslationText id="sure" />
@@ -469,21 +416,14 @@ class WorkflowForm extends React.Component {
                                 <Modal.Actions>
                                   {this.state.modal < 3 ? (
                                     <Button
-                                      disabled={
-                                        readOnly || workflows.isRejecting
-                                      }
+                                      disabled={readOnly || workflows.isRejecting}
                                       loading={workflows.isSubmitting === true}
                                       onClick={() => {
-                                        this.props
-                                          .submitWorkflow(
-                                            status[role].id,
-                                            this.state.modal === 2,
-                                          )
-                                          .then(() => {
-                                            this.setState({
-                                              modal: 0,
-                                            });
+                                        this.props.submitWorkflow(status[role].id, this.state.modal === 2).then(() => {
+                                          this.setState({
+                                            modal: 0,
                                           });
+                                        });
                                       }}
                                       secondary>
                                       <Icon name="checkmark" />
@@ -492,19 +432,15 @@ class WorkflowForm extends React.Component {
                                     </Button>
                                   ) : (
                                     <Button
-                                      disabled={
-                                        readOnly || workflows.isSubmitting
-                                      }
+                                      disabled={readOnly || workflows.isSubmitting}
                                       loading={workflows.isRejecting === true}
                                       negative
                                       onClick={() => {
-                                        this.props
-                                          .rejectWorkflow(status[role].id)
-                                          .then(() => {
-                                            this.setState({
-                                              modal: 0,
-                                            });
+                                        this.props.rejectWorkflow(status[role].id).then(() => {
+                                          this.setState({
+                                            modal: 0,
                                           });
+                                        });
                                       }}>
                                       <Icon name="checkmark" />
                                       &nbsp;
@@ -541,9 +477,7 @@ class WorkflowForm extends React.Component {
                             whiteSpace: "nowrap",
                           }}>
                           <h4 style={{ color: "#909090" }}>
-                            <TranslationText
-                              id={`status${role.toLowerCase()}`}
-                            />
+                            <TranslationText id={`status${role.toLowerCase()}`} />
                           </h4>
                         </div>
                         <div
@@ -557,17 +491,12 @@ class WorkflowForm extends React.Component {
                   </div>
                 );
                 if (current === null) {
-                  current =
-                    status[role] !== null && status[role].finished === null
-                      ? true
-                      : null;
+                  current = status[role] !== null && status[role].finished === null ? true : null;
                 }
                 return ret;
               });
             })()}
-        {workflow.data !== null &&
-        workflow.data.role === "PUBLIC" &&
-        workflow.data.finished !== null ? (
+        {workflow.data !== null && workflow.data.role === "PUBLIC" && workflow.data.finished !== null ? (
           <div
             style={{
               textAlign: "center",
@@ -586,8 +515,7 @@ class WorkflowForm extends React.Component {
                 style={{
                   flex: "1 1 100%",
                   textAlign: "right",
-                  fontWeight:
-                    this.props.borehole.data.visible === false ? "bold" : null,
+                  fontWeight: this.props.borehole.data.visible === false ? "bold" : null,
                 }}>
                 <TranslationText id="hidden" />
               </div>
@@ -600,8 +528,7 @@ class WorkflowForm extends React.Component {
                   onChange={(e, data) => {
                     if (
                       this.props.borehole.data.lock === null ||
-                      this.props.borehole.data.lock.id !==
-                        this.props.user.data.id
+                      this.props.borehole.data.lock.id !== this.props.user.data.id
                     ) {
                       this.context.error(t("common:errorStartEditing"));
                     } else {
@@ -609,11 +536,7 @@ class WorkflowForm extends React.Component {
                         ...this.props.borehole.data,
                       };
                       borehole.visible = data.checked;
-                      patchBorehole(
-                        borehole.id,
-                        "visible",
-                        borehole.visible,
-                      ).then(() => {
+                      patchBorehole(borehole.id, "visible", borehole.visible).then(() => {
                         this.props.updateBorehole(borehole);
                       });
                     }
@@ -625,8 +548,7 @@ class WorkflowForm extends React.Component {
                 style={{
                   flex: "1 1 100%",
                   textAlign: "left",
-                  fontWeight:
-                    this.props.borehole.data.visible === true ? "bold" : null,
+                  fontWeight: this.props.borehole.data.visible === true ? "bold" : null,
                 }}>
                 <TranslationText id="visible" />
               </div>
@@ -687,14 +609,12 @@ class WorkflowForm extends React.Component {
                     resetting: true,
                   },
                   () => {
-                    this.props
-                      .resetWorkflow(this.props.workflow.data.id)
-                      .then(() => {
-                        this.setState({
-                          modalRestart: false,
-                          resetting: false,
-                        });
+                    this.props.resetWorkflow(this.props.workflow.data.id).then(() => {
+                      this.setState({
+                        modalRestart: false,
+                        resetting: false,
                       });
+                    });
                   },
                 );
               }}>
@@ -759,17 +679,17 @@ const mapDispatchToProps = (dispatch, props) => {
       dispatch(updateWorkflow("notes", value));
     },
     submitWorkflow: (id, online = false) => {
-      return dispatch(submitWorkflow(id, online)).then(res => {
+      return dispatch(submitWorkflow(id, online)).then(() => {
         dispatch(loadBorehole(props.id));
       });
     },
     rejectWorkflow: id => {
-      return dispatch(rejectWorkflow(id)).then(res => {
+      return dispatch(rejectWorkflow(id)).then(() => {
         dispatch(loadBorehole(props.id));
       });
     },
     resetWorkflow: id => {
-      return dispatch(resetWorkflow(id)).then(res => {
+      return dispatch(resetWorkflow(id)).then(() => {
         dispatch(loadBorehole(props.id));
       });
     },
@@ -779,7 +699,4 @@ const mapDispatchToProps = (dispatch, props) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation(["common"])(WorkflowForm));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(WorkflowForm));

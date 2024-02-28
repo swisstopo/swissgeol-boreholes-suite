@@ -23,10 +23,8 @@ const projections = {
     "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs",
   "EPSG:21782":
     "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=0 +y_0=0 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs",
-  "EPSG:4149":
-    "+proj=longlat +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +no_defs",
-  "EPSG:4150":
-    "+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs",
+  "EPSG:4149": "+proj=longlat +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +no_defs",
+  "EPSG:4150": "+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs",
 };
 
 class ExplorerSettings extends React.Component {
@@ -90,10 +88,7 @@ class ExplorerSettings extends React.Component {
       for (let idx = 0; idx < codes.data.layer_kind.length; idx++) {
         const element = codes.data.layer_kind[idx];
         if (element.code === geocode) {
-          if (
-            _.isObject(element.conf) &&
-            _.has(element.conf, `fields.${field}`)
-          ) {
+          if (_.isObject(element.conf) && _.has(element.conf, `fields.${field}`)) {
             return element.conf.fields[field];
           } else {
             return false;
@@ -166,11 +161,7 @@ class ExplorerSettings extends React.Component {
               textAlign: "right",
             }}>
             <Button color="red" size="small">
-              {this.state.appearance === true ? (
-                <TranslationText id="collapse" />
-              ) : (
-                <TranslationText id="expand" />
-              )}
+              {this.state.appearance === true ? <TranslationText id="collapse" /> : <TranslationText id="expand" />}
             </Button>
           </div>
         </div>
@@ -181,7 +172,7 @@ class ExplorerSettings extends React.Component {
                 <Checkbox
                   checked={setting.data.appearance.explorer === 0}
                   label=""
-                  onChange={(e, d) => {
+                  onChange={() => {
                     patchAppearance(0);
                   }}
                   radio
@@ -192,7 +183,7 @@ class ExplorerSettings extends React.Component {
                 <Checkbox
                   checked={setting.data.appearance.explorer === 1}
                   label=""
-                  onChange={(e, d) => {
+                  onChange={() => {
                     patchAppearance(1);
                   }}
                   radio
@@ -203,7 +194,7 @@ class ExplorerSettings extends React.Component {
                 <Checkbox
                   checked={setting.data.appearance.explorer === 2}
                   label=""
-                  onChange={(e, d) => {
+                  onChange={() => {
                     patchAppearance(2);
                   }}
                   radio
@@ -214,7 +205,7 @@ class ExplorerSettings extends React.Component {
                 <Checkbox
                   checked={setting.data.appearance.explorer === 3}
                   label=""
-                  onChange={(e, d) => {
+                  onChange={() => {
                     patchAppearance(3);
                   }}
                   radio
@@ -226,7 +217,7 @@ class ExplorerSettings extends React.Component {
                 <Checkbox
                   checked={setting.data.appearance.explorer === 4}
                   label=""
-                  onChange={(e, d) => {
+                  onChange={() => {
                     patchAppearance(4);
                   }}
                   radio
@@ -237,7 +228,7 @@ class ExplorerSettings extends React.Component {
                 <Checkbox
                   checked={setting.data.appearance.explorer === 5}
                   label=""
-                  onChange={(e, d) => {
+                  onChange={() => {
                     patchAppearance(5);
                   }}
                   radio
@@ -291,9 +282,7 @@ class ExplorerSettings extends React.Component {
                   ...prevState,
                   // update an array of objects:
                   searchList: prevState.searchList.map(obj =>
-                    obj.id === idx
-                      ? { ...obj, isSelected: !obj.isSelected }
-                      : { ...obj },
+                    obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj },
                   ),
                 }));
               }}
@@ -319,22 +308,13 @@ class ExplorerSettings extends React.Component {
                   textAlign: "right",
                 }}>
                 <Button color="red" size="small">
-                  {filter.isSelected === true ? (
-                    <TranslationText id="collapse" />
-                  ) : (
-                    <TranslationText id="expand" />
-                  )}
+                  {filter.isSelected === true ? <TranslationText id="collapse" /> : <TranslationText id="expand" />}
                 </Button>
               </div>
             </div>
-            {filter.isSelected === true &&
-            this.handleButtonSelected(filter.name, filter.isSelected) !==
-              null ? (
+            {filter.isSelected === true && this.handleButtonSelected(filter.name, filter.isSelected) !== null ? (
               <EditorSettingList
-                attribute={this.handleButtonSelected(
-                  filter.name,
-                  filter.isSelected,
-                )}
+                attribute={this.handleButtonSelected(filter.name, filter.isSelected)}
                 codes={this.props.codes}
                 data={setting.data.filter}
                 geocode={this.props.geocode}
@@ -366,7 +346,7 @@ const mapStateToProps = state => {
 ExplorerSettings.defaultProps = {
   geocode: "Geol",
 };
-const mapDispatchToProps = (dispatch, state) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
     toggleFieldArray: (filter, enabled) => {
@@ -420,10 +400,7 @@ const mapDispatchToProps = (dispatch, state) => {
           layer: layer.Identifier,
           // projection: 'EPSG:2056'
         });
-        if (
-          conf.hasOwnProperty("matrixSet") &&
-          !conf.matrixSet.includes("2056")
-        ) {
+        if (Object.prototype.hasOwnProperty.call(conf, "matrixSet") && !conf.matrixSet.includes("2056")) {
           this.context.error("Only EPSG:2056 is supported");
         } else {
           dispatch(
@@ -490,7 +467,4 @@ const mapDispatchToProps = (dispatch, state) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation("common")(ExplorerSettings));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(ExplorerSettings));

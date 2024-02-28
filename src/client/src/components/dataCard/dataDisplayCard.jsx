@@ -1,4 +1,3 @@
-import React from "react";
 import { DataCardButtonContainer } from "../dataCard/dataCard";
 import { StackFullWidth } from "../baseComponents";
 import { EditButton, DeleteButton } from "../buttons/buttons";

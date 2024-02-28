@@ -8,7 +8,7 @@ import { loadDomains } from "../../../api-lib/index";
 class DomainText extends React.Component {
   componentDidMount() {
     const { domains, schema } = this.props;
-    if (!domains.data.hasOwnProperty(schema) && domains.isFetching === false) {
+    if (!Object.prototype.hasOwnProperty.call(domains.data, schema) && domains.isFetching === false) {
       this.props.loadDomains();
     }
   }
@@ -19,15 +19,11 @@ class DomainText extends React.Component {
     if (id === null) {
       return "";
     }
-    if (!domains.data.hasOwnProperty(schema)) {
+    if (!Object.prototype.hasOwnProperty.call(domains.data, schema)) {
       if (domains.isFetching === true) {
         return "loading translations";
       }
-      console.debug(
-        `asked domain (${schema},${
-          geocode !== undefined ? geocode : id
-        }) but still loading..`,
-      );
+      console.debug(`asked domain (${schema},${geocode !== undefined ? geocode : id}) but still loading..`);
       return "";
     }
     let found = null;
@@ -41,11 +37,7 @@ class DomainText extends React.Component {
       });
     }
     if (found === undefined) {
-      console.error(
-        `asked domain (${schema}:${geocode !== undefined ? geocode : id}:${
-          i18n.language
-        }) but not found.`,
-      );
+      console.error(`asked domain (${schema}:${geocode !== undefined ? geocode : id}:${i18n.language}) but not found.`);
       return null;
     }
 
@@ -107,7 +99,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation()(DomainText));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(DomainText));

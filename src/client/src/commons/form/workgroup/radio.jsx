@@ -1,4 +1,3 @@
-import React from "react";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { Form, Radio } from "semantic-ui-react";
@@ -15,10 +14,7 @@ const WorkgroupRadioGroup = props => {
         {props.all === true ? (
           <Radio
             checked={props.filter === "all"}
-            label={
-              props.t("common:alls").charAt(0).toUpperCase() +
-              props.t("common:alls").slice(1)
-            }
+            label={props.t("common:alls").charAt(0).toUpperCase() + props.t("common:alls").slice(1)}
             name="radioGroup"
             onChange={() => {
               props.onChange("all");
@@ -33,9 +29,7 @@ const WorkgroupRadioGroup = props => {
             label={
               workgroup[props.nameKey] +
               (workgroup.supplier === true ? " (supplier)" : "") +
-              (workgroup.disabled !== null
-                ? " ( " + props.t("common:disabled") + ")"
-                : "")
+              (workgroup.disabled !== null ? " ( " + props.t("common:disabled") + ")" : "")
             }
             name="radioGroup"
             onChange={() => {

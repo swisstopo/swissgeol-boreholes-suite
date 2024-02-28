@@ -1,20 +1,6 @@
-import {
-  loginAsAdmin,
-  createBorehole,
-  createCompletion,
-  startBoreholeEditing,
-} from "../helpers/testHelpers";
-import {
-  evaluateDisplayValue,
-  setInput,
-  setSelect,
-} from "../helpers/formHelpers";
-import {
-  addItem,
-  startEditing,
-  saveForm,
-  deleteItem,
-} from "../helpers/buttonHelpers";
+import { loginAsAdmin, createBorehole, createCompletion, startBoreholeEditing } from "../helpers/testHelpers";
+import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
+import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
 
 describe("Casing crud tests", () => {
   it("add, edit and delete casings", () => {

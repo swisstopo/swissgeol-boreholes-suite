@@ -1,4 +1,3 @@
-import React from "react";
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
@@ -19,22 +18,11 @@ const InstrumentationDisplay = props => {
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay label="name" value={item?.name} />
-        <FormDisplay
-          label="casingName"
-          value={item?.casingId ? item?.casing?.name : null}
-        />
+        <FormDisplay label="casingName" value={item?.casingId ? item?.casing?.name : null} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay
-          label="kindInstrument"
-          value={item?.kind}
-          type={FormDisplayType.Domain}
-        />
-        <FormDisplay
-          label="statusInstrument"
-          value={item?.status}
-          type={FormDisplayType.Domain}
-        />
+        <FormDisplay label="kindInstrument" value={item?.kind} type={FormDisplayType.Domain} />
+        <FormDisplay label="statusInstrument" value={item?.status} type={FormDisplayType.Domain} />
       </StackFullWidth>
       <FormDisplay label="notes" value={item?.notes} />
     </DataDisplayCard>

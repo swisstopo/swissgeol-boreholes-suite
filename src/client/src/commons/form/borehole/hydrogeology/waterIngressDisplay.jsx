@@ -1,4 +1,3 @@
-import React from "react";
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
@@ -16,16 +15,8 @@ const WaterIngressDisplay = props => {
       deleteData={deleteData}>
       <ObservationDisplay observation={item} />
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay
-          label="quantity"
-          value={item?.quantity}
-          type={FormDisplayType.Domain}
-        />
-        <FormDisplay
-          label="conditions"
-          value={item?.conditions}
-          type={FormDisplayType.Domain}
-        />
+        <FormDisplay label="quantity" value={item?.quantity} type={FormDisplayType.Domain} />
+        <FormDisplay label="conditions" value={item?.conditions} type={FormDisplayType.Domain} />
       </StackFullWidth>
     </DataDisplayCard>
   );

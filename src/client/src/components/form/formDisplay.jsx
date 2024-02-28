@@ -61,10 +61,7 @@ export const FormDisplay = props => {
         ...sx,
       }}>
       <Typography variant="subtitle2">{t(label)}</Typography>
-      <Typography
-        marginBottom={"1em"}
-        variant="subtitle1"
-        data-cy={label + "-formDisplay"}>
+      <Typography marginBottom={"1em"} variant="subtitle1" data-cy={label + "-formDisplay"}>
         {formatValue(value)}
       </Typography>
     </Stack>

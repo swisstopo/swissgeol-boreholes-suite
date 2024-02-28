@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import ProfileView from "./view/profileViewComponent";
 import { fetchLayerById, useLayers } from "../../../../api/fetchApiV2";
 
@@ -21,12 +21,7 @@ const ProfileContainer = props => {
     return null;
   }
   return (
-    <ProfileView
-      data={layers.data}
-      handleSelected={selectLayer}
-      isFetchingLayer={isFetching}
-      layer={selectedLayer}
-    />
+    <ProfileView data={layers.data} handleSelected={selectLayer} isFetchingLayer={isFetching} layer={selectedLayer} />
   );
 };
 

@@ -1,24 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import {
-  Box,
-  IconButton,
-  InputAdornment,
-  Stack,
-  Typography,
-} from "@mui/material";
-import {
-  FormInput,
-  FormMultiSelect,
-  FormSelect,
-} from "../../../../components/form/form";
+import { Box, IconButton, InputAdornment, Stack, Typography } from "@mui/material";
+import { FormInput, FormMultiSelect, FormSelect } from "../../../../components/form/form";
 import { StackHalfWidth } from "../../../../components/baseComponents";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
-import {
-  AddButton,
-  CancelButton,
-  SaveButton,
-} from "../../../../components/buttons/buttons";
+import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons";
 import ObservationInput from "./observationInput";
 import { useTranslation } from "react-i18next";
 import { useHydrotestDomains, useDomains } from "../../../../api/fetchApiV2";
@@ -43,9 +29,7 @@ const HydrotestInput = props => {
   const [units, setUnits] = useState({});
 
   const [hydrotestKindIds, setHydrotestKindIds] = useState(
-    item?.codelists
-      ?.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestKind)
-      .map(c => c.id) || [],
+    item?.codelists?.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestKind).map(c => c.id) || [],
   );
   const filteredTestKindDomains = useHydrotestDomains(hydrotestKindIds);
 
@@ -55,11 +39,9 @@ const HydrotestInput = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formMethods.trigger]);
 
-  const getFilteredDomains = (schema, data) =>
-    data?.filter(c => c.schema === schema).map(c => c.id);
+  const getFilteredDomains = (schema, data) => data?.filter(c => c.schema === schema).map(c => c.id);
 
-  const getCompatibleValues = (allowedIds, formValues) =>
-    formValues?.filter(c => allowedIds?.includes(c)) || [];
+  const getCompatibleValues = (allowedIds, formValues) => formValues?.filter(c => allowedIds?.includes(c)) || [];
 
   useEffect(() => {
     if (hydrotestKindIds.length > 0) {
@@ -81,10 +63,7 @@ const HydrotestInput = props => {
           allowedEvalutationMethodId,
           formValues.evaluationMethodId,
         );
-        const compatibleFlowDirections = getCompatibleValues(
-          allowedFlowDirectionIds,
-          formValues.flowDirectionId,
-        );
+        const compatibleFlowDirections = getCompatibleValues(allowedFlowDirectionIds, formValues.flowDirectionId);
 
         // set form values
         formMethods.setValue("evaluationMethodId", compatibleEvaluationMethods);
@@ -124,9 +103,7 @@ const HydrotestInput = props => {
 
   useEffect(() => {
     var currentValues = formMethods.getValues();
-    if (
-      currentValues?.testKindId?.toString() !== hydrotestKindIds?.toString()
-    ) {
+    if (currentValues?.testKindId?.toString() !== hydrotestKindIds?.toString()) {
       setHydrotestKindIds(currentValues?.testKindId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -196,9 +173,7 @@ const HydrotestInput = props => {
     if (!parameterId) {
       return null;
     }
-    return TestResultParameterUnits[
-      domains?.data?.find(d => d.id === parameterId).geolcode
-    ];
+    return TestResultParameterUnits[domains?.data?.find(d => d.id === parameterId).geolcode];
   };
 
   return (
@@ -213,16 +188,11 @@ const HydrotestInput = props => {
               tooltipLabel="hydrotestResultsWillBeDeleted"
               required={true}
               selected={
-                item?.codelists
-                  ?.filter(
-                    c => c.schema === hydrogeologySchemaConstants.hydrotestKind,
-                  )
-                  .map(c => c.id) || []
+                item?.codelists?.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestKind).map(c => c.id) ||
+                []
               }
               values={domains?.data
-                ?.filter(
-                  d => d.schema === hydrogeologySchemaConstants.hydrotestKind,
-                )
+                ?.filter(d => d.schema === hydrogeologySchemaConstants.hydrotestKind)
                 .sort((a, b) => a.order - b.order)
                 .map(d => ({
                   key: d.id,
@@ -234,27 +204,17 @@ const HydrotestInput = props => {
               label="flowDirection"
               selected={
                 item?.codelists
-                  ?.filter(
-                    c =>
-                      c.schema ===
-                      hydrogeologySchemaConstants.hydrotestFlowDirection,
-                  )
+                  ?.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestFlowDirection)
                   .map(c => c.id) || []
               }
               disabled={
                 !!formMethods.formState.errors?.testKindId ||
                 !filteredTestKindDomains?.data?.filter(
-                  d =>
-                    d.schema ===
-                    hydrogeologySchemaConstants.hydrotestFlowDirection,
+                  d => d.schema === hydrogeologySchemaConstants.hydrotestFlowDirection,
                 ).length > 0
               }
               values={filteredTestKindDomains?.data
-                ?.filter(
-                  d =>
-                    d.schema ===
-                    hydrogeologySchemaConstants.hydrotestFlowDirection,
-                )
+                ?.filter(d => d.schema === hydrogeologySchemaConstants.hydrotestFlowDirection)
                 .sort((a, b) => a.order - b.order)
                 .map(d => ({
                   key: d.id,
@@ -268,27 +228,17 @@ const HydrotestInput = props => {
               label="evaluationMethod"
               selected={
                 item?.codelists
-                  ?.filter(
-                    c =>
-                      c.schema ===
-                      hydrogeologySchemaConstants.hydrotestEvaluationMethod,
-                  )
+                  ?.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestEvaluationMethod)
                   .map(c => c.id) || []
               }
               disabled={
                 !!formMethods.formState.errors?.testKindId ||
                 !filteredTestKindDomains?.data?.filter(
-                  d =>
-                    d.schema ===
-                    hydrogeologySchemaConstants.hydrotestEvaluationMethod,
+                  d => d.schema === hydrogeologySchemaConstants.hydrotestEvaluationMethod,
                 ).length > 0
               }
               values={filteredTestKindDomains?.data
-                ?.filter(
-                  d =>
-                    d.schema ===
-                    hydrogeologySchemaConstants.hydrotestEvaluationMethod,
-                )
+                ?.filter(d => d.schema === hydrogeologySchemaConstants.hydrotestEvaluationMethod)
                 .sort((a, b) => a.order - b.order)
                 .map(d => ({
                   key: d.id,
@@ -303,38 +253,24 @@ const HydrotestInput = props => {
                 marginRight: "8px !important",
                 marginTop: "18px !important",
               }}>
-              <Stack
-                direction={"row"}
-                sx={{ width: "100%" }}
-                spacing={1}
-                justifyContent={"space-between"}>
-                <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
-                  {t("hydrotestResult")}
-                </Typography>
+              <Stack direction={"row"} sx={{ width: "100%" }} spacing={1} justifyContent={"space-between"}>
+                <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("hydrotestResult")}</Typography>
                 <AddButton
                   label="addHydrotestResult"
-                  onClick={e => {
+                  onClick={() => {
                     append();
                   }}
                 />
               </Stack>
               {fields.map((field, index) => (
-                <Stack
-                  direction={"row"}
-                  key={field.id}
-                  marginTop="8px"
-                  data-cy={`hydrotestResult-${index}`}>
+                <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`hydrotestResult-${index}`}>
                   <FormSelect
                     fieldName={`hydrotestResults.${index}.parameterId`}
                     label="parameter"
                     selected={field.parameterId}
                     required={true}
                     values={filteredTestKindDomains?.data
-                      ?.filter(
-                        d =>
-                          d.schema ===
-                          hydrogeologySchemaConstants.hydrotestResultParameter,
-                      )
+                      ?.filter(d => d.schema === hydrogeologySchemaConstants.hydrotestResultParameter)
                       .sort((a, b) => a.order - b.order)
                       .map(d => ({
                         key: d.id,
@@ -350,11 +286,7 @@ const HydrotestInput = props => {
                     value={field.value}
                     type="number"
                     inputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          {units[index] ? units[index] : ""}
-                        </InputAdornment>
-                      ),
+                      endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
                     }}
                   />
                   <FormInput
@@ -363,11 +295,7 @@ const HydrotestInput = props => {
                     value={field.minValue}
                     type="number"
                     inputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          {units[index] ? units[index] : ""}
-                        </InputAdornment>
-                      ),
+                      endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
                     }}
                   />
                   <FormInput
@@ -376,11 +304,7 @@ const HydrotestInput = props => {
                     value={field.maxValue}
                     type="number"
                     inputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          {units[index] ? units[index] : ""}
-                        </InputAdornment>
-                      ),
+                      endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
                     }}
                   />
                   <IconButton

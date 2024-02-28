@@ -1,11 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
-import {
-  Box,
-  FormControl,
-  Stack,
-  RadioGroup,
-  FormControlLabel,
-} from "@mui/material";
+import { useState, useEffect, useCallback } from "react";
+import { Box, FormControl, Stack, RadioGroup, FormControlLabel } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import DomainDropdown from "../../domain/dropdown/domainDropdown";
 import DomainText from "../../domain/domainText";
@@ -33,28 +27,16 @@ const referenceSystems = {
 };
 
 const CoordinatesSegment = props => {
-  const {
-    size,
-    borehole,
-    user,
-    updateChange,
-    updateNumber,
-    checkLock,
-    mapPointChange,
-    setMapPointChange,
-  } = props;
+  const { size, borehole, user, updateChange, updateNumber, checkLock, mapPointChange, setMapPointChange } = props;
 
-  const [referenceSystem, setReferenceSystem] = useState(
-    borehole.data.spatial_reference_system,
-  );
+  const [referenceSystem, setReferenceSystem] = useState(borehole.data.spatial_reference_system);
   const [boreholeId, setBoreholeId] = useState();
 
   const { control, reset, trigger, setValue, getValues } = useForm({
     mode: "onChange",
   });
 
-  const isLV95 =
-    referenceSystem === referenceSystems.LV95.code || referenceSystem === null; // LV95 should be selected by default.
+  const isLV95 = referenceSystem === referenceSystems.LV95.code || referenceSystem === null; // LV95 should be selected by default.
 
   // bounding box of switzerland.
   const coordinateLimits = {
@@ -69,9 +51,7 @@ const CoordinatesSegment = props => {
   };
 
   const isEditable =
-    borehole?.data.role === "EDIT" &&
-    borehole?.data.lock !== null &&
-    borehole?.data.lock?.id === user?.data.id;
+    borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   //initially validate the form to display errors.
   useEffect(() => {
@@ -100,9 +80,7 @@ const CoordinatesSegment = props => {
       apiUrl = webApilv03tolv95;
     }
     if (x && y) {
-      const response = await fetch(
-        apiUrl + `?easting=${x}&northing=${y}&altitude=0.0&format=json`,
-      );
+      const response = await fetch(apiUrl + `?easting=${x}&northing=${y}&altitude=0.0&format=json`);
       if (response.ok) {
         return await response.json();
       }
@@ -117,19 +95,11 @@ const CoordinatesSegment = props => {
   const updateCoordinates = useCallback(
     async (LV95X, LV95Y, LV03X, LV03Y) => {
       try {
-        var location =
-          LV95X && LV95Y ? await getLocationInfo(LV95X, LV95Y) : null;
+        var location = LV95X && LV95Y ? await getLocationInfo(LV95X, LV95Y) : null;
 
         updateChange(
           "location",
-          [
-            LV95X,
-            LV95Y,
-            borehole.data.elevation_z,
-            location?.country,
-            location?.canton,
-            location?.municipality,
-          ],
+          [LV95X, LV95Y, borehole.data.elevation_z, location?.country, location?.canton, location?.municipality],
           false,
         );
       } catch {
@@ -148,17 +118,9 @@ const CoordinatesSegment = props => {
     // only update coordinates if borehole id changed or location was changed from map.
     if (mapPointChange || borehole.data.id !== boreholeId) {
       if (borehole.data.location_x && borehole.data.location_y)
-        setValuesForReferenceSystem(
-          "LV95",
-          borehole.data.location_x,
-          borehole.data.location_y,
-        );
+        setValuesForReferenceSystem("LV95", borehole.data.location_x, borehole.data.location_y);
       if (borehole.data.location_x_lv03 && borehole.data.location_y_lv03)
-        setValuesForReferenceSystem(
-          "LV03",
-          borehole.data.location_x_lv03,
-          borehole.data.location_y_lv03,
-        );
+        setValuesForReferenceSystem("LV03", borehole.data.location_x_lv03, borehole.data.location_y_lv03);
       setReferenceSystem(parseFloat(borehole.data.spatial_reference_system));
       setBoreholeId(borehole.data.id);
     }
@@ -167,24 +129,12 @@ const CoordinatesSegment = props => {
       setReferenceSystem(referenceSystems.LV95.code);
       updateNumber("spatial_reference_system", referenceSystems.LV95.code);
       if (isEditable && borehole.data.location_x && borehole.data.location_y) {
-        transformCoodinates(
-          "LV95",
-          borehole.data.location_x,
-          borehole.data.location_y,
-        ).then(res => {
-          const precision = getPrecision(
-            borehole.data.location_x,
-            borehole.data.location_y,
-          );
+        transformCoodinates("LV95", borehole.data.location_x, borehole.data.location_y).then(res => {
+          const precision = getPrecision(borehole.data.location_x, borehole.data.location_y);
           const x = parseFloat(parseFloat(res.easting).toFixed(precision));
           const y = parseFloat(parseFloat(res.northing).toFixed(precision));
           setValuesForReferenceSystem("LV03", x, y);
-          updateCoordinates(
-            borehole.data.location_x,
-            borehole.data.location_y,
-            x,
-            y,
-          );
+          updateCoordinates(borehole.data.location_x, borehole.data.location_y, x, y);
           setMapPointChange(false);
         });
       }
@@ -224,8 +174,7 @@ const CoordinatesSegment = props => {
 
   // Gets all current coordinates and sets them to coordinates object.
   const getCoordinatesFromForm = (referenceSystem, direction, value) => {
-    const currentFieldName =
-      referenceSystems[referenceSystem].fieldName[direction];
+    const currentFieldName = referenceSystems[referenceSystem].fieldName[direction];
 
     const LV95XFormValue = getValues(referenceSystems.LV95.fieldName.X);
     const LV95YFormValue = getValues(referenceSystems.LV95.fieldName.Y);
@@ -284,47 +233,27 @@ const CoordinatesSegment = props => {
         coordinateLimits[referenceSystem][direction].Min < floatValue &&
         floatValue < coordinateLimits[referenceSystem][direction].Max
       ) {
-        const coordinates = getCoordinatesFromForm(
-          referenceSystem,
-          direction,
-          floatValue,
-        );
+        const coordinates = getCoordinatesFromForm(referenceSystem, direction, floatValue);
         const completeLV95 = coordinates.LV95.X > 0 && coordinates.LV95.Y > 0;
         const completeLV03 = coordinates.LV03.X > 0 && coordinates.LV03.Y > 0;
 
         const hasChangedLV95 =
-          coordinates.LV95.X !== borehole.data.location_x ||
-          coordinates.LV95.Y !== borehole.data.location_y;
+          coordinates.LV95.X !== borehole.data.location_x || coordinates.LV95.Y !== borehole.data.location_y;
 
         const hasChangedLV03 =
-          coordinates.LV03.X !== borehole.data.location_x_lv03 ||
-          coordinates.LV03.Y !== borehole.data.location_y_lv03;
+          coordinates.LV03.X !== borehole.data.location_x_lv03 || coordinates.LV03.Y !== borehole.data.location_y_lv03;
 
         if (referenceSystem === "LV95" && completeLV95 && hasChangedLV95)
-          transformCoodinates(
-            "LV95",
-            coordinates.LV95.X,
-            coordinates.LV95.Y,
-          ).then(res => {
-            const precision = getPrecision(
-              coordinates.LV95.X,
-              coordinates.LV95.Y,
-            );
+          transformCoodinates("LV95", coordinates.LV95.X, coordinates.LV95.Y).then(res => {
+            const precision = getPrecision(coordinates.LV95.X, coordinates.LV95.Y);
             const x = parseFloat(parseFloat(res.easting).toFixed(precision));
             const y = parseFloat(parseFloat(res.northing).toFixed(precision));
             setValuesForReferenceSystem("LV03", x, y);
             updateCoordinates(coordinates.LV95.X, coordinates.LV95.Y, x, y);
           });
         if (referenceSystem === "LV03" && completeLV03 && hasChangedLV03) {
-          transformCoodinates(
-            "LV03",
-            coordinates.LV03.X,
-            coordinates.LV03.Y,
-          ).then(res => {
-            const precision = getPrecision(
-              coordinates.LV03.X,
-              coordinates.LV03.Y,
-            );
+          transformCoodinates("LV03", coordinates.LV03.X, coordinates.LV03.Y).then(res => {
+            const precision = getPrecision(coordinates.LV03.X, coordinates.LV03.Y);
             const x = parseFloat(parseFloat(res.easting).toFixed(precision));
             const y = parseFloat(parseFloat(res.northing).toFixed(precision));
             setValuesForReferenceSystem("LV95", x, y);
@@ -339,34 +268,22 @@ const CoordinatesSegment = props => {
   const inLV95XBounds = value => {
     const coordinate = parseIfString(value);
 
-    return (
-      coordinateLimits.LV95.X.Min < coordinate &&
-      coordinate < coordinateLimits.LV95.X.Max
-    );
+    return coordinateLimits.LV95.X.Min < coordinate && coordinate < coordinateLimits.LV95.X.Max;
   };
   const inLV95YBounds = value => {
     const coordinate = parseIfString(value);
 
-    return (
-      coordinateLimits.LV95.Y.Min < coordinate &&
-      coordinate < coordinateLimits.LV95.Y.Max
-    );
+    return coordinateLimits.LV95.Y.Min < coordinate && coordinate < coordinateLimits.LV95.Y.Max;
   };
   const inLV03XBounds = value => {
     const coordinate = parseIfString(value);
 
-    return (
-      coordinateLimits.LV03.X.Min < coordinate &&
-      coordinate < coordinateLimits.LV03.X.Max
-    );
+    return coordinateLimits.LV03.X.Min < coordinate && coordinate < coordinateLimits.LV03.X.Max;
   };
   const inLV03YBounds = value => {
     const coordinate = parseIfString(value);
 
-    return (
-      coordinateLimits.LV03.Y.Min < coordinate &&
-      coordinate < coordinateLimits.LV03.Y.Max
-    );
+    return coordinateLimits.LV03.Y.Min < coordinate && coordinate < coordinateLimits.LV03.Y.Max;
   };
 
   return (
@@ -391,23 +308,13 @@ const CoordinatesSegment = props => {
                       value={referenceSystems.LV95.code}
                       sx={{ flexGrow: 1 }}
                       control={<DisabledRadio isEditable={!isEditable} />}
-                      label={
-                        <DomainText
-                          id={referenceSystems.LV95.code}
-                          schema="spatial_reference_system"
-                        />
-                      }
+                      label={<DomainText id={referenceSystems.LV95.code} schema="spatial_reference_system" />}
                     />
                     <FormControlLabel
                       value={referenceSystems.LV03.code}
                       sx={{ flexGrow: 1 }}
                       control={<DisabledRadio isEditable={!isEditable} />}
-                      label={
-                        <DomainText
-                          id={referenceSystems.LV03.code}
-                          schema="spatial_reference_system"
-                        />
-                      }
+                      label={<DomainText id={referenceSystems.LV03.code} schema="spatial_reference_system" />}
                     />
                   </RadioGroup>
                 </FormControl>
@@ -416,11 +323,7 @@ const CoordinatesSegment = props => {
           </Form.Field>
         </Form.Group>
         <Box>
-          <Stack
-            direction="row"
-            spacing={2}
-            justifyContent="space-around"
-            mb={2}>
+          <Stack direction="row" spacing={2} justifyContent="space-around" mb={2}>
             <Stack direction="column" sx={{ flexGrow: 1 }}>
               <Controller
                 name="location_x"
@@ -592,10 +495,7 @@ const CoordinatesSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
-                updateNumber(
-                  "elevation_z",
-                  e.target.value === "" ? null : parseIfString(e.target.value),
-                );
+                updateNumber("elevation_z", e.target.value === "" ? null : parseIfString(e.target.value));
               }}
               spellCheck="false"
               value={borehole.data.elevation_z ?? ""}
@@ -619,9 +519,7 @@ const CoordinatesSegment = props => {
           </Form.Field>
         </Form.Group>
         <Form.Group widths="equal">
-          <Form.Field
-            error={borehole.data.reference_elevation == null}
-            required>
+          <Form.Field error={borehole.data.reference_elevation == null} required>
             <label>
               <TranslationText id="reference_elevation" />
             </label>
@@ -630,16 +528,10 @@ const CoordinatesSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
-                updateNumber(
-                  "reference_elevation",
-                  e.target.value === "" ? null : parseIfString(e.target.value),
-                );
+                updateNumber("reference_elevation", e.target.value === "" ? null : parseIfString(e.target.value));
 
                 if (/^-?\d*[.,]?\d*$/.test(e.target.value)) {
-                  updateChange(
-                    "reference_elevation",
-                    e.target.value === "" ? null : parseFloat(e.target.value),
-                  );
+                  updateChange("reference_elevation", e.target.value === "" ? null : parseFloat(e.target.value));
                 }
               }}
               spellCheck="false"
@@ -663,9 +555,7 @@ const CoordinatesSegment = props => {
           </Form.Field>
         </Form.Group>
         <Form.Group widths="equal">
-          <Form.Field
-            error={borehole.data.reference_elevation_type === null}
-            required>
+          <Form.Field error={borehole.data.reference_elevation_type === null} required>
             <label>
               <TranslationText id="reference_elevation_type" />
             </label>
@@ -689,10 +579,7 @@ const CoordinatesSegment = props => {
                 alignItems: "center",
               }}>
               <div>
-                <DomainText
-                  id={borehole.data.height_reference_system}
-                  schema="hrs"
-                />
+                <DomainText id={borehole.data.height_reference_system} schema="hrs" />
               </div>
             </div>
           </Form.Field>

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import PropTypes from "prop-types";
 
 import {
@@ -59,13 +59,11 @@ class EditorBoreholeFilesTable extends Component {
       () => {
         if (field === "public") {
           // Patch immediately
-          updateBoreholeAttachment(id, fid, currentDescription, value).then(
-            () => {
-              this.setState({
-                patching: null,
-              });
-            },
-          );
+          updateBoreholeAttachment(id, fid, currentDescription, value).then(() => {
+            this.setState({
+              patching: null,
+            });
+          });
         } else {
           // Apply delay
           if (this.patchQueued) {
@@ -73,13 +71,11 @@ class EditorBoreholeFilesTable extends Component {
             this.patchQueued = false;
           }
           this.patchQueued = setTimeout(() => {
-            updateBoreholeAttachment(id, fid, value, currentIsPublic).then(
-              () => {
-                this.setState({
-                  patching: null,
-                });
-              },
-            );
+            updateBoreholeAttachment(id, fid, value, currentIsPublic).then(() => {
+              this.setState({
+                patching: null,
+              });
+            });
           }, 250);
         }
       },
@@ -146,9 +142,7 @@ class EditorBoreholeFilesTable extends Component {
               type="file"
             />
             <Button
-              disabled={
-                this.state.creating === true || this.state.file === null
-              }
+              disabled={this.state.creating === true || this.state.file === null}
               loading={this.state.creating}
               data-cy="attachments-upload-button"
               onClick={() => {
@@ -157,19 +151,12 @@ class EditorBoreholeFilesTable extends Component {
                     creating: true,
                   },
                   () => {
-                    uploadBoreholeAttachment(
-                      this.props.id,
-                      this.state.file,
-                    ).then(r => {
+                    uploadBoreholeAttachment(this.props.id, this.state.file).then(r => {
                       if (r.ok === false) {
                         if (r.status === 400) {
-                          this.context.error(
-                            t("errorDuplicatedUploadPerBorehole"),
-                          );
+                          this.context.error(t("errorDuplicatedUploadPerBorehole"));
                         } else {
-                          this.context.error(
-                            t("errorDuringBoreholeFileUpload"),
-                          );
+                          this.context.error(t("errorDuringBoreholeFileUpload"));
                         }
                       }
                       this.input.value = "";
@@ -187,9 +174,7 @@ class EditorBoreholeFilesTable extends Component {
                   },
                 );
               }}
-              secondary={
-                this.state.creating === false && this.state.file !== null
-              }>
+              secondary={this.state.creating === false && this.state.file !== null}>
               <TranslationText id="upload" />
             </Button>
           </div>

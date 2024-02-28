@@ -23,9 +23,7 @@ class MenuEditorSearch extends React.Component {
   constructor(props) {
     super(props);
     this.updateDimensions = this.updateDimensions.bind(this);
-    const wgs = this.props.user.data.workgroups.filter(
-      w => w.disabled === null && w.supplier === false,
-    );
+    const wgs = this.props.user.data.workgroups.filter(w => w.disabled === null && w.supplier === false);
     this.state = {
       creating: false,
       delete: false,
@@ -113,10 +111,7 @@ class MenuEditorSearch extends React.Component {
       <div
         key="sb-em-1"
         style={{
-          color:
-            boreholes.isFetching === false && boreholes.dlen === 0
-              ? "red"
-              : "#767676",
+          color: boreholes.isFetching === false && boreholes.dlen === 0 ? "red" : "#767676",
           borderBottom: "thin solid rgb(187, 187, 187)",
           padding: "1em 1em 0px 1em",
         }}>
@@ -124,11 +119,7 @@ class MenuEditorSearch extends React.Component {
         {boreholes.isFetching ? (
           <Icon loading name="spinner" />
         ) : (
-          <NumericFormat
-            value={boreholes.dlen}
-            thousandSeparator="'"
-            displayType="text"
-          />
+          <NumericFormat value={boreholes.dlen} thousandSeparator="'" displayType="text" />
         )}
       </div>,
       <div
@@ -141,10 +132,9 @@ class MenuEditorSearch extends React.Component {
           display: "flex",
           flexDirection: "column",
           overflowY: "hidden",
-          marginRight:
-            this.state.scroller === true ? this.props.setting.scrollbar : "0px",
+          marginRight: this.state.scroller === true ? this.props.setting.scrollbar : "0px",
         }}>
-        <SearchEditorComponent onChange={filter => {}} />
+        <SearchEditorComponent onChange={() => {}} />
       </div>,
       <Menu
         icon="labeled"
@@ -212,11 +202,7 @@ class MenuEditorSearch extends React.Component {
             padding: "1.5em",
           }}>
           <Icon name="add" size="tiny" />
-          <TranslationText
-            firstUpperCase
-            extra={{ what: "borehole" }}
-            id="new"
-          />
+          <TranslationText firstUpperCase extra={{ what: "borehole" }} id="new" />
         </Menu.Item>
       </Menu>,
       <Modal
@@ -232,19 +218,12 @@ class MenuEditorSearch extends React.Component {
         <Segment clearing>
           <Header
             floated="left"
-            content={
-              <TranslationText
-                id={this.state.upload === true ? "import" : "newBorehole"}
-              />
-            }
+            content={<TranslationText id={this.state.upload === true ? "import" : "newBorehole"} />}
             icon={this.state.upload === true ? "upload" : "plus"}
           />
           <Header as="h4" floated="right">
             <span>
-              <a
-                href={`/help/import`}
-                rel="noopener noreferrer"
-                target="_BLANK">
+              <a href={`/help/import`} rel="noopener noreferrer" target="_BLANK">
                 <TranslationText id="header_help" />
               </a>
             </span>
@@ -256,11 +235,7 @@ class MenuEditorSearch extends React.Component {
               <p>
                 <div>
                   <TranslationText id="csvCodeListReferenceExplanation" />
-                  <Downloadlink
-                    style={{ marginLeft: "0.2em" }}
-                    caption="Codelist"
-                    onDownload={downloadCodelistCsv}
-                  />
+                  <Downloadlink style={{ marginLeft: "0.2em" }} caption="Codelist" onDownload={downloadCodelistCsv} />
                 </div>
               </p>
               {this.SeparatorLine()}
@@ -376,7 +351,7 @@ class MenuEditorSearch extends React.Component {
                       renderValue={selected => {
                         return options.find(o => o.value === selected)?.text;
                       }}
-                      onChange={(e, data) => {
+                      onChange={e => {
                         this.setState({
                           workgroup: e.target.value,
                         });
@@ -398,8 +373,7 @@ class MenuEditorSearch extends React.Component {
           <Button
             disabled={
               this.state.enabledWorkgroups.length === 0 ||
-              (this.state.upload === true &&
-                !this.state.selectedFile?.length > 0)
+              (this.state.upload === true && !this.state.selectedFile?.length > 0)
             }
             loading={this.state.creating === true}
             onClick={() => {
@@ -415,24 +389,14 @@ class MenuEditorSearch extends React.Component {
                         combinedFormData.append("boreholesFile", boreholeFile);
                       });
 
-                      this.state.selectedBoreholeAttachments.forEach(
-                        attachment => {
-                          combinedFormData.append("attachments", attachment);
-                        },
-                      );
-                      this.state.selectedLithologyFile.forEach(
-                        lithologyFile => {
-                          combinedFormData.append(
-                            "lithologyFile",
-                            lithologyFile,
-                          );
-                        },
-                      );
+                      this.state.selectedBoreholeAttachments.forEach(attachment => {
+                        combinedFormData.append("attachments", attachment);
+                      });
+                      this.state.selectedLithologyFile.forEach(lithologyFile => {
+                        combinedFormData.append("lithologyFile", lithologyFile);
+                      });
                     }
-                    importBoreholes(
-                      this.state.workgroup,
-                      combinedFormData,
-                    ).then(response => {
+                    importBoreholes(this.state.workgroup, combinedFormData).then(response => {
                       this.setState(
                         {
                           creating: false,
@@ -441,11 +405,7 @@ class MenuEditorSearch extends React.Component {
                         },
                         async () => {
                           if (response.ok) {
-                            this.context.success(
-                              `${await response.text()} ${t(
-                                "boreholesImported",
-                              )}.`,
-                            );
+                            this.context.success(`${await response.text()} ${t("boreholesImported")}.`);
                             this.props.refresh();
                           } else {
                             let responseBody = await response.text();
@@ -469,13 +429,9 @@ class MenuEditorSearch extends React.Component {
                                   this.context.error(`${responseBody}`);
                                 }
                               } else if (response.status === 504) {
-                                this.context.error(
-                                  `${t("boreholesImportLongRunning")}`,
-                                );
+                                this.context.error(`${t("boreholesImportLongRunning")}`);
                               } else {
-                                this.context.error(
-                                  `${t("boreholesImportError")}`,
-                                );
+                                this.context.error(`${t("boreholesImportError")}`);
                               }
                             }
                           }
@@ -517,11 +473,7 @@ class MenuEditorSearch extends React.Component {
             }}
             secondary>
             <Icon name={this.state.upload === true ? "upload" : "plus"} />{" "}
-            {this.state.upload === true ? (
-              <TranslationText id="import" />
-            ) : (
-              <TranslationText id="create" />
-            )}
+            {this.state.upload === true ? <TranslationText id="import" /> : <TranslationText id="create" />}
           </Button>
         </Modal.Actions>
       </Modal>,
@@ -536,9 +488,7 @@ class MenuEditorSearch extends React.Component {
         open={this.state.validationErrorModal === true}
         size="tiny">
         <Header content={t("validationErrorHeader")} />
-        <Modal.Content
-          style={{ maxHeight: "70vh", overflow: "auto" }}
-          data-cy="borehole-import-error-modal-content">
+        <Modal.Content style={{ maxHeight: "70vh", overflow: "auto" }} data-cy="borehole-import-error-modal-content">
           {this.state.errorResponse && (
             <div>
               {/* In case of API response type ProblemDetails */}
@@ -607,9 +557,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  )(withTranslation(["common"])(MenuEditorSearch)),
-);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MenuEditorSearch)));

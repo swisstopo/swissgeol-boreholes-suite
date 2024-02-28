@@ -84,23 +84,21 @@ class Feedback extends React.Component {
                   sending: true,
                 },
                 () => {
-                  createFeedback(this.state.message, this.state.tag).then(
-                    response => {
-                      if (response.data.success === true) {
-                        this.setState({
-                          sending: false,
-                          sent: true,
-                          tag: null,
-                          message: "",
-                        });
-                      } else {
-                        this.context.error(response.data.message);
-                        this.setState({
-                          sending: false,
-                        });
-                      }
-                    },
-                  );
+                  createFeedback(this.state.message, this.state.tag).then(response => {
+                    if (response.data.success === true) {
+                      this.setState({
+                        sending: false,
+                        sent: true,
+                        tag: null,
+                        message: "",
+                      });
+                    } else {
+                      this.context.error(response.data.message);
+                      this.setState({
+                        sending: false,
+                      });
+                    }
+                  });
                 },
               );
             }}
@@ -131,7 +129,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation(["common"])(Feedback));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(Feedback));

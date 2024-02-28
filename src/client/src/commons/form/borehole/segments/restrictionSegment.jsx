@@ -1,4 +1,3 @@
-import React from "react";
 import TranslationText from "../../translationText";
 import { Form, Segment } from "semantic-ui-react";
 import { FormControl, RadioGroup, FormControlLabel } from "@mui/material";
@@ -15,9 +14,7 @@ const RestrictionSegment = props => {
   const { size, borehole, updateChange, user } = props;
 
   const isEditable =
-    borehole?.data.role === "EDIT" &&
-    borehole?.data.lock !== null &&
-    borehole?.data.lock?.id === user?.data.id;
+    borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
 
   return (
     <Segment>
@@ -38,8 +35,7 @@ const RestrictionSegment = props => {
           </Form.Field>
           <Form.Field
             error={
-              (borehole.data.restriction === 20111003 &&
-                !moment(borehole.data.restriction_until).isValid()) ||
+              (borehole.data.restriction === 20111003 && !moment(borehole.data.restriction_until).isValid()) ||
               (borehole.data.restriction !== 20111003 &&
                 _.isString(borehole.data.restriction_until) &&
                 borehole.data.restriction_until !== "" &&
@@ -74,12 +70,7 @@ const RestrictionSegment = props => {
                       : "NULL"
                 }
                 onChange={e => {
-                  let value =
-                    e.target.value === "TRUE"
-                      ? true
-                      : e.target.value === "FALSE"
-                        ? false
-                        : null;
+                  let value = e.target.value === "TRUE" ? true : e.target.value === "FALSE" ? false : null;
                   updateChange("national_interest", value, false);
                 }}>
                 <FormControlLabel

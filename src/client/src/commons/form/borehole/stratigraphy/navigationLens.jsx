@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Box, Button, ButtonGroup, useTheme } from "@mui/material";
 import { NavState, clamp } from "./navigationContainer";
 import { KeyboardArrowUp, KeyboardArrowDown } from "@mui/icons-material";
@@ -30,9 +30,7 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
   const theme = useTheme();
 
   const contentRef = useRef(null);
-  useResizeObserver(contentRef, entry =>
-    setBackgroundNavState(prev => prev.setHeight(entry.contentRect.height)),
-  );
+  useResizeObserver(contentRef, entry => setBackgroundNavState(prev => prev.setHeight(entry.contentRect.height)));
 
   useEffect(() => {
     setBackgroundNavState(
@@ -53,13 +51,7 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
 
   const handleMove = pageFraction =>
     setNavState(prev =>
-      prev.setLensStart(
-        clamp(
-          prev.lensStart + prev.lensSize * pageFraction,
-          0,
-          prev.maxContent - prev.lensSize,
-        ),
-      ),
+      prev.setLensStart(clamp(prev.lensStart + prev.lensSize * pageFraction, 0, prev.maxContent - prev.lensSize)),
     );
 
   const minPixelHeightForDepthLabel = 50;
@@ -89,18 +81,14 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
         <BackgroundShade
           sx={{
             bottom:
-              (navState.maxContent - navState.lensStart) *
-                backgroundNavState.pixelPerMeter -
+              (navState.maxContent - navState.lensStart) * backgroundNavState.pixelPerMeter -
               2 + // a bit less to prevent visual glitches
               "px",
           }}
         />
         <BackgroundShade
           sx={{
-            top:
-              navState.lensStart * backgroundNavState.pixelPerMeter +
-              lensHeight +
-              "px",
+            top: navState.lensStart * backgroundNavState.pixelPerMeter + lensHeight + "px",
           }}
         />
         <DraggableCore
@@ -131,11 +119,7 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
             }}>
             {lensHeight > minPixelHeightForDepthLabel && (
               <>
-                <LensDepthLabel
-                  value={Math.round(navState.lensStart)}
-                  thousandSeparator="'"
-                  displayType="text"
-                />
+                <LensDepthLabel value={Math.round(navState.lensStart)} thousandSeparator="'" displayType="text" />
                 <LensDepthLabel
                   value={Math.round(navState.lensStart + navState.lensSize)}
                   thousandSeparator="'"

@@ -1,29 +1,16 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack } from "@mui/material";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
-import {
-  FormInput,
-  FormSelect,
-  FormCheckbox,
-} from "../../../../components/form/form";
-import {
-  CancelButton,
-  SaveButton,
-} from "../../../../components/buttons/buttons";
+import { FormInput, FormSelect, FormCheckbox } from "../../../../components/form/form";
+import { CancelButton, SaveButton } from "../../../../components/buttons/buttons";
 import Prompt from "../../../../components/prompt/prompt";
 
 const CompletionHeaderInput = props => {
-  const {
-    completion,
-    cancelChanges,
-    saveCompletion,
-    trySwitchTab,
-    switchTabs,
-  } = props;
+  const { completion, cancelChanges, saveCompletion, trySwitchTab, switchTabs } = props;
   const domains = useDomains();
   const formMethods = useForm({ mode: "all" });
   const { i18n } = useTranslation();
@@ -69,11 +56,7 @@ const CompletionHeaderInput = props => {
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
           <Stack direction="column">
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              flexWrap="wrap">
+            <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap">
               <FormInput
                 fieldName="name"
                 label="name"
@@ -93,10 +76,7 @@ const CompletionHeaderInput = props => {
                   selected={selectedCompletion?.kindId}
                   required={true}
                   values={domains?.data
-                    ?.filter(
-                      d =>
-                        d.schema === completionSchemaConstants.completionKind,
-                    )
+                    ?.filter(d => d.schema === completionSchemaConstants.completionKind)
                     .sort((a, b) => a.order - b.order)
                     .map(d => ({
                       key: d.id,
@@ -111,10 +91,7 @@ const CompletionHeaderInput = props => {
                 />
               </Stack>
             </Stack>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              flexWrap="wrap">
+            <Stack direction="row" justifyContent="space-between" flexWrap="wrap">
               <FormInput
                 fieldName="notes"
                 label="notes"

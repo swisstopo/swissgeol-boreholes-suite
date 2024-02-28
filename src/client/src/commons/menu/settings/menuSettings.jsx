@@ -1,4 +1,3 @@
-import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
@@ -19,30 +18,12 @@ const MenuSettings = props => {
         t={t}
         hasTranslation
       />
-      <ListItem
-        path="/setting/explorer"
-        name="Viewer"
-        location={location}
-        history={history}
-        icon="binoculars"
-      />
-      <ListItem
-        path="/setting/editor"
-        name="Editor"
-        location={location}
-        history={history}
-        icon="edit"
-      />
+      <ListItem path="/setting/explorer" name="Viewer" location={location} history={history} icon="binoculars" />
+      <ListItem path="/setting/editor" name="Editor" location={location} history={history} icon="edit" />
 
       {props.user.data.admin === true && (
         <>
-          <ListItem
-            path="/setting/admin"
-            name="Admin"
-            location={location}
-            history={history}
-            icon="user outline"
-          />
+          <ListItem path="/setting/admin" name="Admin" location={location} history={history} icon="user outline" />
           <ListItem
             path="/setting/term"
             name="terms"
@@ -97,7 +78,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
-    boreholeSelected: borehole => {
+    boreholeSelected: () => {
       dispatch({
         path: "/borehole",
         type: "CLEAR",
@@ -106,9 +87,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  )(withTranslation(["common"])(MenuSettings)),
-);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MenuSettings)));

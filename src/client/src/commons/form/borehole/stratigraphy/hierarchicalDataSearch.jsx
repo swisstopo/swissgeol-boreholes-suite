@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useDomainSchema } from "../../../../api/fetchApiV2";
@@ -69,9 +69,7 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
 
   useEffect(() => {
     let selectedOption = getSelectedOption(selected);
-    setSelectedIds(
-      selectedOption ? selectedOption.path.split(".").map(id => +id) : [],
-    );
+    setSelectedIds(selectedOption ? selectedOption.path.split(".").map(id => +id) : []);
   }, [getSelectedOption, selected]);
 
   useEffect(() => {
@@ -146,20 +144,12 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
   return (
     <>
       {levels.map(level => (
-        <div
-          key={schema + "_" + level.level}
-          data-cy="hierarchical-data-search">
+        <div key={schema + "_" + level.level} data-cy="hierarchical-data-search">
           <Styled.Label>
             <TranslationText id={level.label} />
           </Styled.Label>
           <Styled.AttributesItem>
-            <Form.Select
-              fluid
-              search={true}
-              onChange={handleChange}
-              options={level.options}
-              value={level.selected}
-            />
+            <Form.Select fluid search={true} onChange={handleChange} options={level.options} value={level.selected} />
           </Styled.AttributesItem>
           {reset && (
             <Styled.Reset>

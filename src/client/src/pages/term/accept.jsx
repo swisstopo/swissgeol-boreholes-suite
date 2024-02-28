@@ -156,7 +156,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation("common")(AcceptTerms));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(AcceptTerms));

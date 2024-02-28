@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Stack, CircularProgress, TextField, MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useLithologyStratigraphies } from "../../../../api/fetchApiV2";
@@ -8,13 +8,8 @@ import * as Styled from "../../profile/styles";
 /**
  * Provides a stratigraphy selection. The selected stratigraphy is available through the `renderItem` render prop.
  */
-const StratigraphySelection = ({
-  id: selectedBoreholeId,
-  noStratigraphiesMessageKey,
-  renderItem,
-}) => {
-  const { data: stratigraphyData } =
-    useLithologyStratigraphies(selectedBoreholeId);
+const StratigraphySelection = ({ id: selectedBoreholeId, noStratigraphiesMessageKey, renderItem }) => {
+  const { data: stratigraphyData } = useLithologyStratigraphies(selectedBoreholeId);
 
   const [stratigraphyId, setStratigraphyId] = useState("");
 
@@ -23,11 +18,7 @@ const StratigraphySelection = ({
   useEffect(() => {
     // select stratigraphy if none is selected
     if (stratigraphyData && !stratigraphyId) {
-      setStratigraphyId(
-        stratigraphyData.find(x => x.isPrimary)?.id ??
-          stratigraphyData[0]?.id ??
-          "",
-      );
+      setStratigraphyId(stratigraphyData.find(x => x.isPrimary)?.id ?? stratigraphyData[0]?.id ?? "");
     }
   }, [stratigraphyData, stratigraphyId]);
 
@@ -51,7 +42,7 @@ const StratigraphySelection = ({
         value={stratigraphyId}
         label={t("stratigraphy")}
         select
-        onChange={(event, value) => {
+        onChange={event => {
           setStratigraphyId(event.target.value);
         }}
         sx={{ margin: "1em 0" }}>

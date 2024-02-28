@@ -49,13 +49,7 @@ class HomeComponent extends React.Component {
           searchState={{
             ...search,
           }}
-          highlighted={
-            !_.isNil(detail.borehole)
-              ? [detail.borehole.id]
-              : home.hover
-                ? [home.hover.id]
-                : []
-          }
+          highlighted={!_.isNil(detail.borehole) ? [detail.borehole.id] : home.hover ? [home.hover.id] : []}
           hover={id => {
             if (_.isNil(detail.borehole)) {
               this.props.mapHover(id);
@@ -78,9 +72,7 @@ class HomeComponent extends React.Component {
               history.push("/" + id);
             }
           }}
-          zoomto={
-            search.zoom2selected && setting.data.appearance.explorer !== 0
-          }
+          zoomto={search.zoom2selected && setting.data.appearance.explorer !== 0}
         />
       </div>
     );
@@ -215,11 +207,7 @@ class HomeComponent extends React.Component {
                         exact
                         path={"/:id"}
                         render={props => {
-                          return (
-                            <DetailsContainer
-                              id={parseInt(props.match.params.id, 10)}
-                            />
-                          );
+                          return <DetailsContainer id={parseInt(props.match.params.id, 10)} />;
                         }}
                       />
                     </Switch>
@@ -238,9 +226,7 @@ class HomeComponent extends React.Component {
                     }}>
                     <div
                       style={{
-                        boxShadow: !_.isNil(detail.borehole)
-                          ? "rgba(0, 0, 0, 0.17) 2px 6px 6px 0px"
-                          : null,
+                        boxShadow: !_.isNil(detail.borehole) ? "rgba(0, 0, 0, 0.17) 2px 6px 6px 0px" : null,
                         display: "flex",
                         flex: "1 1 100%",
                         flexDirection: "column",
@@ -267,8 +253,7 @@ class HomeComponent extends React.Component {
                           <Route
                             path={`/:id?`}
                             render={p => {
-                              if (p.match.params.id === undefined)
-                                return this.getTable();
+                              if (p.match.params.id === undefined) return this.getTable();
                               else return this.getTable(p.match.params.id);
                             }}
                           />
@@ -280,11 +265,7 @@ class HomeComponent extends React.Component {
                         exact
                         path={"/:id"}
                         render={props => {
-                          return (
-                            <DetailsContainer
-                              id={parseInt(props.match.params.id, 10)}
-                            />
-                          );
+                          return <DetailsContainer id={parseInt(props.match.params.id, 10)} />;
                         }}
                       />
                       <Route
@@ -335,11 +316,7 @@ class HomeComponent extends React.Component {
                           exact
                           path={"/:id"}
                           render={props => {
-                            return (
-                              <DetailsContainer
-                                id={parseInt(props.match.params.id, 10)}
-                              />
-                            );
+                            return <DetailsContainer id={parseInt(props.match.params.id, 10)} />;
                           }}
                         />
 
@@ -347,8 +324,7 @@ class HomeComponent extends React.Component {
                           exact
                           path={`/:id?`}
                           render={p => {
-                            if (p.match.params.id === undefined)
-                              return this.getTable();
+                            if (p.match.params.id === undefined) return this.getTable();
                             else return this.getTable(p.match.params.id);
                           }}
                         />
@@ -377,8 +353,7 @@ class HomeComponent extends React.Component {
                         <Route
                           path={`/:id?`}
                           render={p => {
-                            if (p.match.params.id === undefined)
-                              return this.getTable();
+                            if (p.match.params.id === undefined) return this.getTable();
                             else return this.getTable(p.match.params.id);
                           }}
                         />
@@ -396,11 +371,7 @@ class HomeComponent extends React.Component {
                           exact
                           path={"/:id"}
                           render={props => {
-                            return (
-                              <DetailsContainer
-                                id={parseInt(props.match.params.id, 10)}
-                              />
-                            );
+                            return <DetailsContainer id={parseInt(props.match.params.id, 10)} />;
                           }}
                         />
                         <Route exact path={"/"} render={() => this.getMap()} />
@@ -430,11 +401,7 @@ class HomeComponent extends React.Component {
                           exact
                           path={"/:id"}
                           render={h => {
-                            return (
-                              <DetailsContainer
-                                id={parseInt(h.match.params.id, 10)}
-                              />
-                            );
+                            return <DetailsContainer id={parseInt(h.match.params.id, 10)} />;
                           }}
                         />
                         <Route exact path={"/"} render={() => this.getMap()} />
@@ -451,8 +418,7 @@ class HomeComponent extends React.Component {
                         <Route
                           path={`/:id?`}
                           render={p => {
-                            if (p.match.params.id === undefined)
-                              return this.getTable();
+                            if (p.match.params.id === undefined) return this.getTable();
                             else return this.getTable(p.match.params.id);
                           }}
                         />
@@ -482,11 +448,7 @@ class HomeComponent extends React.Component {
                           exact
                           path={"/:id"}
                           render={props => {
-                            return (
-                              <DetailsContainer
-                                id={parseInt(props.match.params.id, 10)}
-                              />
-                            );
+                            return <DetailsContainer id={parseInt(props.match.params.id, 10)} />;
                           }}
                         />
 
@@ -494,8 +456,7 @@ class HomeComponent extends React.Component {
                           exact
                           path={`/:id?`}
                           render={p => {
-                            if (p.match.params.id === undefined)
-                              return this.getTable();
+                            if (p.match.params.id === undefined) return this.getTable();
                             else return this.getTable(p.match.params.id);
                           }}
                         />
@@ -590,9 +551,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  )(withTranslation(["common"])(HomeComponent)),
-);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(HomeComponent)));

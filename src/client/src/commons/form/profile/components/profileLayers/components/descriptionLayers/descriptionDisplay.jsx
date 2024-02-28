@@ -1,4 +1,3 @@
-import React from "react";
 import { Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
@@ -31,8 +30,7 @@ const DescriptionDisplay = props => {
           </Typography>
           {item.id !== null && (
             <Typography variant="subtitle2">
-              {t("description_quality")}:{" "}
-              {item.descriptionQuality?.[i18n.language] ?? "-"}
+              {t("description_quality")}: {item.descriptionQuality?.[i18n.language] ?? "-"}
             </Typography>
           )}
         </>

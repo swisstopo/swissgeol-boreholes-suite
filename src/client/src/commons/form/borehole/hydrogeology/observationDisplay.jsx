@@ -1,4 +1,3 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
@@ -33,51 +32,30 @@ const ObservationDisplay = props => {
             <FormDisplay label="todepth" value={observation?.toDepthM} />
           </StackFullWidth>
           <StackFullWidth direction="row" spacing={1}>
-            <FormDisplay
-              label="fromDepthMasl"
-              value={observation?.fromDepthMasl}
-            />
+            <FormDisplay label="fromDepthMasl" value={observation?.fromDepthMasl} />
             <FormDisplay label="toDepthMasl" value={observation?.toDepthMasl} />
           </StackFullWidth>
           <StackFullWidth direction="row" spacing={1}>
-            <FormDisplay
-              label="startTime"
-              value={observation?.startTime}
-              type={FormDisplayType.DateTime}
-            />
-            <FormDisplay
-              label="endTime"
-              value={observation?.endTime}
-              type={FormDisplayType.DateTime}
-            />
+            <FormDisplay label="startTime" value={observation?.startTime} type={FormDisplayType.DateTime} />
+            <FormDisplay label="endTime" value={observation?.endTime} type={FormDisplayType.DateTime} />
           </StackFullWidth>
           <FormDisplay
             label="duration"
             value={
               observation?.startTime && observation.endTime
-                ? timesToReadableDuration(
-                    observation?.startTime,
-                    observation?.endTime,
-                  )
+                ? timesToReadableDuration(observation?.startTime, observation?.endTime)
                 : null
             }
           />
           <StackFullWidth direction="row" spacing={1}>
-            <FormDisplay
-              label="reliability"
-              value={observation?.reliability}
-              type={FormDisplayType.Domain}
-            />
+            <FormDisplay label="reliability" value={observation?.reliability} type={FormDisplayType.Domain} />
             <FormDisplay
               label="completionFinished"
               value={observation?.completionFinished}
               type={FormDisplayType.Boolean}
             />
           </StackFullWidth>
-          <FormDisplay
-            label="casingName"
-            value={observation?.casingId ? observation?.casing?.name : null}
-          />
+          <FormDisplay label="casingName" value={observation?.casingId ? observation?.casing?.name : null} />
           <FormDisplay label="comment" value={observation?.comment} />
         </>
       )}

@@ -28,27 +28,10 @@ const CasingInput = ({ item, setSelected, parentId, addData, updateData }) => {
       addData={addData}
       updateData={updateData}
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
-      <FormInput
-        fieldName="name"
-        label="casingName"
-        value={item.name}
-        required={true}
-      />
+      <FormInput fieldName="name" label="casingName" value={item.name} required={true} />
       <Stack direction="row">
-        <FormInput
-          fieldName="fromDepth"
-          label="fromdepth"
-          value={item.fromDepth}
-          type="number"
-          required={true}
-        />
-        <FormInput
-          fieldName="toDepth"
-          label="todepth"
-          value={item.toDepth}
-          type="number"
-          required={true}
-        />
+        <FormInput fieldName="fromDepth" label="fromdepth" value={item.fromDepth} type="number" required={true} />
+        <FormInput fieldName="toDepth" label="todepth" value={item.toDepth} type="number" required={true} />
       </Stack>
       <Stack direction="row">
         <FormSelect
@@ -79,13 +62,7 @@ const CasingInput = ({ item, setSelected, parentId, addData, updateData }) => {
         />
       </Stack>
       <Stack direction="row">
-        <FormInput
-          fieldName="dateStart"
-          label="dateStartCasing"
-          value={item.dateStart}
-          type="date"
-          required={true}
-        />
+        <FormInput fieldName="dateStart" label="dateStartCasing" value={item.dateStart} type="date" required={true} />
         <FormInput
           fieldName="dateFinish"
           label="dateFinishCasing"
@@ -111,12 +88,7 @@ const CasingInput = ({ item, setSelected, parentId, addData, updateData }) => {
         />
       </Stack>
       <Stack direction="row">
-        <FormInput
-          fieldName="notes"
-          label="notes"
-          multiline={true}
-          value={item.notes}
-        />
+        <FormInput fieldName="notes" label="notes" multiline={true} value={item.notes} />
       </Stack>
     </DataInputCard>
   );

@@ -45,11 +45,7 @@ class DownloadLink extends React.Component {
           {this.props.caption}
         </span>
         &nbsp;
-        {this.state.downloading === true ? (
-          <Icon loading name="spinner" />
-        ) : (
-          <Icon name="arrow circle down" />
-        )}
+        {this.state.downloading === true ? <Icon loading name="spinner" /> : <Icon name="arrow circle down" />}
       </span>
     );
   }

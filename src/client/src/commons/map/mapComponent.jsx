@@ -33,10 +33,8 @@ const projections = {
     "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs",
   "EPSG:21782":
     "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=0 +y_0=0 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs",
-  "EPSG:4149":
-    "+proj=longlat +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +no_defs",
-  "EPSG:4150":
-    "+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs",
+  "EPSG:4149": "+proj=longlat +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +no_defs",
+  "EPSG:4150": "+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs",
 };
 
 const boreholeStyleCache = {};
@@ -134,7 +132,7 @@ class MapComponent extends React.Component {
     };
 
     for (var identifier in this.props.layers) {
-      if (this.props.layers.hasOwnProperty(identifier)) {
+      if (Object.prototype.hasOwnProperty.call(this.props.layers, identifier)) {
         const layer = this.props.layers[identifier];
         this.state.overlays.push({
           key: identifier,
@@ -147,14 +145,11 @@ class MapComponent extends React.Component {
 
   componentDidMount() {
     var resolutions = [
-      4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250,
-      1000, 750, 650, 500, 250, 100, 50, 20, 10, 5, 2.5, 2, 1.5, 1, 0.5,
+      4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250, 1000, 750, 650, 500, 250, 100, 50, 20, 10,
+      5, 2.5, 2, 1.5, 1, 0.5,
     ];
     const extent = [2420000, 1030000, 2900000, 1350000];
-    const center = [
-      (extent[2] - extent[0]) / 2 + extent[0],
-      (extent[3] - extent[1]) / 2 + extent[1],
-    ];
+    const center = [(extent[2] - extent[0]) / 2 + extent[0], (extent[3] - extent[1]) / 2 + extent[1]];
     const projection = getProjection(this.srs);
     projection.setExtent(extent);
     const matrixIds = [];
@@ -261,7 +256,7 @@ class MapComponent extends React.Component {
 
     // Loading user's layers
     for (var identifier in this.props.layers) {
-      if (this.props.layers.hasOwnProperty(identifier)) {
+      if (Object.prototype.hasOwnProperty.call(this.props.layers, identifier)) {
         const layer = this.props.layers[identifier];
 
         if (layer.type === "WMS") {
@@ -352,9 +347,7 @@ class MapComponent extends React.Component {
                   if (clusterMembers.length > 1) {
                     // Calculate the extent of the cluster members.
                     const extent = createEmpty();
-                    clusterMembers.forEach(feature =>
-                      extend(extent, feature.getGeometry().getExtent()),
-                    );
+                    clusterMembers.forEach(feature => extend(extent, feature.getGeometry().getExtent()));
                     // Zoom to the extent of the cluster members.
                     view.fit(extent, {
                       duration: 500,
@@ -364,9 +357,7 @@ class MapComponent extends React.Component {
                     this.props.filterByExtent?.(extent);
                   } else {
                     // Go zoom to single point.
-                    const coordinates = clusterMembers[0]
-                      .getGeometry()
-                      .getCoordinates();
+                    const coordinates = clusterMembers[0].getGeometry().getCoordinates();
                     view.setCenter(coordinates);
                     view.setResolution(15);
                   }
@@ -402,9 +393,7 @@ class MapComponent extends React.Component {
             this.selectClick.on("select", this.selected);
             this.map.addInteraction(this.selectClick);
 
-            this.points.addFeatures(
-              new GeoJSON().readFeatures(response.data.data),
-            );
+            this.points.addFeatures(new GeoJSON().readFeatures(response.data.data));
 
             let extent = this.props.searchState.extent?.length
               ? this.props.searchState.extent
@@ -413,9 +402,7 @@ class MapComponent extends React.Component {
             this.map.getView().fit(extent);
 
             if (this.props.searchState.resolution) {
-              this.map
-                .getView()
-                .setResolution(this.props.searchState.resolution);
+              this.map.getView().setResolution(this.props.searchState.resolution);
             }
 
             this.moveEnd();
@@ -427,9 +414,8 @@ class MapComponent extends React.Component {
       });
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { centerto, searchState, highlighted, hover, layers, zoomto } =
-      this.props;
+  componentDidUpdate(prevProps) {
+    const { centerto, searchState, highlighted, hover, layers, zoomto } = this.props;
     let refresh = false;
 
     // Check overlays apparence
@@ -437,10 +423,7 @@ class MapComponent extends React.Component {
     for (const identifier of keys) {
       for (let c = 0, l = this.overlays.length; c < l; c++) {
         const layer = this.overlays[c];
-        if (
-          (layer.get("name") !== undefined) &
-          (layer.get("name") === identifier)
-        ) {
+        if ((layer.get("name") !== undefined) & (layer.get("name") === identifier)) {
           layer.setVisible(layers[identifier].visibility);
           layer.setOpacity(1 - layers[identifier].transparency / 100);
           layer.setZIndex(layers[identifier].position + this.layers.length + 1);
@@ -448,10 +431,7 @@ class MapComponent extends React.Component {
       }
     }
 
-    if (
-      this.points !== undefined &&
-      !_.isEqual(highlighted, prevProps.highlighted)
-    ) {
+    if (this.points !== undefined && !_.isEqual(highlighted, prevProps.highlighted)) {
       if (highlighted.length > 0) {
         let feature = this.points.getFeatureById(highlighted[0]);
         this.popup.setPosition(undefined);
@@ -493,12 +473,7 @@ class MapComponent extends React.Component {
       refresh = true;
     }
     if (!_.isEqual(searchState.filter, prevProps.searchState.filter)) {
-      if (
-        _.isEqual(
-          searchState.filter.extent,
-          prevProps.searchState.filter.extent,
-        )
-      ) {
+      if (_.isEqual(searchState.filter.extent, prevProps.searchState.filter.extent)) {
         refresh = true;
         if (this.timeoutFilter !== null) {
           clearTimeout(this.timeoutFilter);
@@ -509,9 +484,7 @@ class MapComponent extends React.Component {
             .then(
               function (response) {
                 if (response.data.success) {
-                  this.points.addFeatures(
-                    new GeoJSON().readFeatures(response.data.data),
-                  );
+                  this.points.addFeatures(new GeoJSON().readFeatures(response.data.data));
                   this.map.getView().fit(this.points.getExtent());
                   this.moveEnd();
                 }
@@ -548,11 +521,10 @@ class MapComponent extends React.Component {
     this.map.updateSize();
   }
 
-  styleFunction(feature, _) {
+  styleFunction(feature) {
     const { highlighted } = this.props;
 
-    let selected =
-      highlighted !== undefined && highlighted.indexOf(feature.getId()) > -1;
+    let selected = highlighted !== undefined && highlighted.indexOf(feature.getId()) > -1;
     let res = feature.get("restriction");
     let fill = null;
     if (res === "f") {
@@ -755,9 +727,7 @@ class MapComponent extends React.Component {
             hover: singleFeature,
           },
           () => {
-            this.popup.setPosition(
-              singleFeature.getGeometry().getCoordinates(),
-            );
+            this.popup.setPosition(singleFeature.getGeometry().getCoordinates());
             hover(singleFeature.getId());
           },
         );
@@ -850,19 +820,13 @@ class MapComponent extends React.Component {
                   {
                     basemap: data.value,
                   },
-                  a => {
+                  () => {
                     this.layers.forEach(function (layer) {
                       if (data.value === "nomap") {
                         layer.setVisible(false);
                       } else {
-                        if (
-                          (layer.get("name") !== undefined) &
-                          (layer.get("name") !== "points")
-                        ) {
-                          if (
-                            (layer.get("name") !== undefined) &
-                            (layer.get("name") === data.value)
-                          ) {
+                        if ((layer.get("name") !== undefined) & (layer.get("name") !== "points")) {
+                          if ((layer.get("name") !== undefined) & (layer.get("name") === data.value)) {
                             layer.setVisible(true);
                           } else {
                             layer.setVisible(false);
@@ -911,12 +875,9 @@ class MapComponent extends React.Component {
                   fontWeight: "bold",
                   whiteSpace: "nowrap",
                 }}>
-                {this.state.hover !== null
-                  ? this.state.hover.get("name")
-                  : null}
+                {this.state.hover !== null ? this.state.hover.get("name") : null}
               </div>
-              {this.state.hover === null ||
-              _.isNil(this.state.hover.get("length")) ? null : (
+              {this.state.hover === null || _.isNil(this.state.hover.get("length")) ? null : (
                 <div
                   style={{
                     whiteSpace: "nowrap",

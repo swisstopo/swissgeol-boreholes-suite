@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-  useRef,
-  useContext,
-} from "react";
+import { useCallback, useEffect, useState, useRef, useContext } from "react";
 import * as Styled from "./styles";
 import TranslationText from "../../../translationText";
 import ProfileLayersValidation from "./components/profileLayersValidation";
@@ -43,14 +37,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { AlertContext } from "../../../../../components/alert/alertContext";
 
 const ProfileLayers = props => {
-  const {
-    isEditable,
-    selectedStratigraphyID,
-    selectedLayer,
-    setSelectedLayer,
-    reloadLayer,
-    onUpdated,
-  } = props.data;
+  const { isEditable, selectedStratigraphyID, selectedLayer, setSelectedLayer, reloadLayer, onUpdated } = props.data;
   const { t } = props;
   const [layersWithValidation, setLayersWithValidation] = useState(null);
   const [selecteDescription, setSelectedDescription] = useState(null);
@@ -185,11 +172,7 @@ const ProfileLayers = props => {
   };
 
   const addDescription = (query, mutation) => {
-    if (
-      query?.data &&
-      query?.data?.length &&
-      query?.data[query?.data?.length - 1]?.toDepth == null
-    ) {
+    if (query?.data && query?.data?.length && query?.data[query?.data?.length - 1]?.toDepth == null) {
       alertContext.error(t("first_add_layer_to_depth"));
     } else {
       setSelectedDescription(null);
@@ -198,9 +181,7 @@ const ProfileLayers = props => {
         ? mutation.mutate({
             stratigraphyId: selectedStratigraphyID,
             fromDepth: newFromDepth,
-            toDepth: layersWithValidation?.data.find(
-              l => l.depth_from === newFromDepth,
-            )?.depth_to,
+            toDepth: layersWithValidation?.data.find(l => l.depth_from === newFromDepth)?.depth_to,
           })
         : alertContext.error(t("first_add_lithology"));
     }
@@ -234,10 +215,7 @@ const ProfileLayers = props => {
           overflow: isLayerSelected ? "hidden" : "",
           borderBottom: hasLayers ? "1px solid lightgrey" : "",
         }}>
-        <Table
-          stickyHeader
-          aria-label="sticky table"
-          sx={{ borderCollapse: "collapse" }}>
+        <Table stickyHeader aria-label="sticky table" sx={{ borderCollapse: "collapse" }}>
           <TableHead>
             <TableRow>
               <TableCell>
@@ -245,11 +223,7 @@ const ProfileLayers = props => {
                   <Typography>{t("lithology")}</Typography>
                   {isEditable && selectedStratigraphyID !== null && (
                     <Tooltip title={t("add")}>
-                      <AddCircleIcon
-                        sx={{ marginLeft: 1.5 }}
-                        data-cy="add-layer-icon"
-                        onClick={createNewLayer}
-                      />
+                      <AddCircleIcon sx={{ marginLeft: 1.5 }} data-cy="add-layer-icon" onClick={createNewLayer} />
                     </Tooltip>
                   )}
                 </Stack>
@@ -263,12 +237,7 @@ const ProfileLayers = props => {
                         <AddCircleIcon
                           sx={{ marginLeft: 1.5 }}
                           data-cy="add-litho-desc-icon"
-                          onClick={() =>
-                            addDescription(
-                              lithoDescQuery,
-                              addLithologicalDescriptionMutation,
-                            )
-                          }
+                          onClick={() => addDescription(lithoDescQuery, addLithologicalDescriptionMutation)}
                         />
                       </Tooltip>
                     )}
@@ -284,12 +253,7 @@ const ProfileLayers = props => {
                         <AddCircleIcon
                           sx={{ marginLeft: 1.5 }}
                           data-cy="add-facies-desc-icon"
-                          onClick={() =>
-                            addDescription(
-                              faciesDescQuery,
-                              addFaciesDescriptionMutation,
-                            )
-                          }
+                          onClick={() => addDescription(faciesDescQuery, addFaciesDescriptionMutation)}
                         />
                       </Tooltip>
                     )}

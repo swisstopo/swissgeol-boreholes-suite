@@ -4,11 +4,7 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { Route, Switch, withRouter } from "react-router-dom";
-import {
-  updateBorehole,
-  loadBorehole,
-  patchBorehole,
-} from "../../../api-lib/index";
+import { updateBorehole, loadBorehole, patchBorehole } from "../../../api-lib/index";
 
 import EditorBoreholeFilesTable from "../../files/table/editorBoreholeFilesTable";
 import TranslationText from "../translationText";
@@ -70,10 +66,7 @@ class BoreholeForm extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (
-      this.props.match.params.id !== null &&
-      this.props.match.params.id !== prevProps.match.params.id
-    ) {
+    if (this.props.match.params.id !== null && this.props.match.params.id !== prevProps.match.params.id) {
       this.loadOrCreate(parseInt(this.props.match.params.id, 10));
     }
   }
@@ -98,8 +91,7 @@ class BoreholeForm extends React.Component {
                 self.setState({
                   loadingFetch: false,
                   stratigraphy_id:
-                    _.isArray(response.data.stratigraphy) &&
-                    response.data.stratigraphy.length > 0
+                    _.isArray(response.data.stratigraphy) && response.data.stratigraphy.length > 0
                       ? response.data.stratigraphy[0].id
                       : null,
                 });
@@ -123,10 +115,7 @@ class BoreholeForm extends React.Component {
       );
       return false;
     }
-    if (
-      this.props.borehole.data.lock === null ||
-      this.props.borehole.data.lock.id !== this.props.user.data.id
-    ) {
+    if (this.props.borehole.data.lock === null || this.props.borehole.data.lock.id !== this.props.user.data.id) {
       this.context.error(t("common:errorStartEditing"));
       return false;
     }
@@ -191,7 +180,7 @@ class BoreholeForm extends React.Component {
 
   patch(borehole, attribute, value, to = true) {
     if (
-      this.updateAttributeDelay.hasOwnProperty(attribute) &&
+      Object.prototype.hasOwnProperty.call(this.updateAttributeDelay, attribute) &&
       this.updateAttributeDelay[attribute]
     ) {
       clearTimeout(this.updateAttributeDelay[attribute]);
@@ -212,8 +201,7 @@ class BoreholeForm extends React.Component {
                   if (response.data.location) {
                     borehole.custom.country = response.data.location.country;
                     borehole.custom.canton = response.data.location.canton;
-                    borehole.custom.municipality =
-                      response.data.location.municipality;
+                    borehole.custom.municipality = response.data.location.municipality;
                   }
                   this.props.updateBorehole(borehole);
                 },
@@ -247,9 +235,7 @@ class BoreholeForm extends React.Component {
     const { t, borehole, user } = this.props;
     const size = null; // 'small'
     const isEditable =
-      borehole?.data.role === "EDIT" &&
-      borehole?.data.lock !== null &&
-      borehole?.data.lock?.id === user?.data.id;
+      borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
     if (borehole.error !== null) {
       return <div>{t(borehole.error, borehole.data)}</div>;
     }
@@ -257,11 +243,7 @@ class BoreholeForm extends React.Component {
     return (
       <Dimmer.Dimmable
         as={"div"}
-        dimmed={
-          borehole.isFetching === true ||
-          this.state.loadingFetch === true ||
-          this.state.creationFetch === true
-        }
+        dimmed={borehole.isFetching === true || this.state.loadingFetch === true || this.state.creationFetch === true}
         style={{
           flex: 1,
           overflowY: "hidden",
@@ -269,11 +251,7 @@ class BoreholeForm extends React.Component {
           flexDirection: "column",
         }}>
         <Dimmer
-          active={
-            borehole.isFetching === true ||
-            this.state.loadingFetch === true ||
-            this.state.creationFetch === true
-          }
+          active={borehole.isFetching === true || this.state.loadingFetch === true || this.state.creationFetch === true}
           inverted>
           <Loader>
             {(() => {
@@ -305,11 +283,7 @@ class BoreholeForm extends React.Component {
                   setState={this.setState.bind(this)}
                   updateBorehole={this.props.updateBorehole}
                   user={user}></IdentifierSegment>
-                <NameSegment
-                  size={size}
-                  borehole={borehole}
-                  updateChange={this.updateChange}
-                  user={user}></NameSegment>
+                <NameSegment size={size} borehole={borehole} updateChange={this.updateChange} user={user}></NameSegment>
                 <RestrictionSegment
                   size={size}
                   borehole={borehole}
@@ -356,51 +330,34 @@ class BoreholeForm extends React.Component {
           <Route
             exact
             path={"/editor/:id/stratigraphy"}
-            render={() => (
-              <Profile
-                id={parseInt(this.props.match.params.id, 10)}
-                unlocked={isEditable}
-              />
-            )}
+            render={() => <Profile id={parseInt(this.props.match.params.id, 10)} unlocked={isEditable} />}
           />
           <Route
             exact
             path={"/editor/:id/stratigraphy/chronostratigraphy"}
             render={() => (
-              <ChronostratigraphyPanel
-                id={parseInt(this.props.match.params.id, 10)}
-                isEditable={isEditable}
-              />
+              <ChronostratigraphyPanel id={parseInt(this.props.match.params.id, 10)} isEditable={isEditable} />
             )}
           />
           <Route
             exact
             path={"/editor/:id/stratigraphy/lithostratigraphy"}
             render={() => (
-              <LithostratigraphyPanel
-                id={parseInt(this.props.match.params.id, 10)}
-                isEditable={isEditable}
-              />
+              <LithostratigraphyPanel id={parseInt(this.props.match.params.id, 10)} isEditable={isEditable} />
             )}
           />
           <Route
             exact
             path={"/editor/:id/attachments"}
             render={() => (
-              <EditorBoreholeFilesTable
-                id={parseInt(this.props.match.params.id, 10)}
-                unlocked={isEditable}
-              />
+              <EditorBoreholeFilesTable id={parseInt(this.props.match.params.id, 10)} unlocked={isEditable} />
             )}
           />
           <Route
             exact
             path={"/editor/:id/hydrogeology/wateringress"}
             render={() => (
-              <WaterIngress
-                isEditable={isEditable}
-                boreholeId={parseInt(this.props.match.params.id, 10)}
-              />
+              <WaterIngress isEditable={isEditable} boreholeId={parseInt(this.props.match.params.id, 10)} />
             )}
           />
           <Route
@@ -417,21 +374,13 @@ class BoreholeForm extends React.Component {
             exact
             path={"/editor/:id/hydrogeology/fieldmeasurement"}
             render={() => (
-              <FieldMeasurement
-                isEditable={isEditable}
-                boreholeId={parseInt(this.props.match.params.id, 10)}
-              />
+              <FieldMeasurement isEditable={isEditable} boreholeId={parseInt(this.props.match.params.id, 10)} />
             )}
           />
           <Route
             exact
             path={"/editor/:id/hydrogeology/hydrotest"}
-            render={() => (
-              <Hydrotest
-                isEditable={isEditable}
-                boreholeId={parseInt(this.props.match.params.id, 10)}
-              />
-            )}
+            render={() => <Hydrotest isEditable={isEditable} boreholeId={parseInt(this.props.match.params.id, 10)} />}
           />
           <Route
             exact
@@ -447,10 +396,7 @@ class BoreholeForm extends React.Component {
             path={"/editor/:boreholeId/completion/:completionId"}
             render={() => <Completion isEditable={isEditable} />}
           />
-          <Route
-            path={"/editor/:boreholeId/completion"}
-            render={() => <Completion isEditable={isEditable} />}
-          />
+          <Route path={"/editor/:boreholeId/completion"} render={() => <Completion isEditable={isEditable} />} />
         </Switch>
       </Dimmer.Dimmable>
     );
@@ -498,9 +444,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  )(withTranslation(["common"])(BoreholeForm)),
-);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(BoreholeForm)));

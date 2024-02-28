@@ -1,4 +1,3 @@
-import React from "react";
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
@@ -11,9 +10,7 @@ const FieldMeasurementDisplay = props => {
   const domains = useDomains();
 
   const getParameterUnit = parameterId => {
-    return FieldMeasurementParameterUnits[
-      domains.data?.find(d => d.id === parameterId)?.geolcode
-    ];
+    return FieldMeasurementParameterUnits[domains.data?.find(d => d.id === parameterId)?.geolcode];
   };
 
   return (
@@ -25,16 +22,8 @@ const FieldMeasurementDisplay = props => {
       deleteData={deleteData}>
       <ObservationDisplay observation={item} />
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay
-          label="field_measurement_sample_type"
-          value={item?.sampleType}
-          type={FormDisplayType.Domain}
-        />
-        <FormDisplay
-          label="parameter"
-          value={item?.parameter}
-          type={FormDisplayType.Domain}
-        />
+        <FormDisplay label="field_measurement_sample_type" value={item?.sampleType} type={FormDisplayType.Domain} />
+        <FormDisplay label="parameter" value={item?.parameter} type={FormDisplayType.Domain} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay

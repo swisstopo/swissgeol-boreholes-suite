@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo } from "react";
 import { Box } from "@mui/material";
 import useResizeObserver from "@react-hook/resize-observer";
 import { NumericFormat } from "react-number-format";
@@ -12,8 +12,7 @@ const isMajorNumber = (number, metersPerPattern) => {
 };
 
 const DepthLabel = styled(NumericFormat, {
-  shouldForwardProp: prop =>
-    !["bottomPosition", "isMajorNumber"].includes(prop),
+  shouldForwardProp: prop => !["bottomPosition", "isMajorNumber"].includes(prop),
 })(({ bottomPosition, isMajorNumber }) => ({
   position: "absolute",
   bottom: bottomPosition,
@@ -39,22 +38,17 @@ const Scale = ({ navState }) => {
       const minMetersPerPattern = width / navState.pixelPerMeter;
       const metersPerPattern = 10 ** Math.ceil(Math.log10(minMetersPerPattern));
       patternHeight = metersPerPattern * navState.pixelPerMeter;
-      patternOffset =
-        (navState.lensStart % metersPerPattern) * navState.pixelPerMeter;
+      patternOffset = (navState.lensStart % metersPerPattern) * navState.pixelPerMeter;
 
       const lensEnd = navState.lensStart + navState.lensSize;
       for (
-        let depth =
-          Math.ceil(navState.lensStart / metersPerPattern) * metersPerPattern;
+        let depth = Math.ceil(navState.lensStart / metersPerPattern) * metersPerPattern;
         depth <= lensEnd;
         depth += metersPerPattern
       ) {
         labels.push(
           <DepthLabel
-            bottomPosition={
-              (navState.lensSize - depth + navState.lensStart) *
-              navState.pixelPerMeter
-            }
+            bottomPosition={(navState.lensSize - depth + navState.lensStart) * navState.pixelPerMeter}
             isMajorNumber={isMajorNumber(depth, metersPerPattern)}
             key={depth}
             value={depth}

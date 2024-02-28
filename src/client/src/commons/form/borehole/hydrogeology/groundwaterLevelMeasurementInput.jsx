@@ -1,4 +1,3 @@
-import React from "react";
 import { Stack } from "@mui/material";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
@@ -39,11 +38,7 @@ const GroundwaterLevelMeasurementInput = props => {
           selected={item.kindId}
           required={true}
           values={domains?.data
-            ?.filter(
-              d =>
-                d.schema ===
-                hydrogeologySchemaConstants.groundwaterLevelMeasurementKind,
-            )
+            ?.filter(d => d.schema === hydrogeologySchemaConstants.groundwaterLevelMeasurementKind)
             .sort((a, b) => a.order - b.order)
             .map(d => ({
               key: d.id,
@@ -52,18 +47,8 @@ const GroundwaterLevelMeasurementInput = props => {
         />
       </Stack>
       <Stack direction="row">
-        <FormInput
-          fieldName="levelMasl"
-          label="gwlm_levelmasl"
-          value={item.levelMasl}
-          type="number"
-        />
-        <FormInput
-          fieldName="levelM"
-          label="gwlm_levelm"
-          value={item.levelM}
-          type="number"
-        />
+        <FormInput fieldName="levelMasl" label="gwlm_levelmasl" value={item.levelMasl} type="number" />
+        <FormInput fieldName="levelM" label="gwlm_levelm" value={item.levelM} type="number" />
       </Stack>
     </DataInputCard>
   );

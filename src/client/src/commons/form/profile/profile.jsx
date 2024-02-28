@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import * as Styled from "./styles";
 import { useSelector } from "react-redux";
 import ProfileHeader from "./components/profileHeader";
@@ -9,7 +9,7 @@ import { stratigraphyData } from "./data/stratigraphydata";
 import TranslationText from "../translationText";
 import { Loader } from "semantic-ui-react";
 
-const Profile = props => {
+const Profile = () => {
   const { user, borehole } = useSelector(state => ({
     borehole: state.core_borehole,
     user: state.core_user,
@@ -25,12 +25,7 @@ const Profile = props => {
   const [isLoadingData, setIsLoadingData] = useState(false);
 
   const onUpdated = attribute => {
-    if (
-      attribute === "toDepth" ||
-      attribute === "fromDepth" ||
-      attribute === "lithology" ||
-      attribute === "newLayer"
-    ) {
+    if (attribute === "toDepth" || attribute === "fromDepth" || attribute === "lithology" || attribute === "newLayer") {
       setReloadLayer(reloadLayer => reloadLayer + 1);
     }
 
@@ -54,17 +49,12 @@ const Profile = props => {
       setReloadLayer(reloadLayer => reloadLayer + 1);
     }
 
-    if (attribute === "newAttribute")
-      setReloadAttribute(reloadAttribute => reloadAttribute + 1);
+    if (attribute === "newAttribute") setReloadAttribute(reloadAttribute => reloadAttribute + 1);
   };
 
   useEffect(() => {
     if (
-      !(
-        borehole?.data?.lock === null ||
-        borehole?.data?.lock.id !== user?.data?.id ||
-        borehole?.data?.role !== "EDIT"
-      )
+      !(borehole?.data?.lock === null || borehole?.data?.lock.id !== user?.data?.id || borehole?.data?.role !== "EDIT")
     ) {
       setIsEditable(true);
     } else {
@@ -104,11 +94,7 @@ const Profile = props => {
 
       {!isLoadingData && !selectedStratigraphy && (
         <Styled.Empty data-cy="stratigraphy-message">
-          <TranslationText
-            id={
-              borehole.data.lock ? "msgAddStratigraphy" : "msgStratigraphyEmpty"
-            }
-          />
+          <TranslationText id={borehole.data.lock ? "msgAddStratigraphy" : "msgStratigraphyEmpty"} />
         </Styled.Empty>
       )}
 
@@ -117,9 +103,7 @@ const Profile = props => {
           <Styled.FirstColumn>
             <ProfileInfo
               data={{
-                selectedStratigraphyID: selectedStratigraphy
-                  ? selectedStratigraphy.id
-                  : null,
+                selectedStratigraphyID: selectedStratigraphy ? selectedStratigraphy.id : null,
                 isEditable,
                 onUpdated,
                 attribute: attributesBasedKind?.profileInfo,
@@ -127,9 +111,7 @@ const Profile = props => {
             />
             <ProfileLayers
               data={{
-                selectedStratigraphyID: selectedStratigraphy
-                  ? selectedStratigraphy.id
-                  : null,
+                selectedStratigraphyID: selectedStratigraphy ? selectedStratigraphy.id : null,
                 isEditable,
                 selectedLayer,
                 setSelectedLayer: e => {

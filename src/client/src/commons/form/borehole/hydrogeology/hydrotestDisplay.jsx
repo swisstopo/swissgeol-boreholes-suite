@@ -1,13 +1,5 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableContainer,
-  TableRow,
-  TableCell,
-} from "@mui/material";
+import { Table, TableHead, TableBody, TableContainer, TableRow, TableCell } from "@mui/material";
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
@@ -22,9 +14,7 @@ const HydrotestDisplay = props => {
   const domains = useDomains();
 
   const getParameterUnit = parameterId => {
-    return TestResultParameterUnits[
-      domains?.data?.find(d => d.id === parameterId).geolcode
-    ];
+    return TestResultParameterUnits[domains?.data?.find(d => d.id === parameterId).geolcode];
   };
 
   const tableCellStyles = {
@@ -55,28 +45,19 @@ const HydrotestDisplay = props => {
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay
           label="testKind"
-          value={item?.codelists.filter(
-            c => c.schema === hydrogeologySchemaConstants.hydrotestKind,
-          )}
+          value={item?.codelists.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestKind)}
           type={FormDisplayType.Domain}
         />
         <FormDisplay
           label="flowDirection"
-          value={item?.codelists.filter(
-            c =>
-              c.schema === hydrogeologySchemaConstants.hydrotestFlowDirection,
-          )}
+          value={item?.codelists.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestFlowDirection)}
           type={FormDisplayType.Domain}
         />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay
           label="evaluationMethod"
-          value={item?.codelists.filter(
-            c =>
-              c.schema ===
-              hydrogeologySchemaConstants.hydrotestEvaluationMethod,
-          )}
+          value={item?.codelists.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestEvaluationMethod)}
           type={FormDisplayType.Domain}
         />
       </StackFullWidth>
@@ -85,22 +66,16 @@ const HydrotestDisplay = props => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ ...tableHeaderStyles, paddingRight: 0 }}>
-                  {t("parameter")}
-                </TableCell>
+                <TableCell sx={{ ...tableHeaderStyles, paddingRight: 0 }}>{t("parameter")}</TableCell>
                 <TableCell sx={tableHeaderStyles}>{t("value")}</TableCell>
                 <TableCell sx={tableHeaderStyles}>{t("minValue")}</TableCell>
                 <TableCell sx={tableHeaderStyles}>{t("maxValue")}</TableCell>
-                {isEditable && (
-                  <TableCell align="right" sx={{ padding: "3px" }}></TableCell>
-                )}
+                {isEditable && <TableCell align="right" sx={{ padding: "3px" }}></TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
               {item?.hydrotestResults?.map((result, index) => (
-                <TableRow
-                  key={index}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                <TableRow key={index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                   <TableCell
                     component="th"
                     scope="row"
@@ -116,13 +91,9 @@ const HydrotestDisplay = props => {
                       minWidth: "200px",
                     }}
                     data-cy={`hydrotestResult.${index}.parameter-formDisplay`}>
-                    {domains?.data?.find(d => d.id === result.parameterId)?.[
-                      i18n.language
-                    ] || ""}
+                    {domains?.data?.find(d => d.id === result.parameterId)?.[i18n.language] || ""}
                   </TableCell>
-                  <TableCell
-                    sx={tableCellStyles}
-                    data-cy={`hydrotestResult.${index}.value-formDisplay`}>
+                  <TableCell sx={tableCellStyles} data-cy={`hydrotestResult.${index}.value-formDisplay`}>
                     {result?.value && (
                       <>
                         <span>{result?.value + " "}</span>
@@ -130,9 +101,7 @@ const HydrotestDisplay = props => {
                       </>
                     )}
                   </TableCell>
-                  <TableCell
-                    sx={tableCellStyles}
-                    data-cy={`hydrotestResult.${index}.minValue-formDisplay`}>
+                  <TableCell sx={tableCellStyles} data-cy={`hydrotestResult.${index}.minValue-formDisplay`}>
                     {result?.minValue && (
                       <>
                         <span>{result?.minValue + " "}</span>
@@ -140,9 +109,7 @@ const HydrotestDisplay = props => {
                       </>
                     )}
                   </TableCell>
-                  <TableCell
-                    sx={tableCellStyles}
-                    data-cy={`hydrotestResult.${index}.maxValue-formDisplay`}>
+                  <TableCell sx={tableCellStyles} data-cy={`hydrotestResult.${index}.maxValue-formDisplay`}>
                     {result?.maxValue && (
                       <>
                         <span>{result?.maxValue + " "}</span>

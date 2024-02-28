@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import _ from "lodash";
 import DomainText from "../../../../form/domain/domainText";
 import { Stratigraphy } from "../../../../../stratigraphy";
@@ -36,17 +36,12 @@ const ProfileView = props => {
   }
 
   function getDomainRowMultiple(codes, fieldName) {
-    const text =
-      codes?.length > 0
-        ? codes.map(code => code[i18n.language]).join(",")
-        : null;
+    const text = codes?.length > 0 ? codes.map(code => code[i18n.language]).join(",") : null;
     return getRowIfVisible(fieldName, getRow(text, fieldName));
   }
 
   function getNumericTextRow(fieldName, number) {
-    const text = number ? (
-      <NumericFormat value={number} thousandSeparator="'" displayType="text" />
-    ) : null;
+    const text = number ? <NumericFormat value={number} thousandSeparator="'" displayType="text" /> : null;
     return getTextRow(fieldName, text);
   }
 
@@ -63,9 +58,7 @@ const ProfileView = props => {
   }
 
   function getPattern(id) {
-    const filteredDomains = domains?.data.filter(
-      d => d.schema === "custom.lithology_top_bedrock",
-    );
+    const filteredDomains = domains?.data.filter(d => d.schema === "custom.lithology_top_bedrock");
 
     let domain = filteredDomains.find(element => {
       return element.id === id;
@@ -79,9 +72,7 @@ const ProfileView = props => {
     }
   }
   function getColor(id) {
-    const filteredDomains = domains.data.filter(
-      d => d.schema === "custom.lithostratigraphy_top_bedrock",
-    );
+    const filteredDomains = domains.data.filter(d => d.schema === "custom.lithostratigraphy_top_bedrock");
 
     let domain = filteredDomains.find(function (element) {
       return element.id === id;
@@ -99,11 +90,7 @@ const ProfileView = props => {
     const conf = getVisibleFields();
     if (layerKindDomains.length > 0) {
       for (let idx = 0; idx < layerKindDomains.length; idx++) {
-        if (
-          allFields === false &&
-          _.isObject(conf) &&
-          _.has(conf, `fields.${name}`)
-        ) {
+        if (allFields === false && _.isObject(conf) && _.has(conf, `fields.${name}`)) {
           if (conf.fields[name] === true) {
             return field;
           } else {
@@ -135,17 +122,9 @@ const ProfileView = props => {
           data={data}
           getColor={getColor}
           getPattern={getPattern}
-          getSubTitle={layer => (
-            <DomainText
-              id={layer.lithologyId}
-              schema="custom.lithology_top_bedrock"
-            />
-          )}
+          getSubTitle={layer => <DomainText id={layer.lithologyId} schema="custom.lithology_top_bedrock" />}
           getTitle={layer => (
-            <DomainText
-              id={layer.lithostratigraphyId}
-              schema="custom.lithostratigraphy_top_bedrock"
-            />
+            <DomainText id={layer.lithostratigraphyId} schema="custom.lithostratigraphy_top_bedrock" />
           )}
           mapping={{
             id: "id",
@@ -224,11 +203,7 @@ const ProfileView = props => {
               {getNumericTextRow("todepth", layer.toDepth)}
               {getTextRow(
                 "layer_last",
-                layer.isLast === true
-                  ? t("common:yes")
-                  : layer.isLast === false
-                    ? t("common:no")
-                    : null,
+                layer.isLast === true ? t("common:yes") : layer.isLast === false ? t("common:no") : null,
               )}
               {getDomainRow(layer.descriptionQuality, "description_quality")}
 
@@ -242,26 +217,13 @@ const ProfileView = props => {
               {getDomainRow(layer.grainSize2, "grain_size_2")}
               {getDomainRowMultiple(layer.uscs3Codelists, "uscs_3")}
               {getDomainRowMultiple(layer.grainShapeCodelists, "grain_shape")}
-              {getDomainRowMultiple(
-                layer.grainAngularityCodelists,
-                "grain_granularity",
-              )}
-              {getDomainRowMultiple(
-                layer.organicComponentsCodelists,
-                "organic_component",
-              )}
+              {getDomainRowMultiple(layer.grainAngularityCodelists, "grain_granularity")}
+              {getDomainRowMultiple(layer.organicComponentsCodelists, "organic_component")}
               {getDomainRowMultiple(layer.debrisCodelists, "debris")}
-              {getDomainRow(
-                layer.lithologyTopBedrock,
-                "layer_lithology_top_bedrock",
-              )}
+              {getDomainRow(layer.lithologyTopBedrock, "layer_lithology_top_bedrock")}
               {getTextRow(
                 "striae",
-                layer.isStriae === true
-                  ? t("common:yes")
-                  : layer.isStriae === false
-                    ? t("common:no")
-                    : null,
+                layer.isStriae === true ? t("common:yes") : layer.isStriae === false ? t("common:no") : null,
               )}
               {getDomainRowMultiple(layer.colorCodelists, "color")}
               {getDomainRow(layer.consistance, "consistance")}

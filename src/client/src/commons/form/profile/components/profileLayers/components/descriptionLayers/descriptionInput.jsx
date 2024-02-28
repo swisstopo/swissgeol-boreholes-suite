@@ -1,18 +1,11 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { MenuItem, Stack, TextField } from "@mui/material";
 import { useDomains } from "../../../../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 
 const DescriptionInput = props => {
-  const {
-    item,
-    setFromDepth,
-    setDescription,
-    setToDepth,
-    setDescriptionQualityId,
-    selectableDepths,
-    descriptions,
-  } = props;
+  const { item, setFromDepth, setDescription, setToDepth, setDescriptionQualityId, selectableDepths, descriptions } =
+    props;
   const [fromDepthOptions, setFromDepthOptions] = useState();
   const [toDepthOptions, setToDepthOptions] = useState();
 
@@ -22,9 +15,7 @@ const DescriptionInput = props => {
   const getFromDepthOptions = useCallback(() => {
     const closestTopLayer = descriptions[descriptions.indexOf(item) - 1];
     // get all depths that are not yet in use and that are smaller than toDepth
-    let options = selectableDepths.filter(
-      d => !descriptions.map(l => l.fromDepth).includes(d) && d < item.toDepth,
-    );
+    let options = selectableDepths.filter(d => !descriptions.map(l => l.fromDepth).includes(d) && d < item.toDepth);
     // only allow selecting depths in the gap above the layer
     if (closestTopLayer !== undefined) {
       // and depths that are smaller than the bottom of the layer above
@@ -43,9 +34,7 @@ const DescriptionInput = props => {
   const getToDepthOptions = useCallback(() => {
     const closestBottomLayer = descriptions[descriptions.indexOf(item) + 1];
     // get all depths that are not yet in use and that are greater than fromDepth
-    let options = selectableDepths.filter(
-      d => !descriptions.map(l => l.toDepth).includes(d) && d > item.fromDepth,
-    );
+    let options = selectableDepths.filter(d => !descriptions.map(l => l.toDepth).includes(d) && d > item.fromDepth);
     // only allow selecting depths in the gap below the layer
     if (closestBottomLayer !== undefined) {
       // and greater than the top of the layer below
@@ -84,7 +73,9 @@ const DescriptionInput = props => {
           setFromDepth(e.target.value);
         }}>
         {fromDepthOptions?.map(d => (
-          <MenuItem value={d}>{d}</MenuItem>
+          <MenuItem key={d.id} value={d}>
+            {d}
+          </MenuItem>
         ))}
       </TextField>
       <TextField
@@ -121,7 +112,9 @@ const DescriptionInput = props => {
           ?.filter(d => d.schema === "description_quality")
           .sort((a, b) => a.order - b.order)
           .map(d => (
-            <MenuItem value={d.id}>{d[i18n.language]}</MenuItem>
+            <MenuItem key={d.id} value={d.id}>
+              {d[i18n.language]}
+            </MenuItem>
           ))}
       </TextField>
       {toDepthOptions?.length > 0 && (
@@ -139,8 +132,10 @@ const DescriptionInput = props => {
             e.stopPropagation();
             setToDepth(e.target.value);
           }}>
-          {toDepthOptions?.map(d => (
-            <MenuItem value={d}>{d}</MenuItem>
+          {toDepthOptions?.map((d, index) => (
+            <MenuItem key={index} value={d}>
+              {d}
+            </MenuItem>
           ))}
         </TextField>
       )}

@@ -77,10 +77,7 @@ class SearchEditorComponent extends React.Component {
   }
   componentDidUpdate(prevProps) {
     const { search, onChange } = this.props;
-    if (
-      onChange !== undefined &&
-      !_.isEqual(search.filter, prevProps.search.filter)
-    ) {
+    if (onChange !== undefined && !_.isEqual(search.filter, prevProps.search.filter)) {
       onChange({ ...search.filter });
     }
   }
@@ -97,35 +94,17 @@ class SearchEditorComponent extends React.Component {
 
   handleButtonSelected() {
     let selectedData = null;
-    if (
-      this.state?.searchList?.[2]?.name === "location" &&
-      this.state?.searchList?.[2]?.isSelected
-    ) {
+    if (this.state?.searchList?.[2]?.name === "location" && this.state?.searchList?.[2]?.isSelected) {
       selectedData = LocationSearchData;
-    } else if (
-      this.state?.searchList?.[3]?.name === "borehole" &&
-      this.state?.searchList?.[3]?.isSelected
-    ) {
+    } else if (this.state?.searchList?.[3]?.name === "borehole" && this.state?.searchList?.[3]?.isSelected) {
       selectedData = boreholeSearchData;
-    } else if (
-      this.state?.searchList?.[4]?.name === "lithology" &&
-      this.state?.searchList?.[4]?.isSelected
-    ) {
+    } else if (this.state?.searchList?.[4]?.name === "lithology" && this.state?.searchList?.[4]?.isSelected) {
       selectedData = lithologySearchData;
-    } else if (
-      this.state?.searchList?.[5]?.name === "chronostratigraphy" &&
-      this.state?.searchList?.[5]?.isSelected
-    ) {
+    } else if (this.state?.searchList?.[5]?.name === "chronostratigraphy" && this.state?.searchList?.[5]?.isSelected) {
       selectedData = chronostratigraphySearchData;
-    } else if (
-      this.state?.searchList?.[6]?.name === "lithostratigraphy" &&
-      this.state?.searchList?.[6]?.isSelected
-    ) {
+    } else if (this.state?.searchList?.[6]?.name === "lithostratigraphy" && this.state?.searchList?.[6]?.isSelected) {
       selectedData = lithostratigraphySearchData;
-    } else if (
-      this.state?.searchList?.[7]?.name === "registration" &&
-      this.state?.searchList?.[7]?.isSelected
-    ) {
+    } else if (this.state?.searchList?.[7]?.name === "registration" && this.state?.searchList?.[7]?.isSelected) {
       selectedData = registrationSearchData;
     } else {
       selectedData = null;
@@ -162,18 +141,15 @@ class SearchEditorComponent extends React.Component {
             <Form.Group
               key="msc-2"
               style={{
-                display:
-                  search.advanced === true || filter.zoom2selected === true
-                    ? null
-                    : "none",
+                display: search.advanced === true || filter.zoom2selected === true ? null : "none",
               }}
               widths="equal"></Form.Group>
           </Form>
         </div>
         <div>
           {this.state?.searchList?.map((filter, idx) => (
-            <Fragment>
-              <Styled.FilterContainer key={idx}>
+            <Fragment key={idx}>
+              <Styled.FilterContainer>
                 <Styled.FilterButton
                   isLast={idx === this.state?.searchList?.length - 1}
                   isSelected={filter?.isSelected}
@@ -182,16 +158,12 @@ class SearchEditorComponent extends React.Component {
                       ...prevState,
                       // update an array of objects:
                       searchList: prevState.searchList.map(obj =>
-                        obj.id === idx
-                          ? { ...obj, isSelected: !obj.isSelected }
-                          : { ...obj, isSelected: false },
+                        obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj, isSelected: false },
                       ),
                     }));
                   }}>
                   <div>
-                    <Icon
-                      name={`caret ${filter?.isSelected ? "down" : "right"}`}
-                    />
+                    <Icon name={`caret ${filter?.isSelected ? "down" : "right"}`} />
                     <span>
                       <TranslationText id={filter?.translationId} />
                     </span>
@@ -265,7 +237,7 @@ SearchEditorComponent.propTypes = {
   resetCreatedDate: PropTypes.func,
 };
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = state => {
   return {
     developer: state.developer,
     search: state.searchEditor,
@@ -274,7 +246,7 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
     setFilter: (key, value) => {
@@ -361,7 +333,4 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation(["common"])(SearchEditorComponent));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(SearchEditorComponent));

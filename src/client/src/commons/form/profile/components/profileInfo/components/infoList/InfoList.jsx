@@ -1,4 +1,3 @@
-import React from "react";
 import * as Styled from "./styles";
 import { Input, Form } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
@@ -75,20 +74,10 @@ const InfoList = props => {
                   <DomainDropdown
                     data-cy={item.value}
                     multiple={item.multiple}
-                    onSelected={e =>
-                      updateChange(
-                        item.value,
-                        item.multiple ? e.map(mlpr => mlpr.id) : e.id,
-                        false,
-                      )
-                    }
+                    onSelected={e => updateChange(item.value, item.multiple ? e.map(mlpr => mlpr.id) : e.id, false)}
                     schema={item.schema}
                     search={item.search}
-                    selected={
-                      _.isNil(profileInfo?.[item.value])
-                        ? null
-                        : profileInfo[item.value]
-                    }
+                    selected={_.isNil(profileInfo?.[item.value]) ? null : profileInfo[item.value]}
                   />
                 </Styled.AttributesItem>
               )}
@@ -97,9 +86,7 @@ const InfoList = props => {
                 <Styled.AttributesItem>
                   <DateField
                     data-cy={item.value}
-                    date={
-                      profileInfo?.[item.value] ? profileInfo[item.value] : null
-                    }
+                    date={profileInfo?.[item.value] ? profileInfo[item.value] : null}
                     onChange={selected => {
                       updateChange(item.value, selected, false);
                     }}

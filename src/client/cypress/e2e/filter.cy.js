@@ -1,7 +1,4 @@
-import {
-  loginAsAdmin,
-  loginAsEditorInViewerMode,
-} from "../e2e/helpers/testHelpers";
+import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/helpers/testHelpers";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
@@ -121,7 +118,7 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
       .should("have.length", 100)
-      .each((el, index, list) => {
+      .each(el => {
         cy.wrap(el).contains("v. user");
       });
   });
@@ -137,9 +134,7 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     // check content of table
-    cy.get('[data-cy="borehole-table"] tbody')
-      .children()
-      .should("have.length", 21);
+    cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 21);
   });
 
   it("filters boreholes by creation date", () => {
@@ -149,10 +144,7 @@ describe("Search filter tests", () => {
     cy.contains("Show all fields").children(".checkbox").click();
 
     // input values
-    cy.contains("Creation date")
-      .next()
-      .find(".react-datepicker-wrapper input")
-      .click();
+    cy.contains("Creation date").next().find(".react-datepicker-wrapper input").click();
 
     cy.get(".react-datepicker__year-select").select("2021");
     cy.get(".react-datepicker__month-select").select("November");
@@ -160,12 +152,7 @@ describe("Search filter tests", () => {
 
     cy.wait("@edit_list");
 
-    cy.contains("Creation date")
-      .parent()
-      .parent()
-      .next()
-      .find(".react-datepicker-wrapper input")
-      .click();
+    cy.contains("Creation date").parent().parent().next().find(".react-datepicker-wrapper input").click();
 
     cy.get(".react-datepicker__year-select").select("2021");
     cy.get(".react-datepicker__month-select").select("November");
@@ -174,9 +161,7 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
 
     // check content of table
-    cy.get('[data-cy="borehole-table"] tbody')
-      .children()
-      .should("have.length", 3);
+    cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 3);
 
     cy.contains("td", "09.11.2021");
   });

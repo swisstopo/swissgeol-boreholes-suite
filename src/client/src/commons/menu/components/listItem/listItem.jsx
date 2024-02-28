@@ -1,4 +1,3 @@
-import React from "react";
 import * as Styled from "./styles";
 import { List } from "semantic-ui-react";
 
@@ -16,9 +15,7 @@ const ListItem = props => {
             padding: "1em",
             borderRadius: "inherit",
             borderLeft:
-              location.pathname.indexOf(path) >= 0 && name !== "done"
-                ? "0.25em solid rgb(237, 29, 36)"
-                : null,
+              location.pathname.indexOf(path) >= 0 && name !== "done" ? "0.25em solid rgb(237, 29, 36)" : null,
           }}>
           <List.Icon name={icon} size="large" verticalAlign="middle" />
           <List.Content>

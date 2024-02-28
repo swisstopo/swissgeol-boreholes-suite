@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import * as Styled from "./styles";
 import { withTranslation } from "react-i18next";
 
@@ -49,12 +49,8 @@ const TranslationKeys = prop => {
             }
           }}
           style={{
-            color:
-              selectedLanguage?.language === item.language ? "red" : "black",
-            textDecoration:
-              selectedLanguage?.language === item.language
-                ? "underline"
-                : "none",
+            color: selectedLanguage?.language === item.language ? "red" : "black",
+            textDecoration: selectedLanguage?.language === item.language ? "underline" : "none",
           }}>
           {item.language.toUpperCase()}
         </Styled.Keys>

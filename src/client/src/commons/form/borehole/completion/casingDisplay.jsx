@@ -1,4 +1,3 @@
-import React from "react";
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
@@ -19,28 +18,12 @@ const CasingDisplay = props => {
         <FormDisplay label="todepth" value={item?.toDepth} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay
-          label="kindCasingLayer"
-          value={item?.kind}
-          type={FormDisplayType.Domain}
-        />
-        <FormDisplay
-          label="materialCasingLayer"
-          value={item?.material}
-          type={FormDisplayType.Domain}
-        />
+        <FormDisplay label="kindCasingLayer" value={item?.kind} type={FormDisplayType.Domain} />
+        <FormDisplay label="materialCasingLayer" value={item?.material} type={FormDisplayType.Domain} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay
-          label="dateStartCasing"
-          value={item?.dateStart}
-          type={FormDisplayType.Date}
-        />
-        <FormDisplay
-          label="dateFinishCasing"
-          value={item?.dateFinish}
-          type={FormDisplayType.Date}
-        />
+        <FormDisplay label="dateStartCasing" value={item?.dateStart} type={FormDisplayType.Date} />
+        <FormDisplay label="dateFinishCasing" value={item?.dateFinish} type={FormDisplayType.Date} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay label="casingInnerDiameter" value={item?.innerDiameter} />

@@ -6,15 +6,7 @@ import _ from "lodash";
 
 import { loadDomains } from "../../../../api-lib/index";
 
-import {
-  Dropdown,
-  Icon,
-  Input,
-  Header,
-  List,
-  Modal,
-  Form,
-} from "semantic-ui-react";
+import { Dropdown, Icon, Input, Header, List, Modal, Form } from "semantic-ui-react";
 
 import TranslationText from "../../translationText";
 import DomainText from "../domainText";
@@ -76,7 +68,7 @@ class DomainTree extends React.Component {
 
   componentDidMount() {
     const { domains, schema } = this.props;
-    if (!domains.data.hasOwnProperty(schema) && domains.isFetching === false) {
+    if (!Object.prototype.hasOwnProperty.call(domains.data, schema) && domains.isFetching === false) {
       this.props.loadDomains();
     }
   }
@@ -149,7 +141,7 @@ class DomainTree extends React.Component {
     if (id === null) {
       return "";
     }
-    if (!domains.data.hasOwnProperty(schema)) {
+    if (!Object.prototype.hasOwnProperty.call(domains.data, schema)) {
       if (domains.isFetching === true) {
         return "loading translations";
       }
@@ -160,9 +152,7 @@ class DomainTree extends React.Component {
       return element.id === id;
     });
     if (found === undefined) {
-      console.error(
-        `asked domain (${schema}:${id}:${i18n.language}) but not found.`,
-      );
+      console.error(`asked domain (${schema}:${id}:${i18n.language}) but not found.`);
       return null;
     }
 
@@ -171,11 +161,11 @@ class DomainTree extends React.Component {
 
   render() {
     const { domains, schema, isEditable } = this.props;
-    if (!domains.data.hasOwnProperty(schema)) {
+    if (!Object.prototype.hasOwnProperty.call(domains.data, schema)) {
       if (domains.isFetching === true) {
         return "loading translations";
       }
-      return <div style={{ color: "red" }}>"{schema}" not in codelist</div>;
+      return <div style={{ color: "red" }}>&quot;{schema}&quot; not in codelist</div>;
     }
     let options = [
       {
@@ -210,19 +200,13 @@ class DomainTree extends React.Component {
           domain.level === this.state.levels[0] ||
           //
           // Parent is selected
-          (this.state.selectedFilters.hasOwnProperty(
-            this.state.parent[domain.level],
-          ) &&
+          (Object.prototype.hasOwnProperty.call(this.state.selectedFilters, this.state.parent[domain.level]) &&
             // And is not null
-            this.state.selectedFilters[this.state.parent[domain.level]] !==
-              null &&
+            this.state.selectedFilters[this.state.parent[domain.level]] !== null &&
             // This element is child of selected parent
-            _.startsWith(
-              domain.path,
-              this.state.selectedFilters[this.state.parent[domain.level]].path,
-            ))
+            _.startsWith(domain.path, this.state.selectedFilters[this.state.parent[domain.level]].path))
         ) {
-          if (!filters.hasOwnProperty(this.props.levels[domain.level])) {
+          if (!Object.prototype.hasOwnProperty.call(filters, this.props.levels[domain.level])) {
             filters[this.props.levels[domain.level]] = [
               {
                 key: "dom-opt-lev-z-" + this.props.levels[domain.level],
@@ -285,12 +269,9 @@ class DomainTree extends React.Component {
 
       if (
         domain.level !== null &&
-        (this.state.filter.length === 0 ||
-          _.startsWith(domain.path, currentFilter)) &&
+        (this.state.filter.length === 0 || _.startsWith(domain.path, currentFilter)) &&
         (this.state.search === "" ||
-          domain[this.state.language].text
-            .toUpperCase()
-            .includes(this.state.search.toUpperCase()))
+          domain[this.state.language].text.toUpperCase().includes(this.state.search.toUpperCase()))
       ) {
         options.push({
           active: this.state.selected === domain.id,
@@ -304,11 +285,9 @@ class DomainTree extends React.Component {
                   style={{
                     display: "flex",
                     flexDirection: "row",
-                    marginLeft:
-                      0.5 * (domain.level - this.state.filter.length) + "em",
+                    marginLeft: 0.5 * (domain.level - this.state.filter.length) + "em",
                   }}>
-                  {domain.conf !== null &&
-                  domain.conf.hasOwnProperty("color") ? (
+                  {domain.conf !== null && Object.prototype.hasOwnProperty.call(domain.conf, "color") ? (
                     <div
                       style={{
                         backgroundColor:
@@ -328,8 +307,7 @@ class DomainTree extends React.Component {
                   <div
                     style={{
                       flex:
-                        domain.conf !== null &&
-                        domain.conf.hasOwnProperty("image")
+                        domain.conf !== null && Object.prototype.hasOwnProperty.call(domain.conf, "image")
                           ? null
                           : "1 1 100%",
                     }}>
@@ -345,14 +323,12 @@ class DomainTree extends React.Component {
                       </span>
                     ) : null}
                   </div>
-                  {domain.conf !== null &&
-                  domain.conf.hasOwnProperty("image") ? (
+                  {domain.conf !== null && Object.prototype.hasOwnProperty.call(domain.conf, "image") ? (
                     <div
                       style={{
                         flex: "1 1 100%",
                         marginLeft: "1em",
-                        backgroundImage:
-                          'url("' + "/img/lit/" + domain.conf.image + '")',
+                        backgroundImage: 'url("' + "/img/lit/" + domain.conf.image + '")',
                       }}
                     />
                   ) : null}
@@ -361,7 +337,7 @@ class DomainTree extends React.Component {
               style={{
                 backgroundImage:
                   domain.conf !== null
-                    ? domain.conf.hasOwnProperty("img")
+                    ? Object.prototype.hasOwnProperty.call(domain.conf, "img")
                       ? 'url("' + "/img/lit/" + domain.conf.img + '")'
                       : null
                     : null,
@@ -370,25 +346,11 @@ class DomainTree extends React.Component {
                 <div
                   style={{
                     color: "#787878",
-                    marginLeft:
-                      0.5 * (domain.level - this.state.filter.length) + "em",
+                    marginLeft: 0.5 * (domain.level - this.state.filter.length) + "em",
                   }}>
                   <span style={{ fontSize: "0.8em" }}>
-                    {!_.isNil(domain[this.state.language].descr)
-                      ? domain[this.state.language].descr
-                      : null}
-                    {
-                      // domain[
-                      //   this.state.language
-                      // ].descr !== null
-                      // && domain[
-                      //   this.state.language
-                      // ].descr !== '' ?
-                      //   domain[this.state.language].text + ', ' +
-                      //     domain[this.state.language].descr :
-                      //   domain.code === '' ?
-                      //     null : domain[this.state.language].text
-                    }
+                    {!_.isNil(domain[this.state.language].descr) ? domain[this.state.language].descr : null}
+                    {}
                   </span>
                 </div>
               }
@@ -426,11 +388,7 @@ class DomainTree extends React.Component {
             </div>
             {this.props.schema === "custom.lithostratigraphy_top_bedrock" ? (
               <div>
-                <a
-                  className="link"
-                  href="https://www.strati.ch/"
-                  rel="noopener noreferrer"
-                  target="_BLANK">
+                <a className="link" href="https://www.strati.ch/" rel="noopener noreferrer" target="_BLANK">
                   strati.ch
                 </a>
               </div>
@@ -488,16 +446,9 @@ class DomainTree extends React.Component {
                           ...this.state.selectedFilters,
                         };
                         const filter = [];
-                        for (
-                          let index2 = 0, l = this.state.levels.length;
-                          index2 < l;
-                          index2++
-                        ) {
+                        for (let index2 = 0, l = this.state.levels.length; index2 < l; index2++) {
                           const lev2 = this.state.levels[index2];
-                          if (
-                            lev2 >= lev &&
-                            selectedFilters.hasOwnProperty(lev)
-                          ) {
+                          if (lev2 >= lev && Object.prototype.hasOwnProperty.call(selectedFilters, lev)) {
                             selectedFilters[lev2] = null;
                           } else {
                             filter.push(this.state.filter[index2]);
@@ -533,7 +484,7 @@ class DomainTree extends React.Component {
                       placeholder="Filter by units"
                       selection
                       value={
-                        this.state.selectedFilters.hasOwnProperty(lev) &&
+                        Object.prototype.hasOwnProperty.call(this.state.selectedFilters, lev) &&
                         this.state.selectedFilters[lev] !== null
                           ? this.state.selectedFilters[lev].id
                           : null
@@ -583,11 +534,7 @@ class DomainTree extends React.Component {
                   flex: "1 1 100%",
                   overflowY: "auto",
                 }}>
-                <List
-                  items={options}
-                  onItemClick={this.handleChange}
-                  selection
-                />
+                <List items={options} onItemClick={this.handleChange} selection />
               </div>
             </div>
           </div>
@@ -605,10 +552,7 @@ DomainTree.propTypes = {
   reset: PropTypes.bool,
   schema: PropTypes.string,
   search: PropTypes.bool,
-  selected: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.arrayOf(PropTypes.number),
-  ]),
+  selected: PropTypes.oneOfType([PropTypes.number, PropTypes.arrayOf(PropTypes.number)]),
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
 };
 
@@ -620,14 +564,14 @@ DomainTree.defaultProps = {
   title: null,
 };
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = state => {
   return {
     developer: state.developer,
     domains: state.core_domain_list,
   };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
     loadDomains: () => {
@@ -636,7 +580,4 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation("common")(DomainTree));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(DomainTree));

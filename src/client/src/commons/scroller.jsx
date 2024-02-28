@@ -24,6 +24,7 @@ class Scroller extends React.Component {
   updateDimensions() {
     if (!_.isNil(this.cntnr) && this.cntnr.children.length > 0) {
       if (this.props.debug === true) {
+        // eslint-disable-next-line no-debugger
         debugger;
       }
       const height = this.cntnr.clientHeight;
@@ -46,8 +47,7 @@ class Scroller extends React.Component {
         ref={divElement => (this.cntnr = divElement)}
         style={{
           overflowY: "hidden",
-          marginRight:
-            this.state.scroller === true ? this.props.setting.scrollbar : "0px",
+          marginRight: this.state.scroller === true ? this.props.setting.scrollbar : "0px",
           ...this.props.style,
         }}>
         {this.props.children}

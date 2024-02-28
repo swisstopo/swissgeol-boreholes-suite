@@ -88,19 +88,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "cypress run",
-    "lint": "eslint ./src/",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "cy": "cypress open"
-  },
-  "eslintConfig": {
-    "extends": [
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": "error"
-    },
-    "plugins": [
-      "prettier"
-    ]
   },
   "browserslist": {
     "production": [

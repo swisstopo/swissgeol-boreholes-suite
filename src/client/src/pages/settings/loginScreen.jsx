@@ -7,11 +7,7 @@ import { AlertContext } from "../../components/alert/alertContext";
 import LoginPreview from "../../commons/form/loginPreview";
 import TranslationKeys from "../../commons/translationKeys";
 
-import {
-  draftContent,
-  getContentDraft,
-  publishContent,
-} from "../../api-lib/index";
+import { draftContent, getContentDraft, publishContent } from "../../api-lib/index";
 
 class LoginScreen extends React.Component {
   static contextType = AlertContext;
@@ -150,18 +146,13 @@ class LoginScreen extends React.Component {
                 }}
                 primary
                 style={{
-                  display:
-                    this.state.draft === true && this.state.dirty === false
-                      ? null
-                      : "none",
+                  display: this.state.draft === true && this.state.dirty === false ? null : "none",
                   textTransform: "capitalize",
                 }}>
                 {t("publish")}
               </Button>
               <Modal open={this.state.confirmPublication} size="mini">
-                <Modal.Header>
-                  {t("msgWelcomeMessage_publish_title")}
-                </Modal.Header>
+                <Modal.Header>{t("msgWelcomeMessage_publish_title")}</Modal.Header>
                 <Modal.Content>
                   <p>{t("msgWelcomeMessage_publish_message")}</p>
                 </Modal.Content>
@@ -210,16 +201,13 @@ class LoginScreen extends React.Component {
               display: "flex",
               justifyContent: "flex-end",
             }}>
-            <TranslationKeys
-              ignori18n
-              handleSelectedLanguage={this.changeLanguage}
-            />
+            <TranslationKeys ignori18n handleSelectedLanguage={this.changeLanguage} />
           </div>
 
           <Form>
             <Form.Input
               label="Title"
-              onChange={(e, data) => {
+              onChange={e => {
                 this.setState({
                   dirty: true,
                   title: {
@@ -233,7 +221,7 @@ class LoginScreen extends React.Component {
             />
             <TextArea
               data-cy="publish-message-area"
-              onChange={(e, data) => {
+              onChange={e => {
                 this.setState({
                   dirty: true,
                   body: {
@@ -282,10 +270,7 @@ class LoginScreen extends React.Component {
               style={{
                 transform: "scale(0.80)",
               }}>
-              <LoginPreview
-                body={this.state.body[this.state.lang]}
-                title={this.state.title[this.state.lang]}
-              />
+              <LoginPreview body={this.state.body[this.state.lang]} title={this.state.title[this.state.lang]} />
             </div>
           </div>
         </div>
@@ -311,7 +296,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation(["common", "messages"])(LoginScreen));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common", "messages"])(LoginScreen));

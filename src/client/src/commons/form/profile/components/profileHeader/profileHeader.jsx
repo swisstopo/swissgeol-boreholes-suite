@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import * as Styled from "./styles";
 import { Button } from "semantic-ui-react";
 import TranslationText from "./../../../translationText";
@@ -7,14 +7,8 @@ import { fetchStratigraphyByBoreholeId } from "../../../../../api/fetchApiV2";
 import ProfileHeaderList from "./components/profileHeaderList";
 
 const ProfileHeader = props => {
-  const {
-    boreholeID,
-    isEditable,
-    reloadHeader,
-    selectedStratigraphy,
-    setSelectedStratigraphy,
-    setIsLoadingData,
-  } = props;
+  const { boreholeID, isEditable, reloadHeader, selectedStratigraphy, setSelectedStratigraphy, setIsLoadingData } =
+    props;
 
   const [profiles, setProfiles] = useState([]);
 

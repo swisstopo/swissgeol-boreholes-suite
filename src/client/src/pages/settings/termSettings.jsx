@@ -134,18 +134,13 @@ class TermSettings extends React.Component {
                 }}
                 primary
                 style={{
-                  display:
-                    this.state.draft === true && this.state.dirty === false
-                      ? null
-                      : "none",
+                  display: this.state.draft === true && this.state.dirty === false ? null : "none",
                   textTransform: "capitalize",
                 }}>
                 {t("publish")}
               </Button>
               <Modal open={this.state.confirmPublication} size="mini">
-                <Modal.Header>
-                  {t("messages:disclaimer_publish_title")}
-                </Modal.Header>
+                <Modal.Header>{t("messages:disclaimer_publish_title")}</Modal.Header>
                 <Modal.Content>
                   <p>{t("messages:disclaimer_publish_message")}</p>
                   <p>{t("messages:disclaimer_publish_note")}</p>
@@ -196,15 +191,12 @@ class TermSettings extends React.Component {
               justifyContent: "flex-end",
               paddingBottom: "10px",
             }}>
-            <TranslationKeys
-              ignori18n
-              handleSelectedLanguage={this.changeLanguage}
-            />
+            <TranslationKeys ignori18n handleSelectedLanguage={this.changeLanguage} />
           </div>
 
           <Form>
             <TextArea
-              onChange={(e, data) => {
+              onChange={e => {
                 let text = {
                   dirty: true,
                 };
@@ -265,7 +257,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation(["common"])(TermSettings));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(TermSettings));

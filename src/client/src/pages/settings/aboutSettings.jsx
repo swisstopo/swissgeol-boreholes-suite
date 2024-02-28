@@ -47,10 +47,7 @@ class AboutSettings extends React.Component {
             :&nbsp;
           </span>
           <span>
-            <a
-              href="https://github.com/geoadmin/suite-bdms"
-              rel="noopener noreferrer"
-              target="_BLANK">
+            <a href="https://github.com/geoadmin/suite-bdms" rel="noopener noreferrer" target="_BLANK">
               github.com/geoadmin/suite-bdms
             </a>
           </span>
@@ -69,8 +66,7 @@ class AboutSettings extends React.Component {
           <span>
             <a
               href={
-                "https://github.com/geoadmin/suite-bdms/releases/tag/v" +
-                import.meta.env.VITE_APP_VERSION.split("+")[0]
+                "https://github.com/geoadmin/suite-bdms/releases/tag/v" + import.meta.env.VITE_APP_VERSION.split("+")[0]
               }
               rel="noopener noreferrer"
               target="_BLANK"
@@ -115,13 +111,10 @@ class AboutSettings extends React.Component {
                 paddingTop: "1em",
               }}>
               {this.state.license[key].name}
-              {this.state.license[key].version &&
-                ` (Version ${this.state.license[key].version})`}{" "}
+              {this.state.license[key].version && ` (Version ${this.state.license[key].version})`}{" "}
             </h4>
             <span>
-              <a href={this.state.license[key].repository}>
-                {this.state.license[key].repository}
-              </a>
+              <a href={this.state.license[key].repository}>{this.state.license[key].repository}</a>
             </span>
             <div>{this.state.license[key].description}</div>
             <div>{this.state.license[key].copyright}</div>

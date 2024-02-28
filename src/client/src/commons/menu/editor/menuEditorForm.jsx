@@ -4,26 +4,13 @@ import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { withRouter } from "react-router-dom";
 
-import {
-  Button,
-  Header,
-  Icon,
-  List,
-  Menu,
-  Modal,
-  Progress,
-} from "semantic-ui-react";
+import { Button, Header, Icon, List, Menu, Modal, Progress } from "semantic-ui-react";
 
 import DateText from "../../form/dateText";
 import TranslationText from "../../form/translationText";
 import moment from "moment";
 
-import {
-  deleteBorehole,
-  loadBorehole,
-  lockBorehole,
-  unlockBorehole,
-} from "../../../api-lib/index";
+import { deleteBorehole, loadBorehole, lockBorehole, unlockBorehole } from "../../../api-lib/index";
 
 import Scroller from "../../scroller";
 
@@ -60,11 +47,8 @@ class MenuEditorForm extends React.Component {
 
     let editableByCurrentUser = true;
     const wg =
-      borehole.data.id !== null &&
-      user.data.workgroups.find(
-        workgroup => workgroup.id === borehole.data.workgroup.id,
-      );
-    if (wg !== undefined && wg.hasOwnProperty("roles")) {
+      borehole.data.id !== null && user.data.workgroups.find(workgroup => workgroup.id === borehole.data.workgroup.id);
+    if (wg !== undefined && Object.prototype.hasOwnProperty.call(wg, "roles")) {
       editableByCurrentUser = wg.roles.indexOf(borehole.data.role) === -1;
     }
 
@@ -106,10 +90,7 @@ class MenuEditorForm extends React.Component {
             }}
             style={{
               padding: "1em",
-              borderLeft:
-                location.pathname === "/editor/" + match.params.id
-                  ? "0.25em solid rgb(237, 29, 36)"
-                  : null,
+              borderLeft: location.pathname === "/editor/" + match.params.id ? "0.25em solid rgb(237, 29, 36)" : null,
             }}>
             <List.Icon name="map marker" size="large" verticalAlign="middle" />
             <List.Content>
@@ -126,9 +107,7 @@ class MenuEditorForm extends React.Component {
             style={{
               padding: "1em",
               borderLeft:
-                location.pathname === `/editor/${match.params.id}/borehole`
-                  ? "0.25em solid rgb(237, 29, 36)"
-                  : null,
+                location.pathname === `/editor/${match.params.id}/borehole` ? "0.25em solid rgb(237, 29, 36)" : null,
             }}>
             <List.Icon name="info" size="large" verticalAlign="middle" />
             <List.Content>
@@ -155,36 +134,21 @@ class MenuEditorForm extends React.Component {
                 ? "0.25em solid rgb(237, 29, 36)"
                 : null,
             }}>
-            <List.Icon
-              name="align justify"
-              size="large"
-              verticalAlign="middle"
-            />
+            <List.Icon name="align justify" size="large" verticalAlign="middle" />
             <List.Content>
               <List.Header as="h3" data-cy="stratigraphy-menu-item">
                 <TranslationText firstUpperCase id="stratigraphy" />
               </List.Header>
             </List.Content>
             <div style={{ marginLeft: "2em" }}>
-              {!this.state.stratigraphyIsVisible && (
-                <List.Icon
-                  name="angle down"
-                  size="big"
-                  verticalAlign="middle"
-                />
-              )}
-              {this.state.stratigraphyIsVisible && (
-                <List.Icon name="angle up" size="big" verticalAlign="middle" />
-              )}
+              {!this.state.stratigraphyIsVisible && <List.Icon name="angle down" size="big" verticalAlign="middle" />}
+              {this.state.stratigraphyIsVisible && <List.Icon name="angle up" size="big" verticalAlign="middle" />}
             </div>
           </List.Item>
           {this.state.stratigraphyIsVisible && (
             <>
               <List.Item
-                active={
-                  location.pathname ===
-                  `/editor/${match.params.id}/stratigraphy`
-                }
+                active={location.pathname === `/editor/${match.params.id}/stratigraphy`}
                 onClick={() => {
                   history.push(`/editor/${match.params.id}/stratigraphy`);
                 }}
@@ -193,16 +157,11 @@ class MenuEditorForm extends React.Component {
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname ===
-                    `/editor/${match.params.id}/stratigraphy`
+                    location.pathname === `/editor/${match.params.id}/stratigraphy`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
-                <List.Icon
-                  name="align justify"
-                  size="large"
-                  verticalAlign="middle"
-                />
+                <List.Icon name="align justify" size="large" verticalAlign="middle" />
                 <List.Content>
                   <List.Header as="h3" data-cy="lithology-menu-item">
                     <TranslationText firstUpperCase id="lithology" />
@@ -210,30 +169,20 @@ class MenuEditorForm extends React.Component {
                 </List.Content>
               </List.Item>
               <List.Item
-                active={
-                  location.pathname ===
-                  `/editor/${match.params.id}/stratigraphy/chronostratigraphy`
-                }
+                active={location.pathname === `/editor/${match.params.id}/stratigraphy/chronostratigraphy`}
                 onClick={() => {
-                  history.push(
-                    `/editor/${match.params.id}/stratigraphy/chronostratigraphy`,
-                  );
+                  history.push(`/editor/${match.params.id}/stratigraphy/chronostratigraphy`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname ===
-                    `/editor/${match.params.id}/stratigraphy/chronostratigraphy`
+                    location.pathname === `/editor/${match.params.id}/stratigraphy/chronostratigraphy`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
-                <List.Icon
-                  name="align justify"
-                  size="large"
-                  verticalAlign="middle"
-                />
+                <List.Icon name="align justify" size="large" verticalAlign="middle" />
                 <List.Content>
                   <List.Header as="h3" data-cy="chronostratigraphy-menu-item">
                     <TranslationText firstUpperCase id="chronostratigraphy" />
@@ -241,30 +190,20 @@ class MenuEditorForm extends React.Component {
                 </List.Content>
               </List.Item>
               <List.Item
-                active={
-                  location.pathname ===
-                  `/editor/${match.params.id}/stratigraphy/lithostratigraphy`
-                }
+                active={location.pathname === `/editor/${match.params.id}/stratigraphy/lithostratigraphy`}
                 onClick={() => {
-                  history.push(
-                    `/editor/${match.params.id}/stratigraphy/lithostratigraphy`,
-                  );
+                  history.push(`/editor/${match.params.id}/stratigraphy/lithostratigraphy`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname ===
-                    `/editor/${match.params.id}/stratigraphy/lithostratigraphy`
+                    location.pathname === `/editor/${match.params.id}/stratigraphy/lithostratigraphy`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
-                <List.Icon
-                  name="align justify"
-                  size="large"
-                  verticalAlign="middle"
-                />
+                <List.Icon name="align justify" size="large" verticalAlign="middle" />
                 <List.Content>
                   <List.Header as="h3" data-cy="lithostratigraphy-menu-item">
                     <TranslationText firstUpperCase id="lithostratigraphy" />
@@ -282,9 +221,7 @@ class MenuEditorForm extends React.Component {
             style={{
               padding: "1em",
               display: "flex",
-              borderLeft: [
-                `/editor/${match.params.id}/hydrogeology/watgeringress`,
-              ].includes(location.pathname)
+              borderLeft: [`/editor/${match.params.id}/hydrogeology/watgeringress`].includes(location.pathname)
                 ? "0.25em solid rgb(237, 29, 36)"
                 : null,
             }}>
@@ -303,37 +240,23 @@ class MenuEditorForm extends React.Component {
               </List.Header>
             </List.Content>
             <div style={{ marginLeft: "2em" }}>
-              {!this.state.hydrogeologyIsVisible && (
-                <List.Icon
-                  name="angle down"
-                  size="big"
-                  verticalAlign="middle"
-                />
-              )}
-              {this.state.hydrogeologyIsVisible && (
-                <List.Icon name="angle up" size="big" verticalAlign="middle" />
-              )}
+              {!this.state.hydrogeologyIsVisible && <List.Icon name="angle down" size="big" verticalAlign="middle" />}
+              {this.state.hydrogeologyIsVisible && <List.Icon name="angle up" size="big" verticalAlign="middle" />}
             </div>
           </List.Item>
           {this.state.hydrogeologyIsVisible && (
             <>
               <List.Item
-                active={
-                  location.pathname ===
-                  `/editor/${match.params.id}/hydrogeology/wateringress`
-                }
+                active={location.pathname === `/editor/${match.params.id}/hydrogeology/wateringress`}
                 onClick={() => {
-                  history.push(
-                    `/editor/${match.params.id}/hydrogeology/wateringress`,
-                  );
+                  history.push(`/editor/${match.params.id}/hydrogeology/wateringress`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname ===
-                    `/editor/${match.params.id}/hydrogeology/wateringress`
+                    location.pathname === `/editor/${match.params.id}/hydrogeology/wateringress`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -353,22 +276,16 @@ class MenuEditorForm extends React.Component {
                 </List.Content>
               </List.Item>
               <List.Item
-                active={
-                  location.pathname ===
-                  `/editor/${match.params.id}/hydrogeology/hydrotest`
-                }
+                active={location.pathname === `/editor/${match.params.id}/hydrogeology/hydrotest`}
                 onClick={() => {
-                  history.push(
-                    `/editor/${match.params.id}/hydrogeology/hydrotest`,
-                  );
+                  history.push(`/editor/${match.params.id}/hydrogeology/hydrotest`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname ===
-                    `/editor/${match.params.id}/hydrogeology/hydrotest`
+                    location.pathname === `/editor/${match.params.id}/hydrogeology/hydrotest`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -392,22 +309,16 @@ class MenuEditorForm extends React.Component {
           {this.state.hydrogeologyIsVisible && (
             <>
               <List.Item
-                active={
-                  location.pathname ===
-                  `/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`
-                }
+                active={location.pathname === `/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`}
                 onClick={() => {
-                  history.push(
-                    `/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`,
-                  );
+                  history.push(`/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname ===
-                    `/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`
+                    location.pathname === `/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -421,33 +332,22 @@ class MenuEditorForm extends React.Component {
                   }}
                 />
                 <List.Content>
-                  <List.Header
-                    as="h3"
-                    data-cy="groundwaterlevelmeasurement-menu-item">
-                    <TranslationText
-                      firstUpperCase
-                      id="groundwater_level_measurement_word_break"
-                    />
+                  <List.Header as="h3" data-cy="groundwaterlevelmeasurement-menu-item">
+                    <TranslationText firstUpperCase id="groundwater_level_measurement_word_break" />
                   </List.Header>
                 </List.Content>
               </List.Item>
               <List.Item
-                active={
-                  location.pathname ===
-                  `/editor/${match.params.id}/hydrogeology/fieldmeasurement`
-                }
+                active={location.pathname === `/editor/${match.params.id}/hydrogeology/fieldmeasurement`}
                 onClick={() => {
-                  history.push(
-                    `/editor/${match.params.id}/hydrogeology/fieldmeasurement`,
-                  );
+                  history.push(`/editor/${match.params.id}/hydrogeology/fieldmeasurement`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname ===
-                    `/editor/${match.params.id}/hydrogeology/fieldmeasurement`
+                    location.pathname === `/editor/${match.params.id}/hydrogeology/fieldmeasurement`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -469,18 +369,14 @@ class MenuEditorForm extends React.Component {
             </>
           )}
           <List.Item
-            active={location.pathname.includes(
-              `/editor/${match.params.id}/completion`,
-            )}
+            active={location.pathname.includes(`/editor/${match.params.id}/completion`)}
             onClick={() => {
               history.push(`/editor/${match.params.id}/completion`);
             }}
             style={{
               padding: "1em",
               display: "flex",
-              borderLeft: location.pathname.includes(
-                `/editor/${match.params.id}/completion`,
-              )
+              borderLeft: location.pathname.includes(`/editor/${match.params.id}/completion`)
                 ? "0.25em solid rgb(237, 29, 36)"
                 : null,
             }}>
@@ -490,10 +386,7 @@ class MenuEditorForm extends React.Component {
               style={{
                 height: "1.5em",
                 paddingRight: "1em",
-                opacity:
-                  location.pathname === `/editor/${match.params.id}/completion`
-                    ? 1
-                    : 0.5,
+                opacity: location.pathname === `/editor/${match.params.id}/completion` ? 1 : 0.5,
               }}
             />
             <List.Content>
@@ -503,18 +396,14 @@ class MenuEditorForm extends React.Component {
             </List.Content>
           </List.Item>
           <List.Item
-            active={
-              location.pathname === `/editor/${match.params.id}/attachments`
-            }
+            active={location.pathname === `/editor/${match.params.id}/attachments`}
             onClick={() => {
               history.push(`/editor/${match.params.id}/attachments`);
             }}
             style={{
               padding: "1em",
               borderLeft:
-                location.pathname === `/editor/${match.params.id}/attachments`
-                  ? "0.25em solid rgb(237, 29, 36)"
-                  : null,
+                location.pathname === `/editor/${match.params.id}/attachments` ? "0.25em solid rgb(237, 29, 36)" : null,
             }}>
             <List.Icon name="attach" size="large" verticalAlign="middle" />
             <List.Content>
@@ -542,14 +431,8 @@ class MenuEditorForm extends React.Component {
             justifyContent: "center",
             cursor: "pointer",
           }}
-          onClick={() =>
-            this.setState({ detailsIsVisible: !this.state.detailsIsVisible })
-          }>
-          {this.state.detailsIsVisible ? (
-            <Icon name="angle down" />
-          ) : (
-            <Icon name="angle up" />
-          )}
+          onClick={() => this.setState({ detailsIsVisible: !this.state.detailsIsVisible })}>
+          {this.state.detailsIsVisible ? <Icon name="angle down" /> : <Icon name="angle up" />}
           more Info
         </div>
         <div>
@@ -571,9 +454,7 @@ class MenuEditorForm extends React.Component {
               {borehole.data.lock !== null || borehole.data.role === null ? (
                 <TranslationText id="editingEnabled" />
               ) : (
-                <TranslationText
-                  id={`status${borehole.data.role.toLowerCase()}`}
-                />
+                <TranslationText id={`status${borehole.data.role.toLowerCase()}`} />
               )}
             </span>
           </div>
@@ -596,8 +477,7 @@ class MenuEditorForm extends React.Component {
                 fontSize: "0.7em",
                 color: "#787878",
               }}>
-              {borehole.data.workgroup &&
-              borehole.data.workgroup.supplier === true ? (
+              {borehole.data.workgroup && borehole.data.workgroup.supplier === true ? (
                 <TranslationText id="supplier" />
               ) : (
                 <TranslationText id="workgroup" />
@@ -628,10 +508,7 @@ class MenuEditorForm extends React.Component {
                 }}>
                 {borehole.data.creator !== undefined
                   ? borehole.data.creator.id === this.props.user.data.id
-                    ? borehole.data.creator.fullname +
-                      " (" +
-                      t("common:you") +
-                      ")"
+                    ? borehole.data.creator.fullname + " (" + t("common:you") + ")"
                     : borehole.data.creator.fullname
                   : "-"}
               </div>
@@ -652,20 +529,14 @@ class MenuEditorForm extends React.Component {
               style={{
                 fontWeight: "bold",
               }}>
-              {borehole.data.creator && (
-                <DateText date={borehole.data.creator.date} hours />
-              )}
+              {borehole.data.creator && <DateText date={borehole.data.creator.date} hours />}
             </div>
             <div
               style={{
                 fontSize: "0.8em",
                 marginBottom: "0.25em",
               }}>
-              {borehole.data.creator !== undefined ? (
-                <DateText date={borehole.data.creator.date} fromnow />
-              ) : (
-                "-"
-              )}
+              {borehole.data.creator !== undefined ? <DateText date={borehole.data.creator.date} fromnow /> : "-"}
             </div>
           </div>
         )}
@@ -678,12 +549,7 @@ class MenuEditorForm extends React.Component {
                   fontSize: "0.7em",
                   color: "#787878",
                 }}>
-                {borehole.data.lock !== null ? (
-                  <TranslationText id="locked_by" />
-                ) : (
-                  <TranslationText id="updatedBy" />
-                )}
-                :
+                {borehole.data.lock !== null ? <TranslationText id="locked_by" /> : <TranslationText id="updatedBy" />}:
               </div>
               <div
                 style={{
@@ -691,16 +557,10 @@ class MenuEditorForm extends React.Component {
                 }}>
                 {borehole.data.lock !== null
                   ? borehole.data.lock.id === this.props.user.data.id
-                    ? borehole.data.updater.fullname +
-                      " (" +
-                      t("common:you") +
-                      ")"
+                    ? borehole.data.updater.fullname + " (" + t("common:you") + ")"
                     : borehole.data.lock.fullname
                   : borehole.data.updater.id === this.props.user.data.id
-                    ? borehole.data.updater.fullname +
-                      " (" +
-                      t("common:you") +
-                      ")"
+                    ? borehole.data.updater.fullname + " (" + t("common:you") + ")"
                     : borehole.data.updater.fullname}
               </div>
               <div
@@ -708,11 +568,7 @@ class MenuEditorForm extends React.Component {
                   fontSize: "0.7em",
                   color: "#787878",
                 }}>
-                {borehole.data.lock !== null ? (
-                  <TranslationText id="locked_at" />
-                ) : (
-                  <TranslationText id="updateDate" />
-                )}
+                {borehole.data.lock !== null ? <TranslationText id="locked_at" /> : <TranslationText id="updateDate" />}
                 :
               </div>
               <div
@@ -744,8 +600,7 @@ class MenuEditorForm extends React.Component {
                   onTick={(d, m) => {
                     this.setState(
                       {
-                        timeout:
-                          (moment().diff(m, "seconds") / (timeout * 60)) * 100,
+                        timeout: (moment().diff(m, "seconds") / (timeout * 60)) * 100,
                       },
                       () => {
                         if (this.state.timeout > 100) {
@@ -763,13 +618,7 @@ class MenuEditorForm extends React.Component {
           </div>
           {borehole.data.lock !== null && editableByCurrentUser === false ? (
             <Progress
-              color={
-                this.state.timeout >= 90
-                  ? "red"
-                  : this.state.timeout >= 80
-                    ? "orange"
-                    : "black"
-              }
+              color={this.state.timeout >= 90 ? "red" : this.state.timeout >= 80 ? "orange" : "black"}
               percent={this.state.timeout}
               size="tiny"
               style={{
@@ -786,16 +635,8 @@ class MenuEditorForm extends React.Component {
               }}>
               <div style={{ flex: "1 1 100%" }}>
                 {(() => {
-                  let d = moment.duration(
-                    moment(borehole.data.lock.date)
-                      .add(60, "minutes")
-                      .diff(moment()),
-                  );
-                  return (
-                    d.minutes().toString().padStart(2, "0") +
-                    ":" +
-                    d.seconds().toString().padStart(2, "0")
-                  );
+                  let d = moment.duration(moment(borehole.data.lock.date).add(60, "minutes").diff(moment()));
+                  return d.minutes().toString().padStart(2, "0") + ":" + d.seconds().toString().padStart(2, "0");
                 })()}
               </div>
               <div>
@@ -827,10 +668,7 @@ class MenuEditorForm extends React.Component {
             size="mini"
             trigger={
               <Menu.Item
-                disabled={
-                  borehole.data.lock === null ||
-                  borehole.data.lock.id !== user.data.id
-                }
+                disabled={borehole.data.lock === null || borehole.data.lock.id !== user.data.id}
                 onClick={() => {
                   this.setState({
                     confirmDelete: true,
@@ -874,15 +712,9 @@ class MenuEditorForm extends React.Component {
         )}
         {editableByCurrentUser === true ? null : (
           <Menu.Item
-            disabled={
-              borehole.data.lock !== null &&
-              borehole.data.lock.id !== user.data.id
-            }
+            disabled={borehole.data.lock !== null && borehole.data.lock.id !== user.data.id}
             onClick={() => {
-              if (
-                borehole.data.lock !== null &&
-                borehole.data.lock.id === user.data.id
-              ) {
+              if (borehole.data.lock !== null && borehole.data.lock.id === user.data.id) {
                 this.props.unlock(borehole.data.id);
               } else if (borehole.data.lock === null) {
                 this.props.lock(borehole.data.id);
@@ -893,16 +725,12 @@ class MenuEditorForm extends React.Component {
             }}>
             <Icon
               name={
-                borehole.data.lock !== null &&
-                moment().diff(moment(borehole.data.lock.date), "seconds") <
-                  timeout * 60
+                borehole.data.lock !== null && moment().diff(moment(borehole.data.lock.date), "seconds") < timeout * 60
                   ? "stop"
                   : "play"
               }
             />
-            {borehole.data.lock !== null &&
-            moment().diff(moment(borehole.data.lock.date), "seconds") <
-              timeout * 60 ? (
+            {borehole.data.lock !== null && moment().diff(moment(borehole.data.lock.date), "seconds") < timeout * 60 ? (
               <TranslationText id="editingStop" />
             ) : (
               <TranslationText id="editingStart" />
@@ -985,9 +813,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  )(withTranslation(["common"])(MenuEditorForm)),
-);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MenuEditorForm)));

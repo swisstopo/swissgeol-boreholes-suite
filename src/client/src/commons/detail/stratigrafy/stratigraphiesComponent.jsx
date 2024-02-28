@@ -13,9 +13,7 @@ class StratigraphiesComponent extends React.Component {
     super(props);
     let primary =
       props.data.borehole.stratigraphy !== null
-        ? props.data.borehole.stratigraphy.findIndex(
-            item => item.primary === true,
-          )
+        ? props.data.borehole.stratigraphy.findIndex(item => item.primary === true)
         : -1;
     this.state = {
       index: primary,
@@ -25,11 +23,8 @@ class StratigraphiesComponent extends React.Component {
   render() {
     const { data } = this.props;
     const item =
-      data.borehole.stratigraphy !== null &&
-      data.borehole.stratigraphy.length > 0
-        ? data.borehole.stratigraphy[
-            this.state.index >= 0 ? this.state.index : 0
-          ]
+      data.borehole.stratigraphy !== null && data.borehole.stratigraphy.length > 0
+        ? data.borehole.stratigraphy[this.state.index >= 0 ? this.state.index : 0]
         : null;
     const tmp = [
       {
@@ -89,11 +84,7 @@ class StratigraphiesComponent extends React.Component {
               borderTop: "none",
               padding: "1em",
             }}>
-            {data.borehole.attachments === 0 ? (
-              "Empty"
-            ) : (
-              <BoreholeFilesTable id={data.borehole.id} />
-            )}
+            {data.borehole.attachments === 0 ? "Empty" : <BoreholeFilesTable id={data.borehole.id} />}
           </div>
         ),
       },
@@ -102,14 +93,8 @@ class StratigraphiesComponent extends React.Component {
             menuItem: (
               <Menu.Item key={"str-tb-2"}>
                 <div>
-                  {item.primary === true ? (
-                    <Icon name="check" size="small" title="Primary" />
-                  ) : null}
-                  {item.name === null || item.name === "" ? (
-                    <TranslationText id="np" />
-                  ) : (
-                    item.name
-                  )}
+                  {item.primary === true ? <Icon name="check" size="small" title="Primary" /> : null}
+                  {item.name === null || item.name === "" ? <TranslationText id="np" /> : item.name}
                   {data.borehole.stratigraphy.length <= 1 ? null : (
                     <Dropdown
                       icon={null}
@@ -118,38 +103,32 @@ class StratigraphiesComponent extends React.Component {
                           index: data.value,
                         });
                       }}
-                      options={data.borehole.stratigraphy.map(
-                        (ditem, idx2) => ({
-                          value: idx2,
-                          selected: ditem.id === item.id,
-                          text: (
-                            <div>
-                              {ditem.primary === true ? (
-                                <Icon
-                                  name="check"
-                                  size="mini"
-                                  style={{
-                                    margin: "0em 0.25rem 0em 0em",
-                                  }}
-                                  title="Primary"
-                                />
-                              ) : null}
-                              {ditem.name === null || ditem.name === "" ? (
-                                <TranslationText id="np" />
-                              ) : (
-                                ditem.name
-                              )}
-                              <br />
-                              <span
+                      options={data.borehole.stratigraphy.map((ditem, idx2) => ({
+                        value: idx2,
+                        selected: ditem.id === item.id,
+                        text: (
+                          <div>
+                            {ditem.primary === true ? (
+                              <Icon
+                                name="check"
+                                size="mini"
                                 style={{
-                                  fontSize: "0.7em",
-                                }}>
-                                <DateText date={ditem.date} />
-                              </span>
-                            </div>
-                          ),
-                        }),
-                      )}
+                                  margin: "0em 0.25rem 0em 0em",
+                                }}
+                                title="Primary"
+                              />
+                            ) : null}
+                            {ditem.name === null || ditem.name === "" ? <TranslationText id="np" /> : ditem.name}
+                            <br />
+                            <span
+                              style={{
+                                fontSize: "0.7em",
+                              }}>
+                              <DateText date={ditem.date} />
+                            </span>
+                          </div>
+                        ),
+                      }))}
                       pointing="top right"
                       trigger={<Icon name="caret down" />}
                     />

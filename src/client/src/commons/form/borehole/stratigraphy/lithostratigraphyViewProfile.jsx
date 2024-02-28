@@ -1,20 +1,14 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useLithostratigraphies } from "../../../../api/fetchApiV2";
 import { LinearProgress, Box } from "@mui/material";
 
 const handleColor = layer =>
-  `rgb(${(
-    JSON.parse(layer?.lithostratigraphy?.conf ?? null)?.color ?? [255, 255, 255]
-  ).join()})`;
+  `rgb(${(JSON.parse(layer?.lithostratigraphy?.conf ?? null)?.color ?? [255, 255, 255]).join()})`;
 
 /**
  * Displays the lithostratigraphy layers.
  */
-const LithostratigraphyViewProfile = ({
-  stratigraphyId,
-  navState,
-  setNavState,
-}) => {
+const LithostratigraphyViewProfile = ({ stratigraphyId, navState, setNavState }) => {
   const { data: layers } = useLithostratigraphies(stratigraphyId);
 
   useEffect(() => {
@@ -28,8 +22,7 @@ const LithostratigraphyViewProfile = ({
   return (
     <>
       {layers.flatMap(layer => {
-        const height =
-          (layer.toDepth - layer.fromDepth) * navState.pixelPerMeter;
+        const height = (layer.toDepth - layer.fromDepth) * navState.pixelPerMeter;
         return !isFinite(height) ||
           height < 1 ||
           layer.fromDepth > navState.lensEnd ||

@@ -1,12 +1,6 @@
-import React from "react";
 import { Card, Stack, Typography, CardActionArea } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import {
-  ArrowDownward,
-  ArrowUpward,
-  AddCircle,
-  Warning,
-} from "@mui/icons-material";
+import { ArrowDownward, ArrowUpward, AddCircle, Warning } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 
 const IconTypography = ({ icon, text }) => {
@@ -29,14 +23,7 @@ const IconTypography = ({ icon, text }) => {
  * Component that is displayed if there is a gap between two layers.
  * It offers solutions to fix the gap like extending the upper layer or filling the gap with an empty layers.
  */
-const LayerGap = ({
-  addLayer,
-  updateLayer,
-  previousLayer,
-  nextLayer,
-  isEditable,
-  height,
-}) => {
+const LayerGap = ({ addLayer, updateLayer, previousLayer, nextLayer, isEditable, height }) => {
   const { t } = useTranslation();
   const theme = useTheme();
 
@@ -48,9 +35,7 @@ const LayerGap = ({
           justifyContent: "space-evenly",
           color: theme.palette.error.main,
         }}>
-        {!isEditable && (
-          <IconTypography text={t("errorGap")} icon={<Warning />} />
-        )}
+        {!isEditable && <IconTypography text={t("errorGap")} icon={<Warning />} />}
         {isEditable && (
           <>
             {previousLayer && (
@@ -62,10 +47,7 @@ const LayerGap = ({
                     toDepth: nextLayer.fromDepth,
                   })
                 }>
-                <IconTypography
-                  text={t("errorGapSolution_extendUpperLayer")}
-                  icon={<ArrowDownward />}
-                />
+                <IconTypography text={t("errorGapSolution_extendUpperLayer")} icon={<ArrowDownward />} />
               </CardActionArea>
             )}
             <CardActionArea
@@ -77,10 +59,7 @@ const LayerGap = ({
                   toDepth: nextLayer.fromDepth,
                 })
               }>
-              <IconTypography
-                text={t("errorGapSolution_fillWithUndefined")}
-                icon={<AddCircle />}
-              />
+              <IconTypography text={t("errorGapSolution_fillWithUndefined")} icon={<AddCircle />} />
             </CardActionArea>
             {!previousLayer && (
               <CardActionArea
@@ -91,10 +70,7 @@ const LayerGap = ({
                     fromDepth: 0,
                   })
                 }>
-                <IconTypography
-                  text={t("errorGapSolution_extendLowerToZero")}
-                  icon={<ArrowUpward />}
-                />
+                <IconTypography text={t("errorGapSolution_extendLowerToZero")} icon={<ArrowUpward />} />
               </CardActionArea>
             )}
             {previousLayer && (
@@ -106,10 +82,7 @@ const LayerGap = ({
                     fromDepth: previousLayer.toDepth,
                   })
                 }>
-                <IconTypography
-                  text={t("errorGapSolution_extendLowerLayer")}
-                  icon={<ArrowUpward />}
-                />
+                <IconTypography text={t("errorGapSolution_extendLowerLayer")} icon={<ArrowUpward />} />
               </CardActionArea>
             )}
           </>

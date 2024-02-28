@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Chip } from "@mui/material";
@@ -18,9 +18,7 @@ export const FileDropzone = props => {
   const [dropZoneText, setDropZoneText] = useState(null);
   const [dropZoneTextColor, setDropZoneTextColor] = useState(null);
   const defaultDropzoneTextColor = isDisabled ? "#9f9f9f" : "#2185d0";
-  const initialDropzoneText = isDisabled
-    ? t("dropZoneChooseBoreholeFilesFirst")
-    : t(defaultText);
+  const initialDropzoneText = isDisabled ? t("dropZoneChooseBoreholeFilesFirst") : t(defaultText);
 
   useEffect(() => {
     setDropZoneText(initialDropzoneText);
@@ -39,10 +37,7 @@ export const FileDropzone = props => {
           setDropZoneText(
             t("dropZoneMaximumFilesToSelectAtOnce") +
               " (max: " +
-              Math.min(
-                maxFilesToSelectAtOnce,
-                maxFilesToUpload - files.length,
-              ) +
+              Math.min(maxFilesToSelectAtOnce, maxFilesToUpload - files.length) +
               ")",
           );
           break;
@@ -51,10 +46,7 @@ export const FileDropzone = props => {
           break;
         case "max-upload-reached":
           setDropZoneText(
-            t("dropZoneMaxFilesToUploadReached") +
-              " (max additional: " +
-              (maxFilesToUpload - files.length) +
-              ")",
+            t("dropZoneMaxFilesToUploadReached") + " (max additional: " + (maxFilesToUpload - files.length) + ")",
           );
           break;
         default:
@@ -83,14 +75,7 @@ export const FileDropzone = props => {
         setFiles(prevFiles => [...prevFiles, ...acceptedFiles]);
       }
     },
-    [
-      defaultDropzoneTextColor,
-      defaultText,
-      files.length,
-      maxFilesToUpload,
-      showErrorMsg,
-      t,
-    ],
+    [defaultDropzoneTextColor, defaultText, files.length, maxFilesToUpload, showErrorMsg, t],
   );
 
   // Is called when a accepted file is removed.
@@ -170,6 +155,7 @@ export const FileDropzone = props => {
               }}>
               {files.map(file => (
                 <div
+                  key={file.name}
                   style={{
                     display: "flex",
                     fontSize: "12px",

@@ -1,15 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { useDispatch } from "react-redux";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Box,
-  LinearProgress,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, Box, LinearProgress, Stack, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Icon, Form } from "semantic-ui-react";
 import { loadDomains } from "../../../api-lib/index";
@@ -29,7 +21,7 @@ const CodeListSettings = () => {
       return result;
     },
     {
-      onSuccess: (data, variables) => {
+      onSuccess: data => {
         queryClient.setQueryData(["domains"], oldDomains =>
           produce(oldDomains, draft => {
             const code = draft.find(d => d.id === data.id);
@@ -70,24 +62,13 @@ const CodeListSettings = () => {
   const schemas = [...new Set(domains.data.map(d => d.schema))];
   return (
     <Box sx={{ padding: "2em" }}>
-      <Stack
-        direction="row"
-        justifyContent="space-evenly"
-        alignItems="flex-start"
-        marginLeft={2}>
+      <Stack direction="row" justifyContent="space-evenly" alignItems="flex-start" marginLeft={2}>
         <Form
           style={{
             flex: 1,
           }}>
           <Form.Group widths="equal">
-            <Form.Input
-              fluid
-              readonly
-              transparent
-              name="geolcode"
-              label="Geolcode"
-              value={geolcode}
-            />
+            <Form.Input fluid readonly transparent name="geolcode" label="Geolcode" value={geolcode} />
             <Form.Input
               fluid
               name="german-input"
@@ -200,11 +181,7 @@ const CodeListSettings = () => {
                           backgroundColor: id === val.id ? "#595959" : null,
                           color: id === val.id ? "white" : null,
                         }}>
-                        <Stack
-                          direction="row"
-                          justifyContent="space-evenly"
-                          alignItems="flex-start"
-                          spacing={2}>
+                        <Stack direction="row" justifyContent="space-evenly" alignItems="flex-start" spacing={2}>
                           <div style={{ flex: "1 1 0" }}>{val.geolcode}</div>
                           <div style={{ flex: "1 1 0" }}>{val.de}</div>
                           <div style={{ flex: "1 1 0" }}>{val.fr}</div>

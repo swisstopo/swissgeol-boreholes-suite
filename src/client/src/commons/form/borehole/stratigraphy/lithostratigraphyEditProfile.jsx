@@ -1,21 +1,11 @@
-import React from "react";
-import {
-  useLithostratigraphies,
-  useLithostratigraphyMutations,
-} from "../../../../api/fetchApiV2";
+import { useLithostratigraphies, useLithostratigraphyMutations } from "../../../../api/fetchApiV2";
 import HierarchicalDataEditProfile from "./hierarchicalDataEditProfile";
 import { useTranslation } from "react-i18next";
 
 /**
  * Manages the lithostratigraphy data and mutations.
  */
-const LithostratigraphyEditProfile = ({
-  selectedStratigraphyID,
-  isEditable,
-  sx,
-  navState,
-  setNavState,
-}) => {
+const LithostratigraphyEditProfile = ({ selectedStratigraphyID, isEditable, sx, navState, setNavState }) => {
   const { t } = useTranslation();
 
   const { data: layers } = useLithostratigraphies(selectedStratigraphyID);

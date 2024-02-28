@@ -1,10 +1,4 @@
-import React from "react";
-import {
-  getHydrotests,
-  addHydrotest,
-  updateHydrotest,
-  deleteHydrotest,
-} from "../../../../api/fetchApiV2";
+import { getHydrotests, addHydrotest, updateHydrotest, deleteHydrotest } from "../../../../api/fetchApiV2";
 import HydrotestInput from "./hydrotestInput";
 import HydrotestDisplay from "./hydrotestDisplay";
 import { DataCards } from "../../../../components/dataCard/dataCards";

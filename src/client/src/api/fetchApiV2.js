@@ -159,7 +159,6 @@ export const updateStratigraphy = async stratigraphy => {
 
 // Enable using react-query outputs across the application.
 
-// eslint-disable-next-line react-hooks/rules-of-hooks
 export const useDomains = () =>
   useQuery("domains", () => {
     const domains = fetchApiV2("codelist", "GET");

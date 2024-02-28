@@ -1,4 +1,3 @@
-import React from "react";
 import * as Styled from "./styles";
 import { Button, Segment } from "semantic-ui-react";
 import TranslationText from "../../../../commons/form/translationText";
@@ -31,18 +30,10 @@ const EditorSettingList = props => {
         const element = codes.data.layer_kind[idx];
 
         if (element.code === geocode) {
-          if (
-            type === "editor" &&
-            _.isObject(element.conf) &&
-            _.has(element.conf, `fields.${field}`)
-          ) {
+          if (type === "editor" && _.isObject(element.conf) && _.has(element.conf, `fields.${field}`)) {
             return element.conf.fields[field];
           }
-          if (
-            type === "viewer" &&
-            _.isObject(element.conf) &&
-            _.has(element.conf, `viewerFields.${field}`)
-          ) {
+          if (type === "viewer" && _.isObject(element.conf) && _.has(element.conf, `viewerFields.${field}`)) {
             return element.conf.viewerFields[field];
           } else {
             return false;

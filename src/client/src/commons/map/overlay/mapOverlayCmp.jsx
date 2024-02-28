@@ -14,15 +14,7 @@ class MapOverlayComponent extends React.Component {
   }
 
   render() {
-    const {
-      isFetching,
-      layers,
-      moveDown,
-      moveUp,
-      saveTransparency,
-      setTransparency,
-      toggleVisibility,
-    } = this.props;
+    const { isFetching, layers, moveDown, moveUp, saveTransparency, setTransparency, toggleVisibility } = this.props;
 
     const len = Object.values(layers).length - 1;
 

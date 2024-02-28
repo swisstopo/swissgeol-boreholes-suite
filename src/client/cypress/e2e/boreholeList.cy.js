@@ -1,7 +1,4 @@
-import {
-  loginAsAdmin,
-  loginAsEditorInViewerMode,
-} from "../e2e/helpers/testHelpers";
+import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/helpers/testHelpers";
 
 describe("Borehole list tests", () => {
   it("Boreholes are displayed in correct order with editor login", () => {
@@ -205,11 +202,7 @@ describe("Borehole list tests", () => {
     cy.get("tbody").children().eq(2).contains("td", "Christop Keebler");
 
     // open first borehole
-    cy.get("tbody")
-      .children()
-      .eq(0)
-      .contains("td", "Christine Schuster")
-      .click();
+    cy.get("tbody").children().eq(0).contains("td", "Christine Schuster").click();
     cy.wait("@borehole");
 
     // verify current page is 4

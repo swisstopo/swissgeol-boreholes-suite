@@ -5,17 +5,7 @@ import { withTranslation } from "react-i18next";
 import { AlertContext } from "../../../components/alert/alertContext";
 import { fetchUsers } from "../../../api/fetchApiV2";
 
-import {
-  Button,
-  Checkbox,
-  Icon,
-  Input,
-  Label,
-  Modal,
-  Table,
-  Form,
-  Loader,
-} from "semantic-ui-react";
+import { Button, Checkbox, Icon, Input, Label, Modal, Table, Form, Loader } from "semantic-ui-react";
 
 import {
   createWorkgroup,
@@ -132,16 +122,9 @@ class AdminSettings extends React.Component {
         roleUpdate: true,
       },
       () => {
-        let isRoleActive =
-          uwg !== undefined &&
-          uwg.some(x => x.role.toLowerCase().startsWith(role.toLowerCase()));
+        let isRoleActive = uwg !== undefined && uwg.some(x => x.role.toLowerCase().startsWith(role.toLowerCase()));
 
-        setRole(
-          this.state.user.id,
-          workgroup.id,
-          role === "Publisher" ? "PUBLIC" : role,
-          !isRoleActive,
-        ).then(_ => {
+        setRole(this.state.user.id, workgroup.id, role === "Publisher" ? "PUBLIC" : role, !isRoleActive).then(() => {
           this.listUsers();
         });
       },
@@ -230,8 +213,7 @@ class AdminSettings extends React.Component {
                       flex: "1 1 100%",
                     }}
                     title={
-                      this.state.uId !== null &&
-                      this.props.user.data.name === this.state.uUsername
+                      this.state.uId !== null && this.props.user.data.name === this.state.uUsername
                         ? t("disabled")
                         : null
                     }>
@@ -259,15 +241,13 @@ class AdminSettings extends React.Component {
                   label="&nbsp;"
                   disabled={this.state.uId == null}
                   onClick={() => {
-                    updateUser(this.state.uId, this.state.uAdmin).then(
-                      response => {
-                        if (response.data.success === false) {
-                          this.context.error(response.data.message);
-                        } else {
-                          this.listUsers();
-                        }
-                      },
-                    );
+                    updateUser(this.state.uId, this.state.uAdmin).then(response => {
+                      if (response.data.success === false) {
+                        this.context.error(response.data.message);
+                      } else {
+                        this.listUsers();
+                      }
+                    });
                   }}>
                   <Icon name="save" />
                 </Form.Button>
@@ -280,8 +260,7 @@ class AdminSettings extends React.Component {
               display: "flex",
               flexDirection: "row",
             }}>
-            {this.state.usersFilter !== "all" ||
-            this.state.usersSearch !== "" ? (
+            {this.state.usersFilter !== "all" || this.state.usersSearch !== "" ? (
               <div
                 className="linker link"
                 onClick={() => {
@@ -305,8 +284,7 @@ class AdminSettings extends React.Component {
                 ) : null}
               </div>
             ) : null}
-            {this.state.usersFilter !== "enabled" &&
-            this.state.usersSearch === "" ? (
+            {this.state.usersFilter !== "enabled" && this.state.usersSearch === "" ? (
               <div
                 className="linker link"
                 onClick={() => {
@@ -329,8 +307,7 @@ class AdminSettings extends React.Component {
                 ) : null}
               </div>
             ) : null}
-            {this.state.usersFilter !== "disabled" &&
-            this.state.usersSearch === "" ? (
+            {this.state.usersFilter !== "disabled" && this.state.usersSearch === "" ? (
               <div
                 className="linker link"
                 onClick={() => {
@@ -384,24 +361,18 @@ class AdminSettings extends React.Component {
               open={this.state.deleteUser !== null}
               size="tiny">
               <Modal.Header>
-                {this.state.deleteUser !== null &&
-                this.state.deleteUser.disabledAt !== null
+                {this.state.deleteUser !== null && this.state.deleteUser.disabledAt !== null
                   ? t("enabling", { what: t("user") })
                   : t("disabling", { what: t("user") })}
               </Modal.Header>
               <Modal.Content>
-                {this.state.deleteUser === null ? null : this.state.deleteUser
-                    .disabledAt !== null ? (
+                {this.state.deleteUser === null ? null : this.state.deleteUser.disabledAt !== null ? (
                   <Modal.Description>
                     <p>
-                      <TranslationText
-                        extra={{ user: this.state.deleteUser.name }}
-                        id="msgEnablingUser"
-                      />
+                      <TranslationText extra={{ user: this.state.deleteUser.name }} id="msgEnablingUser" />
                     </p>
                   </Modal.Description>
-                ) : this.state.deleteUser !== null &&
-                  this.state.deleteUser.deletable ? (
+                ) : this.state.deleteUser !== null && this.state.deleteUser.deletable ? (
                   <Modal.Description>
                     <p>
                       <TranslationText id="msgDeleteUser" />
@@ -477,11 +448,10 @@ class AdminSettings extends React.Component {
                     </span>
                   </Button>
                   <div style={{ flex: "1 1 100%" }} />
-                  {this.state.deleteUser === null ? null : this.state.deleteUser
-                      .disabledAt !== null ? (
+                  {this.state.deleteUser === null ? null : this.state.deleteUser.disabledAt !== null ? (
                     <Button
                       data-cy="enable-user-button"
-                      onClick={e => {
+                      onClick={() => {
                         enableUser(this.state.deleteUser.id).then(() => {
                           this.setState(
                             {
@@ -505,7 +475,7 @@ class AdminSettings extends React.Component {
                   ) : (
                     <Button
                       data-cy="disable-user-button"
-                      onClick={e => {
+                      onClick={() => {
                         disableUser(this.state.deleteUser.id).then(() => {
                           this.reset(
                             {
@@ -531,7 +501,7 @@ class AdminSettings extends React.Component {
                     <Button
                       data-cy="permanently-delete-user-button"
                       color="red"
-                      onClick={e => {
+                      onClick={() => {
                         deleteUser(this.state.deleteUser.id).then(() => {
                           this.reset(
                             {
@@ -577,23 +547,15 @@ class AdminSettings extends React.Component {
                 </Table.Header>
                 <Table.Body data-cy="user-list-table-body">
                   {this.state.users &&
-                    this.state.users.map((currentUser, idx) =>
+                    this.state.users.map(currentUser =>
                       (this.state.usersSearch !== "" &&
-                        (currentUser.name
-                          .toUpperCase()
-                          .includes(this.state.usersSearch.toUpperCase()) ||
-                          currentUser.firstName
-                            .toUpperCase()
-                            .includes(this.state.usersSearch.toUpperCase()) ||
-                          currentUser.lastName
-                            .toUpperCase()
-                            .includes(this.state.usersSearch.toUpperCase()))) ||
+                        (currentUser.name.toUpperCase().includes(this.state.usersSearch.toUpperCase()) ||
+                          currentUser.firstName.toUpperCase().includes(this.state.usersSearch.toUpperCase()) ||
+                          currentUser.lastName.toUpperCase().includes(this.state.usersSearch.toUpperCase()))) ||
                       (this.state.usersSearch === "" &&
                         (this.state.usersFilter === "all" ||
-                          (this.state.usersFilter === "disabled" &&
-                            currentUser.disabledAt !== null) ||
-                          (this.state.usersFilter === "enabled" &&
-                            currentUser.disabledAt === null))) ? (
+                          (this.state.usersFilter === "disabled" && currentUser.disabledAt !== null) ||
+                          (this.state.usersFilter === "enabled" && currentUser.disabledAt === null))) ? (
                         <Table.Row
                           active={this.state.uId === currentUser.id}
                           error={currentUser.disabledAt !== null}
@@ -634,24 +596,16 @@ class AdminSettings extends React.Component {
                                 }}>
                                 <TranslationText id="disabled" />
                                 &nbsp;
-                                <DateText
-                                  date={currentUser.disabledAt}
-                                  fromnow
-                                />
+                                <DateText date={currentUser.disabledAt} fromnow />
                                 &nbsp;(
-                                <DateText date={currentUser.disabledAt} hours />
-                                )
+                                <DateText date={currentUser.disabledAt} hours />)
                               </span>
                             ) : null}
                           </Table.Cell>
                           <Table.Cell>{currentUser.firstName}</Table.Cell>
                           <Table.Cell>{currentUser.lastName}</Table.Cell>
                           <Table.Cell textAlign="center">
-                            {currentUser.isAdmin === true ? (
-                              <TranslationText id="yes" />
-                            ) : (
-                              <TranslationText id="no" />
-                            )}
+                            {currentUser.isAdmin === true ? <TranslationText id="yes" /> : <TranslationText id="no" />}
                           </Table.Cell>
                           <Table.Cell
                             style={{
@@ -732,10 +686,7 @@ class AdminSettings extends React.Component {
                             this.props.listWorkgroups(true);
                           });
                         } else {
-                          updateWorkgroup(
-                            this.state.wId,
-                            this.state.wName,
-                          ).then(() => {
+                          updateWorkgroup(this.state.wId, this.state.wName).then(() => {
                             this.props.listWorkgroups(true);
                           });
                         }
@@ -751,8 +702,7 @@ class AdminSettings extends React.Component {
                   display: "flex",
                   flexDirection: "row",
                 }}>
-                {this.state.workgroupFilter !== "all" ||
-                this.state.workgroupsSearch !== "" ? (
+                {this.state.workgroupFilter !== "all" || this.state.workgroupsSearch !== "" ? (
                   <div
                     className="linker link"
                     onClick={() => {
@@ -776,8 +726,7 @@ class AdminSettings extends React.Component {
                     ) : null}
                   </div>
                 ) : null}
-                {this.state.workgroupFilter !== "enabled" &&
-                this.state.workgroupsSearch === "" ? (
+                {this.state.workgroupFilter !== "enabled" && this.state.workgroupsSearch === "" ? (
                   <div
                     className="linker link"
                     onClick={() => {
@@ -800,8 +749,7 @@ class AdminSettings extends React.Component {
                     ) : null}
                   </div>
                 ) : null}
-                {this.state.workgroupFilter !== "disabled" &&
-                this.state.workgroupsSearch === "" ? (
+                {this.state.workgroupFilter !== "disabled" && this.state.workgroupsSearch === "" ? (
                   <div
                     className="linker link"
                     onClick={() => {
@@ -813,10 +761,7 @@ class AdminSettings extends React.Component {
                       marginRight: "1em",
                       whiteSpace: "nowrap",
                     }}>
-                    <TranslationText
-                      extra={{ what: t("disabled") }}
-                      id="show"
-                    />
+                    <TranslationText extra={{ what: t("disabled") }} id="show" />
                     {this.props.developer.debug === true ? (
                       <div
                         style={{
@@ -857,17 +802,10 @@ class AdminSettings extends React.Component {
                   open={this.state.deleteWorkgroup !== null}
                   size="tiny">
                   <Modal.Header>
-                    {this.state.deleteWorkgroup !== null &&
-                    this.state.deleteWorkgroup.disabled !== null ? (
-                      <TranslationText
-                        extra={{ what: t("workgroup") }}
-                        id="enabling"
-                      />
+                    {this.state.deleteWorkgroup !== null && this.state.deleteWorkgroup.disabled !== null ? (
+                      <TranslationText extra={{ what: t("workgroup") }} id="enabling" />
                     ) : (
-                      <TranslationText
-                        extra={{ what: t("workgroup") }}
-                        id="disabling"
-                      />
+                      <TranslationText extra={{ what: t("workgroup") }} id="disabling" />
                     )}
                     {this.props.developer.debug === true ? (
                       <div
@@ -879,8 +817,7 @@ class AdminSettings extends React.Component {
                     ) : null}
                   </Modal.Header>
                   <Modal.Content>
-                    {this.state.deleteWorkgroup === null ? null : this.state
-                        .deleteWorkgroup.disabled !== null ? (
+                    {this.state.deleteWorkgroup === null ? null : this.state.deleteWorkgroup.disabled !== null ? (
                       <Modal.Description>
                         <p>
                           <TranslationText
@@ -891,8 +828,7 @@ class AdminSettings extends React.Component {
                           />
                         </p>
                       </Modal.Description>
-                    ) : this.state.deleteWorkgroup !== null &&
-                      this.state.deleteWorkgroup.boreholes === 0 ? (
+                    ) : this.state.deleteWorkgroup !== null && this.state.deleteWorkgroup.boreholes === 0 ? (
                       <Modal.Description>
                         <p>
                           <TranslationText id="msgDeleteWorkgroup" />
@@ -966,22 +902,19 @@ class AdminSettings extends React.Component {
                         </span>
                       </Button>
                       <div style={{ flex: "1 1 100%" }} />
-                      {this.state.deleteWorkgroup === null ? null : this.state
-                          .deleteWorkgroup.disabled !== null ? (
+                      {this.state.deleteWorkgroup === null ? null : this.state.deleteWorkgroup.disabled !== null ? (
                         <Button
-                          onClick={e => {
-                            enableWorkgroup(this.state.deleteWorkgroup.id).then(
-                              () => {
-                                this.setState(
-                                  {
-                                    deleteWorkgroup: null,
-                                  },
-                                  () => {
-                                    this.props.listWorkgroups(true);
-                                  },
-                                );
-                              },
-                            );
+                          onClick={() => {
+                            enableWorkgroup(this.state.deleteWorkgroup.id).then(() => {
+                              this.setState(
+                                {
+                                  deleteWorkgroup: null,
+                                },
+                                () => {
+                                  this.props.listWorkgroups(true);
+                                },
+                              );
+                            });
                           }}
                           secondary>
                           <span
@@ -994,10 +927,8 @@ class AdminSettings extends React.Component {
                         </Button>
                       ) : (
                         <Button
-                          onClick={e => {
-                            disableWorkgroup(
-                              this.state.deleteWorkgroup.id,
-                            ).then(() => {
+                          onClick={() => {
+                            disableWorkgroup(this.state.deleteWorkgroup.id).then(() => {
                               this.resetWorkgroup(
                                 {
                                   deleteWorkgroup: null,
@@ -1023,19 +954,17 @@ class AdminSettings extends React.Component {
                       this.state.deleteWorkgroup.boreholes === 0 ? (
                         <Button
                           color="red"
-                          onClick={e => {
-                            deleteWorkgroup(this.state.deleteWorkgroup.id).then(
-                              () => {
-                                this.resetWorkgroup(
-                                  {
-                                    deleteWorkgroup: null,
-                                  },
-                                  () => {
-                                    this.props.listWorkgroups(true);
-                                  },
-                                );
-                              },
-                            );
+                          onClick={() => {
+                            deleteWorkgroup(this.state.deleteWorkgroup.id).then(() => {
+                              this.resetWorkgroup(
+                                {
+                                  deleteWorkgroup: null,
+                                },
+                                () => {
+                                  this.props.listWorkgroups(true);
+                                },
+                              );
+                            });
                           }}>
                           <span
                             style={{
@@ -1076,19 +1005,13 @@ class AdminSettings extends React.Component {
                     </Table.Row>
                   </Table.Header>
                   <Table.Body data-cy="workgroup-list-table-body">
-                    {this.props.workgroups.data.map((workgroup, idx) =>
+                    {this.props.workgroups.data.map(workgroup =>
                       (this.state.workgroupsSearch !== "" &&
-                        workgroup.name
-                          .toUpperCase()
-                          .includes(
-                            this.state.workgroupsSearch.toUpperCase(),
-                          )) ||
+                        workgroup.name.toUpperCase().includes(this.state.workgroupsSearch.toUpperCase())) ||
                       (this.state.workgroupsSearch === "" &&
                         (this.state.workgroupFilter === "all" ||
-                          (this.state.workgroupFilter === "disabled" &&
-                            workgroup.disabled !== null) ||
-                          (this.state.workgroupFilter === "enabled" &&
-                            workgroup.disabled === null))) ? (
+                          (this.state.workgroupFilter === "disabled" && workgroup.disabled !== null) ||
+                          (this.state.workgroupFilter === "enabled" && workgroup.disabled === null))) ? (
                         <Table.Row
                           active={this.state.wId === workgroup.id}
                           key={"stng-workgroups-" + workgroup.id}
@@ -1116,11 +1039,7 @@ class AdminSettings extends React.Component {
                               />
                             ) : null}
                             {workgroup.name}{" "}
-                            {workgroup.supplier === true ? (
-                              <span style={{ color: "red" }}>(supplier)</span>
-                            ) : (
-                              ""
-                            )}
+                            {workgroup.supplier === true ? <span style={{ color: "red" }}>(supplier)</span> : ""}
                           </Table.Cell>
                           <Table.Cell>{workgroup.boreholes}</Table.Cell>
                           <Table.Cell
@@ -1209,7 +1128,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation(["common"])(AdminSettings));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(AdminSettings));

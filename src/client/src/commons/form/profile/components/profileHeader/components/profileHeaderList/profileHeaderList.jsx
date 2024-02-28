@@ -1,4 +1,3 @@
-import React from "react";
 import * as Styled from "./styles";
 import DateText from "../../../../../dateText";
 import { Icon } from "semantic-ui-react";
@@ -18,14 +17,11 @@ const ProfileHeaderList = props => {
             setSelectedStratigraphy(item);
           }}
           style={{
-            borderBottom:
-              item.id === selectedStratigraphy?.id && "2px solid black",
+            borderBottom: item.id === selectedStratigraphy?.id && "2px solid black",
           }}>
           <Styled.ItemName>
             {item.primary && <Icon name="check" />}
-            {item.name === null || item.name === ""
-              ? t("common:np")
-              : item.name}
+            {item.name === null || item.name === "" ? t("common:np") : item.name}
           </Styled.ItemName>
           <Styled.ItemDate>
             <DateText date={item.date} />

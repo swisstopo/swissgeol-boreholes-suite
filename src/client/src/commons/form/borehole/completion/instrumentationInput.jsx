@@ -6,13 +6,7 @@ import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
 
-const InstrumentationInput = ({
-  item,
-  setSelected,
-  parentId,
-  addData,
-  updateData,
-}) => {
+const InstrumentationInput = ({ item, setSelected, parentId, addData, updateData }) => {
   const domains = useDomains();
   const { i18n } = useTranslation();
   const [casings, setCasings] = useState([]);
@@ -41,28 +35,11 @@ const InstrumentationInput = ({
       updateData={updateData}
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <Stack direction="row">
-        <FormInput
-          fieldName="fromDepth"
-          label="fromdepth"
-          value={item.fromDepth}
-          type="number"
-          required={true}
-        />
-        <FormInput
-          fieldName="toDepth"
-          label="todepth"
-          value={item.toDepth}
-          type="number"
-          required={true}
-        />
+        <FormInput fieldName="fromDepth" label="fromdepth" value={item.fromDepth} type="number" required={true} />
+        <FormInput fieldName="toDepth" label="todepth" value={item.toDepth} type="number" required={true} />
       </Stack>
       <Stack direction="row">
-        <FormInput
-          fieldName="name"
-          label="name"
-          value={item.name}
-          required={true}
-        />
+        <FormInput fieldName="name" label="name" value={item.name} required={true} />
         <FormSelect
           fieldName="casingId"
           label="casingName"
@@ -80,9 +57,7 @@ const InstrumentationInput = ({
           selected={item.kindId}
           required={true}
           values={domains?.data
-            ?.filter(
-              d => d.schema === completionSchemaConstants.instrumentationType,
-            )
+            ?.filter(d => d.schema === completionSchemaConstants.instrumentationType)
             .sort((a, b) => a.order - b.order)
             .map(d => ({
               key: d.id,
@@ -95,9 +70,7 @@ const InstrumentationInput = ({
           selected={item.statusId}
           required={true}
           values={domains?.data
-            ?.filter(
-              d => d.schema === completionSchemaConstants.instrumentationStatus,
-            )
+            ?.filter(d => d.schema === completionSchemaConstants.instrumentationStatus)
             .sort((a, b) => a.order - b.order)
             .map(d => ({
               key: d.id,
@@ -106,12 +79,7 @@ const InstrumentationInput = ({
         />
       </Stack>
       <Stack direction="row">
-        <FormInput
-          fieldName="notes"
-          label="notes"
-          multiline={true}
-          value={item.notes}
-        />
+        <FormInput fieldName="notes" label="notes" multiline={true} value={item.notes} />
       </Stack>
     </DataInputCard>
   );

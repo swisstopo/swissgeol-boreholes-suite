@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Checkbox, Form } from "semantic-ui-react";
 
 export const WorkgroupRoleSettings = props => {
@@ -12,7 +10,7 @@ export const WorkgroupRoleSettings = props => {
           <Checkbox
             checked={uwg !== undefined && uwg.some(x => x.role === "View")}
             label="VIEW"
-            onChange={(e, d) => {
+            onChange={e => {
               e.stopPropagation();
               setRole(uwg, workgroup, "VIEW");
             }}
@@ -23,7 +21,7 @@ export const WorkgroupRoleSettings = props => {
             <Checkbox
               checked={uwg !== undefined && uwg.some(x => x.role === "Editor")}
               label="EDITOR"
-              onChange={(e, d) => {
+              onChange={e => {
                 e.stopPropagation();
                 setRole(uwg, workgroup, "EDIT");
               }}
@@ -33,11 +31,9 @@ export const WorkgroupRoleSettings = props => {
         {workgroup.supplier === false ? (
           <Form.Field>
             <Checkbox
-              checked={
-                uwg !== undefined && uwg.some(x => x.role === "Controller")
-              }
+              checked={uwg !== undefined && uwg.some(x => x.role === "Controller")}
               label="CONTROLLER"
-              onChange={(e, d) => {
+              onChange={e => {
                 e.stopPropagation();
                 setRole(uwg, workgroup, "CONTROL");
               }}
@@ -49,11 +45,9 @@ export const WorkgroupRoleSettings = props => {
         {workgroup.supplier === false ? (
           <Form.Field>
             <Checkbox
-              checked={
-                uwg !== undefined && uwg.some(x => x.role === "Validator")
-              }
+              checked={uwg !== undefined && uwg.some(x => x.role === "Validator")}
               label="VALIDATOR"
-              onChange={(e, d) => {
+              onChange={e => {
                 e.stopPropagation();
                 setRole(uwg, workgroup, "VALID");
               }}
@@ -64,7 +58,7 @@ export const WorkgroupRoleSettings = props => {
           <Checkbox
             checked={uwg !== undefined && uwg.some(x => x.role === "Publisher")}
             label="PUBLISHER"
-            onChange={(e, d) => {
+            onChange={e => {
               e.stopPropagation();
               setRole(uwg, workgroup, "PUBLIC");
             }}

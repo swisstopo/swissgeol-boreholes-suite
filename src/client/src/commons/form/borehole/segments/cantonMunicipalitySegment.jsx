@@ -1,4 +1,3 @@
-import React from "react";
 import TranslationText from "../../translationText";
 
 import { Form, Segment, Input, Icon } from "semantic-ui-react";
@@ -8,12 +7,7 @@ const CantonMunicipalitySegment = props => {
 
   return (
     <Segment>
-      <Form
-        autoCapitalize="off"
-        autoComplete="off"
-        autoCorrect="off"
-        size={size}
-        spellCheck="false">
+      <Form autoCapitalize="off" autoComplete="off" autoCorrect="off" size={size} spellCheck="false">
         <Form.Group widths="equal">
           <Form.Field>
             <label>
@@ -21,11 +15,7 @@ const CantonMunicipalitySegment = props => {
               &nbsp;
               <Icon name="map marker" />
             </label>
-            <Input
-              data-cy="country"
-              value={country ?? ""}
-              readOnly={!isEditable}
-            />
+            <Input data-cy="country" value={country ?? ""} readOnly={!isEditable} />
           </Form.Field>
           <Form.Field>
             <label>
@@ -33,11 +23,7 @@ const CantonMunicipalitySegment = props => {
               &nbsp;
               <Icon name="map marker" />
             </label>
-            <Input
-              data-cy="canton"
-              value={canton ?? ""}
-              readOnly={!isEditable}
-            />
+            <Input data-cy="canton" value={canton ?? ""} readOnly={!isEditable} />
           </Form.Field>
           <Form.Field>
             <label>
@@ -45,11 +31,7 @@ const CantonMunicipalitySegment = props => {
               &nbsp;
               <Icon name="map marker" />
             </label>
-            <Input
-              data-cy="municipality"
-              value={municipality ?? ""}
-              readOnly={!isEditable}
-            />
+            <Input data-cy="municipality" value={municipality ?? ""} readOnly={!isEditable} />
           </Form.Field>
         </Form.Group>
       </Form>

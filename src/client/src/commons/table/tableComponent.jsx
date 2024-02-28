@@ -155,7 +155,7 @@ class TableComponent extends React.Component {
     console.error("Please overwrite getHeader method");
   }
 
-  getCols(item, idx) {
+  getCols() {
     console.error("Please overwrite getCols method");
   }
 
@@ -164,8 +164,7 @@ class TableComponent extends React.Component {
 
     // remember current scroll position
     if (!store.isFetching) {
-      var currentScrollPosition =
-        document.getElementById("borehole-table").scrollTop;
+      var currentScrollPosition = document.getElementById("borehole-table").scrollTop;
       if (scrollPosition !== currentScrollPosition) {
         onScrollChange(currentScrollPosition);
       }
@@ -203,23 +202,19 @@ class TableComponent extends React.Component {
               {store.data.map((item, idx) => (
                 <Table.Row
                   key={this.uid + "_" + idx}
-                  onClick={e => {
+                  onClick={() => {
                     if (all === true || selected.length > 0) {
                       this.add2selection(item.id);
                     } else {
                       this.handleClick(item);
                     }
                   }}
-                  onMouseEnter={e => this.handleHover(item)}
-                  onMouseLeave={e => this.handleHover(null)}
+                  onMouseEnter={() => this.handleHover(item)}
+                  onMouseLeave={() => this.handleHover(null)}
                   style={{
                     cursor: "pointer",
                     backgroundColor:
-                      activeItem === item.id
-                        ? "gray"
-                        : this.props.highlight === item.id
-                          ? "lightgrey"
-                          : "white",
+                      activeItem === item.id ? "gray" : this.props.highlight === item.id ? "lightgrey" : "white",
                   }}>
                   {this.getCols(item, idx)}
                 </Table.Row>

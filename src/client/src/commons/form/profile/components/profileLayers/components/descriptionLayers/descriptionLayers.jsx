@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, createRef } from "react";
+import { useState, useEffect, useMemo, createRef } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import { produce } from "immer";
@@ -27,8 +27,7 @@ const DescriptionLayers = props => {
   const [description, setDescription] = useState(null);
   const [descriptionQualityId, setDescriptionQualityId] = useState(null);
   const [displayDescriptions, setDisplayDescriptions] = useState(null);
-  const [descriptionIdSelectedForDelete, setDescriptionIdSelectedForDelete] =
-    useState(0);
+  const [descriptionIdSelectedForDelete, setDescriptionIdSelectedForDelete] = useState(0);
   const [selectableDepths, setSelectableDepths] = useState([]);
   const [gaps, setGaps] = useState([]);
   const [previousLength, setPreviousLength] = useState(0);
@@ -60,12 +59,7 @@ const DescriptionLayers = props => {
     }
     // update the previous length
     setPreviousLength(displayDescriptions?.length || 0);
-  }, [
-    displayDescriptions,
-    selectedDescription,
-    descriptionRefs,
-    previousLength,
-  ]);
+  }, [displayDescriptions, selectedDescription, descriptionRefs, previousLength]);
 
   useEffect(() => {
     // include empty items in description column to signal missing descriptions
@@ -73,22 +67,15 @@ const DescriptionLayers = props => {
     descriptions
       .sort((a, b) => a.fromDepth - b.fromDepth)
       .forEach((description, index) => {
-        const expectedFromDepth =
-          index === 0 ? 0 : descriptions[index - 1]?.toDepth;
+        const expectedFromDepth = index === 0 ? 0 : descriptions[index - 1]?.toDepth;
         if (description.fromDepth !== expectedFromDepth) {
           tempDescriptions.push({
             id: null,
             fromDepth: expectedFromDepth,
             toDepth: description.fromDepth,
             description: (
-              <Stack
-                direction="row"
-                alignItems="center"
-                gap={1}
-                sx={{ color: theme.palette.error.main }}>
-                <Typography sx={{ fontWeight: "bold" }}>
-                  {t("errorGap")}
-                </Typography>
+              <Stack direction="row" alignItems="center" gap={1} sx={{ color: theme.palette.error.main }}>
+                <Typography sx={{ fontWeight: "bold" }}>{t("errorGap")}</Typography>
                 <WarningIcon />
               </Stack>
             ),
@@ -107,16 +94,12 @@ const DescriptionLayers = props => {
       // delete description if the layer was deleted with extention
       if (resolvingAction !== 0) {
         deleteMutation.mutate(
-          descriptions?.find(
-            d => d.fromDepth === layer.fromDepth && d.toDepth === layer.toDepth,
-          )?.id,
+          descriptions?.find(d => d.fromDepth === layer.fromDepth && d.toDepth === layer.toDepth)?.id,
         );
       }
       // case: extend upper layer to bottom
       if (resolvingAction === 1) {
-        const upperDescription = descriptions?.find(
-          d => d.toDepth === layer.fromDepth,
-        );
+        const upperDescription = descriptions?.find(d => d.toDepth === layer.fromDepth);
         updateMutation.mutate({
           ...upperDescription,
           toDepth: layer.toDepth,
@@ -124,9 +107,7 @@ const DescriptionLayers = props => {
       }
       // case: extend lower layer to top
       if (resolvingAction === 2) {
-        const lowerDerscription = descriptions?.find(
-          d => d.fromDepth === layer.toDepth,
-        );
+        const lowerDerscription = descriptions?.find(d => d.fromDepth === layer.toDepth);
         updateMutation.mutate({
           ...lowerDerscription,
           fromDepth: layer.fromDepth,
@@ -165,29 +146,19 @@ const DescriptionLayers = props => {
     const selectableToDepths = layers?.data?.map(l => l.depth_to);
     if (selectableFromDepths && selectableToDepths) {
       const selectableDepths = selectableToDepths
-        .concat(
-          selectableFromDepths.filter(
-            item => selectableToDepths.indexOf(item) < 0,
-          ),
-        )
+        .concat(selectableFromDepths.filter(item => selectableToDepths.indexOf(item) < 0))
         .sort((a, b) => a - b);
 
       const missingFromDepths = displayDescriptions
         ?.map(d => d.fromDepth)
         .filter(d => !selectableFromDepths.includes(d));
-      const missingToDepths = displayDescriptions
-        ?.map(d => d.toDepth)
-        .filter(d => !selectableToDepths.includes(d));
+      const missingToDepths = displayDescriptions?.map(d => d.toDepth).filter(d => !selectableToDepths.includes(d));
 
-      const missingDepths = missingFromDepths?.filter(d =>
-        missingToDepths.includes(d),
-      );
+      const missingDepths = missingFromDepths?.filter(d => missingToDepths.includes(d));
 
       const gaps = [];
       for (let i = 0; i < selectableDepths.length; i++) {
-        const gap = missingDepths?.filter(
-          d => d > selectableDepths[i] && d < selectableDepths[i + 1],
-        );
+        const gap = missingDepths?.filter(d => d > selectableDepths[i] && d < selectableDepths[i + 1]);
         gaps.push(gap);
       }
 
@@ -200,13 +171,8 @@ const DescriptionLayers = props => {
 
   const calculateLayerHeight = (fromDepth, toDepth) => {
     // case height must be reduced because of gaps in lithology.
-    if (
-      !selectableDepths.includes(fromDepth) ||
-      (!selectableDepths.includes(toDepth) && gaps?.length)
-    ) {
-      const gapLength = gaps.find(
-        g => g?.includes(fromDepth) || g?.includes(toDepth),
-      )?.length;
+    if (!selectableDepths.includes(fromDepth) || (!selectableDepths.includes(toDepth) && gaps?.length)) {
+      const gapLength = gaps.find(g => g?.includes(fromDepth) || g?.includes(toDepth))?.length;
 
       if (gapLength) {
         return 10 / (gapLength + 1);
@@ -216,10 +182,7 @@ const DescriptionLayers = props => {
     }
     // case height must be enhanced because descriptions stretching several lithology layers.
 
-    const layerDistance =
-      (selectableDepths.indexOf(toDepth) -
-        selectableDepths.indexOf(fromDepth)) *
-      10;
+    const layerDistance = (selectableDepths.indexOf(toDepth) - selectableDepths.indexOf(fromDepth)) * 10;
 
     if (layerDistance < 10) return 10;
     return layerDistance;
@@ -231,10 +194,7 @@ const DescriptionLayers = props => {
         displayDescriptions
           ?.sort((a, b) => a.fromDepth - b.fromDepth)
           .map((item, index) => {
-            const calculatedHeight = calculateLayerHeight(
-              item?.fromDepth,
-              item?.toDepth,
-            );
+            const calculatedHeight = calculateLayerHeight(item?.fromDepth, item?.toDepth);
             const isItemSelected = selectedDescription?.id === item?.id;
             const isItemToDelete = item.id === descriptionIdSelectedForDelete;
             return (
@@ -242,16 +202,13 @@ const DescriptionLayers = props => {
                 direction="row"
                 data-cy={`description-${index}`}
                 sx={{
-                  boxShadow:
-                    "inset -1px 0 0 lightgrey, inset 0 -1px 0 lightgrey",
+                  boxShadow: "inset -1px 0 0 lightgrey, inset 0 -1px 0 lightgrey",
                   flex: "1 1 100%",
                   height: isItemSelected ? "auto" : calculatedHeight + "em",
                   overflowY: "auto",
                   padding: "5px",
                   backgroundColor:
-                    item.id === null || isItemToDelete
-                      ? theme.palette.error.background
-                      : isItemSelected && "lightgrey",
+                    item.id === null || isItemToDelete ? theme.palette.error.background : isItemSelected && "lightgrey",
                   "&:hover": {
                     backgroundColor: "#ebebeb",
                   },
@@ -263,12 +220,7 @@ const DescriptionLayers = props => {
                 }}>
                 {!isItemToDelete && (
                   <>
-                    {!isItemSelected && (
-                      <DescriptionDisplay
-                        item={item}
-                        layerHeight={calculatedHeight}
-                      />
-                    )}
+                    {!isItemSelected && <DescriptionDisplay item={item} layerHeight={calculatedHeight} />}
                     {isItemSelected && (
                       <DescriptionInput
                         setFromDepth={setFromDepth}
@@ -290,9 +242,7 @@ const DescriptionLayers = props => {
                       <ActionButtons
                         item={item}
                         selectItem={selectItem}
-                        setDescriptionIdSelectedForDelete={
-                          setDescriptionIdSelectedForDelete
-                        }
+                        setDescriptionIdSelectedForDelete={setDescriptionIdSelectedForDelete}
                         addMutation={addMutation}
                         selectedDescription={selectedDescription}
                         selectedStratigraphyID={selectedStratigraphyID}
@@ -303,9 +253,7 @@ const DescriptionLayers = props => {
                 {isItemToDelete && (
                   <DescriptionDeleteDialog
                     item={item}
-                    setDescriptionIdSelectedForDelete={
-                      setDescriptionIdSelectedForDelete
-                    }
+                    setDescriptionIdSelectedForDelete={setDescriptionIdSelectedForDelete}
                     deleteMutation={deleteMutation}
                   />
                 )}

@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import Casing from "./casing";
 import Backfill from "./backfill";
 import Instrumentation from "./instrumentation";
 import { Stack } from "@mui/material";
-import {
-  CompletionBox,
-  CompletionTabs,
-  CompletionTab,
-} from "./styledComponents";
+import { CompletionBox, CompletionTabs, CompletionTab } from "./styledComponents";
 import { useTranslation } from "react-i18next";
 
 const CompletionContent = ({ completion, isEditable }) => {
@@ -39,9 +35,7 @@ const CompletionContent = ({ completion, isEditable }) => {
   };
 
   useEffect(() => {
-    var newTabIndex = tabs.findIndex(
-      t => t.hash === location.hash.replace("#", ""),
-    );
+    var newTabIndex = tabs.findIndex(t => t.hash === location.hash.replace("#", ""));
     if (newTabIndex > -1 && state.index !== newTabIndex) {
       handleCompletionChanged(null, newTabIndex);
     }
@@ -50,21 +44,13 @@ const CompletionContent = ({ completion, isEditable }) => {
 
   return (
     <Stack direction="column" flex="1 0 0">
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        flex="0 1 auto">
+      <Stack direction="row" justifyContent="space-between" alignItems="center" flex="0 1 auto">
         <CompletionTabs value={state.index} onChange={handleCompletionChanged}>
           {tabs.map((tab, index) => {
             return (
               <CompletionTab
                 data-cy={"completion-content-header-tab-" + tab.hash}
-                label={
-                  tab.label === null || tab.label === ""
-                    ? t("common:np")
-                    : tab.label
-                }
+                label={tab.label === null || tab.label === "" ? t("common:np") : tab.label}
                 key={index}
               />
             );
@@ -72,18 +58,9 @@ const CompletionContent = ({ completion, isEditable }) => {
         </CompletionTabs>
       </Stack>
       <CompletionBox flex="1 0 0">
-        {(state.index === 0 && (
-          <Casing completionId={completion.id} isEditable={isEditable} />
-        )) ||
-          (state.index === 1 && (
-            <Instrumentation
-              completionId={completion.id}
-              isEditable={isEditable}
-            />
-          )) ||
-          (state.index === 2 && (
-            <Backfill completionId={completion.id} isEditable={isEditable} />
-          ))}
+        {(state.index === 0 && <Casing completionId={completion.id} isEditable={isEditable} />) ||
+          (state.index === 1 && <Instrumentation completionId={completion.id} isEditable={isEditable} />) ||
+          (state.index === 2 && <Backfill completionId={completion.id} isEditable={isEditable} />)}
       </CompletionBox>
     </Stack>
   );

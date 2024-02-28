@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   CardActionArea,
   Typography,
@@ -69,10 +69,7 @@ const LayerCard = ({
         }
       }
 
-      const selections =
-        selectedOption?.path?.map(
-          (id, index) => options[index].find(c => c.id === id) ?? {},
-        ) ?? [];
+      const selections = selectedOption?.path?.map((id, index) => options[index].find(c => c.id === id) ?? {}) ?? [];
 
       // set color of empty path elements to the closest defined parent
       let currentColor = selections[0]?.color ?? null;
@@ -87,11 +84,7 @@ const LayerCard = ({
 
       // make selection array the same length as header array
       setSelection(
-        selections
-          .slice(0, header.length)
-          .concat(
-            Array(Math.max(0, header.length - selections.length)).fill(null),
-          ),
+        selections.slice(0, header.length).concat(Array(Math.max(0, header.length - selections.length)).fill(null)),
       );
     }
   }, [dataProperty, header.length, layer, options]);
@@ -190,10 +183,9 @@ const LayerCard = ({
         left: "0",
         right: "0",
       }}>
-      {[State.DISPLAY, State.EDITABLE].includes(cardState) &&
-        height >= minPixelHeightForDepthLabels && (
-          <Typography>{layer?.fromDepth ?? "-"} [m MD]</Typography>
-        )}
+      {[State.DISPLAY, State.EDITABLE].includes(cardState) && height >= minPixelHeightForDepthLabels && (
+        <Typography>{layer?.fromDepth ?? "-"} [m MD]</Typography>
+      )}
       {State.EDITING === cardState && (
         <TextField
           sx={{ margin: "0.8rem 0" }}
@@ -252,10 +244,9 @@ const LayerCard = ({
         left: "0",
         bottom: "0",
       }}>
-      {[State.DISPLAY, State.EDITABLE].includes(cardState) &&
-        height >= minPixelHeightForDepthLabels && (
-          <Typography>{layer?.toDepth ?? "-"} [m MD]</Typography>
-        )}
+      {[State.DISPLAY, State.EDITABLE].includes(cardState) && height >= minPixelHeightForDepthLabels && (
+        <Typography>{layer?.toDepth ?? "-"} [m MD]</Typography>
+      )}
       {State.EDITING === cardState && (
         <TextField
           sx={{ margin: "0.8rem 0" }}
@@ -275,10 +266,7 @@ const LayerCard = ({
       data-cy="layer-card"
       sx={{
         display: "grid",
-        gridTemplateColumns: `repeat(${header.reduce(
-          (acc, h) => acc + h.isVisible,
-          0,
-        )},minmax(0,1fr))`,
+        gridTemplateColumns: `repeat(${header.reduce((acc, h) => acc + h.isVisible, 0)},minmax(0,1fr))`,
         justifyItems: "stretch",
         alignItems: "stretch",
         borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
@@ -297,16 +285,12 @@ const LayerCard = ({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: selectedItem?.color
-                  ? `rgb(${selectedItem?.color?.join()})`
-                  : "transparent",
+                backgroundColor: selectedItem?.color ? `rgb(${selectedItem?.color?.join()})` : "transparent",
                 borderRight: "1px solid rgba(0, 0, 0, 0.12)",
                 padding: "0 1rem",
               }}>
               {[State.DISPLAY, State.EDITABLE].includes(cardState) && (
-                <Typography sx={{ textAlign: "center" }}>
-                  {selectedItem?.label ?? "-"}
-                </Typography>
+                <Typography sx={{ textAlign: "center" }}>{selectedItem?.label ?? "-"}</Typography>
               )}
               {State.EDITING === cardState && (
                 <Autocomplete
@@ -314,9 +298,7 @@ const LayerCard = ({
                   size="small"
                   options={options[index] ?? []}
                   value={selectedItem?.label ? selectedItem : null}
-                  renderInput={params => (
-                    <TextField {...params} label={t(header[index].title)} />
-                  )}
+                  renderInput={params => <TextField {...params} label={t(header[index].title)} />}
                   onChange={(event, value) => handleLayerChange(value, index)}
                 />
               )}
@@ -332,9 +314,7 @@ const LayerCard = ({
     <>
       {State.DISPLAY === cardState && cardContent}
       {State.EDITABLE === cardState && (
-        <CardActionArea
-          onClick={() => setCardState(State.EDITING)}
-          component="div">
+        <CardActionArea onClick={() => setCardState(State.EDITING)} component="div">
           {cardContent}
         </CardActionArea>
       )}
@@ -350,9 +330,7 @@ const LayerCard = ({
           </Box>
         </ClickAwayListener>
       )}
-      {State.DELETED === cardState && (
-        <Skeleton variant="rectangular" height={`${height}px`} />
-      )}
+      {State.DELETED === cardState && <Skeleton variant="rectangular" height={`${height}px`} />}
     </>
   );
 };

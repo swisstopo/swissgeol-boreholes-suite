@@ -1,4 +1,3 @@
-import React from "react";
 import { Stack } from "@mui/material";
 import { FormSelect } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
@@ -42,10 +41,7 @@ const WaterIngressInput = props => {
           selected={item.quantityId}
           required={true}
           values={domains?.data
-            ?.filter(
-              d =>
-                d.schema === hydrogeologySchemaConstants.waterIngressQuantity,
-            )
+            ?.filter(d => d.schema === hydrogeologySchemaConstants.waterIngressQuantity)
             .sort((a, b) => a.order - b.order)
             .map(d => ({
               key: d.id,
@@ -57,10 +53,7 @@ const WaterIngressInput = props => {
           label="conditions"
           selected={item.conditionsId}
           values={domains?.data
-            ?.filter(
-              d =>
-                d.schema === hydrogeologySchemaConstants.waterIngressConditions,
-            )
+            ?.filter(d => d.schema === hydrogeologySchemaConstants.waterIngressConditions)
             .sort((a, b) => a.order - b.order)
             .map(d => ({
               key: d.id,

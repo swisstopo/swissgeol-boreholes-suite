@@ -1,10 +1,4 @@
-import React from "react";
-import {
-  getWaterIngress,
-  addWaterIngress,
-  updateWaterIngress,
-  deleteWaterIngress,
-} from "../../../../api/fetchApiV2";
+import { getWaterIngress, addWaterIngress, updateWaterIngress, deleteWaterIngress } from "../../../../api/fetchApiV2";
 import WaterIngressInput from "./waterIngressInput";
 import WaterIngressDisplay from "./waterIngressDisplay";
 import { DataCards } from "../../../../components/dataCard/dataCards";
