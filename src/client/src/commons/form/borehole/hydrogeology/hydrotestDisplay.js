@@ -7,6 +7,7 @@ import {
   TableContainer,
   TableRow,
   TableCell,
+  Typography,
 } from "@mui/material";
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
@@ -81,80 +82,82 @@ const HydrotestDisplay = props => {
         />
       </StackFullWidth>
       {item?.hydrotestResults?.length > 0 && (
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ ...tableHeaderStyles, paddingRight: 0 }}>
-                  {t("parameter")}
-                </TableCell>
-                <TableCell sx={tableHeaderStyles}>{t("value")}</TableCell>
-                <TableCell sx={tableHeaderStyles}>{t("minValue")}</TableCell>
-                <TableCell sx={tableHeaderStyles}>{t("maxValue")}</TableCell>
-                {isEditable && (
-                  <TableCell align="right" sx={{ padding: "3px" }}></TableCell>
-                )}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {item?.hydrotestResults?.map((result, index) => (
-                <TableRow
-                  key={index}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={{
-                      ...tableCellStyles,
-                      "& .MuiFormControl-root": {
-                        minWidth: "100%",
-                        maxWidth: "100%",
-                      },
-                      pr: "3px",
-                      pl: "3px",
-                      maxWidth: "200px",
-                      minWidth: "200px",
-                    }}
-                    data-cy={`hydrotestResult.${index}.parameter-formDisplay`}>
-                    {domains?.data?.find(d => d.id === result.parameterId)?.[
-                      i18n.language
-                    ] || ""}
+        <>
+          <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
+            {t("hydrotestResult")}
+          </Typography>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ ...tableHeaderStyles, paddingRight: 0 }}>
+                    {t("parameter")}
                   </TableCell>
-                  <TableCell
-                    sx={tableCellStyles}
-                    data-cy={`hydrotestResult.${index}.value-formDisplay`}>
-                    {result?.value && (
-                      <>
-                        <span>{result?.value + " "}</span>
-                        {getParameterUnit(result.parameterId)}
-                      </>
-                    )}
-                  </TableCell>
-                  <TableCell
-                    sx={tableCellStyles}
-                    data-cy={`hydrotestResult.${index}.minValue-formDisplay`}>
-                    {result?.minValue && (
-                      <>
-                        <span>{result?.minValue + " "}</span>
-                        {getParameterUnit(result.parameterId)}
-                      </>
-                    )}
-                  </TableCell>
-                  <TableCell
-                    sx={tableCellStyles}
-                    data-cy={`hydrotestResult.${index}.maxValue-formDisplay`}>
-                    {result?.maxValue && (
-                      <>
-                        <span>{result?.maxValue + " "}</span>
-                        {getParameterUnit(result.parameterId)}
-                      </>
-                    )}
-                  </TableCell>
+                  <TableCell sx={tableHeaderStyles}>{t("value")}</TableCell>
+                  <TableCell sx={tableHeaderStyles}>{t("minValue")}</TableCell>
+                  <TableCell sx={tableHeaderStyles}>{t("maxValue")}</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {item?.hydrotestResults?.map((result, index) => (
+                  <TableRow
+                    key={index}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                    <TableCell
+                      component="th"
+                      scope="row"
+                      sx={{
+                        ...tableCellStyles,
+                        "& .MuiFormControl-root": {
+                          minWidth: "100%",
+                          maxWidth: "100%",
+                        },
+                        pr: "3px",
+                        pl: "3px",
+                        maxWidth: "200px",
+                        minWidth: "200px",
+                      }}
+                      data-cy={`hydrotestResult.${index}.parameter-formDisplay`}>
+                      {domains?.data?.find(d => d.id === result.parameterId)?.[
+                        i18n.language
+                      ] || ""}
+                    </TableCell>
+                    <TableCell
+                      sx={tableCellStyles}
+                      data-cy={`hydrotestResult.${index}.value-formDisplay`}>
+                      {result?.value && (
+                        <>
+                          <span>{result?.value + " "}</span>
+                          {getParameterUnit(result.parameterId)}
+                        </>
+                      )}
+                    </TableCell>
+                    <TableCell
+                      sx={tableCellStyles}
+                      data-cy={`hydrotestResult.${index}.minValue-formDisplay`}>
+                      {result?.minValue && (
+                        <>
+                          <span>{result?.minValue + " "}</span>
+                          {getParameterUnit(result.parameterId)}
+                        </>
+                      )}
+                    </TableCell>
+                    <TableCell
+                      sx={tableCellStyles}
+                      data-cy={`hydrotestResult.${index}.maxValue-formDisplay`}>
+                      {result?.maxValue && (
+                        <>
+                          <span>{result?.maxValue + " "}</span>
+                          {getParameterUnit(result.parameterId)}
+                        </>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
       )}
     </DataDisplayCard>
   );
