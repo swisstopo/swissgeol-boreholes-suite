@@ -44,14 +44,14 @@ describe("Tests for the wateringress editor.", () => {
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1");
-    setInput("fromDepth", "0");
-    setInput("toDepth", "10");
-    setSelect("kindId", 2);
-    setSelect("materialId", 3);
     setInput("dateStart", "2021-01-01");
     setInput("dateFinish", "2021-01-02");
-    setInput("innerDiameter", "3");
-    setInput("outerDiameter", "4");
+    setInput("casingElements.0.fromDepth", "0");
+    setInput("casingElements.0.toDepth", "10");
+    setSelect("casingElements.0.kindId", 2);
+    setSelect("casingElements.0.materialId", 3);
+    setInput("casingElements.0.innerDiameter", "3");
+    setInput("casingElements.0.outerDiameter", "4");
 
     saveForm();
     cy.wait("@casing_GET");
