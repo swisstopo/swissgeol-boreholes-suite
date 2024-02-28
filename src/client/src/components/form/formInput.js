@@ -14,6 +14,7 @@ export const FormInput = props => {
     value,
     sx,
     inputProps,
+    onUpdate,
   } = props;
   const { t } = useTranslation();
   const { formState, register, setValue } = useFormContext();
@@ -52,6 +53,9 @@ export const FormInput = props => {
         valueAsNumber: type === "number" ? true : false,
         onChange: e => {
           setValue(fieldName, e.target.value, { shouldValidate: true });
+          if (onUpdate) {
+            onUpdate(e.target.value);
+          }
         },
       })}
       defaultValue={getDefaultValue(value)}

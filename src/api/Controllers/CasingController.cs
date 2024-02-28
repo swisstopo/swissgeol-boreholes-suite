@@ -26,9 +26,11 @@ public class CasingController : BdmsControllerBase<Casing>
     public async Task<IEnumerable<Casing>> GetAsync([FromQuery] int? completionId = null, [FromQuery] int? boreholeId = null)
     {
         var casings = Context.Casings
+            .Include(c => c.CasingElements)
+                .ThenInclude(e => e.Material)
+            .Include(c => c.CasingElements)
+                .ThenInclude(e => e.Kind)
             .Include(c => c.Completion)
-            .Include(c => c.Material)
-            .Include(c => c.Kind)
             .AsNoTracking();
 
         if (completionId != null)
@@ -51,8 +53,10 @@ public class CasingController : BdmsControllerBase<Casing>
     public async Task<ActionResult<Casing>> GetByIdAsync(int id)
     {
         var casing = await Context.Casings
-            .Include(i => i.Material)
-            .Include(i => i.Kind)
+            .Include(c => c.CasingElements)
+                .ThenInclude(e => e.Material)
+            .Include(c => c.CasingElements)
+                .ThenInclude(e => e.Kind)
             .AsNoTracking()
             .SingleOrDefaultAsync(i => i.Id == id)
             .ConfigureAwait(false);
@@ -67,13 +71,58 @@ public class CasingController : BdmsControllerBase<Casing>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<ActionResult<Casing>> CreateAsync(Casing entity)
-        => base.CreateAsync(entity);
+    public override async Task<ActionResult<Casing>> CreateAsync(Casing entity)
+    {
+        if (entity == null) return BadRequest();
+
+        try
+        {
+            if (!(entity.CasingElements?.Count > 0))
+            {
+                return Problem("At least one casing element must be defined.");
+            }
+
+            return await base.CreateAsync(entity).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            var message = "An error ocurred while creating the completion.";
+            Logger.LogError(ex, message);
+            return Problem(message);
+        }
+    }
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<ActionResult<Casing>> EditAsync(Casing entity)
-        => base.EditAsync(entity);
+    public override async Task<ActionResult<Casing>> EditAsync(Casing entity)
+    {
+        if (entity == null) return BadRequest();
+
+        try
+        {
+            if (entity.CasingElements.Count == 0)
+            {
+                return Problem("At least one casing element must be defined.");
+            }
+
+            var existingEntity = await Context.Casings.Include(c => c.CasingElements).SingleOrDefaultAsync(c => c.Id == entity.Id).ConfigureAwait(false);
+            if (existingEntity == null)
+            {
+                return NotFound();
+            }
+
+            Context.Entry(existingEntity).CurrentValues.SetValues(entity);
+            existingEntity.CasingElements = entity.CasingElements;
+
+            return await base.EditAsync(entity).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            var message = "An error ocurred while processing the casing";
+            Logger.LogError(ex, message);
+            return Problem(message);
+        }
+    }
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
@@ -82,6 +131,7 @@ public class CasingController : BdmsControllerBase<Casing>
         try
         {
             var casing = await Context.Casings
+                .Include(c => c.CasingElements)
                 .Include(c => c.Instrumentations)
                 .Include(c => c.Observations)
                 .AsNoTracking()

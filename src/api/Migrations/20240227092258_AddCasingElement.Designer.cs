@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240227092258_AddCasingElement")]
+    partial class AddCasingElement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1327,106 +1330,26 @@ namespace BDMS.Migrations
                     b.ToTable("layer", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.LayerColorCode", b =>
+            modelBuilder.Entity("BDMS.Models.LayerCodelist", b =>
                 {
                     b.Property<int>("LayerId")
                         .HasColumnType("integer")
-                        .HasColumnName("layer_id");
+                        .HasColumnName("id_lay_fk");
 
                     b.Property<int>("CodelistId")
                         .HasColumnType("integer")
-                        .HasColumnName("color_id");
+                        .HasColumnName("id_cli_fk");
+
+                    b.Property<string>("SchemaName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("code_cli");
 
                     b.HasKey("LayerId", "CodelistId");
 
                     b.HasIndex("CodelistId");
 
-                    b.ToTable("layer_color_codelist", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerDebrisCode", b =>
-                {
-                    b.Property<int>("LayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("layer_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("debris_id");
-
-                    b.HasKey("LayerId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("layer_debris_codelist", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerGrainAngularityCode", b =>
-                {
-                    b.Property<int>("LayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("layer_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("grain_angularity_id");
-
-                    b.HasKey("LayerId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("layer_grain_angularity_codelist", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerGrainShapeCode", b =>
-                {
-                    b.Property<int>("LayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("layer_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("grain_shape_id");
-
-                    b.HasKey("LayerId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("layer_grain_shape_codelist", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerOrganicComponentCode", b =>
-                {
-                    b.Property<int>("LayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("layer_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("organic_components_id");
-
-                    b.HasKey("LayerId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("layer_organic_component_codelist", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerUscs3Code", b =>
-                {
-                    b.Property<int>("LayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("layer_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("uscs3_id");
-
-                    b.HasKey("LayerId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("layer_uscs3_codelist", "bdms");
+                    b.ToTable("layer_codelist", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.LithologicalDescription", b =>
@@ -2255,11 +2178,13 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Kind")
                         .WithMany()
                         .HasForeignKey("KindId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.Codelist", "Material")
                         .WithMany()
                         .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
@@ -2591,111 +2516,16 @@ namespace BDMS.Migrations
                     b.Navigation("UscsDetermination");
                 });
 
-            modelBuilder.Entity("BDMS.Models.LayerColorCode", b =>
+            modelBuilder.Entity("BDMS.Models.LayerCodelist", b =>
                 {
                     b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LayerColorCodes")
+                        .WithMany("LayerCodelists")
                         .HasForeignKey("CodelistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.Layer", "Layer")
-                        .WithMany("LayerColorCodes")
-                        .HasForeignKey("LayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("Layer");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerDebrisCode", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LayerDebrisCodes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Layer", "Layer")
-                        .WithMany("LayerDebrisCodes")
-                        .HasForeignKey("LayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("Layer");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerGrainAngularityCode", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LayerGrainAngularityCodes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Layer", "Layer")
-                        .WithMany("LayerGrainAngularityCodes")
-                        .HasForeignKey("LayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("Layer");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerGrainShapeCode", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LayerGrainShapeCodes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Layer", "Layer")
-                        .WithMany("LayerGrainShapeCodes")
-                        .HasForeignKey("LayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("Layer");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerOrganicComponentCode", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LayerOrganicComponentCodes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Layer", "Layer")
-                        .WithMany("LayerOrganicComponentCodes")
-                        .HasForeignKey("LayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("Layer");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerUscs3Code", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LayerUscs3Codes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Layer", "Layer")
-                        .WithMany("LayerUscs3Codes")
+                        .WithMany("LayerCodelists")
                         .HasForeignKey("LayerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2968,17 +2798,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("HydrotestCodelists");
 
-                    b.Navigation("LayerColorCodes");
-
-                    b.Navigation("LayerDebrisCodes");
-
-                    b.Navigation("LayerGrainAngularityCodes");
-
-                    b.Navigation("LayerGrainShapeCodes");
-
-                    b.Navigation("LayerOrganicComponentCodes");
-
-                    b.Navigation("LayerUscs3Codes");
+                    b.Navigation("LayerCodelists");
                 });
 
             modelBuilder.Entity("BDMS.Models.Completion", b =>
@@ -2997,17 +2817,7 @@ namespace BDMS.Migrations
 
             modelBuilder.Entity("BDMS.Models.Layer", b =>
                 {
-                    b.Navigation("LayerColorCodes");
-
-                    b.Navigation("LayerDebrisCodes");
-
-                    b.Navigation("LayerGrainAngularityCodes");
-
-                    b.Navigation("LayerGrainShapeCodes");
-
-                    b.Navigation("LayerOrganicComponentCodes");
-
-                    b.Navigation("LayerUscs3Codes");
+                    b.Navigation("LayerCodelists");
                 });
 
             modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>

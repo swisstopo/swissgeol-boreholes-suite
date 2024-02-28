@@ -1,14 +1,35 @@
-import React from "react";
-import { Stack } from "@mui/material";
+import React, { useEffect } from "react";
+import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import { Box, IconButton, Stack, Typography } from "@mui/material";
+import Delete from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
-import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
+import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
+import {
+  AddButton,
+  CancelButton,
+  SaveButton,
+} from "../../../../components/buttons/buttons";
+import { extractCasingDepth } from "./casing";
 
-const CasingInput = ({ item, setSelected, parentId, addData, updateData }) => {
+const CasingInput = props => {
+  const { item, setSelected, parentId, addData, updateData } = props;
   const domains = useDomains();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const formMethods = useForm({
+    defaultValues: {
+      casingElements: item?.casingElements || [],
+    },
+  });
+  const { fields, append, remove } = useFieldArray({
+    name: "casingElements",
+    control: formMethods.control,
+    rules: {
+      required: true,
+    },
+  });
 
   const prepareFormDataForSubmit = data => {
     if (data?.dateStart === "") {
@@ -21,104 +42,221 @@ const CasingInput = ({ item, setSelected, parentId, addData, updateData }) => {
     return data;
   };
 
+  const submitForm = data => {
+    data = prepareFormDataForSubmit(data);
+    if (item.id === 0) {
+      addData({
+        ...data,
+      });
+    } else {
+      updateData({
+        ...item,
+        ...data,
+      });
+    }
+  };
+
+  const closeFormIfCompleted = () => {
+    if (formMethods.formState.isValid) {
+      formMethods.handleSubmit(submitForm)();
+      setSelected(null);
+    }
+  };
+
+  const updateDepth = () => {
+    var depths = extractCasingDepth(formMethods.getValues());
+
+    if (
+      depths.min !== formMethods.getValues()["fromDepth"] ||
+      depths.max !== formMethods.getValues()["toDepth"]
+    ) {
+      formMethods.setValue("fromDepth", depths.min || 0);
+      formMethods.setValue("toDepth", depths.max || 0);
+    }
+  };
+
+  // trigger form validation on mount
+  useEffect(() => {
+    formMethods.trigger();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formMethods.trigger]);
+
+  useEffect(() => {
+    var casingElements = formMethods.getValues()["casingElements"];
+    if (casingElements.length === 0) {
+      append();
+    }
+    updateDepth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formMethods.getValues()["casingElements"]]);
+
   return (
-    <DataInputCard
-      item={item}
-      setSelected={setSelected}
-      addData={addData}
-      updateData={updateData}
-      prepareFormDataForSubmit={prepareFormDataForSubmit}>
-      <FormInput
-        fieldName="name"
-        label="casingName"
-        value={item.name}
-        required={true}
-      />
-      <Stack direction="row">
-        <FormInput
-          fieldName="fromDepth"
-          label="fromdepth"
-          value={item.fromDepth}
-          type="number"
-          required={true}
-        />
-        <FormInput
-          fieldName="toDepth"
-          label="todepth"
-          value={item.toDepth}
-          type="number"
-          required={true}
-        />
-      </Stack>
-      <Stack direction="row">
-        <FormSelect
-          fieldName="kindId"
-          label="kindCasingLayer"
-          selected={item.kindId}
-          required={true}
-          values={domains?.data
-            ?.filter(d => d.schema === completionSchemaConstants.casingType)
-            .sort((a, b) => a.order - b.order)
-            .map(d => ({
-              key: d.id,
-              name: d[i18n.language],
-            }))}
-        />
-        <FormSelect
-          fieldName="materialId"
-          label="materialCasingLayer"
-          selected={item.materialId}
-          required={true}
-          values={domains?.data
-            ?.filter(d => d.schema === completionSchemaConstants.casingMaterial)
-            .sort((a, b) => a.order - b.order)
-            .map(d => ({
-              key: d.id,
-              name: d[i18n.language],
-            }))}
-        />
-      </Stack>
-      <Stack direction="row">
-        <FormInput
-          fieldName="dateStart"
-          label="dateStartCasing"
-          value={item.dateStart}
-          type="date"
-          required={true}
-        />
-        <FormInput
-          fieldName="dateFinish"
-          label="dateFinishCasing"
-          value={item.dateFinish}
-          type="date"
-          required={true}
-        />
-      </Stack>
-      <Stack direction="row">
-        <FormInput
-          fieldName="innerDiameter"
-          label="casingInnerDiameter"
-          value={item.innerDiameter}
-          type="number"
-          required={true}
-        />
-        <FormInput
-          fieldName="outerDiameter"
-          label="casingOuterDiameter"
-          value={item.outerDiameter}
-          type="number"
-          required={true}
-        />
-      </Stack>
-      <Stack direction="row">
-        <FormInput
-          fieldName="notes"
-          label="notes"
-          multiline={true}
-          value={item.notes}
-        />
-      </Stack>
-    </DataInputCard>
+    <FormProvider {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(submitForm)}>
+        <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
+          <FormInput
+            fieldName="name"
+            label="casingName"
+            value={item.name}
+            required={true}
+          />
+          <Stack direction="row">
+            <FormInput
+              fieldName="fromDepth"
+              label="fromdepth"
+              value={item.fromDepth}
+              type="number"
+              disabled={true}
+            />
+            <FormInput
+              fieldName="toDepth"
+              label="todepth"
+              value={item.toDepth}
+              type="number"
+              disabled={true}
+            />
+          </Stack>
+          <Stack direction="row">
+            <FormInput
+              fieldName="dateStart"
+              label="dateStartCasing"
+              value={item.dateStart}
+              type="date"
+              required={true}
+            />
+            <FormInput
+              fieldName="dateFinish"
+              label="dateFinishCasing"
+              value={item.dateFinish}
+              type="date"
+              required={true}
+            />
+          </Stack>
+          <Stack direction="row">
+            <FormInput
+              fieldName="notes"
+              label="notes"
+              multiline={true}
+              value={item.notes}
+            />
+          </Stack>
+          <Box
+            sx={{
+              paddingBottom: "8.5px",
+              marginRight: "8px !important",
+              marginTop: "18px !important",
+            }}>
+            <Stack
+              direction={"row"}
+              sx={{ width: "100%" }}
+              spacing={1}
+              justifyContent={"space-between"}>
+              <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>
+                {t("casingElements")}
+              </Typography>
+              <AddButton
+                label="addCasingElement"
+                onClick={e => {
+                  append();
+                }}
+              />
+            </Stack>
+            {fields
+              .sort((a, b) => a.fromDepth - b.fromDepth)
+              .map((field, index) => (
+                <Stack
+                  direction={"row"}
+                  key={field.id}
+                  marginTop="8px"
+                  data-cy={`casingElement-${index}`}>
+                  <FormInput
+                    fieldName={`casingElements.${index}.fromDepth`}
+                    label="fromdepth"
+                    value={field.fromDepth}
+                    type="number"
+                    required={true}
+                    onUpdate={updateDepth}
+                  />
+                  <FormInput
+                    fieldName={`casingElements.${index}.toDepth`}
+                    label="todepth"
+                    value={field.toDepth}
+                    type="number"
+                    required={true}
+                    onUpdate={updateDepth}
+                  />
+                  <FormSelect
+                    fieldName={`casingElements.${index}.kindId`}
+                    label="kindCasingLayer"
+                    selected={field.kindId}
+                    required={true}
+                    values={domains?.data
+                      ?.filter(
+                        d => d.schema === completionSchemaConstants.casingType,
+                      )
+                      .sort((a, b) => a.order - b.order)
+                      .map(d => ({
+                        key: d.id,
+                        name: d[i18n.language],
+                      }))}
+                  />
+                  <FormSelect
+                    fieldName={`casingElements.${index}.materialId`}
+                    label="materialCasingLayer"
+                    selected={field.materialId}
+                    required={true}
+                    values={domains?.data
+                      ?.filter(
+                        d =>
+                          d.schema === completionSchemaConstants.casingMaterial,
+                      )
+                      .sort((a, b) => a.order - b.order)
+                      .map(d => ({
+                        key: d.id,
+                        name: d[i18n.language],
+                      }))}
+                  />
+                  <FormInput
+                    fieldName={`casingElements.${index}.innerDiameter`}
+                    label="casingInnerDiameter"
+                    value={field.innerDiameter}
+                    type="number"
+                    required={true}
+                  />
+                  <FormInput
+                    fieldName={`casingElements.${index}.outerDiameter`}
+                    label="casingOuterDiameter"
+                    value={field.outerDiameter}
+                    type="number"
+                    required={true}
+                  />
+                  <IconButton
+                    onClick={() => remove(index)}
+                    disabled={fields.length === 1}
+                    color="error"
+                    sx={{ marginTop: "10px !important" }}>
+                    <Delete />
+                  </IconButton>
+                </Stack>
+              ))}
+          </Box>
+        </Stack>
+        <DataCardButtonContainer>
+          <CancelButton
+            onClick={() => {
+              formMethods.reset();
+              setSelected(null);
+            }}
+          />
+          <SaveButton
+            disabled={!formMethods.formState.isValid}
+            onClick={() => {
+              closeFormIfCompleted();
+            }}
+          />
+        </DataCardButtonContainer>
+      </form>
+    </FormProvider>
   );
 };
 

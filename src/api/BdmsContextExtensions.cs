@@ -1,4 +1,4 @@
-using BDMS.Models;
+﻿using BDMS.Models;
 using Bogus;
 using EFCore.BulkExtensions;
 using Microsoft.Data.SqlClient;
@@ -631,14 +631,6 @@ public static class BdmsContextExtensions
             .RuleFor(c => c.CompletionId, f => f.PickRandom(completions.Select(c => c.Id)))
             .RuleFor(c => c.Completion, _ => default!)
             .RuleFor(c => c.Name, f => f.Random.Word())
-            .RuleFor(c => c.FromDepth, f => (casing_ids % 10) * 10)
-            .RuleFor(c => c.ToDepth, f => ((casing_ids % 10) + 1) * 10)
-            .RuleFor(c => c.KindId, f => f.PickRandom(casingKindIds))
-            .RuleFor(c => c.Kind, _ => default!)
-            .RuleFor(c => c.MaterialId, f => f.PickRandom(casingMaterialIds))
-            .RuleFor(c => c.Material, _ => default!)
-            .RuleFor(c => c.InnerDiameter, f => f.Random.Double(0, 15))
-            .RuleFor(c => c.OuterDiameter, f => f.Random.Double(0, 20))
             .RuleFor(c => c.DateFinish, f => DateOnly.FromDateTime(f.Date.Past()))
             .RuleFor(c => c.DateStart, f => DateOnly.FromDateTime(f.Date.Past()))
             .RuleFor(c => c.Notes, f => f.Random.Words(4))
@@ -660,6 +652,33 @@ public static class BdmsContextExtensions
         var casings = completions.Select(c => SeededCasing(c)).ToList();
 
         context.BulkInsert(casings, bulkConfig);
+
+        context.SaveChanges();
+
+        // Seed Casing elements
+        var casingElement_ids = 18_000_000;
+        var casingElementRange = Enumerable.Range(casingElement_ids, 1000).ToList();
+        var fakeCasingElement = new Faker<CasingElement>()
+            .RuleFor(c => c.CasingId, f => f.PickRandom(casings.Select(c => c.Id)))
+            .RuleFor(c => c.Casing, _ => default!)
+            .RuleFor(c => c.FromDepth, f => (casing_ids % 10) * 10)
+            .RuleFor(c => c.ToDepth, f => ((casing_ids % 10) + 1) * 10)
+            .RuleFor(c => c.KindId, f => f.PickRandom(casingKindIds))
+            .RuleFor(c => c.Kind, _ => default!)
+            .RuleFor(c => c.MaterialId, f => f.PickRandom(casingMaterialIds))
+            .RuleFor(c => c.Material, _ => default!)
+            .RuleFor(c => c.InnerDiameter, f => f.Random.Double(0, 15))
+            .RuleFor(c => c.OuterDiameter, f => f.Random.Double(0, 20))
+            .RuleFor(c => c.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(c => c.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(c => c.CreatedBy, _ => default!)
+            .RuleFor(c => c.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(c => c.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(c => c.UpdatedBy, _ => default!)
+            .RuleFor(c => c.Id, f => casingElement_ids++);
+
+        CasingElement SeededCasingElements(int seed) => fakeCasingElement.UseSeed(seed).Generate();
+        context.BulkInsert(casingElementRange.Select(SeededCasingElements).ToList(), bulkConfig);
 
         context.SaveChanges();
 
