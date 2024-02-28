@@ -232,6 +232,7 @@ const CasingInput = props => {
                   />
                   <IconButton
                     onClick={() => remove(index)}
+                    data-cy={`casingElements.${index}.delete`}
                     disabled={fields.length === 1}
                     color="error"
                     sx={{ marginTop: "10px !important" }}>

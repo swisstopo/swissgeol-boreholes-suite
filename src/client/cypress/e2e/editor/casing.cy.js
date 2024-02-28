@@ -6,6 +6,7 @@ import {
 } from "../helpers/testHelpers";
 import {
   evaluateDisplayValue,
+  evaluateInput,
   setInput,
   setSelect,
 } from "../helpers/formHelpers";
@@ -17,7 +18,7 @@ import {
 } from "../helpers/buttonHelpers";
 
 describe("Casing crud tests", () => {
-  it("add, edit and delete casings", () => {
+  beforeEach(() => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
       .then(id => createCompletion("test casing", id, 16000002, true))
@@ -39,21 +40,27 @@ describe("Casing crud tests", () => {
     // select casing tab
     cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
+  });
 
+  it("add, edit and delete casings", () => {
     // create casing
     addItem("addCasing");
     cy.wait("@codelist_GET");
+    cy.get('[data-cy="casingElements.0.delete"]').should("be.disabled");
 
     setInput("name", "casing-1");
-    setInput("fromDepth", "0");
-    setInput("toDepth", "10");
-    setSelect("kindId", 2);
-    setSelect("materialId", 3);
     setInput("dateStart", "2021-01-01");
     setInput("dateFinish", "2021-01-02");
-    setInput("innerDiameter", "3");
-    setInput("outerDiameter", "4");
     setInput("notes", "Lorem.");
+
+    setInput("casingElements.0.fromDepth", "0");
+    evaluateInput("fromDepth", "0");
+    setInput("casingElements.0.toDepth", "10");
+    evaluateInput("toDepth", "10");
+    setSelect("casingElements.0.kindId", 2);
+    setSelect("casingElements.0.materialId", 3);
+    setInput("casingElements.0.innerDiameter", "3");
+    setInput("casingElements.0.outerDiameter", "4");
 
     saveForm();
     cy.wait("@casing_GET");
@@ -61,25 +68,27 @@ describe("Casing crud tests", () => {
     evaluateDisplayValue("name", "casing-1");
     evaluateDisplayValue("fromdepth", "0");
     evaluateDisplayValue("todepth", "10");
-    evaluateDisplayValue("kindCasingLayer", "conductor pipe");
-    evaluateDisplayValue("materialCasingLayer", "steel");
     evaluateDisplayValue("dateStartCasing", "01. Jan. 2021");
     evaluateDisplayValue("dateFinishCasing", "02. Jan. 2021");
-    evaluateDisplayValue("casingInnerDiameter", "3");
-    evaluateDisplayValue("casingOuterDiameter", "4");
     evaluateDisplayValue("notes", "Lorem.");
+    evaluateDisplayValue("casingElements.0.fromDepth", "0");
+    evaluateDisplayValue("casingElements.0.toDepth", "10");
+    evaluateDisplayValue("casingElements.0.kindId", "conductor pipe");
+    evaluateDisplayValue("casingElements.0.materialId", "steel");
+    evaluateDisplayValue("casingElements.0.innerDiameter", "3");
+    evaluateDisplayValue("casingElements.0.outerDiameter", "4");
 
     // update casing
     startEditing();
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1 updated");
-    setSelect("materialId", 5);
+    setSelect("casingElements.0.materialId", 5);
 
     saveForm();
     evaluateDisplayValue("name", "casing-1 updated");
-    evaluateDisplayValue("materialCasingLayer", "concrete");
-    evaluateDisplayValue("casingInnerDiameter", "3");
+    evaluateDisplayValue("casingElements.0.materialId", "concrete");
+    evaluateDisplayValue("casingElements.0.innerDiameter", "3");
 
     // delete casing
     // Precondition: instrumentation with reference to casing
@@ -108,5 +117,99 @@ describe("Casing crud tests", () => {
     cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
     evaluateDisplayValue("casingName", "-");
+  });
+
+  it("sort casings", () => {
+    addItem("addCasing");
+    cy.wait("@codelist_GET");
+    cy.get('[data-cy="casingElements.0.delete"]').should("be.disabled");
+
+    setInput("name", "casing-1");
+    setInput("dateStart", "2021-01-01");
+    setInput("dateFinish", "2021-01-02");
+    setInput("notes", "Lorem.");
+
+    setInput("casingElements.0.fromDepth", "5");
+    evaluateInput("fromDepth", "5");
+    setInput("casingElements.0.toDepth", "10");
+    evaluateInput("toDepth", "10");
+    setSelect("casingElements.0.kindId", 2);
+    setSelect("casingElements.0.materialId", 3);
+    setInput("casingElements.0.innerDiameter", "3");
+    setInput("casingElements.0.outerDiameter", "4");
+    saveForm();
+    cy.wait("@casing_GET");
+    evaluateDisplayValue("casingElements.0.fromDepth", "5");
+    evaluateDisplayValue("casingElements.0.toDepth", "10");
+
+    startEditing();
+    addItem("addCasingElement");
+    cy.get('[data-cy="casingElements.0.delete"]').should("be.enabled");
+    cy.get('[data-cy="casingElements.1.delete"]').should("be.enabled");
+    setInput("casingElements.1.fromDepth", "0");
+    evaluateInput("fromDepth", "0");
+    setInput("casingElements.1.toDepth", "5");
+    evaluateInput("toDepth", "10");
+    setSelect("casingElements.1.kindId", 2);
+    setSelect("casingElements.1.materialId", 3);
+    setInput("casingElements.1.innerDiameter", "3");
+    setInput("casingElements.1.outerDiameter", "4");
+
+    saveForm();
+    cy.wait("@casing_GET");
+
+    evaluateDisplayValue("casingElements.0.fromDepth", "0");
+    evaluateDisplayValue("casingElements.0.toDepth", "5");
+    evaluateDisplayValue("casingElements.1.fromDepth", "5");
+    evaluateDisplayValue("casingElements.1.toDepth", "10");
+
+    addItem("addCasing");
+    cy.wait("@codelist_GET");
+    setInput("name", "casing-2");
+    setInput("dateStart", "2021-01-01");
+    setInput("dateFinish", "2021-01-02");
+    setInput("notes", "Lorem.");
+
+    setInput("casingElements.0.fromDepth", "0");
+    setInput("casingElements.0.toDepth", "12");
+    setSelect("casingElements.0.kindId", 2);
+    setSelect("casingElements.0.materialId", 3);
+    setInput("casingElements.0.innerDiameter", "3");
+    setInput("casingElements.0.outerDiameter", "4");
+    saveForm();
+    cy.wait("@casing_GET");
+
+    cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains(
+      "casing-1",
+    );
+    cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains(
+      "casing-2",
+    );
+
+    cy.get('[data-cy="casing-card.1"] [data-cy="edit-button"]').click({
+      force: true,
+    });
+    setInput("casingElements.0.toDepth", "8");
+    saveForm();
+    cy.wait("@casing_GET");
+    cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains(
+      "casing-2",
+    );
+    cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains(
+      "casing-1",
+    );
+
+    cy.get('[data-cy="casing-card.0"] [data-cy="edit-button"]').click({
+      force: true,
+    });
+    setInput("casingElements.0.fromDepth", "3");
+    saveForm();
+    cy.wait("@casing_GET");
+    cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains(
+      "casing-1",
+    );
+    cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains(
+      "casing-2",
+    );
   });
 });

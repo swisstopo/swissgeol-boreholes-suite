@@ -117,26 +117,26 @@ const CasingDisplay = props => {
                   </TableCell>
                   <TableCell
                     sx={tableCellStyles}
-                    data-cy={`casingElements.${index}.value-formDisplay`}>
+                    data-cy={`casingElements.${index}.toDepth-formDisplay`}>
                     {element.toDepth}
                   </TableCell>
                   <TableCell
                     sx={tableCellStyles}
-                    data-cy={`casingElements.${index}.minValue-formDisplay`}>
+                    data-cy={`casingElements.${index}.kindId-formDisplay`}>
                     {domains?.data?.find(d => d.id === element.kindId)?.[
                       i18n.language
                     ] || ""}
                   </TableCell>
                   <TableCell
                     sx={tableCellStyles}
-                    data-cy={`casingElements.${index}.maxValue-formDisplay`}>
+                    data-cy={`casingElements.${index}.materialId-formDisplay`}>
                     {domains?.data?.find(d => d.id === element.materialId)?.[
                       i18n.language
                     ] || ""}
                   </TableCell>
                   <TableCell
                     sx={tableCellStyles}
-                    data-cy={`casingElements.${index}.minValue-formDisplay`}>
+                    data-cy={`casingElements.${index}.innerDiameter-formDisplay`}>
                     {element.innerDiameter}
                   </TableCell>
                   <TableCell
