@@ -31,31 +31,6 @@ export const FormInput = props => {
     }
   };
 
-  const isValidDate = dateString => {
-    var regex = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?$/;
-    var matches = dateString.match(regex);
-    if (!matches) {
-      return false;
-    }
-
-    var year = parseInt(matches[1], 10);
-    var month = parseInt(matches[2], 10) - 1;
-    var day = parseInt(matches[3], 10);
-    var hour = matches[4] ? parseInt(matches[4], 10) : 0;
-    var minute = matches[5] ? parseInt(matches[5], 10) : 0;
-
-    var date = new Date(year, month, day, hour, minute);
-    if (
-      date.getFullYear() !== year ||
-      date.getMonth() !== month ||
-      date.getDate() !== day
-    ) {
-      return false;
-    }
-
-    return true;
-  };
-
   return (
     <FormField
       name={fieldName}
@@ -80,7 +55,12 @@ export const FormInput = props => {
             return true;
           }
           if (type === "date" || type === "datetime-local") {
-            return isValidDate(value);
+            var date = new Date(value);
+            return (
+              !isNaN(date) &&
+              date.getFullYear() > 1800 &&
+              date.getFullYear() < 3000
+            );
           }
           return true;
         },
