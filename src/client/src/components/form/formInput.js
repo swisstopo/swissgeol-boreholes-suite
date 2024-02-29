@@ -76,6 +76,9 @@ export const FormInput = props => {
         required: required || false,
         valueAsNumber: type === "number" ? true : false,
         validate: value => {
+          if (value === "") {
+            return true;
+          }
           if (type === "date" || type === "datetime-local") {
             return isValidDate(value);
           }
