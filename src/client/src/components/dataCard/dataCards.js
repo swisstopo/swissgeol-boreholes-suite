@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, createRef, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Typography } from "@mui/material";
 import {
@@ -86,26 +86,6 @@ export const DataCards = props => {
     setDisplayed(state.data);
   }, [state.data]);
 
-  // scroll to newly added item
-  const dataRefs = useMemo(
-    () =>
-      Array(displayed?.length)
-        .fill(null)
-        .map(() => createRef(null)),
-    [displayed],
-  );
-
-  useEffect(() => {
-    if (displayed?.length > 0) {
-      const lastDataRef = dataRefs[displayed?.length - 1];
-      if (displayed[displayed?.length - 1].id === 0)
-        lastDataRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-    }
-  }, [displayed, dataRefs]);
-
   return (
     <FullPage data-cy={`${cyLabel}-content`}>
       <DataCardButtonContainer>
@@ -116,7 +96,7 @@ export const DataCards = props => {
               e.stopPropagation();
               if (!selected) {
                 const temp = { id: 0 };
-                setDisplayed([...state.data, temp]);
+                setDisplayed([temp, ...state.data]);
                 setSelected(temp);
               }
             }}
@@ -133,7 +113,7 @@ export const DataCards = props => {
             const isSelected = selected?.id === item.id;
             const isTemp = item.id === 0;
             return (
-              <DataCardItem key={item.id} ref={dataRefs[index]}>
+              <DataCardItem key={item.id}>
                 <DataCard key={item.id} data-cy={`${cyLabel}-card.${index}`}>
                   {isEditable && isSelected
                     ? renderInput({
