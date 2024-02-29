@@ -233,30 +233,38 @@ class PatchLayer(Action):
             ]:
 
                 schema = field
+                t_name = ""
 
                 if field == 'color':
                     schema = 'colour'
+                    t_name = "layer_color_codelist"
 
                 elif field == 'organic_component':
                     schema = 'organic_components'
+                    t_name = "layer_organic_component_codelist"
 
                 elif field == 'grain_shape':
                     schema = 'grain_shape'
+                    t_name = "layer_grain_shape_codelist"
 
                 elif field == 'grain_granularity':
                     schema = 'grain_angularity'
+                    t_name = "layer_grain_angularity_codelist"
 
                 elif field == 'uscs_3':
                     schema = 'uscs_type'
+                    t_name = "layer_uscs3_codelist"
 
                 elif field == 'debris':
                     schema = 'debris'
+                    t_name = "layer_debris_codelist"
 
-                await self.conn.execute("""
-                    DELETE FROM bdms.layer_codelist
-                    WHERE id_lay_fk = $1
-                    AND code_cli = $2
-                """, id, schema)
+                table_name = t_name
+
+                await self.conn.execute(f"""
+                    DELETE FROM {table_name}
+                    WHERE layer_id = $1
+                """, id)
 
                 if len(value) > 0:
                     # Check if domain(s) is(are) extracted from the
@@ -284,12 +292,11 @@ class PatchLayer(Action):
                             )
                         )
 
-                    await self.conn.executemany("""
-                        INSERT INTO
-                            bdms.layer_codelist (
-                                id_lay_fk, id_cli_fk, code_cli
-                            ) VALUES ($1, $2, $3)
-                    """, [(id, v, schema) for v in value])
+                    await self.conn.executemany(f"""
+                        INSERT INTO {table_name} (
+                            layer_id, id_cli_fk
+                        ) VALUES ($1, $2)
+                    """, [(id, v) for v in value])
 
                     await self.conn.execute("""
                         UPDATE bdms.layer
