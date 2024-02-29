@@ -1,30 +1,8 @@
 import { useEffect, useState } from "react";
-import { AuthProvider, useAuth } from "react-oidc-context";
-import { useDispatch } from "react-redux";
-import { setAuthentication, unsetAuthentication } from "./api-lib";
-import { WebStorageStateStore } from "oidc-client-ts";
-
-const AuthenticationStoreSync = () => {
-  const auth = useAuth();
-  const dispatch = useDispatch();
-
-  const [userValueExpired, setUserValueExpired] = useState(false);
-
-  useEffect(() => {
-    if (auth.isLoading) return;
-
-    if (auth.user && !auth.user.expired) {
-      // Trigger delayed rerender to reevaluate user.expired value.
-      setTimeout(
-        () => setUserValueExpired(current => !current),
-        auth.user.expires_in * 1000,
-      );
-      dispatch(setAuthentication(auth.user));
-    } else {
-      dispatch(unsetAuthentication());
-    }
-  }, [auth.user, userValueExpired, dispatch, auth.isLoading]);
-};
+import { AuthProvider } from "react-oidc-context";
+import { UserManager, WebStorageStateStore } from "oidc-client-ts";
+import { CognitoLogoutHandler } from "./CognitoLogoutHandler";
+import { AuthenticationStoreSync } from "./AuthenticationStoreSync";
 
 export const BdmsAuthProvider = props => {
   const [serverConfig, setServerConfig] = useState(undefined);
