@@ -7,7 +7,11 @@ import { useEffect } from "react";
 export const CognitoLogoutHandler = ({ userManager }) => {
   useEffect(() => {
     userManager.metadataService.getMetadata().then(metadata => {
-      if (new URL(metadata.end_session_endpoint).hostname.endsWith("amazoncognito.com")) {
+      if (
+        new URL(metadata.end_session_endpoint).hostname.endsWith(
+          "amazoncognito.com",
+        )
+      ) {
         const cognitoLogoutUrl = new URL(metadata.end_session_endpoint);
         cognitoLogoutUrl.searchParams.append(
           "client_id",
