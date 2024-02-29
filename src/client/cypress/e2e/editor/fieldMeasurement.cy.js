@@ -108,6 +108,7 @@ describe("Tests for the field measurement editor.", () => {
     saveForm();
     cy.wait("@fieldmeasurement_GET");
 
+    cy.wait(1000);
     addItem("addFieldmeasurement");
     cy.wait("@casing_GET");
     setInput("fromDepthM", 0);
