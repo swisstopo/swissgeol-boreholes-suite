@@ -22,6 +22,17 @@ export const BdmsAuthProvider = props => {
   useEffect(() => {
     if (!serverConfig) return;
 
+    const oidcClientSettings = {
+      authority: serverConfig.authority,
+      client_id: serverConfig.audience,
+      scope: serverConfig.scopes,
+      redirect_uri: window.location.origin,
+      post_logout_redirect_uri: window.location.origin,
+      userStore: new WebStorageStateStore({ store: window.localStorage }),
+    };
+
+    var userManager = new UserManager(oidcClientSettings);
+
     const onSigninCallback = user => {
       const preLoginState = JSON.parse(atob(user.url_state));
       // restore location after login.
@@ -29,19 +40,15 @@ export const BdmsAuthProvider = props => {
     };
 
     setOidcConfig({
-      authority: serverConfig.authority,
-      client_id: serverConfig.audience,
-      scope: serverConfig.scopes,
-      redirect_uri: window.location.origin,
-      post_logout_redirect_uri: window.location.origin,
-      userStore: new WebStorageStateStore({ store: window.localStorage }),
       onSigninCallback,
+      userManager,
     });
   }, [serverConfig]);
 
   return oidcConfig ? (
     <AuthProvider {...oidcConfig}>
       <AuthenticationStoreSync />
+      <CognitoLogoutHandler userManager={oidcConfig.userManager} />
       {props.children}
     </AuthProvider>
   ) : null;
