@@ -18,12 +18,12 @@ export const CognitoLogoutHandler = ({ userManager }) => {
           window.location.origin,
         );
 
-        const singoutRedirectOverride = _args => {
+        const signoutRedirectOverride = _args => {
           userManager.removeUser();
           window.location.assign(cognitoLogoutUrl.href);
         };
 
-        userManager.signoutRedirect = singoutRedirectOverride;
+        userManager.signoutRedirect = signoutRedirectOverride;
       }
     });
   }, [userManager]);
