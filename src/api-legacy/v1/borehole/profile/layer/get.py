@@ -119,7 +119,29 @@ class GetLayer(Action):
 
 class GetGeologyLayer(Action):
 
-    sql = """
+    key_to_table_column = {
+        'color': {'table': 'bdms.layer_color_codelist', 'column': 'color_id'},
+        'organic_components': {'table': 'bdms.layer_organic_component_codelist', 'column': 'organic_components_id'},
+        'grain_shape': {'table': 'bdms.layer_grain_shape_codelist', 'column': 'grain_shape_id'},
+        'uscs_3': {'table': 'bdms.layer_uscs3_codelist', 'column': 'uscs3_id'},
+        'grain_angularity': {'table': 'bdms.layer_grain_angularity_codelist', 'column': 'grain_angularity_id'},
+        'debris': {'table': 'bdms.layer_debris_codelist', 'column': 'debris_id'}
+    }
+
+    joins = []
+    for key, value in key_to_table_column.items():
+        joins.append(f"""
+            LEFT JOIN (
+                SELECT
+                    layer_id, array_agg({value['column']}) as {key}
+                FROM
+                    {value['table']}
+                GROUP BY layer_id
+            ) {key}
+            ON {key}.layer_id = id_lay
+        """)
+
+    sql = f"""
         SELECT
             id_lay AS id,
             stratigraphy.id_sty AS stratigraphy,
@@ -154,7 +176,7 @@ class GetGeologyLayer(Action):
             layer.lithology_id_cli AS lithology,
             layer.lithostratigraphy_id_cli AS lithostratigraphy,
             COALESCE(
-                colour, '{}'::int[]
+                colour, '{{}}'::int[]
             ) AS color,
             layer.plasticity_id_cli AS plasticity,
             layer.humidity_id_cli AS humidity,
@@ -162,26 +184,23 @@ class GetGeologyLayer(Action):
             layer.gradation_id_cli AS gradation,
             layer.alteration_id_cli AS alteration,
             layer.compactness_id_cli AS compactness,
-            /*COALESCE(
-                mlpr113, '{}'::int[]
-            ) AS jointing,*/
             COALESCE(
-                organic_components, '{}'::int[]
+                organic_components, '{{}}'::int[]
             ) AS organic_component,
             striae_lay AS striae,
             layer.grain_size_1_id_cli AS grain_size_1,
             layer.grain_size_2_id_cli AS grain_size_2,
             COALESCE(
-                grain_shape, '{}'::int[]
+                grain_shape, '{{}}'::int[]
             ) AS grain_shape,
             COALESCE(
-                grain_angularity, '{}'::int[]
+                grain_angularity, '{{}}'::int[]
             ) AS grain_granularity,
             layer.cohesion_id_cli AS cohesion,
             layer.uscs_1_id_cli AS uscs_1,
             layer.uscs_2_id_cli AS uscs_2,
             COALESCE(
-                uscs_type, '{}'::int[]
+                uscs_type, '{{}}'::int[]
             ) AS uscs_3,
             COALESCE(
                 uscs_original_lay, ''
@@ -191,7 +210,7 @@ class GetGeologyLayer(Action):
             ) AS original_lithology,
             uscs_determination_id_cli AS uscs_determination,
             COALESCE(
-                debris, '{}'::int[]
+                debris, '{{}}'::int[]
             ) AS debris,
             layer.lithology_top_bedrock_id_cli AS lithology_top_bedrock,
             COALESCE(
@@ -248,83 +267,6 @@ class GetGeologyLayer(Action):
         ON creator_lay = creator.id_usr
 
         INNER JOIN bdms.users as updater
-        ON updater_lay = updater.id_usr
-
-        LEFT JOIN (
-            SELECT
-                id_lay_fk, array_agg(id_cli_fk) as colour
-            FROM
-                bdms.layer_codelist
-            WHERE
-                code_cli = 'colour'
-            GROUP BY id_lay_fk
-        ) clr
-        ON clr.id_lay_fk = id_lay
-
-        LEFT JOIN (
-            SELECT
-                id_lay_fk, array_agg(id_cli_fk) as mlpr113
-            FROM
-                bdms.layer_codelist
-            WHERE
-                code_cli = 'mlpr113'
-            GROUP BY id_lay_fk
-        ) jng
-        ON jng.id_lay_fk = id_lay
-
-        LEFT JOIN (
-            SELECT
-                id_lay_fk, array_agg(id_cli_fk) as organic_components
-            FROM
-                bdms.layer_codelist
-            WHERE
-                code_cli = 'organic_components'
-            GROUP BY id_lay_fk
-        ) oco
-        ON oco.id_lay_fk = id_lay
-
-        LEFT JOIN (
-            SELECT
-                id_lay_fk, array_agg(id_cli_fk) as grain_shape
-            FROM
-                bdms.layer_codelist
-            WHERE
-                code_cli = 'grain_shape'
-            GROUP BY id_lay_fk
-        ) gsh
-        ON gsh.id_lay_fk = id_lay
-
-        LEFT JOIN (
-            SELECT
-                id_lay_fk, array_agg(id_cli_fk) as uscs_type
-            FROM
-                bdms.layer_codelist
-            WHERE
-                code_cli = 'uscs_type'
-            GROUP BY id_lay_fk
-        ) us3
-        ON us3.id_lay_fk = id_lay
-
-        LEFT JOIN (
-            SELECT
-                id_lay_fk, array_agg(id_cli_fk) as grain_angularity
-            FROM
-                bdms.layer_codelist
-            WHERE
-                code_cli = 'grain_angularity'
-            GROUP BY id_lay_fk
-        ) ggr
-        ON ggr.id_lay_fk = id_lay
-
-        LEFT JOIN (
-            SELECT
-                id_lay_fk, array_agg(id_cli_fk) as debris
-            FROM
-                bdms.layer_codelist
-            WHERE
-                code_cli = 'debris'
-            GROUP BY id_lay_fk
-        ) dbr
-        ON dbr.id_lay_fk = id_lay
-
+        ON updater_lay = updater.id_usrs
+        {' '.join(joins) if joins else ''}
     """
