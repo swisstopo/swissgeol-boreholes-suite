@@ -336,12 +336,6 @@ public class CompletionControllerTest
         Assert.AreNotEqual(originalCompletion.Casings.First().Id, copiedCompletion.Casings.First().Id);
         Assert.AreEqual(originalCompletion.Casings.Count, copiedCompletion.Casings.Count);
         Assert.AreEqual(originalCompletion.Casings.First().Name, copiedCompletion.Casings.First().Name);
-        Assert.AreEqual(originalCompletion.Casings.First().FromDepth, copiedCompletion.Casings.First().FromDepth);
-        Assert.AreEqual(originalCompletion.Casings.First().ToDepth, copiedCompletion.Casings.First().ToDepth);
-        Assert.AreEqual(originalCompletion.Casings.First().KindId, copiedCompletion.Casings.First().KindId);
-        Assert.AreEqual(originalCompletion.Casings.First().MaterialId, copiedCompletion.Casings.First().MaterialId);
-        Assert.AreEqual(originalCompletion.Casings.First().InnerDiameter, copiedCompletion.Casings.First().InnerDiameter);
-        Assert.AreEqual(originalCompletion.Casings.First().OuterDiameter, copiedCompletion.Casings.First().OuterDiameter);
         Assert.AreEqual(originalCompletion.Casings.First().DateStart, copiedCompletion.Casings.First().DateStart);
         Assert.AreEqual(originalCompletion.Casings.First().DateFinish, copiedCompletion.Casings.First().DateFinish);
         Assert.AreEqual(originalCompletion.Casings.First().Notes, copiedCompletion.Casings.First().Notes);

@@ -473,6 +473,55 @@ namespace BDMS.Migrations
                         .HasColumnType("date")
                         .HasColumnName("date_start");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text")
+                        .HasColumnName("notes");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("updater");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompletionId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("casing", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.CasingElement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CasingId")
+                        .HasColumnType("integer")
+                        .HasColumnName("casing_id");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("creator");
+
                     b.Property<double>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("from_depth");
@@ -488,15 +537,6 @@ namespace BDMS.Migrations
                     b.Property<int>("MaterialId")
                         .HasColumnType("integer")
                         .HasColumnName("material_id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text")
-                        .HasColumnName("notes");
 
                     b.Property<double>("OuterDiameter")
                         .HasColumnType("double precision")
@@ -516,7 +556,7 @@ namespace BDMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompletionId");
+                    b.HasIndex("CasingId");
 
                     b.HasIndex("CreatedById");
 
@@ -526,7 +566,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("casing", "bdms");
+                    b.ToTable("casing_element", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.ChronostratigraphyLayer", b =>
@@ -2189,23 +2229,44 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
+                    b.HasOne("BDMS.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("Completion");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("BDMS.Models.CasingElement", b =>
+                {
+                    b.HasOne("BDMS.Models.Casing", "Casing")
+                        .WithMany("CasingElements")
+                        .HasForeignKey("CasingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
                     b.HasOne("BDMS.Models.Codelist", "Kind")
                         .WithMany()
                         .HasForeignKey("KindId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.Codelist", "Material")
                         .WithMany()
                         .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.Navigation("Completion");
+                    b.Navigation("Casing");
 
                     b.Navigation("CreatedBy");
 
@@ -2894,6 +2955,8 @@ namespace BDMS.Migrations
 
             modelBuilder.Entity("BDMS.Models.Casing", b =>
                 {
+                    b.Navigation("CasingElements");
+
                     b.Navigation("Instrumentations");
 
                     b.Navigation("Observations");

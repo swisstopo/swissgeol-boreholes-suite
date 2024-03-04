@@ -309,8 +309,8 @@ public static class BdmsContextExtensions
         // Seed layers
         var layer_ids = 7_000_000;
 
-        // Each ten layers should be associated with the one stratigraphy or casing.
-        int GetStratigraphyOrCasingId(int currentLayerId, int startId)
+        // Each ten layers should be associated with the one stratigraphy.
+        int GetStratigraphyId(int currentLayerId, int startId)
         {
             return 6_000_000 + (int)Math.Floor((double)((currentLayerId - startId) / 10));
         }
@@ -349,7 +349,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Plasticity, _ => default!)
             .RuleFor(o => o.DescriptionQualityId, f => f.PickRandom(descriptionQualityIds).OrNull(f, .05f))
             .RuleFor(o => o.DescriptionQuality, _ => default!)
-            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(layer_ids, 7_000_000))
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyId(layer_ids, 7_000_000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.IsStriae, f => f.Random.Bool())
             .RuleFor(o => o.IsUndefined, f => f.Random.Bool())
@@ -424,7 +424,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.ToDepth, f => ((lithologicalDescription_ids % 10) + 1) * 10)
             .RuleFor(o => o.DescriptionQualityId, f => f.PickRandom(descriptionQualityIds).OrNull(f, .05f))
             .RuleFor(o => o.DescriptionQuality, _ => default!)
-            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(lithologicalDescription_ids, 9_000_000))
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyId(lithologicalDescription_ids, 9_000_000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.Description, f => f.Random.Words(3).OrNull(f, .05f))
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
@@ -457,7 +457,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.ToDepth, f => ((faciesDescription_ids % 10) + 1) * 10)
             .RuleFor(o => o.DescriptionQualityId, f => f.PickRandom(descriptionQualityIds).OrNull(f, .05f))
             .RuleFor(o => o.DescriptionQuality, _ => default!)
-            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(faciesDescription_ids, 10_000_000))
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyId(faciesDescription_ids, 10_000_000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.Description, f => f.Random.Words(3).OrNull(f, .05f))
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
@@ -490,7 +490,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.ToDepth, f => ((chronostratigraphy_ids % 10) + 1) * 10)
             .RuleFor(o => o.ChronostratigraphyId, f => f.PickRandom(chronostratigraphyTopBedrockIds).OrNull(f, .05f))
             .RuleFor(o => o.Chronostratigraphy, _ => default!)
-            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(chronostratigraphy_ids, 11_000_000))
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyId(chronostratigraphy_ids, 11_000_000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
             .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
@@ -522,7 +522,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.ToDepth, f => ((lithostratigraphy_ids % 10) + 1) * 10)
             .RuleFor(o => o.LithostratigraphyId, f => f.PickRandom(lithostratigraphyTopBedrockIds).OrNull(f, .05f))
             .RuleFor(o => o.Lithostratigraphy, _ => default!)
-            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyOrCasingId(lithostratigraphy_ids, 14_000_000))
+            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyId(lithostratigraphy_ids, 14_000_000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
             .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
@@ -631,14 +631,6 @@ public static class BdmsContextExtensions
             .RuleFor(c => c.CompletionId, f => f.PickRandom(completions.Select(c => c.Id)))
             .RuleFor(c => c.Completion, _ => default!)
             .RuleFor(c => c.Name, f => f.Random.Word())
-            .RuleFor(c => c.FromDepth, f => (casing_ids % 10) * 10)
-            .RuleFor(c => c.ToDepth, f => ((casing_ids % 10) + 1) * 10)
-            .RuleFor(c => c.KindId, f => f.PickRandom(casingKindIds))
-            .RuleFor(c => c.Kind, _ => default!)
-            .RuleFor(c => c.MaterialId, f => f.PickRandom(casingMaterialIds))
-            .RuleFor(c => c.Material, _ => default!)
-            .RuleFor(c => c.InnerDiameter, f => f.Random.Double(0, 15))
-            .RuleFor(c => c.OuterDiameter, f => f.Random.Double(0, 20))
             .RuleFor(c => c.DateFinish, f => DateOnly.FromDateTime(f.Date.Past()))
             .RuleFor(c => c.DateStart, f => DateOnly.FromDateTime(f.Date.Past()))
             .RuleFor(c => c.Notes, f => f.Random.Words(4))
@@ -660,6 +652,33 @@ public static class BdmsContextExtensions
         var casings = completions.Select(c => SeededCasing(c)).ToList();
 
         context.BulkInsert(casings, bulkConfig);
+
+        context.SaveChanges();
+
+        // Seed Casing elements
+        var casingElement_ids = 18_000_000;
+        var casingElementRange = Enumerable.Range(casingElement_ids, 1000).ToList();
+        var fakeCasingElement = new Faker<CasingElement>()
+            .RuleFor(c => c.CasingId, f => f.PickRandom(casings.Select(c => c.Id)))
+            .RuleFor(c => c.Casing, _ => default!)
+            .RuleFor(c => c.FromDepth, f => (casing_ids % 10) * 10)
+            .RuleFor(c => c.ToDepth, f => ((casing_ids % 10) + 1) * 10)
+            .RuleFor(c => c.KindId, f => f.PickRandom(casingKindIds))
+            .RuleFor(c => c.Kind, _ => default!)
+            .RuleFor(c => c.MaterialId, f => f.PickRandom(casingMaterialIds))
+            .RuleFor(c => c.Material, _ => default!)
+            .RuleFor(c => c.InnerDiameter, f => f.Random.Double(0, 15))
+            .RuleFor(c => c.OuterDiameter, f => f.Random.Double(0, 20))
+            .RuleFor(c => c.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(c => c.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(c => c.CreatedBy, _ => default!)
+            .RuleFor(c => c.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(c => c.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(c => c.UpdatedBy, _ => default!)
+            .RuleFor(c => c.Id, f => casingElement_ids++);
+
+        CasingElement SeededCasingElements(int seed) => fakeCasingElement.UseSeed(seed).Generate();
+        context.BulkInsert(casingElementRange.Select(SeededCasingElements).ToList(), bulkConfig);
 
         context.SaveChanges();
 

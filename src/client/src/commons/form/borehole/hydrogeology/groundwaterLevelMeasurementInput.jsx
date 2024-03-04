@@ -20,6 +20,7 @@ const GroundwaterLevelMeasurementInput = props => {
     if (data.casingId == null) {
       data.casingId = item.casingId;
     }
+    data.casing = null;
     return data;
   };
 

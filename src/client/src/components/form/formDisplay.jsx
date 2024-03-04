@@ -7,7 +7,9 @@ export const FormDisplay = props => {
   const { t, i18n } = useTranslation();
 
   const convert = value => {
-    if (type === FormDisplayType.Date) {
+    if ((value !== 0 && value == null) || value === "") {
+      return "-";
+    } else if (type === FormDisplayType.Date) {
       const date = new Date(value);
       const dateTimeFormat = new Intl.DateTimeFormat("de-CH", {
         year: "numeric",
@@ -36,14 +38,13 @@ export const FormDisplay = props => {
   };
 
   const formatValue = value => {
-    if (value != null || value === 0) {
-      if (Array.isArray(value)) {
-        return value.map(v => convert(v)).join(", ");
-      } else {
-        return convert(value);
+    if (Array.isArray(value)) {
+      if (value.length === 0) {
+        return "-";
       }
+      return value.map(v => convert(v)).join(", ");
     } else {
-      return "-";
+      return convert(value);
     }
   };
 
