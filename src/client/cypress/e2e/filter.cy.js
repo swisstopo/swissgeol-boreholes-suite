@@ -123,6 +123,48 @@ describe("Search filter tests", () => {
       });
   });
 
+  it("filters boreholes by color and uscs3", () => {
+    loginAsAdmin();
+    cy.visit("/editor");
+    cy.contains("Lithology").click();
+    cy.contains("Show all fields").children(".checkbox").click();
+
+    let colorDropdown = cy.contains("label", "Colour").next();
+
+    colorDropdown.click();
+    colorDropdown
+      .find("div[role='option']")
+      .should("have.length", 25)
+      .should(options => {
+        expect(options[0]).to.have.text("Reset");
+        expect(options[1]).to.have.text("beige");
+      })
+      .then(options => {
+        cy.wrap(options).contains("beige").click();
+      });
+
+    cy.wait("@edit_list");
+    cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 100);
+
+    let uscs3Dropdown = cy.contains("label", "USCS 3").next();
+    uscs3Dropdown.click();
+    uscs3Dropdown
+      .find("div[role='option']")
+      .should("have.length", 36)
+      .should(options => {
+        expect(options[0]).to.have.text("Reset");
+        expect(options[2]).to.have.text("lean clay");
+      })
+      .then(options => {
+        cy.wrap(options).contains("gravel").click();
+      });
+
+    cy.wait("@edit_list");
+
+    // check content of table
+    cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 39);
+  });
+
   it("filters boreholes by original lithology", () => {
     loginAsAdmin();
     cy.visit("/editor");

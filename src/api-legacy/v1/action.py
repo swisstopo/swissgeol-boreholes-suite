@@ -177,56 +177,30 @@ class Action():
 
         keys = filter.keys()
 
-        if 'grain_shape' in keys and filter['grain_shape'] not in ['', None]:
-            params.append(filter['grain_shape'])
-            layer_codelist.append("""
-                id_cli_fk = %s
-            """ % self.getIdx())
-
-        if 'grain_granularity' in keys and filter['grain_granularity'] not in ['', None]:
-            params.append(filter['grain_granularity'])
-            layer_codelist.append("""
-                id_cli_fk = %s
-            """ % self.getIdx())
-
-        if 'organic_component' in keys and filter['organic_component'] not in ['', None]:
-            params.append(filter['organic_component'])
-            layer_codelist.append("""
-                id_cli_fk = %s
-            """ % self.getIdx())
-
-        if 'debris' in keys and filter['debris'] not in ['', None]:
-            params.append(filter['debris'])
-            layer_codelist.append("""
-                id_cli_fk = %s
-            """ % self.getIdx())
-
-        if 'color' in keys and filter['color'] not in ['', None]:
-            params.append(filter['color'])
-            layer_codelist.append("""
-                id_cli_fk = %s
-            """ % self.getIdx())
         
-        if 'uscs_3' in keys and filter['uscs_3'] not in ['', None]:
-            params.append(filter['uscs_3'])
-            layer_codelist.append("""
-                id_cli_fk = %s
-            """ % self.getIdx())
+        key_to_table_column = {
+            'grain_shape': {'table': 'bdms.layer_grain_shape_codelist', 'column': 'grain_shape_id'},
+            'grain_granularity': {'table': 'bdms.layer_grain_angularity_codelist', 'column': 'grain_angularity_id'},
+            'organic_component': {'table': 'bdms.layer_organic_component_codelist', 'column': 'organic_components_id'},
+            'debris': {'table': 'bdms.layer_debris_codelist', 'column': 'debris_id'},
+            'color': {'table': 'bdms.layer_color_codelist', 'column': 'color_id'},
+            'uscs_3': {'table': 'bdms.layer_uscs3_codelist', 'column': 'uscs3_id'}
+        }
 
-        if len(layer_codelist) > 0:
-            joins.append("""
-                INNER JOIN (
-                    SELECT DISTINCT
-                        id_lay_fk
-                    FROM
-                        bdms.layer_codelist
-                    WHERE
-                        {}
-                ) clr
-                ON clr.id_lay_fk = id_lay
-            """.format(
-                ' OR '.join(layer_codelist)
-            ))
+        for key, value in key_to_table_column.items():
+            if key in keys and filter[key] not in ['', None]:
+                params.append(filter[key])
+                joins.append(f"""
+                    INNER JOIN (
+                        SELECT DISTINCT
+                            layer_id
+                        FROM
+                            {value['table']}
+                        WHERE
+                            {value['column']} = %s
+                    ) {key}
+                    ON {key}.layer_id= id_lay
+                """ % self.getIdx())
 
         if 'layer_lithology_top_bedrock' in keys and filter['layer_lithology_top_bedrock'] not in ['', None]:
             params.append(filter['layer_lithology_top_bedrock'])
