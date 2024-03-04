@@ -113,7 +113,7 @@ public class CasingController : BdmsControllerBase<Casing>
         }
         catch (Exception ex)
         {
-            var message = "An error ocurred while processing the casing";
+            var message = "An error occurred while updating the casing.";
             Logger.LogError(ex, message);
             return Problem(message);
         }
