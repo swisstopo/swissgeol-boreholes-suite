@@ -51,8 +51,12 @@ const CasingDisplay = props => {
               <TableCell sx={{ ...tableHeaderStyles, border: "none" }} colSpan={2}>
                 {t("depthMD")}
               </TableCell>
-              <TableCell sx={{ ...tableHeaderStyles, border: "none" }}>{t("kindCasingLayer")}</TableCell>
-              <TableCell sx={{ ...tableHeaderStyles, border: "none" }}>{t("materialCasingLayer")}</TableCell>
+              <TableCell sx={tableHeaderStyles} rowSpan={2}>
+                {t("kindCasingLayer")}
+              </TableCell>
+              <TableCell sx={tableHeaderStyles} rowSpan={2}>
+                {t("materialCasingLayer")}
+              </TableCell>
               <TableCell sx={{ ...tableHeaderStyles, border: "none" }} colSpan={2}>
                 {t("diameter")}
               </TableCell>
@@ -60,8 +64,6 @@ const CasingDisplay = props => {
             <TableRow>
               <TableCell sx={{ ...tableHeaderStyles }}>{t("from")}</TableCell>
               <TableCell sx={tableHeaderStyles}>{t("to")}</TableCell>
-              <TableCell sx={tableHeaderStyles}></TableCell>
-              <TableCell sx={tableHeaderStyles}></TableCell>
               <TableCell sx={tableHeaderStyles}>{t("inner")}</TableCell>
               <TableCell sx={tableHeaderStyles}>{t("outer")}</TableCell>
             </TableRow>
