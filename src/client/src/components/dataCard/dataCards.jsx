@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, createRef, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Typography } from "@mui/material";
 import { DataCard, DataCardItem, DataCardContainer, DataCardButtonContainer } from "./dataCard";
@@ -13,10 +13,12 @@ export const DataCards = props => {
     addData,
     updateData,
     deleteData,
+    cyLabel,
     addLabel,
     emptyLabel,
     renderInput,
     renderDisplay,
+    sortDisplayed,
   } = props;
   const { t } = useTranslation();
   const mounted = useRef(false);
@@ -79,28 +81,8 @@ export const DataCards = props => {
     setDisplayed(state.data);
   }, [state.data]);
 
-  // scroll to newly added item
-  const dataRefs = useMemo(
-    () =>
-      Array(displayed?.length)
-        .fill(null)
-        .map(() => createRef(null)),
-    [displayed],
-  );
-
-  useEffect(() => {
-    if (displayed?.length > 0) {
-      const lastDataRef = dataRefs[displayed?.length - 1];
-      if (displayed[displayed?.length - 1].id === 0)
-        lastDataRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-    }
-  }, [displayed, dataRefs]);
-
   return (
-    <FullPage>
+    <FullPage data-cy={`${cyLabel}-content`}>
       <DataCardButtonContainer>
         {isEditable && (
           <AddButton
@@ -109,7 +91,7 @@ export const DataCards = props => {
               e.stopPropagation();
               if (!selected) {
                 const temp = { id: 0 };
-                setDisplayed([...state.data, temp]);
+                setDisplayed([temp, ...state.data]);
                 setSelected(temp);
               }
             }}
@@ -122,46 +104,44 @@ export const DataCards = props => {
         </FullPageCentered>
       ) : displayed?.length > 0 ? (
         <DataCardContainer>
-          {displayed
-            .sort((a, b) => a.fromDepthM - b.fromDepthM)
-            .map((item, index) => {
-              const isSelected = selected?.id === item.id;
-              const isTemp = item.id === 0;
-              return (
-                <DataCardItem key={item.id} ref={dataRefs[index]}>
-                  <DataCard key={item.id}>
-                    {isEditable && isSelected
-                      ? renderInput({
-                          item: item,
-                          setSelected: setSelected,
-                          parentId: parentId,
-                          updateData: (item, data) => {
-                            updateData(item, data).then(() => {
-                              handleDataChange();
-                            });
-                          },
-                          addData: data => {
-                            addData(data).then(() => {
-                              handleDataChange();
-                            });
-                          },
-                        })
-                      : !isTemp &&
-                        renderDisplay({
-                          item: item,
-                          selected: selected,
-                          setSelected: setSelected,
-                          isEditable: isEditable,
-                          deleteData: id => {
-                            deleteData(id).then(() => {
-                              handleDataChange();
-                            });
-                          },
-                        })}
-                  </DataCard>
-                </DataCardItem>
-              );
-            })}
+          {displayed.sort(sortDisplayed).map((item, index) => {
+            const isSelected = selected?.id === item.id;
+            const isTemp = item.id === 0;
+            return (
+              <DataCardItem key={item.id}>
+                <DataCard key={item.id} data-cy={`${cyLabel}-card.${index}`}>
+                  {isEditable && isSelected
+                    ? renderInput({
+                        item: item,
+                        setSelected: setSelected,
+                        parentId: parentId,
+                        updateData: (item, data) => {
+                          updateData(item, data).then(() => {
+                            handleDataChange();
+                          });
+                        },
+                        addData: data => {
+                          addData(data).then(() => {
+                            handleDataChange();
+                          });
+                        },
+                      })
+                    : !isTemp &&
+                      renderDisplay({
+                        item: item,
+                        selected: selected,
+                        setSelected: setSelected,
+                        isEditable: isEditable,
+                        deleteData: id => {
+                          deleteData(id).then(() => {
+                            handleDataChange();
+                          });
+                        },
+                      })}
+                </DataCard>
+              </DataCardItem>
+            );
+          })}
         </DataCardContainer>
       ) : (
         <FullPageCentered>

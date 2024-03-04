@@ -34,6 +34,7 @@
 - Replaced create-react-app (react-scripts) with vite for frontend tooling.
 - Included typescript configuration.
 - Prevent typing dates in profile and filter, only allow selecting date in datepicker.
+- Split table `casing` into tables `casing` and `casing_element`.
 
 ### Fixed
 

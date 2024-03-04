@@ -21,7 +21,6 @@ const CompletionContent = ({ completion, isEditable }) => {
   ];
   const [state, setState] = useState({
     index: 0,
-    selected: null,
   });
 
   const handleCompletionChanged = (event, index) => {

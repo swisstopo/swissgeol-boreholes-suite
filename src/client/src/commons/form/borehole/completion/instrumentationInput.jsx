@@ -15,6 +15,7 @@ const InstrumentationInput = ({ item, setSelected, parentId, addData, updateData
     if (data.casingId === "") {
       data.casingId = null;
     }
+    data.casing = null;
     data.completionId = parentId;
     return data;
   };

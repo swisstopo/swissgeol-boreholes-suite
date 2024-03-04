@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20240126132250_MigrateCompletion")]
-    partial class MigrateCompletion
+    [Migration("20240227092258_AddCasingElement")]
+    partial class AddCasingElement
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -142,6 +142,10 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("drilling_method_id_cli");
 
+                    b.Property<int?>("ElevationPrecisionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_elevation_id_cli");
+
                     b.Property<double?>("ElevationZ")
                         .HasColumnType("double precision")
                         .HasColumnName("elevation_z_bho");
@@ -170,10 +174,6 @@ namespace BDMS.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("public_bho");
 
-                    b.Property<int?>("KindId")
-                        .HasColumnType("integer")
-                        .HasColumnName("kind_id_cli");
-
                     b.Property<int?>("LithologyTopBedrockId")
                         .HasColumnType("integer")
                         .HasColumnName("lithology_top_bedrock_id_cli");
@@ -181,6 +181,10 @@ namespace BDMS.Migrations
                     b.Property<int?>("LithostratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("lithostrat_id_cli");
+
+                    b.Property<int?>("LocationPrecisionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_location_id_cli");
 
                     b.Property<double?>("LocationX")
                         .HasColumnType("double precision")
@@ -234,17 +238,9 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("qt_depth_id_cli");
 
-                    b.Property<int?>("QtElevationId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_elevation_id_cli");
-
                     b.Property<int?>("QtInclinationDirectionId")
                         .HasColumnType("integer")
                         .HasColumnName("qt_inclination_direction_id_cli");
-
-                    b.Property<int?>("QtLocationId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_location_id_cli");
 
                     b.Property<int?>("QtReferenceElevationId")
                         .HasColumnType("integer")
@@ -306,6 +302,10 @@ namespace BDMS.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("total_depth_tvd_bho");
 
+                    b.Property<int?>("TypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("kind_id_cli");
+
                     b.Property<DateTime?>("Updated")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_bho");
@@ -328,13 +328,15 @@ namespace BDMS.Migrations
 
                     b.HasIndex("DrillingMethodId");
 
-                    b.HasIndex("HrsId");
+                    b.HasIndex("ElevationPrecisionId");
 
-                    b.HasIndex("KindId");
+                    b.HasIndex("HrsId");
 
                     b.HasIndex("LithologyTopBedrockId");
 
                     b.HasIndex("LithostratigraphyId");
+
+                    b.HasIndex("LocationPrecisionId");
 
                     b.HasIndex("LockedById");
 
@@ -342,11 +344,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("QtDepthId");
 
-                    b.HasIndex("QtElevationId");
-
                     b.HasIndex("QtInclinationDirectionId");
-
-                    b.HasIndex("QtLocationId");
 
                     b.HasIndex("QtReferenceElevationId");
 
@@ -357,6 +355,8 @@ namespace BDMS.Migrations
                     b.HasIndex("RestrictionId");
 
                     b.HasIndex("StatusId");
+
+                    b.HasIndex("TypeId");
 
                     b.HasIndex("UpdatedById");
 
@@ -476,6 +476,55 @@ namespace BDMS.Migrations
                         .HasColumnType("date")
                         .HasColumnName("date_start");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text")
+                        .HasColumnName("notes");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("updater");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompletionId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("casing", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.CasingElement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CasingId")
+                        .HasColumnType("integer")
+                        .HasColumnName("casing_id");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("creator");
+
                     b.Property<double>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("from_depth");
@@ -491,15 +540,6 @@ namespace BDMS.Migrations
                     b.Property<int>("MaterialId")
                         .HasColumnType("integer")
                         .HasColumnName("material_id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text")
-                        .HasColumnName("notes");
 
                     b.Property<double>("OuterDiameter")
                         .HasColumnType("double precision")
@@ -519,7 +559,7 @@ namespace BDMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompletionId");
+                    b.HasIndex("CasingId");
 
                     b.HasIndex("CreatedById");
 
@@ -529,7 +569,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("casing", "bdms");
+                    b.ToTable("casing_element", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.ChronostratigraphyLayer", b =>
@@ -844,6 +884,10 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
+                    b.Property<int?>("DescriptionQualityId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_description_id");
+
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
@@ -851,10 +895,6 @@ namespace BDMS.Migrations
                     b.Property<bool?>("IsLast")
                         .HasColumnType("boolean")
                         .HasColumnName("is_last");
-
-                    b.Property<int?>("QtDescriptionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_description_id");
 
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
@@ -876,7 +916,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("QtDescriptionId");
+                    b.HasIndex("DescriptionQualityId");
 
                     b.HasIndex("StratigraphyId");
 
@@ -1135,34 +1175,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("alteration_id_cli");
 
-                    b.Property<string>("Casing")
-                        .HasColumnType("text")
-                        .HasColumnName("casng_id");
-
-                    b.Property<DateTime?>("CasingDateFinish")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("casng_date_finish_lay");
-
-                    b.Property<DateTime?>("CasingDateSpud")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("casng_date_spud_lay");
-
-                    b.Property<double?>("CasingInnerDiameter")
-                        .HasColumnType("double precision")
-                        .HasColumnName("casng_inner_diameter_lay");
-
-                    b.Property<int?>("CasingKindId")
-                        .HasColumnType("integer")
-                        .HasColumnName("casng_kind_id_cli");
-
-                    b.Property<int?>("CasingMaterialId")
-                        .HasColumnType("integer")
-                        .HasColumnName("casng_material_id_cli");
-
-                    b.Property<double?>("CasingOuterDiameter")
-                        .HasColumnType("double precision")
-                        .HasColumnName("casng_outer_diameter_lay");
-
                     b.Property<int?>("CohesionId")
                         .HasColumnType("integer")
                         .HasColumnName("cohesion_id_cli");
@@ -1183,13 +1195,9 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("creator_lay");
 
-                    b.Property<int?>("FillKindId")
+                    b.Property<int?>("DescriptionQualityId")
                         .HasColumnType("integer")
-                        .HasColumnName("fill_kind_id_cli");
-
-                    b.Property<int?>("FillMaterialId")
-                        .HasColumnType("integer")
-                        .HasColumnName("fill_material_id_cli");
+                        .HasColumnName("qt_description_id_cli");
 
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
@@ -1210,26 +1218,6 @@ namespace BDMS.Migrations
                     b.Property<int?>("HumidityId")
                         .HasColumnType("integer")
                         .HasColumnName("humidity_id_cli");
-
-                    b.Property<string>("Instrument")
-                        .HasColumnType("text")
-                        .HasColumnName("instr_id");
-
-                    b.Property<int?>("InstrumentCasingId")
-                        .HasColumnType("integer")
-                        .HasColumnName("instr_id_sty_fk");
-
-                    b.Property<int?>("InstrumentCasingLayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("instr_id_lay_fk");
-
-                    b.Property<int?>("InstrumentKindId")
-                        .HasColumnType("integer")
-                        .HasColumnName("instr_kind_id_cli");
-
-                    b.Property<int?>("InstrumentStatusId")
-                        .HasColumnType("integer")
-                        .HasColumnName("instr_status_id_cli");
 
                     b.Property<bool?>("IsLast")
                         .HasColumnType("boolean")
@@ -1271,10 +1259,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("plasticity_id_cli");
 
-                    b.Property<int?>("QtDescriptionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_description_id_cli");
-
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("id_sty_fk");
@@ -1307,10 +1291,6 @@ namespace BDMS.Migrations
 
                     b.HasIndex("AlterationId");
 
-                    b.HasIndex("CasingKindId");
-
-                    b.HasIndex("CasingMaterialId");
-
                     b.HasIndex("CohesionId");
 
                     b.HasIndex("CompactnessId");
@@ -1319,9 +1299,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("FillKindId");
-
-                    b.HasIndex("FillMaterialId");
+                    b.HasIndex("DescriptionQualityId");
 
                     b.HasIndex("GradationId");
 
@@ -1331,12 +1309,6 @@ namespace BDMS.Migrations
 
                     b.HasIndex("HumidityId");
 
-                    b.HasIndex("InstrumentCasingId");
-
-                    b.HasIndex("InstrumentKindId");
-
-                    b.HasIndex("InstrumentStatusId");
-
                     b.HasIndex("LithologyId");
 
                     b.HasIndex("LithologyTopBedrockId");
@@ -1344,8 +1316,6 @@ namespace BDMS.Migrations
                     b.HasIndex("LithostratigraphyId");
 
                     b.HasIndex("PlasticityId");
-
-                    b.HasIndex("QtDescriptionId");
 
                     b.HasIndex("StratigraphyId");
 
@@ -1403,6 +1373,10 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
+                    b.Property<int?>("DescriptionQualityId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_description_id");
+
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
@@ -1410,10 +1384,6 @@ namespace BDMS.Migrations
                     b.Property<bool?>("IsLast")
                         .HasColumnType("boolean")
                         .HasColumnName("is_last");
-
-                    b.Property<int?>("QtDescriptionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_description_id");
 
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
@@ -1435,7 +1405,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("QtDescriptionId");
+                    b.HasIndex("DescriptionQualityId");
 
                     b.HasIndex("StratigraphyId");
 
@@ -1609,14 +1579,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("id_bho_fk");
 
-                    b.Property<string>("Casing")
-                        .HasColumnType("text")
-                        .HasColumnName("casng_id");
-
-                    b.Property<DateTime?>("CasingDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("casng_date_abd_sty");
-
                     b.Property<DateTime?>("Created")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation_sty");
@@ -1629,17 +1591,9 @@ namespace BDMS.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("date_sty");
 
-                    b.Property<int?>("FillCasingId")
-                        .HasColumnType("integer")
-                        .HasColumnName("fill_casng_id_sty_fk");
-
                     b.Property<bool?>("IsPrimary")
                         .HasColumnType("boolean")
                         .HasColumnName("primary_sty");
-
-                    b.Property<int>("KindId")
-                        .HasColumnType("integer")
-                        .HasColumnName("kind_id_cli");
 
                     b.Property<string>("Name")
                         .HasColumnType("text")
@@ -1648,6 +1602,10 @@ namespace BDMS.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text")
                         .HasColumnName("notes_sty");
+
+                    b.Property<int?>("QualityId")
+                        .HasColumnType("integer")
+                        .HasColumnName("quality_id");
 
                     b.Property<DateTime?>("Updated")
                         .HasColumnType("timestamp with time zone")
@@ -1663,9 +1621,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("FillCasingId");
-
-                    b.HasIndex("KindId");
+                    b.HasIndex("QualityId");
 
                     b.HasIndex("UpdatedById");
 
@@ -2017,13 +1973,13 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("DrillingMethodId");
 
+                    b.HasOne("BDMS.Models.Codelist", "ElevationPrecision")
+                        .WithMany()
+                        .HasForeignKey("ElevationPrecisionId");
+
                     b.HasOne("BDMS.Models.Codelist", "Hrs")
                         .WithMany()
                         .HasForeignKey("HrsId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Kind")
-                        .WithMany()
-                        .HasForeignKey("KindId");
 
                     b.HasOne("BDMS.Models.Codelist", "LithologyTopBedrock")
                         .WithMany()
@@ -2032,6 +1988,10 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Lithostratigraphy")
                         .WithMany()
                         .HasForeignKey("LithostratigraphyId");
+
+                    b.HasOne("BDMS.Models.Codelist", "LocationPrecision")
+                        .WithMany()
+                        .HasForeignKey("LocationPrecisionId");
 
                     b.HasOne("BDMS.Models.User", "LockedBy")
                         .WithMany()
@@ -2045,17 +2005,9 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("QtDepthId");
 
-                    b.HasOne("BDMS.Models.Codelist", "QtElevation")
-                        .WithMany()
-                        .HasForeignKey("QtElevationId");
-
                     b.HasOne("BDMS.Models.Codelist", "QtInclinationDirection")
                         .WithMany()
                         .HasForeignKey("QtInclinationDirectionId");
-
-                    b.HasOne("BDMS.Models.Codelist", "QtLocation")
-                        .WithMany()
-                        .HasForeignKey("QtLocationId");
 
                     b.HasOne("BDMS.Models.Codelist", "QtReferenceElevation")
                         .WithMany()
@@ -2077,6 +2029,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("StatusId");
 
+                    b.HasOne("BDMS.Models.Codelist", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeId");
+
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
@@ -2093,13 +2049,15 @@ namespace BDMS.Migrations
 
                     b.Navigation("DrillingMethod");
 
-                    b.Navigation("Hrs");
+                    b.Navigation("ElevationPrecision");
 
-                    b.Navigation("Kind");
+                    b.Navigation("Hrs");
 
                     b.Navigation("LithologyTopBedrock");
 
                     b.Navigation("Lithostratigraphy");
+
+                    b.Navigation("LocationPrecision");
 
                     b.Navigation("LockedBy");
 
@@ -2107,11 +2065,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("QtDepth");
 
-                    b.Navigation("QtElevation");
-
                     b.Navigation("QtInclinationDirection");
-
-                    b.Navigation("QtLocation");
 
                     b.Navigation("QtReferenceElevation");
 
@@ -2122,6 +2076,8 @@ namespace BDMS.Migrations
                     b.Navigation("Restriction");
 
                     b.Navigation("Status");
+
+                    b.Navigation("Type");
 
                     b.Navigation("UpdatedBy");
 
@@ -2196,6 +2152,29 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
+                    b.HasOne("BDMS.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("Completion");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("BDMS.Models.CasingElement", b =>
+                {
+                    b.HasOne("BDMS.Models.Casing", "Casing")
+                        .WithMany("CasingElements")
+                        .HasForeignKey("CasingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
                     b.HasOne("BDMS.Models.Codelist", "Kind")
                         .WithMany()
                         .HasForeignKey("KindId")
@@ -2212,7 +2191,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.Navigation("Completion");
+                    b.Navigation("Casing");
 
                     b.Navigation("CreatedBy");
 
@@ -2289,9 +2268,9 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Codelist", "QtDescription")
+                    b.HasOne("BDMS.Models.Codelist", "DescriptionQuality")
                         .WithMany()
-                        .HasForeignKey("QtDescriptionId");
+                        .HasForeignKey("DescriptionQualityId");
 
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("FaciesDescriptions")
@@ -2305,7 +2284,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("QtDescription");
+                    b.Navigation("DescriptionQuality");
 
                     b.Navigation("Stratigraphy");
 
@@ -2424,14 +2403,6 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("AlterationId");
 
-                    b.HasOne("BDMS.Models.Codelist", "CasingKind")
-                        .WithMany()
-                        .HasForeignKey("CasingKindId");
-
-                    b.HasOne("BDMS.Models.Codelist", "CasingMaterial")
-                        .WithMany()
-                        .HasForeignKey("CasingMaterialId");
-
                     b.HasOne("BDMS.Models.Codelist", "Cohesion")
                         .WithMany()
                         .HasForeignKey("CohesionId");
@@ -2448,13 +2419,9 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Codelist", "FillKind")
+                    b.HasOne("BDMS.Models.Codelist", "DescriptionQuality")
                         .WithMany()
-                        .HasForeignKey("FillKindId");
-
-                    b.HasOne("BDMS.Models.Codelist", "FillMaterial")
-                        .WithMany()
-                        .HasForeignKey("FillMaterialId");
+                        .HasForeignKey("DescriptionQualityId");
 
                     b.HasOne("BDMS.Models.Codelist", "Gradation")
                         .WithMany()
@@ -2472,18 +2439,6 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("HumidityId");
 
-                    b.HasOne("BDMS.Models.Stratigraphy", "InstrumentCasing")
-                        .WithMany()
-                        .HasForeignKey("InstrumentCasingId");
-
-                    b.HasOne("BDMS.Models.Codelist", "InstrumentKind")
-                        .WithMany()
-                        .HasForeignKey("InstrumentKindId");
-
-                    b.HasOne("BDMS.Models.Codelist", "InstrumentStatus")
-                        .WithMany()
-                        .HasForeignKey("InstrumentStatusId");
-
                     b.HasOne("BDMS.Models.Codelist", "Lithology")
                         .WithMany()
                         .HasForeignKey("LithologyId");
@@ -2499,10 +2454,6 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Plasticity")
                         .WithMany()
                         .HasForeignKey("PlasticityId");
-
-                    b.HasOne("BDMS.Models.Codelist", "QtDescription")
-                        .WithMany()
-                        .HasForeignKey("QtDescriptionId");
 
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("Layers")
@@ -2528,10 +2479,6 @@ namespace BDMS.Migrations
 
                     b.Navigation("Alteration");
 
-                    b.Navigation("CasingKind");
-
-                    b.Navigation("CasingMaterial");
-
                     b.Navigation("Cohesion");
 
                     b.Navigation("Compactness");
@@ -2540,9 +2487,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("FillKind");
-
-                    b.Navigation("FillMaterial");
+                    b.Navigation("DescriptionQuality");
 
                     b.Navigation("Gradation");
 
@@ -2552,12 +2497,6 @@ namespace BDMS.Migrations
 
                     b.Navigation("Humidity");
 
-                    b.Navigation("InstrumentCasing");
-
-                    b.Navigation("InstrumentKind");
-
-                    b.Navigation("InstrumentStatus");
-
                     b.Navigation("Lithology");
 
                     b.Navigation("LithologyTopBedrock");
@@ -2565,8 +2504,6 @@ namespace BDMS.Migrations
                     b.Navigation("Lithostratigraphy");
 
                     b.Navigation("Plasticity");
-
-                    b.Navigation("QtDescription");
 
                     b.Navigation("Stratigraphy");
 
@@ -2604,9 +2541,9 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Codelist", "QtDescription")
+                    b.HasOne("BDMS.Models.Codelist", "DescriptionQuality")
                         .WithMany()
-                        .HasForeignKey("QtDescriptionId");
+                        .HasForeignKey("DescriptionQualityId");
 
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("LithologicalDescriptions")
@@ -2620,7 +2557,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("QtDescription");
+                    b.Navigation("DescriptionQuality");
 
                     b.Navigation("Stratigraphy");
 
@@ -2703,15 +2640,9 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Stratigraphy", "FillCasing")
+                    b.HasOne("BDMS.Models.Codelist", "Quality")
                         .WithMany()
-                        .HasForeignKey("FillCasingId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Kind")
-                        .WithMany()
-                        .HasForeignKey("KindId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("QualityId");
 
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
                         .WithMany()
@@ -2721,9 +2652,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("FillCasing");
-
-                    b.Navigation("Kind");
+                    b.Navigation("Quality");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -2856,6 +2785,8 @@ namespace BDMS.Migrations
 
             modelBuilder.Entity("BDMS.Models.Casing", b =>
                 {
+                    b.Navigation("CasingElements");
+
                     b.Navigation("Instrumentations");
 
                     b.Navigation("Observations");
