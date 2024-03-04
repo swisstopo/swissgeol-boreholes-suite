@@ -1,4 +1,4 @@
-﻿using BDMS.Authentication;
+using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -73,7 +73,9 @@ public class CasingController : BdmsControllerBase<Casing>
         {
             if (!(entity.CasingElements?.Count > 0))
             {
-                return Problem("At least one casing element must be defined.");
+                var message = "At least one casing element must be defined.";
+                Logger.LogWarning(message);
+                return Problem(message);
             }
 
             return await base.CreateAsync(entity).ConfigureAwait(false);
@@ -96,7 +98,9 @@ public class CasingController : BdmsControllerBase<Casing>
         {
             if (entity.CasingElements.Count == 0)
             {
-                return Problem("At least one casing element must be defined.");
+                var message = "At least one casing element must be defined.";
+                Logger.LogWarning(message);
+                return Problem(message);
             }
 
             var existingEntity = await Context.Casings.Include(c => c.CasingElements).SingleOrDefaultAsync(c => c.Id == entity.Id).ConfigureAwait(false);
