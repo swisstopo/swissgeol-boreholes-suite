@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BDMS.Models;
 
 /// <summary>
-/// Represents a Casing entity in the database.
+/// Represents a CasingElement entity in the database.
 /// </summary>
 [Table("casing_element")]
 public class CasingElement : IChangeTracking, IIdentifyable
