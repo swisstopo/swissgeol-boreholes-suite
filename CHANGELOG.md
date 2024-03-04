@@ -31,7 +31,7 @@
 - Remove stratigraphy kind.
 - Split generic join table `layer_codelists` into 6 separate join tables for each many to many relationship between layer and codelist.
 - Prevent typing dates in profile and filter, only allow selecting date in datepicker.
-- Split table `casing` into 2 tables `casing` and `casing_element`.
+- Split table `casing` into tables `casing` and `casing_element`.
 
 ### Fixed
 
