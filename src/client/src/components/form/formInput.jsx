@@ -43,11 +43,7 @@ export const FormInput = props => {
           }
           if (type === "date" || type === "datetime-local") {
             var date = new Date(value);
-            return (
-              !isNaN(date) &&
-              date.getFullYear() > 1800 &&
-              date.getFullYear() < 3000
-            );
+            return !isNaN(date) && date.getFullYear() > 1800 && date.getFullYear() < 3000;
           }
           return true;
         },
