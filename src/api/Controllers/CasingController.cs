@@ -1,4 +1,4 @@
-using BDMS.Authentication;
+﻿using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -96,7 +96,7 @@ public class CasingController : BdmsControllerBase<Casing>
 
         try
         {
-            if (entity.CasingElements.Count == 0)
+            if (!(entity.CasingElements?.Count > 0))
             {
                 var message = "At least one casing element must be defined.";
                 Logger.LogWarning(message);
