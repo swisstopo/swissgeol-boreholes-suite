@@ -1,13 +1,13 @@
 /* eslint-disable no-undef */
 import { express } from "express";
 import { path } from "path";
-import { RateLimit } from "express-rate-limit";
+import { rateLimit } from "express-rate-limit";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // set up rate limiter: maximum of 1000 requests per minute
-const limiter = RateLimit({
+const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 1000,
 });
