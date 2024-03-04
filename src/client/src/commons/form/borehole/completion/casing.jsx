@@ -4,6 +4,7 @@ import { DataCards } from "../../../../components/dataCard/dataCards";
 import CasingInput from "./casingInput";
 import CasingDisplay from "./casingDisplay";
 import { extractCasingDepth } from "./casingDepthExtraction.jsx";
+import { sortByDepth } from "../../../sorter.jsx";
 
 const Casing = ({ isEditable, completionId }) => {
   return (
@@ -22,13 +23,7 @@ const Casing = ({ isEditable, completionId }) => {
       sortDisplayed={(a, b) => {
         var aDepth = extractCasingDepth(a);
         var bDepth = extractCasingDepth(b);
-
-        var minDiff = aDepth.min - bDepth.min;
-        if (minDiff !== 0) {
-          return minDiff;
-        } else {
-          return aDepth.max - bDepth.max;
-        }
+        return sortByDepth(aDepth, bDepth, "min", "max");
       }}
     />
   );

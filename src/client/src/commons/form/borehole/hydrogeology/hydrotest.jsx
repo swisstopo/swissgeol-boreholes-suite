@@ -2,6 +2,7 @@ import { getHydrotests, addHydrotest, updateHydrotest, deleteHydrotest } from ".
 import HydrotestInput from "./hydrotestInput";
 import HydrotestDisplay from "./hydrotestDisplay";
 import { DataCards } from "../../../../components/dataCard/dataCards";
+import { sortByDepth } from "../../../sorter.jsx";
 
 const Hydrotest = ({ isEditable, boreholeId }) => {
   return (
@@ -18,12 +19,7 @@ const Hydrotest = ({ isEditable, boreholeId }) => {
       renderInput={props => <HydrotestInput {...props} />}
       renderDisplay={props => <HydrotestDisplay {...props} />}
       sortDisplayed={(a, b) => {
-        var minDiff = a.fromDepthM - b.fromDepthM;
-        if (minDiff !== 0) {
-          return minDiff;
-        } else {
-          return a.toDepthM - b.toDepthM;
-        }
+        sortByDepth(a, b, "fromDepthM", "toDepthM");
       }}
     />
   );

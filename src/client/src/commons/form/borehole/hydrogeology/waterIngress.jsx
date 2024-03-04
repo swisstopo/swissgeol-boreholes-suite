@@ -2,6 +2,7 @@ import { getWaterIngress, addWaterIngress, updateWaterIngress, deleteWaterIngres
 import WaterIngressInput from "./waterIngressInput";
 import WaterIngressDisplay from "./waterIngressDisplay";
 import { DataCards } from "../../../../components/dataCard/dataCards";
+import { sortByDepth } from "../../../sorter.jsx";
 
 const WaterIngress = ({ isEditable, boreholeId }) => {
   return (
@@ -18,12 +19,7 @@ const WaterIngress = ({ isEditable, boreholeId }) => {
       renderInput={props => <WaterIngressInput {...props} />}
       renderDisplay={props => <WaterIngressDisplay {...props} />}
       sortDisplayed={(a, b) => {
-        var minDiff = a.fromDepthM - b.fromDepthM;
-        if (minDiff !== 0) {
-          return minDiff;
-        } else {
-          return a.toDepthM - b.toDepthM;
-        }
+        sortByDepth(a, b, "fromDepthM", "toDepthM");
       }}
     />
   );

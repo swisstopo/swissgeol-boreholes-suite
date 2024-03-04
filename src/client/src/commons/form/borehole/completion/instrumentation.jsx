@@ -8,6 +8,7 @@ import {
 import { DataCards } from "../../../../components/dataCard/dataCards";
 import InstrumentationInput from "./instrumentationInput";
 import InstrumentationDisplay from "./instrumentationDisplay";
+import { sortByDepth } from "../../../sorter.jsx";
 
 const Instrumentation = ({ isEditable, completionId }) => {
   return (
@@ -24,12 +25,7 @@ const Instrumentation = ({ isEditable, completionId }) => {
       renderInput={props => <InstrumentationInput {...props} />}
       renderDisplay={props => <InstrumentationDisplay {...props} />}
       sortDisplayed={(a, b) => {
-        var minDiff = a.fromDepth - b.fromDepth;
-        if (minDiff !== 0) {
-          return minDiff;
-        } else {
-          return a.toDepth - b.toDepth;
-        }
+        return sortByDepth(a, b, "fromDepth", "toDepth");
       }}
     />
   );
