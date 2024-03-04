@@ -4,7 +4,7 @@ import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import { useDomains } from "../../../../api/fetchApiV2";
-import { extractCasingDepth } from "./casing";
+import { extractCasingDepth } from "./casingDepthExtraction.jsx";
 
 const CasingDisplay = props => {
   const { item, selected, setSelected, isEditable, deleteData } = props;
