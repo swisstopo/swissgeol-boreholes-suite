@@ -24,7 +24,7 @@ const FieldMeasurement = ({ isEditable, boreholeId }) => {
       renderInput={props => <FieldMeasurementInput {...props} />}
       renderDisplay={props => <FieldMeasurementDisplay {...props} />}
       sortDisplayed={(a, b) => {
-        sortByDepth(a, b, "fromDepthM", "toDepthM");
+        return sortByDepth(a, b, "fromDepthM", "toDepthM");
       }}
     />
   );

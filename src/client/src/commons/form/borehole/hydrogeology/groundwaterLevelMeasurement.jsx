@@ -24,7 +24,7 @@ const GroundwaterLevelMeasurement = ({ isEditable, boreholeId }) => {
       renderInput={props => <GroundwaterLevelMeasurementInput {...props} />}
       renderDisplay={props => <GroundwaterLevelMeasurementDisplay {...props} />}
       sortDisplayed={(a, b) => {
-        sortByDepth(a, b, "fromDepthM", "toDepthM");
+        return sortByDepth(a, b, "fromDepthM", "toDepthM");
       }}
     />
   );

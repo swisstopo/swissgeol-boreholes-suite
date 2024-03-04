@@ -19,7 +19,7 @@ const Hydrotest = ({ isEditable, boreholeId }) => {
       renderInput={props => <HydrotestInput {...props} />}
       renderDisplay={props => <HydrotestDisplay {...props} />}
       sortDisplayed={(a, b) => {
-        sortByDepth(a, b, "fromDepthM", "toDepthM");
+        return sortByDepth(a, b, "fromDepthM", "toDepthM");
       }}
     />
   );

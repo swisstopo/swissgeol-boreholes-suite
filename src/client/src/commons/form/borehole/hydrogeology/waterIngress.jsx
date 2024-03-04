@@ -19,7 +19,7 @@ const WaterIngress = ({ isEditable, boreholeId }) => {
       renderInput={props => <WaterIngressInput {...props} />}
       renderDisplay={props => <WaterIngressDisplay {...props} />}
       sortDisplayed={(a, b) => {
-        sortByDepth(a, b, "fromDepthM", "toDepthM");
+        return sortByDepth(a, b, "fromDepthM", "toDepthM");
       }}
     />
   );
