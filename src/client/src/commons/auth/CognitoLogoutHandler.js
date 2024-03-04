@@ -7,22 +7,12 @@ import { useEffect } from "react";
 export const CognitoLogoutHandler = ({ userManager }) => {
   useEffect(() => {
     userManager.metadataService.getMetadata().then(metadata => {
-      if (
-        new URL(metadata.end_session_endpoint).hostname.endsWith(
-          "amazoncognito.com",
-        )
-      ) {
+      if (new URL(metadata.end_session_endpoint).hostname.endsWith("amazoncognito.com")) {
         const cognitoLogoutUrl = new URL(metadata.end_session_endpoint);
-        cognitoLogoutUrl.searchParams.append(
-          "client_id",
-          userManager.settings.client_id,
-        );
-        cognitoLogoutUrl.searchParams.append(
-          "logout_uri",
-          window.location.origin,
-        );
+        cognitoLogoutUrl.searchParams.append("client_id", userManager.settings.client_id);
+        cognitoLogoutUrl.searchParams.append("logout_uri", window.location.origin);
 
-        const signoutRedirectOverride = _args => {
+        const signoutRedirectOverride = () => {
           userManager.removeUser();
           window.location.assign(cognitoLogoutUrl.href);
         };

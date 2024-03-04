@@ -1,9 +1,4 @@
-import {
-  createBorehole,
-  startBoreholeEditing,
-  loginAsAdmin,
-  handlePrompt,
-} from "../helpers/testHelpers";
+import { createBorehole, startBoreholeEditing, loginAsAdmin, handlePrompt } from "../helpers/testHelpers";
 import {
   setInput,
   evaluateInput,
@@ -14,14 +9,7 @@ import {
   evaluateCheckbox,
   evaluateDisplayValue,
 } from "../helpers/formHelpers";
-import {
-  addItem,
-  startEditing,
-  cancelEditing,
-  saveForm,
-  deleteItem,
-  copyItem,
-} from "../helpers/buttonHelpers";
+import { addItem, startEditing, cancelEditing, saveForm, deleteItem, copyItem } from "../helpers/buttonHelpers";
 
 const toggleHeaderOpen = () => {
   cy.get('[data-cy="completion-header-display"]')
@@ -168,9 +156,7 @@ describe("completion crud tests", () => {
     var completion1Id;
     cy.location().should(location => {
       completion1Id = location.pathname.split("/").pop();
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion1Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
     addCompletion();
@@ -181,9 +167,7 @@ describe("completion crud tests", () => {
     cy.location().should(location => {
       completion2Id = location.pathname.split("/").pop();
       expect(completion1Id).to.not.eq(completion2Id);
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion2Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion2Id}`);
       expect(location.hash).to.eq("#casing");
     });
     isTabSelected(1);
@@ -191,16 +175,12 @@ describe("completion crud tests", () => {
     // check hash updates on tab switch
     cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion2Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion2Id}`);
       expect(location.hash).to.eq("#instrumentation");
     });
     cy.get("[data-cy=completion-content-header-tab-backfill]").click();
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion2Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion2Id}`);
       expect(location.hash).to.eq("#backfill");
     });
 
@@ -211,9 +191,7 @@ describe("completion crud tests", () => {
     cy.get('[data-cy="prompt"]').should("not.exist");
     isTabSelected(0);
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion1Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
 
@@ -224,9 +202,7 @@ describe("completion crud tests", () => {
     handlePrompt("Unsaved changes", "cancel");
     isTabSelected(0);
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion1Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
     evaluateInput("name", "Compl-1 updated");
@@ -237,9 +213,7 @@ describe("completion crud tests", () => {
     isTabSelected(1);
     cy.contains("Compl-1");
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion2Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion2Id}`);
       expect(location.hash).to.eq("#casing");
     });
 
@@ -262,9 +236,7 @@ describe("completion crud tests", () => {
     setTab(0);
     cy.wait("@casing_GET");
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion1Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
 
@@ -285,9 +257,7 @@ describe("completion crud tests", () => {
     handlePrompt("Unsaved changes", "reset");
     cy.wait("@casing_GET");
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion1Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
     cy.contains("new completion").should("not.exist");
@@ -304,9 +274,7 @@ describe("completion crud tests", () => {
     handlePrompt("Unsaved changes", "save");
     cy.wait("@casing_GET");
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion1Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
     cy.contains("new completion").should("exist");
@@ -315,9 +283,7 @@ describe("completion crud tests", () => {
     deleteCompletion();
     handlePrompt("Do you really want to delete this completion?", "delete");
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion2Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion2Id}`);
       expect(location.hash).to.eq("#casing");
     });
 
@@ -326,9 +292,7 @@ describe("completion crud tests", () => {
     cy.wait("@casing_GET");
     isTabSelected(0);
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion1Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
     startEdit();
@@ -346,9 +310,7 @@ describe("completion crud tests", () => {
     // existing editing to new: changes can be reverted in prompt
     setTab(0);
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion1Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
     startEdit();
@@ -364,9 +326,7 @@ describe("completion crud tests", () => {
     // existing editing to new: changes can be saved in prompt
     setTab(0);
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion1Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
     startEdit();
@@ -383,9 +343,7 @@ describe("completion crud tests", () => {
     cancelEditing();
     isTabSelected(1);
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion2Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion2Id}`);
       expect(location.hash).to.eq("#casing");
     });
 
@@ -393,9 +351,7 @@ describe("completion crud tests", () => {
     deleteCompletion();
     handlePrompt("Do you really want to delete this completion?", "delete");
     cy.location().should(location => {
-      expect(location.pathname).to.eq(
-        `/editor/${boreholeId}/completion/${completion1Id}`,
-      );
+      expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
     deleteCompletion();

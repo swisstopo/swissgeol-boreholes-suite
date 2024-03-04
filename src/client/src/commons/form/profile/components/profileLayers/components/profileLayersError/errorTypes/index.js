@@ -12,10 +12,7 @@ const ErrorTypes = [
   {
     id: 2,
     messageId: "errorOverlap",
-    solutions: [
-      "errorGapSolution_extendUpperLayer",
-      "errorGapSolution_extendLowerLayer",
-    ],
+    solutions: ["errorGapSolution_extendUpperLayer", "errorGapSolution_extendLowerLayer"],
   },
   {
     id: 3,
@@ -29,10 +26,7 @@ const ErrorTypes = [
   {
     id: 4,
     messageId: "errorStartWrong",
-    solutions: [
-      "errorGapSolution_fillWithUndefined",
-      "errorGapSolution_extendLowerToZero",
-    ],
+    solutions: ["errorGapSolution_fillWithUndefined", "errorGapSolution_extendLowerToZero"],
   },
   { id: 5, messageId: "errorWrongDepth", solutions: ["errorWrongDepth"] },
   {

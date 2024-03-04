@@ -1,0 +1,239 @@
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
+import _ from "lodash";
+import { NumericFormat } from "react-number-format";
+
+import TableComponent from "./tableComponent";
+import DomainText from "../form/domain/domainText";
+import DateText from "../form/dateText";
+import TranslationText from "../form/translationText";
+
+import { Button, Icon, Segment, Table } from "semantic-ui-react";
+import { loadBoreholes } from "../../api-lib/index";
+
+class BoreholeTable extends TableComponent {
+  componentDidMount() {
+    const { filter, store } = this.props;
+    this.props.loadData(store.page || 1, filter);
+  }
+
+  reorder(orderby) {
+    const { filter, loadData, store } = this.props;
+    let dir = store.direction === "DESC" ? "ASC" : "DESC";
+    loadData(store.page, filter, orderby, dir);
+  }
+  getIcon(orderby, sub = false) {
+    const { store } = this.props;
+    let style = {
+      cursor: "pointer",
+    };
+    if (sub === true) {
+      style = {
+        ...style,
+        color: "#787878",
+        fontSize: "0.8em",
+      };
+    }
+    return (
+      <div
+        onClick={() => {
+          this.reorder(orderby);
+        }}
+        style={style}>
+        {store.orderby === orderby ? <Icon name={store.direction === "DESC" ? "sort down" : "sort up"} /> : null}
+        <TranslationText id={orderby} />
+      </div>
+    );
+  }
+  getHeader() {
+    return (
+      <Table.Row>
+        <Table.HeaderCell verticalAlign="top">
+          {this.getIcon("original_name")}
+          {this.getIcon("borehole_type", true)}
+        </Table.HeaderCell>
+        <Table.HeaderCell verticalAlign="top">
+          {this.getIcon("restriction")}
+          {this.getIcon("restriction_until", true)}
+        </Table.HeaderCell>
+        <Table.HeaderCell verticalAlign="top">
+          {this.getIcon("totaldepth")}
+          {this.getIcon("top_bedrock", true)}
+        </Table.HeaderCell>
+        <Table.HeaderCell verticalAlign="top">
+          {this.getIcon("drilling_end_date")}
+          {this.getIcon("purpose", true)}
+        </Table.HeaderCell>
+        <Table.HeaderCell style={{ width: "4em" }} verticalAlign="top"></Table.HeaderCell>
+      </Table.Row>
+    );
+  }
+  getCols(item, idx) {
+    let colIdx = 0;
+    return [
+      <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
+        {(() => {
+          if (!Object.prototype.hasOwnProperty.call(this.props.domains.data, "borehole_type")) {
+            return null;
+          }
+
+          const borehole_type = this.props.domains.data["borehole_type"].find(function (element) {
+            return element.id === item.borehole_type;
+          });
+
+          const restriction = this.props.domains.data["restriction"].find(function (element) {
+            return element.id === item.restriction;
+          });
+
+          let color = "black";
+          if (restriction !== undefined) {
+            if (restriction.code === "f") {
+              color = "green";
+            } else if (["b", "g"].indexOf(restriction.code) >= 0) {
+              color = "red";
+            }
+          }
+
+          if (borehole_type !== undefined) {
+            return (
+              <img
+                alt=""
+                src={"/img/" + borehole_type.code + "-" + color + ".svg"}
+                style={{
+                  height: "0.6em",
+                  marginRight: "0.5em",
+                  width: "0.6em",
+                }}
+              />
+            );
+          } else {
+            return (
+              <img
+                alt=""
+                src={"/img/a-" + color + ".svg"}
+                style={{
+                  height: "0.6em",
+                  marginRight: "0.5em",
+                  width: "0.6em",
+                }}
+              />
+            );
+          }
+        })()}{" "}
+        {item.original_name}
+        <br />
+        <span
+          style={{
+            color: "#787878",
+            fontSize: "0.8em",
+          }}>
+          <DomainText id={item.borehole_type} schema="borehole_type" />
+        </span>
+      </Table.Cell>,
+      <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
+        <DomainText id={item.restriction} schema="restriction" />
+        <br />
+        <span
+          style={{
+            color: "#787878",
+            fontSize: "0.8em",
+          }}>
+          <DateText date={item.restriction_until} />
+        </span>
+      </Table.Cell>,
+      <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
+        {_.isNil(item.total_depth) ? (
+          "n/p"
+        ) : (
+          <NumericFormat value={item.total_depth} thousandSeparator="'" displayType="text" />
+        )}
+        <br />
+        <span
+          style={{
+            color: "#787878",
+            fontSize: "0.8em",
+          }}>
+          {_.isNil(item.extended.top_bedrock) ? (
+            ""
+          ) : (
+            <NumericFormat value={item.extended.top_bedrock} thousandSeparator="'" displayType="text" />
+          )}
+        </span>
+      </Table.Cell>,
+      <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
+        <DateText date={item.drilling_date} />
+        <br />
+        <span
+          style={{
+            color: "#787878",
+            fontSize: "0.8em",
+          }}>
+          {_.isNil(item.extended.purpose) ? null : (
+            <span>
+              (
+              <DomainText id={item.extended.purpose} schema="extended.purpose" />)
+            </span>
+          )}
+        </span>
+      </Table.Cell>,
+      <Table.Cell
+        key={this.uid + "_" + idx + "_" + colIdx++}
+        style={{
+          width: "4em",
+          textAlign: "center",
+        }}>
+        <Button
+          color={_.findIndex(this.props.checkout.cart, ["id", item.id]) >= 0 ? "grey" : "black"}
+          icon={_.findIndex(this.props.checkout.cart, ["id", item.id]) >= 0 ? "minus" : "plus"}
+          onClick={e => {
+            e.stopPropagation();
+            this.props.toggleCart(item);
+          }}
+          size="mini"
+        />
+      </Table.Cell>,
+    ];
+  }
+  render() {
+    return (
+      <Segment
+        basic
+        loading={this.props.store.isFetching}
+        style={{
+          flex: "1 1 100%",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+        }}>
+        {super.render()}
+      </Segment>
+    );
+  }
+}
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    checkout: state.checkout,
+    store: state.core_borehole_list,
+    domains: state.core_domain_list,
+    ...ownProps,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch: dispatch,
+    loadData: (page, filter = {}, orderby = null, direction = null) => {
+      dispatch(loadBoreholes(page, 100, filter, orderby, direction));
+    },
+    toggleCart: item => {
+      dispatch({
+        type: "CHECKOUT_TOGGLE_CART",
+        item: item,
+      });
+    },
+  };
+};
+
+const ConnectedBoreholeTable = connect(mapStateToProps, mapDispatchToProps)(withTranslation("common")(BoreholeTable));
+export default ConnectedBoreholeTable;

@@ -1,8 +1,4 @@
-import {
-  createAndEditBoreholeAsAdmin,
-  deleteDownloadedFile,
-  readDownloadedFile,
-} from "../helpers/testHelpers";
+import { createAndEditBoreholeAsAdmin, deleteDownloadedFile, readDownloadedFile } from "../helpers/testHelpers";
 
 describe("Tests for 'Attachments' edit page.", () => {
   it("creates, downloads and deletes attachments.", () => {
@@ -24,18 +20,12 @@ describe("Tests for 'Attachments' edit page.", () => {
     });
 
     // intercept get all Attachments for borehole request
-    cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as(
-      "getAllAttachments",
-    );
+    cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("getAllAttachments");
     // intercept upload file request
-    cy.intercept("/api/v2/boreholefile/upload?boreholeId=**").as(
-      "upload-files",
-    );
+    cy.intercept("/api/v2/boreholefile/upload?boreholeId=**").as("upload-files");
 
     // upload file
-    cy.get('[data-cy="attachments-upload-button"]')
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
     cy.wait(["@upload-files"]);
     cy.wait(["@getAllAttachments"]);
 
@@ -52,9 +42,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     });
 
     // upload and verify file IRATETRINITY.pdf
-    cy.get('[data-cy="attachments-upload-button"]')
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
     cy.wait(["@upload-files"]);
     cy.wait(["@getAllAttachments"]);
     cy.get("tbody").children().should("have.length", 2);
@@ -69,9 +57,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     });
 
     // Upload "IRATETRINITY.pdf" second time. Should not be uploaded.
-    cy.get('[data-cy="attachments-upload-button"]')
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
     cy.wait(["@upload-files"]);
 
     // Check if error message is displayed.
@@ -81,9 +67,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     deleteDownloadedFile("IRATETRINITY.pdf");
 
     // intercept download file request
-    cy.intercept("/api/v2/boreholefile/download?boreholeFileId=**").as(
-      "download-file",
-    );
+    cy.intercept("/api/v2/boreholefile/download?boreholeFileId=**").as("download-file");
 
     // Download recently uploaded file
     cy.get("tbody").children().contains("span", "IRATETRINITY.pdf").click();
@@ -93,27 +77,13 @@ describe("Tests for 'Attachments' edit page.", () => {
     readDownloadedFile("IRATETRINITY.pdf");
 
     // intercept delete file request
-    cy.intercept(
-      "/api/v2/boreholefile/detachFile?boreholeId=**&boreholeFileId=**",
-    ).as("delete-file");
+    cy.intercept("/api/v2/boreholefile/detachFile?boreholeId=**&boreholeFileId=**").as("delete-file");
 
     // delete attachments
-    cy.get("tbody")
-      .children()
-      .first()
-      .get("td button")
-      .children()
-      .first()
-      .click();
+    cy.get("tbody").children().first().get("td button").children().first().click();
     cy.wait(["@delete-file"]);
     cy.wait(["@getAllAttachments"]);
-    cy.get("tbody")
-      .children()
-      .first()
-      .get("td button")
-      .children()
-      .first()
-      .click();
+    cy.get("tbody").children().first().get("td button").children().first().click();
     cy.wait(["@delete-file"]);
     cy.wait(["@getAllAttachments"]);
     cy.get("tbody").children().should("have.length", 0);

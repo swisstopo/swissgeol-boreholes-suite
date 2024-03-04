@@ -64,13 +64,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("[name=location_y]").should("not.have.class", "error");
 
     // wait edits of all 4 inputs to complete
-    cy.wait([
-      "@location",
-      "@edit_patch",
-      "@edit_patch",
-      "@edit_patch",
-      "@edit_patch",
-    ]);
+    cy.wait(["@location", "@edit_patch", "@edit_patch", "@edit_patch", "@edit_patch"]);
 
     // type coordinates that are out of bounds
     cy.get("@LV95X-input").clear();
@@ -106,9 +100,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
     cy.wait(2000);
     // click on map
-    cy.get('[class="ol-viewport"]')
-      .scrollIntoView()
-      .click(390, 250, { force: true });
+    cy.get('[class="ol-viewport"]').scrollIntoView().click(390, 250, { force: true });
 
     cy.wait("@location");
     cy.get('[data-cy="apply-button"]').click();

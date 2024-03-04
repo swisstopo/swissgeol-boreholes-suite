@@ -1,9 +1,4 @@
-import {
-  createBorehole,
-  createCompletion,
-  loginAsAdmin,
-  startBoreholeEditing,
-} from "../helpers/testHelpers";
+import { createBorehole, createCompletion, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 import {
   evaluateDisplayValue,
   setInput,
@@ -11,12 +6,7 @@ import {
   toggleMultiSelect,
   evaluateMultiSelect,
 } from "../helpers/formHelpers";
-import {
-  addItem,
-  startEditing,
-  saveForm,
-  deleteItem,
-} from "../helpers/buttonHelpers";
+import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
 
 describe("Tests for the hydrotest editor.", () => {
   it("Creates, updates and deletes hydrotests", () => {
@@ -116,10 +106,7 @@ describe("Tests for the hydrotest editor.", () => {
     // delete hydrotest
     deleteItem();
     cy.wait("@hydrotest_GET");
-    cy.get("body").should(
-      "not.contain",
-      "Pump-/Injektionsversuch, variable Rate",
-    );
+    cy.get("body").should("not.contain", "Pump-/Injektionsversuch, variable Rate");
   });
 
   it("sort hydrotest", () => {

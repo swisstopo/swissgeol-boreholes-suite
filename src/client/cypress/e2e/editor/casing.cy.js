@@ -1,21 +1,6 @@
-import {
-  loginAsAdmin,
-  createBorehole,
-  createCompletion,
-  startBoreholeEditing,
-} from "../helpers/testHelpers";
-import {
-  evaluateDisplayValue,
-  evaluateInput,
-  setInput,
-  setSelect,
-} from "../helpers/formHelpers";
-import {
-  addItem,
-  startEditing,
-  saveForm,
-  deleteItem,
-} from "../helpers/buttonHelpers";
+import { loginAsAdmin, createBorehole, createCompletion, startBoreholeEditing } from "../helpers/testHelpers";
+import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
+import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
 
 describe("Casing crud tests", () => {
   beforeEach(() => {
@@ -179,12 +164,8 @@ describe("Casing crud tests", () => {
     saveForm();
     cy.wait("@casing_GET");
 
-    cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains(
-      "casing-1",
-    );
-    cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains(
-      "casing-2",
-    );
+    cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains("casing-1");
+    cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains("casing-2");
 
     cy.get('[data-cy="casing-card.1"] [data-cy="edit-button"]').click({
       force: true,
@@ -192,12 +173,8 @@ describe("Casing crud tests", () => {
     setInput("casingElements.0.toDepth", "8");
     saveForm();
     cy.wait("@casing_GET");
-    cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains(
-      "casing-2",
-    );
-    cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains(
-      "casing-1",
-    );
+    cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains("casing-2");
+    cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains("casing-1");
 
     cy.get('[data-cy="casing-card.0"] [data-cy="edit-button"]').click({
       force: true,
@@ -205,11 +182,7 @@ describe("Casing crud tests", () => {
     setInput("casingElements.0.fromDepth", "3");
     saveForm();
     cy.wait("@casing_GET");
-    cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains(
-      "casing-1",
-    );
-    cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains(
-      "casing-2",
-    );
+    cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains("casing-1");
+    cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains("casing-2");
   });
 });

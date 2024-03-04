@@ -1,12 +1,13 @@
-const express = require("express");
-const path = require("path");
+/* eslint-disable no-undef */
+import { express } from "express";
+import { path } from "path";
+import { RateLimit } from "express-rate-limit";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // set up rate limiter: maximum of 1000 requests per minute
-var RateLimit = require("express-rate-limit");
-var limiter = RateLimit({
+const limiter = RateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 1000,
 });
@@ -14,14 +15,14 @@ var limiter = RateLimit({
 // apply rate limiter to all requests
 app.use(limiter);
 
-app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(path.join(__dirname, "dist")));
 
 app.get("/help/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "help", "index.html"));
+  res.sendFile(path.join(__dirname, "dist", "help", "index.html"));
 });
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 app.listen(PORT, () => {

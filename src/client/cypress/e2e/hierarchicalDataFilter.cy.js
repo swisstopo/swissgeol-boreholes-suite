@@ -92,8 +92,6 @@ describe("Hierachical data filter tests", () => {
       });
     cy.contains("a", "Reset").click();
     cy.wait("@edit_list");
-    cy.get('[data-cy="hierarchical-data-search"]')
-      .find("div.divider.text")
-      .should("have.length", 0);
+    cy.get('[data-cy="hierarchical-data-search"]').find("div.divider.text").should("have.length", 0);
   });
 });

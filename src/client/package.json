@@ -1,6 +1,7 @@
 {
   "name": "suite-bdms",
   "version": "1.0.6",
+  "type": "module",
   "description": "Bohrehole Data Management System",
   "private": true,
   "author": "GeoWerkstatt <office@geowerkstatt.ch> (https://github.com/geowerkstatt)",
@@ -57,7 +58,6 @@
     "react-query": "^3.39.3",
     "react-redux": "^7.2.9",
     "react-router-dom": "^5.3.4",
-    "react-scripts": "^5.0.1",
     "redux": "^4.2.1",
     "redux-thunk": "^2.4.2",
     "semantic-ui-css": "github:Semantic-Org/Semantic-UI-CSS",
@@ -66,34 +66,30 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@vitejs/plugin-react": "^4.2.1",
     "cypress": "^13.6.1",
+    "cypress-vite": "^1.5.0",
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
     "license-checker": "^25.0.1",
-    "prettier": "^3.1.0"
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4",
+    "vite-plugin-svgr": "^4.2.0",
+    "vite-tsconfig-paths": "^4.3.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
     "test": "cypress run",
-    "eject": "react-scripts eject",
-    "lint": "eslint ./src/",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "cy": "cypress open"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": "error"
-    },
-    "plugins": [
-      "prettier"
-    ]
   },
   "browserslist": {
     "production": [

@@ -1,16 +1,6 @@
-import {
-  loginAsAdmin,
-  createBorehole,
-  startBoreholeEditing,
-  createCompletion,
-} from "../helpers/testHelpers";
+import { loginAsAdmin, createBorehole, startBoreholeEditing, createCompletion } from "../helpers/testHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
-import {
-  addItem,
-  startEditing,
-  saveForm,
-  deleteItem,
-} from "../helpers/buttonHelpers";
+import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
 
 describe("Instrumentation crud tests", () => {
   beforeEach(() => {

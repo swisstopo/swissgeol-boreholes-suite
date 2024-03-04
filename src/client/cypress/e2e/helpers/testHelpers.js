@@ -29,9 +29,7 @@ export const interceptApiCalls = () => {
   cy.intercept("PUT", "/api/v2/layer").as("update-layer");
   cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
-  cy.intercept("/api/v2/lithologicaldescription*").as(
-    "lithological_description",
-  );
+  cy.intercept("/api/v2/lithologicaldescription*").as("lithological_description");
   cy.intercept("/api/v2/chronostratigraphy*", req => {
     return (req.alias = `chronostratigraphy_${req.method}`);
   });
@@ -56,9 +54,7 @@ export const interceptApiCalls = () => {
     return (req.alias = `hydrotest_${req.method}`);
   });
 
-  cy.intercept("/api/v2/completion?boreholeId=**").as(
-    "get-completions-by-boreholeId",
-  );
+  cy.intercept("/api/v2/completion?boreholeId=**").as("get-completions-by-boreholeId");
 
   cy.intercept("/api/v2/casing*", req => {
     return (req.alias = `casing_${req.method}`);
@@ -173,10 +169,7 @@ export const newUneditableBorehole = () => {
 
 const waitForCreation = () => {
   return cy.wait(["@edit_create"]).then(interception => {
-    cy.task(
-      "log",
-      "Created new borehole with id:" + interception.response.body.id,
-    );
+    cy.task("log", "Created new borehole with id:" + interception.response.body.id);
     return cy.wrap(interception.response.body.id);
   });
 };

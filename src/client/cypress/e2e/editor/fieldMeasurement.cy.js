@@ -1,20 +1,6 @@
-import {
-  createBorehole,
-  loginAsAdmin,
-  startBoreholeEditing,
-  createCompletion,
-} from "../helpers/testHelpers";
-import {
-  evaluateDisplayValue,
-  setInput,
-  setSelect,
-} from "../helpers/formHelpers";
-import {
-  addItem,
-  startEditing,
-  saveForm,
-  deleteItem,
-} from "../helpers/buttonHelpers";
+import { createBorehole, loginAsAdmin, startBoreholeEditing, createCompletion } from "../helpers/testHelpers";
+import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
+import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
 
 describe("Tests for the field measurement editor.", () => {
   it("Creates, updates and deletes field measurement", () => {

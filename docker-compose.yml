@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   minio:
@@ -39,8 +39,8 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: pgadmin@example.com
       PGADMIN_DEFAULT_PASSWORD: PEEVEDWATER
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
     volumes:
       - ./config/pgadmin4-servers.json:/pgadmin4/servers.json
     entrypoint:
@@ -70,8 +70,8 @@ services:
       db:
         condition: service_healthy
     environment:
-      REACT_APP_PROXY_HOST_API: http://localhost:5000/
-      WATCHPACK_POLLING: 'true'
+      VITE_APP_PROXY_HOST_API: http://localhost:5000/
+      WATCHPACK_POLLING: "true"
     extra_hosts:
       - "localhost:host-gateway"
   api-legacy:

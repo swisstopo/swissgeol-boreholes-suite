@@ -118,7 +118,7 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="borehole-table"] tbody')
       .children()
       .should("have.length", 100)
-      .each((el, index, list) => {
+      .each(el => {
         cy.wrap(el).contains("v. user");
       });
   });

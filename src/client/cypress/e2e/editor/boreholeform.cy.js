@@ -8,12 +8,10 @@ describe("Test for the borehole form.", () => {
     // fill all dropdowns on location tab
     cy.get('[data-cy="domain-dropdown"]')
       .should("have.length", 6)
-      .each((el, index, list) =>
-        cy.wrap(el).click().find('[role="option"]').last().click(),
-      );
+      .each(el => cy.wrap(el).click().find('[role="option"]').last().click());
 
     const locationDropdownValues = [];
-    cy.get('[data-cy="domain-dropdown"]').each((el, index, list) => {
+    cy.get('[data-cy="domain-dropdown"]').each(el => {
       const value = el[0].children[1].firstChild.data;
       locationDropdownValues.push(value);
       if (locationDropdownValues.length === 6) {
@@ -32,12 +30,10 @@ describe("Test for the borehole form.", () => {
     cy.get('[data-cy="borehole-menu-item"]').click();
     cy.get('[data-cy="domain-dropdown"]')
       .should("have.length", 8)
-      .each((el, index, list) =>
-        cy.wrap(el).click().find('[role="option"]').eq(1).click(),
-      );
+      .each(el => cy.wrap(el).click().find('[role="option"]').eq(1).click());
 
     const boreholeDropdownValues = [];
-    cy.get('[data-cy="domain-dropdown"]').each((el, index, list) => {
+    cy.get('[data-cy="domain-dropdown"]').each(el => {
       const value = el[0].children[1].firstChild.data;
       boreholeDropdownValues.push(value);
       if (boreholeDropdownValues.length === 10) {
