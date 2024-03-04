@@ -85,35 +85,23 @@ describe("Backfill crud tests", () => {
     setSelect("materialId", 1);
     saveForm();
 
-    cy.get(
-      '[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]',
-    ).contains("10");
-    cy.get(
-      '[data-cy="backfill-card.1"] [data-cy="todepth-formDisplay"]',
-    ).contains("12");
+    cy.get('[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]').contains("10");
+    cy.get('[data-cy="backfill-card.1"] [data-cy="todepth-formDisplay"]').contains("12");
 
     cy.get('[data-cy="backfill-card.1"] [data-cy="edit-button"]').click({
       force: true,
     });
     setInput("toDepth", "8");
     saveForm();
-    cy.get(
-      '[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]',
-    ).contains("8");
-    cy.get(
-      '[data-cy="backfill-card.1"] [data-cy="todepth-formDisplay"]',
-    ).contains("10");
+    cy.get('[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]').contains("8");
+    cy.get('[data-cy="backfill-card.1"] [data-cy="todepth-formDisplay"]').contains("10");
 
     cy.get('[data-cy="backfill-card.0"] [data-cy="edit-button"]').click({
       force: true,
     });
     setInput("fromDepth", "5");
     saveForm();
-    cy.get(
-      '[data-cy="backfill-card.0"] [data-cy="fromdepth-formDisplay"]',
-    ).contains("0");
-    cy.get(
-      '[data-cy="backfill-card.1"] [data-cy="fromdepth-formDisplay"]',
-    ).contains("5");
+    cy.get('[data-cy="backfill-card.0"] [data-cy="fromdepth-formDisplay"]').contains("0");
+    cy.get('[data-cy="backfill-card.1"] [data-cy="fromdepth-formDisplay"]').contains("5");
   });
 });

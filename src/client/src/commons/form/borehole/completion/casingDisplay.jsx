@@ -1,4 +1,3 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { Table, TableHead, TableBody, TableContainer, TableRow, TableCell, Typography } from "@mui/material";
 import { StackFullWidth } from "../../../../components/baseComponents";

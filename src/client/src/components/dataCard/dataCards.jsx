@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Typography } from "@mui/material";
 import { DataCard, DataCardItem, DataCardContainer, DataCardButtonContainer } from "./dataCard";

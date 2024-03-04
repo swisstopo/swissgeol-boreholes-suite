@@ -114,12 +114,8 @@ describe("Instrumentation crud tests", () => {
     saveForm();
     cy.wait("@instrumentation_GET");
 
-    cy.get(
-      '[data-cy="instrumentation-card.0"] [data-cy="name-formDisplay"]',
-    ).contains("Inst-1");
-    cy.get(
-      '[data-cy="instrumentation-card.1"] [data-cy="name-formDisplay"]',
-    ).contains("Inst-2");
+    cy.get('[data-cy="instrumentation-card.0"] [data-cy="name-formDisplay"]').contains("Inst-1");
+    cy.get('[data-cy="instrumentation-card.1"] [data-cy="name-formDisplay"]').contains("Inst-2");
 
     cy.get('[data-cy="instrumentation-card.1"] [data-cy="edit-button"]').click({
       force: true,
@@ -127,12 +123,8 @@ describe("Instrumentation crud tests", () => {
     setInput("toDepth", "8");
     saveForm();
     cy.wait("@instrumentation_GET");
-    cy.get(
-      '[data-cy="instrumentation-card.0"] [data-cy="name-formDisplay"]',
-    ).contains("Inst-2");
-    cy.get(
-      '[data-cy="instrumentation-card.1"] [data-cy="name-formDisplay"]',
-    ).contains("Inst-1");
+    cy.get('[data-cy="instrumentation-card.0"] [data-cy="name-formDisplay"]').contains("Inst-2");
+    cy.get('[data-cy="instrumentation-card.1"] [data-cy="name-formDisplay"]').contains("Inst-1");
 
     cy.get('[data-cy="instrumentation-card.0"] [data-cy="edit-button"]').click({
       force: true,
@@ -140,11 +132,7 @@ describe("Instrumentation crud tests", () => {
     setInput("fromDepth", "5");
     saveForm();
     cy.wait("@instrumentation_GET");
-    cy.get(
-      '[data-cy="instrumentation-card.0"] [data-cy="name-formDisplay"]',
-    ).contains("Inst-1");
-    cy.get(
-      '[data-cy="instrumentation-card.1"] [data-cy="name-formDisplay"]',
-    ).contains("Inst-2");
+    cy.get('[data-cy="instrumentation-card.0"] [data-cy="name-formDisplay"]').contains("Inst-1");
+    cy.get('[data-cy="instrumentation-card.1"] [data-cy="name-formDisplay"]').contains("Inst-2");
   });
 });

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { Box, IconButton, Stack, Typography } from "@mui/material";
 import Delete from "@mui/icons-material/Delete";
@@ -121,7 +121,7 @@ const CasingInput = props => {
               <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("casingElements")}</Typography>
               <AddButton
                 label="addCasingElement"
-                onClick={e => {
+                onClick={() => {
                   append();
                 }}
               />
