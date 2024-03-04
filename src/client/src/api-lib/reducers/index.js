@@ -229,14 +229,8 @@ export function workflow() {
           fcnt: state.fcnt + 1,
           isFetching: false,
           rtime: new Date().getTime() - state.rtime,
-          previous:
-            action.json.data.length > 1
-              ? action.json.data[action.json.data.length - 2]
-              : null,
-          data:
-            action.json.data.length > 0
-              ? action.json.data[action.json.data.length - 1]
-              : null,
+          previous: action.json.data.length > 1 ? action.json.data[action.json.data.length - 2] : null,
+          data: action.json.data.length > 0 ? action.json.data[action.json.data.length - 1] : null,
         };
         return copy;
       }
@@ -246,14 +240,8 @@ export function workflow() {
           fcnt: state.fcnt + 1,
           isFetching: false,
           rtime: new Date().getTime() - state.rtime,
-          previous:
-            action.json.data.length > 1
-              ? action.json.data[action.json.data.length - 2]
-              : null,
-          data:
-            action.json.data.length > 0
-              ? action.json.data[action.json.data.length - 1]
-              : null,
+          previous: action.json.data.length > 1 ? action.json.data[action.json.data.length - 2] : null,
+          data: action.json.data.length > 0 ? action.json.data[action.json.data.length - 1] : null,
         };
         return copy;
       }
@@ -263,14 +251,8 @@ export function workflow() {
           fcnt: state.fcnt + 1,
           isFetching: false,
           rtime: new Date().getTime() - state.rtime,
-          previous:
-            action.json.data.length > 1
-              ? action.json.data[action.json.data.length - 2]
-              : null,
-          data:
-            action.json.data.length > 0
-              ? action.json.data[action.json.data.length - 1]
-              : null,
+          previous: action.json.data.length > 1 ? action.json.data[action.json.data.length - 2] : null,
+          data: action.json.data.length > 0 ? action.json.data[action.json.data.length - 1] : null,
         };
         return copy;
       }
@@ -381,11 +363,7 @@ export function borehole() {
   };
   return function _borehole(state = initialState, action) {
     const { path } = action;
-    if (
-      path !== "/borehole/edit" &&
-      path !== "/borehole" &&
-      path !== "/workflow/edit"
-    ) {
+    if (path !== "/borehole/edit" && path !== "/borehole" && path !== "/workflow/edit") {
       return state;
     }
 
@@ -575,14 +553,10 @@ export function boreholeList() {
           isFetching: false,
           rtime: new Date().getTime() - state.rtime,
           data: action.json.data,
-          pages: action.json.hasOwnProperty("pages") ? action.json.pages : null,
-          page: action.json.hasOwnProperty("page") ? action.json.page : null,
-          direction: action.json.hasOwnProperty("direction")
-            ? action.json.direction
-            : null,
-          orderby: action.json.hasOwnProperty("orderby")
-            ? action.json.orderby
-            : null,
+          pages: Object.prototype.hasOwnProperty.call(action.json, "pages") ? action.json.pages : null,
+          page: Object.prototype.hasOwnProperty.call(action.json, "page") ? action.json.page : null,
+          direction: Object.prototype.hasOwnProperty.call(action.json, "direction") ? action.json.direction : null,
+          orderby: Object.prototype.hasOwnProperty.call(action.json, "orderby") ? action.json.orderby : null,
         };
         return copy;
       }
@@ -630,14 +604,11 @@ export function boreholeEditorList() {
           isFetching: false,
           rtime: new Date().getTime() - state.rtime,
           data: action.json.data,
+          // eslint-disable-next-line no-prototype-builtins
           pages: action.json.hasOwnProperty("pages") ? action.json.pages : null,
-          page: action.json.hasOwnProperty("page") ? action.json.page : null,
-          direction: action.json.hasOwnProperty("direction")
-            ? action.json.direction
-            : null,
-          orderby: action.json.hasOwnProperty("orderby")
-            ? action.json.orderby
-            : null,
+          page: Object.prototype.hasOwnProperty.call(action.json, "page") ? action.json.page : null,
+          direction: Object.prototype.hasOwnProperty.call(action.json, "direction") ? action.json.direction : null,
+          orderby: Object.prototype.hasOwnProperty.call(action.json, "orderby") ? action.json.orderby : null,
         };
         return copy;
       }
@@ -681,8 +652,8 @@ export function projectList() {
           isFetching: false,
           rtime: new Date().getTime() - state.rtime,
           data: action.json.data,
-          pages: action.json.hasOwnProperty("pages") ? action.json.pages : null,
-          page: action.json.hasOwnProperty("page") ? action.json.page : null,
+          pages: Object.prototype.hasOwnProperty.call(action.json, "pages") ? action.json.pages : null,
+          page: Object.prototype.hasOwnProperty.call(action.json, "page") ? action.json.page : null,
         };
         return copy;
       }
@@ -726,8 +697,8 @@ export function stratigraphyList() {
           isFetching: false,
           rtime: new Date().getTime() - state.rtime,
           data: action.json.data,
-          pages: action.json.hasOwnProperty("pages") ? action.json.pages : null,
-          page: action.json.hasOwnProperty("page") ? action.json.page : null,
+          pages: Object.prototype.hasOwnProperty.call(action.json, "pages") ? action.json.pages : null,
+          page: Object.prototype.hasOwnProperty.call(action.json, "page") ? action.json.page : null,
         };
         return copy;
       }
@@ -771,7 +742,7 @@ export function domainsList() {
           let copy = {
             ...state,
           };
-          if (copy.data.hasOwnProperty(action.json.schema)) {
+          if (Object.prototype.hasOwnProperty.call(copy.data, action.json.schema)) {
             const data = copy.data[action.json.schema];
             for (let idx = 0; idx < data.length; idx++) {
               const element = data[idx];
@@ -879,10 +850,7 @@ export function createReducer(pluginsReducers) {
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 export function configureStore() {
-  const store = createStore(
-    createReducer(),
-    composeEnhancers(applyMiddleware(thunkMiddleware)),
-  );
+  const store = createStore(createReducer(), composeEnhancers(applyMiddleware(thunkMiddleware)));
   store.pluginsReducers = {};
   return store;
 }

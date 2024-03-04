@@ -5,10 +5,7 @@ describe("Tests for 'Location' edit page.", () => {
     newEditableBorehole();
 
     // enter original name
-    cy.contains("label", "Original name")
-      .next()
-      .children("input")
-      .type("SCATORPS");
+    cy.contains("label", "Original name").next().children("input").type("SCATORPS");
     cy.wait("@edit_patch");
 
     // stop editing
@@ -24,9 +21,7 @@ describe("Tests for 'Location' edit page.", () => {
     });
     cy.get(".modal button.negative").click();
     cy.wait(["@edit_deletelist", "@edit_list"]);
-    cy.get('[data-cy="borehole-table"]')
-      .contains("SCATORPS")
-      .should("not.exist");
+    cy.get('[data-cy="borehole-table"]').contains("SCATORPS").should("not.exist");
   });
 
   it("removes error highlight of identifier fields if at least one identifier is present.", () => {
@@ -38,10 +33,7 @@ describe("Tests for 'Location' edit page.", () => {
 
     // add identifier
     cy.get('[data-cy="identifier-dropdown"]').click();
-    cy.get('[data-cy="identifier-dropdown"]')
-      .find("div[role='option']")
-      .contains("ID Canton")
-      .click();
+    cy.get('[data-cy="identifier-dropdown"]').find("div[role='option']").contains("ID Canton").click();
     cy.get('[data-cy="identifier-dropdown"]').should("not.have.class", "error");
     cy.get('[data-cy="identifier-value"]').should("have.class", "error");
 

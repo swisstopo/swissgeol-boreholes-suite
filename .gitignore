@@ -419,7 +419,7 @@ src/client/public/env.js
 src/client/coverage
 
 # Production
-src/client/build
+src/client/dist
 
 # Misc
 src/client/.DS_Store

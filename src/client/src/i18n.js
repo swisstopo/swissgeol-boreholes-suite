@@ -21,7 +21,7 @@ i18n
       // cookieOptions: { path: '/', sameSite: 'strict' }
     },
     backend: {
-      loadPath: `${process.env.PUBLIC_URL}/locale/{{lng}}/{{ns}}.json`,
+      loadPath: `/locale/{{lng}}/{{ns}}.json`,
       allowMultiLoading: false,
       queryStringParams: { v: "1.0.0" },
     },

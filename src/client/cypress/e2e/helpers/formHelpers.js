@@ -37,10 +37,7 @@ export const openDropdown = selector => {
 };
 
 export const selectDropdownOption = index => {
-  cy.get('.MuiPaper-elevation [role="listbox"]')
-    .find('[role="option"]')
-    .eq(index)
-    .click();
+  cy.get('.MuiPaper-elevation [role="listbox"]').find('[role="option"]').eq(index).click();
 };
 
 export const evaluateDropdownOptionsLength = length => {
@@ -102,10 +99,7 @@ export const evaluateMultiSelect = (fieldName, expectedValues) => {
         return input.value === "";
       } else {
         var values = input.value.split(",");
-        return (
-          values.length === expectedValues.length &&
-          values.every(v => expectedValues.includes(v))
-        );
+        return values.length === expectedValues.length && values.every(v => expectedValues.includes(v));
       }
     })
     .should("have.length", 1);

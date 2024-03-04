@@ -6,12 +6,7 @@ describe("Test copying of boreholes", () => {
 
     loginAsAdmin();
     cy.visit("/editor");
-    cy.get('[data-cy="borehole-table"] tbody')
-      .children()
-      .eq(1)
-      .find(".checkbox")
-      .scrollIntoView()
-      .click();
+    cy.get('[data-cy="borehole-table"] tbody').children().eq(1).find(".checkbox").scrollIntoView().click();
 
     cy.contains("button", "Create a copy").click();
 
@@ -19,10 +14,7 @@ describe("Test copying of boreholes", () => {
     cy.wait("@borehole_copy");
     cy.wait("@workflow_edit_list");
 
-    cy.contains("label", "Original name")
-      .next()
-      .children("input")
-      .should("contain.value", " (Copy)");
+    cy.contains("label", "Original name").next().children("input").should("contain.value", " (Copy)");
 
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");

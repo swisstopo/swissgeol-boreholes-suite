@@ -8,10 +8,7 @@ describe("Messages for empty profiles", () => {
   it("Displays correct messages for stratigraphy", () => {
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="lithology-menu-item"]').click();
-    cy.get('[data-cy="stratigraphy-message"]').should(
-      "contain",
-      "No stratigraphy available",
-    );
+    cy.get('[data-cy="stratigraphy-message"]').should("contain", "No stratigraphy available");
     cy.contains("a", "Start editing").click();
     cy.wait("@edit_lock");
     cy.get('[data-cy="stratigraphy-message"]').should(

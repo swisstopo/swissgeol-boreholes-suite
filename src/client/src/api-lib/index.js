@@ -2,20 +2,9 @@ import { getHeight, downloadBorehole } from "./actions";
 
 import { loadSettings, patchSettings } from "./actions/settings";
 
-import {
-  acceptTerms,
-  draftTerms,
-  getTerms,
-  getTermsDraft,
-  publishTerms,
-} from "./actions/terms";
+import { acceptTerms, draftTerms, getTerms, getTermsDraft, publishTerms } from "./actions/terms";
 
-import {
-  draftContent,
-  getContent,
-  getContentDraft,
-  publishContent,
-} from "./actions/content";
+import { draftContent, getContent, getContentDraft, publishContent } from "./actions/content";
 
 import {
   setAuthentication,
@@ -74,12 +63,7 @@ import {
   resetWorkflow,
 } from "./actions/workflow";
 
-import {
-  createLayer,
-  deleteLayer,
-  gapLayer,
-  getLayers,
-} from "./actions/stratigraphy";
+import { createLayer, deleteLayer, gapLayer, getLayers } from "./actions/stratigraphy";
 
 import { getProfileLayers } from "./actions/profile";
 
@@ -89,11 +73,7 @@ import { getWms } from "./actions/geoapi";
 
 import { createFeedback } from "./actions/feedback";
 
-import store, {
-  injectReducer,
-  configureStore,
-  createReducer,
-} from "./reducers";
+import store, { injectReducer, configureStore, createReducer } from "./reducers";
 
 export {
   getHeight,

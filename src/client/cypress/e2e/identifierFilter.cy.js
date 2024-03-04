@@ -5,13 +5,8 @@ describe("Tests for filtering data by identifier.", () => {
     newEditableBorehole().as("borehole_id");
     let identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');
 
-    identifierDropdown.each((el, index, list) =>
-      cy
-        .wrap(el)
-        .click({ force: true })
-        .find('[role="option"]')
-        .eq(1)
-        .click({ force: true }),
+    identifierDropdown.each(el =>
+      cy.wrap(el).click({ force: true }).find('[role="option"]').eq(1).click({ force: true }),
     );
 
     cy.get('[data-cy="identifier-value"] input').type(819544732);
@@ -24,11 +19,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     cy.contains("span", "Location").click();
     // show all options
-    cy.get('[class="ui fitted toggle checkbox"]')
-      .eq(1)
-      .children()
-      .first()
-      .check({ force: true });
+    cy.get('[class="ui fitted toggle checkbox"]').eq(1).children().first().check({ force: true });
 
     cy.get("tbody").children().should("have.length", 100);
 
@@ -42,14 +33,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.get("tbody").children().should("have.length", 1);
 
     // click reset label
-    cy.get('[data-cy="domain-dropdown')
-      .first()
-      .parent()
-      .parent()
-      .next()
-      .children()
-      .first()
-      .click();
+    cy.get('[data-cy="domain-dropdown').first().parent().parent().next().children().first().click();
     cy.get("tbody").children().should("have.length", 100);
   });
 
@@ -57,13 +41,8 @@ describe("Tests for filtering data by identifier.", () => {
     newEditableBorehole().as("borehole_id");
     let identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');
 
-    identifierDropdown.each((el, index, list) =>
-      cy
-        .wrap(el)
-        .click({ force: true })
-        .find('[role="option"]')
-        .eq(1)
-        .click({ force: true }),
+    identifierDropdown.each(el =>
+      cy.wrap(el).click({ force: true }).find('[role="option"]').eq(1).click({ force: true }),
     );
 
     cy.get('[data-cy="identifier-value"] input').type(64531274);
@@ -77,13 +56,8 @@ describe("Tests for filtering data by identifier.", () => {
     newEditableBorehole().as("borehole_id_2");
     identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');
 
-    identifierDropdown.each((el, index, list) =>
-      cy
-        .wrap(el)
-        .click({ force: true })
-        .find('[role="option"]')
-        .eq(1)
-        .click({ force: true }),
+    identifierDropdown.each(el =>
+      cy.wrap(el).click({ force: true }).find('[role="option"]').eq(1).click({ force: true }),
     );
 
     cy.get('[data-cy="identifier-value"] input').type(436584127);
@@ -96,11 +70,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     cy.contains("span", "Location").click();
     // show all options
-    cy.get('[class="ui fitted toggle checkbox"]')
-      .eq(1)
-      .children()
-      .first()
-      .check({ force: true });
+    cy.get('[class="ui fitted toggle checkbox"]').eq(1).children().first().check({ force: true });
 
     cy.get('[data-cy="domain-dropdown"]')
       .first()
@@ -119,13 +89,6 @@ describe("Tests for filtering data by identifier.", () => {
     cy.contains("button", "Cancel").click();
 
     // click reset label
-    cy.get('[data-cy="domain-dropdown"]')
-      .first()
-      .parent()
-      .parent()
-      .next()
-      .children()
-      .first()
-      .click();
+    cy.get('[data-cy="domain-dropdown"]').first().parent().parent().next().children().first().click();
   });
 });

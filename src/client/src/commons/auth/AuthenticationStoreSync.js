@@ -14,10 +14,7 @@ export const AuthenticationStoreSync = () => {
 
     if (auth.user && !auth.user.expired) {
       // Trigger delayed rerender to reevaluate user.expired value.
-      setTimeout(
-        () => setUserValueExpired(current => !current),
-        auth.user.expires_in * 1000,
-      );
+      setTimeout(() => setUserValueExpired(current => !current), auth.user.expires_in * 1000);
       dispatch(setAuthentication(auth.user));
     } else {
       dispatch(unsetAuthentication());

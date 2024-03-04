@@ -34,10 +34,7 @@ class DateText extends React.Component {
     };
 
     if (props.fromnow === true) {
-      this.state.intervalId = window.setInterval(
-        this.countdown,
-        this.props.timer * 1000,
-      );
+      this.state.intervalId = window.setInterval(this.countdown, this.props.timer * 1000);
     }
   }
 

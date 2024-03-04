@@ -8,11 +8,7 @@ describe("Codelist translations tests", () => {
 
     cy.get("button").should("not.contain", "Collapse");
 
-    cy.contains("div", "Codelist translations")
-      .parent("div")
-      .children("div")
-      .find("button")
-      .click();
+    cy.contains("div", "Codelist translations").parent("div").children("div").find("button").click();
 
     cy.get("button").should("contain", "Collapse");
   });
@@ -20,11 +16,7 @@ describe("Codelist translations tests", () => {
   it("Admin can edit translations", () => {
     loginAsAdmin();
     cy.visit("/setting/editor");
-    cy.contains("div", "Codelist translations")
-      .parent("div")
-      .children("div")
-      .find("button")
-      .click();
+    cy.contains("div", "Codelist translations").parent("div").children("div").find("button").click();
 
     cy.contains("p", "compactness").click();
     cy.get("div[name=compactness]").children().should("have.length", 6);
@@ -89,11 +81,7 @@ describe("Codelist translations tests", () => {
   it("Admin can edit order", () => {
     loginAsAdmin();
     cy.visit("/setting/editor");
-    cy.contains("div", "Codelist translations")
-      .parent("div")
-      .children("div")
-      .find("button")
-      .click();
+    cy.contains("div", "Codelist translations").parent("div").children("div").find("button").click();
 
     cy.contains("p", "custom.cuttings").click();
     cy.get("div[name='custom.cuttings']").children().should("have.length", 5);
@@ -111,19 +99,10 @@ describe("Codelist translations tests", () => {
     cy.contains("button", "Save").click();
 
     cy.get("div[name='custom.cuttings']").children().should("have.length", 5);
-    cy.get("div[name='custom.cuttings']")
-      .children()
-      .first()
-      .should("contain", 2);
-    cy.get("div[name='custom.cuttings']")
-      .children()
-      .first()
-      .should("contain", "Bohrklein");
+    cy.get("div[name='custom.cuttings']").children().first().should("contain", 2);
+    cy.get("div[name='custom.cuttings']").children().first().should("contain", "Bohrklein");
     cy.get("div[name='custom.cuttings']").children().eq(4).should("contain", 6);
-    cy.get("div[name='custom.cuttings']")
-      .children()
-      .eq(4)
-      .should("contain", "Bohrkern");
+    cy.get("div[name='custom.cuttings']").children().eq(4).should("contain", "Bohrkern");
 
     // undo edit order
     cy.get("input[name=order-input]").click().clear().type("1");

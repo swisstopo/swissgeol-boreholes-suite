@@ -18,7 +18,7 @@ describe("Test the borehole bulk edit feature.", () => {
 
     cy.get(".modal .toggle")
       .should("have.length", 30)
-      .each((el, index, list) => {
+      .each(el => {
         cy.wrap(el).click({ force: true });
         cy.get(".modal form .field").should("exist");
         cy.wrap(el).click({ force: true });
@@ -55,7 +55,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.contains("button", "Workgroup").click({ force: true });
     cy.get('[data-cy="workgroup-select"]')
       .should("have.length", 1)
-      .each((el, index, list) => {
+      .each(el => {
         cy.wrap(el).scrollIntoView().click();
         cy.get('.modal [role="option"]').eq(0).click({ force: true });
       });
@@ -82,33 +82,29 @@ describe("Test the borehole bulk edit feature.", () => {
 
     cy.get('[data-cy="text-input"]')
       .should("have.length", 8)
-      .each((el, index, list) =>
-        cy.wrap(el).scrollIntoView().type(`A${index}`),
-      );
+      .each((el, index) => cy.wrap(el).scrollIntoView().type(`A${index}`));
 
     cy.get("form .field > .react-datepicker-wrapper .datepicker-input")
       .should("have.length", 3)
-      .each((el, index, list) => {
+      .each(el => {
         cy.wrap(el).click();
         cy.get(`.react-datepicker__day--013`).click();
       });
 
     cy.get('[data-cy="radio-yes"]')
       .should("have.length", 2)
-      .each((el, index, list) => {
+      .each(el => {
         cy.wrap(el).click();
         el.click();
       });
 
     cy.get('[data-cy="domain-dropdown"]')
       .should("have.length", 15)
-      .each((el, index, list) =>
-        cy.wrap(el).click().find('[role="option"]').last().click(),
-      );
+      .each(el => cy.wrap(el).click().find('[role="option"]').last().click());
 
     cy.get('[data-cy="domain-tree"] > input')
       .should("have.length", 3)
-      .each((el, index, list) => {
+      .each(el => {
         cy.wrap(el).scrollIntoView().click();
         cy.get('.modal [role="listitem"]').eq(5).click();
       });

@@ -1,9 +1,4 @@
-import {
-  createBorehole,
-  createStratigraphy,
-  loginAsAdmin,
-  bearerAuth,
-} from "../helpers/testHelpers";
+import { createBorehole, createStratigraphy, loginAsAdmin, bearerAuth } from "../helpers/testHelpers";
 
 describe("Tests for the chronostratigraphy editor.", () => {
   beforeEach(function () {
@@ -97,10 +92,7 @@ describe("Tests for the chronostratigraphy editor.", () => {
     // Ensure clone and delete buttons in header are disabled for chronostratigraphy.
     cy.get('[data-cy="clone-and-delete-buttons"]').should("not.exist");
 
-    cy.get('.MuiPaper-elevation [role="listbox"]')
-      .find('[role="option"]')
-      .eq(1)
-      .click();
+    cy.get('.MuiPaper-elevation [role="listbox"]').find('[role="option"]').eq(1).click();
     cy.wait("@chronostratigraphy_PUT");
     cy.get('[data-cy="layer-card"] [data-testid="CloseIcon"]').click();
 
