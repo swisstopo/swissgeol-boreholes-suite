@@ -10,8 +10,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class FieldMeasurementController : BdmsControllerBase<FieldMeasurement>
 {
-    public FieldMeasurementController(BdmsContext context, ILogger<FieldMeasurement> logger)
-        : base(context, logger)
+    public FieldMeasurementController(BdmsContext context, ILogger<FieldMeasurement> logger, IBoreholeLockService boreholeLockService)
+        : base(context, logger, boreholeLockService)
     {
     }
 
@@ -53,4 +53,10 @@ public class FieldMeasurementController : BdmsControllerBase<FieldMeasurement>
     [Authorize(Policy = PolicyNames.Viewer)]
     public override Task<ActionResult<FieldMeasurement>> CreateAsync(FieldMeasurement entity)
         => base.CreateAsync(entity);
+
+    protected override async Task<int?> GetBoreholeId(FieldMeasurement entity)
+    {
+        if (entity == null) return default;
+        return entity.BoreholeId;
+    }
 }

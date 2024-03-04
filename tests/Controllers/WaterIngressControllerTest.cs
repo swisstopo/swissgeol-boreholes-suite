@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Security.Claims;
+using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
 
@@ -19,7 +20,11 @@ public class WaterIngressControllerTests
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new WaterIngressController(context, new Mock<ILogger<WaterIngress>>().Object)
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+        controller = new WaterIngressController(context, new Mock<ILogger<WaterIngress>>().Object, boreholeLockServiceMock.Object)
         {
             ControllerContext = new ControllerContext
             {

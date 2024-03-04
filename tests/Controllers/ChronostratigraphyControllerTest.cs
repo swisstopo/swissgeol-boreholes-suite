@@ -17,7 +17,11 @@ public class ChronostratigraphyControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new ChronostratigraphyController(context, new Mock<ILogger<ChronostratigraphyLayer>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+        controller = new ChronostratigraphyController(context, new Mock<ILogger<ChronostratigraphyLayer>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -127,6 +131,7 @@ public class ChronostratigraphyControllerTest
         var chronostratigraphy = new ChronostratigraphyLayer
         {
             Id = id,
+            StratigraphyId = 6000001,
         };
 
         // Upate FaciesDescription
@@ -176,6 +181,7 @@ public class ChronostratigraphyControllerTest
         {
             Id = 11_000_010,
             ChronostratigraphyId = 15001045,
+            StratigraphyId = 6000001,
         };
 
         var getResponse = await controller.GetByIdAsync(chronostratigraphy.Id);

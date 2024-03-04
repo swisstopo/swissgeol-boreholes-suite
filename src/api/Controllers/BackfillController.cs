@@ -10,8 +10,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class BackfillController : BdmsControllerBase<Backfill>
 {
-    public BackfillController(BdmsContext context, ILogger<Backfill> logger)
-        : base(context, logger)
+    public BackfillController(BdmsContext context, ILogger<Backfill> logger, IBoreholeLockService boreholeLockService)
+        : base(context, logger, boreholeLockService)
     {
     }
 
@@ -72,4 +72,14 @@ public class BackfillController : BdmsControllerBase<Backfill>
     [Authorize(Policy = PolicyNames.Viewer)]
     public override Task<IActionResult> DeleteAsync(int id)
         => base.DeleteAsync(id);
+
+    protected override async Task<int?> GetBoreholeId(Backfill entity)
+    {
+        if (entity == null) return default;
+        var completion = await Context.Completions
+            .AsNoTracking()
+            .SingleOrDefaultAsync(b => b.Id == entity.CompletionId)
+            .ConfigureAwait(false);
+        return completion.BoreholeId;
+    }
 }

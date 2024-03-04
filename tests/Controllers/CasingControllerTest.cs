@@ -1,10 +1,10 @@
 ﻿using BDMS.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.CodeAnalysis.Emit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
 
@@ -20,8 +20,11 @@ public class CasingControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new CasingController(context, new Mock<ILogger<Casing>>().Object);
-        controller.ControllerContext.HttpContext = new DefaultHttpContext();
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+        controller = new CasingController(context, new Mock<ILogger<Casing>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]

@@ -10,8 +10,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class LithologicalDescriptionController : BdmsControllerBase<LithologicalDescription>
 {
-    public LithologicalDescriptionController(BdmsContext context, ILogger<LithologicalDescription> logger)
-        : base(context, logger)
+    public LithologicalDescriptionController(BdmsContext context, ILogger<LithologicalDescription> logger, IBoreholeLockService boreholeLockService)
+        : base(context, logger, boreholeLockService)
     {
     }
 
@@ -71,4 +71,14 @@ public class LithologicalDescriptionController : BdmsControllerBase<Lithological
     [Authorize(Policy = PolicyNames.Viewer)]
     public override Task<ActionResult<LithologicalDescription>> CreateAsync(LithologicalDescription entity)
         => base.CreateAsync(entity);
+
+    protected override async Task<int?> GetBoreholeId(LithologicalDescription entity)
+    {
+        if (entity == null) return default;
+        var stratigraphy = await Context.Stratigraphies
+            .AsNoTracking()
+            .SingleOrDefaultAsync(d => d.Id == entity.StratigraphyId)
+            .ConfigureAwait(false);
+        return stratigraphy.BoreholeId;
+    }
 }

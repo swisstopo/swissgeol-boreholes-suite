@@ -11,8 +11,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class WaterIngressController : BdmsControllerBase<WaterIngress>
 {
-    public WaterIngressController(BdmsContext context, ILogger<WaterIngress> logger)
-        : base(context, logger)
+    public WaterIngressController(BdmsContext context, ILogger<WaterIngress> logger, IBoreholeLockService boreholeLockService)
+        : base(context, logger, boreholeLockService)
     {
     }
 
@@ -54,4 +54,10 @@ public class WaterIngressController : BdmsControllerBase<WaterIngress>
     [Authorize(Policy = PolicyNames.Viewer)]
     public override Task<ActionResult<WaterIngress>> CreateAsync(WaterIngress entity)
         => base.CreateAsync(entity);
+
+    protected override async Task<int?> GetBoreholeId(WaterIngress entity)
+    {
+        if (entity == null) return default;
+        return entity.BoreholeId;
+    }
 }

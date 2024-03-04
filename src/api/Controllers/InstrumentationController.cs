@@ -10,8 +10,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class InstrumentationController : BdmsControllerBase<Instrumentation>
 {
-    public InstrumentationController(BdmsContext context, ILogger<Instrumentation> logger)
-        : base(context, logger)
+    public InstrumentationController(BdmsContext context, ILogger<Instrumentation> logger, IBoreholeLockService boreholeLockService)
+        : base(context, logger, boreholeLockService)
     {
     }
 
@@ -74,4 +74,14 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
     [Authorize(Policy = PolicyNames.Viewer)]
     public override Task<IActionResult> DeleteAsync(int id)
         => base.DeleteAsync(id);
+
+    protected override async Task<int?> GetBoreholeId(Instrumentation entity)
+    {
+        if (entity == null) return default;
+        var completion = await Context.Completions
+            .AsNoTracking()
+            .SingleOrDefaultAsync(i => i.Id == ((Instrumentation)(object)entity).CompletionId)
+            .ConfigureAwait(false);
+        return completion.BoreholeId;
+    }
 }

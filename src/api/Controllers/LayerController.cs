@@ -10,8 +10,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class LayerController : BdmsControllerBase<Layer>
 {
-    public LayerController(BdmsContext context, ILogger<Layer> logger)
-        : base(context, logger)
+    public LayerController(BdmsContext context, ILogger<Layer> logger, IBoreholeLockService boreholeLockService)
+        : base(context, logger, boreholeLockService)
     {
     }
 
@@ -194,5 +194,15 @@ public class LayerController : BdmsControllerBase<Layer>
             .Include(l => l.Uscs3Codelists)
             .Include(l => l.LayerOrganicComponentCodes)
             .Include(l => l.OrganicComponentCodelists);
+    }
+
+    protected override async Task<int?> GetBoreholeId(Layer entity)
+    {
+        if (entity == null) return default;
+        var stratigraphy = await Context.Stratigraphies
+            .AsNoTracking()
+            .SingleOrDefaultAsync(d => d.Id == entity.StratigraphyId)
+            .ConfigureAwait(false);
+        return stratigraphy.BoreholeId;
     }
 }
