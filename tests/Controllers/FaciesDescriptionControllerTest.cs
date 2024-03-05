@@ -186,6 +186,7 @@ public class FaciesDescriptionControllerTest
         {
             Id = 10_000_010,
             Description = "TAMENL",
+            StratigraphyId = 6000001,
         };
 
         var getResponse = await controller.GetByIdAsync(faciesDescription.Id);

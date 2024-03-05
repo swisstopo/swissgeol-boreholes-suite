@@ -186,6 +186,7 @@ public class LithologicalDescriptionControllerTest
         {
             Id = 9_000_010,
             Description = "RANHEN",
+            StratigraphyId = 6000001,
         };
 
         var getResponse = await controller.GetByIdAsync(lithologicalDescription.Id);
