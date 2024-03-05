@@ -49,28 +49,37 @@ class DomainDropdown extends React.Component {
   handleChange(event, data) {
     const { onSelected, domains, schema, multiple, additionalValues } = this.props;
     if (multiple === true) {
-      const selection = [];
-      for (let i = 0; i < domains.data[schema].length; i++) {
-        let h = domains.data[schema][i];
-        for (var f = 0; f < data.value.length; f++) {
-          const s = data.value[f];
-          if (h.id === s) {
-            selection.push({ ...h });
+      if (data.value.includes(null)) {
+        this.setState({ selected: null });
+        if (onSelected !== undefined) {
+          onSelected({
+            id: null,
+          });
+        }
+      } else {
+        const selection = [];
+        for (let i = 0; i < domains.data[schema].length; i++) {
+          let h = domains.data[schema][i];
+          for (var f = 0; f < data.value.length; f++) {
+            const s = data.value[f];
+            if (h.id === s) {
+              selection.push({ ...h });
+            }
           }
         }
-      }
-      for (let i = 0; i < additionalValues?.length; i++) {
-        let h = additionalValues[i];
-        for (var g = 0; g < data.value.length; g++) {
-          const s = data.value[g];
-          if (h.id === s) {
-            selection.push({ ...h });
+        for (let i = 0; i < additionalValues?.length; i++) {
+          let h = additionalValues[i];
+          for (var g = 0; g < data.value.length; g++) {
+            const s = data.value[g];
+            if (h.id === s) {
+              selection.push({ ...h });
+            }
           }
         }
-      }
-      this.setState({ selected: data.value });
-      if (onSelected !== undefined) {
-        onSelected(selection);
+        this.setState({ selected: data.value });
+        if (onSelected !== undefined) {
+          onSelected(selection);
+        }
       }
     } else {
       if (data.value === null) {
@@ -131,7 +140,6 @@ class DomainDropdown extends React.Component {
       });
     }
     let data = [];
-    // console.log("exclude: ", this.props.exclude);
     if (this.props.exclude !== undefined) {
       data = domains.data[schema].filter(el => !this.props.exclude.includes(el.id));
     } else {
@@ -204,8 +212,6 @@ class DomainDropdown extends React.Component {
                   gcode={domain.id}
                 </div>
               ) : null
-              // !_.isNil(domain[this.state.language].descr)?
-              //   domain[this.state.language].descr: null
             }
           />
         ),
