@@ -190,7 +190,6 @@ class MetaComponent extends React.Component {
 
   render() {
     const { data } = this.props;
-    console.log(data);
     const margin = "0.5em 0px";
     const padding = "0.5em";
     return (
