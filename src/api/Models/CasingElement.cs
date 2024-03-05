@@ -51,7 +51,7 @@ public class CasingElement : IChangeTracking, IIdentifyable
     /// Gets or sets the id of the <see cref="Casing"/>'s material.
     /// </summary>
     [Column("material_id")]
-    public int MaterialId { get; set; }
+    public int? MaterialId { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Casing"/>'s material.
@@ -62,13 +62,13 @@ public class CasingElement : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Casing"/>'s inner diameter.
     /// </summary>
     [Column("inner_diameter")]
-    public double InnerDiameter { get; set; }
+    public double? InnerDiameter { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Casing"/>'s outer diameter.
     /// </summary>
     [Column("outer_diameter")]
-    public double OuterDiameter { get; set; }
+    public double? OuterDiameter { get; set; }
 
     /// <inheritdoc />
     [Column("creator")]
