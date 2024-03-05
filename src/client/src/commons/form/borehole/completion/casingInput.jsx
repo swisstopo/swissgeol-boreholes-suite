@@ -34,7 +34,7 @@ const CasingInput = props => {
     if (data?.dateFinish === "") {
       data.dateFinish = null;
     }
-    data.casingElements = data.casingElements.map((element, index) => {
+    data.casingElements = data.casingElements.map(element => {
       return {
         ...element,
         materialId: element.materialId === "" ? null : element.materialId,
