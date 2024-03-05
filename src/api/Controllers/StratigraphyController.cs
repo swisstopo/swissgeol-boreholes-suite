@@ -183,14 +183,6 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 
         try
         {
-            // Check if associated borehole is locked
-            if (await BoreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
-            {
-                var message = "The borehole is locked by another user or you are missing permissions.";
-                Logger.LogWarning(message);
-                return Problem(message);
-            }
-
             // If the stratigraphy to create is the first stratigraphy of a borehole,
             // then we need to set it as the primary stratigraphy.
             var hasBoreholeExistingStratigraphy = await Context.Stratigraphies
