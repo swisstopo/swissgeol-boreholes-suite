@@ -54,6 +54,11 @@ public class Casing : IChangeTracking, IIdentifyable
     public ICollection<Instrumentation>? Instrumentations { get; }
 
     /// <summary>
+    /// Gets the <see cref="Backfill"/>s associated with the <see cref="Casing"/>.
+    /// </summary>
+    public ICollection<Backfill>? Backfills { get; }
+
+    /// <summary>
     /// Gets the <see cref="Observation"/>s associated with the <see cref="Casing"/>.
     /// </summary>
     public ICollection<Observation>? Observations { get; }

@@ -24,13 +24,14 @@ public class BackfillController : BdmsControllerBase<Backfill>
     public async Task<IEnumerable<Backfill>> GetAsync([FromQuery] int? completionId = null)
     {
         var backfills = Context.Backfills
-            .Include(i => i.Material)
-            .Include(i => i.Kind)
+            .Include(b => b.Material)
+            .Include(b => b.Kind)
+            .Include(b => b.Casing)
             .AsNoTracking();
 
         if (completionId != null)
         {
-            backfills = backfills.Where(i => i.CompletionId == completionId);
+            backfills = backfills.Where(b => b.CompletionId == completionId);
         }
 
         return await backfills.ToListAsync().ConfigureAwait(false);
@@ -44,8 +45,9 @@ public class BackfillController : BdmsControllerBase<Backfill>
     public async Task<ActionResult<Backfill>> GetByIdAsync(int id)
     {
         var backfill = await Context.Backfills
-            .Include(i => i.Material)
-            .Include(i => i.Kind)
+            .Include(b => b.Material)
+            .Include(b => b.Kind)
+            .Include(b => b.Casing)
             .AsNoTracking()
             .SingleOrDefaultAsync(i => i.Id == id)
             .ConfigureAwait(false);

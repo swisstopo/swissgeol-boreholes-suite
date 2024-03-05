@@ -132,6 +132,7 @@ public class CasingController : BdmsControllerBase<Casing>
             var casing = await Context.Casings
                 .Include(c => c.CasingElements)
                 .Include(c => c.Instrumentations)
+                .Include(c => c.Backfills)
                 .Include(c => c.Observations)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(i => i.Id == id)
