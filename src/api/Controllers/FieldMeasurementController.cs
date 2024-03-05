@@ -1,4 +1,4 @@
-﻿using BDMS.Authentication;
+using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +54,9 @@ public class FieldMeasurementController : BdmsControllerBase<FieldMeasurement>
     public override Task<ActionResult<FieldMeasurement>> CreateAsync(FieldMeasurement entity)
         => base.CreateAsync(entity);
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     protected override async Task<int?> GetBoreholeId(FieldMeasurement entity)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
         if (entity == null) return default;
         return entity.BoreholeId;
