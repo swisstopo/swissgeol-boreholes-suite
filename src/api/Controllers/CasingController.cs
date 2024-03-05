@@ -96,6 +96,15 @@ public class CasingController : BdmsControllerBase<Casing>
 
         try
         {
+            // Check if associated borehole is locked
+            var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
+            if (await BoreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+            {
+                var message = "The borehole is locked by another user or you are missing permissions.";
+                Logger.LogWarning(message);
+                return Problem(message);
+            }
+
             if (!(entity.CasingElements?.Count > 0))
             {
                 var message = "At least one casing element must be defined.";

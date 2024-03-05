@@ -143,6 +143,14 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             return NotFound();
         }
 
+        // Check if associated borehole is locked
+        if (await BoreholeLockService.IsBoreholeLockedAsync(stratigraphyToDelete.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        {
+            var message = "The borehole is locked by another user or you are missing permissions.";
+            Logger.LogWarning(message);
+            return Problem(message);
+        }
+
         Context.Remove(stratigraphyToDelete);
         await Context.SaveChangesAsync().ConfigureAwait(false);
 
