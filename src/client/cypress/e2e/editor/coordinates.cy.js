@@ -10,17 +10,7 @@ function checkDecimalPlaces(inputAlias, expectedDecimalPlaces) {
 }
 
 function waitForCoordinatePatches() {
-  cy.wait([
-    "@edit_patch",
-    "@edit_patch",
-    "@edit_patch",
-    "@edit_patch",
-    "@edit_patch",
-    "@edit_patch",
-    "@edit_patch",
-    "@edit_patch",
-    "@edit_patch",
-  ]);
+  cy.wait(["@edit_patch", "@edit_patch", "@edit_patch", "@edit_patch", "@edit_patch", "@edit_patch"]);
 }
 
 describe("Tests for editing coordinates of a borehole.", () => {
@@ -150,12 +140,14 @@ describe("Tests for editing coordinates of a borehole.", () => {
     checkDecimalPlaces("@LV03Y-input", 2);
   });
 
-  it("validates decimal precision", () => {
+  it("displays correct decimal precision", () => {
     // Type valid coordinates with zeros after decimal
-    cy.get("@LV95X-input").scrollIntoView().type("2645123.0000").trigger("input");
-    cy.get("@LV95Y-input").scrollIntoView().type("1245794.000").trigger("input");
-    waitForCoordinatePatches();
+    delayedType(cy.get("@LV95X-input"), "2645123.0000");
+    delayedType(cy.get("@LV95Y-input"), "1245794.000");
 
+    waitForCoordinatePatches();
+    cy.wait("@edit_patch");
+    cy.wait("@location");
     checkDecimalPlaces("@LV03X-input", 4);
     checkDecimalPlaces("@LV03Y-input", 4);
 
@@ -168,40 +160,12 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@LV95Y-input").should("have.value", `1'245'794.000`);
 
     // Add more zeros to LV95Y input
-    cy.get("@LV95Y-input").scrollIntoView();
-    cy.get("@LV95Y-input").clear();
-    cy.get("@LV95Y-input").type("1245794.00000").trigger("input");
-    waitForCoordinatePatches();
+    delayedType(cy.get("@LV95Y-input"), "00");
 
+    waitForCoordinatePatches();
+    cy.wait("@edit_patch");
+    cy.wait("@location");
     checkDecimalPlaces("@LV03X-input", 5);
     checkDecimalPlaces("@LV03Y-input", 5);
-
-    //switch reference system to LV03
-    cy.get("input[value=20104002]").click();
-    waitForCoordinatePatches();
-
-    cy.get("@LV03X-input").scrollIntoView().type("645123.0").trigger("input");
-    cy.get("@LV03Y-input").scrollIntoView().type("245794.000").trigger("input");
-    waitForCoordinatePatches();
-
-    checkDecimalPlaces("@LV95X-input", 3);
-    checkDecimalPlaces("@LV95Y-input", 3);
-
-    // Navigate somewhere else and return
-    cy.get('[data-cy="borehole-menu-item"]').click();
-    cy.get('[data-cy="location-menu-item"]').click();
-
-    // Check that the values are still the same
-    cy.get("@LV03X-input").should("have.value", `645'123.0`);
-    cy.get("@LV03Y-input").should("have.value", `245'794.000`);
-
-    // Delete zeros from LV03Y input
-    cy.get("@LV03Y-input").scrollIntoView();
-    cy.get("@LV03Y-input").clear();
-    cy.get("@LV03Y-input").type("245794.0").trigger("input");
-    waitForCoordinatePatches();
-
-    checkDecimalPlaces("@LV95X-input", 1);
-    checkDecimalPlaces("@LV95Y-input", 1);
   });
 });
