@@ -178,7 +178,9 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             // Check if associated borehole is locked
             if (await BoreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user or you are missing permissions.");
+                var message = "The borehole is locked by another user or you are missing permissions.";
+                Logger.LogWarning(message);
+                return Problem(message);
             }
 
             // If the stratigraphy to create is the first stratigraphy of a borehole,
@@ -219,7 +221,9 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             // Check if associated borehole is locked
             if (await BoreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user or you are missing permissions.");
+                var message = "The borehole is locked by another user or you are missing permissions.";
+                Logger.LogWarning(message);
+                return Problem(message);
             }
 
             // Check if associated borehole has a TopBedrock value
@@ -261,7 +265,9 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             // Check if associated borehole is locked
             if (await BoreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user or you are missing permissions.");
+                var message = "The borehole is locked by another user or you are missing permissions.";
+                Logger.LogWarning(message);
+                return Problem(message);
             }
 
             entity.Date = entity.Date != null ? DateTime.SpecifyKind(entity.Date.Value, DateTimeKind.Utc) : null;

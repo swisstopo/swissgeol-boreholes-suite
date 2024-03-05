@@ -52,7 +52,9 @@ public abstract class BdmsControllerBase<TEntity> : ControllerBase
         var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
         if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
         {
-            return Problem("The borehole is locked by another user or you are missing permissions.");
+            var message = "The borehole is locked by another user or you are missing permissions.";
+            Logger.LogWarning(message);
+            return Problem(message);
         }
 
         await context.AddAsync(entity).ConfigureAwait(false);
@@ -75,7 +77,9 @@ public abstract class BdmsControllerBase<TEntity> : ControllerBase
         var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
         if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
         {
-            return Problem("The borehole is locked by another user or you are missing permissions.");
+            var message = "The borehole is locked by another user or you are missing permissions.";
+            Logger.LogWarning(message);
+            return Problem(message);
         }
 
         var entityToEdit = (TEntity?)await context.FindAsync(typeof(TEntity), entity.Id).ConfigureAwait(false);
@@ -107,7 +111,9 @@ public abstract class BdmsControllerBase<TEntity> : ControllerBase
         var boreholeId = await GetBoreholeId((TEntity)entityToDelete).ConfigureAwait(false);
         if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
         {
-            return Problem("The borehole is locked by another user or you are missing permissions.");
+            var message = "The borehole is locked by another user or you are missing permissions.";
+            Logger.LogWarning(message);
+            return Problem(message);
         }
 
         context.Remove(entityToDelete);

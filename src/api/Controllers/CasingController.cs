@@ -1,4 +1,4 @@
-﻿using BDMS.Authentication;
+using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -146,7 +146,9 @@ public class CasingController : BdmsControllerBase<Casing>
             var boreholeId = await GetBoreholeId(casing).ConfigureAwait(false);
             if (await BoreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user or you are missing permissions.");
+                var message = "The borehole is locked by another user or you are missing permissions.";
+                Logger.LogWarning(message);
+                return Problem(message);
             }
 
             Context.Remove(casing);

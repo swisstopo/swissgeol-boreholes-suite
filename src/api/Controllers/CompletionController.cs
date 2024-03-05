@@ -1,4 +1,4 @@
-using BDMS.Authentication;
+﻿using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -67,7 +67,9 @@ public class CompletionController : BdmsControllerBase<Completion>
             // Check if associated borehole is locked
             if (await BoreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user or you are missing permissions.");
+                var message = "The borehole is locked by another user or you are missing permissions.";
+                Logger.LogWarning(message);
+                return Problem(message);
             }
 
             // If the completion to create is the first completion of a borehole,
@@ -115,7 +117,9 @@ public class CompletionController : BdmsControllerBase<Completion>
             // Check if associated borehole is locked
             if (await BoreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user or you are missing permissions.");
+                var message = "The borehole is locked by another user or you are missing permissions.";
+                Logger.LogWarning(message);
+                return Problem(message);
             }
 
             var editResult = await base.EditAsync(entity).ConfigureAwait(false);
@@ -176,7 +180,9 @@ public class CompletionController : BdmsControllerBase<Completion>
             // Check if associated borehole is locked
             if (await BoreholeLockService.IsBoreholeLockedAsync(completion.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user or you are missing permissions.");
+                var message = "The borehole is locked by another user or you are missing permissions.";
+                Logger.LogWarning(message);
+                return Problem(message);
             }
 
             // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
@@ -229,7 +235,9 @@ public class CompletionController : BdmsControllerBase<Completion>
             // Check if associated borehole is locked
             if (await BoreholeLockService.IsBoreholeLockedAsync(completionToDelete.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user or you are missing permissions.");
+                var message = "The borehole is locked by another user or you are missing permissions.";
+                Logger.LogWarning(message);
+                return Problem(message);
             }
 
             Context.Remove(completionToDelete);
