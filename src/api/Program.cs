@@ -28,15 +28,18 @@ builder.Services.AddTransient<IClaimsTransformation, DatabaseAuthenticationClaim
 
 builder.Services.AddAuthorization(options =>
 {
+    var groupClaimType = builder.Configuration.GetValue<string>("Auth:GroupClaimType")
+        ?? throw new InvalidOperationException("The configuration 'Auth:GroupClaimType' is missing.");
+
     var authorizedGroupName = builder.Configuration.GetValue<string>("Auth:AuthorizedGroupName")
-        ?? throw new InvalidOperationException($"The configuration 'Auth:AuthorizedGroupName' is missing."); ;
+        ?? throw new InvalidOperationException("The configuration 'Auth:AuthorizedGroupName' is missing.");
 
     options.AddPolicy(PolicyNames.Admin, options => options
-    .RequireRole(authorizedGroupName)
+    .RequireClaim(groupClaimType, authorizedGroupName)
     .RequireRole(PolicyNames.Admin));
 
     options.AddPolicy(PolicyNames.Viewer, options => options
-    .RequireRole(authorizedGroupName)
+    .RequireClaim(groupClaimType, authorizedGroupName)
     .RequireRole(PolicyNames.Admin, PolicyNames.Viewer));
 
     // Remarks: By default controller endpoints are accessible only to administrators (isAdmin flag in user entity).
