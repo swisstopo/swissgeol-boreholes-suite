@@ -35,6 +35,7 @@
 - Included typescript configuration.
 - Prevent typing dates in profile and filter, only allow selecting date in datepicker.
 - Split table `casing` into tables `casing` and `casing_element`.
+- Store precision of coordinates, to be able to display zeros after the decimal points in coordinate inputs.
 
 ### Fixed
 
