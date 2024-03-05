@@ -55,11 +55,9 @@ public class WaterIngressController : BdmsControllerBase<WaterIngress>
     public override Task<ActionResult<WaterIngress>> CreateAsync(WaterIngress entity)
         => base.CreateAsync(entity);
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    protected override async Task<int?> GetBoreholeId(WaterIngress entity)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+    protected override Task<int?> GetBoreholeId(WaterIngress entity)
     {
-        if (entity == null) return default;
-        return entity.BoreholeId;
+        if (entity == null) return Task.FromResult<int?>(default);
+        return Task.FromResult<int?>(entity.BoreholeId);
     }
 }
