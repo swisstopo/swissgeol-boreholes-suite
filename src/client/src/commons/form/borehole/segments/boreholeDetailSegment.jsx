@@ -6,7 +6,7 @@ import TranslationText from "../../translationText";
 import { NumericFormat } from "react-number-format";
 import { Form, Segment } from "semantic-ui-react";
 import { FormControl, RadioGroup, FormControlLabel } from "@mui/material";
-import { parseIfString } from "../../formUtils";
+import { parseIfString } from "../../formUtils.ts";
 import { DisabledRadio } from "./styledComponents";
 
 const BoreholeDetailSegment = props => {
