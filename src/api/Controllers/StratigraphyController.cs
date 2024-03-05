@@ -146,9 +146,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         // Check if associated borehole is locked
         if (await BoreholeLockService.IsBoreholeLockedAsync(stratigraphyToDelete.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
         {
-            var message = "The borehole is locked by another user or you are missing permissions.";
-            Logger.LogWarning(message);
-            return Problem(message);
+            return Problem("The borehole is locked by another user or you are missing permissions.");
         }
 
         Context.Remove(stratigraphyToDelete);
@@ -221,9 +219,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             // Check if associated borehole is locked
             if (await BoreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                var message = "The borehole is locked by another user or you are missing permissions.";
-                Logger.LogWarning(message);
-                return Problem(message);
+                return Problem("The borehole is locked by another user or you are missing permissions.");
             }
 
             // Check if associated borehole has a TopBedrock value
@@ -265,9 +261,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             // Check if associated borehole is locked
             if (await BoreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                var message = "The borehole is locked by another user or you are missing permissions.";
-                Logger.LogWarning(message);
-                return Problem(message);
+                return Problem("The borehole is locked by another user or you are missing permissions.");
             }
 
             entity.Date = entity.Date != null ? DateTime.SpecifyKind(entity.Date.Value, DateTimeKind.Utc) : null;

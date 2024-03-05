@@ -100,9 +100,7 @@ public class CasingController : BdmsControllerBase<Casing>
             var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
             if (await BoreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                var message = "The borehole is locked by another user or you are missing permissions.";
-                Logger.LogWarning(message);
-                return Problem(message);
+                return Problem("The borehole is locked by another user or you are missing permissions.");
             }
 
             if (!(entity.CasingElements?.Count > 0))
@@ -155,9 +153,7 @@ public class CasingController : BdmsControllerBase<Casing>
             var boreholeId = await GetBoreholeId(casing).ConfigureAwait(false);
             if (await BoreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
-                var message = "The borehole is locked by another user or you are missing permissions.";
-                Logger.LogWarning(message);
-                return Problem(message);
+                return Problem("The borehole is locked by another user or you are missing permissions.");
             }
 
             Context.Remove(casing);
