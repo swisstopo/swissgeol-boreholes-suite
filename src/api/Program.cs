@@ -28,7 +28,8 @@ builder.Services.AddTransient<IClaimsTransformation, DatabaseAuthenticationClaim
 
 builder.Services.AddAuthorization(options =>
 {
-    var authorizedGroupName = builder.Configuration.GetValue<string>("Auth:AuthorizedGroupName") ?? "boreholes";
+    var authorizedGroupName = builder.Configuration.GetValue<string>("Auth:AuthorizedGroupName")
+        ?? throw new InvalidOperationException($"The configuration 'Auth:AuthorizedGroupName' is missing."); ;
 
     options.AddPolicy(PolicyNames.Admin, options => options
     .RequireRole(authorizedGroupName)
