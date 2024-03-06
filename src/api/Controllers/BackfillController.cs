@@ -23,11 +23,7 @@ public class BackfillController : BdmsControllerBase<Backfill>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Backfill>> GetAsync([FromQuery] int? completionId = null)
     {
-        var backfills = Context.Backfills
-            .Include(b => b.Material)
-            .Include(b => b.Kind)
-            .Include(b => b.Casing)
-            .AsNoTracking();
+        var backfills = GetBackfills();
 
         if (completionId != null)
         {
@@ -44,13 +40,7 @@ public class BackfillController : BdmsControllerBase<Backfill>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Backfill>> GetByIdAsync(int id)
     {
-        var backfill = await Context.Backfills
-            .Include(b => b.Material)
-            .Include(b => b.Kind)
-            .Include(b => b.Casing)
-            .AsNoTracking()
-            .SingleOrDefaultAsync(i => i.Id == id)
-            .ConfigureAwait(false);
+        var backfill = await GetBackfills().SingleOrDefaultAsync(i => i.Id == id).ConfigureAwait(false);
 
         if (backfill == null)
         {
@@ -74,4 +64,13 @@ public class BackfillController : BdmsControllerBase<Backfill>
     [Authorize(Policy = PolicyNames.Viewer)]
     public override Task<IActionResult> DeleteAsync(int id)
         => base.DeleteAsync(id);
+
+    private IQueryable<Backfill> GetBackfills()
+    {
+        return Context.Backfills
+            .Include(b => b.Material)
+            .Include(b => b.Kind)
+            .Include(b => b.Casing)
+            .AsNoTracking();
+    }
 }
