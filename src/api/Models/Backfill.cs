@@ -59,6 +59,17 @@ public class Backfill : IChangeTracking, IIdentifyable
     public Codelist? Material { get; set; }
 
     /// <summary>
+    /// Gets or sets id of the <see cref="Backfill"/>'s casing.
+    /// </summary>
+    [Column("casing_id")]
+    public int? CasingId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Backfill"/>'s casing.
+    /// </summary>
+    public Casing? Casing { get; set; }
+
+    /// <summary>
     /// Gets or sets the <see cref="Backfill"/>'s notes.
     /// </summary>
     [Column("notes")]

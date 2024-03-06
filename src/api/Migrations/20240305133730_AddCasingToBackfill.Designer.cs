@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240305133730_AddCasingToBackfill")]
+    partial class AddCasingToBackfill
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -228,22 +231,6 @@ namespace BDMS.Migrations
                     b.Property<int?>("OriginalReferenceSystem")
                         .HasColumnType("integer")
                         .HasColumnName("srs_id_cli");
-
-                    b.Property<int>("PrecisionLocationX")
-                        .HasColumnType("integer")
-                        .HasColumnName("precision_location_x");
-
-                    b.Property<int>("PrecisionLocationXLV03")
-                        .HasColumnType("integer")
-                        .HasColumnName("precision_location_x_lv03");
-
-                    b.Property<int>("PrecisionLocationY")
-                        .HasColumnType("integer")
-                        .HasColumnName("precision_location_y");
-
-                    b.Property<int>("PrecisionLocationYLV03")
-                        .HasColumnType("integer")
-                        .HasColumnName("precision_location_y_lv03");
 
                     b.Property<string>("ProjectName")
                         .HasColumnType("text")
@@ -2283,6 +2270,7 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Kind")
                         .WithMany()
                         .HasForeignKey("KindId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.Codelist", "Material")

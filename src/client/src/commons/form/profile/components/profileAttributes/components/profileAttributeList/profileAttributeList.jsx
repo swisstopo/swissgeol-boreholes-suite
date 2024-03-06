@@ -149,7 +149,13 @@ const ProfileAttributeList = props => {
                 <DomainDropdown
                   data-cy={item.value}
                   multiple={item.multiple}
-                  onSelected={e => updateChange(item.value, item.multiple ? e.map(mlpr => mlpr.id) : e.id, false)}
+                  onSelected={e => {
+                    return updateChange(
+                      item.value,
+                      item.multiple && e.length > 0 ? e.map(mlpr => mlpr.id) : e.id,
+                      false,
+                    );
+                  }}
                   schema={item.schema}
                   search={item.search}
                   selected={_.isNil(layer?.[item.value]) ? null : layer[item.value]}
