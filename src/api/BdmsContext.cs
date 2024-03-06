@@ -263,5 +263,11 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<GroundwaterLevelMeasurement>().ToTable("groundwater_level_measurement").HasBaseType<Observation>();
 
         modelBuilder.Entity<FieldMeasurement>().ToTable("field_measurement").HasBaseType<Observation>();
+
+        modelBuilder.Entity<CasingElement>()
+            .HasOne(ce => ce.Kind)
+            .WithMany()
+            .HasForeignKey(ce => ce.KindId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }
