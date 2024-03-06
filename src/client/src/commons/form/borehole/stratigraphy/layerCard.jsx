@@ -184,7 +184,7 @@ const LayerCard = ({
         right: "0",
       }}>
       {[State.DISPLAY, State.EDITABLE].includes(cardState) && height >= minPixelHeightForDepthLabels && (
-        <Typography>{layer?.fromDepth ?? "-"} [m MD]</Typography>
+        <Typography>{layer?.fromDepth ?? "-"} m MD</Typography>
       )}
       {State.EDITING === cardState && (
         <TextField
@@ -245,7 +245,7 @@ const LayerCard = ({
         bottom: "0",
       }}>
       {[State.DISPLAY, State.EDITABLE].includes(cardState) && height >= minPixelHeightForDepthLabels && (
-        <Typography>{layer?.toDepth ?? "-"} [m MD]</Typography>
+        <Typography>{layer?.toDepth ?? "-"} m MD</Typography>
       )}
       {State.EDITING === cardState && (
         <TextField

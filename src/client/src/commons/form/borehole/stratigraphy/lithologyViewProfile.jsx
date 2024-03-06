@@ -50,7 +50,7 @@ const LithologyViewProfile = ({ stratigraphyId, navState, setNavState, minPixelH
                       left: 0,
                       right: 0,
                     }}>
-                    <NumericFormat value={layer.toDepth} thousandSeparator="'" displayType="text" suffix={" [m MD]"} />
+                    <NumericFormat value={layer.toDepth} thousandSeparator="'" displayType="text" suffix={" m MD"} />
                   </Box>
                 )}
               </Box>,
