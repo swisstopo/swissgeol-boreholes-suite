@@ -90,17 +90,5 @@
     "test": "cypress run",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "cy": "cypress open"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   }
 }
