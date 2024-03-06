@@ -22,7 +22,6 @@ public class LithostratigraphyControllerTest
         Updated = new DateTime(2023, 5, 31, 13, 10, 44).ToUniversalTime(),
         FromDepth = 10,
         ToDepth = 20,
-        IsLast = true,
         LithostratigraphyId = 15_300_284,
     };
 
@@ -122,7 +121,6 @@ public class LithostratigraphyControllerTest
             Updated = new DateTime(2022, 4, 30, 10, 34, 41).ToUniversalTime(),
             FromDepth = 30,
             ToDepth = 40,
-            IsLast = false,
             LithostratigraphyId = 15_300_623,
         };
 
