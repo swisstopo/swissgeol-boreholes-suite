@@ -30,6 +30,7 @@ public class WaterIngressController : BdmsControllerBase<WaterIngress>
             .Include(w => w.Reliability)
             .Include(w => w.Conditions)
             .Include(w => w.Casing)
+            .ThenInclude(c => c.Completion)
             .AsNoTracking();
 
         if (boreholeId != null)

@@ -29,6 +29,7 @@ public class FieldMeasurementController : BdmsControllerBase<FieldMeasurement>
             .Include(f => f.Parameter)
             .Include(f => f.Reliability)
             .Include(f => f.Casing)
+            .ThenInclude(c => c.Completion)
             .AsNoTracking();
 
         if (boreholeId != null)

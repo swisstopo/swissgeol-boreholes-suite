@@ -66,10 +66,22 @@ const ObservationInput = props => {
           label="casing"
           selected={observation?.casingId}
           disabled={!casings?.length}
-          values={casings?.map(casing => ({
-            key: casing.id,
-            name: casing.name,
-          }))}
+          values={casings
+            ?.sort((a, b) => {
+              if (a.completion.name !== b.completion.name) {
+                return a.completion.name < b.completion.name ? -1 : 1;
+              } else {
+                if (a.name !== b.name) {
+                  return a.name < b.name ? -1 : 1;
+                } else {
+                  return 0;
+                }
+              }
+            })
+            .map(casing => ({
+              key: casing.id,
+              name: `${casing.completion.name} - ${casing.name}`,
+            }))}
         />
       </StackHalfWidth>
       <Stack direction="row">

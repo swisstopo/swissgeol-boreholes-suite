@@ -28,6 +28,7 @@ public class GroundwaterLevelMeasurementController : BdmsControllerBase<Groundwa
             .Include(w => w.Kind)
             .Include(w => w.Reliability)
             .Include(w => w.Casing)
+            .ThenInclude(c => c.Completion)
             .AsNoTracking();
 
         if (boreholeId != null)

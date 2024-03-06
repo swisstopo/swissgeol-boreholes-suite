@@ -6,7 +6,7 @@ describe("Tests for the field measurement editor.", () => {
   it("Creates, updates and deletes field measurement", () => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id => createCompletion("test hydrotest", id, 16000002, true))
+      .then(id => createCompletion("testFieldmeasurement", id, 16000002, true))
       .then(response => {
         expect(response).to.have.property("status", 200);
       });
@@ -57,7 +57,7 @@ describe("Tests for the field measurement editor.", () => {
     saveForm();
 
     //assert field measurementis displayed
-    evaluateDisplayValue("casingName", "casing-1");
+    evaluateDisplayValue("casingName", "testFieldmeasurement - casing-1");
     evaluateDisplayValue("field_measurement_sample_type", "Schöpfprobe");
     evaluateDisplayValue("parameter", "Sauerstoffsättigung");
     evaluateDisplayValue("value", "77.1045 %");
@@ -67,7 +67,7 @@ describe("Tests for the field measurement editor.", () => {
     setSelect("sampleTypeId", 0);
     saveForm();
     evaluateDisplayValue("field_measurement_sample_type", "Pumpprobe");
-    evaluateDisplayValue("casingName", "casing-1");
+    evaluateDisplayValue("casingName", "testFieldmeasurement - casing-1");
 
     // delete field measurement
     deleteItem();
