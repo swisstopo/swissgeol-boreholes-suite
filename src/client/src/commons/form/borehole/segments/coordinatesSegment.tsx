@@ -6,7 +6,7 @@ import { NumericFormat } from "react-number-format";
 import { useTranslation } from "react-i18next";
 import DomainDropdown from "../../domain/dropdown/domainDropdown.jsx";
 import DomainText from "../../domain/domainText.jsx";
-import { parseFloatWithTousandsSeparator, getPrecisionFromString } from "../../formUtils.js";
+import { parseFloatWithThousandsSeparator, getPrecisionFromString } from "../../formUtils.js";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
 import { DisabledRadio } from "./styledComponents.jsx";
 import {
@@ -177,28 +177,28 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       currentFieldName === referenceSystems.LV95.fieldName.X
         ? value
         : LV95XFormValue
-          ? parseFloatWithTousandsSeparator(LV95XFormValue)
+          ? parseFloatWithThousandsSeparator(LV95XFormValue)
           : null;
 
     const LV95Y =
       currentFieldName === referenceSystems.LV95.fieldName.Y
         ? value
         : LV95XFormValue
-          ? parseFloatWithTousandsSeparator(LV95YFormValue)
+          ? parseFloatWithThousandsSeparator(LV95YFormValue)
           : null;
 
     const LV03X =
       currentFieldName === referenceSystems.LV03.fieldName.X
         ? value
         : LV03XFormValue
-          ? parseFloatWithTousandsSeparator(LV03XFormValue)
+          ? parseFloatWithThousandsSeparator(LV03XFormValue)
           : null;
 
     const LV03Y =
       currentFieldName === referenceSystems.LV03.fieldName.Y
         ? value
         : LV03XFormValue
-          ? parseFloatWithTousandsSeparator(LV03YFormValue)
+          ? parseFloatWithThousandsSeparator(LV03YFormValue)
           : null;
 
     return {
@@ -312,7 +312,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       return;
     }
     if (isEditable) {
-      const floatValue = parseFloatWithTousandsSeparator(value);
+      const floatValue = parseFloatWithThousandsSeparator(value);
       // verify coordinates are in bounding box
       if (
         boundingBox[referenceSystem][direction].Min < floatValue &&
@@ -384,22 +384,22 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // --- Custom form validation ---
   const inLV95XBounds = (value: string): boolean => {
-    const coordinate = parseFloatWithTousandsSeparator(value);
+    const coordinate = parseFloatWithThousandsSeparator(value);
     return boundingBox.LV95.X.Min < coordinate && coordinate < boundingBox.LV95.X.Max;
   };
 
   const inLV95YBounds = (value: string): boolean => {
-    const coordinate = parseFloatWithTousandsSeparator(value);
+    const coordinate = parseFloatWithThousandsSeparator(value);
     return boundingBox.LV95.Y.Min < coordinate && coordinate < boundingBox.LV95.Y.Max;
   };
 
   const inLV03XBounds = (value: string): boolean => {
-    const coordinate = parseFloatWithTousandsSeparator(value);
+    const coordinate = parseFloatWithThousandsSeparator(value);
     return boundingBox.LV03.X.Min < coordinate && coordinate < boundingBox.LV03.X.Max;
   };
 
   const inLV03YBounds = (value: string): boolean => {
-    const coordinate = parseFloatWithTousandsSeparator(value);
+    const coordinate = parseFloatWithThousandsSeparator(value);
     return boundingBox.LV03.Y.Min < coordinate && coordinate < boundingBox.LV03.Y.Max;
   };
 
@@ -605,7 +605,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
               onChange={e => {
                 updateNumber(
                   "elevation_z",
-                  e.target.value === "" ? null : parseFloatWithTousandsSeparator(e.target.value),
+                  e.target.value === "" ? null : parseFloatWithThousandsSeparator(e.target.value),
                 );
               }}
               fixedDecimalScale
@@ -639,7 +639,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
               onChange={e => {
                 updateNumber(
                   "reference_elevation",
-                  e.target.value === "" ? null : parseFloatWithTousandsSeparator(e.target.value),
+                  e.target.value === "" ? null : parseFloatWithThousandsSeparator(e.target.value),
                 );
                 if (/^-?\d*[.,]?\d*$/.test(e.target.value)) {
                   updateChange("reference_elevation", e.target.value === "" ? null : parseFloat(e.target.value));
