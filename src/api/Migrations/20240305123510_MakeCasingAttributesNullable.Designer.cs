@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240305123510_MakeCasingAttributesNullable")]
+    partial class MakeCasingAttributesNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,10 +37,6 @@ namespace BDMS.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CasingId")
-                        .HasColumnType("integer")
-                        .HasColumnName("casing_id");
 
                     b.Property<int>("CompletionId")
                         .HasColumnType("integer")
@@ -80,8 +79,6 @@ namespace BDMS.Migrations
                         .HasColumnName("updater");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CasingId");
 
                     b.HasIndex("CompletionId");
 
@@ -2005,10 +2002,6 @@ namespace BDMS.Migrations
 
             modelBuilder.Entity("BDMS.Models.Backfill", b =>
                 {
-                    b.HasOne("BDMS.Models.Casing", "Casing")
-                        .WithMany("Backfills")
-                        .HasForeignKey("CasingId");
-
                     b.HasOne("BDMS.Models.Completion", "Completion")
                         .WithMany("Backfills")
                         .HasForeignKey("CompletionId")
@@ -2030,8 +2023,6 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
-
-                    b.Navigation("Casing");
 
                     b.Navigation("Completion");
 
@@ -2267,6 +2258,7 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Kind")
                         .WithMany()
                         .HasForeignKey("KindId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.Codelist", "Material")
@@ -2966,8 +2958,6 @@ namespace BDMS.Migrations
 
             modelBuilder.Entity("BDMS.Models.Casing", b =>
                 {
-                    b.Navigation("Backfills");
-
                     b.Navigation("CasingElements");
 
                     b.Navigation("Instrumentations");

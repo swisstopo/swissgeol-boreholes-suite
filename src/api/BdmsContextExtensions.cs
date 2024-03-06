@@ -730,6 +730,8 @@ public static class BdmsContextExtensions
             .RuleFor(b => b.MaterialId, f => f.PickRandom(backfillMaterialIds))
             .RuleFor(b => b.Material, _ => default!)
             .RuleFor(i => i.Notes, f => f.Random.Words(4))
+            .RuleFor(i => i.CasingId, f => f.PickRandom(casings.Select(c => c.Id)))
+            .RuleFor(i => i.Casing, _ => default!)
             .RuleFor(i => i.Created, f => f.Date.Past().ToUniversalTime())
             .RuleFor(i => i.CreatedById, f => f.PickRandom(userRange))
             .RuleFor(i => i.CreatedBy, _ => default!)

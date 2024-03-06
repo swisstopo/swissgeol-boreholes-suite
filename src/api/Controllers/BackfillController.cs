@@ -23,14 +23,11 @@ public class BackfillController : BdmsControllerBase<Backfill>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Backfill>> GetAsync([FromQuery] int? completionId = null)
     {
-        var backfills = Context.Backfills
-            .Include(i => i.Material)
-            .Include(i => i.Kind)
-            .AsNoTracking();
+        var backfills = GetBackfillsWithIncludes();
 
         if (completionId != null)
         {
-            backfills = backfills.Where(i => i.CompletionId == completionId);
+            backfills = backfills.Where(b => b.CompletionId == completionId);
         }
 
         return await backfills.ToListAsync().ConfigureAwait(false);
@@ -43,12 +40,7 @@ public class BackfillController : BdmsControllerBase<Backfill>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Backfill>> GetByIdAsync(int id)
     {
-        var backfill = await Context.Backfills
-            .Include(i => i.Material)
-            .Include(i => i.Kind)
-            .AsNoTracking()
-            .SingleOrDefaultAsync(i => i.Id == id)
-            .ConfigureAwait(false);
+        var backfill = await GetBackfillsWithIncludes().SingleOrDefaultAsync(i => i.Id == id).ConfigureAwait(false);
 
         if (backfill == null)
         {
@@ -72,6 +64,15 @@ public class BackfillController : BdmsControllerBase<Backfill>
     [Authorize(Policy = PolicyNames.Viewer)]
     public override Task<IActionResult> DeleteAsync(int id)
         => base.DeleteAsync(id);
+
+    private IQueryable<Backfill> GetBackfillsWithIncludes()
+    {
+        return Context.Backfills
+            .Include(b => b.Material)
+            .Include(b => b.Kind)
+            .Include(b => b.Casing)
+            .AsNoTracking();
+    }
 
     protected override async Task<int?> GetBoreholeId(Backfill entity)
     {

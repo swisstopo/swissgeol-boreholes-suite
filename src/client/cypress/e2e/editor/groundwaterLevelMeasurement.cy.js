@@ -76,7 +76,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     cy.get("body").should("not.contain", "Drucksonde");
   });
 
-  it("sort groundwaterlevelmeasurement", () => {
+  it("sorts groundwaterlevelmeasurement", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();

@@ -28,6 +28,11 @@
         "Type": "email_verified",
         "Value": "true",
         "ValueType": "boolean"
+      },
+      {
+        "Type": "local_groups_claim",
+        "Value": "[\"boreholes_dev_group\"]",
+        "ValueType": "json"
       }
     ]
   },
@@ -60,6 +65,11 @@
         "Type": "email_verified",
         "Value": "true",
         "ValueType": "boolean"
+      },
+      {
+        "Type": "local_groups_claim",
+        "Value": "[\"boreholes_dev_group\"]",
+        "ValueType": "json"
       }
     ]
   }

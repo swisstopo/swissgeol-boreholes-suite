@@ -34,13 +34,13 @@ public class Casing : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Casing"/>'s start date.
     /// </summary>
     [Column("date_start")]
-    public DateOnly DateStart { get; set; }
+    public DateOnly? DateStart { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Casing"/>'s finish date.
     /// </summary>
     [Column("date_finish")]
-    public DateOnly DateFinish { get; set; }
+    public DateOnly? DateFinish { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Casing"/>'s notes.
@@ -52,6 +52,11 @@ public class Casing : IChangeTracking, IIdentifyable
     /// Gets the <see cref="Instrumentation"/>s associated with the <see cref="Casing"/>.
     /// </summary>
     public ICollection<Instrumentation>? Instrumentations { get; }
+
+    /// <summary>
+    /// Gets the <see cref="Backfill"/>s associated with the <see cref="Casing"/>.
+    /// </summary>
+    public ICollection<Backfill>? Backfills { get; }
 
     /// <summary>
     /// Gets the <see cref="Observation"/>s associated with the <see cref="Casing"/>.

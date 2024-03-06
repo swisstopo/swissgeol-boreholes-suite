@@ -27,7 +27,7 @@ describe("Casing crud tests", () => {
     cy.wait("@casing_GET");
   });
 
-  it("add, edit and delete casings", () => {
+  it("adds, edits and deletes casings", () => {
     // create casing
     addItem("addCasing");
     cy.wait("@codelist_GET");
@@ -43,7 +43,7 @@ describe("Casing crud tests", () => {
     setInput("casingElements.0.toDepth", "10");
     evaluateInput("toDepth", "10");
     setSelect("casingElements.0.kindId", 2);
-    setSelect("casingElements.0.materialId", 3);
+    setSelect("casingElements.0.materialId", 4);
     setInput("casingElements.0.innerDiameter", "3");
     setInput("casingElements.0.outerDiameter", "4");
 
@@ -68,7 +68,7 @@ describe("Casing crud tests", () => {
     cy.wait("@codelist_GET");
 
     setInput("name", "casing-1 updated");
-    setSelect("casingElements.0.materialId", 5);
+    setSelect("casingElements.0.materialId", 6);
 
     saveForm();
     evaluateDisplayValue("name", "casing-1 updated");
@@ -80,6 +80,7 @@ describe("Casing crud tests", () => {
     cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
+    cy.wait(1000);
     addItem("addInstrument");
     cy.wait("@casing_GET");
 
@@ -104,24 +105,17 @@ describe("Casing crud tests", () => {
     evaluateDisplayValue("casingName", "-");
   });
 
-  it("sort casings", () => {
+  it("sorts casings", () => {
     addItem("addCasing");
     cy.wait("@codelist_GET");
     cy.get('[data-cy="casingElements.0.delete"]').should("be.disabled");
 
     setInput("name", "casing-1");
-    setInput("dateStart", "2021-01-01");
-    setInput("dateFinish", "2021-01-02");
-    setInput("notes", "Lorem.");
-
     setInput("casingElements.0.fromDepth", "5");
     evaluateInput("fromDepth", "5");
     setInput("casingElements.0.toDepth", "10");
     evaluateInput("toDepth", "10");
     setSelect("casingElements.0.kindId", 2);
-    setSelect("casingElements.0.materialId", 3);
-    setInput("casingElements.0.innerDiameter", "3");
-    setInput("casingElements.0.outerDiameter", "4");
     saveForm();
     cy.wait("@casing_GET");
     evaluateDisplayValue("casingElements.0.fromDepth", "5");
@@ -136,9 +130,6 @@ describe("Casing crud tests", () => {
     setInput("casingElements.1.toDepth", "5");
     evaluateInput("toDepth", "10");
     setSelect("casingElements.1.kindId", 2);
-    setSelect("casingElements.1.materialId", 3);
-    setInput("casingElements.1.innerDiameter", "3");
-    setInput("casingElements.1.outerDiameter", "4");
 
     saveForm();
     cy.wait("@casing_GET");
@@ -151,16 +142,10 @@ describe("Casing crud tests", () => {
     addItem("addCasing");
     cy.wait("@codelist_GET");
     setInput("name", "casing-2");
-    setInput("dateStart", "2021-01-01");
-    setInput("dateFinish", "2021-01-02");
-    setInput("notes", "Lorem.");
 
     setInput("casingElements.0.fromDepth", "0");
     setInput("casingElements.0.toDepth", "12");
     setSelect("casingElements.0.kindId", 2);
-    setSelect("casingElements.0.materialId", 3);
-    setInput("casingElements.0.innerDiameter", "3");
-    setInput("casingElements.0.outerDiameter", "4");
     saveForm();
     cy.wait("@casing_GET");
 

@@ -34,6 +34,14 @@ const CasingInput = props => {
     if (data?.dateFinish === "") {
       data.dateFinish = null;
     }
+    data.casingElements = data.casingElements.map(element => {
+      return {
+        ...element,
+        materialId: element.materialId === "" ? null : element.materialId,
+        innerDiameter: element.innerDiameter === "" ? null : element.innerDiameter,
+        outerDiameter: element.outerDiameter === "" ? null : element.outerDiameter,
+      };
+    });
     data.completionId = parentId;
     return data;
   };
@@ -93,20 +101,8 @@ const CasingInput = props => {
             <FormInput fieldName="toDepth" label="todepth" value={item.toDepth} type="number" disabled={true} />
           </Stack>
           <Stack direction="row">
-            <FormInput
-              fieldName="dateStart"
-              label="dateStartCasing"
-              value={item.dateStart}
-              type="date"
-              required={true}
-            />
-            <FormInput
-              fieldName="dateFinish"
-              label="dateFinishCasing"
-              value={item.dateFinish}
-              type="date"
-              required={true}
-            />
+            <FormInput fieldName="dateStart" label="dateStartCasing" value={item.dateStart} type="date" />
+            <FormInput fieldName="dateFinish" label="dateFinishCasing" value={item.dateFinish} type="date" />
           </Stack>
           <Stack direction="row">
             <FormInput fieldName="notes" label="notes" multiline={true} value={item.notes} />
@@ -163,7 +159,6 @@ const CasingInput = props => {
                     fieldName={`casingElements.${index}.materialId`}
                     label="materialCasingLayer"
                     selected={field.materialId}
-                    required={true}
                     values={domains?.data
                       ?.filter(d => d.schema === completionSchemaConstants.casingMaterial)
                       .sort((a, b) => a.order - b.order)
@@ -177,14 +172,12 @@ const CasingInput = props => {
                     label="casingInnerDiameter"
                     value={field.innerDiameter}
                     type="number"
-                    required={true}
                   />
                   <FormInput
                     fieldName={`casingElements.${index}.outerDiameter`}
                     label="casingOuterDiameter"
                     value={field.outerDiameter}
                     type="number"
-                    required={true}
                   />
                   <IconButton
                     onClick={() => remove(index)}
