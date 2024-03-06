@@ -263,9 +263,11 @@ public class CompletionController : BdmsControllerBase<Completion>
         }
     }
 
+    /// <inheritdoc />
     protected override Task<int?> GetBoreholeId(Completion entity)
     {
         if (entity == null) return Task.FromResult<int?>(default);
+
         return Task.FromResult<int?>(entity.BoreholeId);
     }
 }

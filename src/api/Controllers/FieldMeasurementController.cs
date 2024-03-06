@@ -54,9 +54,11 @@ public class FieldMeasurementController : BdmsControllerBase<FieldMeasurement>
     public override Task<ActionResult<FieldMeasurement>> CreateAsync(FieldMeasurement entity)
         => base.CreateAsync(entity);
 
+    /// <inheritdoc />
     protected override Task<int?> GetBoreholeId(FieldMeasurement entity)
     {
         if (entity == null) return Task.FromResult<int?>(default);
+
         return Task.FromResult<int?>(entity.BoreholeId);
     }
 }

@@ -72,13 +72,15 @@ public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
     public override Task<ActionResult<FaciesDescription>> CreateAsync(FaciesDescription entity)
         => base.CreateAsync(entity);
 
+    /// <inheritdoc />
     protected override async Task<int?> GetBoreholeId(FaciesDescription entity)
     {
         if (entity == null) return default;
+
         var stratigraphy = await Context.Stratigraphies
             .AsNoTracking()
             .SingleOrDefaultAsync(d => d.Id == entity.StratigraphyId)
             .ConfigureAwait(false);
-        return stratigraphy.BoreholeId;
+        return stratigraphy?.BoreholeId;
     }
 }

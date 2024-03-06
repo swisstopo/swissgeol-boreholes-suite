@@ -74,13 +74,15 @@ public class BackfillController : BdmsControllerBase<Backfill>
             .AsNoTracking();
     }
 
+    /// <inheritdoc />
     protected override async Task<int?> GetBoreholeId(Backfill entity)
     {
         if (entity == null) return default;
+
         var completion = await Context.Completions
             .AsNoTracking()
             .SingleOrDefaultAsync(b => b.Id == entity.CompletionId)
             .ConfigureAwait(false);
-        return completion.BoreholeId;
+        return completion?.BoreholeId;
     }
 }

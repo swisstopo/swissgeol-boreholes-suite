@@ -169,13 +169,15 @@ public class CasingController : BdmsControllerBase<Casing>
         }
     }
 
+    /// <inheritdoc />
     protected override async Task<int?> GetBoreholeId(Casing entity)
     {
         if (entity == null) return default;
+
         var completion = await Context.Completions
             .AsNoTracking()
             .SingleOrDefaultAsync(c => c.Id == entity.CompletionId)
             .ConfigureAwait(false);
-        return completion.BoreholeId;
+        return completion?.BoreholeId;
     }
 }

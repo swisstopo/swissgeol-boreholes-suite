@@ -75,13 +75,15 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
     public override Task<IActionResult> DeleteAsync(int id)
         => base.DeleteAsync(id);
 
+    /// <inheritdoc />
     protected override async Task<int?> GetBoreholeId(Instrumentation entity)
     {
         if (entity == null) return default;
+
         var completion = await Context.Completions
             .AsNoTracking()
             .SingleOrDefaultAsync(i => i.Id == ((Instrumentation)(object)entity).CompletionId)
             .ConfigureAwait(false);
-        return completion.BoreholeId;
+        return completion?.BoreholeId;
     }
 }

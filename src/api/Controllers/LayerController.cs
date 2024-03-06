@@ -196,13 +196,15 @@ public class LayerController : BdmsControllerBase<Layer>
             .Include(l => l.OrganicComponentCodelists);
     }
 
+    /// <inheritdoc />
     protected override async Task<int?> GetBoreholeId(Layer entity)
     {
         if (entity == null) return default;
+
         var stratigraphy = await Context.Stratigraphies
             .AsNoTracking()
             .SingleOrDefaultAsync(d => d.Id == entity.StratigraphyId)
             .ConfigureAwait(false);
-        return stratigraphy.BoreholeId;
+        return stratigraphy?.BoreholeId;
     }
 }

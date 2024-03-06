@@ -69,13 +69,15 @@ public class LithostratigraphyController : BdmsControllerBase<LithostratigraphyL
     public override Task<ActionResult<LithostratigraphyLayer>> CreateAsync(LithostratigraphyLayer entity)
         => base.CreateAsync(entity);
 
+    /// <inheritdoc />
     protected override async Task<int?> GetBoreholeId(LithostratigraphyLayer entity)
     {
         if (entity == null) return default;
+
         var stratigraphy = await Context.Stratigraphies
             .AsNoTracking()
             .SingleOrDefaultAsync(d => d.Id == entity.StratigraphyId)
             .ConfigureAwait(false);
-        return stratigraphy.BoreholeId;
+        return stratigraphy?.BoreholeId;
     }
 }

@@ -55,9 +55,11 @@ public class WaterIngressController : BdmsControllerBase<WaterIngress>
     public override Task<ActionResult<WaterIngress>> CreateAsync(WaterIngress entity)
         => base.CreateAsync(entity);
 
+    /// <inheritdoc />
     protected override Task<int?> GetBoreholeId(WaterIngress entity)
     {
         if (entity == null) return Task.FromResult<int?>(default);
+
         return Task.FromResult<int?>(entity.BoreholeId);
     }
 }
