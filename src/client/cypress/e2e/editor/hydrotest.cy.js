@@ -109,7 +109,7 @@ describe("Tests for the hydrotest editor.", () => {
     cy.get("body").should("not.contain", "Pump-/Injektionsversuch, variable Rate");
   });
 
-  it("sort hydrotest", () => {
+  it("sorts hydrotest", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();

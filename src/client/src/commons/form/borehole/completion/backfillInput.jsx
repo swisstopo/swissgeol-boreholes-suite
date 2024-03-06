@@ -1,19 +1,32 @@
-import React from "react";
-import { Stack } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDomains } from "../../../../api/fetchApiV2";
+import { useDomains, getCasings } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
+import { StackFullWidth, StackHalfWidth } from "../../../../components/baseComponents.js";
 
 const BackfillInput = ({ item, setSelected, parentId, addData, updateData }) => {
   const domains = useDomains();
   const { i18n } = useTranslation();
+  const [casings, setCasings] = useState([]);
 
   const prepareFormDataForSubmit = data => {
+    if (data.casingId === "") {
+      data.casingId = null;
+    }
+    data.casing = null;
     data.completionId = parentId;
     return data;
   };
+
+  useEffect(() => {
+    if (parentId) {
+      getCasings(parentId).then(casings => {
+        setCasings(casings);
+      });
+    }
+  }, [parentId]);
 
   return (
     <DataInputCard
@@ -22,11 +35,11 @@ const BackfillInput = ({ item, setSelected, parentId, addData, updateData }) => 
       addData={addData}
       updateData={updateData}
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
-      <Stack direction="row">
+      <StackFullWidth direction="row">
         <FormInput fieldName="fromDepth" label="fromdepth" value={item.fromDepth} type="number" required={true} />
         <FormInput fieldName="toDepth" label="todepth" value={item.toDepth} type="number" required={true} />
-      </Stack>
-      <Stack direction="row">
+      </StackFullWidth>
+      <StackFullWidth direction="row">
         <FormSelect
           fieldName="kindId"
           label="kindFilling"
@@ -53,10 +66,21 @@ const BackfillInput = ({ item, setSelected, parentId, addData, updateData }) => 
               name: d[i18n.language],
             }))}
         />
-      </Stack>
-      <Stack direction="row">
+      </StackFullWidth>
+      <StackHalfWidth>
+        <FormSelect
+          fieldName="casingId"
+          label="casingName"
+          selected={item.casingId}
+          values={casings?.map(casing => ({
+            key: casing.id,
+            name: casing.name,
+          }))}
+        />
+      </StackHalfWidth>
+      <StackFullWidth>
         <FormInput fieldName="notes" label="notes" multiline={true} value={item.notes} />
-      </Stack>
+      </StackFullWidth>
     </DataInputCard>
   );
 };

@@ -21,14 +21,29 @@ describe("Backfill crud tests", () => {
 
     // start editing session
     startBoreholeEditing();
+  });
+
+  it("adds, edits and deletes backfills", () => {
+    // Precondition: Create casing to later link in instrumentation
+    cy.get("[data-cy=completion-content-header-tab-casing]").click();
+    cy.wait("@casing_GET");
+
+    addItem("addCasing");
+    cy.wait("@codelist_GET");
+
+    setInput("name", "casing-1");
+    setInput("casingElements.0.fromDepth", "0");
+    setInput("casingElements.0.toDepth", "10");
+    setSelect("casingElements.0.kindId", 2);
+    saveForm();
+    cy.wait("@casing_GET");
 
     // select backfill tab
     cy.get("[data-cy=completion-content-header-tab-backfill]").click();
     cy.wait("@backfill_GET");
-  });
 
-  it("add, edit and delete backfills", () => {
     // add new backfill card
+    cy.wait(1000);
     addItem("addFilling");
     cy.wait("@codelist_GET");
 
@@ -51,12 +66,14 @@ describe("Backfill crud tests", () => {
 
     // edit backfill
     startEditing();
-    cy.wait("@codelist_GET");
+    cy.wait("@casing_GET");
 
     setInput("fromDepth", "222");
+    setSelect("casingId", 1);
 
     // close editing mask
     saveForm();
+    cy.contains("casing-1");
     cy.contains("222");
     cy.contains("inactive");
 
@@ -65,7 +82,37 @@ describe("Backfill crud tests", () => {
     cy.contains("From depth").should("not.exist");
   });
 
-  it("sort backfill", () => {
+  it("sorts backfill", () => {
+    // Precondition: Create casing to later link in instrumentation
+    cy.get("[data-cy=completion-content-header-tab-casing]").click();
+    cy.wait("@casing_GET");
+
+    addItem("addCasing");
+    cy.wait("@codelist_GET");
+
+    setInput("name", "casing-1");
+    setInput("casingElements.0.fromDepth", "0");
+    setInput("casingElements.0.toDepth", "10");
+    setSelect("casingElements.0.kindId", 2);
+    saveForm();
+    cy.wait("@casing_GET");
+
+    cy.wait(1000);
+    addItem("addCasing");
+    cy.wait("@codelist_GET");
+
+    setInput("name", "casing-2");
+    setInput("casingElements.0.fromDepth", "5");
+    setInput("casingElements.0.toDepth", "12");
+    setSelect("casingElements.0.kindId", 2);
+    saveForm();
+    cy.wait("@casing_GET");
+
+    // select backfill tab
+    cy.get("[data-cy=completion-content-header-tab-backfill]").click();
+    cy.wait("@backfill_GET");
+
+    cy.wait(1000);
     addItem("addFilling");
     cy.wait("@codelist_GET");
     setInput("notes", "Lorem.");
@@ -73,6 +120,7 @@ describe("Backfill crud tests", () => {
     setInput("toDepth", "10");
     setSelect("kindId", 2);
     setSelect("materialId", 1);
+    setSelect("casingId", 2);
     saveForm();
 
     cy.wait(1000);
@@ -83,6 +131,16 @@ describe("Backfill crud tests", () => {
     setInput("toDepth", "12");
     setSelect("kindId", 2);
     setSelect("materialId", 1);
+    setSelect("casingId", 1);
+    saveForm();
+
+    cy.get('[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]').contains("12");
+    cy.get('[data-cy="backfill-card.1"] [data-cy="todepth-formDisplay"]').contains("10");
+
+    cy.get('[data-cy="backfill-card.0"] [data-cy="edit-button"]').click({
+      force: true,
+    });
+    setSelect("casingId", 2);
     saveForm();
 
     cy.get('[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]').contains("10");

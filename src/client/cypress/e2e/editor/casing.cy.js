@@ -27,7 +27,7 @@ describe("Casing crud tests", () => {
     cy.wait("@casing_GET");
   });
 
-  it("add, edit and delete casings", () => {
+  it("adds, edits and deletes casings", () => {
     // create casing
     addItem("addCasing");
     cy.wait("@codelist_GET");
@@ -105,7 +105,7 @@ describe("Casing crud tests", () => {
     evaluateDisplayValue("casingName", "-");
   });
 
-  it("sort casings", () => {
+  it("sorts casings", () => {
     addItem("addCasing");
     cy.wait("@codelist_GET");
     cy.get('[data-cy="casingElements.0.delete"]').should("be.disabled");
