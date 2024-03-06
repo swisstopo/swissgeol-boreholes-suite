@@ -38,6 +38,7 @@
 - Store precision of coordinates, to be able to display zeros after the decimal points in coordinate inputs.
 - Link casing to backfill.
 - Removed square brackets from _m MD_ in `chronostratigraphy` and `lithostratigraphy`.
+- Include completion in casing name for hydrogeological observations.
 
 ### Fixed
 
