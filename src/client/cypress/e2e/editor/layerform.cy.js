@@ -68,8 +68,8 @@ describe("Tests for the layer form.", () => {
     cy.get('[data-cy="notes"]').click();
 
     // veryfiy that the dropdowns are reset
-    [...new Set(expectedValues)].forEach(word => {
-      cy.contains(word).should("not.be.visible");
+    [...new Set(expectedValues)].forEach(value => {
+      cy.contains(value).should("not.be.visible");
     });
 
     cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
