@@ -124,6 +124,8 @@ services:
       ReverseProxy__Clusters__pythonApi__Destinations__legacyApi__Address: "http://localhost:8888/"
       Auth__Authority: http://localhost:4011
       Auth__Audience: "bdms-client"
+      Auth__GroupClaimType: "local_groups_claim"
+      Auth__AuthorizedGroupName: "boreholes_dev_group"
       S3__ENDPOINT: http://minio:9000
       S3__SECURE: 1
     extra_hosts:
@@ -136,6 +138,15 @@ services:
     environment:
       CLIENTS_CONFIGURATION_PATH: /tmp/config/clients-config.json
       USERS_CONFIGURATION_PATH: /tmp/config/users-config.json
+      IDENTITY_RESOURCES_INLINE: |
+        [
+          {
+            "Name": "local_groups_scope",
+            "ClaimTypes": [
+              "local_groups_claim"
+            ]
+          }
+        ]
       SERVER_OPTIONS_INLINE: |
         {
           "IssuerUri": "http://localhost:4011",
