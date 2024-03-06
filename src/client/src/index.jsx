@@ -6,7 +6,7 @@ import i18n from "./i18n";
 import "./index.css";
 import "ol/ol.css";
 import App from "./App";
-import { BdmsAuthProvider } from "./BdmsAuthProvider.jsx";
+import { BdmsAuthProvider } from "./commons/auth/BdmsAuthProvider.jsx";
 
 import "semantic-ui-css/semantic.css";
 
