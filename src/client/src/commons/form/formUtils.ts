@@ -6,7 +6,7 @@ export const parseIfString = (value: string | number) => {
   }
 };
 
-export const parseFloatWithTousandsSeparator = (value: string) => parseFloat(value.replace(/'/g, ""));
+export const parseFloatWithThousandsSeparator = (value: string) => parseFloat(value.replace(/'/g, ""));
 
 export const getMaxPrecision = (x: string, y: string) => Math.max(getPrecisionFromString(x), getPrecisionFromString(y));
 
