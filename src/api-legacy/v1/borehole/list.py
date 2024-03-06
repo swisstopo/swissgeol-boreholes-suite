@@ -37,6 +37,10 @@ class ListBorehole(Action):
                 location_y_bho as location_y,
                 location_x_lv03_bho as location_x_lv03,
                 location_y_lv03_bho as location_y_lv03,
+                precision_location_x,
+                precision_location_y,
+                precision_location_x_lv03,
+                precision_location_y_lv03,
                 COALESCE(
                     srd.text_cli_{language},
                     srd.text_cli_{fallback}
@@ -228,6 +232,10 @@ class ListBorehole(Action):
                 location_y_bho as location_y,
                 location_x_lv03_bho as location_x_lv03,
                 location_y_lv03_bho as location_y_lv03,
+                precision_location_x,
+                precision_location_y,
+                precision_location_x_lv03,
+                precision_location_y_lv03,
                 srd.geolcode as spatial_reference_system,
                 
                 qtloc.geolcode as location_precision,
@@ -392,6 +400,10 @@ class ListBorehole(Action):
                 location_y_bho as location_y,
                 location_x_lv03_bho as location_x_lv03,
                 location_y_lv03_bho as location_y_lv03,
+                precision_location_x,
+                precision_location_y,
+                precision_location_x_lv03,
+                precision_location_y_lv03,
                 srs_id_cli as spatial_reference_system,
                 elevation_z_bho as elevation_z,
                 hrs_id_cli as height_reference_system,

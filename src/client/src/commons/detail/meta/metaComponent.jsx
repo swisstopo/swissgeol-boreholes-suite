@@ -55,25 +55,46 @@ class MetaComponent extends React.Component {
     return this.getTextRow(schema, _.isNil(isodate) || isodate === "" ? null : <DateText date={isodate} />);
   }
 
-  getNumericTextRow(schema, ...values) {
-    let coordinates;
-    if (values?.length === 2) {
-      coordinates = (
-        <>
-          <NumericFormat value={values[0] ?? "-"} thousandSeparator="'" displayType="text" suffix=", " />
-          <NumericFormat value={values[1] ?? "-"} thousandSeparator="'" displayType="text" />
-        </>
-      );
-    } else {
-      coordinates = <NumericFormat value={values[0] ?? "-"} thousandSeparator="'" displayType="text" />;
-    }
-
+  getCoordinatesTextRow(schema, x, y, precisionX, precisionY) {
     return (
       <div key={schema}>
         <div style={rowLabelStyle}>
           <TranslationText id={schema} />
         </div>
-        <div style={rowTextStyle}>{coordinates}</div>
+        <div style={rowTextStyle}>
+          {
+            <>
+              <NumericFormat
+                value={x ?? "-"}
+                thousandSeparator="'"
+                displayType="text"
+                decimalScale={precisionX}
+                fixedDecimalScale
+                suffix=", "
+              />
+              <NumericFormat
+                value={y ?? "-"}
+                thousandSeparator="'"
+                displayType="text"
+                decimalScale={precisionY}
+                fixedDecimalScale
+              />
+            </>
+          }
+        </div>
+      </div>
+    );
+  }
+
+  getNumericTextRow(schema, value) {
+    return (
+      <div key={schema}>
+        <div style={rowLabelStyle}>
+          <TranslationText id={schema} />
+        </div>
+        <div style={rowTextStyle}>
+          {<NumericFormat value={value ?? "-"} thousandSeparator="'" displayType="text" />}
+        </div>
       </div>
     );
   }
@@ -231,8 +252,20 @@ class MetaComponent extends React.Component {
 
         <div style={rowContainerStyle}>
           <div data-cy="coordinates-div" style={flexRowStyle}>
-            {this.getNumericTextRow("coordinatesLV95", data.location_x, data.location_y)}
-            {this.getNumericTextRow("coordinatesLV03", data.location_x_lv03, data.location_y_lv03)}
+            {this.getCoordinatesTextRow(
+              "coordinatesLV95",
+              data.location_x,
+              data.location_y,
+              data.precision_location_x,
+              data.precision_location_y,
+            )}
+            {this.getCoordinatesTextRow(
+              "coordinatesLV03",
+              data.location_x_lv03,
+              data.location_y_lv03,
+              data.precision_location_x_lv03,
+              data.precision_location_y_lv03,
+            )}
             {this.getNumericTextRow("elevation_z", data.elevation_z)}
             {this.getNumericTextRow("reference_elevation", data.reference_elevation)}
             {this.getDomainRow("reference_elevation_type", data.reference_elevation_type, "reference_elevation_type")}

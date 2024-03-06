@@ -197,7 +197,11 @@ public static class BdmsContextExtensions
                point.SRID = 2056;
                return point.OrNull(f, .05f);
            })
-           .RuleFor(o => o.NationalInterest, f => borehole_ids % 10 == 9);
+           .RuleFor(o => o.NationalInterest, f => borehole_ids % 10 == 9)
+           .RuleFor(o => o.PrecisionLocationX, f => f.PickRandom(Enumerable.Range(0, 10)))
+           .RuleFor(o => o.PrecisionLocationY, f => f.PickRandom(Enumerable.Range(0, 10)))
+           .RuleFor(o => o.PrecisionLocationXLV03, f => f.PickRandom(Enumerable.Range(0, 10)))
+           .RuleFor(o => o.PrecisionLocationYLV03, f => f.PickRandom(Enumerable.Range(0, 10)));
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
         context.BulkInsert(boreholeRange.Select(SeededBoreholes).ToList(), bulkConfig);

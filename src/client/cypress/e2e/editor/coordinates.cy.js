@@ -1,5 +1,18 @@
 import { newEditableBorehole, delayedType } from "../helpers/testHelpers";
 
+function checkDecimalPlaces(inputAlias, expectedDecimalPlaces) {
+  cy.get(inputAlias)
+    .invoke("val")
+    .then(val => {
+      const parts = val.split(".");
+      expect(parts[1]).to.have.length(expectedDecimalPlaces);
+    });
+}
+
+function waitForCoordinatePatches() {
+  cy.wait(["@edit_patch", "@edit_patch", "@edit_patch", "@edit_patch", "@edit_patch", "@edit_patch"]);
+}
+
 describe("Tests for editing coordinates of a borehole.", () => {
   beforeEach(() => {
     newEditableBorehole().as("borehole_id");
@@ -117,5 +130,42 @@ describe("Tests for editing coordinates of a borehole.", () => {
     // verify original reference system has switched to LV95
     cy.get("input[value=20104002]").should("not.be.checked");
     cy.get("input[value=20104001]").should("be.checked");
+
+    waitForCoordinatePatches();
+
+    // verify that all inputs have a precision of 2 decimal places
+    checkDecimalPlaces("@LV95X-input", 2);
+    checkDecimalPlaces("@LV95Y-input", 2);
+    checkDecimalPlaces("@LV03X-input", 2);
+    checkDecimalPlaces("@LV03Y-input", 2);
+  });
+
+  it("displays correct decimal precision", () => {
+    // Type valid coordinates with zeros after decimal
+    delayedType(cy.get("@LV95X-input"), "2645123.0000");
+    delayedType(cy.get("@LV95Y-input"), "1245794.000");
+
+    waitForCoordinatePatches();
+    cy.wait("@edit_patch");
+    cy.wait("@location");
+    checkDecimalPlaces("@LV03X-input", 4);
+    checkDecimalPlaces("@LV03Y-input", 4);
+
+    // Navigate somewhere else and return
+    cy.get('[data-cy="borehole-menu-item"]').click();
+    cy.get('[data-cy="location-menu-item"]').click();
+
+    // Check that the values are still the same
+    cy.get("@LV95X-input").should("have.value", `2'645'123.0000`);
+    cy.get("@LV95Y-input").should("have.value", `1'245'794.000`);
+
+    // Add more zeros to LV95Y input
+    delayedType(cy.get("@LV95Y-input"), "00");
+
+    waitForCoordinatePatches();
+    cy.wait("@edit_patch");
+    cy.wait("@location");
+    checkDecimalPlaces("@LV03X-input", 5);
+    checkDecimalPlaces("@LV03Y-input", 5);
   });
 });
