@@ -29,7 +29,15 @@ class PatchBorehole(Action):
         elif field == 'workgroup':
             column = 'id_wgp_fk'
 
-        elif field in ['location_x', 'location_y', 'location_x_lv03',  'location_y_lv03', 'location']:
+        elif field in [ 'location_x',
+                        'location_y', 
+                        'location_x_lv03', 
+                        'location_y_lv03', 
+                        'location', 
+                        'precision_location_x',
+                        'precision_location_y',
+                        'precision_location_x_lv03',
+                        'precision_location_y_lv03']:
 
             if field == 'location_x':
                 column = 'location_x_bho'
@@ -42,6 +50,18 @@ class PatchBorehole(Action):
 
             elif field == 'location_y_lv03':
                 column = 'location_y_lv03_bho'
+
+            elif field == 'precision_location_x':
+                column = 'precision_location_x'        
+
+            elif field == 'precision_location_y':
+                column = 'precision_location_y'       
+
+            elif field == 'precision_location_x_lv03':
+                column = 'precision_location_x_lv03'       
+
+            elif field == 'precision_location_y_lv03':
+                column = 'precision_location_y_lv03'       
 
             elif field == 'location':
                 column = [
@@ -195,6 +215,10 @@ class PatchBorehole(Action):
                 'location_y',
                 'location_x_lv03',
                 'location_y_lv03',
+                'precision_location_x',
+                'precision_location_y',
+                'precision_location_x_lv03',
+                'precision_location_y_lv03',
                 'elevation_z',
                 'country_bho',
                 'canton_bho',

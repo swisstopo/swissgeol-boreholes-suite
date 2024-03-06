@@ -88,10 +88,22 @@ public class Borehole : IChangeTracking, IIdentifyable
     public double? LocationX { get; set; }
 
     /// <summary>
+    /// Gets or sets the precision for the <see cref="Borehole"/>'s X-location (LV95).
+    /// </summary>
+    [Column("precision_location_x")]
+    public int? PrecisionLocationX { get; set; }
+
+    /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s Y-location using LV95 coordinates.
     /// </summary>
     [Column("location_y_bho")]
     public double? LocationY { get; set; }
+
+    /// <summary>
+    /// Gets or sets the precision for the <see cref="Borehole"/>'s Y-location (LV95).
+    /// </summary>
+    [Column("precision_location_y")]
+    public int? PrecisionLocationY { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s X-location using LV03 coordinates.
@@ -100,10 +112,22 @@ public class Borehole : IChangeTracking, IIdentifyable
     public double? LocationXLV03 { get; set; }
 
     /// <summary>
+    /// Gets or sets the precision for the <see cref="Borehole"/>'s X-location (LV03).
+    /// </summary>
+    [Column("precision_location_x_lv03")]
+    public int? PrecisionLocationXLV03 { get; set; }
+
+    /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s Y-location using LV03 coordinates.
     /// </summary>
     [Column("location_y_lv03_bho")]
     public double? LocationYLV03 { get; set; }
+
+    /// <summary>
+    /// Gets or sets the precision for the <see cref="Borehole"/>'s Y-location (LV03).
+    /// </summary>
+    [Column("precision_location_y_lv03")]
+    public int? PrecisionLocationYLV03 { get; set; }
 
     /// <summary>
     /// Gets or sets the original reference system.

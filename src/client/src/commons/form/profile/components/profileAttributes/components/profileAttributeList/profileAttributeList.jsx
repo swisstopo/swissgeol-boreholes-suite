@@ -8,7 +8,7 @@ import DateField from "../../../../../dateField";
 import { NumericFormat } from "react-number-format";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
-import { parseIfString } from "../../../../../formUtils";
+import { parseIfString } from "../../../../../formUtils.ts";
 
 const ProfileAttributeList = props => {
   const { attribute, showAll, updateChange, layer, isVisibleFunction } = props.data;

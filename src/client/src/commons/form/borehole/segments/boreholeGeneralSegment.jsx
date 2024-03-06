@@ -6,7 +6,7 @@ import DateField from "../../dateField";
 import TranslationText from "../../translationText";
 import { NumericFormat } from "react-number-format";
 import { Form, Input, Segment, TextArea } from "semantic-ui-react";
-import { parseIfString } from "../../formUtils";
+import { parseIfString } from "../../formUtils.ts";
 
 const BoreholeGeneralSegment = props => {
   const { size, borehole, updateChange, updateNumber, isEditable } = props;

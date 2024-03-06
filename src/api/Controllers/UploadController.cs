@@ -539,6 +539,10 @@ public class UploadController : ControllerBase
             Map(m => m.LocationYLV03).Optional();
             Map(m => m.OriginalReferenceSystem).Optional();
             Map(m => m.Attachments).Optional();
+            Map(m => m.PrecisionLocationX).Optional();
+            Map(m => m.PrecisionLocationY).Optional();
+            Map(m => m.PrecisionLocationXLV03).Optional();
+            Map(m => m.PrecisionLocationYLV03).Optional();
 
             // Define properties to ignore
             Map(b => b.Municipality).Ignore();
