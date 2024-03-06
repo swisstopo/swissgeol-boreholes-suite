@@ -19,8 +19,6 @@ import traceback
 
 sys.path.append('.')
 
-from bms.v1.listeners import EventListener
-
 define("port", default=8888, help="Tornado Web port", type=int)
 
 define("pg_user", default=None, help="PostgreSQL database user")
@@ -158,9 +156,6 @@ if __name__ == "__main__":
         TermsHandler,
         TermsAdminHandler,
 
-        # Feedback handler
-        FeedbackHandler,
-
         # Other handlers
         CodeListHandler,
         Wms,
@@ -208,9 +203,6 @@ if __name__ == "__main__":
         (r'/api/v1/terms', TermsHandler),
         (r'/api/v1/terms/admin', TermsAdminHandler),
 
-        # FEEDBACK handlers
-        (r'/api/v1/feedback', FeedbackHandler),
-
         # Layer handlers (will be deprecated)
         (r'/api/v1/borehole/stratigraphy/layer', LayerViewerHandler),
         (r'/api/v1/borehole/stratigraphy/layer/edit', LayerProducerHandler),
@@ -237,10 +229,6 @@ if __name__ == "__main__":
     # Init database postgresql connection pool
     application.pool = ioloop.run_until_complete(get_conn())
     green("Connection to PostgreSQL database: Ok")
-
-    # Create events listeners
-    application.listener = EventListener(application)
-    ioloop.run_until_complete(application.listener.start())
 
     try:
         http_server = HTTPServer(application)
