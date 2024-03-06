@@ -17,7 +17,11 @@ public class LithologicalDescriptionControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new LithologicalDescriptionController(context, new Mock<ILogger<LithologicalDescription>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+        controller = new LithologicalDescriptionController(context, new Mock<ILogger<LithologicalDescription>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -131,6 +135,7 @@ public class LithologicalDescriptionControllerTest
         var lithologicalDescription = new LithologicalDescription
         {
             Id = id,
+            StratigraphyId = 6000001,
         };
 
         // Upate LithologicalDescription
@@ -181,6 +186,7 @@ public class LithologicalDescriptionControllerTest
         {
             Id = 9_000_010,
             Description = "RANHEN",
+            StratigraphyId = 6000001,
         };
 
         var getResponse = await controller.GetByIdAsync(lithologicalDescription.Id);

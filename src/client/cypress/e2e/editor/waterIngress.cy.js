@@ -7,7 +7,7 @@ describe("Tests for the wateringress editor.", () => {
     // Precondition: Create casing to later link in observation
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id => createCompletion("test wateringress", id, 16000002, true))
+      .then(id => createCompletion("testWateringress", id, 16000002, true))
       .then(response => {
         expect(response).to.have.property("status", 200);
       });
@@ -51,6 +51,7 @@ describe("Tests for the wateringress editor.", () => {
     cy.get('[data-cy="menu"]').click({ force: true });
     cy.contains("span", "DE").click({ force: true });
 
+    cy.wait(1000);
     // create wateringress
     addItem("addWaterIngress");
     cy.wait("@casing_GET");
@@ -65,7 +66,7 @@ describe("Tests for the wateringress editor.", () => {
 
     evaluateDisplayValue("quantity", "viel (> 120 l/min)");
     evaluateDisplayValue("reliability", "fraglich");
-    evaluateDisplayValue("casingName", "casing-1");
+    evaluateDisplayValue("casingName", "testWateringress - casing-1");
 
     // edit wateringress
     startEditing();
@@ -74,7 +75,7 @@ describe("Tests for the wateringress editor.", () => {
     saveForm();
     evaluateDisplayValue("quantity", "mittel (30 - 120 l/min)");
     evaluateDisplayValue("conditions", "frei/ungespannt");
-    evaluateDisplayValue("casingName", "casing-1");
+    evaluateDisplayValue("casingName", "testWateringress - casing-1");
 
     // delete wateringress
     deleteItem();

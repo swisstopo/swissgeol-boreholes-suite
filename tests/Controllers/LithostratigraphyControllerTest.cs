@@ -30,7 +30,11 @@ public class LithostratigraphyControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new LithostratigraphyController(context, new Mock<ILogger<LithostratigraphyLayer>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+        controller = new LithostratigraphyController(context, new Mock<ILogger<LithostratigraphyLayer>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -141,6 +145,7 @@ public class LithostratigraphyControllerTest
         var lithostratigraphy = new LithostratigraphyLayer
         {
             Id = id,
+            StratigraphyId = 6000001,
         };
 
         var response = await controller.EditAsync(lithostratigraphy);

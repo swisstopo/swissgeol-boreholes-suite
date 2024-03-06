@@ -12,11 +12,13 @@ public class HydrotestController : ControllerBase
 {
     private readonly BdmsContext context;
     private readonly ILogger<Hydrotest> logger;
+    private readonly IBoreholeLockService boreholeLockService;
 
-    public HydrotestController(BdmsContext context, ILogger<Hydrotest> logger)
+    public HydrotestController(BdmsContext context, ILogger<Hydrotest> logger, IBoreholeLockService boreholeLockService)
     {
         this.context = context;
         this.logger = logger;
+        this.boreholeLockService = boreholeLockService;
     }
 
     /// <summary>
@@ -32,6 +34,7 @@ public class HydrotestController : ControllerBase
             .Include(w => w.Codelists)
             .Include(w => w.Reliability)
             .Include(f => f.Casing)
+            .ThenInclude(c => c.Completion)
             .Include(w => w.HydrotestResults).ThenInclude(h => h.Parameter)
             .AsNoTracking();
 
@@ -73,12 +76,24 @@ public class HydrotestController : ControllerBase
             return NotFound();
         }
 
+        // Check if associated borehole is locked
+        if (await boreholeLockService.IsBoreholeLockedAsync(((Hydrotest)hydrotestToDelete).BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        {
+            return Problem("The borehole is locked by another user or you are missing permissions.");
+        }
+
         context.Remove(hydrotestToDelete);
         return await SaveChangesAsync(Ok).ConfigureAwait(false);
     }
 
     private async Task<IActionResult> ProcessHydrotestAsync(Hydrotest hydrotest)
     {
+        // Check if associated borehole is locked
+        if (await boreholeLockService.IsBoreholeLockedAsync(hydrotest.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        {
+            return Problem("The borehole is locked by another user or you are missing permissions.");
+        }
+
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);

@@ -11,12 +11,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 {
-    private readonly IBoreholeLockService boreholeLockService;
-
     public StratigraphyController(BdmsContext context, ILogger<Stratigraphy> logger, IBoreholeLockService boreholeLockService)
-        : base(context, logger)
+        : base(context, logger, boreholeLockService)
     {
-        this.boreholeLockService = boreholeLockService;
     }
 
     /// <summary>
@@ -67,17 +64,6 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
     {
         Logger.LogInformation("Copy stratigraphy with id <{StratigraphyId}>", id);
 
-        var user = await Context.Users
-            .Include(u => u.WorkgroupRoles)
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
-            .ConfigureAwait(false);
-
-        if (user == null || !user.WorkgroupRoles.Any(w => w.Role == Role.Editor))
-        {
-            return Unauthorized();
-        }
-
         var stratigraphy = await Context.Stratigraphies
             .Include(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
             .Include(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
@@ -95,6 +81,12 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         if (stratigraphy == null)
         {
             return NotFound();
+        }
+
+        // Check if associated borehole is locked
+        if (await BoreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        {
+            return Problem("The borehole is locked by another user or you are missing permissions.");
         }
 
         // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
@@ -146,6 +138,12 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             return NotFound();
         }
 
+        // Check if associated borehole is locked
+        if (await BoreholeLockService.IsBoreholeLockedAsync(stratigraphyToDelete.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        {
+            return Problem("The borehole is locked by another user or you are missing permissions.");
+        }
+
         Context.Remove(stratigraphyToDelete);
         await Context.SaveChangesAsync().ConfigureAwait(false);
 
@@ -178,12 +176,6 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 
         try
         {
-            // Check if associated borehole is locked
-            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
-            {
-                return Problem("The borehole is locked by another user or you are missing permissions.");
-            }
-
             // If the stratigraphy to create is the first stratigraphy of a borehole,
             // then we need to set it as the primary stratigraphy.
             var hasBoreholeExistingStratigraphy = await Context.Stratigraphies
@@ -220,7 +212,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         try
         {
             // Check if associated borehole is locked
-            if (await boreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+            if (await BoreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user or you are missing permissions.");
             }
@@ -262,7 +254,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         try
         {
             // Check if associated borehole is locked
-            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+            if (await BoreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user or you are missing permissions.");
             }
@@ -297,5 +289,13 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             Logger.LogError(ex, message);
             return Problem(message);
         }
+    }
+
+    /// <inheritdoc />
+    protected override Task<int?> GetBoreholeId(Stratigraphy entity)
+    {
+        if (entity == null) return Task.FromResult<int?>(default);
+
+        return Task.FromResult<int?>(entity.BoreholeId);
     }
 }

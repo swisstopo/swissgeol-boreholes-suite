@@ -10,8 +10,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
 {
-    public FaciesDescriptionController(BdmsContext context, ILogger<FaciesDescription> logger)
-        : base(context, logger)
+    public FaciesDescriptionController(BdmsContext context, ILogger<FaciesDescription> logger, IBoreholeLockService boreholeLockService)
+        : base(context, logger, boreholeLockService)
     {
     }
 
@@ -71,4 +71,16 @@ public class FaciesDescriptionController : BdmsControllerBase<FaciesDescription>
     [Authorize(Policy = PolicyNames.Viewer)]
     public override Task<ActionResult<FaciesDescription>> CreateAsync(FaciesDescription entity)
         => base.CreateAsync(entity);
+
+    /// <inheritdoc />
+    protected override async Task<int?> GetBoreholeId(FaciesDescription entity)
+    {
+        if (entity == null) return default;
+
+        var stratigraphy = await Context.Stratigraphies
+            .AsNoTracking()
+            .SingleOrDefaultAsync(d => d.Id == entity.StratigraphyId)
+            .ConfigureAwait(false);
+        return stratigraphy?.BoreholeId;
+    }
 }

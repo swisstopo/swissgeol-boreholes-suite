@@ -12,12 +12,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class CompletionController : BdmsControllerBase<Completion>
 {
-    private readonly IBoreholeLockService boreholeLockService;
-
     public CompletionController(BdmsContext context, ILogger<Completion> logger, IBoreholeLockService boreholeLockService)
-        : base(context, logger)
+        : base(context, logger, boreholeLockService)
     {
-        this.boreholeLockService = boreholeLockService;
     }
 
     /// <summary>
@@ -68,7 +65,7 @@ public class CompletionController : BdmsControllerBase<Completion>
         try
         {
             // Check if associated borehole is locked
-            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+            if (await BoreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user or you are missing permissions.");
             }
@@ -116,7 +113,7 @@ public class CompletionController : BdmsControllerBase<Completion>
         try
         {
             // Check if associated borehole is locked
-            if (await boreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+            if (await BoreholeLockService.IsBoreholeLockedAsync(entity.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user or you are missing permissions.");
             }
@@ -177,7 +174,7 @@ public class CompletionController : BdmsControllerBase<Completion>
             }
 
             // Check if associated borehole is locked
-            if (await boreholeLockService.IsBoreholeLockedAsync(completion.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+            if (await BoreholeLockService.IsBoreholeLockedAsync(completion.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user or you are missing permissions.");
             }
@@ -230,7 +227,7 @@ public class CompletionController : BdmsControllerBase<Completion>
             }
 
             // Check if associated borehole is locked
-            if (await boreholeLockService.IsBoreholeLockedAsync(completionToDelete.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+            if (await BoreholeLockService.IsBoreholeLockedAsync(completionToDelete.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
             {
                 return Problem("The borehole is locked by another user or you are missing permissions.");
             }
@@ -264,5 +261,13 @@ public class CompletionController : BdmsControllerBase<Completion>
             Logger.LogError(ex, message);
             return Problem(message);
         }
+    }
+
+    /// <inheritdoc />
+    protected override Task<int?> GetBoreholeId(Completion entity)
+    {
+        if (entity == null) return Task.FromResult<int?>(default);
+
+        return Task.FromResult<int?>(entity.BoreholeId);
     }
 }
