@@ -17,7 +17,11 @@ public class FaciesDescriptionControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new FaciesDescriptionController(context, new Mock<ILogger<FaciesDescription>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+        controller = new FaciesDescriptionController(context, new Mock<ILogger<FaciesDescription>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -131,6 +135,7 @@ public class FaciesDescriptionControllerTest
         var faciesDescription = new FaciesDescription
         {
             Id = id,
+            StratigraphyId = 6000001,
         };
 
         // Upate FaciesDescription
@@ -181,6 +186,7 @@ public class FaciesDescriptionControllerTest
         {
             Id = 10_000_010,
             Description = "TAMENL",
+            StratigraphyId = 6000001,
         };
 
         var getResponse = await controller.GetByIdAsync(faciesDescription.Id);

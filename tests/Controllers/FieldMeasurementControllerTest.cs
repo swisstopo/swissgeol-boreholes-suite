@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System.Security.Claims;
+using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
 
@@ -18,16 +18,11 @@ public class FieldMeasurementControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new FieldMeasurementController(context, new Mock<ILogger<FieldMeasurement>>().Object)
-        {
-            ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "TestUser") })),
-                },
-            },
-        };
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+        controller = new FieldMeasurementController(context, new Mock<ILogger<FieldMeasurement>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
