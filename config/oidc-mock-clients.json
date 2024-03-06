@@ -20,7 +20,7 @@
   "AllowedScopes": [
       "openid",
       "profile",
-      "email"
+      "local_groups_scope"
   ],
   "AccessTokenType": "JWT",
   "IdentityTokenLifetime": 3600,
