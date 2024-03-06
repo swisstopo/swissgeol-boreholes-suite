@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { AuthProvider } from "react-oidc-context";
 import { UserManager, WebStorageStateStore } from "oidc-client-ts";
-import { CognitoLogoutHandler } from "./commons/auth/CognitoLogoutHandler.js";
-import { AuthenticationStoreSync } from "./commons/auth/AuthenticationStoreSync";
+import { CognitoLogoutHandler } from "./CognitoLogoutHandler.js";
+import { AuthenticationStoreSync } from "./AuthenticationStoreSync.js";
 
 export const BdmsAuthProvider = props => {
   const [serverConfig, setServerConfig] = useState(undefined);
