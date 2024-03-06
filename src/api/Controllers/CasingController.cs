@@ -11,8 +11,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class CasingController : BdmsControllerBase<Casing>
 {
-    public CasingController(BdmsContext context, ILogger<Casing> logger)
-        : base(context, logger)
+    public CasingController(BdmsContext context, ILogger<Casing> logger, IBoreholeLockService boreholeLockService)
+        : base(context, logger, boreholeLockService)
     {
     }
 
@@ -96,6 +96,13 @@ public class CasingController : BdmsControllerBase<Casing>
 
         try
         {
+            // Check if associated borehole is locked
+            var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
+            if (await BoreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+            {
+                return Problem("The borehole is locked by another user or you are missing permissions.");
+            }
+
             if (!(entity.CasingElements?.Count > 0))
             {
                 var message = "At least one casing element must be defined.";
@@ -143,6 +150,13 @@ public class CasingController : BdmsControllerBase<Casing>
                 return NotFound();
             }
 
+            // Check if associated borehole is locked
+            var boreholeId = await GetBoreholeId(casing).ConfigureAwait(false);
+            if (await BoreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+            {
+                return Problem("The borehole is locked by another user or you are missing permissions.");
+            }
+
             Context.Remove(casing);
             await Context.SaveChangesAsync().ConfigureAwait(false);
             return Ok();
@@ -153,5 +167,17 @@ public class CasingController : BdmsControllerBase<Casing>
             Logger.LogError(ex, message);
             return Problem(message);
         }
+    }
+
+    /// <inheritdoc />
+    protected override async Task<int?> GetBoreholeId(Casing entity)
+    {
+        if (entity == null) return default;
+
+        var completion = await Context.Completions
+            .AsNoTracking()
+            .SingleOrDefaultAsync(c => c.Id == entity.CompletionId)
+            .ConfigureAwait(false);
+        return completion?.BoreholeId;
     }
 }

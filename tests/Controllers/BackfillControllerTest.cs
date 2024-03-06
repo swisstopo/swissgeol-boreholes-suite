@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
 
@@ -17,8 +18,11 @@ public class BackfillControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new BackfillController(context, new Mock<ILogger<Backfill>>().Object);
-        controller.ControllerContext.HttpContext = new DefaultHttpContext();
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+        controller = new BackfillController(context, new Mock<ILogger<Backfill>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]

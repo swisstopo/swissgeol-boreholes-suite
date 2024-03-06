@@ -5,11 +5,12 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class BdmsControllerBase<TEntity> : ControllerBase
+public abstract class BdmsControllerBase<TEntity> : ControllerBase
     where TEntity : IIdentifyable, IChangeTracking, new()
 {
     private readonly BdmsContext context;
     private readonly ILogger<TEntity> logger;
+    private readonly IBoreholeLockService boreholeLockService;
 
     /// <summary>
     /// Gets the <see cref="BdmsContext"/> used by the controller.
@@ -21,11 +22,24 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     /// </summary>
     protected ILogger<TEntity> Logger => logger;
 
-    protected BdmsControllerBase(BdmsContext context, ILogger<TEntity> logger)
+    /// <summary>
+    /// Gets the <see cref="IBoreholeLockService"/> used by the controller.
+    /// </summary>
+    protected IBoreholeLockService BoreholeLockService => boreholeLockService;
+
+    protected BdmsControllerBase(BdmsContext context, ILogger<TEntity> logger, IBoreholeLockService boreholeLockService)
     {
         this.context = context;
         this.logger = logger;
+        this.boreholeLockService = boreholeLockService;
     }
+
+    /// <summary>
+    /// Gets the id of the <see cref="Borehole"/> to which the <paramref name="entity"/> belongs.
+    /// </summary>
+    /// <param name="entity">The <paramref name="entity"/>.</param>
+    /// <returns>The id of the borehole.</returns>
+    protected abstract Task<int?> GetBoreholeId(TEntity entity);
 
     /// <summary>
     /// Asynchronously creates the <paramref name="entity"/> specified.
@@ -34,6 +48,13 @@ public class BdmsControllerBase<TEntity> : ControllerBase
     [HttpPost]
     public virtual async Task<ActionResult<TEntity>> CreateAsync(TEntity entity)
     {
+        // Check if associated borehole is locked
+        var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
+        if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        {
+            return Problem("The borehole is locked by another user or you are missing permissions.");
+        }
+
         await context.AddAsync(entity).ConfigureAwait(false);
         return await SaveChangesAsync(() => Ok(entity)).ConfigureAwait(false);
     }
@@ -48,6 +69,13 @@ public class BdmsControllerBase<TEntity> : ControllerBase
         if (entity == null)
         {
             return BadRequest(ModelState);
+        }
+
+        // Check if associated borehole is locked
+        var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
+        if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        {
+            return Problem("The borehole is locked by another user or you are missing permissions.");
         }
 
         var entityToEdit = (TEntity?)await context.FindAsync(typeof(TEntity), entity.Id).ConfigureAwait(false);
@@ -73,6 +101,13 @@ public class BdmsControllerBase<TEntity> : ControllerBase
         if (entityToDelete == null)
         {
             return NotFound();
+        }
+
+        // Check if associated borehole is locked
+        var boreholeId = await GetBoreholeId((TEntity)entityToDelete).ConfigureAwait(false);
+        if (await boreholeLockService.IsBoreholeLockedAsync(boreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        {
+            return Problem("The borehole is locked by another user or you are missing permissions.");
         }
 
         context.Remove(entityToDelete);

@@ -10,8 +10,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class GroundwaterLevelMeasurementController : BdmsControllerBase<GroundwaterLevelMeasurement>
 {
-    public GroundwaterLevelMeasurementController(BdmsContext context, ILogger<GroundwaterLevelMeasurement> logger)
-        : base(context, logger)
+    public GroundwaterLevelMeasurementController(BdmsContext context, ILogger<GroundwaterLevelMeasurement> logger, IBoreholeLockService boreholeLockService)
+        : base(context, logger, boreholeLockService)
     {
     }
 
@@ -52,4 +52,12 @@ public class GroundwaterLevelMeasurementController : BdmsControllerBase<Groundwa
     [Authorize(Policy = PolicyNames.Viewer)]
     public override Task<ActionResult<GroundwaterLevelMeasurement>> CreateAsync(GroundwaterLevelMeasurement entity)
         => base.CreateAsync(entity);
+
+    /// <inheritdoc />
+    protected override Task<int?> GetBoreholeId(GroundwaterLevelMeasurement entity)
+    {
+        if (entity == null) return Task.FromResult<int?>(default);
+
+        return Task.FromResult<int?>(entity.BoreholeId);
+    }
 }

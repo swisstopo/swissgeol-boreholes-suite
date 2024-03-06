@@ -17,7 +17,11 @@ public class LayerControllerTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        controller = new LayerController(context, new Mock<ILogger<Layer>>().Object) { ControllerContext = GetControllerContextAdmin() };
+        var boreholeLockServiceMock = new Mock<IBoreholeLockService>(MockBehavior.Strict);
+        boreholeLockServiceMock
+            .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
+            .ReturnsAsync(false);
+        controller = new LayerController(context, new Mock<ILogger<Layer>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
