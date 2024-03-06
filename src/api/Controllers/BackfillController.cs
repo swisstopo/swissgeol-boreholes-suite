@@ -23,7 +23,7 @@ public class BackfillController : BdmsControllerBase<Backfill>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Backfill>> GetAsync([FromQuery] int? completionId = null)
     {
-        var backfills = GetBackfills();
+        var backfills = GetBackfillsWithIncludes();
 
         if (completionId != null)
         {
@@ -40,7 +40,7 @@ public class BackfillController : BdmsControllerBase<Backfill>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Backfill>> GetByIdAsync(int id)
     {
-        var backfill = await GetBackfills().SingleOrDefaultAsync(i => i.Id == id).ConfigureAwait(false);
+        var backfill = await GetBackfillsWithIncludes().SingleOrDefaultAsync(i => i.Id == id).ConfigureAwait(false);
 
         if (backfill == null)
         {
@@ -65,7 +65,7 @@ public class BackfillController : BdmsControllerBase<Backfill>
     public override Task<IActionResult> DeleteAsync(int id)
         => base.DeleteAsync(id);
 
-    private IQueryable<Backfill> GetBackfills()
+    private IQueryable<Backfill> GetBackfillsWithIncludes()
     {
         return Context.Backfills
             .Include(b => b.Material)
