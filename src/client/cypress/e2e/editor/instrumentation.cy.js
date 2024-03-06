@@ -23,7 +23,7 @@ describe("Instrumentation crud tests", () => {
     startBoreholeEditing();
   });
 
-  it("add, edit and delete instrumentations", () => {
+  it("adds, edits and deletes instrumentations", () => {
     // Precondition: Create casing to later link in instrumentation
     cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
@@ -88,7 +88,7 @@ describe("Instrumentation crud tests", () => {
     cy.contains("From depth").should("not.exist");
   });
 
-  it("sort instrumentation", () => {
+  it("sorts instrumentation", () => {
     cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 

@@ -23,7 +23,7 @@ describe("Backfill crud tests", () => {
     startBoreholeEditing();
   });
 
-  it("add, edit and delete backfills", () => {
+  it("adds, edits and deletes backfills", () => {
     // Precondition: Create casing to later link in instrumentation
     cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");
@@ -82,7 +82,7 @@ describe("Backfill crud tests", () => {
     cy.contains("From depth").should("not.exist");
   });
 
-  it("sort backfill", () => {
+  it("sorts backfill", () => {
     // Precondition: Create casing to later link in instrumentation
     cy.get("[data-cy=completion-content-header-tab-casing]").click();
     cy.wait("@casing_GET");

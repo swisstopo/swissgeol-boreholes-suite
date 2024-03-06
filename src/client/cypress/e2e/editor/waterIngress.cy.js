@@ -82,7 +82,7 @@ describe("Tests for the wateringress editor.", () => {
     cy.get("body").should("not.contain", "mittel (30 - 120 l/min)");
   });
 
-  it("sort wateringress", () => {
+  it("sorts wateringress", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();

@@ -75,7 +75,7 @@ describe("Tests for the field measurement editor.", () => {
     cy.get("body").should("not.contain", "Pumpprobe");
   });
 
-  it("sort fieldmeasurement", () => {
+  it("sorts fieldmeasurement", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
