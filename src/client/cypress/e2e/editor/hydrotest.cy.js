@@ -12,7 +12,7 @@ describe("Tests for the hydrotest editor.", () => {
   it("Creates, updates and deletes hydrotests", () => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id => createCompletion("test hydrotest", id, 16000002, true))
+      .then(id => createCompletion("testHydrotest", id, 16000002, true))
       .then(response => {
         expect(response).to.have.property("status", 200);
       });
@@ -60,7 +60,7 @@ describe("Tests for the hydrotest editor.", () => {
     saveForm();
     cy.wait("@hydrotest_GET");
     evaluateDisplayValue("reliability", "fraglich");
-    evaluateDisplayValue("casingName", "casing-1");
+    evaluateDisplayValue("casingName", "testHydrotest - casing-1");
     evaluateDisplayValue("testKind", "Pump-/Injektionsversuch, variable Rate");
 
     // update hydrotest
@@ -88,7 +88,7 @@ describe("Tests for the hydrotest editor.", () => {
     saveForm();
     cy.wait("@hydrotest_GET");
 
-    evaluateDisplayValue("casingName", "casing-1");
+    evaluateDisplayValue("casingName", "testHydrotest - casing-1");
     evaluateDisplayValue("testKind", "Pump-/Injektionsversuch, variable Rate");
     evaluateDisplayValue("flowDirection", ["Entnahme", "Injektion"]);
     evaluateDisplayValue("evaluationMethod", ["stationär", "instationär"]);

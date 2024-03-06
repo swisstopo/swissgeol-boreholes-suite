@@ -55,7 +55,12 @@ const ObservationDisplay = props => {
               type={FormDisplayType.Boolean}
             />
           </StackFullWidth>
-          <FormDisplay label="casingName" value={observation?.casingId ? observation?.casing?.name : null} />
+          <FormDisplay
+            label="casingName"
+            value={
+              observation?.casingId ? `${observation?.casing?.completion.name} - ${observation?.casing?.name}` : null
+            }
+          />
           <FormDisplay label="comment" value={observation?.comment} />
         </>
       )}

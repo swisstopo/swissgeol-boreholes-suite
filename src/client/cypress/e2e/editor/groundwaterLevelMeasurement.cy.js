@@ -6,7 +6,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
   it("Creates, updates and deletes groundwater level measurement", () => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id => createCompletion("test hydrotest", id, 16000002, true))
+      .then(id => createCompletion("testGroundwaterLevel", id, 16000002, true))
       .then(response => {
         expect(response).to.have.property("status", 200);
       });
@@ -57,7 +57,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     // close editing mask
     saveForm();
-    evaluateDisplayValue("casingName", "casing-1");
+    evaluateDisplayValue("casingName", "testGroundwaterLevel - casing-1");
     evaluateDisplayValue("gwlm_kind", "Manometer");
     evaluateDisplayValue("gwlm_levelm", "789.12");
     evaluateDisplayValue("gwlm_levelmasl", "5.4567");
@@ -68,7 +68,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     setSelect("kindId", 1);
     saveForm();
     evaluateDisplayValue("gwlm_kind", "Drucksonde");
-    evaluateDisplayValue("casingName", "casing-1");
+    evaluateDisplayValue("casingName", "testGroundwaterLevel - casing-1");
 
     // delete groundwater level measurement
     deleteItem();
