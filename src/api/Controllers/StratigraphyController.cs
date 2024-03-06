@@ -64,17 +64,6 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
     {
         Logger.LogInformation("Copy stratigraphy with id <{StratigraphyId}>", id);
 
-        var user = await Context.Users
-            .Include(u => u.WorkgroupRoles)
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
-            .ConfigureAwait(false);
-
-        if (user == null || !user.WorkgroupRoles.Any(w => w.Role == Role.Editor))
-        {
-            return Unauthorized();
-        }
-
         var stratigraphy = await Context.Stratigraphies
             .Include(s => s.Layers).ThenInclude(l => l.LayerColorCodes)
             .Include(s => s.Layers).ThenInclude(l => l.LayerDebrisCodes)
@@ -92,6 +81,12 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
         if (stratigraphy == null)
         {
             return NotFound();
+        }
+
+        // Check if associated borehole is locked
+        if (await BoreholeLockService.IsBoreholeLockedAsync(stratigraphy.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        {
+            return Problem("The borehole is locked by another user or you are missing permissions.");
         }
 
         // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.

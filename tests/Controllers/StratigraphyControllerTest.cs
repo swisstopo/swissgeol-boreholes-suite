@@ -171,24 +171,6 @@ public class StratigraphyControllerTest
     }
 
     [TestMethod]
-    public async Task CopyWithUnknownUser()
-    {
-        controller.HttpContext.SetClaimsPrincipal("NON-EXISTENT-NAME", PolicyNames.Admin);
-        var result = await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
-        ActionResultAssert.IsUnauthorized(result.Result);
-    }
-
-    [TestMethod]
-    public async Task CopyWithUserNotSet()
-    {
-        controller.ControllerContext.HttpContext.User = null;
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () =>
-        {
-            await controller.CopyAsync(StratigraphyId).ConfigureAwait(false);
-        });
-    }
-
-    [TestMethod]
     public async Task CopyWithNonAdminUser()
     {
         controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
