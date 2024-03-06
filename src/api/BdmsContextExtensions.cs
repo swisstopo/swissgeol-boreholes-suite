@@ -437,7 +437,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
             .RuleFor(o => o.UpdatedBy, _ => default!)
-            .RuleFor(o => o.IsLast, f => lithologicalDescription_ids % 10 == 9)
             .RuleFor(o => o.Id, f => lithologicalDescription_ids++);
 
         LithologicalDescription SeededLithologicalDescriptions(int seed) => fakelithologicalDescriptions.UseSeed(seed).Generate();
@@ -470,7 +469,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
             .RuleFor(o => o.UpdatedBy, _ => default!)
-            .RuleFor(o => o.IsLast, f => faciesDescription_ids % 10 == 9)
             .RuleFor(o => o.Id, f => faciesDescription_ids++);
 
         FaciesDescription SeededFaciesDescriptions(int seed) => fakeFaciesDescriptions.UseSeed(seed).Generate();
@@ -502,7 +500,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
             .RuleFor(o => o.UpdatedBy, _ => default!)
-            .RuleFor(o => o.IsLast, f => chronostratigraphy_ids % 10 == 9)
             .RuleFor(o => o.Id, f => chronostratigraphy_ids++);
 
         ChronostratigraphyLayer SeededChronostratigraphies(int seed) => fakeChronostratigraphies.UseSeed(seed).Generate();
@@ -534,7 +531,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
             .RuleFor(o => o.UpdatedBy, _ => default!)
-            .RuleFor(o => o.IsLast, f => lithostratigraphy_ids % 10 == 9)
             .RuleFor(o => o.Id, f => lithostratigraphy_ids++);
 
         LithostratigraphyLayer SeededLithostratigraphies(int seed) => fakeLithostratigraphies.UseSeed(seed).Generate();

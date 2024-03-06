@@ -24,9 +24,4 @@ public interface ILayerDescription
     /// Gets or sets the <see cref="ILayerDescription"/>'s lower depth.
     /// </summary>
     public double? ToDepth { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether this <see cref="ILayerDescription"/> is the last, deepest description.
-    /// </summary>
-    public bool? IsLast { get; set; }
 }
