@@ -31,28 +31,47 @@ describe("Tests for the layer form.", () => {
         cy.wait("@update-layer");
       });
 
+    const expectedValues = [
+      "fat clay",
+      "elastic silt",
+      "cubic",
+      "not specified",
+      "sharp",
+      "not specified",
+      "earth",
+      "not specified",
+      "erratic block",
+      "not specified",
+      "beige",
+      "not specified",
+    ];
+
     const multipleDropdownValues = [];
     cy.get(".ui.fluid.multiple.selection.dropdown").each(el => {
       const firstValue = el[0].children[0].text;
       const secondValue = el[0].children[1].text;
       multipleDropdownValues.push(firstValue, secondValue);
       if (multipleDropdownValues.length === 12) {
-        expect(multipleDropdownValues).to.deep.eq([
-          "fat clay",
-          "elastic silt",
-          "cubic",
-          "not specified",
-          "sharp",
-          "not specified",
-          "earth",
-          "not specified",
-          "erratic block",
-          "not specified",
-          "beige",
-          "not specified",
-        ]);
+        expect(multipleDropdownValues).to.deep.eq(expectedValues);
       }
     });
+
+    // click reset on all multiselect dropdowns
+    cy.get('[aria-multiselectable="true"]')
+      .should("have.length", 6)
+      .each(el => {
+        cy.wrap(el).scrollIntoView().click({ force: true }).find('[role="option"]').eq(0).click();
+        cy.wait("@update-layer");
+      });
+
+    // click somewhere else to close the last dropdown
+    cy.get('[data-cy="notes"]').click();
+
+    // veryfiy that the dropdowns are reset
+    [...new Set(expectedValues)].forEach(word => {
+      cy.contains(word).should("not.be.visible");
+    });
+
     cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
 
     // stop editing
