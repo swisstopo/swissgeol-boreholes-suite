@@ -1,12 +1,14 @@
-﻿using System.Security.Claims;
+﻿using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace BDMS.Authentication;
 
 /// <summary>
 /// Middleware to authenticate requests to the legacy api before proxying.
 /// </summary>
+/// <param name="authorizationService">The authorization service used to check for policies.</param>
 /// <param name="logger">The logger for the instance.</param>
-public class LegacyApiAuthenticationMiddleware(ILogger<LegacyApiAuthenticationMiddleware> logger) : IMiddleware
+public class LegacyApiAuthenticationMiddleware(IAuthorizationService authorizationService, ILogger<LegacyApiAuthenticationMiddleware> logger) : IMiddleware
 {
     private readonly ILogger<LegacyApiAuthenticationMiddleware> logger = logger;
 
@@ -15,8 +17,10 @@ public class LegacyApiAuthenticationMiddleware(ILogger<LegacyApiAuthenticationMi
     {
         if (context.Request.Path.StartsWithSegments(new PathString("/api/v1"), StringComparison.OrdinalIgnoreCase))
         {
+            var userAuthorized = (await authorizationService.AuthorizeAsync(context.User, PolicyNames.Viewer).ConfigureAwait(false)).Succeeded;
             var subjectId = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            if (subjectId is not null)
+
+            if (userAuthorized && subjectId is not null)
             {
                 context.Request.Headers.Authorization = subjectId.Value;
 
