@@ -8,7 +8,7 @@ import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons";
-import { extractCasingDepth } from "./casingDepthExtraction.jsx";
+import { extractCasingDepth } from "./casingUtils";
 
 const CasingInput = props => {
   const { item, setSelected, parentId, addData, updateData } = props;

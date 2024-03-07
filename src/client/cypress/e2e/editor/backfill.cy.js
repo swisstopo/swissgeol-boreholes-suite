@@ -1,6 +1,6 @@
 import { loginAsAdmin, createBorehole, createCompletion, startBoreholeEditing } from "../helpers/testHelpers";
-import { setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
+import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
+import { addItem, startEditing, saveForm, cancelEditing, deleteItem } from "../helpers/buttonHelpers";
 
 describe("Backfill crud tests", () => {
   beforeEach(() => {
@@ -69,13 +69,22 @@ describe("Backfill crud tests", () => {
     cy.wait("@casing_GET");
 
     setInput("fromDepth", "222");
-    setSelect("casingId", 1);
+    setSelect("casingId", 2);
 
     // close editing mask
     saveForm();
     cy.contains("casing-1");
     cy.contains("222");
     cy.contains("inactive");
+
+    startEditing();
+    cy.wait("@casing_GET");
+    setSelect("casingId", 1);
+    saveForm();
+    evaluateDisplayValue("casingName", "open hole");
+    startEditing();
+    evaluateSelect("casingId", "-1");
+    cancelEditing();
 
     // delete backfill
     deleteItem();
@@ -120,7 +129,7 @@ describe("Backfill crud tests", () => {
     setInput("toDepth", "10");
     setSelect("kindId", 2);
     setSelect("materialId", 1);
-    setSelect("casingId", 2);
+    setSelect("casingId", 3);
     saveForm();
 
     cy.wait(1000);
@@ -131,7 +140,7 @@ describe("Backfill crud tests", () => {
     setInput("toDepth", "12");
     setSelect("kindId", 2);
     setSelect("materialId", 1);
-    setSelect("casingId", 1);
+    setSelect("casingId", 2);
     saveForm();
 
     cy.get('[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]').contains("12");
@@ -140,7 +149,7 @@ describe("Backfill crud tests", () => {
     cy.get('[data-cy="backfill-card.0"] [data-cy="edit-button"]').click({
       force: true,
     });
-    setSelect("casingId", 2);
+    setSelect("casingId", 3);
     saveForm();
 
     cy.get('[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]').contains("10");

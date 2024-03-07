@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240307075739_AddIsOpenBorehole")]
+    partial class AddIsOpenBorehole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -620,6 +623,10 @@ namespace BDMS.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
 
+                    b.Property<bool?>("IsLast")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_last");
+
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("id_sty_fk");
@@ -911,6 +918,10 @@ namespace BDMS.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
 
+                    b.Property<bool?>("IsLast")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_last");
+
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("id_sty_fk");
@@ -938,6 +949,41 @@ namespace BDMS.Migrations
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("facies_description", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Feedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id_feb");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_feb");
+
+                    b.Property<bool?>("IsFrw")
+                        .HasColumnType("boolean")
+                        .HasColumnName("frw_feb");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("text")
+                        .HasColumnName("message_feb");
+
+                    b.Property<string>("Tag")
+                        .HasColumnType("text")
+                        .HasColumnName("tag_feb");
+
+                    b.Property<string>("User")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_feb");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("feedbacks", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.File", b =>
@@ -1445,6 +1491,10 @@ namespace BDMS.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
 
+                    b.Property<bool?>("IsLast")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_last");
+
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("id_sty_fk");
@@ -1494,6 +1544,10 @@ namespace BDMS.Migrations
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
+
+                    b.Property<bool?>("IsLast")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_last");
 
                     b.Property<int?>("LithostratigraphyId")
                         .HasColumnType("integer")
@@ -2306,7 +2360,7 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Kind")
                         .WithMany()
                         .HasForeignKey("KindId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
@@ -2400,7 +2454,7 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Parameter")
                         .WithMany()
                         .HasForeignKey("ParameterId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
@@ -2767,7 +2821,7 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Reliability")
                         .WithMany()
                         .HasForeignKey("ReliabilityId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
@@ -2862,13 +2916,13 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Parameter")
                         .WithMany()
                         .HasForeignKey("ParameterId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.Codelist", "SampleType")
                         .WithMany()
                         .HasForeignKey("SampleTypeId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Parameter");
@@ -2887,7 +2941,7 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Kind")
                         .WithMany()
                         .HasForeignKey("KindId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Kind");
@@ -2917,7 +2971,7 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Quantity")
                         .WithMany()
                         .HasForeignKey("QuantityId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Conditions");

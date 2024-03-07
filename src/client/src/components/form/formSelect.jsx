@@ -10,7 +10,7 @@ export const FormSelect = props => {
 
   var menuItems = [];
   if (required !== true) {
-    menuItems.push({ key: "0", value: null, label: t("reset"), italic: true });
+    menuItems.push({ key: "0", value: "", label: t("reset"), italic: true });
   }
   if (values) {
     values.forEach(value => {

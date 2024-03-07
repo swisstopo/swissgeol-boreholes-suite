@@ -65,6 +65,12 @@ public class Instrumentation : IChangeTracking, IIdentifyable
     public Codelist? Status { get; set; }
 
     /// <summary>
+    /// Gets or sets whether or not the <see cref="Instrumentation"/> belongs to an open borehole.
+    /// </summary>
+    [Column("is_open_borehole")]
+    public bool IsOpenBorehole { get; set; }
+
+    /// <summary>
     /// Gets or sets id of the <see cref="Instrumentation"/>'s casing.
     /// </summary>
     [Column("casing_id")]

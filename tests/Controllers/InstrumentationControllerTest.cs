@@ -94,6 +94,39 @@ public class InstrumentationControllerTest
     }
 
     [TestMethod]
+    public async Task CreateWithOpenBoreholeAsync()
+    {
+        var completionId = context.Completions.First().Id;
+        var instrumentation = new Instrumentation()
+        {
+            Name = "REDWALK",
+            CompletionId = completionId,
+            StatusId = context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationStatusSchema).Id,
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationTypeSchema).Id,
+            CasingId = 1,
+            IsOpenBorehole = true,
+            Notes = "ARGONSHIP",
+            FromDepth = 0,
+            ToDepth = 100,
+        };
+
+        var response = await controller.CreateAsync(instrumentation);
+        ActionResultAssert.IsOkObjectResult<Instrumentation>(response.Result);
+
+        instrumentation = await context.Instrumentations.FindAsync(instrumentation.Id);
+        Assert.IsNotNull(instrumentation);
+        Assert.AreEqual(completionId, instrumentation.CompletionId);
+        Assert.IsTrue(instrumentation.IsOpenBorehole);
+        Assert.AreEqual(null, instrumentation.CasingId);
+        Assert.AreEqual("REDWALK", instrumentation.Name);
+        Assert.AreEqual("ARGONSHIP", instrumentation.Notes);
+        Assert.AreEqual(0, instrumentation.FromDepth);
+        Assert.AreEqual(100, instrumentation.ToDepth);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationStatusSchema).Id, instrumentation.StatusId);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.InstrumentationTypeSchema).Id, instrumentation.KindId);
+    }
+
+    [TestMethod]
     public async Task EditAsync()
     {
         var instrumentation = context.Instrumentations.First();

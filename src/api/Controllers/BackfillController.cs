@@ -52,13 +52,21 @@ public class BackfillController : BdmsControllerBase<Backfill>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<ActionResult<Backfill>> CreateAsync(Backfill entity)
-        => base.CreateAsync(entity);
+    public override async Task<ActionResult<Backfill>> CreateAsync(Backfill entity)
+    {
+        var backfill = ProcessBackfill(entity);
+
+        return await base.CreateAsync(backfill).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<ActionResult<Backfill>> EditAsync(Backfill entity)
-        => base.EditAsync(entity);
+    public override async Task<ActionResult<Backfill>> EditAsync(Backfill entity)
+    {
+        var backfill = ProcessBackfill(entity);
+
+        return await base.EditAsync(backfill).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
@@ -84,5 +92,15 @@ public class BackfillController : BdmsControllerBase<Backfill>
             .SingleOrDefaultAsync(b => b.Id == entity.CompletionId)
             .ConfigureAwait(false);
         return completion?.BoreholeId;
+    }
+
+    private Backfill ProcessBackfill(Backfill backfill)
+    {
+        if (backfill.IsOpenBorehole)
+        {
+            backfill.CasingId = null;
+        }
+
+        return backfill;
     }
 }

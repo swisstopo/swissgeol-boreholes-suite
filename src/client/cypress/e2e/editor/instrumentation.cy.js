@@ -1,6 +1,6 @@
 import { loginAsAdmin, createBorehole, startBoreholeEditing, createCompletion } from "../helpers/testHelpers";
-import { setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
+import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
+import { addItem, startEditing, saveForm, cancelEditing, deleteItem } from "../helpers/buttonHelpers";
 
 describe("Instrumentation crud tests", () => {
   beforeEach(() => {
@@ -75,13 +75,22 @@ describe("Instrumentation crud tests", () => {
     // We need the casings for the casing name dropdown
     cy.wait("@casing_GET");
     setInput("fromDepth", "222");
-    setSelect("casingId", 1);
+    setSelect("casingId", 2);
 
     // close editing mask
     saveForm();
     cy.contains("casing-1");
     cy.contains("222");
     cy.contains("inactive");
+
+    startEditing();
+    cy.wait("@casing_GET");
+    setSelect("casingId", 1);
+    saveForm();
+    evaluateDisplayValue("casingName", "open hole");
+    startEditing();
+    evaluateSelect("casingId", "-1");
+    cancelEditing();
 
     // delete instrumentation
     deleteItem();

@@ -92,6 +92,37 @@ public class BackfillControllerTest
     }
 
     [TestMethod]
+    public async Task CreateWithOpenBoreholeAsync()
+    {
+        var completionId = context.Completions.First().Id;
+        var backfill = new Backfill()
+        {
+            CompletionId = completionId,
+            MaterialId = context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Id,
+            KindId = context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillTypeSchema).Id,
+            CasingId = 1,
+            IsOpenBorehole = true,
+            Notes = "ARGONSHIP",
+            FromDepth = 0,
+            ToDepth = 100,
+        };
+
+        var response = await controller.CreateAsync(backfill);
+        ActionResultAssert.IsOkObjectResult<Backfill>(response.Result);
+
+        backfill = await context.Backfills.FindAsync(backfill.Id);
+        Assert.IsNotNull(backfill);
+        Assert.AreEqual(completionId, backfill.CompletionId);
+        Assert.IsTrue(backfill.IsOpenBorehole);
+        Assert.AreEqual(null, backfill.CasingId);
+        Assert.AreEqual("ARGONSHIP", backfill.Notes);
+        Assert.AreEqual(0, backfill.FromDepth);
+        Assert.AreEqual(100, backfill.ToDepth);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillMaterialSchema).Id, backfill.MaterialId);
+        Assert.AreEqual(context.Codelists.First(c => c.Schema == CompletionSchemas.BackfillTypeSchema).Id, backfill.KindId);
+    }
+
+    [TestMethod]
     public async Task EditAsync()
     {
         var backfill = context.Backfills.First();
