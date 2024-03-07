@@ -57,7 +57,9 @@ public class Layer : ILayerDescription, IChangeTracking, IIdentifyable
     [Column("depth_to_lay")]
     public double? ToDepth { get; set; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets or sets whether this <see cref="Layer"/> is the last.
+    /// </summary>
     [Column("last_lay")]
     public bool? IsLast { get; set; }
 
