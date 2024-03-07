@@ -27,15 +27,6 @@ define("pg_host", default=None, help="PostgreSQL database host")
 define("pg_port", default="5432", help="PostgreSQL database port")
 define("pg_database", default=None, help="PostgreSQL database name")
 
-# SMTP send mail configuration
-define("smtp_recipients", default=None, help="SMTP comma separated recipients email addresses", type=str)
-define("smtp_sender", default=None, help="SMTP sender respectively username", type=str)
-define("smtp_password", default=None, help="SMTP password", type=str)
-define("smtp_server", default=None, help="SMTP server address", type=str)
-define("smtp_port", default=25, help="SMTP server port", type=int)
-define("smtp_tls", default=False, help="SMTP server supports direct connection via TLS/SSL", type=bool)
-define("smtp_starttls", default=False, help="SMTP servers support the STARTTLS extension", type=bool)
-
 # Ordered list of upgradable versions
 versions = [
     "1.0.0",
@@ -215,16 +206,6 @@ if __name__ == "__main__":
         (r"/api/v1/geoapi/wms/swisstopo", Wms),
 
     ], **settings)
-
-    # Check for missing SMTP environment configuration options
-    if (
-        not options.smtp_sender or
-        not options.smtp_server or
-        not options.smtp_recipients
-    ):
-        raise Exception(
-            "Missing mandatory SMTP environment configuration options (SMTP_SENDER|SMTP_SERVER|SMTP_RECIPIENTS)"
-        )
 
     # Init database postgresql connection pool
     application.pool = ioloop.run_until_complete(get_conn())
