@@ -47,6 +47,7 @@
 
 - Ensure hydrogeology components are loaded properly when refreshed.
 - Fix translations for _new_ buttons.
+- Fixed delete behavior for non-nullable foreign keys of type _Codelist_.
 
 ## v2.0.506 - 2023-12-21
 

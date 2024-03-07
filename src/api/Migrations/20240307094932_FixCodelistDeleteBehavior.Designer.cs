@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240307094932_FixCodelistDeleteBehavior")]
+    partial class FixCodelistDeleteBehavior
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -616,6 +619,10 @@ namespace BDMS.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
 
+                    b.Property<bool?>("IsLast")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_last");
+
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("id_sty_fk");
@@ -906,6 +913,10 @@ namespace BDMS.Migrations
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
+
+                    b.Property<bool?>("IsLast")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_last");
 
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
@@ -1437,6 +1448,10 @@ namespace BDMS.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
 
+                    b.Property<bool?>("IsLast")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_last");
+
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
                         .HasColumnName("id_sty_fk");
@@ -1486,6 +1501,10 @@ namespace BDMS.Migrations
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
+
+                    b.Property<bool?>("IsLast")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_last");
 
                     b.Property<int?>("LithostratigraphyId")
                         .HasColumnType("integer")
