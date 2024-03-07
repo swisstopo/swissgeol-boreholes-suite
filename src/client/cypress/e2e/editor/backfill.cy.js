@@ -69,7 +69,7 @@ describe("Backfill crud tests", () => {
     cy.wait("@casing_GET");
 
     setInput("fromDepth", "222");
-    setSelect("casingId", 1);
+    setSelect("casingId", 2);
 
     // close editing mask
     saveForm();
@@ -120,7 +120,7 @@ describe("Backfill crud tests", () => {
     setInput("toDepth", "10");
     setSelect("kindId", 2);
     setSelect("materialId", 1);
-    setSelect("casingId", 2);
+    setSelect("casingId", 3);
     saveForm();
 
     cy.wait(1000);
@@ -131,7 +131,7 @@ describe("Backfill crud tests", () => {
     setInput("toDepth", "12");
     setSelect("kindId", 2);
     setSelect("materialId", 1);
-    setSelect("casingId", 1);
+    setSelect("casingId", 2);
     saveForm();
 
     cy.get('[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]').contains("12");
@@ -140,7 +140,7 @@ describe("Backfill crud tests", () => {
     cy.get('[data-cy="backfill-card.0"] [data-cy="edit-button"]').click({
       force: true,
     });
-    setSelect("casingId", 2);
+    setSelect("casingId", 3);
     saveForm();
 
     cy.get('[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]').contains("10");

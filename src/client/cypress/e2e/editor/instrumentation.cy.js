@@ -75,7 +75,7 @@ describe("Instrumentation crud tests", () => {
     // We need the casings for the casing name dropdown
     cy.wait("@casing_GET");
     setInput("fromDepth", "222");
-    setSelect("casingId", 1);
+    setSelect("casingId", 2);
 
     // close editing mask
     saveForm();
