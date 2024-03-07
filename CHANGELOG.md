@@ -7,6 +7,7 @@
 - Reusable form components.
 - Quality attribute for stratigraphy.
 - Support Amazon Cognito logout flow.
+- IsOpenBorehole option for instrumentation and backfill
 
 ### Changed
 
