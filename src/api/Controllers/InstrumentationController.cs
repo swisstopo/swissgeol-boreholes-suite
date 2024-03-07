@@ -69,7 +69,7 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
             entity.CasingId = null;
         }
 
-        return await base.CreateAsync(entity);
+        return await base.CreateAsync(entity).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -81,7 +81,7 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
             entity.CasingId = null;
         }
 
-        return await base.EditAsync(entity);
+        return await base.EditAsync(entity).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
