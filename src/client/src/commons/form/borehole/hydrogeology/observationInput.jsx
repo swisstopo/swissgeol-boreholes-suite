@@ -63,7 +63,7 @@ const ObservationInput = props => {
       <StackHalfWidth direction="row">
         <FormSelect
           fieldName="casingId"
-          label="casing"
+          label="casingName"
           selected={observation?.casingId}
           disabled={!casings?.length}
           values={casings
