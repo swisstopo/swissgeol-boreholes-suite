@@ -2,10 +2,11 @@ import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import { StackHalfWidth } from "../../../../components/baseComponents.js";
-import { getCasingName } from "./casingUtils";
+import { useGetCasingName } from "./casingUtils";
 
 const BackfillDisplay = props => {
   const { item, selected, setSelected, isEditable, deleteData } = props;
+  const getCasingName = useGetCasingName();
 
   return (
     <DataDisplayCard

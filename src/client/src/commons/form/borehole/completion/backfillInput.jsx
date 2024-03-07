@@ -5,12 +5,13 @@ import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
 import { StackFullWidth, StackHalfWidth } from "../../../../components/baseComponents.js";
-import { getCasingOptions, prepareCasingDataForSubmit } from "./casingUtils";
+import { useGetCasingOptions, prepareCasingDataForSubmit } from "./casingUtils";
 
 const BackfillInput = ({ item, setSelected, parentId, addData, updateData }) => {
   const domains = useDomains();
   const { i18n } = useTranslation();
   const [casings, setCasings] = useState([]);
+  const getCasingOptions = useGetCasingOptions();
 
   const prepareFormDataForSubmit = data => {
     data = prepareCasingDataForSubmit(data);

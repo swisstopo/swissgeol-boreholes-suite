@@ -5,12 +5,13 @@ import { useDomains, getCasings } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
-import { getCasingOptions, prepareCasingDataForSubmit } from "./casingUtils";
+import { useGetCasingOptions, prepareCasingDataForSubmit } from "./casingUtils";
 
 const InstrumentationInput = ({ item, setSelected, parentId, addData, updateData }) => {
   const domains = useDomains();
   const { i18n } = useTranslation();
   const [casings, setCasings] = useState([]);
+  const getCasingOptions = useGetCasingOptions();
 
   const prepareFormDataForSubmit = data => {
     data = prepareCasingDataForSubmit(data);

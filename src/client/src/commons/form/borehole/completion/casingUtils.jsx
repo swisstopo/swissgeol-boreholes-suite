@@ -16,32 +16,41 @@ export const extractCasingDepth = casing => {
   return { min, max };
 };
 
-export const getCasingName = item => {
+export const useGetCasingName = () => {
   const { t } = useTranslation();
 
-  if (item?.isOpenBorehole) {
-    return t("openBorehole");
-  } else if (item?.casingId) {
-    return item?.casing?.name;
-  }
-  return null;
+  const getCasingName = item => {
+    if (item?.isOpenBorehole) {
+      return t("openBorehole");
+    } else if (item?.casingId) {
+      return item?.casing?.name;
+    }
+    return null;
+  };
+
+  return getCasingName;
 };
 
-export const getCasingOptions = casings => {
+export const useGetCasingOptions = () => {
   const { t } = useTranslation();
-  var options = [{ key: -1, name: t("openBorehole") }];
-  casings
-    .sort((a, b) => {
-      if (a.name !== b.name) {
-        return a.name < b.name ? -1 : 1;
-      } else {
-        return 0;
-      }
-    })
-    .forEach(casing => {
-      options.push({ key: casing.id, name: casing.name });
-    });
-  return options;
+
+  const getCasingOptions = casings => {
+    var options = [{ key: -1, name: t("openBorehole") }];
+    casings
+      .sort((a, b) => {
+        if (a.name !== b.name) {
+          return a.name < b.name ? -1 : 1;
+        } else {
+          return 0;
+        }
+      })
+      .forEach(casing => {
+        options.push({ key: casing.id, name: casing.name });
+      });
+    return options;
+  };
+
+  return getCasingOptions;
 };
 
 export const prepareCasingDataForSubmit = data => {
