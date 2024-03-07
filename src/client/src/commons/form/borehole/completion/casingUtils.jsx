@@ -25,7 +25,7 @@ export const useGetCasingName = () => {
   const { t } = useTranslation();
 
   /**
-   * Gets the name of the casing, or if the the item references an open borehole it returns the open borehole string
+   * Gets the name of the casing; or if the item references an open borehole, it returns the open borehole string
    * @param {any} item An object that references a casing
    * @returns The name to be displayed
    */
