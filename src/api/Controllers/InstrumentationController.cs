@@ -64,24 +64,18 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
     [Authorize(Policy = PolicyNames.Viewer)]
     public override async Task<ActionResult<Instrumentation>> CreateAsync(Instrumentation entity)
     {
-        if (entity.IsOpenBorehole)
-        {
-            entity.CasingId = null;
-        }
+        var instrumentation = ProcessInstrumentation(entity);
 
-        return await base.CreateAsync(entity).ConfigureAwait(false);
+        return await base.CreateAsync(instrumentation).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
     public override async Task<ActionResult<Instrumentation>> EditAsync(Instrumentation entity)
     {
-        if (entity.IsOpenBorehole)
-        {
-            entity.CasingId = null;
-        }
+        var instrumentation = ProcessInstrumentation(entity);
 
-        return await base.EditAsync(entity).ConfigureAwait(false);
+        return await base.EditAsync(instrumentation).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -99,5 +93,15 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
             .SingleOrDefaultAsync(i => i.Id == ((Instrumentation)(object)entity).CompletionId)
             .ConfigureAwait(false);
         return completion?.BoreholeId;
+    }
+
+    private Instrumentation ProcessInstrumentation(Instrumentation instrumentation)
+    {
+        if (instrumentation.IsOpenBorehole)
+        {
+            instrumentation.CasingId = null;
+        }
+
+        return instrumentation;
     }
 }
