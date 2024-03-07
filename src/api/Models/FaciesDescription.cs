@@ -67,8 +67,4 @@ public class FaciesDescription : ILayerDescription, IChangeTracking, IIdentifyab
     /// <inheritdoc />
     [Column("depth_to")]
     public double? ToDepth { get; set; }
-
-    /// <inheritdoc />
-    [Column("is_last")]
-    public bool? IsLast { get; set; }
 }

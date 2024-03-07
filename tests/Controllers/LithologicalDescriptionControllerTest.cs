@@ -88,7 +88,6 @@ public class LithologicalDescriptionControllerTest
             FromDepth = 90,
             ToDepth = 100,
             Id = 9_000_069,
-            IsLast = true,
             DescriptionQuality = null,
             DescriptionQualityId = 9001,
             Updated = new DateTime(2021, 3, 31, 16, 55, 02).ToUniversalTime(),

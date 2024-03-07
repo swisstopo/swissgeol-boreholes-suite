@@ -148,7 +148,7 @@ public class BdmsContext : DbContext
                     .HasForeignKey(l => l.LayerId),
                 j => j.HasKey(lc => new { lc.LayerId, lc.CodelistId }));
 
-          // Join table for layer and codelists with schema name 'debris'
+        // Join table for layer and codelists with schema name 'debris'
         modelBuilder.Entity<Layer>()
             .HasMany(l => l.DebrisCodelists)
             .WithMany()
@@ -263,10 +263,53 @@ public class BdmsContext : DbContext
 
         modelBuilder.Entity<FieldMeasurement>().ToTable("field_measurement").HasBaseType<Observation>();
 
+        // Configure delete behavior for all non-nullable foreign keys for Codelists.
         modelBuilder.Entity<CasingElement>()
             .HasOne(ce => ce.Kind)
             .WithMany()
             .HasForeignKey(ce => ce.KindId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Completion>()
+            .HasOne(c => c.Kind)
+            .WithMany()
+            .HasForeignKey(c => c.KindId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Observation>()
+            .HasOne(o => o.Reliability)
+            .WithMany()
+            .HasForeignKey(o => o.ReliabilityId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<WaterIngress>()
+            .HasOne(w => w.Quantity)
+            .WithMany()
+            .HasForeignKey(w => w.QuantityId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<GroundwaterLevelMeasurement>()
+            .HasOne(g => g.Kind)
+            .WithMany()
+            .HasForeignKey(g => g.KindId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<FieldMeasurement>()
+            .HasOne(f => f.Parameter)
+            .WithMany()
+            .HasForeignKey(f => f.ParameterId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<FieldMeasurement>()
+            .HasOne(f => f.SampleType)
+            .WithMany()
+            .HasForeignKey(f => f.SampleTypeId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<HydrotestResult>()
+            .HasOne(h => h.Parameter)
+            .WithMany()
+            .HasForeignKey(h => h.ParameterId)
             .OnDelete(DeleteBehavior.NoAction);
     }
 }
