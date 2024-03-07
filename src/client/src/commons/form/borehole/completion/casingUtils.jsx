@@ -1,5 +1,10 @@
 import { useTranslation } from "react-i18next";
 
+/**
+ * Extract the minimum and maximum depth of the casing elements from the casing object
+ * @param {any} casing The casing with the casing elements
+ * @returns {number, number} The minimum and maximum depth of the casing elements
+ */
 export const extractCasingDepth = casing => {
   var min = null;
   var max = null;
@@ -19,6 +24,11 @@ export const extractCasingDepth = casing => {
 export const useGetCasingName = () => {
   const { t } = useTranslation();
 
+  /**
+   * Gets the name of the casing, or if the the item references an open borehole it returns the open borehole string
+   * @param {any} item An object that references a casing
+   * @returns The name to be displayed
+   */
   const getCasingName = item => {
     if (item?.isOpenBorehole) {
       return t("openBorehole");
@@ -34,6 +44,11 @@ export const useGetCasingName = () => {
 export const useGetCasingOptions = () => {
   const { t } = useTranslation();
 
+  /**
+   * Get the available casings toghether with an open borehole option
+   * @param {any[]} casings An array of casings
+   * @returns An array of objects that contain the key and name of the available casings as well as the open borehole option
+   */
   const getCasingOptions = casings => {
     var options = [{ key: -1, name: t("openBorehole") }];
     casings
