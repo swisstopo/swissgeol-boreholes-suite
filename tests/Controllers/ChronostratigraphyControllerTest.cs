@@ -86,7 +86,6 @@ public class ChronostratigraphyControllerTest
             FromDepth = 90,
             ToDepth = 100,
             Id = 11_000_039,
-            IsLast = true,
             Chronostratigraphy = null,
             ChronostratigraphyId = 15_001_088,
             Updated = new DateTime(2021, 6, 27, 4, 22, 39).ToUniversalTime(),
