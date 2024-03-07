@@ -40,6 +40,7 @@
 - Removed square brackets from _m MD_ in `chronostratigraphy` and `lithostratigraphy`.
 - Implemented a validation to check the user's role and the lock status of the borehole before performing any data manipulations on child tables in the .NET API.
 - Include completion in casing name for hydrogeological observations.
+- Removed feedback functionality.
 
 ### Fixed
 

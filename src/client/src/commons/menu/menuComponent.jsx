@@ -6,15 +6,11 @@ import _ from "lodash";
 
 import { List, Icon, Popup } from "semantic-ui-react";
 
-import Feedback from "../feedback/feedbackComponent";
 import TranslationText from "../form/translationText";
 import TranslationKeys from "../translationKeys";
 class MenuComponent extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      feedback: false,
-    };
   }
 
   render() {
@@ -89,39 +85,7 @@ class MenuComponent extends React.Component {
             flex: "1 1 100%",
           }}
         />
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            padding: "1em",
-            textAlign: "right",
-          }}>
-          <Popup
-            content={
-              <Feedback
-                onFinised={() => {
-                  this.setState({
-                    feedback: false,
-                  });
-                }}
-              />
-            }
-            on="click"
-            onClose={() => {
-              this.setState({
-                feedback: false,
-              });
-            }}
-            onOpen={() => {
-              this.setState({
-                feedback: true,
-              });
-            }}
-            open={this.state.feedback}
-            position="top right"
-            trigger={<div className="linker">Feedback</div>}
-          />
-        </div>
+
         <Popup
           on="click"
           position="bottom right"

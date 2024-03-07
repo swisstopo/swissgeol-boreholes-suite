@@ -9,4 +9,3 @@ pyshp==2.1.0
 svglib==1.0.0
 svg2rlg==0.3
 spatialite==0.0.3
-aiosmtplib==1.1.3
