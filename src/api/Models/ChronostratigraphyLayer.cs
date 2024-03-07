@@ -51,10 +51,6 @@ public class ChronostratigraphyLayer : ILayerDescription, IChangeTracking, IIden
     [Column("depth_to")]
     public double? ToDepth { get; set; }
 
-    /// <inheritdoc />
-    [Column("is_last")]
-    public bool? IsLast { get; set; }
-
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/> id of the chronostratigraphy.
     /// </summary>

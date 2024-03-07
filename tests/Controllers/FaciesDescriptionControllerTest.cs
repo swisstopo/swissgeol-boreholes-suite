@@ -88,7 +88,6 @@ public class FaciesDescriptionControllerTest
             FromDepth = 90,
             ToDepth = 100,
             Id = 10_000_039,
-            IsLast = true,
             DescriptionQuality = null,
             DescriptionQualityId = 9003,
             Updated = new DateTime(2021, 11, 14, 8, 3, 19).ToUniversalTime(),
