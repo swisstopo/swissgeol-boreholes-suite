@@ -71,8 +71,6 @@ import { loadDomains, patchCodeConfig } from "./actions/domains";
 
 import { getWms } from "./actions/geoapi";
 
-import { createFeedback } from "./actions/feedback";
-
 import store, { injectReducer, configureStore, createReducer } from "./reducers";
 
 export {
@@ -139,7 +137,6 @@ export {
   loadDomains,
   patchCodeConfig,
   getWms,
-  createFeedback,
 
   // Reducers
   store,

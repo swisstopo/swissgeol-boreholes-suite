@@ -41,6 +41,7 @@
 - Implemented a validation to check the user's role and the lock status of the borehole before performing any data manipulations on child tables in the .NET API.
 - Include completion in casing name for hydrogeological observations.
 - Removed property _isLast_ from `ChronostratigraphyLayer`, `LithostratigraphyLayer`, `LithologicalDescription` and `FaciesDescription`.
+- Removed feedback functionality.
 
 ### Fixed
 

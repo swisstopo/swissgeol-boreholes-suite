@@ -61,9 +61,6 @@ from bms.v1.content.admin import ContentAdminHandler
 from bms.v1.terms.handler import TermsHandler
 from bms.v1.terms.admin import TermsAdminHandler
 
-# Feedback handlers
-from bms.v1.feedback.handler import FeedbackHandler
-
 # Actions
 from bms.v1.borehole import CreateBorehole
 from bms.v1.borehole import ListBorehole

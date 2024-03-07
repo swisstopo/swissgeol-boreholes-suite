@@ -16,12 +16,4 @@ CMD python -u bms/main.py \
     --pg-port=${DB_PORT} \
     --pg-database=${DB_DATABASE} \
     --pg-user=${DB_USERNAME} \
-    --pg-password=${DB_PASSWORD} \
-    \
-    --smtp-recipients=${SMTP_RECIPIENTS} \
-    --smtp-sender=${SMTP_SENDER} \
-    --smtp-password=${SMTP_PASSWORD} \
-    --smtp-server=${SMTP_SERVER} \
-    --smtp-port=${SMTP_PORT:-25} \
-    --smtp-tls=${SMTP_TLS:-0} \
-    --smtp-starttls=${SMTP_STARTTLS:-0}
+    --pg-password=${DB_PASSWORD}

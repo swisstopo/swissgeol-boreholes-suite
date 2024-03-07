@@ -15,7 +15,6 @@ public class BdmsContext : DbContext
     public DbSet<Codelist> Codelists { get; set; }
     public DbSet<Config> Configs { get; set; }
     public DbSet<Content> Contents { get; set; }
-    public DbSet<Feedback> Feedbacks { get; set; }
     public DbSet<Models.File> Files { get; set; }
     public DbSet<Layer> Layers { get; set; }
     public DbSet<Stratigraphy> Stratigraphies { get; set; }

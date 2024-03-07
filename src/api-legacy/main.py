@@ -19,8 +19,6 @@ import traceback
 
 sys.path.append('.')
 
-from bms.v1.listeners import EventListener
-
 define("port", default=8888, help="Tornado Web port", type=int)
 
 define("pg_user", default=None, help="PostgreSQL database user")
@@ -28,15 +26,6 @@ define("pg_password", default=None, help="PostgreSQL user password")
 define("pg_host", default=None, help="PostgreSQL database host")
 define("pg_port", default="5432", help="PostgreSQL database port")
 define("pg_database", default=None, help="PostgreSQL database name")
-
-# SMTP send mail configuration
-define("smtp_recipients", default=None, help="SMTP comma separated recipients email addresses", type=str)
-define("smtp_sender", default=None, help="SMTP sender respectively username", type=str)
-define("smtp_password", default=None, help="SMTP password", type=str)
-define("smtp_server", default=None, help="SMTP server address", type=str)
-define("smtp_port", default=25, help="SMTP server port", type=int)
-define("smtp_tls", default=False, help="SMTP server supports direct connection via TLS/SSL", type=bool)
-define("smtp_starttls", default=False, help="SMTP servers support the STARTTLS extension", type=bool)
 
 # Ordered list of upgradable versions
 versions = [
@@ -158,9 +147,6 @@ if __name__ == "__main__":
         TermsHandler,
         TermsAdminHandler,
 
-        # Feedback handler
-        FeedbackHandler,
-
         # Other handlers
         CodeListHandler,
         Wms,
@@ -208,9 +194,6 @@ if __name__ == "__main__":
         (r'/api/v1/terms', TermsHandler),
         (r'/api/v1/terms/admin', TermsAdminHandler),
 
-        # FEEDBACK handlers
-        (r'/api/v1/feedback', FeedbackHandler),
-
         # Layer handlers (will be deprecated)
         (r'/api/v1/borehole/stratigraphy/layer', LayerViewerHandler),
         (r'/api/v1/borehole/stratigraphy/layer/edit', LayerProducerHandler),
@@ -224,23 +207,9 @@ if __name__ == "__main__":
 
     ], **settings)
 
-    # Check for missing SMTP environment configuration options
-    if (
-        not options.smtp_sender or
-        not options.smtp_server or
-        not options.smtp_recipients
-    ):
-        raise Exception(
-            "Missing mandatory SMTP environment configuration options (SMTP_SENDER|SMTP_SERVER|SMTP_RECIPIENTS)"
-        )
-
     # Init database postgresql connection pool
     application.pool = ioloop.run_until_complete(get_conn())
     green("Connection to PostgreSQL database: Ok")
-
-    # Create events listeners
-    application.listener = EventListener(application)
-    ioloop.run_until_complete(application.listener.start())
 
     try:
         http_server = HTTPServer(application)
