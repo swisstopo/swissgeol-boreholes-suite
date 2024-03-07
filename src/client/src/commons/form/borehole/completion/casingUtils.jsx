@@ -68,6 +68,11 @@ export const useGetCasingOptions = () => {
   return getCasingOptions;
 };
 
+/**
+ * Prepares the casing data of an item that references a casing for submission
+ * @param {any} data The form data to be prepared for submission
+ * @returns {any} The updated form data
+ */
 export const prepareCasingDataForSubmit = data => {
   switch (data.casingId) {
     case -1:
