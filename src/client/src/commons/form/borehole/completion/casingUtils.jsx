@@ -45,7 +45,7 @@ export const useGetCasingOptions = () => {
   const { t } = useTranslation();
 
   /**
-   * Get the available casings toghether with an open borehole option
+   * Get the available casings together with an open borehole option
    * @param {any[]} casings An array of casings
    * @returns An array of objects that contain the key and name of the available casings as well as the open borehole option
    */
