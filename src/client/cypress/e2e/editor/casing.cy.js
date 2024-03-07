@@ -90,7 +90,7 @@ describe("Casing crud tests", () => {
     setInput("toDepth", "987654");
     setSelect("kindId", 2);
     setSelect("statusId", 1);
-    setSelect("casingId", 1);
+    setSelect("casingId", 2);
     saveForm();
 
     cy.get("[data-cy=completion-content-header-tab-casing]").click();
