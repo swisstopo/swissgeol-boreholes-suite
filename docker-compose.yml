@@ -94,10 +94,6 @@ services:
       DB_DATABASE: bdms
       DB_HOST: db
       DB_PORT: 5432
-      SMTP_SENDER: WRONGAUTO@example.com
-      SMTP_SERVER: mailhog.geow.cloud
-      SMTP_RECIPIENTS: ORANGEPHOTO@example.com
-      APP_BASE_DOMAIN: CHEFCHASER.example.com
   api:
     build:
       context: ./src/api

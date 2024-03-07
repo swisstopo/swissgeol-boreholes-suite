@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240306153840_RemoveFeedback")]
+    partial class RemoveFeedback
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,10 +57,6 @@ namespace BDMS.Migrations
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("from_depth");
-
-                    b.Property<bool>("IsOpenBorehole")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_open_borehole");
 
                     b.Property<int?>("KindId")
                         .HasColumnType("integer")
@@ -1104,10 +1103,6 @@ namespace BDMS.Migrations
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("from_depth");
-
-                    b.Property<bool>("IsOpenBorehole")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_open_borehole");
 
                     b.Property<int?>("KindId")
                         .HasColumnType("integer")
