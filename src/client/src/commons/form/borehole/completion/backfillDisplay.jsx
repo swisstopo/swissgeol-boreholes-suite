@@ -2,6 +2,7 @@ import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import { StackHalfWidth } from "../../../../components/baseComponents.js";
+import { getCasingName } from "./casingUtils";
 
 const BackfillDisplay = props => {
   const { item, selected, setSelected, isEditable, deleteData } = props;
@@ -22,7 +23,7 @@ const BackfillDisplay = props => {
         <FormDisplay label="materialFilling" value={item?.material} type={FormDisplayType.Domain} />
       </StackFullWidth>
       <StackHalfWidth>
-        <FormDisplay label="casingName" value={item?.casingId ? item?.casing?.name : null} />
+        <FormDisplay label="casingName" value={getCasingName(item)} />
       </StackHalfWidth>
       <FormDisplay label="notes" value={item?.notes} />
     </DataDisplayCard>

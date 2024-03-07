@@ -3,7 +3,7 @@ import { getCasings, addCasing, updateCasing, deleteCasing } from "../../../../a
 import { DataCards } from "../../../../components/dataCard/dataCards";
 import CasingInput from "./casingInput";
 import CasingDisplay from "./casingDisplay";
-import { extractCasingDepth } from "./casingDepthExtraction.jsx";
+import { extractCasingDepth } from "./casingUtils.jsx";
 import { sortByDepth } from "../../../sorter.jsx";
 
 const Casing = ({ isEditable, completionId }) => {

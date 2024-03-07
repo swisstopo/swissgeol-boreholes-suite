@@ -5,6 +5,7 @@ import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
 import { StackFullWidth, StackHalfWidth } from "../../../../components/baseComponents.js";
+import { getCasingOptions, prepareCasingDataForSubmit } from "./casingUtils";
 
 const BackfillInput = ({ item, setSelected, parentId, addData, updateData }) => {
   const domains = useDomains();
@@ -12,10 +13,7 @@ const BackfillInput = ({ item, setSelected, parentId, addData, updateData }) => 
   const [casings, setCasings] = useState([]);
 
   const prepareFormDataForSubmit = data => {
-    if (data.casingId === "") {
-      data.casingId = null;
-    }
-    data.casing = null;
+    data = prepareCasingDataForSubmit(data);
     data.completionId = parentId;
     return data;
   };
@@ -71,11 +69,8 @@ const BackfillInput = ({ item, setSelected, parentId, addData, updateData }) => 
         <FormSelect
           fieldName="casingId"
           label="casingName"
-          selected={item.casingId}
-          values={casings?.map(casing => ({
-            key: casing.id,
-            name: casing.name,
-          }))}
+          selected={item.isOpenBorehole ? -1 : item.casingId}
+          values={getCasingOptions(casings)}
         />
       </StackHalfWidth>
       <StackFullWidth>

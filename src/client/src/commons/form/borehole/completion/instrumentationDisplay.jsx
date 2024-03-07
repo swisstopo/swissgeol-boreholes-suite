@@ -1,6 +1,7 @@
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
+import { getCasingName } from "./casingUtils";
 
 const InstrumentationDisplay = props => {
   const { item, selected, setSelected, isEditable, deleteData } = props;
@@ -18,7 +19,7 @@ const InstrumentationDisplay = props => {
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay label="name" value={item?.name} />
-        <FormDisplay label="casingName" value={item?.casingId ? item?.casing?.name : null} />
+        <FormDisplay label="casingName" value={getCasingName(item)} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay label="kindInstrument" value={item?.kind} type={FormDisplayType.Domain} />

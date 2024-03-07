@@ -62,13 +62,27 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<ActionResult<Instrumentation>> CreateAsync(Instrumentation entity)
-        => base.CreateAsync(entity);
+    public override async Task<ActionResult<Instrumentation>> CreateAsync(Instrumentation entity)
+    {
+        if (entity.IsOpenBorehole)
+        {
+            entity.CasingId = null;
+        }
+
+        return await base.CreateAsync(entity);
+    }
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<ActionResult<Instrumentation>> EditAsync(Instrumentation entity)
-        => base.EditAsync(entity);
+    public override async Task<ActionResult<Instrumentation>> EditAsync(Instrumentation entity)
+    {
+        if (entity.IsOpenBorehole)
+        {
+            entity.CasingId = null;
+        }
+
+        return await base.EditAsync(entity);
+    }
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]

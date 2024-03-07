@@ -59,6 +59,12 @@ public class Backfill : IChangeTracking, IIdentifyable
     public Codelist? Material { get; set; }
 
     /// <summary>
+    /// Gets or sets whether or not the <see cref="Backfill"/> belongs to an open borehole.
+    /// </summary>
+    [Column("is_open_borehole")]
+    public bool IsOpenBorehole { get; set; }
+
+    /// <summary>
     /// Gets or sets id of the <see cref="Backfill"/>'s casing.
     /// </summary>
     [Column("casing_id")]
