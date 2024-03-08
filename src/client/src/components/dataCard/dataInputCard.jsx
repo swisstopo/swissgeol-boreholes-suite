@@ -26,13 +26,7 @@ export const DataInputCard = props => {
         ...data,
       });
     }
-  };
-
-  const closeFormIfCompleted = () => {
-    if (formMethods.formState.isValid) {
-      formMethods.handleSubmit(submitForm)();
-      setSelected(null);
-    }
+    setSelected(null);
   };
 
   return (
@@ -46,7 +40,10 @@ export const DataInputCard = props => {
               setSelected(null);
             }}
           />
-          <SaveButton disabled={!formMethods.formState.isValid} onClick={() => closeFormIfCompleted()} />
+          <SaveButton
+            disabled={!formMethods.formState.isValid}
+            onClick={() => formMethods.handleSubmit(submitForm)()}
+          />
         </DataCardButtonContainer>
       </form>
     </FormProvider>
