@@ -2,7 +2,7 @@ import { TextField } from "@mui/material";
 import { styled } from "@mui/system";
 import { theme } from "../../AppTheme.js";
 
-export const getInputFieldBackgroundColor = (fieldName, errors) => {
+export const getFormFieldBackgroundColor = (fieldName, errors) => {
   var fieldNameElements = fieldName ? fieldName.split(".") : [];
   var currentElement = errors;
   for (var i = 0; i < fieldNameElements.length; i++) {

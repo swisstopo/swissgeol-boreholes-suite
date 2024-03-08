@@ -2,7 +2,7 @@ import { Box, Chip, MenuItem } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
 import { useFormContext, Controller } from "react-hook-form";
-import { FormField, getInputFieldBackgroundColor } from "./form";
+import { FormField, getFormFieldBackgroundColor } from "./form";
 
 export const FormMultiSelect = props => {
   const { fieldName, label, tooltipLabel, required, disabled, selected, values, sx } = props;
@@ -59,7 +59,7 @@ export const FormMultiSelect = props => {
               }}
               required={required || false}
               sx={{
-                backgroundColor: getInputFieldBackgroundColor(fieldName, formState?.errors),
+                backgroundColor: getFormFieldBackgroundColor(fieldName, formState?.errors),
                 ...sx,
               }}
               size="small"
@@ -86,7 +86,7 @@ export const FormMultiSelect = props => {
               {...field}
               required={required || false}
               sx={{
-                backgroundColor: getInputFieldBackgroundColor(formState.errors[fieldName]),
+                backgroundColor: getFormFieldBackgroundColor(formState.errors[fieldName]),
                 ...sx,
               }}
               size="small"

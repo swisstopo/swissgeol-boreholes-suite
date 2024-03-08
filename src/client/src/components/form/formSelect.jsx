@@ -1,7 +1,7 @@
 import { MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useFormContext } from "react-hook-form";
-import { FormField, getInputFieldBackgroundColor } from "./form";
+import { FormField, getFormFieldBackgroundColor } from "./form";
 
 export const FormSelect = props => {
   const { fieldName, label, required, disabled, selected, values, sx, onUpdate } = props;
@@ -28,7 +28,7 @@ export const FormSelect = props => {
       name={fieldName}
       required={required || false}
       sx={{
-        backgroundColor: getInputFieldBackgroundColor(fieldName, formState?.errors),
+        backgroundColor: getFormFieldBackgroundColor(fieldName, formState?.errors),
         ...sx,
       }}
       size="small"
