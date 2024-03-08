@@ -15,8 +15,11 @@ const CasingInput = props => {
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const formMethods = useForm({
+    mode: "all",
     defaultValues: {
-      casingElements: item?.casingElements || [],
+      casingElements: item?.casingElements || [
+        { fromDepth: "", toDepth: "", kindId: "", materialId: "", innerDiameter: "", outerDiameter: "" },
+      ],
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -76,6 +79,13 @@ const CasingInput = props => {
     }
   };
 
+  const addCasingElement = () => {
+    append(
+      { fromDepth: "", toDepth: "", kindId: "", materialId: "", innerDiameter: "", outerDiameter: "" },
+      { shouldFocus: false },
+    );
+  };
+
   // trigger form validation on mount
   useEffect(() => {
     formMethods.trigger();
@@ -83,10 +93,7 @@ const CasingInput = props => {
   }, [formMethods.trigger]);
 
   useEffect(() => {
-    var casingElements = formMethods.getValues()["casingElements"];
-    if (casingElements.length === 0) {
-      append();
-    }
+    formMethods.trigger("casingElements");
     updateDepth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formMethods.getValues()["casingElements"]]);
@@ -118,7 +125,7 @@ const CasingInput = props => {
               <AddButton
                 label="addCasingElement"
                 onClick={() => {
-                  append();
+                  addCasingElement();
                 }}
               />
             </Stack>

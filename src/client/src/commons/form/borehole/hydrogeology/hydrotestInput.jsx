@@ -18,6 +18,7 @@ const HydrotestInput = props => {
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const formMethods = useForm({
+    mode: "all",
     defaultValues: {
       hydrotestResults: item?.hydrotestResults || [],
     },
@@ -90,6 +91,7 @@ const HydrotestInput = props => {
   }, [hydrotestKindIds]);
 
   useEffect(() => {
+    formMethods.trigger("hydrotestResults");
     var currentUnits = {};
     formMethods.getValues()["hydrotestResults"].forEach((element, index) => {
       currentUnits = {
@@ -259,7 +261,7 @@ const HydrotestInput = props => {
                 <AddButton
                   label="addHydrotestResult"
                   onClick={() => {
-                    append();
+                    append({ parameterId: "", value: "", minValue: "", maxValue: "" }, { shouldFocus: false });
                   }}
                 />
               </Stack>

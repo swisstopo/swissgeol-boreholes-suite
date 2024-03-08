@@ -6,7 +6,7 @@ import { CancelButton, SaveButton } from "../buttons/buttons";
 
 export const DataInputCard = props => {
   const { item, setSelected, addData, updateData, prepareFormDataForSubmit } = props;
-  const formMethods = useForm();
+  const formMethods = useForm({ mode: "all" });
 
   // trigger form validation on mount
   useEffect(() => {

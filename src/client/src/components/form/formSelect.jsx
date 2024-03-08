@@ -28,7 +28,7 @@ export const FormSelect = props => {
       name={fieldName}
       required={required || false}
       sx={{
-        backgroundColor: getInputFieldBackgroundColor(formState.errors[fieldName]),
+        backgroundColor: getInputFieldBackgroundColor(fieldName, formState?.errors),
         ...sx,
       }}
       size="small"
