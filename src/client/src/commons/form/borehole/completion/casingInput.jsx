@@ -18,7 +18,7 @@ const CasingInput = props => {
     mode: "all",
     defaultValues: {
       casingElements: item?.casingElements || [
-        { fromDepth: "", toDepth: "", kindId: "", materialId: "", innerDiameter: "", outerDiameter: "" },
+        { fromDepth: null, toDepth: null, kindId: "", materialId: "", innerDiameter: null, outerDiameter: null },
       ],
     },
   });
@@ -75,7 +75,7 @@ const CasingInput = props => {
 
   const addCasingElement = () => {
     append(
-      { fromDepth: "", toDepth: "", kindId: "", materialId: "", innerDiameter: "", outerDiameter: "" },
+      { fromDepth: null, toDepth: null, kindId: "", materialId: "", innerDiameter: null, outerDiameter: null },
       { shouldFocus: false },
     );
   };
@@ -124,7 +124,11 @@ const CasingInput = props => {
               />
             </Stack>
             {fields
-              .sort((a, b) => a.fromDepth - b.fromDepth)
+              .sort((a, b) => {
+                if (a.fromDepth === null) return 1;
+                if (b.fromDepth === null) return -1;
+                return a.fromDepth - b.fromDepth;
+              })
               .map((field, index) => (
                 <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`casingElement-${index}`}>
                   <FormInput

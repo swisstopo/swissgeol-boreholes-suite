@@ -255,7 +255,7 @@ const HydrotestInput = props => {
                 <AddButton
                   label="addHydrotestResult"
                   onClick={() => {
-                    append({ parameterId: "", value: "", minValue: "", maxValue: "" }, { shouldFocus: false });
+                    append({ parameterId: "", value: null, minValue: null, maxValue: null }, { shouldFocus: false });
                   }}
                 />
               </Stack>
