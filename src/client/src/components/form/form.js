@@ -3,19 +3,19 @@ import { styled } from "@mui/system";
 import { theme } from "../../AppTheme.js";
 
 export const getFormFieldBackgroundColor = (fieldName, errors) => {
-  if (typeof fieldName === "string") {
-    var fieldNameElements = fieldName ? fieldName.split(".") : [];
-    var currentElement = errors;
-    for (var i = 0; i < fieldNameElements.length; i++) {
-      currentElement = currentElement[fieldNameElements[i]];
-      if (!currentElement) {
-        break;
-      }
-    }
-    return currentElement ? theme.palette.error.background : "transparent";
-  } else {
+  if (typeof fieldName !== "string") {
     return "transparent";
   }
+
+  const fieldNameElements = fieldName ? fieldName.split(".") : [];
+  var currentElement = errors;
+  for (var i = 0; i < fieldNameElements.length; i++) {
+    currentElement = currentElement[fieldNameElements[i]];
+    if (!currentElement) {
+      break;
+    }
+  }
+  return currentElement ? theme.palette.error.background : "transparent";
 };
 
 export const FormField = styled(TextField)(() => ({
