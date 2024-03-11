@@ -684,7 +684,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                 alignItems: "center",
               }}>
               <div>
-                <DomainText id={borehole.data.height_reference_system} schema="hrs" />
+                <DomainText id={borehole.data.height_reference_system} schema="height_reference_system" />
               </div>
             </div>
           </Form.Field>
