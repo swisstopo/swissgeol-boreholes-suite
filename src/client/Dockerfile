@@ -1,22 +1,23 @@
-FROM cypress/included:13.6.0 AS development
+FROM node:20-buster-slim AS development
 ARG VERSION
 ARG REVISION
 ENV VITE_APP_VERSION ${VERSION}+${REVISION}
 RUN apt-get -y update
 RUN apt-get -y install git vim curl htop python3 python3-pip
+RUN python3 -m pip install mkdocs
 RUN mkdir -p /app/src/client
 WORKDIR /app/src/client
 
 COPY ./package.json ./package-lock.json ./
-RUN npm install
+RUN npm ci
 
 # Build docs
 RUN mkdir -p docs
 COPY ./docs ./docs
 COPY ./mkdocs.yml ./
-RUN pip install mkdocs && mkdocs build -d ./public/help
+RUN mkdocs build -d ./public/help
 
-ENTRYPOINT npm run start
+ENTRYPOINT npm run start -- --host
 
 FROM node:20-buster-slim AS deploy
 ARG VERSION

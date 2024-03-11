@@ -63,7 +63,6 @@ services:
     volumes:
       - .:/app
       - /app/src/client/node_modules
-      - /app/src/client/public/help
     ports:
       - 3000:3000
     depends_on:
@@ -71,7 +70,6 @@ services:
         condition: service_healthy
     environment:
       VITE_APP_PROXY_HOST_API: http://localhost:5000/
-      WATCHPACK_POLLING: "true"
     extra_hosts:
       - "localhost:host-gateway"
   api-legacy:
