@@ -2,8 +2,21 @@ import { TextField } from "@mui/material";
 import { styled } from "@mui/system";
 import { theme } from "../../AppTheme.js";
 
-export const getInputFieldBackgroundColor = errorFieldName =>
-  errorFieldName ? theme.palette.error.background : "transparent";
+export const getFormFieldBackgroundColor = (fieldName, errors) => {
+  if (typeof fieldName !== "string") {
+    return "transparent";
+  }
+
+  const fieldNameElements = fieldName ? fieldName.split(".") : [];
+  var currentElement = errors;
+  for (var i = 0; i < fieldNameElements.length; i++) {
+    currentElement = currentElement[fieldNameElements[i]];
+    if (!currentElement) {
+      break;
+    }
+  }
+  return currentElement ? theme.palette.error.background : "transparent";
+};
 
 export const FormField = styled(TextField)(() => ({
   borderRadius: "4px",

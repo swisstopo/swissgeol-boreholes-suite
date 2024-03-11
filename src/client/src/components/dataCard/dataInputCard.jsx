@@ -6,7 +6,7 @@ import { CancelButton, SaveButton } from "../buttons/buttons";
 
 export const DataInputCard = props => {
   const { item, setSelected, addData, updateData, prepareFormDataForSubmit } = props;
-  const formMethods = useForm();
+  const formMethods = useForm({ mode: "all" });
 
   // trigger form validation on mount
   useEffect(() => {
@@ -26,13 +26,7 @@ export const DataInputCard = props => {
         ...data,
       });
     }
-  };
-
-  const closeFormIfCompleted = () => {
-    if (formMethods.formState.isValid) {
-      formMethods.handleSubmit(submitForm)();
-      setSelected(null);
-    }
+    setSelected(null);
   };
 
   return (
@@ -46,7 +40,10 @@ export const DataInputCard = props => {
               setSelected(null);
             }}
           />
-          <SaveButton disabled={!formMethods.formState.isValid} onClick={() => closeFormIfCompleted()} />
+          <SaveButton
+            disabled={!formMethods.formState.isValid}
+            onClick={() => formMethods.handleSubmit(submitForm)()}
+          />
         </DataCardButtonContainer>
       </form>
     </FormProvider>

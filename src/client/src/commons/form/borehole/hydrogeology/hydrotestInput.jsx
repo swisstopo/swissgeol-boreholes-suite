@@ -18,6 +18,7 @@ const HydrotestInput = props => {
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const formMethods = useForm({
+    mode: "all",
     defaultValues: {
       hydrotestResults: item?.hydrotestResults || [],
     },
@@ -90,6 +91,7 @@ const HydrotestInput = props => {
   }, [hydrotestKindIds]);
 
   useEffect(() => {
+    formMethods.trigger("hydrotestResults");
     var currentUnits = {};
     formMethods.getValues()["hydrotestResults"].forEach((element, index) => {
       currentUnits = {
@@ -161,13 +163,7 @@ const HydrotestInput = props => {
         ...data,
       });
     }
-  };
-
-  const closeFormIfCompleted = () => {
-    if (formMethods.formState.isValid) {
-      formMethods.handleSubmit(submitForm)();
-      setSelected(null);
-    }
+    setSelected(null);
   };
 
   const getParameterUnit = parameterId => {
@@ -259,7 +255,7 @@ const HydrotestInput = props => {
                 <AddButton
                   label="addHydrotestResult"
                   onClick={() => {
-                    append();
+                    append({ parameterId: "", value: null, minValue: null, maxValue: null }, { shouldFocus: false });
                   }}
                 />
               </Stack>
@@ -331,7 +327,7 @@ const HydrotestInput = props => {
           <SaveButton
             disabled={!formMethods.formState.isValid}
             onClick={() => {
-              closeFormIfCompleted();
+              formMethods.handleSubmit(submitForm)();
             }}
           />
         </DataCardButtonContainer>

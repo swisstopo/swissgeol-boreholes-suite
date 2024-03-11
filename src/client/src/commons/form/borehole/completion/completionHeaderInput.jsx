@@ -109,16 +109,14 @@ const CompletionHeaderInput = props => {
             </Stack>
             <DataCardButtonContainer>
               <CancelButton
-                onClick={e => {
-                  e.stopPropagation();
+                onClick={() => {
                   formMethods.reset(selectedCompletion);
                   cancelChanges();
                 }}
               />
               <SaveButton
                 disabled={!formMethods.formState.isValid}
-                onClick={e => {
-                  e.stopPropagation();
+                onClick={() => {
                   formMethods.handleSubmit(submitForm)();
                 }}
               />

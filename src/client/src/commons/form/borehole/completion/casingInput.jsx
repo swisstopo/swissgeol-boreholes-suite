@@ -15,8 +15,11 @@ const CasingInput = props => {
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const formMethods = useForm({
+    mode: "all",
     defaultValues: {
-      casingElements: item?.casingElements || [],
+      casingElements: item?.casingElements || [
+        { fromDepth: null, toDepth: null, kindId: "", materialId: "", innerDiameter: null, outerDiameter: null },
+      ],
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -58,13 +61,7 @@ const CasingInput = props => {
         ...data,
       });
     }
-  };
-
-  const closeFormIfCompleted = () => {
-    if (formMethods.formState.isValid) {
-      formMethods.handleSubmit(submitForm)();
-      setSelected(null);
-    }
+    setSelected(null);
   };
 
   const updateDepth = () => {
@@ -76,6 +73,13 @@ const CasingInput = props => {
     }
   };
 
+  const addCasingElement = () => {
+    append(
+      { fromDepth: null, toDepth: null, kindId: "", materialId: "", innerDiameter: null, outerDiameter: null },
+      { shouldFocus: false },
+    );
+  };
+
   // trigger form validation on mount
   useEffect(() => {
     formMethods.trigger();
@@ -83,10 +87,7 @@ const CasingInput = props => {
   }, [formMethods.trigger]);
 
   useEffect(() => {
-    var casingElements = formMethods.getValues()["casingElements"];
-    if (casingElements.length === 0) {
-      append();
-    }
+    formMethods.trigger("casingElements");
     updateDepth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formMethods.getValues()["casingElements"]]);
@@ -118,12 +119,12 @@ const CasingInput = props => {
               <AddButton
                 label="addCasingElement"
                 onClick={() => {
-                  append();
+                  addCasingElement();
                 }}
               />
             </Stack>
             {fields
-              .sort((a, b) => a.fromDepth - b.fromDepth)
+              .sort((a, b) => (a.fromDepth || Infinity) - (b.fromDepth || Infinity))
               .map((field, index) => (
                 <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`casingElement-${index}`}>
                   <FormInput
@@ -201,7 +202,7 @@ const CasingInput = props => {
           <SaveButton
             disabled={!formMethods.formState.isValid}
             onClick={() => {
-              closeFormIfCompleted();
+              formMethods.handleSubmit(submitForm)();
             }}
           />
         </DataCardButtonContainer>
