@@ -124,11 +124,7 @@ const CasingInput = props => {
               />
             </Stack>
             {fields
-              .sort((a, b) => {
-                if (a.fromDepth === null) return 1;
-                if (b.fromDepth === null) return -1;
-                return a.fromDepth - b.fromDepth;
-              })
+              .sort((a, b) => (a.fromDepth || Infinity) - (b.fromDepth || Infinity))
               .map((field, index) => (
                 <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`casingElement-${index}`}>
                   <FormInput
