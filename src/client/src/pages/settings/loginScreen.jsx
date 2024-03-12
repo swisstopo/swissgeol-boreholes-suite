@@ -4,9 +4,10 @@ import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { Button, Form, Modal, TextArea } from "semantic-ui-react";
 import { AlertContext } from "../../components/alert/alertContext";
-import LoginPreview from "../../commons/form/loginPreview";
+import LoginDialog from "../../commons/form/loginDialog";
 import TranslationKeys from "../../commons/translationKeys";
-
+import Markdown from "markdown-to-jsx";
+import styled from "@mui/material/styles/styled";
 import { draftContent, getContentDraft, publishContent } from "../../api-lib/index";
 
 class LoginScreen extends React.Component {
@@ -104,6 +105,23 @@ class LoginScreen extends React.Component {
 
   render() {
     const { t } = this.props;
+
+    const MarkdownContainer = styled("div")({
+      paddingTop: "2em",
+      marginBottom: "1em",
+    });
+
+    const LoginPreviewContainer = styled("div")(() => ({
+      backgroundColor: "#fff",
+      borderRadius: "2px",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+      display: "flex",
+      flexDirection: "row",
+      padding: "2em",
+      minWidth: "300px",
+      maxWidth: "600px",
+    }));
+
     return (
       <div
         style={{
@@ -270,7 +288,14 @@ class LoginScreen extends React.Component {
               style={{
                 transform: "scale(0.80)",
               }}>
-              <LoginPreview body={this.state.body[this.state.lang]} title={this.state.title[this.state.lang]} />
+              <LoginPreviewContainer>
+                <LoginDialog title={this.state.title[this.state.lang]}>
+                  <MarkdownContainer>
+                    <Markdown>{this.state.body[this.state.lang]}</Markdown>
+                  </MarkdownContainer>
+                  <Button primary compact content="Login" style={{ width: "120px", alignSelf: "center" }} />
+                </LoginDialog>
+              </LoginPreviewContainer>
             </div>
           </div>
         </div>

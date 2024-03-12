@@ -5,9 +5,10 @@ import { withTranslation } from "react-i18next";
 import { withAuth } from "react-oidc-context";
 import Markdown from "markdown-to-jsx";
 import TranslationKeys from "../../commons/translationKeys";
-
+import { styled } from "@mui/material/styles";
 import { Button } from "semantic-ui-react";
 import Alert from "@mui/material/Alert";
+import LoginDialog from "../../commons/form/loginDialog";
 
 import { loadDomains, loadBoreholes, loadSettings, loadUser, getContent } from "../../api-lib/index";
 
@@ -59,91 +60,49 @@ class DataLoader extends React.Component {
     const isLoading = !this.props.auth || this.props.auth.isLoading || this.props.user?.authentication;
 
     const authorizationFailed = this.props.user?.authentication && this.props.user.error;
-    return (
-      <div
-        style={{
-          alignItems: "center",
-          backgroundColor: "#787878",
-          display: "flex",
-          flex: "1 1 0%",
-          justifyContent: "center",
-          height: "100%",
-        }}>
-        <div
-          style={{
-            backgroundColor: "#fff",
-            borderRadius: "2px",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
-            display: "flex",
-            flexDirection: "column",
-          }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              padding: "2em",
-            }}>
-            <div
-              style={{
-                width: "300px",
-                paddingRight: "1em",
-              }}>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                }}>
-                <img
-                  alt="Swiss Logo"
-                  src={"/logo.svg"}
-                  style={{
-                    height: "70px",
-                  }}
-                />
-                <div
-                  style={{
-                    marginLeft: "1em",
-                    textAlign: "left",
-                  }}>
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "1.2em",
-                      }}>
-                      {this.state.title[this.props.i18n.language]}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "0.8em",
-                      }}>
-                      Borehole Data Management System
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-              <div
-                style={{
-                  paddingTop: "2em",
-                }}>
-                {Object.prototype.hasOwnProperty.call(this.state.body, this.props.i18n.language) ? (
+    const OuterContainer = styled("div")({
+      alignItems: "center",
+      backgroundColor: "#787878",
+      display: "flex",
+      flex: "1 1 0%",
+      justifyContent: "center",
+      height: "100%",
+    });
+
+    const InnerContainer = styled("div")({
+      backgroundColor: "#fff",
+      borderRadius: "2px",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+      display: "flex",
+      flexDirection: "column",
+      minWidth: "100px",
+      maxWidth: "600px",
+    });
+
+    const RowContainer = styled("div")({
+      display: "flex",
+      flexDirection: "row",
+      padding: "2em",
+    });
+
+    const MarkdownContainer = styled("div")({
+      paddingTop: "2em",
+      marginBottom: "1em",
+    });
+
+    const CommonButtonStyle = { marginTop: "1.5em", width: "120px", alignSelf: "center" };
+
+    return (
+      <OuterContainer>
+        <InnerContainer>
+          <RowContainer>
+            <LoginDialog title={this.state.title[this.state.lang]}>
+              <MarkdownContainer>
+                {this.state.body[this.props.i18n.language] && (
                   <Markdown>{this.state.body[this.props.i18n.language]}</Markdown>
-                ) : null}
-              </div>
-            </div>
-            <div
-              style={{
-                width: "300px",
-                padding: "0px 1em 0px 2em",
-              }}>
-              <div
-                style={{
-                  fontSize: "1.2em",
-                  paddingBottom: "2em",
-                  textAlign: "center",
-                }}>
-                Sign in
-              </div>
+                )}
+              </MarkdownContainer>
               {!(isLoading || authorizationFailed) ? (
                 <Button
                   compact
@@ -156,9 +115,7 @@ class DataLoader extends React.Component {
                     });
                   }}
                   size="small"
-                  style={{
-                    marginTop: "1.5em",
-                  }}
+                  style={CommonButtonStyle}
                   data-cy="login-button"
                 />
               ) : null}
@@ -171,9 +128,7 @@ class DataLoader extends React.Component {
                   content="Login"
                   fluid
                   size="small"
-                  style={{
-                    marginTop: "1.5em",
-                  }}
+                  style={CommonButtonStyle}
                 />
               ) : null}
               {authorizationFailed ? (
@@ -185,14 +140,12 @@ class DataLoader extends React.Component {
                     color="red"
                     content="Logout"
                     onClick={() => this.props.auth.signoutRedirect()}
-                    style={{
-                      marginTop: "1em",
-                    }}
+                    style={CommonButtonStyle}
                   />
                 </>
               ) : null}
-            </div>
-          </div>
+            </LoginDialog>
+          </RowContainer>
           <div
             style={{
               display: "flex",
@@ -201,8 +154,8 @@ class DataLoader extends React.Component {
             }}>
             <TranslationKeys />
           </div>
-        </div>
-      </div>
+        </InnerContainer>
+      </OuterContainer>
     );
   }
 }
