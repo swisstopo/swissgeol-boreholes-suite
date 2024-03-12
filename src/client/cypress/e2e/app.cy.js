@@ -5,22 +5,22 @@ describe("General app tests", () => {
     // default is english
     cy.session("logged out", () => cy.visit("/"));
     cy.visit("/");
-    cy.contains("Sign in");
+    cy.contains("Login");
     cy.contains("Welcome to");
 
     // german
     cy.contains("span", "DE").click();
-    cy.contains("Sign in");
+    cy.contains("Login");
     cy.contains("Willkommen bei");
 
     // french
     cy.contains("span", "FR").click();
-    cy.contains("Sign in");
+    cy.contains("Login");
     cy.contains("Bienvenue sur");
 
     // italian
     cy.contains("span", "IT").click();
-    cy.contains("Sign in");
+    cy.contains("Login");
     cy.contains("Benvenuti su");
   });
 

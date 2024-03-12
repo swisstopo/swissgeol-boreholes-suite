@@ -114,15 +114,15 @@ INSERT INTO bdms.contents(
     'login',
     FALSE,
 
-    'Welcome to swissforage.ch',
+    'Welcome to boreholes.ch',
     'A platform to acquire borehole data according to the Borehole data model defined by the Swiss Geological Survey at swisstopo ([more](https://geoservice2.ist.supsi.ch/docs/bdms)).',
 
-    'Willkommen bei swissforage.ch',
+    'Willkommen bei boreholes.ch',
     'Eine Plattform zur Erfassung von Bohrlochdaten nach dem von der Schweizerischen Landesgeologie bei swisstopo definierten Bohrlochdatenmodell ([mehr](https://geoservice2.ist.supsi.ch/docs/bdms)).',
 
-    'Bienvenue sur swissforage.ch',
+    'Bienvenue sur boreholes.ch',
     'Une plate-forme pour l''acquisition de données de forage selon le modèle de données de forage défini par le Service géologique suisse à swisstopo ([en savoir plus](https://geoservice2.ist.supsi.ch/docs/bdms)).',
 
-    'Benvenuti su swissforage.ch',
+    'Benvenuti su boreholes.ch',
     'Una piattaforma per l''acquisizione di dati di trivellazione secondo il modello di dati di trivellazione definito dal Servizio geologico nazionale di swisstopo ([altro](https://geoservice2.ist.supsi.ch/docs/bdms)).'
 );

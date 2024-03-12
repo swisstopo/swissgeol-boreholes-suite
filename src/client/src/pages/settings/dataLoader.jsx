@@ -97,7 +97,7 @@ class DataLoader extends React.Component {
       <OuterContainer>
         <InnerContainer>
           <RowContainer>
-            <LoginDialog title={this.state.title[this.state.lang]}>
+            <LoginDialog title={this.state.title[this.props.i18n.language]}>
               <MarkdownContainer>
                 {this.state.body[this.props.i18n.language] && (
                   <Markdown>{this.state.body[this.props.i18n.language]}</Markdown>

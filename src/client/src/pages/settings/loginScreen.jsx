@@ -289,9 +289,9 @@ class LoginScreen extends React.Component {
                 transform: "scale(0.80)",
               }}>
               <LoginPreviewContainer>
-                <LoginDialog title={this.state.title[this.state.lang]}>
+                <LoginDialog title={this.state.title[this.props.i18n.language]}>
                   <MarkdownContainer>
-                    <Markdown>{this.state.body[this.state.lang]}</Markdown>
+                    <Markdown>{this.state.body[this.props.i18n.language]}</Markdown>
                   </MarkdownContainer>
                   <Button primary compact content="Login" style={{ width: "120px", alignSelf: "center" }} />
                 </LoginDialog>

@@ -15,7 +15,7 @@ const StyledImage = styled("img")({
   paddingBottom: "1em",
 });
 
-const LoginDialog: React.FC<LoginDialogProps> = ({ title = "Welcome to swissforage.ch", body = "", children }) => {
+const LoginDialog: React.FC<LoginDialogProps> = ({ title = "Welcome to boreholes.ch", children }) => {
   return (
     <Stack alignItems="left" direction="column">
       <StyledImage alt="Swiss Logo" src="/swissgeol_boreholes.svg" />
