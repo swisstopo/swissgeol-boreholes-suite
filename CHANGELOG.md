@@ -43,6 +43,7 @@
 - Include completion in casing name for hydrogeological observations.
 - Removed property _isLast_ from `ChronostratigraphyLayer`, `LithostratigraphyLayer`, `LithologicalDescription` and `FaciesDescription`.
 - Removed feedback functionality.
+- Included new `swissgeol boreholes` logo and icon.
 
 ### Fixed
 
@@ -50,6 +51,7 @@
 - Fix translations for _new_ buttons.
 - Fixed delete behavior for non-nullable foreign keys of type _Codelist_.
 - Fixed height reference system display.
+- Fixed hydrotest kind display.
 
 ## v2.0.506 - 2023-12-21
 

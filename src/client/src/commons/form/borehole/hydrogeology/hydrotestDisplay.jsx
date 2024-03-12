@@ -44,7 +44,7 @@ const HydrotestDisplay = props => {
       <ObservationDisplay observation={item} />
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay
-          label="testKind"
+          label="hydrotestKind"
           value={item?.codelists.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestKind)}
           type={FormDisplayType.Domain}
         />

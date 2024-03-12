@@ -61,7 +61,7 @@ describe("Tests for the hydrotest editor.", () => {
     cy.wait("@hydrotest_GET");
     evaluateDisplayValue("reliability", "fraglich");
     evaluateDisplayValue("casingName", "testHydrotest - casing-1");
-    evaluateDisplayValue("testKind", "Pump-/Injektionsversuch, variable Rate");
+    evaluateDisplayValue("hydrotestKind", "Pump-/Injektionsversuch, variable Rate");
 
     // update hydrotest
     startEditing();
@@ -89,7 +89,7 @@ describe("Tests for the hydrotest editor.", () => {
     cy.wait("@hydrotest_GET");
 
     evaluateDisplayValue("casingName", "testHydrotest - casing-1");
-    evaluateDisplayValue("testKind", "Pump-/Injektionsversuch, variable Rate");
+    evaluateDisplayValue("hydrotestKind", "Pump-/Injektionsversuch, variable Rate");
     evaluateDisplayValue("flowDirection", ["Entnahme", "Injektion"]);
     evaluateDisplayValue("evaluationMethod", ["stationär", "instationär"]);
     evaluateDisplayValue("hydrotestResult.0.parameter", "kf-Wert (gesättigt)");

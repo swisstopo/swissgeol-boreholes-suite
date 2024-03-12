@@ -29,8 +29,8 @@ class MenuComponent extends React.Component {
           zIndex: 10,
         }}>
         <img
-          alt="ch logo"
-          src={"/logo.svg"}
+          alt="Swiss Logo"
+          src={"/swissgeol_boreholes.svg"}
           style={{
             height: "45px",
             width: "auto",
