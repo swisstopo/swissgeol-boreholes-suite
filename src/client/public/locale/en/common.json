@@ -263,7 +263,7 @@
   "msgDisclaimer_publish_title": "Publish disclaimer",
   "msgEnablingUser": "You are going to re-enable the user \"{{user}}\". This user will be able to login and apply modifications based on its roles.",
   "msgEnablingWorkgroup": "You are going to reenable the workgroup \"{{workgroup}}\". Users belonging to this workgroup will be able to again apply modifications based on their roles.",
-  "msgFillingEmpty": "No casing available",
+  "msgFillingEmpty": "No backfill available",
   "msgIdentifierAlreadyUsed": "ID type already in use",
   "msgIdentifierDeletionAlreadyUsed": "This ID type is used and therefore cannot be deleted",
   "msgInstrumentsEmpty": "No instrumentation available",
