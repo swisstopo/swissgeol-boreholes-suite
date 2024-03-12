@@ -25,8 +25,8 @@ public class FieldMeasurementController : BdmsControllerBase<FieldMeasurement>
     public async Task<IEnumerable<FieldMeasurement>> GetAsync([FromQuery] int? boreholeId = null)
     {
         var fieldMeasurements = Context.FieldMeasurements
-            .Include(f => f.SampleType)
-            .Include(f => f.Parameter)
+            .Include(f => f.FieldMeasurementResults).ThenInclude(f => f.SampleType)
+            .Include(f => f.FieldMeasurementResults).ThenInclude(f => f.Parameter)
             .Include(f => f.Reliability)
             .Include(f => f.Casing)
             .ThenInclude(c => c.Completion)

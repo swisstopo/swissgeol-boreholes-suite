@@ -847,16 +847,11 @@ public static class BdmsContextExtensions
         context.BulkInsert(groundwaterLevelMeasurements, bulkConfig);
 
         // Seed field measurements
-        var fakeFieldMeasurements = new Faker<FieldMeasurement>()
-            .RuleFor(o => o.SampleTypeId, f => f.PickRandom(fieldMeasurementSampleTypeIds))
-            .RuleFor(o => o.SampleType, _ => default!)
-            .RuleFor(o => o.ParameterId, f => f.PickRandom(fieldMeasurementParameterIds))
-            .RuleFor(o => o.Parameter, _ => default!)
-            .RuleFor(o => o.Value, f => f.Random.Double(1, 5000));
+        var fakeFieldMeasurement = new Faker<FieldMeasurement>();
 
         FieldMeasurement SeededFieldMeasurements(Observation observation)
         {
-            return fakeFieldMeasurements
+            return fakeFieldMeasurement
                 .UseSeed(observation.Id)
                 .RuleFor(o => o.Id, _ => observation.Id)
                 .Generate();
@@ -865,6 +860,29 @@ public static class BdmsContextExtensions
         var fieldMeasurements = observations.Where(o => o.Type == ObservationType.FieldMeasurement).Select(observation => SeededFieldMeasurements(observation)).ToList();
 
         context.BulkInsert(fieldMeasurements, bulkConfig);
+
+        // Seed field measurement results
+        var fieldMeasurementResult_ids = 14_000_000;
+        var fieldMeasurementResultRange = Enumerable.Range(fieldMeasurementResult_ids, 1000).ToList();
+        var fakeFieldMeasurementResults = new Faker<FieldMeasurementResult>()
+            .StrictMode(true)
+            .RuleFor(o => o.Id, f => fieldMeasurementResult_ids++)
+            .RuleFor(o => o.FieldMeasurementId, f => f.PickRandom(fieldMeasurements.Select(h => h.Id)))
+            .RuleFor(o => o.FieldMeasurement, _ => default!)
+            .RuleFor(o => o.SampleTypeId, f => f.PickRandom(fieldMeasurementSampleTypeIds))
+            .RuleFor(o => o.SampleType, _ => default!)
+            .RuleFor(o => o.ParameterId, f => f.PickRandom(fieldMeasurementParameterIds))
+            .RuleFor(o => o.Parameter, _ => default!)
+            .RuleFor(o => o.Value, f => f.Random.Double(1, 5000))
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!); 
+
+        FieldMeasurementResult SeededFieldMeasurementResults(int seed) => fakeFieldMeasurementResults.UseSeed(seed).Generate();
+        context.BulkInsert(fieldMeasurementResultRange.Select(SeededFieldMeasurementResults).ToList(), bulkConfig);
 
         context.SaveChanges();
 
@@ -878,6 +896,7 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow', 'id_wkf'), {workflow_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.observation', 'id'), {observation_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.hydrotest_result', 'id'), {hydrotestResult_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.fieldmeasurement_result', 'id'), {fieldMeasurementResult_ids - 1})");
     }
 }
 #pragma warning restore CA1505

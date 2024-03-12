@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240312163115_AddFieldMeasurementResultsTable")]
+    partial class AddFieldMeasurementResultsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1966,6 +1969,22 @@ namespace BDMS.Migrations
                 {
                     b.HasBaseType("BDMS.Models.Observation");
 
+                    b.Property<int>("ParameterId")
+                        .HasColumnType("integer")
+                        .HasColumnName("parameter");
+
+                    b.Property<int>("SampleTypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("sample_type");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("double precision")
+                        .HasColumnName("value");
+
+                    b.HasIndex("ParameterId");
+
+                    b.HasIndex("SampleTypeId");
+
                     b.ToTable("field_measurement", "bdms");
                 });
 
@@ -2937,6 +2956,22 @@ namespace BDMS.Migrations
                         .HasForeignKey("BDMS.Models.FieldMeasurement", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "Parameter")
+                        .WithMany()
+                        .HasForeignKey("ParameterId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "SampleType")
+                        .WithMany()
+                        .HasForeignKey("SampleTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Parameter");
+
+                    b.Navigation("SampleType");
                 });
 
             modelBuilder.Entity("BDMS.Models.GroundwaterLevelMeasurement", b =>
