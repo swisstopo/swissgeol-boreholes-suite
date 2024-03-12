@@ -43,6 +43,7 @@
 - Include completion in casing name for hydrogeological observations.
 - Removed property _isLast_ from `ChronostratigraphyLayer`, `LithostratigraphyLayer`, `LithologicalDescription` and `FaciesDescription`.
 - Removed feedback functionality.
+- Included new `swissgeol boreholes` logo and icon.
 
 ### Fixed
 
