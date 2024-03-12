@@ -3,49 +3,15 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { withAuth } from "react-oidc-context";
-import Markdown from "markdown-to-jsx";
 import TranslationKeys from "../../commons/translationKeys";
 import { styled } from "@mui/material/styles";
 import { Button } from "semantic-ui-react";
 import Alert from "@mui/material/Alert";
 import LoginDialog from "../../commons/form/loginDialog";
 
-import { loadDomains, loadBoreholes, loadSettings, loadUser, getContent } from "../../api-lib/index";
+import { loadDomains, loadBoreholes, loadSettings, loadUser } from "../../api-lib/index";
 
 class DataLoader extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isFetching: true,
-      title: {
-        en: "",
-        de: "",
-        fr: "",
-        it: "",
-        ro: "",
-      },
-      body: {
-        en: "",
-        de: "",
-        fr: "",
-        it: "",
-        ro: "",
-      },
-    };
-  }
-
-  componentDidMount() {
-    getContent("login").then(r => {
-      if (r.data.data !== null) {
-        this.setState({
-          isFetching: false,
-          title: r.data.data.title,
-          body: r.data.data.body,
-        });
-      }
-    });
-  }
-
   componentDidUpdate(prevProps) {
     if (!prevProps.user?.authentication && this.props.user?.authentication) {
       this.props.loadUser();
@@ -86,23 +52,13 @@ class DataLoader extends React.Component {
       padding: "2em",
     });
 
-    const MarkdownContainer = styled("div")({
-      paddingTop: "2em",
-      marginBottom: "1em",
-    });
-
     const CommonButtonStyle = { marginTop: "1.5em", width: "120px", alignSelf: "center" };
 
     return (
       <OuterContainer>
         <InnerContainer>
           <RowContainer>
-            <LoginDialog title={this.state.title[this.props.i18n.language]}>
-              <MarkdownContainer>
-                {this.state.body[this.props.i18n.language] && (
-                  <Markdown>{this.state.body[this.props.i18n.language]}</Markdown>
-                )}
-              </MarkdownContainer>
+            <LoginDialog>
               {!(isLoading || authorizationFailed) ? (
                 <Button
                   compact
