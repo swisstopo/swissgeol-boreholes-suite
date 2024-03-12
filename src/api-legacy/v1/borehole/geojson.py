@@ -48,6 +48,8 @@ class ListGeojson(Action):
 
                     {}
 
+                    {}
+
                 ) as strt
                 ON 
                     borehole.id_bho = strt.id_bho_fk
@@ -79,6 +81,8 @@ class ListGeojson(Action):
                         id_sty_fk = id_sty
                     {}
 
+                    {}                    
+
                 ) as chronostratigraphy
                 ON 
                     borehole.id_bho = chronostratigraphy.id_bho_fk
@@ -109,6 +113,8 @@ class ListGeojson(Action):
                     ON
                         stratigraphy_id = id_sty
                     {}
+
+                    {}                    
 
                 ) as lithostratigraphy
                 ON 
