@@ -199,6 +199,7 @@ class BoreholeTable extends TableComponent {
       <Segment
         basic
         loading={this.props.store.isFetching}
+        data-cy="borehole-table"
         style={{
           flex: "1 1 100%",
           display: "flex",

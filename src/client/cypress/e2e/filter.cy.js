@@ -165,17 +165,25 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 39);
   });
 
-  it("filters boreholes by original lithology", () => {
-    loginAsAdmin();
-    cy.visit("/editor");
+  function filterByOriginalLithology() {
     cy.contains("Lithology").click();
     cy.contains("Show all fields").children(".checkbox").click();
-
-    // input value
     cy.contains("Original lithology").next().find("input").type("Wooden Chair");
-    cy.wait("@edit_list");
+  }
 
-    // check content of table
+  it("filters boreholes by original lithology in editor mode", () => {
+    loginAsAdmin();
+    cy.visit("/editor");
+    filterByOriginalLithology();
+    cy.wait("@edit_list");
+    cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 21);
+  });
+
+  it("filters boreholes by original lithology in viewer mode", () => {
+    loginAsEditorInViewerMode();
+    cy.visit("/");
+    filterByOriginalLithology();
+    cy.wait("@borehole");
     cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 21);
   });
 
