@@ -70,9 +70,9 @@ export const DataCardProvider = props => {
 
       setDisplayedCards(newDisplayedCards);
       setSelectedCard(newSelectedCard);
-      setCheckIsDirty(false);
-      setNewCardId(null);
     }
+    setCheckIsDirty(false);
+    setNewCardId(null);
   };
 
   return (
