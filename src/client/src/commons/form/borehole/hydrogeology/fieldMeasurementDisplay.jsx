@@ -4,6 +4,7 @@ import { useDomains } from "../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
 import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";
+import { getFieldMeasurementParameterUnits } from "./parameterUnits";
 
 const FieldMeasurementDisplay = props => {
   const { item, selected, setSelected, isEditable, deleteData } = props;
@@ -54,6 +55,7 @@ const FieldMeasurementDisplay = props => {
               {result?.value && (
                 <>
                   <span>{result?.value + " "}</span>
+                  {getFieldMeasurementParameterUnits(result.parameterId, domains)}
                 </>
               )}
             </TableCell>

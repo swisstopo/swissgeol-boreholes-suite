@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { FieldMeasurementParameterUnits } from "./parameterUnits";
+import { FieldMeasurementParameterUnits, getFieldMeasurementParameterUnits } from "./parameterUnits";
 import Delete from "@mui/icons-material/Delete";
 
 const FieldMeasurementInput = props => {
@@ -43,7 +43,7 @@ const FieldMeasurementInput = props => {
     formMethods.getValues()["fieldMeasurementResults"].forEach((element, index) => {
       currentUnits = {
         ...currentUnits,
-        [index]: getParameterUnit(element.parameterId),
+        [index]: getFieldMeasurementParameterUnits(element.parameterId),
       };
     });
     setUnits(currentUnits);
@@ -86,13 +86,6 @@ const FieldMeasurementInput = props => {
     }
     data.casing = null;
     return data;
-  };
-
-  const getParameterUnit = parameterId => {
-    if (!parameterId) {
-      return null;
-    }
-    return FieldMeasurementParameterUnits[domains?.data?.find(d => d.id === parameterId).geolcode];
   };
 
   return (
@@ -144,7 +137,7 @@ const FieldMeasurementInput = props => {
                         name: d[i18n.language],
                       }))}
                     onUpdate={value => {
-                      setUnits({ ...units, [index]: getParameterUnit(value) });
+                      setUnits({ ...units, [index]: getFieldMeasurementParameterUnits(value) });
                     }}
                   />
 

@@ -54,6 +54,7 @@ export const closeDropdown = () => {
  * Sets the value for a select form element.
  * @param {string} fieldName The name of the select field.
  * @param {number} index The index of the option to select.
+ * @param {number} expected The expected number of options in the dropdown.
  */
 export const setSelect = (fieldName, index, expected) => {
   var selector = `[data-cy="${fieldName}-formSelect"]`;

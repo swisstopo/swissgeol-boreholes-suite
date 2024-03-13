@@ -60,14 +60,14 @@ describe("Tests for the field measurement editor.", () => {
     startEditing();
     addItem("addFieldMeasurementResult");
     setSelect("fieldMeasurementResults.0.sampleTypeId", 0);
-    setSelect("fieldMeasurementResults.0.parameterId", 0, 6);
+    setSelect("fieldMeasurementResults.0.parameterId", 0, 9);
     setInput("fieldMeasurementResults.0.value", "10");
     saveForm();
-    cy.wait("@hydrotest_GET");
+    cy.wait("@fieldmeasurement_GET");
 
     evaluateDisplayValue("fieldMeasurementResult.0.sampleType", "Pumpprobe");
-    evaluateDisplayValue("fieldMeasurementResult.0.parameter", "kf-Wert (gesättigt)");
-    evaluateDisplayValue("fieldMeasurementResult.0.value", "10 m/s");
+    evaluateDisplayValue("fieldMeasurementResult.0.parameter", "Temperatur");
+    evaluateDisplayValue("fieldMeasurementResult.0.value", "10 °C");
 
     // delete field measurement
     deleteItem();
