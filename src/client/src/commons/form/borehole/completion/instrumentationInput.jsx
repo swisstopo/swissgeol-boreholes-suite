@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useDomains, getCasings, addInstrumentation, updateInstrumentation } from "../../../../api/fetchApiV2";
@@ -81,5 +81,4 @@ const InstrumentationInput = ({ item, parentId }) => {
   );
 };
 
-const MemoizedInstrumentationInput = React.memo(InstrumentationInput);
-export default MemoizedInstrumentationInput;
+export default InstrumentationInput;

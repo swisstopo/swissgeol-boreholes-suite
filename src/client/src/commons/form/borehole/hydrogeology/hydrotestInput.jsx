@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { Box, IconButton, InputAdornment, Stack, Typography } from "@mui/material";
 import { FormInput, FormMultiSelect, FormSelect } from "../../../../components/form/form";
@@ -394,5 +394,4 @@ const HydrotestInput = props => {
   );
 };
 
-const MemoizedHydrotestInput = React.memo(HydrotestInput);
-export default MemoizedHydrotestInput;
+export default HydrotestInput;

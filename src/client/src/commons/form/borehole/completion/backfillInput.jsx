@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDomains, getCasings, addBackfill, updateBackfill } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
@@ -80,5 +80,4 @@ const BackfillInput = ({ item, parentId }) => {
   );
 };
 
-const MemoizedBackfillInput = React.memo(BackfillInput);
-export default MemoizedBackfillInput;
+export default BackfillInput;

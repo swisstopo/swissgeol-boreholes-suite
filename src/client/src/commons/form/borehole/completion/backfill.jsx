@@ -1,4 +1,3 @@
-import React from "react";
 import { getBackfills } from "../../../../api/fetchApiV2";
 import DataCards from "../../../../components/dataCard/dataCards";
 import BackfillInput from "./backfillInput";
@@ -28,5 +27,4 @@ const Backfill = ({ isEditable, completionId }) => {
     />
   );
 };
-const MemoizedBackfill = React.memo(Backfill);
-export default MemoizedBackfill;
+export default Backfill;

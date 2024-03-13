@@ -1,4 +1,3 @@
-import React from "react";
 import { getInstrumentation } from "../../../../api/fetchApiV2";
 import DataCards from "../../../../components/dataCard/dataCards";
 import InstrumentationInput from "./instrumentationInput";
@@ -22,5 +21,4 @@ const Instrumentation = ({ isEditable, completionId }) => {
     />
   );
 };
-const MemoizedInstrumentation = React.memo(Instrumentation);
-export default MemoizedInstrumentation;
+export default Instrumentation;
