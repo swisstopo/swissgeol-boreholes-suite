@@ -54,9 +54,13 @@ export const DataCards = props => {
     return displayedCards.sort(sortDisplayed).map((item, index) => {
       const isSelected = selectedCard?.id === item.id;
       const isTemp = item.id === 0;
+      var cardLabel = `${cyLabel}-card.${index}`;
+      if (isEditable && isSelected) {
+        cardLabel = `${cyLabel}-card.${index}.edit`;
+      }
       return (
         <DataCardItem key={item.id}>
-          <DataCard key={item.id} data-cy={`${cyLabel}-card.${index}`}>
+          <DataCard key={item.id} data-cy={cardLabel}>
             {isEditable && isSelected
               ? renderInput({
                   item: item,
