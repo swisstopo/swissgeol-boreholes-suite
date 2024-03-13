@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { FieldMeasurementParameterUnits, getFieldMeasurementParameterUnits } from "./parameterUnits";
+import { getFieldMeasurementParameterUnits } from "./parameterUnits";
 import Delete from "@mui/icons-material/Delete";
 
 const FieldMeasurementInput = props => {
