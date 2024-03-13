@@ -101,9 +101,9 @@ const FieldMeasurementInput = props => {
                 marginTop: "18px !important",
               }}>
               <Stack direction={"row"} sx={{ width: "100%" }} spacing={1} justifyContent={"space-between"}>
-                <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("FieldMeasurementResult")}</Typography>
+                <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("fieldMeasurementResult")}</Typography>
                 <AddButton
-                  label="addFieldMeasurementResult"
+                  label="addFieldmeasurementResult"
                   onClick={() => {
                     append({ parameterId: "", value: null, minValue: null, maxValue: null }, { shouldFocus: false });
                   }}
@@ -126,7 +126,7 @@ const FieldMeasurementInput = props => {
                   />
                   <FormSelect
                     fieldName={`fieldMeasurementResults.${index}.parameterId`}
-                    label="field_measurement_parameter"
+                    label="parameter"
                     selected={field.parameterId}
                     required={true}
                     values={domains?.data
