@@ -49,25 +49,25 @@ describe("Tests for the field measurement editor.", () => {
     setSelect("reliabilityId", 1);
     setInput("startTime", "2012-11-14T12:06");
     setSelect("casingId", 1);
-    setSelect("sampleTypeId", 1);
-    setSelect("parameterId", 5);
-    setInput("value", "77.1045");
 
     // close editing mask
     saveForm();
 
     //assert field measurementis displayed
     evaluateDisplayValue("casingName", "testFieldmeasurement - casing-1");
-    evaluateDisplayValue("field_measurement_sample_type", "Schöpfprobe");
-    evaluateDisplayValue("parameter", "Sauerstoffsättigung");
-    evaluateDisplayValue("value", "77.1045 %");
 
     // edit field measurement
     startEditing();
-    setSelect("sampleTypeId", 0);
+    addItem("addFieldmeasurementResult");
+    setSelect("fieldMeasurementResults.0.sampleTypeId", 0);
+    setSelect("fieldMeasurementResults.0.parameterId", 0, 6);
+    setInput("fieldMeasurementResults.0.value", "10");
     saveForm();
-    evaluateDisplayValue("field_measurement_sample_type", "Pumpprobe");
-    evaluateDisplayValue("casingName", "testFieldmeasurement - casing-1");
+    cy.wait("@hydrotest_GET");
+
+    evaluateDisplayValue("fieldMeasurementResult.0.sampleType", "Pumpprobe");
+    evaluateDisplayValue("fieldMeasurementResult.0.parameter", "kf-Wert (gesättigt)");
+    evaluateDisplayValue("fieldMeasurementResult.0.value", "10 m/s");
 
     // delete field measurement
     deleteItem();
@@ -89,9 +89,6 @@ describe("Tests for the field measurement editor.", () => {
     setInput("toDepthM", 10);
     setSelect("reliabilityId", 1);
     setInput("startTime", "2012-11-14T12:06");
-    setSelect("sampleTypeId", 1);
-    setSelect("parameterId", 5);
-    setInput("value", "77.1045");
     saveForm();
     cy.wait("@fieldmeasurement_GET");
 
@@ -102,9 +99,6 @@ describe("Tests for the field measurement editor.", () => {
     setInput("toDepthM", 12);
     setSelect("reliabilityId", 1);
     setInput("startTime", "2012-11-14T12:06");
-    setSelect("sampleTypeId", 1);
-    setSelect("parameterId", 5);
-    setInput("value", "77.1045");
     saveForm();
     cy.wait("@fieldmeasurement_GET");
 
