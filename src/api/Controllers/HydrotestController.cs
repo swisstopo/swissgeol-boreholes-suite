@@ -8,13 +8,14 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class HydrotestController : ControllerBase
+public class HydrotestController : ControllerBaseWithSave
 {
     private readonly BdmsContext context;
     private readonly ILogger<Hydrotest> logger;
     private readonly IBoreholeLockService boreholeLockService;
 
     public HydrotestController(BdmsContext context, ILogger<Hydrotest> logger, IBoreholeLockService boreholeLockService)
+        : base(context, logger)
     {
         this.context = context;
         this.logger = logger;
@@ -214,21 +215,6 @@ public class HydrotestController : ControllerBase
         else
         {
             return new List<int>();
-        }
-    }
-
-    private async Task<IActionResult> SaveChangesAsync(Func<IActionResult> successResult)
-    {
-        try
-        {
-            await context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
-            return successResult();
-        }
-        catch (Exception ex)
-        {
-            var errorMessage = "An error occurred while saving the entity changes.";
-            logger?.LogError(ex, errorMessage);
-            return Problem(errorMessage);
         }
     }
 }

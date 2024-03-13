@@ -5,7 +5,7 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public abstract class BdmsControllerBase<TEntity> : ControllerBase
+public abstract class BdmsControllerBase<TEntity> : ControllerBaseWithSave
     where TEntity : IIdentifyable, IChangeTracking, new()
 {
     private readonly BdmsContext context;
@@ -28,6 +28,7 @@ public abstract class BdmsControllerBase<TEntity> : ControllerBase
     protected IBoreholeLockService BoreholeLockService => boreholeLockService;
 
     protected BdmsControllerBase(BdmsContext context, ILogger<TEntity> logger, IBoreholeLockService boreholeLockService)
+        : base(context, logger)
     {
         this.context = context;
         this.logger = logger;
