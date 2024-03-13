@@ -361,15 +361,39 @@ export const createStratigraphy = (boreholeId, kindId) => {
 };
 
 export const createCompletion = (name, boreholeId, kindId, isPrimary) => {
+  return cy.get("@id_token").then(token => {
+    return cy
+      .request({
+        method: "POST",
+        url: "/api/v2/completion",
+        body: {
+          name: name,
+          boreholeId: boreholeId,
+          kindId: kindId,
+          isPrimary: isPrimary,
+        },
+        cache: "no-cache",
+        credentials: "same-origin",
+        auth: bearerAuth(token),
+      })
+      .then(res => {
+        return cy.wrap(res.body.id);
+      });
+  });
+};
+
+export const createCasing = (name, boreholeId, completionId, dateStart, dateFinish, casingElements) => {
   cy.get("@id_token").then(token => {
     return cy.request({
       method: "POST",
-      url: "/api/v2/completion",
+      url: "/api/v2/casing",
       body: {
         name: name,
         boreholeId: boreholeId,
-        kindId: kindId,
-        isPrimary: isPrimary,
+        completionId: completionId,
+        dateStart: dateStart,
+        dateFinish: dateFinish,
+        casingElements: casingElements,
       },
       cache: "no-cache",
       credentials: "same-origin",

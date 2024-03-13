@@ -1,38 +1,39 @@
-import { createBorehole, loginAsAdmin, startBoreholeEditing, createCompletion } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  loginAsAdmin,
+  startBoreholeEditing,
+  createCompletion,
+  createCasing,
+} from "../helpers/testHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
 
 describe("Tests for the field measurement editor.", () => {
   it("Creates, updates and deletes field measurement", () => {
+    // Create borehole with completion and casings
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id => createCompletion("testFieldmeasurement", id, 16000002, true))
+      .then(id =>
+        createCompletion("test fieldmeasurement", id, 16000002, true)
+          .as("completion_id")
+          .then(completionId => {
+            createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
+              { fromDepth: 0, toDepth: 10, kindId: 25000103 },
+            ]);
+            createCasing("casing-2", id, completionId, "2021-01-03", "2021-01-04", [
+              { fromDepth: 5, toDepth: 12, kindId: 25000105 },
+            ]);
+          }),
+      )
       .then(response => {
         expect(response).to.have.property("status", 200);
       });
+
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
       cy.visit(`/editor/${id}/completion`);
     });
     startBoreholeEditing();
-    cy.get("[data-cy=completion-content-header-tab-casing]").click();
-    cy.wait("@casing_GET");
-
-    addItem("addCasing");
-    cy.wait("@codelist_GET");
-
-    setInput("name", "casing-1");
-    setInput("dateStart", "2021-01-01");
-    setInput("dateFinish", "2021-01-02");
-    setInput("casingElements.0.fromDepth", "0");
-    setInput("casingElements.0.toDepth", "10");
-    setSelect("casingElements.0.kindId", 2);
-    setSelect("casingElements.0.materialId", 3);
-    setInput("casingElements.0.innerDiameter", "3");
-    setInput("casingElements.0.outerDiameter", "4");
-
-    saveForm();
-    cy.wait("@casing_GET");
 
     cy.get('[data-cy="hydrogeology-menu-item"]').click({ force: true });
     cy.get('[data-cy="fieldmeasurement-menu-item"]').click({ force: true });
@@ -54,7 +55,7 @@ describe("Tests for the field measurement editor.", () => {
     saveForm();
 
     //assert field measurementis displayed
-    evaluateDisplayValue("casingName", "testFieldmeasurement - casing-1");
+    evaluateDisplayValue("casingName", "test fieldmeasurement - casing-1");
 
     // edit field measurement
     startEditing();
