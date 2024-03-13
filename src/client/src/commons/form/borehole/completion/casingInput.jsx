@@ -1,17 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { Box, IconButton, Stack, Typography } from "@mui/material";
 import Delete from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
-import { useDomains } from "../../../../api/fetchApiV2";
+import { addCasing, updateCasing, useDomains } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons";
 import { extractCasingDepth } from "./casingUtils";
+import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
+import Prompt from "../../../../components/prompt/prompt";
 
 const CasingInput = props => {
-  const { item, setSelected, parentId, addData, updateData } = props;
+  const { item, parentId } = props;
+  const { triggerReload, selectCard } = useContext(DataCardContext);
+  const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const formMethods = useForm({
@@ -29,6 +33,7 @@ const CasingInput = props => {
       required: true,
     },
   });
+  const [showSavePrompt, setShowSavePrompt] = useState(false);
 
   const prepareFormDataForSubmit = data => {
     if (data?.dateStart === "") {
@@ -52,16 +57,19 @@ const CasingInput = props => {
   const submitForm = data => {
     data = prepareFormDataForSubmit(data);
     if (item.id === 0) {
-      addData({
+      addCasing({
         ...data,
+      }).then(() => {
+        triggerReload();
       });
     } else {
-      updateData({
+      updateCasing({
         ...item,
         ...data,
+      }).then(() => {
+        triggerReload();
       });
     }
-    setSelected(null);
   };
 
   const updateDepth = () => {
@@ -80,6 +88,17 @@ const CasingInput = props => {
     );
   };
 
+  useEffect(() => {
+    if (checkIsDirty) {
+      if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
+        setShowSavePrompt(true);
+      } else {
+        leaveInput(true);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkIsDirty]);
+
   // trigger form validation on mount
   useEffect(() => {
     formMethods.trigger();
@@ -93,6 +112,7 @@ const CasingInput = props => {
   }, [formMethods.getValues()["casingElements"]]);
 
   return (
+    <>
     <FormProvider {...formMethods}>
       <form onSubmit={formMethods.handleSubmit(submitForm)}>
         <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
@@ -196,7 +216,7 @@ const CasingInput = props => {
           <CancelButton
             onClick={() => {
               formMethods.reset();
-              setSelected(null);
+                selectCard(null);
             }}
           />
           <SaveButton
@@ -208,6 +228,36 @@ const CasingInput = props => {
         </DataCardButtonContainer>
       </form>
     </FormProvider>
+      <Prompt
+        open={showSavePrompt}
+        setOpen={setShowSavePrompt}
+        titleLabel="unsavedChangesTitle"
+        messageLabel="unsavedChangesMessage"
+        actions={[
+          {
+            label: "cancel",
+            action: () => {
+              leaveInput(false);
+            },
+          },
+          {
+            label: "reset",
+            action: () => {
+              formMethods.reset();
+              selectCard(null);
+              leaveInput(true);
+            },
+          },
+          {
+            label: "save",
+            disabled: !formMethods.formState.isValid,
+            action: () => {
+              formMethods.handleSubmit(submitForm)();
+            },
+          },
+        ]}
+      />
+    </>
   );
 };
 

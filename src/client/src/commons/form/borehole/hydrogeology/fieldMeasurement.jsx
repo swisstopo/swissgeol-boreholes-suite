@@ -1,9 +1,4 @@
-import {
-  getFieldMeasurements,
-  addFieldMeasurement,
-  updateFieldMeasurement,
-  deleteFieldMeasurement,
-} from "../../../../api/fetchApiV2";
+import { getFieldMeasurements } from "../../../../api/fetchApiV2";
 import FieldMeasurementInput from "./fieldMeasurementInput";
 import FieldMeasurementDisplay from "./fieldMeasurementDisplay";
 import { DataCards } from "../../../../components/dataCard/dataCards";
@@ -15,9 +10,6 @@ const FieldMeasurement = ({ isEditable, boreholeId }) => {
       isEditable={isEditable}
       parentId={boreholeId}
       getData={getFieldMeasurements}
-      addData={addFieldMeasurement}
-      updateData={updateFieldMeasurement}
-      deleteData={deleteFieldMeasurement}
       cyLabel="fieldMeasurement"
       addLabel="addFieldmeasurement"
       emptyLabel="msgFieldMeasurementsEmpty"

@@ -2,17 +2,13 @@ import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import ObservationDisplay from "./observationDisplay";
+import { deleteGroundwaterLevelMeasurement } from "../../../../api/fetchApiV2";
 
 const GroundwaterLevelMeasurementDisplay = props => {
-  const { item, selected, setSelected, isEditable, deleteData } = props;
+  const { item, isEditable } = props;
 
   return (
-    <DataDisplayCard
-      item={item}
-      selected={selected}
-      setSelected={setSelected}
-      isEditable={isEditable}
-      deleteData={deleteData}>
+    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteGroundwaterLevelMeasurement}>
       <ObservationDisplay observation={item} />
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay label="gwlm_kind" value={item?.kind} type={FormDisplayType.Domain} />

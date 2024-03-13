@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  getInstrumentation,
-  addInstrumentation,
-  updateInstrumentation,
-  deleteInstrumentation,
-} from "../../../../api/fetchApiV2";
+import { getInstrumentation } from "../../../../api/fetchApiV2";
 import { DataCards } from "../../../../components/dataCard/dataCards";
 import InstrumentationInput from "./instrumentationInput";
 import InstrumentationDisplay from "./instrumentationDisplay";
@@ -16,9 +11,6 @@ const Instrumentation = ({ isEditable, completionId }) => {
       isEditable={isEditable}
       parentId={completionId}
       getData={getInstrumentation}
-      addData={addInstrumentation}
-      updateData={updateInstrumentation}
-      deleteData={deleteInstrumentation}
       cyLabel="instrumentation"
       addLabel="addInstrument"
       emptyLabel="msgInstrumentsEmpty"

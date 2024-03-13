@@ -2,18 +2,14 @@ import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import { useGetCasingName } from "./casingUtils";
+import { deleteInstrumentation } from "../../../../api/fetchApiV2";
 
 const InstrumentationDisplay = props => {
-  const { item, selected, setSelected, isEditable, deleteData } = props;
+  const { item, isEditable } = props;
   const getCasingName = useGetCasingName();
 
   return (
-    <DataDisplayCard
-      item={item}
-      selected={selected}
-      setSelected={setSelected}
-      isEditable={isEditable}
-      deleteData={deleteData}>
+    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteInstrumentation}>
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay label="fromdepth" value={item?.fromDepth} />
         <FormDisplay label="todepth" value={item?.toDepth} />

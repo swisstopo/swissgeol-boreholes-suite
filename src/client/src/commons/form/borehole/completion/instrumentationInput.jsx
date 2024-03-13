@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useDomains, getCasings } from "../../../../api/fetchApiV2";
+import { useDomains, getCasings, addInstrumentation, updateInstrumentation } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
 import { useGetCasingOptions, prepareCasingDataForSubmit } from "./casingUtils";
 
-const InstrumentationInput = ({ item, setSelected, parentId, addData, updateData }) => {
+const InstrumentationInput = ({ item, parentId }) => {
   const domains = useDomains();
   const { i18n } = useTranslation();
   const [casings, setCasings] = useState([]);
@@ -30,9 +30,8 @@ const InstrumentationInput = ({ item, setSelected, parentId, addData, updateData
   return (
     <DataInputCard
       item={item}
-      setSelected={setSelected}
-      addData={addData}
-      updateData={updateData}
+      addData={addInstrumentation}
+      updateData={updateInstrumentation}
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <Stack direction="row">
         <FormInput fieldName="fromDepth" label="fromdepth" value={item.fromDepth} type="number" required={true} />
