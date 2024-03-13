@@ -1,6 +1,6 @@
 import React from "react";
 import { getInstrumentation } from "../../../../api/fetchApiV2";
-import { DataCards } from "../../../../components/dataCard/dataCards";
+import DataCards from "../../../../components/dataCard/dataCards";
 import InstrumentationInput from "./instrumentationInput";
 import InstrumentationDisplay from "./instrumentationDisplay";
 import { sortByDepth } from "../../../sorter.jsx";

@@ -105,3 +105,5 @@ export const DataCards = props => {
     </FullPage>
   );
 };
+
+export default DataCards;

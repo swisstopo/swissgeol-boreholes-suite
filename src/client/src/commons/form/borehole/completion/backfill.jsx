@@ -1,6 +1,6 @@
 import React from "react";
 import { getBackfills } from "../../../../api/fetchApiV2";
-import { DataCards } from "../../../../components/dataCard/dataCards";
+import DataCards from "../../../../components/dataCard/dataCards";
 import BackfillInput from "./backfillInput";
 import BackfillDisplay from "./backfillDisplay";
 import { sortByDepth } from "../../../sorter.jsx";

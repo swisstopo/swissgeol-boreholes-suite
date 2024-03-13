@@ -1,6 +1,6 @@
 import React from "react";
 import { getCasings } from "../../../../api/fetchApiV2";
-import { DataCards } from "../../../../components/dataCard/dataCards";
+import DataCards from "../../../../components/dataCard/dataCards";
 import CasingInput from "./casingInput";
 import CasingDisplay from "./casingDisplay";
 import { extractCasingDepth } from "./casingUtils.jsx";
