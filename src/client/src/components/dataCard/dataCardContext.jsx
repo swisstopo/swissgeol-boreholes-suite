@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, useState } from "react";
+import { createContext, useState } from "react";
 export const DataCardContext = createContext({
   cards: [],
   displayedCards: [],

@@ -95,6 +95,7 @@ export const DataCards = props => {
           <CircularProgress />
         </FullPageCentered>
       ) : displayedCards?.length > 0 ? (
+        // eslint-disable-next-line react/no-children-prop
         <MemoizedDataCardsContainer children={renderCards} />
       ) : (
         <FullPageCentered>
