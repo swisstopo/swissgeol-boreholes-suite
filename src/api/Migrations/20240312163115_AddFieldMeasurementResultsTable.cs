@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -26,7 +25,7 @@ public partial class AddFieldMeasurementResultsTable : Migration
                 creator = table.Column<int>(type: "integer", nullable: true),
                 creation = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 updater = table.Column<int>(type: "integer", nullable: true),
-                update = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                update = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
             },
             constraints: table =>
             {

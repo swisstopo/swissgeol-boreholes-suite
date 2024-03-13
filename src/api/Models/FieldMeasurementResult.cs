@@ -75,4 +75,3 @@ public class FieldMeasurementResult : IIdentifyable, IChangeTracking
     [Column("update")]
     public DateTime? Updated { get; set; }
 }
-

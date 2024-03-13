@@ -879,7 +879,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.CreatedBy, _ => default!)
             .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
-            .RuleFor(o => o.UpdatedBy, _ => default!); 
+            .RuleFor(o => o.UpdatedBy, _ => default!);
 
         FieldMeasurementResult SeededFieldMeasurementResults(int seed) => fakeFieldMeasurementResults.UseSeed(seed).Generate();
         context.BulkInsert(fieldMeasurementResultRange.Select(SeededFieldMeasurementResults).ToList(), bulkConfig);
