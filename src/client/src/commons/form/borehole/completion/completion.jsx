@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Stack, Typography } from "@mui/material";
@@ -16,9 +16,11 @@ import CompletionHeaderDisplay from "./completionHeaderDisplay";
 import Prompt from "../../../../components/prompt/prompt";
 import { AddButton } from "../../../../components/buttons/buttons";
 import { FullPage } from "../../../../components/baseComponents";
+import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext";
 
 const Completion = props => {
   const { isEditable } = props;
+  const { triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const { boreholeId, completionId } = useParams();
   const history = useHistory();
   const location = useLocation();
@@ -33,6 +35,7 @@ const Completion = props => {
     displayed: [],
     editing: false,
   });
+  const [completionToBeSaved, setCompletionToBeSaved] = useState(null);
   const [showDeletePrompt, setShowDeletePrompt] = useState(false);
 
   const resetState = () => {
@@ -79,16 +82,29 @@ const Completion = props => {
     if (state.editing) {
       setState({ ...state, switchTabTo: index, trySwitchTab: true });
     } else {
-      if (index === -1) {
-        updateHistory("new");
-      } else {
-        updateHistory(state.displayed[index].id);
-      }
+      setState({ ...state, switchTabTo: index });
+      triggerCanSwitch();
     }
   };
 
   const switchTabs = continueSwitching => {
     if (continueSwitching) {
+      triggerCanSwitch();
+    } else {
+      setState({
+        ...state,
+        switchTabTo: null,
+        trySwitchTab: false,
+        editing: state.editing,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (canSwitch === 1 && state.switchTabTo !== null) {
+      if (completionToBeSaved !== null) {
+        saveCompletion();
+      }
       if (state.switchTabTo === -1) {
         updateHistory("new");
       } else if (state.selected.id === 0) {
@@ -103,15 +119,21 @@ const Completion = props => {
         updateHistory(state.displayed[state.switchTabTo].id);
       }
     }
-    setState({
-      ...state,
-      switchTabTo: null,
-      trySwitchTab: false,
-      editing: continueSwitching ? false : state.editing,
-    });
-  };
+    if (canSwitch === 0) {
+      setState({
+        ...state,
+        switchTabTo: null,
+        trySwitchTab: false,
+        editing: false,
+      });
+    }
+  }, [canSwitch]);
 
   const saveCompletion = completion => {
+    if (completion == null) {
+      completion = completionToBeSaved;
+      setCompletionToBeSaved(null);
+    }
     if (completion.id === 0) {
       addCompletion(completion).then(() => {
         setState({
@@ -124,6 +146,15 @@ const Completion = props => {
       updateCompletion(completion).then(() => {
         loadData();
       });
+    }
+  };
+
+  const checkSwitchBeforeSave = completion => {
+    setCompletionToBeSaved(completion);
+    if (state.trySwitchTab) {
+      triggerCanSwitch();
+    } else {
+      saveCompletion(completion);
     }
   };
 
@@ -259,7 +290,7 @@ const Completion = props => {
                     completion={state.selected}
                     editing={state.editing}
                     cancelChanges={cancelChanges}
-                    saveCompletion={saveCompletion}
+                    saveCompletion={checkSwitchBeforeSave}
                     trySwitchTab={state.trySwitchTab}
                     switchTabs={continueSwitching => {
                       switchTabs(continueSwitching);
