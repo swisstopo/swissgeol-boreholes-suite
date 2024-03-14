@@ -14,7 +14,7 @@ const CompletionContentTabBox = props => {
 export const MemoizedCompletionContentTabBox = React.memo(CompletionContentTabBox);
 
 const CompletionContent = ({ completion, isEditable }) => {
-  const { triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
+  const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const history = useHistory();
   const location = useLocation();
   const { t } = useTranslation();
@@ -28,22 +28,30 @@ const CompletionContent = ({ completion, isEditable }) => {
   ];
   const [activeIndex, setActiveIndex] = useState(0);
   const [newIndex, setNewIndex] = useState(null);
+  const [checkContentDirty, setCheckContentDirty] = useState(false);
 
   const handleCompletionChanged = (event, index) => {
     setNewIndex(index);
+    setCheckContentDirty(true);
     triggerCanSwitch();
   };
 
   useEffect(() => {
-    if (canSwitch === 1 && newIndex !== null) {
-      setActiveIndex(newIndex);
-      setNewIndex(null);
-      var newLocation = location.pathname + "#" + tabs[activeIndex].hash;
-      if (location.pathname + location.hash !== newLocation) {
-        history.push(location.pathname + "#" + tabs[activeIndex].hash);
+    if (checkContentDirty) {
+      if (canSwitch === 1 && newIndex !== null) {
+        setActiveIndex(newIndex);
+        setNewIndex(null);
+        var newLocation = location.pathname + "#" + tabs[newIndex].hash;
+        if (location.pathname + location.hash !== newLocation) {
+          history.push(newLocation);
+        }
+      } else if (canSwitch === -1) {
+        setNewIndex(null);
       }
-    } else if (canSwitch === -1) {
-      setNewIndex(null);
+      if (canSwitch !== 0) {
+        resetCanSwitch();
+        setCheckContentDirty(false);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwitch]);

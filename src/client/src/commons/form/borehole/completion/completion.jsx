@@ -20,7 +20,7 @@ import { DataCardExternalContext } from "../../../../components/dataCard/dataCar
 
 const Completion = props => {
   const { isEditable } = props;
-  const { triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
+  const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const { boreholeId, completionId } = useParams();
   const history = useHistory();
   const location = useLocation();
@@ -35,6 +35,7 @@ const Completion = props => {
     displayed: [],
     editing: false,
   });
+  const [checkContentDirty, setCheckContentDirty] = useState(false);
   const [completionToBeSaved, setCompletionToBeSaved] = useState(null);
   const [showDeletePrompt, setShowDeletePrompt] = useState(false);
 
@@ -78,18 +79,23 @@ const Completion = props => {
     }
   };
 
+  const checkIfContentIsDirty = () => {
+    setCheckContentDirty(true);
+    triggerCanSwitch();
+  };
+
   const handleCompletionChanged = (event, index) => {
     if (state.editing) {
       setState({ ...state, switchTabTo: index, trySwitchTab: true });
     } else {
       setState({ ...state, switchTabTo: index });
-      triggerCanSwitch();
+      checkIfContentIsDirty();
     }
   };
 
   const switchTabs = continueSwitching => {
     if (continueSwitching) {
-      triggerCanSwitch();
+      checkIfContentIsDirty();
     } else {
       setState({
         ...state,
@@ -101,32 +107,37 @@ const Completion = props => {
   };
 
   useEffect(() => {
-    if (canSwitch === 1 && state.switchTabTo !== null) {
-      if (completionToBeSaved !== null) {
-        saveCompletion();
-      }
-      if (state.switchTabTo === -1) {
-        updateHistory("new");
-      } else if (state.selected.id === 0) {
-        var newCompletionList = state.displayed.slice(0, -1);
-        if (newCompletionList.length === 0) {
-          history.push("/editor/" + boreholeId + "/completion");
-          resetState();
-        } else {
-          updateHistory(newCompletionList[state.switchTabTo].id);
+    if (checkContentDirty) {
+      if (canSwitch === 1 && state.switchTabTo !== null) {
+        if (completionToBeSaved !== null) {
+          saveCompletion();
         }
-      } else {
-        updateHistory(state.displayed[state.switchTabTo].id);
+        if (state.switchTabTo === -1) {
+          updateHistory("new");
+        } else if (state.selected.id === 0) {
+          var newCompletionList = state.displayed.slice(0, -1);
+          if (newCompletionList.length === 0) {
+            history.push("/editor/" + boreholeId + "/completion");
+            resetState();
+          } else {
+            updateHistory(newCompletionList[state.switchTabTo].id);
+          }
+        } else {
+          updateHistory(state.displayed[state.switchTabTo].id);
+        }
       }
-    }
-    if (canSwitch === 0) {
       setState({
         ...state,
         switchTabTo: null,
         trySwitchTab: false,
         editing: false,
       });
+      if (canSwitch !== 0) {
+        resetCanSwitch();
+        setCheckContentDirty(false);
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwitch]);
 
   const saveCompletion = completion => {
@@ -150,9 +161,9 @@ const Completion = props => {
   };
 
   const checkSwitchBeforeSave = completion => {
-    setCompletionToBeSaved(completion);
     if (state.trySwitchTab) {
-      triggerCanSwitch();
+      setCompletionToBeSaved(completion);
+      checkIfContentIsDirty();
     } else {
       saveCompletion(completion);
     }
@@ -200,7 +211,7 @@ const Completion = props => {
   }, [boreholeId]);
 
   useEffect(() => {
-    if (completionId === "new" && state.switchTabTo === null) {
+    if (completionId === "new" && (state.switchTabTo === null || state.switchTabTo === -1)) {
       var tempCompletion = {
         id: 0,
         boreholeId: boreholeId,
@@ -216,6 +227,7 @@ const Completion = props => {
         displayed: [...displayed, tempCompletion],
         index: displayed.length,
         selected: tempCompletion,
+        switchTabTo: null,
         editing: true,
       });
     } else if (completions?.length > 0) {
@@ -267,7 +279,7 @@ const Completion = props => {
                     <CompletionTab
                       data-cy={"completion-header-tab-" + index}
                       label={item.name === null || item.name === "" ? t("common:np") : item.name}
-                      key={index}
+                      key={item.id}
                     />
                   );
                 })}

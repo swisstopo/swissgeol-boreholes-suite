@@ -18,6 +18,7 @@ export const DataCardSwitchContext = createContext({
 });
 
 export const DataCardExternalContext = createContext({
+  resetCanSwitch: () => {},
   triggerCanSwitch: () => {},
   canSwitch: 0,
 });
@@ -92,6 +93,10 @@ export const DataCardProvider = props => {
     }
   };
 
+  const resetCanSwitch = () => {
+    setCanSwitch(0);
+  };
+
   return (
     <DataCardContext.Provider
       value={{
@@ -109,7 +114,7 @@ export const DataCardProvider = props => {
           switchToCard,
           leaveInput,
         }}>
-        <DataCardExternalContext.Provider value={{ triggerCanSwitch, canSwitch }}>
+        <DataCardExternalContext.Provider value={{ resetCanSwitch, triggerCanSwitch, canSwitch }}>
           {props.children}
         </DataCardExternalContext.Provider>
       </DataCardSwitchContext.Provider>

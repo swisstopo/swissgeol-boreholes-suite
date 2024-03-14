@@ -296,7 +296,6 @@ describe("completion crud tests", () => {
       expect(location.hash).to.eq("#casing");
     });
     startEdit();
-    cy.get(`[data-cy="name-formInput"]`).click();
     addCompletion();
     evaluateInput("name", "");
     evaluateSelect("kindId", "");
