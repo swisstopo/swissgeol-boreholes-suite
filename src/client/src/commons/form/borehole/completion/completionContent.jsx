@@ -78,7 +78,10 @@ const CompletionContent = ({ completion, isEditable }) => {
           })}
         </CompletionTabs>
       </Stack>
+      {
+        // eslint-disable-next-line react/no-children-prop
       <MemoizedCompletionContentTabBox children={renderTabContent} />
+      }
     </Stack>
   );
 };
