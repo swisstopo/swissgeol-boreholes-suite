@@ -8,18 +8,11 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class HydrotestController : ControllerBaseWithSave
+public class HydrotestController : BdmsControllerBase<Hydrotest>
 {
-    private readonly BdmsContext context;
-    private readonly ILogger<Hydrotest> logger;
-    private readonly IBoreholeLockService boreholeLockService;
-
     public HydrotestController(BdmsContext context, ILogger<Hydrotest> logger, IBoreholeLockService boreholeLockService)
-        : base(context, logger)
+        : base(context, logger, boreholeLockService)
     {
-        this.context = context;
-        this.logger = logger;
-        this.boreholeLockService = boreholeLockService;
     }
 
     /// <summary>
@@ -31,7 +24,7 @@ public class HydrotestController : ControllerBaseWithSave
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Hydrotest>> GetAsync([FromQuery] int? boreholeId = null)
     {
-        var hydrotestes = context.Hydrotests
+        var hydrotestes = Context.Hydrotests
             .Include(w => w.Codelists)
             .Include(w => w.Reliability)
             .Include(f => f.Casing)
@@ -48,20 +41,20 @@ public class HydrotestController : ControllerBaseWithSave
     }
 
     /// <summary>
-    /// Asynchronously creates the <paramref name="hydrotest"/> specified.
+    /// Asynchronously creates the <paramref name="entity"/> specified.
     /// </summary>
-    /// <param name="hydrotest">The hydrotest to create.</param>
+    /// <param name="entity">The hydrotest to create.</param>
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public virtual async Task<IActionResult> CreateAsync(Hydrotest hydrotest) => await ProcessHydrotestAsync(hydrotest).ConfigureAwait(false);
+    public override async Task<ActionResult<Hydrotest>> CreateAsync(Hydrotest entity) => await ProcessHydrotestAsync(entity).ConfigureAwait(false);
 
     /// <summary>
-    /// Asynchronously updates the <paramref name="hydrotest"/> specified.
+    /// Asynchronously updates the <paramref name="entity"/> specified.
     /// </summary>
-    /// <param name="hydrotest">The hydrotest to update.</param>
+    /// <param name="entity">The hydrotest to update.</param>
     [HttpPut]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> EditHydrotestAsync(Hydrotest hydrotest) => await ProcessHydrotestAsync(hydrotest).ConfigureAwait(false);
+    public override async Task<ActionResult<Hydrotest>> EditAsync(Hydrotest entity) => await ProcessHydrotestAsync(entity).ConfigureAwait(false);
 
     /// <summary>
     /// Asynchronously deletes the hydrotest with the specified <paramref name="id"/>.
@@ -69,28 +62,29 @@ public class HydrotestController : ControllerBaseWithSave
     /// <param name="id">The id of the hydrotest to delete.</param>
     [HttpDelete]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public virtual async Task<IActionResult> DeleteAsync(int id)
+    public override async Task<IActionResult> DeleteAsync(int id)
     {
-        var hydrotestToDelete = await context.FindAsync(typeof(Hydrotest), id).ConfigureAwait(false);
+        var hydrotestToDelete = await Context.FindAsync(typeof(Hydrotest), id).ConfigureAwait(false);
         if (hydrotestToDelete == null)
         {
             return NotFound();
         }
 
         // Check if associated borehole is locked
-        if (await boreholeLockService.IsBoreholeLockedAsync(((Hydrotest)hydrotestToDelete).BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        if (await BoreholeLockService.IsBoreholeLockedAsync(((Hydrotest)hydrotestToDelete).BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
         {
             return Problem("The borehole is locked by another user or you are missing permissions.");
         }
 
-        context.Remove(hydrotestToDelete);
-        return await SaveChangesAsync(Ok).ConfigureAwait(false);
+        Context.Remove(hydrotestToDelete);
+        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+        return Ok();
     }
 
-    private async Task<IActionResult> ProcessHydrotestAsync(Hydrotest hydrotest)
+    private async Task<ActionResult> ProcessHydrotestAsync(Hydrotest hydrotest)
     {
         // Check if associated borehole is locked
-        if (await boreholeLockService.IsBoreholeLockedAsync(hydrotest.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
+        if (await BoreholeLockService.IsBoreholeLockedAsync(hydrotest.BoreholeId, HttpContext.GetUserSubjectId()).ConfigureAwait(false))
         {
             return Problem("The borehole is locked by another user or you are missing permissions.");
         }
@@ -123,15 +117,16 @@ public class HydrotestController : ControllerBaseWithSave
         }
         else
         {
-            await context.AddAsync(hydrotest).ConfigureAwait(false);
+            await Context.AddAsync(hydrotest).ConfigureAwait(false);
         }
 
-        return await SaveChangesAsync(() => Ok(hydrotest)).ConfigureAwait(false);
+        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+        return Ok(hydrotest);
     }
 
     private async Task<Hydrotest?> GetHydrotestToEdit(int id)
     {
-        return await context.Hydrotests
+        return await Context.Hydrotests
         .Include(h => h.Codelists)
         .Include(h => h.HydrotestResults)
         .SingleOrDefaultAsync(w => w.Id == id).ConfigureAwait(false);
@@ -139,14 +134,14 @@ public class HydrotestController : ControllerBaseWithSave
 
     private void UpdateHydrotest(Hydrotest source, Hydrotest target)
     {
-        context.Entry(target).CurrentValues.SetValues(source);
+        Context.Entry(target).CurrentValues.SetValues(source);
         target.Codelists = source.Codelists;
         target.HydrotestResults = source.HydrotestResults;
     }
 
     private async Task<List<Codelist>> GetCodelists(List<int> codelistIds)
     {
-        return await context.Codelists
+        return await Context.Codelists
                     .Where(c => codelistIds.Contains(c.Id))
                     .ToListAsync().ConfigureAwait(false);
     }
@@ -164,7 +159,7 @@ public class HydrotestController : ControllerBaseWithSave
             .Select(hc => hc.Id)
             .ToList();
 
-        var testKindGeolCodes = context.Codelists
+        var testKindGeolCodes = Context.Codelists
             .Where(c => hydrotestKindCodelistIds.Contains(c.Id) && c.Geolcode.HasValue)
             .Select(c => c.Geolcode!.Value)
             .ToList();
@@ -201,7 +196,7 @@ public class HydrotestController : ControllerBaseWithSave
         {
             if (optionsLookup.TryGetValue(t, out List<int>? geolcodes))
             {
-                compatibleGeolCodes.AddRange(context.Codelists
+                compatibleGeolCodes.AddRange(Context.Codelists
                     .Where(c => c.Schema == schema && c.Geolcode != null && geolcodes.Contains(c.Geolcode.Value))
                     .Select(c => c.Id)
                     .ToList());
@@ -216,5 +211,13 @@ public class HydrotestController : ControllerBaseWithSave
         {
             return new List<int>();
         }
+    }
+
+    /// <inheritdoc />
+    protected override Task<int?> GetBoreholeId(Hydrotest entity)
+    {
+        if (entity == null) return Task.FromResult<int?>(default);
+
+        return Task.FromResult<int?>(entity.BoreholeId);
     }
 }

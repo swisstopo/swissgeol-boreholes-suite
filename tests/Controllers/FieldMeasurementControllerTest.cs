@@ -138,10 +138,10 @@ public class FieldMeasurementControllerTest
         context.FieldMeasurements.Add(originalFieldMeasurement);
         await context.SaveChangesAsync();
 
-        var result = await controller.EditAsync(updatedFieldMeasurement);
+        var response = await controller.EditAsync(updatedFieldMeasurement);
 
-        Assert.IsNotNull(result);
-        ActionResultAssert.IsOk(result);
+        Assert.IsNotNull(response);
+        ActionResultAssert.IsOk(response.Result);
 
         var editedFieldMeasurement = context.FieldMeasurements.Single(w => w.Id == 1);
         Assert.AreEqual(updatedFieldMeasurement.Id, editedFieldMeasurement.Id);
@@ -170,8 +170,8 @@ public class FieldMeasurementControllerTest
     {
         var nonExistentFieldMeasurement = new FieldMeasurement { Id = 2964237 };
 
-        var result = await controller.EditAsync(nonExistentFieldMeasurement);
-        ActionResultAssert.IsNotFound(result);
+        var response = await controller.EditAsync(nonExistentFieldMeasurement);
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
@@ -209,7 +209,7 @@ public class FieldMeasurementControllerTest
         };
 
         var createResponse = await controller.CreateAsync(newFieldMeasurement);
-        ActionResultAssert.IsOk(createResponse);
+        ActionResultAssert.IsOk(createResponse.Result);
 
         newFieldMeasurement = await context.FieldMeasurements.FindAsync(newFieldMeasurement.Id);
         Assert.IsNotNull(newFieldMeasurement);
