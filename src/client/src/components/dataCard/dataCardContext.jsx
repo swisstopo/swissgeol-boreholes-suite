@@ -29,7 +29,7 @@ export const DataCardProvider = props => {
   const [shouldReload, setShouldReload] = useState(false);
   const [checkIsDirty, setCheckIsDirty] = useState(false);
   const [newCardId, setNewCardId] = useState(null);
-  const [canSwitch, setCanSwitch] = useState(false);
+  const [canSwitch, setCanSwitch] = useState(0);
 
   const tempCard = { id: 0 };
 
