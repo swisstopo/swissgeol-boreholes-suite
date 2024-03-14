@@ -59,7 +59,7 @@ describe("Tests for the field measurement editor.", () => {
 
     // edit field measurement
     startEditing();
-    addItem("addFieldMeasurementResult");
+    addItem("addFieldmeasurementResult");
     setSelect("fieldMeasurementResults.0.sampleTypeId", 0);
     setSelect("fieldMeasurementResults.0.parameterId", 0, 9);
     setInput("fieldMeasurementResults.0.value", "10");
