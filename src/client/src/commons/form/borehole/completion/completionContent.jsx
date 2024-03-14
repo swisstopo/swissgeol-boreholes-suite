@@ -45,6 +45,7 @@ const CompletionContent = ({ completion, isEditable }) => {
     } else if (canSwitch === -1) {
       setNewIndex(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwitch]);
 
   useEffect(() => {
@@ -80,7 +81,7 @@ const CompletionContent = ({ completion, isEditable }) => {
       </Stack>
       {
         // eslint-disable-next-line react/no-children-prop
-      <MemoizedCompletionContentTabBox children={renderTabContent} />
+        <MemoizedCompletionContentTabBox children={renderTabContent} />
       }
     </Stack>
   );
