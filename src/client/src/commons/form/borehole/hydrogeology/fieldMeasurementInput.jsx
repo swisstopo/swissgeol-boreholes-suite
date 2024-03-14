@@ -49,6 +49,7 @@ const FieldMeasurementInput = props => {
     setUnits(currentUnits);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formMethods.getValues()["fieldMeasurementResults"]]);
+
   const submitForm = data => {
     data = prepareFormDataForSubmit(data);
     if (item.id === 0) {
