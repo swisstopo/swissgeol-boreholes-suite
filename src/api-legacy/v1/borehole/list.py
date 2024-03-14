@@ -626,6 +626,8 @@ class ListBorehole(Action):
                         id_sty_fk = id_sty
 
                     {}
+                    
+                    {}
 
                 ) as strt2
                 ON 
