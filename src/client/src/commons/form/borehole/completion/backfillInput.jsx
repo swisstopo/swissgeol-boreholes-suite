@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDomains, getCasings } from "../../../../api/fetchApiV2";
+import { useDomains, getCasings, addBackfill, updateBackfill } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard";
 import { StackFullWidth, StackHalfWidth } from "../../../../components/baseComponents.js";
 import { useGetCasingOptions, prepareCasingDataForSubmit } from "./casingUtils";
 
-const BackfillInput = ({ item, setSelected, parentId, addData, updateData }) => {
+const BackfillInput = ({ item, parentId }) => {
   const domains = useDomains();
   const { i18n } = useTranslation();
   const [casings, setCasings] = useState([]);
@@ -30,9 +30,8 @@ const BackfillInput = ({ item, setSelected, parentId, addData, updateData }) => 
   return (
     <DataInputCard
       item={item}
-      setSelected={setSelected}
-      addData={addData}
-      updateData={updateData}
+      addData={addBackfill}
+      updateData={updateBackfill}
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <StackFullWidth direction="row">
         <FormInput fieldName="fromDepth" label="fromdepth" value={item.fromDepth} type="number" required={true} />
@@ -81,5 +80,4 @@ const BackfillInput = ({ item, setSelected, parentId, addData, updateData }) => 
   );
 };
 
-const MemoizedBackfillInput = React.memo(BackfillInput);
-export default MemoizedBackfillInput;
+export default BackfillInput;

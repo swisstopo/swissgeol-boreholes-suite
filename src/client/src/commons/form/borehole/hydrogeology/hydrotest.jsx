@@ -1,7 +1,7 @@
-import { getHydrotests, addHydrotest, updateHydrotest, deleteHydrotest } from "../../../../api/fetchApiV2";
+import { getHydrotests } from "../../../../api/fetchApiV2";
 import HydrotestInput from "./hydrotestInput";
 import HydrotestDisplay from "./hydrotestDisplay";
-import { DataCards } from "../../../../components/dataCard/dataCards";
+import DataCards from "../../../../components/dataCard/dataCards";
 import { sortByDepth } from "../../../sorter.jsx";
 
 const Hydrotest = ({ isEditable, boreholeId }) => {
@@ -10,9 +10,6 @@ const Hydrotest = ({ isEditable, boreholeId }) => {
       isEditable={isEditable}
       parentId={boreholeId}
       getData={getHydrotests}
-      addData={addHydrotest}
-      updateData={updateHydrotest}
-      deleteData={deleteHydrotest}
       cyLabel="hydrotest"
       addLabel="addHydrotest"
       emptyLabel="msgHydrotestEmpty"

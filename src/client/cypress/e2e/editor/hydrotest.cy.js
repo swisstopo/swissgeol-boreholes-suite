@@ -1,6 +1,15 @@
-import { createBorehole, createCompletion, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  createCompletion,
+  loginAsAdmin,
+  startBoreholeEditing,
+  handlePrompt,
+} from "../helpers/testHelpers";
 import {
   evaluateDisplayValue,
+  evaluateInput,
+  evaluateSelect,
+  evaluateTextarea,
   setInput,
   setSelect,
   toggleMultiSelect,
@@ -158,5 +167,81 @@ describe("Tests for the hydrotest editor.", () => {
     cy.wait("@hydrotest_GET");
     cy.get('[data-cy="hydrotest-card.0"] [data-cy="fromdepth-formDisplay"]').contains("0");
     cy.get('[data-cy="hydrotest-card.1"] [data-cy="fromdepth-formDisplay"]').contains("5");
+  });
+
+  it("checks for unsaved changes when switching between cards", () => {
+    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      loginAsAdmin();
+      cy.visit(`/editor/${id}/hydrogeology/hydrotest`);
+    });
+    startBoreholeEditing();
+
+    // no prompt should be displayed when no card is currently in edit mode
+    addItem("addHydrotest");
+    cy.wait("@casing_GET");
+    setInput("startTime", "2012-11-14T12:06");
+    setSelect("reliabilityId", 1);
+
+    // can cancel switching tabs without loosing data
+    addItem("addHydrotest");
+    handlePrompt("Unsaved changes", "cancel");
+    evaluateInput("startTime", "2012-11-14T12:06");
+    evaluateSelect("reliabilityId", "15203157");
+    toggleMultiSelect("testKindId", [2]);
+
+    // can reset new card form
+    addItem("addHydrotest");
+    handlePrompt("Unsaved changes", "reset");
+    cy.get('[data-cy="hydrotest-card.0.edit"]').should("exist");
+
+    // can save new card and switch to new card
+    setInput("startTime", "2012-11-14T12:06");
+    setSelect("reliabilityId", 1);
+    toggleMultiSelect("testKindId", [2]);
+    addItem("addHydrotest");
+    handlePrompt("Unsaved changes", "save");
+    cy.wait("@hydrotest_GET");
+    cy.get('[data-cy="hydrotest-card.0.edit"]').should("exist");
+    cy.get('[data-cy="hydrotest-card.1"]').should("exist");
+
+    // can switch cards without prompt if no changes were made
+    startEditing();
+    setInput("comment", "Lorem.");
+
+    // can cancel switching tabs without loosing data
+    addItem("addHydrotest");
+    handlePrompt("Unsaved changes", "cancel");
+    evaluateTextarea("comment", "Lorem.");
+
+    // can reset creating
+    addItem("addHydrotest");
+    handlePrompt("Unsaved changes", "reset");
+    evaluateDisplayValue("comment", "-");
+
+    // can save changes in existing card and switch to new card
+    startEditing();
+    setInput("comment", "Lorem.");
+    addItem("addHydrotest");
+    handlePrompt("Unsaved changes", "save");
+    evaluateDisplayValue("comment", "Lorem.");
+
+    // can reset creating and switch to existing card
+    setInput("startTime", "2012-11-14T12:06");
+    setSelect("reliabilityId", 1);
+    startEditing();
+    handlePrompt("Unsaved changes", "reset");
+    cy.get('[data-cy="hydrotest-card.0.edit"]').should("exist");
+    cy.get('[data-cy="hydrotest-card.1"]').should("not.exist");
+
+    // can save new card and switch to existing card
+    addItem("addHydrotest");
+    setInput("startTime", "2013-10-02T14:06");
+    setSelect("reliabilityId", 2);
+    toggleMultiSelect("testKindId", [3]);
+    startEditing();
+    handlePrompt("Unsaved changes", "save");
+    cy.get('[data-cy="hydrotest-card.0.edit"]').should("exist");
+    cy.get('[data-cy="hydrotest-card.1"]').should("exist");
   });
 });
