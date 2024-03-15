@@ -22,6 +22,7 @@ const toggleHeaderOpen = () => {
 };
 
 const addCompletion = () => {
+  cy.wait(500);
   addItem("addCompletion");
   cy.wait("@codelist_GET");
 };
@@ -378,5 +379,212 @@ describe("completion crud tests", () => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion`);
       expect(location.hash).to.eq("");
     });
+  });
+
+  it("checks completion content validation", () => {
+    var boreholeId;
+    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      boreholeId = id;
+      loginAsAdmin();
+      cy.visit(`/editor/${id}/completion`);
+    });
+    cy.wait("@get-completions-by-boreholeId");
+    cy.contains("No completion available");
+
+    // start editing session
+    startBoreholeEditing();
+
+    addCompletion();
+    setInput("name", "Compl-1");
+    setSelect("kindId", 1);
+    saveChanges();
+
+    // cancel switching content tabs
+    cy.wait(1000);
+    addItem("addCasing");
+    cy.wait("@codelist_GET");
+    setInput("name", "casing 1", "casing-card.0.edit");
+    setInput("casingElements.0.fromDepth", "0");
+    setInput("casingElements.0.toDepth", "10");
+    setSelect("casingElements.0.kindId", 2);
+    setContentTab("instrumentation");
+    handlePrompt("Casing: Unsaved changes", "Cancel");
+    isContentTabSelected("casing");
+
+    // reset when switching content tabs
+    setContentTab("instrumentation");
+    handlePrompt("Casing: Unsaved changes", "Reset");
+    isContentTabSelected("instrumentation");
+    setContentTab("casing");
+    cy.wait("@casing_GET");
+    cy.get('[data-cy="casing-card.0"]').should("not.exist");
+
+    // save when switching content tabs
+    cy.wait(1000);
+    addItem("addCasing");
+    cy.wait("@codelist_GET");
+    setInput("name", "casing 1", "casing-card.0.edit");
+    setInput("casingElements.0.fromDepth", "0");
+    setInput("casingElements.0.toDepth", "10");
+    setSelect("casingElements.0.kindId", 2);
+    setContentTab("backfill");
+    handlePrompt("Casing: Unsaved changes", "Save");
+    isContentTabSelected("backfill");
+    setContentTab("casing");
+    cy.contains("casing 1").should("exist");
+
+    // cancel switching header tabs when content changes are present
+    setContentTab("backfill");
+    cy.wait("@backfill_GET");
+    cy.wait(1000);
+    addItem("addFilling");
+    cy.wait("@casing_GET");
+    setInput("fromDepth", 0);
+    setInput("toDepth", 10);
+    setSelect("kindId", 1);
+    setSelect("materialId", 1);
+
+    addCompletion();
+    handlePrompt("Backfill: Unsaved changes", "Cancel");
+    isHeaderTabSelected(0);
+    isContentTabSelected("backfill");
+
+    // reset content changes when switching header tabs
+    addCompletion();
+    handlePrompt("Backfill: Unsaved changes", "Reset");
+    isHeaderTabSelected(1);
+    cancelEditing();
+    setContentTab("backfill");
+    cy.wait("@backfill_GET");
+    cy.get('[data-cy="backfill-card.0"]').should("not.exist");
+
+    // save content changes when switching header tabs
+    cy.wait(1000);
+    addItem("addFilling");
+    cy.wait("@casing_GET");
+    setInput("fromDepth", 0);
+    setInput("toDepth", 10);
+    setSelect("kindId", 1);
+    setSelect("materialId", 1);
+    addCompletion();
+    handlePrompt("Backfill: Unsaved changes", "Save");
+    isHeaderTabSelected(1);
+    cancelEditing();
+    setContentTab("backfill");
+    cy.wait("@backfill_GET");
+    cy.get('[data-cy="backfill-card.0"]').should("exist");
+
+    // cancel header changes, no prompt should be displayed for content changes because tab switching was already canceled
+    setContentTab("instrumentation");
+    cy.wait("@instrumentation_GET");
+    cy.wait(1000);
+    addItem("addInstrument");
+    cy.wait("@casing_GET");
+    setInput("fromDepth", "0");
+    setInput("toDepth", "10");
+    setInput("name", "Inst-1");
+    setSelect("kindId", 2);
+    setSelect("statusId", 1);
+
+    startEditHeader();
+    setInput("name", "Compl-1 updated", "completion-header");
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Cancel");
+    cy.get('[data-cy="prompt"]').should("not.exist");
+    isHeaderTabSelected(0);
+    isContentTabSelected("instrumentation");
+    evaluateInput("fromDepth", "0");
+    evaluateInput("toDepth", "10");
+    evaluateInput("name", "Compl-1 updated", "completion-header");
+
+    // reset header changes, cancel content changes
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Reset");
+    cy.wait(1000);
+    handlePrompt("Instrumentation: Unsaved changes", "Cancel");
+    isHeaderTabSelected(0);
+    isContentTabSelected("instrumentation");
+    evaluateInput("fromDepth", "0");
+    evaluateInput("toDepth", "10");
+    evaluateDisplayValue("name", "Compl-1", "completion-header");
+
+    // reset header changes, reset content changes
+    startEditHeader();
+    setInput("name", "Compl-1 updated", "completion-header");
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Reset");
+    cy.wait(1000);
+    handlePrompt("Instrumentation: Unsaved changes", "Reset");
+    isHeaderTabSelected(1);
+    setHeaderTab(0);
+    evaluateDisplayValue("name", "Compl-1", "completion-header");
+    setContentTab("instrumentation");
+    cy.wait("@instrumentation_GET");
+    cy.get('[data-cy="instrumentation-card.0"]').should("not.exist");
+
+    //reset header changes, save content changes
+    cy.wait(1000);
+    addItem("addInstrument");
+    cy.wait("@casing_GET");
+    setInput("fromDepth", "0");
+    setInput("toDepth", "10");
+    setInput("name", "Inst-1");
+    setSelect("kindId", 2);
+    setSelect("statusId", 1);
+    startEditHeader();
+    setInput("name", "Compl-1 updated", "completion-header");
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Reset");
+    cy.wait(1000);
+    handlePrompt("Instrumentation: Unsaved changes", "Save");
+    isHeaderTabSelected(1);
+    setHeaderTab(0);
+    evaluateDisplayValue("name", "Compl-1", "completion-header");
+    setContentTab("instrumentation");
+    cy.get('[data-cy="instrumentation-card.0"]').should("exist");
+
+    // save header changes, cancel content changes
+    startEditing("instrumentation-card.0");
+    setInput("notes", "Lorem.");
+    startEditHeader();
+    setInput("name", "Compl-1 updated", "completion-header");
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Save");
+    cy.wait(1000);
+    handlePrompt("Instrumentation: Unsaved changes", "Cancel");
+    isHeaderTabSelected(0);
+    isContentTabSelected("instrumentation");
+    evaluateTextarea("notes", "Lorem.");
+    evaluateDisplayValue("name", "Compl-1 updated", "completion-header");
+
+    // save header changes, reset content changes
+    startEditHeader();
+    setInput("name", "Compl-1 updated again", "completion-header");
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Save");
+    cy.wait(1000);
+    handlePrompt("Instrumentation: Unsaved changes", "Reset");
+    isHeaderTabSelected(1);
+    setHeaderTab(0);
+    evaluateDisplayValue("name", "Compl-1 updated again", "completion-header");
+    setContentTab("instrumentation");
+    cy.wait("@instrumentation_GET");
+    evaluateDisplayValue("notes", "-");
+
+    // save header changes, save content changes
+    startEditing("instrumentation-card.0");
+    setInput("notes", "Lorem.");
+    startEditHeader();
+    setInput("name", "Compl-1 updated again and again", "completion-header");
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Save");
+    cy.wait(1000);
+    handlePrompt("Instrumentation: Unsaved changes", "Save");
+    isHeaderTabSelected(1);
+    setHeaderTab(0);
+    evaluateDisplayValue("name", "Compl-1 updated again and again", "completion-header");
+    setContentTab("instrumentation");
+    evaluateDisplayValue("notes", "Lorem.");
   });
 });
