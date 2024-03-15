@@ -98,11 +98,12 @@ describe("Casing crud tests", () => {
     setSelect("statusId", 1);
     setSelect("casingId", 2);
     saveForm();
+    cy.wait("@instrumentation_GET");
 
     cy.get("[data-cy=completion-content-tab-casing]").click();
     cy.wait("@casing_GET");
 
-    deleteItem();
+    deleteItem("casing-card.0");
     cy.wait("@casing_DELETE");
     cy.contains("casing-1 updated").should("not.exist");
 
