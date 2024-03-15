@@ -40,66 +40,59 @@ class App extends React.Component {
   }
 
   render() {
-    const { loader } = this.props;
     let mode = "viewer";
-    return loader.isReady === false ? (
-      <DataLoader />
-    ) : loader.terms === false ? (
-      <AcceptTerms />
-    ) : (
-      <AlertProvider>
-        <AlertBanner />
-        <ThemeProvider theme={theme}>
-          <QueryClientProvider client={queryClient}>
-            <Router>
-              <Switch>
-                <Route
-                  render={props => {
-                    mode = "editor";
-                    return <EditorComponent {...props} />;
-                  }}
-                  exact={false}
-                  key={0}
-                  path={"/editor"}
-                />
-                <Route
-                  render={props => <SettingCmp {...props} mode={mode} />}
-                  exact={true}
-                  key={1}
-                  path={"/setting/:id"}
-                />
-                <Route
-                  render={props => {
-                    mode = "viewer";
-                    return <HomeComponent {...props} />;
-                  }}
-                  key={2}
-                  path={"/"}
-                />
-                <Route
-                  component={() => (
-                    <Redirect
-                      to={{
-                        pathname: "/",
+    return (
+      <DataLoader>
+        <AcceptTerms>
+          <AlertProvider>
+            <AlertBanner />
+            <ThemeProvider theme={theme}>
+              <QueryClientProvider client={queryClient}>
+                <Router>
+                  <Switch>
+                    <Route
+                      render={props => {
+                        mode = "editor";
+                        return <EditorComponent {...props} />;
                       }}
+                      exact={false}
+                      key={0}
+                      path={"/editor"}
                     />
-                  )}
-                />
-              </Switch>
-            </Router>
-            <ReactQueryDevtools />
-          </QueryClientProvider>
-        </ThemeProvider>
-      </AlertProvider>
+                    <Route
+                      render={props => <SettingCmp {...props} mode={mode} />}
+                      exact={true}
+                      key={1}
+                      path={"/setting/:id"}
+                    />
+                    <Route
+                      render={props => {
+                        mode = "viewer";
+                        return <HomeComponent {...props} />;
+                      }}
+                      key={2}
+                      path={"/"}
+                    />
+                    <Route
+                      component={() => (
+                        <Redirect
+                          to={{
+                            pathname: "/",
+                          }}
+                        />
+                      )}
+                    />
+                  </Switch>
+                </Router>
+                <ReactQueryDevtools />
+              </QueryClientProvider>
+            </ThemeProvider>
+          </AlertProvider>
+        </AcceptTerms>
+      </DataLoader>
     );
   }
 }
-
-const mapStateToProps = state => {
-  return {
-    loader: state.dataLoaderState,
-  };
-};
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -113,5 +106,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App);
+const ConnectedApp = connect(null, mapDispatchToProps)(App);
 export default ConnectedApp;
