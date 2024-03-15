@@ -10,10 +10,18 @@ interface AuthOverlayProps {
     children?: React.ReactNode
 }
 
+interface User {
+    data: Object,
+    error?: string,
+}
+interface ReduxState {
+    core_user: User,
+}
+
 export const AuthOverlay: React.FC<AuthOverlayProps> = ({ children }) => {
     const auth = useAuth();
     const dispatch = useDispatch();
-    const user = useSelector(state => state.core_user);
+    const user = useSelector<ReduxState, User>(state => state.core_user);
     const { t, i18n } = useTranslation();
 
     const signIn = () => {
