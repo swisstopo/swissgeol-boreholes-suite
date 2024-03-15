@@ -108,10 +108,14 @@ const Completion = props => {
 
   useEffect(() => {
     if (checkContentDirty) {
-      if (canSwitch === 1 && state.switchTabTo !== null) {
+      if (canSwitch !== 0) {
         if (completionToBeSaved !== null) {
           saveCompletion();
         }
+        resetCanSwitch();
+        setCheckContentDirty(false);
+      }
+      if (canSwitch === 1 && state.switchTabTo !== null) {
         if (state.switchTabTo === -1) {
           updateHistory("new");
         } else if (state.selected.id === 0) {
@@ -132,10 +136,6 @@ const Completion = props => {
         trySwitchTab: false,
         editing: false,
       });
-      if (canSwitch !== 0) {
-        resetCanSwitch();
-        setCheckContentDirty(false);
-      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwitch]);
