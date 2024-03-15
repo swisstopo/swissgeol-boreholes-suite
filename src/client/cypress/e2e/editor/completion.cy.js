@@ -262,7 +262,7 @@ describe("completion crud tests", () => {
     });
     setInput("name", "new completion");
     setHeaderTab(0);
-    cy.get('[data-cy="prompt-button-save"]').should("be.disabled");
+    cy.get('[data-cy="prompt-button-Save"]').should("be.disabled");
     handlePrompt("Completion: Unsaved changes", "Cancel");
 
     // new to existing: changes can be reverted in prompt
