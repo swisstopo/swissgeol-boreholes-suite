@@ -1,7 +1,6 @@
 import { loginAsAdmin, createBorehole, startBoreholeEditing, createCompletion } from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, cancelEditing, deleteItem } from "../helpers/buttonHelpers";
-import { setContentTab } from "./completion.cy";
 
 describe("Instrumentation crud tests", () => {
   beforeEach(() => {
@@ -26,7 +25,7 @@ describe("Instrumentation crud tests", () => {
 
   it("adds, edits and deletes instrumentations", () => {
     // Precondition: Create casing to later link in instrumentation
-    setContentTab("casing");
+    cy.get("[data-cy=completion-content-tab-casing]").click();
     cy.wait("@casing_GET");
 
     addItem("addCasing");
@@ -44,7 +43,7 @@ describe("Instrumentation crud tests", () => {
     saveForm();
     cy.wait("@casing_GET");
 
-    setContentTab("instrumentation");
+    cy.get("[data-cy=completion-content-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
     // create instrumentation
@@ -99,7 +98,7 @@ describe("Instrumentation crud tests", () => {
   });
 
   it("sorts instrumentation", () => {
-    setContentTab("instrumentation");
+    cy.get("[data-cy=completion-content-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
     addItem("addInstrument");

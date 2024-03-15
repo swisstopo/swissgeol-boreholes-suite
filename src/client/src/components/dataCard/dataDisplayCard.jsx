@@ -25,8 +25,9 @@ export const DataDisplayCard = props => {
           />
           <DeleteButton
             onClick={() => {
-              deleteData(item.id);
-              triggerReload();
+              deleteData(item.id).then(() => {
+                triggerReload();
+              });
             }}
           />
         </DataCardButtonContainer>
