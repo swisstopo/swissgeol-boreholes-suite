@@ -1,7 +1,6 @@
 import { loginAsAdmin, createBorehole, createCompletion, startBoreholeEditing } from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, cancelEditing, deleteItem } from "../helpers/buttonHelpers";
-import { setContentTab } from "./completion.cy";
 
 describe("Backfill crud tests", () => {
   beforeEach(() => {
@@ -26,7 +25,7 @@ describe("Backfill crud tests", () => {
 
   it("adds, edits and deletes backfills", () => {
     // Precondition: Create casing to later link in instrumentation
-    setContentTab("casing");
+    cy.get("[data-cy=completion-content-tab-casing]").click();
     cy.wait("@casing_GET");
 
     addItem("addCasing");
@@ -40,7 +39,7 @@ describe("Backfill crud tests", () => {
     cy.wait("@casing_GET");
 
     // select backfill tab
-    setContentTab("backfill");
+    cy.get("[data-cy=completion-content-tab-backfill]").click();
     cy.wait("@backfill_GET");
 
     // add new backfill card
@@ -94,7 +93,7 @@ describe("Backfill crud tests", () => {
 
   it("sorts backfill", () => {
     // Precondition: Create casing to later link in instrumentation
-    setContentTab("casing");
+    cy.get("[data-cy=completion-content-tab-casing]").click();
     cy.wait("@casing_GET");
 
     addItem("addCasing");
@@ -119,7 +118,7 @@ describe("Backfill crud tests", () => {
     cy.wait("@casing_GET");
 
     // select backfill tab
-    setContentTab("backfill");
+    cy.get("[data-cy=completion-content-tab-backfill]").click();
     cy.wait("@backfill_GET");
 
     cy.wait(1000);

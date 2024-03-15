@@ -1,7 +1,6 @@
 import { createBorehole, createCompletion, startBoreholeEditing, loginAsAdmin } from "../helpers/testHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
-import { setContentTab } from "./completion.cy";
 
 describe("Tests for the wateringress editor.", () => {
   it("Creates, updates and deletes wateringresses", () => {
@@ -24,7 +23,7 @@ describe("Tests for the wateringress editor.", () => {
     // start editing session
     startBoreholeEditing();
 
-    setContentTab("casing");
+    cy.get("[data-cy=completion-content-tab-casing]").click();
     cy.wait("@casing_GET");
 
     addItem("addCasing");
