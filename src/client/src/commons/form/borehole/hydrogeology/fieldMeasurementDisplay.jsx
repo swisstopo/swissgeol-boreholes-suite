@@ -17,7 +17,7 @@ const FieldMeasurementDisplay = props => {
     <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteFieldMeasurement}>
       <ObservationDisplay observation={item} />
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay label="field_measurement_sample_type" value={item?.sampleType} type={FormDisplayType.Domain} />
+        <FormDisplay label="fieldMeasurementSampleType" value={item?.sampleType} type={FormDisplayType.Domain} />
         <FormDisplay label="parameter" value={item?.parameter} type={FormDisplayType.Domain} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>

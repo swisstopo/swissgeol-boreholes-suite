@@ -36,13 +36,13 @@ const FieldMeasurementInput = props => {
       item={item}
       addData={addFieldMeasurement}
       updateData={updateFieldMeasurement}
-      promptLabel="field_measurement"
+      promptLabel="fieldMeasurement"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <ObservationInput observation={item} boreholeId={parentId} />
       <Stack direction="row" sx={{ paddingTop: "10px" }}>
         <FormSelect
           fieldName="sampleTypeId"
-          label="field_measurement_sample_type"
+          label="fieldMeasurementSampleType"
           selected={item.sampleTypeId}
           required={true}
           values={domains?.data

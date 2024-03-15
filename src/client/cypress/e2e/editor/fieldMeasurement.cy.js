@@ -59,7 +59,7 @@ describe("Tests for the field measurement editor.", () => {
 
     //assert field measurementis displayed
     evaluateDisplayValue("casingName", "testFieldmeasurement - casing-1");
-    evaluateDisplayValue("field_measurement_sample_type", "Schöpfprobe");
+    evaluateDisplayValue("fieldMeasurementSampleType", "Schöpfprobe");
     evaluateDisplayValue("parameter", "Sauerstoffsättigung");
     evaluateDisplayValue("value", "77.1045 %");
 
@@ -67,7 +67,7 @@ describe("Tests for the field measurement editor.", () => {
     startEditing();
     setSelect("sampleTypeId", 0);
     saveForm();
-    evaluateDisplayValue("field_measurement_sample_type", "Pumpprobe");
+    evaluateDisplayValue("fieldMeasurementSampleType", "Pumpprobe");
     evaluateDisplayValue("casingName", "testFieldmeasurement - casing-1");
 
     // delete field measurement
