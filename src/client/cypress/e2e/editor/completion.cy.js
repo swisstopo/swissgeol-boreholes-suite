@@ -126,7 +126,7 @@ describe("completion crud tests", () => {
 
     // delete completion
     deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "cancel");
+    handlePrompt("Do you really want to delete this completion?", "Cancel");
     cy.contains("Compl-2");
     deleteCompletion();
     handlePrompt("Do you really want to delete this completion?", "Delete");
