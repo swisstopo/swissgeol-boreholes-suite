@@ -129,7 +129,7 @@ describe("completion crud tests", () => {
     handlePrompt("Do you really want to delete this completion?", "cancel");
     cy.contains("Compl-2");
     deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "delete");
+    handlePrompt("Do you really want to delete this completion?", "Delete");
     cy.wait("@get-completions-by-boreholeId");
     cy.get('[data-cy="completion-header-tab-1"]').should("not.exist");
     isHeaderTabSelected(0);
@@ -295,7 +295,7 @@ describe("completion crud tests", () => {
 
     setHeaderTab(2);
     deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "delete");
+    handlePrompt("Do you really want to delete this completion?", "Delete");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion2Id}`);
       expect(location.hash).to.eq("#casing");
@@ -362,13 +362,13 @@ describe("completion crud tests", () => {
 
     // should update to base url if last completion is deleted
     deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "delete");
+    handlePrompt("Do you really want to delete this completion?", "Delete");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
     deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "delete");
+    handlePrompt("Do you really want to delete this completion?", "Delete");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion`);
       expect(location.hash).to.eq("");

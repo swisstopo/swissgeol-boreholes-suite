@@ -338,15 +338,15 @@ const Completion = props => {
       <Prompt
         open={showDeletePrompt}
         setOpen={setShowDeletePrompt}
-        titleLabel="deleteCompletionTitle"
-        messageLabel="deleteCompletionMessage"
+        title={t("deleteCompletionTitle")}
+        message={t("deleteCompletionMessage")}
         actions={[
           {
-            label: "cancel",
+            label: t("cancel"),
             action: null,
           },
           {
-            label: "delete",
+            label: t("delete"),
             action: onDeleteConfirmed,
           },
         ]}
