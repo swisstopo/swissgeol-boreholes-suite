@@ -369,7 +369,7 @@
   "upload": "Télécharger",
   "uploaded": "Téléchargé",
   "uploadNewFile": "Télécharger un nouveau fichier",
-  "unsavedChangesTitle": "Changements non enregistrés",
+  "unsavedChangesTitle": "{{where}}: Changements non enregistrés",
   "unsavedChangesMessage": "Vous avez des modifications non enregistrés. Comment souhaitez-vous continuer?",
   "unselectAll": "Tout désélectionner",
   "user": "Utilisateur",

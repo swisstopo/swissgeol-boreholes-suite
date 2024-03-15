@@ -213,7 +213,7 @@ describe("completion crud tests", () => {
     startEdit();
     setInput("name", "Compl-1 updated");
     setHeaderTab(1);
-    handlePrompt("Unsaved changes", "cancel");
+    handlePrompt("Completion: Unsaved changes", "cancel");
     isHeaderTabSelected(0);
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
@@ -223,7 +223,7 @@ describe("completion crud tests", () => {
 
     // existing editing to other existing: changes can be reverted in prompt
     setHeaderTab(1);
-    handlePrompt("Unsaved changes", "reset");
+    handlePrompt("Completion: Unsaved changes", "reset");
     isHeaderTabSelected(1);
     cy.contains("Compl-1");
     cy.location().should(location => {
@@ -235,7 +235,7 @@ describe("completion crud tests", () => {
     startEdit();
     setInput("name", "Compl-2 updated");
     setHeaderTab(0);
-    handlePrompt("Unsaved changes", "save");
+    handlePrompt("Completion: Unsaved changes", "save");
     cy.wait("@get-completions-by-boreholeId");
     isHeaderTabSelected(0);
     cy.contains("Compl-2 updated");
@@ -263,12 +263,12 @@ describe("completion crud tests", () => {
     setInput("name", "new completion");
     setHeaderTab(0);
     cy.get('[data-cy="prompt-button-save"]').should("be.disabled");
-    handlePrompt("Unsaved changes", "cancel");
+    handlePrompt("Completion: Unsaved changes", "cancel");
 
     // new to existing: changes can be reverted in prompt
     setSelect("kindId", 1);
     setHeaderTab(0);
-    handlePrompt("Unsaved changes", "reset");
+    handlePrompt("Completion: Unsaved changes", "reset");
     cy.wait("@casing_GET");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
@@ -285,7 +285,7 @@ describe("completion crud tests", () => {
     setInput("name", "new completion");
     setSelect("kindId", 1);
     setHeaderTab(0);
-    handlePrompt("Unsaved changes", "save");
+    handlePrompt("Completion: Unsaved changes", "save");
     cy.wait("@casing_GET");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
@@ -329,7 +329,7 @@ describe("completion crud tests", () => {
     startEdit();
     setInput("name", "Reset compl-1");
     addCompletion();
-    handlePrompt("Unsaved changes", "reset");
+    handlePrompt("Completion: Unsaved changes", "reset");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/new`);
       expect(location.hash).to.eq("");
@@ -345,7 +345,7 @@ describe("completion crud tests", () => {
     startEdit();
     setInput("name", "Reset compl-1");
     addCompletion();
-    handlePrompt("Unsaved changes", "save");
+    handlePrompt("Completion: Unsaved changes", "save");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/new`);
       expect(location.hash).to.eq("");

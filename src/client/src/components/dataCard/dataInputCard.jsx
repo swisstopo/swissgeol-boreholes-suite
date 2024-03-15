@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useForm, FormProvider } from "react-hook-form";
 import { DataCardButtonContainer } from "../dataCard/dataCard";
 import { DataCardContext, DataCardSwitchContext } from "../dataCard/dataCardContext";
@@ -7,7 +8,8 @@ import { CancelButton, SaveButton } from "../buttons/buttons";
 import Prompt from "../prompt/prompt";
 
 export const DataInputCard = props => {
-  const { item, addData, updateData, prepareFormDataForSubmit } = props;
+  const { item, addData, updateData, promptLabel, prepareFormDataForSubmit } = props;
+  const { t } = useTranslation();
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
   const formMethods = useForm({ mode: "all" });
@@ -70,17 +72,17 @@ export const DataInputCard = props => {
       <Prompt
         open={showSavePrompt}
         setOpen={setShowSavePrompt}
-        titleLabel="unsavedChangesTitle"
-        messageLabel="unsavedChangesMessage"
+        title={t("unsavedChangesTitle", { where: t(promptLabel) })}
+        message={t("unsavedChangesMessage")}
         actions={[
           {
-            label: "cancel",
+            label: t("cancel"),
             action: () => {
               leaveInput(false);
             },
           },
           {
-            label: "reset",
+            label: t("reset"),
             action: () => {
               formMethods.reset();
               selectCard(null);
@@ -88,7 +90,7 @@ export const DataInputCard = props => {
             },
           },
           {
-            label: "save",
+            label: t("save"),
             disabled: !formMethods.formState.isValid,
             action: () => {
               formMethods.handleSubmit(submitForm)();

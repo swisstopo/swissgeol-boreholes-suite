@@ -32,6 +32,7 @@ const InstrumentationInput = ({ item, parentId }) => {
       item={item}
       addData={addInstrumentation}
       updateData={updateInstrumentation}
+      promptLabel="instrument"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <Stack direction="row">
         <FormInput fieldName="fromDepth" label="fromdepth" value={item.fromDepth} type="number" required={true} />

@@ -13,7 +13,7 @@ const CompletionHeaderInput = props => {
   const { completion, cancelChanges, saveCompletion, trySwitchTab, switchTabs } = props;
   const domains = useDomains();
   const formMethods = useForm({ mode: "all" });
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [selectedCompletion, setSelectedCompletion] = useState({
     ...completion,
@@ -127,24 +127,24 @@ const CompletionHeaderInput = props => {
       <Prompt
         open={showSavePrompt}
         setOpen={setShowSavePrompt}
-        titleLabel="unsavedChangesTitle"
-        messageLabel="unsavedChangesMessage"
+        title={t("unsavedChangesTitle", { where: t("completion") })}
+        message={t("unsavedChangesMessage")}
         actions={[
           {
-            label: "cancel",
+            label: t("cancel"),
             action: () => {
               switchTabs(false);
             },
           },
           {
-            label: "reset",
+            label: t("reset"),
             action: () => {
               formMethods.reset(selectedCompletion);
               switchTabs(true);
             },
           },
           {
-            label: "save",
+            label: t("save"),
             disabled: !formMethods.formState.isValid,
             action: () => {
               formMethods.handleSubmit(submitForm)();
