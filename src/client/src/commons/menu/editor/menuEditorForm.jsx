@@ -333,7 +333,7 @@ class MenuEditorForm extends React.Component {
                 />
                 <List.Content>
                   <List.Header as="h3" data-cy="groundwaterlevelmeasurement-menu-item">
-                    <TranslationText firstUpperCase id="groundwater_level_measurement_word_break" />
+                    <TranslationText firstUpperCase id="groundwaterLevelMeasurementWordBreak" />
                   </List.Header>
                 </List.Content>
               </List.Item>
