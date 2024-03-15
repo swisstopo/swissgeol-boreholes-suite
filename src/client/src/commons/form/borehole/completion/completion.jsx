@@ -296,7 +296,7 @@ const Completion = props => {
           </Stack>
           {state.selected != null && (
             <>
-              <CompletionBox sx={{ padding: "18px" }}>
+              <CompletionBox sx={{ padding: "18px" }} data-cy="completion-header">
                 {state.editing ? (
                   <CompletionHeaderInput
                     completion={state.selected}

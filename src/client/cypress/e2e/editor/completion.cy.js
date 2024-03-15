@@ -26,24 +26,24 @@ const addCompletion = () => {
   cy.wait("@codelist_GET");
 };
 
-const startEdit = () => {
+const startEditHeader = () => {
   toggleHeaderOpen();
-  startEditing();
+  startEditing("completion-header");
 };
 
 const saveChanges = () => {
-  saveForm();
+  saveForm("completion-header");
   cy.wait("@get-completions-by-boreholeId");
 };
 
 const copyCompletion = () => {
   toggleHeaderOpen();
-  copyItem();
+  copyItem("completion-header");
 };
 
 const deleteCompletion = () => {
   toggleHeaderOpen();
-  deleteItem();
+  deleteItem("completion-header");
 };
 
 const setHeaderTab = index => {
@@ -111,16 +111,16 @@ describe("completion crud tests", () => {
     cy.contains("Compl-1 (Clone)");
 
     // edit completion
-    startEdit();
+    startEditHeader();
     setSelect("kindId", 1);
     cancelEditing();
     cy.contains("telescopic");
-    startEdit();
+    startEditHeader();
     setInput("name", "Compl-2");
     toggleCheckbox("isPrimary");
     saveChanges();
     cy.contains("Compl-2");
-    startEdit();
+    startEditHeader();
     evaluateCheckbox("isPrimary", true);
     cancelEditing();
 
@@ -200,7 +200,7 @@ describe("completion crud tests", () => {
 
     // switch tabs
     // existing editing to other existing: no prompt should be displayed when no changes have been made
-    startEdit();
+    startEditHeader();
     setHeaderTab(0);
     cy.get('[data-cy="prompt"]').should("not.exist");
     isHeaderTabSelected(0);
@@ -210,7 +210,7 @@ describe("completion crud tests", () => {
     });
 
     // existing editing to other existing: tab switching can be canceled in prompt
-    startEdit();
+    startEditHeader();
     setInput("name", "Compl-1 updated");
     setHeaderTab(1);
     handlePrompt("Completion: Unsaved changes", "Cancel");
@@ -232,7 +232,7 @@ describe("completion crud tests", () => {
     });
 
     // existing editing to other existing: changes can be saved in prompt
-    startEdit();
+    startEditHeader();
     setInput("name", "Compl-2 updated");
     setHeaderTab(0);
     handlePrompt("Completion: Unsaved changes", "Save");
@@ -309,7 +309,7 @@ describe("completion crud tests", () => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
-    startEdit();
+    startEditHeader();
     addCompletion();
     evaluateInput("name", "");
     evaluateSelect("kindId", "");
@@ -326,7 +326,7 @@ describe("completion crud tests", () => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
-    startEdit();
+    startEditHeader();
     setInput("name", "Reset compl-1");
     addCompletion();
     handlePrompt("Completion: Unsaved changes", "Reset");
@@ -342,7 +342,7 @@ describe("completion crud tests", () => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
-    startEdit();
+    startEditHeader();
     setInput("name", "Reset compl-1");
     addCompletion();
     handlePrompt("Completion: Unsaved changes", "Save");
