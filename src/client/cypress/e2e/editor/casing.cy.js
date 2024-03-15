@@ -7,7 +7,6 @@ import {
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateInput, evaluateTextarea, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
-import { setContentTab } from "./completion.cy";
 
 describe("Casing crud tests", () => {
   beforeEach(() => {
@@ -30,7 +29,7 @@ describe("Casing crud tests", () => {
     startBoreholeEditing();
 
     // select casing tab
-    setContentTab("casing");
+    cy.get("[data-cy=completion-content-tab-casing]").click();
     cy.wait("@casing_GET");
   });
 
@@ -84,7 +83,7 @@ describe("Casing crud tests", () => {
 
     // delete casing
     // Precondition: instrumentation with reference to casing
-    setContentTab("instrumentation");
+    cy.get("[data-cy=completion-content-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
     cy.wait(1000);
@@ -100,14 +99,14 @@ describe("Casing crud tests", () => {
     setSelect("casingId", 2);
     saveForm();
 
-    setContentTab("casing");
+    cy.get("[data-cy=completion-content-tab-casing]").click();
     cy.wait("@casing_GET");
 
     deleteItem();
     cy.wait("@casing_DELETE");
     cy.contains("casing-1 updated").should("not.exist");
 
-    setContentTab("instrumentation");
+    cy.get("[data-cy=completion-content-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
     evaluateDisplayValue("casingName", "-");
   });
