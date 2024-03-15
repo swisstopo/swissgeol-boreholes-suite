@@ -108,13 +108,10 @@ const Completion = props => {
 
   useEffect(() => {
     if (checkContentDirty) {
-      if (canSwitch !== 0) {
-        if (completionToBeSaved !== null) {
-          saveCompletion();
-        }
-        resetCanSwitch();
-        setCheckContentDirty(false);
+      if (canSwitch !== 0 && completionToBeSaved !== null) {
+        saveCompletion(completionToBeSaved, canSwitch === -1);
       }
+
       if (canSwitch === 1 && state.switchTabTo !== null) {
         if (state.switchTabTo === -1) {
           updateHistory("new");
@@ -130,32 +127,54 @@ const Completion = props => {
           updateHistory(state.displayed[state.switchTabTo].id);
         }
       }
-      setState({
-        ...state,
-        switchTabTo: null,
-        trySwitchTab: false,
-        editing: false,
-      });
+
+      if (completionToBeSaved !== null && canSwitch === -1) {
+        var displayed = state.displayed;
+        const index = displayed.findIndex(item => item.id === completionToBeSaved.id);
+        displayed[index] = completionToBeSaved;
+
+        setState({
+          ...state,
+          displayed: displayed,
+          selected: completionToBeSaved,
+          switchTabTo: null,
+          trySwitchTab: false,
+          editing: false,
+        });
+      } else {
+        setState({
+          ...state,
+          switchTabTo: null,
+          trySwitchTab: false,
+          editing: false,
+        });
+      }
+
+      if (canSwitch !== 0) {
+        setCompletionToBeSaved(null);
+        resetCanSwitch();
+        setCheckContentDirty(false);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwitch]);
 
-  const saveCompletion = completion => {
-    if (completion == null) {
-      completion = completionToBeSaved;
-      setCompletionToBeSaved(null);
-    }
+  const saveCompletion = (completion, preventReload) => {
     if (completion.id === 0) {
       addCompletion(completion).then(() => {
         setState({
           ...state,
           switchTabTo: state.switchTabTo === null ? state.displayed.length - 1 : state.switchTabTo,
         });
-        loadData();
+        if (!preventReload) {
+          loadData();
+        }
       });
     } else {
       updateCompletion(completion).then(() => {
-        loadData();
+        if (!preventReload) {
+          loadData();
+        }
       });
     }
   };
