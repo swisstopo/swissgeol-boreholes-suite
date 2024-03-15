@@ -83,6 +83,7 @@ export const DataCards = props => {
         {isEditable && (
           <AddButton
             label={addLabel}
+            disabled={selectedCard?.id === 0}
             onClick={() => {
               const tempCard = { id: 0 };
               if (!selectedCard) {

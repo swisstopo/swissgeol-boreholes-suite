@@ -288,6 +288,7 @@ const Completion = props => {
               <AddButton
                 label="addCompletion"
                 sx={{ marginRight: "5px" }}
+                disabled={state.selected?.id === 0}
                 onClick={e => {
                   handleCompletionChanged(e, -1);
                 }}
