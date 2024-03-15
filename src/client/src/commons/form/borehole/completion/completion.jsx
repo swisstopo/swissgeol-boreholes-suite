@@ -108,10 +108,11 @@ const Completion = props => {
 
   useEffect(() => {
     if (checkContentDirty) {
+      if (canSwitch !== 0 && completionToBeSaved !== null) {
+        saveCompletion(completionToBeSaved, canSwitch === -1);
+      }
+
       if (canSwitch === 1 && state.switchTabTo !== null) {
-        if (completionToBeSaved !== null) {
-          saveCompletion();
-        }
         if (state.switchTabTo === -1) {
           updateHistory("new");
         } else if (state.selected.id === 0) {
@@ -126,13 +127,31 @@ const Completion = props => {
           updateHistory(state.displayed[state.switchTabTo].id);
         }
       }
-      setState({
-        ...state,
-        switchTabTo: null,
-        trySwitchTab: false,
-        editing: false,
-      });
+
+      if (completionToBeSaved !== null && canSwitch === -1) {
+        var displayed = state.displayed;
+        const index = displayed.findIndex(item => item.id === completionToBeSaved.id);
+        displayed[index] = completionToBeSaved;
+
+        setState({
+          ...state,
+          displayed: displayed,
+          selected: completionToBeSaved,
+          switchTabTo: null,
+          trySwitchTab: false,
+          editing: false,
+        });
+      } else {
+        setState({
+          ...state,
+          switchTabTo: null,
+          trySwitchTab: false,
+          editing: false,
+        });
+      }
+
       if (canSwitch !== 0) {
+        setCompletionToBeSaved(null);
         resetCanSwitch();
         setCheckContentDirty(false);
       }
@@ -140,22 +159,22 @@ const Completion = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwitch]);
 
-  const saveCompletion = completion => {
-    if (completion == null) {
-      completion = completionToBeSaved;
-      setCompletionToBeSaved(null);
-    }
+  const saveCompletion = (completion, preventReload) => {
     if (completion.id === 0) {
       addCompletion(completion).then(() => {
         setState({
           ...state,
           switchTabTo: state.switchTabTo === null ? state.displayed.length - 1 : state.switchTabTo,
         });
-        loadData();
+        if (!preventReload) {
+          loadData();
+        }
       });
     } else {
       updateCompletion(completion).then(() => {
-        loadData();
+        if (!preventReload) {
+          loadData();
+        }
       });
     }
   };
@@ -288,6 +307,7 @@ const Completion = props => {
               <AddButton
                 label="addCompletion"
                 sx={{ marginRight: "5px" }}
+                disabled={state.selected?.id === 0}
                 onClick={e => {
                   handleCompletionChanged(e, -1);
                 }}
@@ -296,7 +316,7 @@ const Completion = props => {
           </Stack>
           {state.selected != null && (
             <>
-              <CompletionBox sx={{ padding: "18px" }}>
+              <CompletionBox sx={{ padding: "18px" }} data-cy="completion-header">
                 {state.editing ? (
                   <CompletionHeaderInput
                     completion={state.selected}
@@ -338,15 +358,15 @@ const Completion = props => {
       <Prompt
         open={showDeletePrompt}
         setOpen={setShowDeletePrompt}
-        titleLabel="deleteCompletionTitle"
-        messageLabel="deleteCompletionMessage"
+        title={t("deleteCompletionTitle")}
+        message={t("deleteCompletionMessage")}
         actions={[
           {
-            label: "cancel",
+            label: t("cancel"),
             action: null,
           },
           {
-            label: "delete",
+            label: t("delete"),
             action: onDeleteConfirmed,
           },
         ]}
