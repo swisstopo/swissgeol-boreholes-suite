@@ -1,7 +1,7 @@
-import { getWaterIngress, addWaterIngress, updateWaterIngress, deleteWaterIngress } from "../../../../api/fetchApiV2";
+import { getWaterIngress } from "../../../../api/fetchApiV2";
 import WaterIngressInput from "./waterIngressInput";
 import WaterIngressDisplay from "./waterIngressDisplay";
-import { DataCards } from "../../../../components/dataCard/dataCards";
+import DataCards from "../../../../components/dataCard/dataCards";
 import { sortByDepth } from "../../../sorter.jsx";
 
 const WaterIngress = ({ isEditable, boreholeId }) => {
@@ -10,9 +10,6 @@ const WaterIngress = ({ isEditable, boreholeId }) => {
       isEditable={isEditable}
       parentId={boreholeId}
       getData={getWaterIngress}
-      addData={addWaterIngress}
-      updateData={updateWaterIngress}
-      deleteData={deleteWaterIngress}
       cyLabel="waterIngress"
       addLabel="addWaterIngress"
       emptyLabel="msgWateringressesEmpty"

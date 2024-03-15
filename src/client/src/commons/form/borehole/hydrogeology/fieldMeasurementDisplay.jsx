@@ -3,10 +3,10 @@ import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import ObservationDisplay from "./observationDisplay";
 import { FieldMeasurementParameterUnits } from "./parameterUnits";
-import { useDomains } from "../../../../api/fetchApiV2";
+import { deleteFieldMeasurement, useDomains } from "../../../../api/fetchApiV2";
 
 const FieldMeasurementDisplay = props => {
-  const { item, selected, setSelected, isEditable, deleteData } = props;
+  const { item, isEditable } = props;
   const domains = useDomains();
 
   const getParameterUnit = parameterId => {
@@ -14,12 +14,7 @@ const FieldMeasurementDisplay = props => {
   };
 
   return (
-    <DataDisplayCard
-      item={item}
-      selected={selected}
-      setSelected={setSelected}
-      isEditable={isEditable}
-      deleteData={deleteData}>
+    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteFieldMeasurement}>
       <ObservationDisplay observation={item} />
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay label="field_measurement_sample_type" value={item?.sampleType} type={FormDisplayType.Domain} />

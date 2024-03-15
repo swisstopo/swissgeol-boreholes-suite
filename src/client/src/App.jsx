@@ -12,6 +12,7 @@ import DataLoader from "./pages/settings/dataLoader";
 import AcceptTerms from "./pages/term/accept";
 import { AlertProvider } from "./components/alert/alertContext";
 import { AlertBanner } from "./components/alert/alertBanner";
+import { DataCardProvider } from "./components/dataCard/dataCardContext.jsx";
 
 const queryClient = new QueryClient();
 
@@ -46,47 +47,49 @@ class App extends React.Component {
         <AcceptTerms>
           <AlertProvider>
             <AlertBanner />
-            <ThemeProvider theme={theme}>
-              <QueryClientProvider client={queryClient}>
-                <Router>
-                  <Switch>
-                    <Route
-                      render={props => {
-                        mode = "editor";
-                        return <EditorComponent {...props} />;
-                      }}
-                      exact={false}
-                      key={0}
-                      path={"/editor"}
-                    />
-                    <Route
-                      render={props => <SettingCmp {...props} mode={mode} />}
-                      exact={true}
-                      key={1}
-                      path={"/setting/:id"}
-                    />
-                    <Route
-                      render={props => {
-                        mode = "viewer";
-                        return <HomeComponent {...props} />;
-                      }}
-                      key={2}
-                      path={"/"}
-                    />
-                    <Route
-                      component={() => (
-                        <Redirect
-                          to={{
-                            pathname: "/",
-                          }}
-                        />
-                      )}
-                    />
-                  </Switch>
-                </Router>
-                <ReactQueryDevtools />
-              </QueryClientProvider>
-            </ThemeProvider>
+            <DataCardProvider>
+              <ThemeProvider theme={theme}>
+                <QueryClientProvider client={queryClient}>
+                  <Router>
+                    <Switch>
+                      <Route
+                        render={props => {
+                          mode = "editor";
+                          return <EditorComponent {...props} />;
+                        }}
+                        exact={false}
+                        key={0}
+                        path={"/editor"}
+                      />
+                      <Route
+                        render={props => <SettingCmp {...props} mode={mode} />}
+                        exact={true}
+                        key={1}
+                        path={"/setting/:id"}
+                      />
+                      <Route
+                        render={props => {
+                          mode = "viewer";
+                          return <HomeComponent {...props} />;
+                        }}
+                        key={2}
+                        path={"/"}
+                      />
+                      <Route
+                        component={() => (
+                          <Redirect
+                            to={{
+                              pathname: "/",
+                            }}
+                          />
+                        )}
+                      />
+                    </Switch>
+                  </Router>
+                  <ReactQueryDevtools />
+                </QueryClientProvider>
+              </ThemeProvider>
+            </DataCardProvider>
           </AlertProvider>
         </AcceptTerms>
       </DataLoader>

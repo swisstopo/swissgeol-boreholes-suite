@@ -6,10 +6,10 @@ import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import ObservationDisplay from "./observationDisplay";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { TestResultParameterUnits } from "./parameterUnits";
-import { useDomains } from "../../../../api/fetchApiV2";
+import { useDomains, deleteHydrotest } from "../../../../api/fetchApiV2";
 
 const HydrotestDisplay = props => {
-  const { item, selected, setSelected, isEditable, deleteData } = props;
+  const { item, isEditable } = props;
   const { t, i18n } = useTranslation();
   const domains = useDomains();
 
@@ -35,12 +35,7 @@ const HydrotestDisplay = props => {
   };
 
   return (
-    <DataDisplayCard
-      item={item}
-      selected={selected}
-      setSelected={setSelected}
-      isEditable={isEditable}
-      deleteData={deleteData}>
+    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteHydrotest}>
       <ObservationDisplay observation={item} />
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay

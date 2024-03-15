@@ -1,5 +1,11 @@
-import { loginAsAdmin, createBorehole, createCompletion, startBoreholeEditing } from "../helpers/testHelpers";
-import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
+import {
+  loginAsAdmin,
+  createBorehole,
+  createCompletion,
+  startBoreholeEditing,
+  handlePrompt,
+} from "../helpers/testHelpers";
+import { evaluateDisplayValue, evaluateInput, evaluateTextarea, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
 
 describe("Casing crud tests", () => {
@@ -169,5 +175,79 @@ describe("Casing crud tests", () => {
     cy.wait("@casing_GET");
     cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains("casing-1");
     cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains("casing-2");
+  });
+
+  it("checks for unsaved changes when switching between cards", () => {
+    // no prompt should be displayed when no card is currently in edit mode
+    addItem("addCasing");
+    setInput("name", "casing 1");
+    setInput("casingElements.0.fromDepth", "5");
+    setInput("casingElements.0.toDepth", "10");
+
+    // can cancel switching tabs without loosing data
+    addItem("addCasing");
+    handlePrompt("Unsaved changes", "cancel");
+    evaluateInput("name", "casing 1");
+    evaluateInput("fromDepth", "5");
+    evaluateInput("toDepth", "10");
+    setSelect("casingElements.0.kindId", 2);
+
+    // can reset new card form
+    addItem("addCasing");
+    handlePrompt("Unsaved changes", "reset");
+    cy.get('[data-cy="casing-card.0.edit"]').should("exist");
+
+    // can save new card and switch to new card
+    setInput("name", "casing 1");
+    setInput("casingElements.0.fromDepth", "5");
+    setInput("casingElements.0.toDepth", "10");
+    setSelect("casingElements.0.kindId", 2);
+    addItem("addCasing");
+    handlePrompt("Unsaved changes", "save");
+    cy.wait("@casing_GET");
+    cy.get('[data-cy="casing-card.0.edit"]').should("exist");
+    cy.get('[data-cy="casing-card.1"]').should("exist");
+
+    // can switch cards without prompt if no changes were made
+    startEditing();
+    setInput("notes", "Lorem.");
+
+    // can cancel switching tabs without loosing data
+    addItem("addCasing");
+    handlePrompt("Unsaved changes", "cancel");
+    evaluateTextarea("notes", "Lorem.");
+
+    // can reset creating
+    addItem("addCasing");
+    handlePrompt("Unsaved changes", "reset");
+    evaluateDisplayValue("notes", "-");
+
+    // can save changes in existing card and switch to new card
+    startEditing();
+    setInput("notes", "Lorem.");
+    addItem("addCasing");
+    handlePrompt("Unsaved changes", "save");
+    evaluateDisplayValue("notes", "Lorem.");
+
+    // can reset creating and switch to existing card
+    setInput("name", "casing 2");
+    setInput("casingElements.0.fromDepth", "0");
+    setInput("casingElements.0.toDepth", "5");
+    setSelect("casingElements.0.kindId", 2);
+    startEditing();
+    handlePrompt("Unsaved changes", "reset");
+    cy.get('[data-cy="casing-card.0.edit"]').should("exist");
+    cy.get('[data-cy="casing-card.1"]').should("not.exist");
+
+    // can save new card and switch to existing card
+    addItem("addCasing");
+    setInput("name", "casing 2");
+    setInput("casingElements.0.fromDepth", "0");
+    setInput("casingElements.0.toDepth", "5");
+    setSelect("casingElements.0.kindId", 2);
+    startEditing();
+    handlePrompt("Unsaved changes", "save");
+    cy.get('[data-cy="casing-card.0.edit"]').should("exist");
+    cy.get('[data-cy="casing-card.1"]').should("exist");
   });
 });
