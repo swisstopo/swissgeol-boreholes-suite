@@ -16,6 +16,7 @@ import {
   evaluateMultiSelect,
 } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
+import { setContentTab } from "./completion.cy";
 
 describe("Tests for the hydrotest editor.", () => {
   it("Creates, updates and deletes hydrotests", () => {
@@ -30,7 +31,7 @@ describe("Tests for the hydrotest editor.", () => {
       cy.visit(`/editor/${id}/completion`);
     });
     startBoreholeEditing();
-    cy.get("[data-cy=completion-content-header-tab-casing]").click();
+    setContentTab("casing");
     cy.wait("@casing_GET");
 
     addItem("addCasing");
