@@ -121,7 +121,7 @@ describe("completion crud tests", () => {
     saveChanges();
     cy.contains("Compl-2");
     startEditHeader();
-    evaluateCheckbox("isPrimary", true);
+    evaluateCheckbox("isPrimary", "true");
     cancelEditing();
 
     // delete completion
