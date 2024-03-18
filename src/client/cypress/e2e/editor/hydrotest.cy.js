@@ -7,8 +7,6 @@ import {
 } from "../helpers/testHelpers";
 import {
   evaluateDisplayValue,
-  evaluateInput,
-  evaluateSelect,
   evaluateTextarea,
   setInput,
   setSelect,
