@@ -362,7 +362,7 @@ class MenuEditorForm extends React.Component {
                 />
                 <List.Content>
                   <List.Header as="h3" data-cy="fieldmeasurement-menu-item">
-                    <TranslationText firstUpperCase id="field_measurement" />
+                    <TranslationText firstUpperCase id="fieldMeasurement" />
                   </List.Header>
                 </List.Content>
               </List.Item>

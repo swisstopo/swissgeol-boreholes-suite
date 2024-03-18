@@ -19,9 +19,6 @@ beforeEach(() => {
           createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
             { fromDepth: 0, toDepth: 10, kindId: 25000103 },
           ]);
-          createCasing("casing-2", id, completionId, "2021-01-03", "2021-01-04", [
-            { fromDepth: 5, toDepth: 12, kindId: 25000105 },
-          ]);
         }),
     )
     .then(response => {
@@ -41,9 +38,9 @@ describe("Tests for the field measurement editor.", () => {
     cy.get('[data-cy="menu"]').click({ force: true });
     cy.contains("span", "DE").click({ force: true });
 
-    cy.wait(1000);
     // create field measurement
-    addItem("addFieldmeasurement");
+    cy.wait(500);
+    addItem("addFieldMeasurement");
     cy.wait("@casing_GET");
 
     setSelect("reliabilityId", 1);
@@ -79,7 +76,7 @@ describe("Tests for the field measurement editor.", () => {
   it("sorts fieldmeasurement", () => {
     // Create borehole with completion and casings
 
-    addItem("addFieldmeasurement");
+    addItem("addFieldMeasurement");
     cy.wait("@casing_GET");
     setInput("fromDepthM", 0);
     setInput("toDepthM", 10);
@@ -93,8 +90,8 @@ describe("Tests for the field measurement editor.", () => {
     saveForm();
     cy.wait("@fieldmeasurement_GET");
 
-    cy.wait(1000);
-    addItem("addFieldmeasurement");
+    cy.wait(500);
+    addItem("addFieldMeasurement");
     cy.wait("@casing_GET");
     setInput("fromDepthM", 0);
     setInput("toDepthM", 12);

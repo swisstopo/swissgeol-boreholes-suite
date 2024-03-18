@@ -19,7 +19,7 @@ const FieldMeasurementDisplay = props => {
         results={item?.fieldMeasurementResults}
         renderHeader={styles => (
           <>
-            <TableCell sx={{ ...styles, paddingRight: 0 }}>{t("field_measurement_sample_type")}</TableCell>
+            <TableCell sx={{ ...styles, paddingRight: 0 }}>{t("fieldMeasurementSampleType")}</TableCell>
             <TableCell sx={styles}>{t("parameter")}</TableCell>
             <TableCell sx={styles}>{t("value")}</TableCell>
           </>
