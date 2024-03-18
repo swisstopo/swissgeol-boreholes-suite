@@ -11,7 +11,7 @@ const FieldMeasurement = ({ isEditable, boreholeId }) => {
       parentId={boreholeId}
       getData={getFieldMeasurements}
       cyLabel="fieldMeasurement"
-      addLabel="addFieldmeasurement"
+      addLabel="addFieldMeasurement"
       emptyLabel="msgFieldMeasurementsEmpty"
       renderInput={props => <FieldMeasurementInput {...props} />}
       renderDisplay={props => <FieldMeasurementDisplay {...props} />}
