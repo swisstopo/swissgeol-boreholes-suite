@@ -47,7 +47,6 @@ describe("Tests for the hydrotest editor.", () => {
     cy.get('[data-cy="menu"]').click({ force: true });
     cy.contains("span", "DE").click({ force: true });
 
-    cy.wait(1000);
     // create hydrotest
     addItem("addHydrotest");
     cy.wait("@casing_GET");
@@ -128,7 +127,6 @@ describe("Tests for the hydrotest editor.", () => {
     saveForm();
     cy.wait("@hydrotest_GET");
 
-    cy.wait(1000);
     addItem("addHydrotest");
     cy.wait("@casing_GET");
     setInput("fromDepthM", 0);
