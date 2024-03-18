@@ -42,7 +42,6 @@ describe("Tests for the groundwater level measurement editor.", () => {
     cy.get('[data-cy="menu"]').click({ force: true });
     cy.contains("span", "DE").click({ force: true });
 
-    cy.wait(1000);
     // create groundwater level measurement
     addItem("addGroundwaterLevelMeasurement");
     cy.wait("@casing_GET");
@@ -96,7 +95,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     saveForm();
     cy.wait("@groundwaterlevelmeasurement_GET");
 
-    cy.wait(1000);
+    cy.wait(500);
     addItem("addGroundwaterLevelMeasurement");
     cy.wait("@casing_GET");
     setInput("fromDepthM", 0);
