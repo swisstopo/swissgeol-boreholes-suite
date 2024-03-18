@@ -48,6 +48,7 @@
 - Removed property _isLast_ from `ChronostratigraphyLayer`, `LithostratigraphyLayer`, `LithologicalDescription` and `FaciesDescription`.
 - Removed feedback functionality.
 - Included new `swissgeol boreholes` logo and icon.
+- Removed `completed` checkbox from hydrogeology observations and added option `open hole` to completion name.
 
 ### Fixed
 
