@@ -6,18 +6,18 @@ import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { useDomains, addFieldMeasurement, updateFieldMeasurement } from "../../../../api/fetchApiV2";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
+import { PromptContext } from "../../../../components/prompt/promptContext";
 import { useTranslation } from "react-i18next";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { getFieldMeasurementParameterUnits } from "./parameterUnits";
 import Delete from "@mui/icons-material/Delete";
-import Prompt from "../../../../components/prompt/prompt";
-
 const FieldMeasurementInput = props => {
   const { item, parentId } = props;
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
+  const { showPrompt } = useContext(PromptContext);
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const formMethods = useForm({
@@ -31,12 +31,33 @@ const FieldMeasurementInput = props => {
     control: formMethods.control,
   });
   const [units, setUnits] = useState({});
-  const [showSavePrompt, setShowSavePrompt] = useState(false);
 
   useEffect(() => {
     if (checkIsDirty) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        setShowSavePrompt(true);
+        showPrompt(t("unsavedChangesTitle", { where: t("field_measurement") }), t("unsavedChangesMessage"), [
+          {
+            label: t("cancel"),
+            action: () => {
+              leaveInput(false);
+            },
+          },
+          {
+            label: t("reset"),
+            action: () => {
+              formMethods.reset();
+              selectCard(null);
+              leaveInput(true);
+            },
+          },
+          {
+            label: t("save"),
+            disabled: !formMethods.formState.isValid,
+            action: () => {
+              formMethods.handleSubmit(submitForm)();
+            },
+          },
+        ]);
       } else {
         leaveInput(true);
       }
@@ -202,35 +223,6 @@ const FieldMeasurementInput = props => {
           </DataCardButtonContainer>
         </form>
       </FormProvider>
-      <Prompt
-        open={showSavePrompt}
-        setOpen={setShowSavePrompt}
-        titleLabel={t("unsavedChangesTitle", { where: t("field_measurement") })}
-        messageLabel={t("unsavedChangesMessage")}
-        actions={[
-          {
-            label: t("cancel"),
-            action: () => {
-              leaveInput(false);
-            },
-          },
-          {
-            label: t("reset"),
-            action: () => {
-              formMethods.reset();
-              selectCard(null);
-              leaveInput(true);
-            },
-          },
-          {
-            label: t("save"),
-            disabled: !formMethods.formState.isValid,
-            action: () => {
-              formMethods.handleSubmit(submitForm)();
-            },
-          },
-        ]}
-      />
     </>
   );
 };
