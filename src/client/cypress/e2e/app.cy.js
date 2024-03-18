@@ -4,23 +4,23 @@ describe("General app tests", () => {
   it("Displays the login page in the correct language", () => {
     // default is english
     cy.session("logged out", () => cy.visit("/"));
+
+    // Fail get of auth setting to previent auto login.
+    cy.intercept("/api/v2/settings/auth", (req) => req.destroy());
+
     cy.visit("/");
-    cy.contains("Login");
     cy.contains("Welcome to");
 
     // german
     cy.contains("span", "DE").click();
-    cy.contains("Login");
     cy.contains("Willkommen bei");
 
     // french
     cy.contains("span", "FR").click();
-    cy.contains("Login");
     cy.contains("Bienvenue sur");
 
     // italian
     cy.contains("span", "IT").click();
-    cy.contains("Login");
     cy.contains("Benvenuti su");
   });
 

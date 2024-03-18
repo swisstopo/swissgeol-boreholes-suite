@@ -450,5 +450,6 @@
   "msgLithostratigraphyEmpty": "Nessun profilo litostratigrafico disponibile",
   "msgLithostratigraphyEmptyEditing": "Prima di creare un profilo litostratigrafico è necessario creare una stratigrafia",
   "msgChronostratigraphyEmpty": "Nessun profilo cronostratigrafico disponibile",
-  "msgChronostratigraphyEmptyEditing": "Prima di creare un profilo cronostratigrafico è necessario creare una stratigrafia"
+  "msgChronostratigraphyEmptyEditing": "Prima di creare un profilo cronostratigrafico è necessario creare una stratigrafia",
+  "welcomeMessage": "Benvenuti su"
 }

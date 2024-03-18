@@ -2,13 +2,15 @@ import React from "react";
 import { Stack, Typography } from "@mui/material";
 import styled from "@mui/material/styles/styled";
 import TranslationKeys from "../translationKeys";
+import { useTranslation } from "react-i18next";
 
 interface AuthOverlayProps {
-    title?: string;
     children?: React.ReactNode;
 }
 
-export const SplashScreen: React.FC<AuthOverlayProps> = ({ children, title = "Welcome to " + window.location.host, }) => {
+export const SplashScreen: React.FC<AuthOverlayProps> = ({ children }) => {
+    const { t } = useTranslation();
+
     const OuterContainer = styled("div")({
         alignItems: "center",
         backgroundColor: "#787878",
@@ -47,7 +49,7 @@ export const SplashScreen: React.FC<AuthOverlayProps> = ({ children, title = "We
                     <Stack alignItems="center" direction="column" justifyContent="center" spacing={ 1.5 }>
                         <StyledImage sx={{ alignSelf: "left" }} alt="Swiss Logo" src="/swissgeol_boreholes.svg" />
                         <Stack>
-                            <Typography sx={{ fontSize: "1.2em", alignSelf: "center" }}>{title}</Typography>
+                            <Typography sx={{ fontSize: "1.2em", alignSelf: "center" }}>{`${t("welcomeMessage")} ${window.location.host}`}</Typography>
                             <Typography sx={{ fontSize: "0.8em", alignSelf: "center" }}>Borehole Data Management System</Typography>
                         </Stack>
                         {children}
