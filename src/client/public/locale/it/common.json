@@ -78,6 +78,8 @@
   "deletelayerconfirmation": "Stai per eliminare questo livello, come vuoi procedere?",
   "deleteCompletionTitle": "Volete davvero cancellare questo installazione?",
   "deleteCompletionMessage": "Questo installazione, compresi gli tubazione, gli strumenti e i riempimenti, sarà cancellato definitivamente dal database.",
+  "deleteTitle": "Volete davvero eliminare questa voce?",
+  "deleteMessage": "La voce verrà eliminata definitivamente dal database.",
   "deleting": "Eliminazione {{what}}",
   "depthMD": "Profondità [m\u00A0MD]",
   "details": "Dettagli",

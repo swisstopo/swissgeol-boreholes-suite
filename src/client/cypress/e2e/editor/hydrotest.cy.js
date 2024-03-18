@@ -112,6 +112,7 @@ describe("Tests for the hydrotest editor.", () => {
 
     // delete hydrotest
     deleteItem();
+    handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "Löschen");
     cy.wait("@hydrotest_GET");
     cy.get("body").should("not.contain", "Pump-/Injektionsversuch, variable Rate");
   });

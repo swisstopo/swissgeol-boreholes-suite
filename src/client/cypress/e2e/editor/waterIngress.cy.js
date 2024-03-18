@@ -1,4 +1,10 @@
-import { createBorehole, createCompletion, startBoreholeEditing, loginAsAdmin } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  createCompletion,
+  startBoreholeEditing,
+  loginAsAdmin,
+  handlePrompt,
+} from "../helpers/testHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
 
@@ -79,6 +85,7 @@ describe("Tests for the wateringress editor.", () => {
 
     // delete wateringress
     deleteItem();
+    handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "Löschen");
     cy.wait("@wateringress_DELETE");
     cy.get("body").should("not.contain", "mittel (30 - 120 l/min)");
   });

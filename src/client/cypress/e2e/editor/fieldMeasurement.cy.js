@@ -1,4 +1,10 @@
-import { createBorehole, loginAsAdmin, startBoreholeEditing, createCompletion } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  loginAsAdmin,
+  startBoreholeEditing,
+  createCompletion,
+  handlePrompt,
+} from "../helpers/testHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
 
@@ -71,6 +77,7 @@ describe("Tests for the field measurement editor.", () => {
 
     // delete field measurement
     deleteItem();
+    handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "Löschen");
     cy.wait("@fieldmeasurement_DELETE");
     cy.get("body").should("not.contain", "Pumpprobe");
   });
