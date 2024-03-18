@@ -14,7 +14,7 @@ describe("Casing crud tests", () => {
       .as("borehole_id")
       .then(id => createCompletion("test casing", id, 16000002, true))
       .then(response => {
-        expect(response).to.have.property("status", 200);
+        expect(response).to.be.above(0);
       });
 
     // open completion editor
@@ -104,6 +104,7 @@ describe("Casing crud tests", () => {
     cy.wait("@casing_GET");
 
     deleteItem("casing-card.0");
+    handlePrompt("Do you really want to delete this entry?", "Delete");
     cy.wait("@casing_DELETE");
     cy.contains("casing-1 updated").should("not.exist");
 

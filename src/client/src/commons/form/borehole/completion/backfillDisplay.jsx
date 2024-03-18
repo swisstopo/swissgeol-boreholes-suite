@@ -16,8 +16,8 @@ const BackfillDisplay = props => {
         <FormDisplay label="todepth" value={item?.toDepth} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay label="kindFilling" value={item?.kind} type={FormDisplayType.Domain} />
-        <FormDisplay label="materialFilling" value={item?.material} type={FormDisplayType.Domain} />
+        <FormDisplay label="kindBackfill" value={item?.kind} type={FormDisplayType.Domain} />
+        <FormDisplay label="materialBackfill" value={item?.material} type={FormDisplayType.Domain} />
       </StackFullWidth>
       <StackHalfWidth>
         <FormDisplay label="casingName" value={getCasingName(item)} />

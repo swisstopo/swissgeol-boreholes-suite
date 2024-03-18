@@ -1,5 +1,7 @@
+import { useContext } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { styled } from "@mui/system";
+import { PromptContext } from "./promptContext";
 
 export const PromptButton = styled(Button)({
   fontFamily: "Lato",
@@ -11,10 +13,10 @@ export const PromptButton = styled(Button)({
   },
 });
 
-const Prompt = props => {
-  const { open, setOpen, title, message, actions } = props;
+export const Prompt = () => {
+  const { promptIsOpen, title, message, actions, closePrompt } = useContext(PromptContext);
   return (
-    <Dialog open={open} data-cy="prompt">
+    <Dialog open={promptIsOpen} data-cy="prompt">
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{message}</DialogContentText>
@@ -27,7 +29,7 @@ const Prompt = props => {
               if (action.action != null) {
                 action.action();
               }
-              setOpen(false);
+              closePrompt();
             }}
             disabled={action.disabled === true}
             data-cy={"prompt-button-" + action.label}>
@@ -38,5 +40,3 @@ const Prompt = props => {
     </Dialog>
   );
 };
-
-export default Prompt;

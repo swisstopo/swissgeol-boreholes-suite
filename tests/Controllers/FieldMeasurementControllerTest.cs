@@ -64,9 +64,11 @@ public class FieldMeasurementControllerTest
         Assert.AreEqual(fieldMeasurement.CompletionFinished, false);
         Assert.AreEqual(fieldMeasurement.Comment, "Accusamus voluptates aut sit ducimus.");
         Assert.AreEqual(fieldMeasurement.ReliabilityId, 15203159);
-        Assert.AreEqual(fieldMeasurement.SampleTypeId, 15203209);
-        Assert.AreEqual(fieldMeasurement.ParameterId, 15203220);
-        Assert.AreEqual(fieldMeasurement.Value, 744.319461402632);
+        Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.Count, 10);
+        Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.First().Id, 14000017);
+        Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.First().FieldMeasurementId, 12000005);
+        Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.First().SampleTypeId, 15203211);
+        Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.First().ParameterId, 15203218);
     }
 
     [TestMethod]
@@ -87,9 +89,23 @@ public class FieldMeasurementControllerTest
             Comment = "Test comment",
             BoreholeId = 1001104,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
-            SampleTypeId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Single(c => c.Geolcode == 3).Id,
-            ParameterId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Single(c => c.Geolcode == 3).Id,
-            Value = 0.0,
+            FieldMeasurementResults = new List<FieldMeasurementResult>
+            {
+                new()
+                {
+                    FieldMeasurementId = 1,
+                    SampleTypeId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Single(c => c.Geolcode == 3).Id,
+                    ParameterId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Single(c => c.Geolcode == 2).Id,
+                    Value = 25435.22,
+                },
+                new()
+                {
+                    FieldMeasurementId = 1,
+                    SampleTypeId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Single(c => c.Geolcode == 1).Id,
+                    ParameterId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Single(c => c.Geolcode == 4).Id,
+                    Value = 0.8478,
+                },
+            },
         };
 
         var updatedFieldMeasurement = new FieldMeasurement
@@ -107,18 +123,25 @@ public class FieldMeasurementControllerTest
             Comment = "Updated test comment",
             BoreholeId = 1001105,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
-            SampleTypeId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Single(c => c.Geolcode == 1).Id,
-            ParameterId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Single(c => c.Geolcode == 1).Id,
-            Value = 6.1,
+            FieldMeasurementResults = new List<FieldMeasurementResult>
+            {
+                new()
+                {
+                    FieldMeasurementId = 1,
+                    SampleTypeId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Single(c => c.Geolcode == 1).Id,
+                    ParameterId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Single(c => c.Geolcode == 1).Id,
+                    Value = 0.0,
+                },
+            },
         };
 
         context.FieldMeasurements.Add(originalFieldMeasurement);
         await context.SaveChangesAsync();
 
-        var result = await controller.EditAsync(updatedFieldMeasurement);
+        var response = await controller.EditAsync(updatedFieldMeasurement);
 
-        Assert.IsNotNull(result);
-        ActionResultAssert.IsOk(result.Result);
+        Assert.IsNotNull(response);
+        ActionResultAssert.IsOk(response.Result);
 
         var editedFieldMeasurement = context.FieldMeasurements.Single(w => w.Id == 1);
         Assert.AreEqual(updatedFieldMeasurement.Id, editedFieldMeasurement.Id);
@@ -134,9 +157,12 @@ public class FieldMeasurementControllerTest
         Assert.AreEqual(updatedFieldMeasurement.Comment, editedFieldMeasurement.Comment);
         Assert.AreEqual(updatedFieldMeasurement.BoreholeId, editedFieldMeasurement.BoreholeId);
         Assert.AreEqual(updatedFieldMeasurement.ReliabilityId, editedFieldMeasurement.ReliabilityId);
-        Assert.AreEqual(updatedFieldMeasurement.SampleTypeId, editedFieldMeasurement.SampleTypeId);
-        Assert.AreEqual(updatedFieldMeasurement.ParameterId, editedFieldMeasurement.ParameterId);
-        Assert.AreEqual(updatedFieldMeasurement.Value, editedFieldMeasurement.Value);
+        Assert.AreEqual(updatedFieldMeasurement.FieldMeasurementResults.Count, editedFieldMeasurement.FieldMeasurementResults.Count);
+        Assert.AreEqual(updatedFieldMeasurement.FieldMeasurementResults.First().Id, editedFieldMeasurement.FieldMeasurementResults.First().Id);
+        Assert.AreEqual(updatedFieldMeasurement.FieldMeasurementResults.First().FieldMeasurementId, editedFieldMeasurement.FieldMeasurementResults.First().FieldMeasurementId);
+        Assert.AreEqual(updatedFieldMeasurement.FieldMeasurementResults.First().SampleTypeId, editedFieldMeasurement.FieldMeasurementResults.First().SampleTypeId);
+        Assert.AreEqual(updatedFieldMeasurement.FieldMeasurementResults.First().ParameterId, editedFieldMeasurement.FieldMeasurementResults.First().ParameterId);
+        Assert.AreEqual(updatedFieldMeasurement.FieldMeasurementResults.First().Value, editedFieldMeasurement.FieldMeasurementResults.First().Value);
     }
 
     [TestMethod]
@@ -144,8 +170,8 @@ public class FieldMeasurementControllerTest
     {
         var nonExistentFieldMeasurement = new FieldMeasurement { Id = 2964237 };
 
-        var result = await controller.EditAsync(nonExistentFieldMeasurement);
-        ActionResultAssert.IsNotFound(result.Result);
+        var response = await controller.EditAsync(nonExistentFieldMeasurement);
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
@@ -165,9 +191,21 @@ public class FieldMeasurementControllerTest
             Comment = "New test comment",
             BoreholeId = 1001493,
             ReliabilityId = context.Codelists.Where(c => c.Schema == "observation_reliability").Single(c => c.Geolcode == 3).Id,
-            SampleTypeId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Single(c => c.Geolcode == 1).Id,
-            ParameterId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Single(c => c.Geolcode == 1).Id,
-            Value = 9453.456,
+            FieldMeasurementResults = new List<FieldMeasurementResult>
+            {
+                new()
+                {
+                    SampleTypeId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Single(c => c.Geolcode == 3).Id,
+                    ParameterId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Single(c => c.Geolcode == 2).Id,
+                    Value = 25435.22,
+                },
+                new()
+                {
+                    SampleTypeId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Single(c => c.Geolcode == 1).Id,
+                    ParameterId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Single(c => c.Geolcode == 4).Id,
+                    Value = 0.8478,
+                },
+            },
         };
 
         var createResponse = await controller.CreateAsync(newFieldMeasurement);
@@ -187,9 +225,13 @@ public class FieldMeasurementControllerTest
         Assert.AreEqual(newFieldMeasurement.Comment, "New test comment");
         Assert.AreEqual(newFieldMeasurement.BoreholeId, 1001493);
         Assert.AreEqual(newFieldMeasurement.ReliabilityId, 15203158);
-        Assert.AreEqual(newFieldMeasurement.SampleTypeId, 15203209);
-        Assert.AreEqual(newFieldMeasurement.ParameterId, 15203214);
-        Assert.AreEqual(newFieldMeasurement.Value, 9453.456);
+        Assert.AreEqual(newFieldMeasurement.FieldMeasurementResults.Count, 2);
+        Assert.AreEqual(newFieldMeasurement.FieldMeasurementResults.First().SampleTypeId, 15203211);
+        Assert.AreEqual(newFieldMeasurement.FieldMeasurementResults.First().ParameterId, 15203215);
+        Assert.AreEqual(newFieldMeasurement.FieldMeasurementResults.First().Value, 25435.22);
+        Assert.AreEqual(newFieldMeasurement.FieldMeasurementResults.Last().SampleTypeId, 15203209);
+        Assert.AreEqual(newFieldMeasurement.FieldMeasurementResults.Last().ParameterId, 15203217);
+        Assert.AreEqual(newFieldMeasurement.FieldMeasurementResults.Last().Value, 0.8478);
 
         var deleteResponse = await controller.DeleteAsync(newFieldMeasurement.Id);
         ActionResultAssert.IsOk(deleteResponse);

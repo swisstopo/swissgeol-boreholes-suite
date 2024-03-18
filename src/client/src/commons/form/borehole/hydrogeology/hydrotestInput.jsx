@@ -10,15 +10,16 @@ import { useTranslation } from "react-i18next";
 import { useHydrotestDomains, useDomains, addHydrotest, updateHydrotest } from "../../../../api/fetchApiV2";
 import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { TestResultParameterUnits } from "./parameterUnits";
+import { getTestResultParameterUnits } from "./parameterUnits";
 import Delete from "@mui/icons-material/Delete";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
-import Prompt from "../../../../components/prompt/prompt";
+import { PromptContext } from "../../../../components/prompt/promptContext";
 
 const HydrotestInput = props => {
   const { item, parentId } = props;
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
+  const { showPrompt } = useContext(PromptContext);
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const formMethods = useForm({
@@ -32,7 +33,6 @@ const HydrotestInput = props => {
     control: formMethods.control,
   });
   const [units, setUnits] = useState({});
-  const [showSavePrompt, setShowSavePrompt] = useState(false);
 
   const [hydrotestKindIds, setHydrotestKindIds] = useState(
     item?.codelists?.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestKind).map(c => c.id) || [],
@@ -42,7 +42,29 @@ const HydrotestInput = props => {
   useEffect(() => {
     if (checkIsDirty) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        setShowSavePrompt(true);
+        showPrompt(t("unsavedChangesTitle", { where: t("hydrotest") }), t("unsavedChangesMessage"), [
+          {
+            label: t("cancel"),
+            action: () => {
+              leaveInput(false);
+            },
+          },
+          {
+            label: t("reset"),
+            action: () => {
+              formMethods.reset();
+              selectCard(null);
+              leaveInput(true);
+            },
+          },
+          {
+            label: t("save"),
+            disabled: !formMethods.formState.isValid,
+            action: () => {
+              formMethods.handleSubmit(submitForm)();
+            },
+          },
+        ]);
       } else {
         leaveInput(true);
       }
@@ -112,7 +134,7 @@ const HydrotestInput = props => {
     formMethods.getValues()["hydrotestResults"].forEach((element, index) => {
       currentUnits = {
         ...currentUnits,
-        [index]: getParameterUnit(element.parameterId),
+        [index]: getTestResultParameterUnits(element.parameterId, domains),
       };
     });
     setUnits(currentUnits);
@@ -185,13 +207,6 @@ const HydrotestInput = props => {
         triggerReload();
       });
     }
-  };
-
-  const getParameterUnit = parameterId => {
-    if (!parameterId) {
-      return null;
-    }
-    return TestResultParameterUnits[domains?.data?.find(d => d.id === parameterId).geolcode];
   };
 
   return (
@@ -296,7 +311,7 @@ const HydrotestInput = props => {
                           name: d[i18n.language],
                         }))}
                       onUpdate={value => {
-                        setUnits({ ...units, [index]: getParameterUnit(value) });
+                        setUnits({ ...units, [index]: getTestResultParameterUnits(value, domains) });
                       }}
                     />
                     <FormInput
@@ -361,35 +376,6 @@ const HydrotestInput = props => {
           </DataCardButtonContainer>
         </form>
       </FormProvider>
-      <Prompt
-        open={showSavePrompt}
-        setOpen={setShowSavePrompt}
-        title={t("unsavedChangesTitle", { where: t("hydrotest") })}
-        message={t("unsavedChangesMessage")}
-        actions={[
-          {
-            label: t("cancel"),
-            action: () => {
-              leaveInput(false);
-            },
-          },
-          {
-            label: t("reset"),
-            action: () => {
-              formMethods.reset();
-              selectCard(null);
-              leaveInput(true);
-            },
-          },
-          {
-            label: t("save"),
-            disabled: !formMethods.formState.isValid,
-            action: () => {
-              formMethods.handleSubmit(submitForm)();
-            },
-          },
-        ]}
-      />
     </>
   );
 };
