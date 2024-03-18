@@ -1,23 +1,18 @@
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import ObservationDisplay from "./observationDisplay";
-import { useDomains } from "../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
 import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";
 import { getFieldMeasurementParameterUnits } from "./parameterUnits";
+import { deleteFieldMeasurement, useDomains } from "../../../../api/fetchApiV2";
 
 const FieldMeasurementDisplay = props => {
-  const { item, selected, setSelected, isEditable, deleteData } = props;
-  const { t, i18n } = useTranslation();
+  const { item, isEditable } = props;
   const domains = useDomains();
+  const { t, i18n } = useTranslation();
 
   return (
-    <DataDisplayCard
-      item={item}
-      selected={selected}
-      setSelected={setSelected}
-      isEditable={isEditable}
-      deleteData={deleteData}>
+    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteFieldMeasurement}>
       <ObservationDisplay observation={item} />
       <FormResultTableDisplay
         title={t("fieldMeasurementResult")}

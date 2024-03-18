@@ -51,9 +51,10 @@ export const DataCard = forwardRef((props, ref) => {
   );
 });
 
-export const DataCardButtonContainer = forwardRef(props => {
+export const DataCardButtonContainer = forwardRef((props, ref) => {
   return (
     <Box
+      ref={ref}
       sx={{
         mb: 2,
         marginBottom: 0,

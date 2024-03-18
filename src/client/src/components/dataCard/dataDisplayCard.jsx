@@ -1,9 +1,13 @@
+import { useContext } from "react";
 import { DataCardButtonContainer } from "../dataCard/dataCard";
+import { DataCardContext, DataCardSwitchContext } from "./dataCardContext";
 import { StackFullWidth } from "../baseComponents";
 import { EditButton, DeleteButton } from "../buttons/buttons";
 
 export const DataDisplayCard = props => {
-  const { item, selected, setSelected, deleteData, isEditable } = props;
+  const { item, deleteData, isEditable } = props;
+  const { selectedCard, selectCard, triggerReload } = useContext(DataCardContext);
+  const { switchToCard } = useContext(DataCardSwitchContext);
 
   return (
     <>
@@ -11,15 +15,18 @@ export const DataDisplayCard = props => {
       {isEditable && (
         <DataCardButtonContainer>
           <EditButton
-            onClick={e => {
-              e.stopPropagation();
-              !selected && setSelected(item);
+            onClick={() => {
+              if (selectedCard) {
+                switchToCard(item);
+              } else {
+                selectCard(item);
+              }
             }}
           />
           <DeleteButton
-            onClick={e => {
-              e.stopPropagation();
-              !selected && deleteData(item.id);
+            onClick={() => {
+              deleteData(item.id);
+              triggerReload();
             }}
           />
         </DataCardButtonContainer>

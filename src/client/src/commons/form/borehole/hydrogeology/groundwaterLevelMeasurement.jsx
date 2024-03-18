@@ -1,12 +1,7 @@
-import {
-  getGroundwaterLevelMeasurements,
-  addGroundwaterLevelMeasurement,
-  updateGroundwaterLevelMeasurement,
-  deleteGroundwaterLevelMeasurement,
-} from "../../../../api/fetchApiV2";
+import { getGroundwaterLevelMeasurements } from "../../../../api/fetchApiV2";
 import GroundwaterLevelMeasurementInput from "./groundwaterLevelMeasurementInput";
 import GroundwaterLevelMeasurementDisplay from "./groundwaterLevelMeasurementDisplay";
-import { DataCards } from "../../../../components/dataCard/dataCards";
+import DataCards from "../../../../components/dataCard/dataCards";
 import { sortByDepth } from "../../../sorter.jsx";
 
 const GroundwaterLevelMeasurement = ({ isEditable, boreholeId }) => {
@@ -15,9 +10,6 @@ const GroundwaterLevelMeasurement = ({ isEditable, boreholeId }) => {
       isEditable={isEditable}
       parentId={boreholeId}
       getData={getGroundwaterLevelMeasurements}
-      addData={addGroundwaterLevelMeasurement}
-      updateData={updateGroundwaterLevelMeasurement}
-      deleteData={deleteGroundwaterLevelMeasurement}
       cyLabel="groundwaterLevelMeasurement"
       addLabel="addGroundwaterLevelMeasurement"
       emptyLabel="msgGroundwaterLevelMeasurementsEmpty"

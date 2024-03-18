@@ -3,11 +3,11 @@ import { Table, TableHead, TableBody, TableContainer, TableRow, TableCell, Typog
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
-import { useDomains } from "../../../../api/fetchApiV2";
+import { deleteCasing, useDomains } from "../../../../api/fetchApiV2";
 import { extractCasingDepth } from "./casingUtils";
 
 const CasingDisplay = props => {
-  const { item, selected, setSelected, isEditable, deleteData } = props;
+  const { item, isEditable } = props;
   const { t, i18n } = useTranslation();
   const domains = useDomains();
 
@@ -27,12 +27,7 @@ const CasingDisplay = props => {
   var depth = extractCasingDepth(item);
 
   return (
-    <DataDisplayCard
-      item={item}
-      selected={selected}
-      setSelected={setSelected}
-      isEditable={isEditable}
-      deleteData={deleteData}>
+    <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteCasing}>
       <FormDisplay label="name" value={item?.name} />
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay label="fromdepth" value={depth.min} type={FormDisplayType.Number} />

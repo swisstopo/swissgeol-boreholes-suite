@@ -1,6 +1,5 @@
-import React from "react";
-import { getCasings, addCasing, updateCasing, deleteCasing } from "../../../../api/fetchApiV2";
-import { DataCards } from "../../../../components/dataCard/dataCards";
+import { getCasings } from "../../../../api/fetchApiV2";
+import DataCards from "../../../../components/dataCard/dataCards";
 import CasingInput from "./casingInput";
 import CasingDisplay from "./casingDisplay";
 import { extractCasingDepth } from "./casingUtils.jsx";
@@ -12,9 +11,6 @@ const Casing = ({ isEditable, completionId }) => {
       isEditable={isEditable}
       parentId={completionId}
       getData={getCasings}
-      addData={addCasing}
-      updateData={updateCasing}
-      deleteData={deleteCasing}
       cyLabel="casing"
       addLabel="addCasing"
       emptyLabel="msgCasingEmpty"
@@ -28,5 +24,4 @@ const Casing = ({ isEditable, completionId }) => {
     />
   );
 };
-const MemoizedCasing = React.memo(Casing);
-export default MemoizedCasing;
+export default Casing;
