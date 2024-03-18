@@ -436,7 +436,7 @@ describe("completion crud tests", () => {
     setContentTab("backfill");
     cy.wait("@backfill_GET");
     cy.wait(1000);
-    addItem("addFilling");
+    addItem("addBackfill");
     cy.wait("@casing_GET");
     setInput("fromDepth", 0);
     setInput("toDepth", 10);
@@ -459,7 +459,7 @@ describe("completion crud tests", () => {
 
     // save content changes when switching header tabs
     cy.wait(1000);
-    addItem("addFilling");
+    addItem("addBackfill");
     cy.wait("@casing_GET");
     setInput("fromDepth", 0);
     setInput("toDepth", 10);

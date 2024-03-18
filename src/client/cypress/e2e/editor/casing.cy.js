@@ -14,7 +14,7 @@ describe("Casing crud tests", () => {
       .as("borehole_id")
       .then(id => createCompletion("test casing", id, 16000002, true))
       .then(response => {
-        expect(response).to.have.property("status", 200);
+        expect(response).to.be.above(0);
       });
 
     // open completion editor

@@ -1,12 +1,30 @@
-import { loginAsAdmin, createBorehole, createCompletion, startBoreholeEditing } from "../helpers/testHelpers";
+import {
+  loginAsAdmin,
+  createBorehole,
+  createCompletion,
+  createCasing,
+  startBoreholeEditing,
+} from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, cancelEditing, deleteItem } from "../helpers/buttonHelpers";
 
 describe("Backfill crud tests", () => {
   beforeEach(() => {
+    // Create borehole with completion and casings
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
-      .then(id => createCompletion("test backfill", id, 16000002, true))
+      .then(id =>
+        createCompletion("test backfill", id, 16000002, true)
+          .as("completion_id")
+          .then(completionId => {
+            createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
+              { fromDepth: 0, toDepth: 10, kindId: 25000103 },
+            ]);
+            createCasing("casing-2", id, completionId, "2021-01-03", "2021-01-04", [
+              { fromDepth: 5, toDepth: 12, kindId: 25000105 },
+            ]);
+          }),
+      )
       .then(response => {
         expect(response).to.have.property("status", 200);
       });
@@ -21,30 +39,14 @@ describe("Backfill crud tests", () => {
 
     // start editing session
     startBoreholeEditing();
+    cy.get("[data-cy=completion-content-tab-backfill]").click();
+    cy.wait("@backfill_GET");
   });
 
   it("adds, edits and deletes backfills", () => {
-    // Precondition: Create casing to later link in instrumentation
-    cy.get("[data-cy=completion-content-tab-casing]").click();
-    cy.wait("@casing_GET");
-
-    addItem("addCasing");
-    cy.wait("@codelist_GET");
-
-    setInput("name", "casing-1");
-    setInput("casingElements.0.fromDepth", "0");
-    setInput("casingElements.0.toDepth", "10");
-    setSelect("casingElements.0.kindId", 2);
-    saveForm();
-    cy.wait("@casing_GET");
-
-    // select backfill tab
-    cy.get("[data-cy=completion-content-tab-backfill]").click();
-    cy.wait("@backfill_GET");
-
     // add new backfill card
     cy.wait(1000);
-    addItem("addFilling");
+    addItem("addBackfill");
     cy.wait("@codelist_GET");
 
     // fill out form
@@ -92,37 +94,8 @@ describe("Backfill crud tests", () => {
   });
 
   it("sorts backfill", () => {
-    // Precondition: Create casing to later link in instrumentation
-    cy.get("[data-cy=completion-content-tab-casing]").click();
-    cy.wait("@casing_GET");
-
-    addItem("addCasing");
-    cy.wait("@codelist_GET");
-
-    setInput("name", "casing-1");
-    setInput("casingElements.0.fromDepth", "0");
-    setInput("casingElements.0.toDepth", "10");
-    setSelect("casingElements.0.kindId", 2);
-    saveForm();
-    cy.wait("@casing_GET");
-
     cy.wait(1000);
-    addItem("addCasing");
-    cy.wait("@codelist_GET");
-
-    setInput("name", "casing-2");
-    setInput("casingElements.0.fromDepth", "5");
-    setInput("casingElements.0.toDepth", "12");
-    setSelect("casingElements.0.kindId", 2);
-    saveForm();
-    cy.wait("@casing_GET");
-
-    // select backfill tab
-    cy.get("[data-cy=completion-content-tab-backfill]").click();
-    cy.wait("@backfill_GET");
-
-    cy.wait(1000);
-    addItem("addFilling");
+    addItem("addBackfill");
     cy.wait("@codelist_GET");
     setInput("notes", "Lorem.");
     setInput("fromDepth", "0");
@@ -133,7 +106,7 @@ describe("Backfill crud tests", () => {
     saveForm();
 
     cy.wait(1000);
-    addItem("addFilling");
+    addItem("addBackfill");
     cy.wait("@codelist_GET");
     setInput("notes", "Lorem.");
     setInput("fromDepth", "0");
