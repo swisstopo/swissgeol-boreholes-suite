@@ -8,7 +8,7 @@ import { theme } from "./AppTheme.js";
 import HomeComponent from "./pages/home/homeComponent";
 import EditorComponent from "./pages/editor/editorComponent";
 import SettingCmp from "./pages/settings/settingCmp";
-import DataLoader from "./pages/settings/dataLoader";
+import { DataLoader } from "./pages/settings/dataLoader";
 import AcceptTerms from "./pages/term/accept";
 import { AlertProvider } from "./components/alert/alertContext";
 import { AlertBanner } from "./components/alert/alertBanner";
