@@ -1,6 +1,7 @@
-import { useTranslation } from "react-i18next";
+import { useContext } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { styled } from "@mui/system";
+import { PromptContext } from "./promptContext";
 
 export const PromptButton = styled(Button)({
   fontFamily: "Lato",
@@ -12,14 +13,13 @@ export const PromptButton = styled(Button)({
   },
 });
 
-const Prompt = props => {
-  const { open, setOpen, titleLabel, messageLabel, actions } = props;
-  const { t } = useTranslation();
+export const Prompt = () => {
+  const { promptIsOpen, title, message, actions, closePrompt } = useContext(PromptContext);
   return (
-    <Dialog open={open} data-cy="prompt">
-      <DialogTitle>{t(titleLabel)}</DialogTitle>
+    <Dialog open={promptIsOpen} data-cy="prompt">
+      <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText>{t(messageLabel)}</DialogContentText>
+        <DialogContentText>{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
         {actions?.map((action, index) => (
@@ -29,16 +29,14 @@ const Prompt = props => {
               if (action.action != null) {
                 action.action();
               }
-              setOpen(false);
+              closePrompt();
             }}
             disabled={action.disabled === true}
             data-cy={"prompt-button-" + action.label}>
-            {t(action.label)}
+            {action.label}
           </PromptButton>
         ))}
       </DialogActions>
     </Dialog>
   );
 };
-
-export default Prompt;

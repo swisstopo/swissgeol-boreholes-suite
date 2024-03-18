@@ -13,12 +13,13 @@ import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { TestResultParameterUnits } from "./parameterUnits";
 import Delete from "@mui/icons-material/Delete";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
-import Prompt from "../../../../components/prompt/prompt";
+import { PromptContext } from "../../../../components/prompt/promptContext";
 
 const HydrotestInput = props => {
   const { item, parentId } = props;
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
+  const { showPrompt } = useContext(PromptContext);
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const formMethods = useForm({
@@ -32,7 +33,6 @@ const HydrotestInput = props => {
     control: formMethods.control,
   });
   const [units, setUnits] = useState({});
-  const [showSavePrompt, setShowSavePrompt] = useState(false);
 
   const [hydrotestKindIds, setHydrotestKindIds] = useState(
     item?.codelists?.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestKind).map(c => c.id) || [],
@@ -42,7 +42,29 @@ const HydrotestInput = props => {
   useEffect(() => {
     if (checkIsDirty) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        setShowSavePrompt(true);
+        showPrompt(t("unsavedChangesTitle", { where: t("hydrotest") }), t("unsavedChangesMessage"), [
+          {
+            label: t("cancel"),
+            action: () => {
+              leaveInput(false);
+            },
+          },
+          {
+            label: t("reset"),
+            action: () => {
+              formMethods.reset();
+              selectCard(null);
+              leaveInput(true);
+            },
+          },
+          {
+            label: t("save"),
+            disabled: !formMethods.formState.isValid,
+            action: () => {
+              formMethods.handleSubmit(submitForm)();
+            },
+          },
+        ]);
       } else {
         leaveInput(true);
       }
@@ -361,35 +383,6 @@ const HydrotestInput = props => {
           </DataCardButtonContainer>
         </form>
       </FormProvider>
-      <Prompt
-        open={showSavePrompt}
-        setOpen={setShowSavePrompt}
-        titleLabel="unsavedChangesTitle"
-        messageLabel="unsavedChangesMessage"
-        actions={[
-          {
-            label: "cancel",
-            action: () => {
-              leaveInput(false);
-            },
-          },
-          {
-            label: "reset",
-            action: () => {
-              formMethods.reset();
-              selectCard(null);
-              leaveInput(true);
-            },
-          },
-          {
-            label: "save",
-            disabled: !formMethods.formState.isValid,
-            action: () => {
-              formMethods.handleSubmit(submitForm)();
-            },
-          },
-        ]}
-      />
     </>
   );
 };

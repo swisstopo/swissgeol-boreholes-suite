@@ -32,6 +32,7 @@ const BackfillInput = ({ item, parentId }) => {
       item={item}
       addData={addBackfill}
       updateData={updateBackfill}
+      promptLabel="backfill"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <StackFullWidth direction="row">
         <FormInput fieldName="fromDepth" label="fromdepth" value={item.fromDepth} type="number" required={true} />
@@ -40,7 +41,7 @@ const BackfillInput = ({ item, parentId }) => {
       <StackFullWidth direction="row">
         <FormSelect
           fieldName="kindId"
-          label="kindFilling"
+          label="kindBackfill"
           selected={item.kindId}
           required={true}
           values={domains?.data
@@ -53,7 +54,7 @@ const BackfillInput = ({ item, parentId }) => {
         />
         <FormSelect
           fieldName="materialId"
-          label="materialFilling"
+          label="materialBackfill"
           selected={item.materialId}
           required={true}
           values={domains?.data

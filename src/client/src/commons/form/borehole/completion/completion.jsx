@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Stack, Typography } from "@mui/material";
@@ -13,12 +13,15 @@ import {
 import CompletionContent from "./completionContent";
 import CompletionHeaderInput from "./completionHeaderInput";
 import CompletionHeaderDisplay from "./completionHeaderDisplay";
-import Prompt from "../../../../components/prompt/prompt";
 import { AddButton } from "../../../../components/buttons/buttons";
 import { FullPage } from "../../../../components/baseComponents";
+import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext";
+import { PromptContext } from "../../../../components/prompt/promptContext";
 
 const Completion = props => {
   const { isEditable } = props;
+  const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
+  const { showPrompt } = useContext(PromptContext);
   const { boreholeId, completionId } = useParams();
   const history = useHistory();
   const location = useLocation();
@@ -33,7 +36,8 @@ const Completion = props => {
     displayed: [],
     editing: false,
   });
-  const [showDeletePrompt, setShowDeletePrompt] = useState(false);
+  const [checkContentDirty, setCheckContentDirty] = useState(false);
+  const [completionToBeSaved, setCompletionToBeSaved] = useState(null);
 
   const resetState = () => {
     setState({
@@ -75,55 +79,112 @@ const Completion = props => {
     }
   };
 
+  const checkIfContentIsDirty = () => {
+    setCheckContentDirty(true);
+    triggerCanSwitch();
+  };
+
   const handleCompletionChanged = (event, index) => {
     if (state.editing) {
       setState({ ...state, switchTabTo: index, trySwitchTab: true });
     } else {
-      if (index === -1) {
-        updateHistory("new");
-      } else {
-        updateHistory(state.displayed[index].id);
-      }
+      setState({ ...state, switchTabTo: index });
+      checkIfContentIsDirty();
     }
   };
 
   const switchTabs = continueSwitching => {
     if (continueSwitching) {
-      if (state.switchTabTo === -1) {
-        updateHistory("new");
-      } else if (state.selected.id === 0) {
-        var newCompletionList = state.displayed.slice(0, -1);
-        if (newCompletionList.length === 0) {
-          history.push("/editor/" + boreholeId + "/completion");
-          resetState();
-        } else {
-          updateHistory(newCompletionList[state.switchTabTo].id);
-        }
-      } else {
-        updateHistory(state.displayed[state.switchTabTo].id);
-      }
+      checkIfContentIsDirty();
+    } else {
+      setState({
+        ...state,
+        switchTabTo: null,
+        trySwitchTab: false,
+        editing: state.editing,
+      });
     }
-    setState({
-      ...state,
-      switchTabTo: null,
-      trySwitchTab: false,
-      editing: continueSwitching ? false : state.editing,
-    });
   };
 
-  const saveCompletion = completion => {
+  useEffect(() => {
+    if (checkContentDirty) {
+      if (canSwitch !== 0 && completionToBeSaved !== null) {
+        saveCompletion(completionToBeSaved, canSwitch === -1);
+      }
+
+      if (canSwitch === 1 && state.switchTabTo !== null) {
+        if (state.switchTabTo === -1) {
+          updateHistory("new");
+        } else if (state.selected.id === 0) {
+          var newCompletionList = state.displayed.slice(0, -1);
+          if (newCompletionList.length === 0) {
+            history.push("/editor/" + boreholeId + "/completion");
+            resetState();
+          } else {
+            updateHistory(newCompletionList[state.switchTabTo].id);
+          }
+        } else {
+          updateHistory(state.displayed[state.switchTabTo].id);
+        }
+      }
+
+      if (completionToBeSaved !== null && canSwitch === -1) {
+        var displayed = state.displayed;
+        const index = displayed.findIndex(item => item.id === completionToBeSaved.id);
+        displayed[index] = completionToBeSaved;
+
+        setState({
+          ...state,
+          displayed: displayed,
+          selected: completionToBeSaved,
+          switchTabTo: null,
+          trySwitchTab: false,
+          editing: false,
+        });
+      } else {
+        setState({
+          ...state,
+          switchTabTo: null,
+          trySwitchTab: false,
+          editing: false,
+        });
+      }
+
+      if (canSwitch !== 0) {
+        setCompletionToBeSaved(null);
+        resetCanSwitch();
+        setCheckContentDirty(false);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canSwitch]);
+
+  const saveCompletion = (completion, preventReload) => {
     if (completion.id === 0) {
       addCompletion(completion).then(() => {
         setState({
           ...state,
           switchTabTo: state.switchTabTo === null ? state.displayed.length - 1 : state.switchTabTo,
         });
-        loadData();
+        if (!preventReload) {
+          loadData();
+        }
       });
     } else {
       updateCompletion(completion).then(() => {
-        loadData();
+        if (!preventReload) {
+          loadData();
+        }
       });
+    }
+  };
+
+  const checkSwitchBeforeSave = completion => {
+    if (state.trySwitchTab) {
+      setCompletionToBeSaved(completion);
+      checkIfContentIsDirty();
+    } else {
+      saveCompletion(completion);
     }
   };
 
@@ -148,7 +209,16 @@ const Completion = props => {
   };
 
   const deleteSelectedCompletion = () => {
-    setShowDeletePrompt(true);
+    showPrompt(t("deleteCompletionTitle"), t("deleteCompletionMessage"), [
+      {
+        label: t("cancel"),
+        action: null,
+      },
+      {
+        label: t("delete"),
+        action: onDeleteConfirmed,
+      },
+    ]);
   };
 
   const onDeleteConfirmed = () => {
@@ -169,7 +239,7 @@ const Completion = props => {
   }, [boreholeId]);
 
   useEffect(() => {
-    if (completionId === "new" && state.switchTabTo === null) {
+    if (completionId === "new" && (state.switchTabTo === null || state.switchTabTo === -1)) {
       var tempCompletion = {
         id: 0,
         boreholeId: boreholeId,
@@ -185,6 +255,7 @@ const Completion = props => {
         displayed: [...displayed, tempCompletion],
         index: displayed.length,
         selected: tempCompletion,
+        switchTabTo: null,
         editing: true,
       });
     } else if (completions?.length > 0) {
@@ -236,7 +307,7 @@ const Completion = props => {
                     <CompletionTab
                       data-cy={"completion-header-tab-" + index}
                       label={item.name === null || item.name === "" ? t("common:np") : item.name}
-                      key={index}
+                      key={item.id}
                     />
                   );
                 })}
@@ -245,6 +316,7 @@ const Completion = props => {
               <AddButton
                 label="addCompletion"
                 sx={{ marginRight: "5px" }}
+                disabled={state.selected?.id === 0}
                 onClick={e => {
                   handleCompletionChanged(e, -1);
                 }}
@@ -253,13 +325,13 @@ const Completion = props => {
           </Stack>
           {state.selected != null && (
             <>
-              <CompletionBox sx={{ padding: "18px" }}>
+              <CompletionBox sx={{ padding: "18px" }} data-cy="completion-header">
                 {state.editing ? (
                   <CompletionHeaderInput
                     completion={state.selected}
                     editing={state.editing}
                     cancelChanges={cancelChanges}
-                    saveCompletion={saveCompletion}
+                    saveCompletion={checkSwitchBeforeSave}
                     trySwitchTab={state.trySwitchTab}
                     switchTabs={continueSwitching => {
                       switchTabs(continueSwitching);
@@ -292,22 +364,6 @@ const Completion = props => {
           )}
         </Stack>
       </FullPage>
-      <Prompt
-        open={showDeletePrompt}
-        setOpen={setShowDeletePrompt}
-        titleLabel="deleteCompletionTitle"
-        messageLabel="deleteCompletionMessage"
-        actions={[
-          {
-            label: "cancel",
-            action: null,
-          },
-          {
-            label: "delete",
-            action: onDeleteConfirmed,
-          },
-        ]}
-      />
     </>
   );
 };

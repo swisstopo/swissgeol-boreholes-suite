@@ -22,31 +22,32 @@ const toggleHeaderOpen = () => {
 };
 
 const addCompletion = () => {
+  cy.wait(500);
   addItem("addCompletion");
   cy.wait("@codelist_GET");
 };
 
-const startEdit = () => {
+const startEditHeader = () => {
   toggleHeaderOpen();
-  startEditing();
+  startEditing("completion-header");
 };
 
 const saveChanges = () => {
-  saveForm();
+  saveForm("completion-header");
   cy.wait("@get-completions-by-boreholeId");
 };
 
 const copyCompletion = () => {
   toggleHeaderOpen();
-  copyItem();
+  copyItem("completion-header");
 };
 
 const deleteCompletion = () => {
   toggleHeaderOpen();
-  deleteItem();
+  deleteItem("completion-header");
 };
 
-const setTab = index => {
+const setHeaderTab = index => {
   cy.get('[data-cy="completion-header-tab-' + index + '"]')
     .focus()
     .click({
@@ -54,8 +55,22 @@ const setTab = index => {
     });
 };
 
-const isTabSelected = index => {
+const isHeaderTabSelected = index => {
   cy.get('[data-cy="completion-header-tab-' + index + '"]')
+    .invoke("attr", "aria-selected")
+    .should("eq", "true");
+};
+
+export const setContentTab = tabName => {
+  cy.get('[data-cy="completion-content-tab-' + tabName + '"]')
+    .focus()
+    .click({
+      force: true,
+    });
+};
+
+export const isContentTabSelected = tabName => {
+  cy.get('[data-cy="completion-content-tab-' + tabName + '"]')
     .invoke("attr", "aria-selected")
     .should("eq", "true");
 };
@@ -74,13 +89,17 @@ describe("completion crud tests", () => {
 
     // add completion
     addCompletion();
+    cy.get('[data-cy="addCompletion-button"]').should("be.disabled");
     cy.contains("Not specified");
     cy.get('[data-cy="save-button"]').should("be.disabled");
     cy.get('[data-cy="cancel-button"]').should("be.enabled");
     cancelEditing();
+    cy.get('[data-cy="addCompletion-button"]').should("be.enabled");
     cy.get('[data-cy="completion-header-tab-0"]').should("not.exist");
 
     addCompletion();
+    cy.get('[data-cy="addCompletion-button"]').should("be.disabled");
+
     setInput("name", "Compl-1");
     setSelect("kindId", 1);
     cy.get('[data-cy="save-button"]').should("be.enabled");
@@ -89,6 +108,7 @@ describe("completion crud tests", () => {
     setInput("notes", "Lorem.");
     saveChanges();
     cy.contains("Compl-1");
+    cy.get('[data-cy="addCompletion-button"]').should("be.enabled");
 
     // copy completion
     copyCompletion();
@@ -97,28 +117,28 @@ describe("completion crud tests", () => {
     cy.contains("Compl-1 (Clone)");
 
     // edit completion
-    startEdit();
+    startEditHeader();
     setSelect("kindId", 1);
     cancelEditing();
     cy.contains("telescopic");
-    startEdit();
+    startEditHeader();
     setInput("name", "Compl-2");
     toggleCheckbox("isPrimary");
     saveChanges();
     cy.contains("Compl-2");
-    startEdit();
-    evaluateCheckbox("isPrimary", true);
+    startEditHeader();
+    evaluateCheckbox("isPrimary", "true");
     cancelEditing();
 
     // delete completion
     deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "cancel");
+    handlePrompt("Do you really want to delete this completion?", "Cancel");
     cy.contains("Compl-2");
     deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "delete");
+    handlePrompt("Do you really want to delete this completion?", "Delete");
     cy.wait("@get-completions-by-boreholeId");
     cy.get('[data-cy="completion-header-tab-1"]').should("not.exist");
-    isTabSelected(0);
+    isHeaderTabSelected(0);
     evaluateDisplayValue("mainCompletion", "Yes");
   });
 
@@ -170,15 +190,15 @@ describe("completion crud tests", () => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion2Id}`);
       expect(location.hash).to.eq("#casing");
     });
-    isTabSelected(1);
+    isHeaderTabSelected(1);
 
     // check hash updates on tab switch
-    cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
+    setContentTab("instrumentation");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion2Id}`);
       expect(location.hash).to.eq("#instrumentation");
     });
-    cy.get("[data-cy=completion-content-header-tab-backfill]").click();
+    setContentTab("backfill");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion2Id}`);
       expect(location.hash).to.eq("#backfill");
@@ -186,21 +206,21 @@ describe("completion crud tests", () => {
 
     // switch tabs
     // existing editing to other existing: no prompt should be displayed when no changes have been made
-    startEdit();
-    setTab(0);
+    startEditHeader();
+    setHeaderTab(0);
     cy.get('[data-cy="prompt"]').should("not.exist");
-    isTabSelected(0);
+    isHeaderTabSelected(0);
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
 
     // existing editing to other existing: tab switching can be canceled in prompt
-    startEdit();
+    startEditHeader();
     setInput("name", "Compl-1 updated");
-    setTab(1);
-    handlePrompt("Unsaved changes", "cancel");
-    isTabSelected(0);
+    setHeaderTab(1);
+    handlePrompt("Completion: Unsaved changes", "Cancel");
+    isHeaderTabSelected(0);
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
@@ -208,9 +228,9 @@ describe("completion crud tests", () => {
     evaluateInput("name", "Compl-1 updated");
 
     // existing editing to other existing: changes can be reverted in prompt
-    setTab(1);
-    handlePrompt("Unsaved changes", "reset");
-    isTabSelected(1);
+    setHeaderTab(1);
+    handlePrompt("Completion: Unsaved changes", "Reset");
+    isHeaderTabSelected(1);
     cy.contains("Compl-1");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion2Id}`);
@@ -218,12 +238,12 @@ describe("completion crud tests", () => {
     });
 
     // existing editing to other existing: changes can be saved in prompt
-    startEdit();
+    startEditHeader();
     setInput("name", "Compl-2 updated");
-    setTab(0);
-    handlePrompt("Unsaved changes", "save");
+    setHeaderTab(0);
+    handlePrompt("Completion: Unsaved changes", "Save");
     cy.wait("@get-completions-by-boreholeId");
-    isTabSelected(0);
+    isHeaderTabSelected(0);
     cy.contains("Compl-2 updated");
 
     // new to existing: no prompt should be displayed when no changes have been made
@@ -233,7 +253,7 @@ describe("completion crud tests", () => {
       expect(location.hash).to.eq("");
     });
     cy.get(`[data-cy="name-formInput"]`).click();
-    setTab(0);
+    setHeaderTab(0);
     cy.wait("@casing_GET");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
@@ -247,14 +267,14 @@ describe("completion crud tests", () => {
       expect(location.hash).to.eq("");
     });
     setInput("name", "new completion");
-    setTab(0);
-    cy.get('[data-cy="prompt-button-save"]').should("be.disabled");
-    handlePrompt("Unsaved changes", "cancel");
+    setHeaderTab(0);
+    cy.get('[data-cy="prompt-button-Save"]').should("be.disabled");
+    handlePrompt("Completion: Unsaved changes", "Cancel");
 
     // new to existing: changes can be reverted in prompt
     setSelect("kindId", 1);
-    setTab(0);
-    handlePrompt("Unsaved changes", "reset");
+    setHeaderTab(0);
+    handlePrompt("Completion: Unsaved changes", "Reset");
     cy.wait("@casing_GET");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
@@ -270,8 +290,8 @@ describe("completion crud tests", () => {
     });
     setInput("name", "new completion");
     setSelect("kindId", 1);
-    setTab(0);
-    handlePrompt("Unsaved changes", "save");
+    setHeaderTab(0);
+    handlePrompt("Completion: Unsaved changes", "Save");
     cy.wait("@casing_GET");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
@@ -279,24 +299,23 @@ describe("completion crud tests", () => {
     });
     cy.contains("new completion").should("exist");
 
-    setTab(2);
+    setHeaderTab(2);
     deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "delete");
+    handlePrompt("Do you really want to delete this completion?", "Delete");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion2Id}`);
       expect(location.hash).to.eq("#casing");
     });
 
     // existing editing to new: no prompt should be displayed when no changes have been made, form should be reset
-    setTab(0);
+    setHeaderTab(0);
     cy.wait("@casing_GET");
-    isTabSelected(0);
+    isHeaderTabSelected(0);
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
-    startEdit();
-    cy.get(`[data-cy="name-formInput"]`).click();
+    startEditHeader();
     addCompletion();
     evaluateInput("name", "");
     evaluateSelect("kindId", "");
@@ -308,15 +327,15 @@ describe("completion crud tests", () => {
     });
 
     // existing editing to new: changes can be reverted in prompt
-    setTab(0);
+    setHeaderTab(0);
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
-    startEdit();
+    startEditHeader();
     setInput("name", "Reset compl-1");
     addCompletion();
-    handlePrompt("Unsaved changes", "reset");
+    handlePrompt("Completion: Unsaved changes", "Reset");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/new`);
       expect(location.hash).to.eq("");
@@ -324,15 +343,15 @@ describe("completion crud tests", () => {
     cy.contains("Reset compl-1").should("not.exist");
 
     // existing editing to new: changes can be saved in prompt
-    setTab(0);
+    setHeaderTab(0);
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
-    startEdit();
+    startEditHeader();
     setInput("name", "Reset compl-1");
     addCompletion();
-    handlePrompt("Unsaved changes", "save");
+    handlePrompt("Completion: Unsaved changes", "Save");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/new`);
       expect(location.hash).to.eq("");
@@ -341,7 +360,7 @@ describe("completion crud tests", () => {
 
     // cancel adding new completion: last tab should be selected
     cancelEditing();
-    isTabSelected(1);
+    isHeaderTabSelected(1);
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion2Id}`);
       expect(location.hash).to.eq("#casing");
@@ -349,16 +368,221 @@ describe("completion crud tests", () => {
 
     // should update to base url if last completion is deleted
     deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "delete");
+    handlePrompt("Do you really want to delete this completion?", "Delete");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
     deleteCompletion();
-    handlePrompt("Do you really want to delete this completion?", "delete");
+    handlePrompt("Do you really want to delete this completion?", "Delete");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion`);
       expect(location.hash).to.eq("");
     });
+  });
+
+  it("checks completion content validation", () => {
+    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      loginAsAdmin();
+      cy.visit(`/editor/${id}/completion`);
+    });
+    cy.wait("@get-completions-by-boreholeId");
+    cy.contains("No completion available");
+
+    // start editing session
+    startBoreholeEditing();
+
+    addCompletion();
+    setInput("name", "Compl-1");
+    setSelect("kindId", 1);
+    saveChanges();
+
+    // cancel switching content tabs
+    cy.wait(1000);
+    addItem("addCasing");
+    cy.wait("@codelist_GET");
+    setInput("name", "casing 1", "casing-card.0.edit");
+    setInput("casingElements.0.fromDepth", "0");
+    setInput("casingElements.0.toDepth", "10");
+    setSelect("casingElements.0.kindId", 2);
+    setContentTab("instrumentation");
+    handlePrompt("Casing: Unsaved changes", "Cancel");
+    isContentTabSelected("casing");
+
+    // reset when switching content tabs
+    setContentTab("instrumentation");
+    handlePrompt("Casing: Unsaved changes", "Reset");
+    isContentTabSelected("instrumentation");
+    setContentTab("casing");
+    cy.wait("@casing_GET");
+    cy.get('[data-cy="casing-card.0"]').should("not.exist");
+
+    // save when switching content tabs
+    cy.wait(1000);
+    addItem("addCasing");
+    cy.wait("@codelist_GET");
+    setInput("name", "casing 1", "casing-card.0.edit");
+    setInput("casingElements.0.fromDepth", "0");
+    setInput("casingElements.0.toDepth", "10");
+    setSelect("casingElements.0.kindId", 2);
+    setContentTab("backfill");
+    handlePrompt("Casing: Unsaved changes", "Save");
+    isContentTabSelected("backfill");
+    setContentTab("casing");
+    cy.contains("casing 1").should("exist");
+
+    // cancel switching header tabs when content changes are present
+    setContentTab("backfill");
+    cy.wait("@backfill_GET");
+    cy.wait(1000);
+    addItem("addBackfill");
+    cy.wait("@casing_GET");
+    setInput("fromDepth", 0);
+    setInput("toDepth", 10);
+    setSelect("kindId", 1);
+    setSelect("materialId", 1);
+
+    addCompletion();
+    handlePrompt("Backfill: Unsaved changes", "Cancel");
+    isHeaderTabSelected(0);
+    isContentTabSelected("backfill");
+
+    // reset content changes when switching header tabs
+    addCompletion();
+    handlePrompt("Backfill: Unsaved changes", "Reset");
+    isHeaderTabSelected(1);
+    cancelEditing();
+    setContentTab("backfill");
+    cy.wait("@backfill_GET");
+    cy.get('[data-cy="backfill-card.0"]').should("not.exist");
+
+    // save content changes when switching header tabs
+    cy.wait(1000);
+    addItem("addBackfill");
+    cy.wait("@casing_GET");
+    setInput("fromDepth", 0);
+    setInput("toDepth", 10);
+    setSelect("kindId", 1);
+    setSelect("materialId", 1);
+    addCompletion();
+    handlePrompt("Backfill: Unsaved changes", "Save");
+    isHeaderTabSelected(1);
+    cancelEditing();
+    setContentTab("backfill");
+    cy.wait("@backfill_GET");
+    cy.get('[data-cy="backfill-card.0"]').should("exist");
+
+    // cancel header changes, no prompt should be displayed for content changes because tab switching was already canceled
+    setContentTab("instrumentation");
+    cy.wait("@instrumentation_GET");
+    cy.wait(1000);
+    addItem("addInstrument");
+    cy.wait("@casing_GET");
+    setInput("fromDepth", "0");
+    setInput("toDepth", "10");
+    setInput("name", "Inst-1");
+    setSelect("kindId", 2);
+    setSelect("statusId", 1);
+
+    startEditHeader();
+    setInput("name", "Compl-1 updated", "completion-header");
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Cancel");
+    cy.get('[data-cy="prompt"]').should("not.exist");
+    isHeaderTabSelected(0);
+    isContentTabSelected("instrumentation");
+    evaluateInput("fromDepth", "0");
+    evaluateInput("toDepth", "10");
+    evaluateInput("name", "Compl-1 updated", "completion-header");
+
+    // reset header changes, cancel content changes
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Reset");
+    cy.wait(1000);
+    handlePrompt("Instrumentation: Unsaved changes", "Cancel");
+    isHeaderTabSelected(0);
+    isContentTabSelected("instrumentation");
+    evaluateInput("fromDepth", "0");
+    evaluateInput("toDepth", "10");
+    evaluateDisplayValue("name", "Compl-1", "completion-header");
+
+    // reset header changes, reset content changes
+    startEditHeader();
+    setInput("name", "Compl-1 updated", "completion-header");
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Reset");
+    cy.wait(1000);
+    handlePrompt("Instrumentation: Unsaved changes", "Reset");
+    isHeaderTabSelected(1);
+    setHeaderTab(0);
+    evaluateDisplayValue("name", "Compl-1", "completion-header");
+    setContentTab("instrumentation");
+    cy.wait("@instrumentation_GET");
+    cy.get('[data-cy="instrumentation-card.0"]').should("not.exist");
+
+    //reset header changes, save content changes
+    cy.wait(1000);
+    addItem("addInstrument");
+    cy.wait("@casing_GET");
+    setInput("fromDepth", "0");
+    setInput("toDepth", "10");
+    setInput("name", "Inst-1");
+    setSelect("kindId", 2);
+    setSelect("statusId", 1);
+    startEditHeader();
+    setInput("name", "Compl-1 updated", "completion-header");
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Reset");
+    cy.wait(1000);
+    handlePrompt("Instrumentation: Unsaved changes", "Save");
+    isHeaderTabSelected(1);
+    setHeaderTab(0);
+    evaluateDisplayValue("name", "Compl-1", "completion-header");
+    setContentTab("instrumentation");
+    cy.get('[data-cy="instrumentation-card.0"]').should("exist");
+
+    // save header changes, cancel content changes
+    startEditing("instrumentation-card.0");
+    setInput("notes", "Lorem.");
+    startEditHeader();
+    setInput("name", "Compl-1 updated", "completion-header");
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Save");
+    cy.wait(1000);
+    handlePrompt("Instrumentation: Unsaved changes", "Cancel");
+    isHeaderTabSelected(0);
+    isContentTabSelected("instrumentation");
+    evaluateTextarea("notes", "Lorem.");
+    evaluateDisplayValue("name", "Compl-1 updated", "completion-header");
+
+    // save header changes, reset content changes
+    startEditHeader();
+    setInput("name", "Compl-1 updated again", "completion-header");
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Save");
+    cy.wait(1000);
+    handlePrompt("Instrumentation: Unsaved changes", "Reset");
+    isHeaderTabSelected(1);
+    setHeaderTab(0);
+    evaluateDisplayValue("name", "Compl-1 updated again", "completion-header");
+    setContentTab("instrumentation");
+    cy.wait("@instrumentation_GET");
+    evaluateDisplayValue("notes", "-");
+
+    // save header changes, save content changes
+    startEditing("instrumentation-card.0");
+    setInput("notes", "Lorem.");
+    startEditHeader();
+    setInput("name", "Compl-1 updated again and again", "completion-header");
+    addCompletion();
+    handlePrompt("Completion: Unsaved changes", "Save");
+    cy.wait(1000);
+    handlePrompt("Instrumentation: Unsaved changes", "Save");
+    isHeaderTabSelected(1);
+    setHeaderTab(0);
+    evaluateDisplayValue("name", "Compl-1 updated again and again", "completion-header");
+    setContentTab("instrumentation");
+    evaluateDisplayValue("notes", "Lorem.");
   });
 });

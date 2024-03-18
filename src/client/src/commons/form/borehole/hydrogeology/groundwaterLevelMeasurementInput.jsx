@@ -33,6 +33,7 @@ const GroundwaterLevelMeasurementInput = props => {
       item={item}
       addData={addGroundwaterLevelMeasurement}
       updateData={updateGroundwaterLevelMeasurement}
+      promptLabel="groundwaterLevelMeasurement"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <ObservationInput observation={item} boreholeId={parentId} />
       <Stack direction="row" sx={{ paddingTop: "10px" }}>

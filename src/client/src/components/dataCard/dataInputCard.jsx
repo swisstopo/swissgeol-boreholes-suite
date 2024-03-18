@@ -1,22 +1,46 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useForm, FormProvider } from "react-hook-form";
 import { DataCardButtonContainer } from "../dataCard/dataCard";
 import { DataCardContext, DataCardSwitchContext } from "../dataCard/dataCardContext";
 import { StackFullWidth } from "../baseComponents";
 import { CancelButton, SaveButton } from "../buttons/buttons";
-import Prompt from "../prompt/prompt";
+import { PromptContext } from "../prompt/promptContext";
 
 export const DataInputCard = props => {
-  const { item, addData, updateData, prepareFormDataForSubmit } = props;
+  const { item, addData, updateData, promptLabel, prepareFormDataForSubmit } = props;
+  const { t } = useTranslation();
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
+  const { showPrompt } = useContext(PromptContext);
   const formMethods = useForm({ mode: "all" });
-  const [showSavePrompt, setShowSavePrompt] = useState(false);
 
   useEffect(() => {
     if (checkIsDirty) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        setShowSavePrompt(true);
+        showPrompt(t("unsavedChangesTitle", { where: t(promptLabel) }), t("unsavedChangesMessage"), [
+          {
+            label: t("cancel"),
+            action: () => {
+              leaveInput(false);
+            },
+          },
+          {
+            label: t("reset"),
+            action: () => {
+              formMethods.reset();
+              selectCard(null);
+              leaveInput(true);
+            },
+          },
+          {
+            label: t("save"),
+            disabled: !formMethods.formState.isValid,
+            action: () => {
+              formMethods.handleSubmit(submitForm)();
+            },
+          },
+        ]);
       } else {
         leaveInput(true);
       }
@@ -67,35 +91,6 @@ export const DataInputCard = props => {
           </DataCardButtonContainer>
         </form>
       </FormProvider>
-      <Prompt
-        open={showSavePrompt}
-        setOpen={setShowSavePrompt}
-        titleLabel="unsavedChangesTitle"
-        messageLabel="unsavedChangesMessage"
-        actions={[
-          {
-            label: "cancel",
-            action: () => {
-              leaveInput(false);
-            },
-          },
-          {
-            label: "reset",
-            action: () => {
-              formMethods.reset();
-              selectCard(null);
-              leaveInput(true);
-            },
-          },
-          {
-            label: "save",
-            disabled: !formMethods.formState.isValid,
-            action: () => {
-              formMethods.handleSubmit(submitForm)();
-            },
-          },
-        ]}
-      />
     </>
   );
 };

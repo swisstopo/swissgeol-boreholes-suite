@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { Box, IconButton, Stack, Typography } from "@mui/material";
 import Delete from "@mui/icons-material/Delete";
@@ -10,12 +10,13 @@ import { DataCardButtonContainer } from "../../../../components/dataCard/dataCar
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons";
 import { extractCasingDepth } from "./casingUtils";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
-import Prompt from "../../../../components/prompt/prompt";
+import { PromptContext } from "../../../../components/prompt/promptContext";
 
 const CasingInput = props => {
   const { item, parentId } = props;
   const { triggerReload, selectCard } = useContext(DataCardContext);
   const { checkIsDirty, leaveInput } = useContext(DataCardSwitchContext);
+  const { showPrompt } = useContext(PromptContext);
   const domains = useDomains();
   const { t, i18n } = useTranslation();
   const formMethods = useForm({
@@ -33,7 +34,6 @@ const CasingInput = props => {
       required: true,
     },
   });
-  const [showSavePrompt, setShowSavePrompt] = useState(false);
 
   const prepareFormDataForSubmit = data => {
     if (data?.dateStart === "") {
@@ -91,7 +91,29 @@ const CasingInput = props => {
   useEffect(() => {
     if (checkIsDirty) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        setShowSavePrompt(true);
+        showPrompt(t("unsavedChangesTitle", { where: t("casing") }), t("unsavedChangesMessage"), [
+          {
+            label: t("cancel"),
+            action: () => {
+              leaveInput(false);
+            },
+          },
+          {
+            label: t("reset"),
+            action: () => {
+              formMethods.reset();
+              selectCard(null);
+              leaveInput(true);
+            },
+          },
+          {
+            label: t("save"),
+            disabled: !formMethods.formState.isValid,
+            action: () => {
+              formMethods.handleSubmit(submitForm)();
+            },
+          },
+        ]);
       } else {
         leaveInput(true);
       }
@@ -228,35 +250,6 @@ const CasingInput = props => {
           </DataCardButtonContainer>
         </form>
       </FormProvider>
-      <Prompt
-        open={showSavePrompt}
-        setOpen={setShowSavePrompt}
-        titleLabel="unsavedChangesTitle"
-        messageLabel="unsavedChangesMessage"
-        actions={[
-          {
-            label: "cancel",
-            action: () => {
-              leaveInput(false);
-            },
-          },
-          {
-            label: "reset",
-            action: () => {
-              formMethods.reset();
-              selectCard(null);
-              leaveInput(true);
-            },
-          },
-          {
-            label: "save",
-            disabled: !formMethods.formState.isValid,
-            action: () => {
-              formMethods.handleSubmit(submitForm)();
-            },
-          },
-        ]}
-      />
     </>
   );
 };
