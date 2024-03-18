@@ -46,7 +46,6 @@ describe("Backfill crud tests", () => {
 
   it("adds, edits and deletes backfills", () => {
     // add new backfill card
-
     addItem("addBackfill");
     cy.wait("@codelist_GET");
 

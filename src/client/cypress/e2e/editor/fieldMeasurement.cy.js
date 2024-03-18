@@ -21,9 +21,6 @@ describe("Tests for the field measurement editor.", () => {
             createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
               { fromDepth: 0, toDepth: 10, kindId: 25000103 },
             ]);
-            createCasing("casing-2", id, completionId, "2021-01-03", "2021-01-04", [
-              { fromDepth: 5, toDepth: 12, kindId: 25000105 },
-            ]);
           }),
       )
       .then(response => {
@@ -44,6 +41,7 @@ describe("Tests for the field measurement editor.", () => {
     cy.contains("span", "DE").click({ force: true });
 
     // create field measurement
+    cy.wait(500);
     addItem("addFieldMeasurement");
     cy.wait("@casing_GET");
 
