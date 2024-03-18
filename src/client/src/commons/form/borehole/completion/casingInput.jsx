@@ -231,17 +231,17 @@ const CasingInput = props => {
       <Prompt
         open={showSavePrompt}
         setOpen={setShowSavePrompt}
-        titleLabel="unsavedChangesTitle"
-        messageLabel="unsavedChangesMessage"
+        title={t("unsavedChangesTitle", { where: t("casing") })}
+        message={t("unsavedChangesMessage")}
         actions={[
           {
-            label: "cancel",
+            label: t("cancel"),
             action: () => {
               leaveInput(false);
             },
           },
           {
-            label: "reset",
+            label: t("reset"),
             action: () => {
               formMethods.reset();
               selectCard(null);
@@ -249,7 +249,7 @@ const CasingInput = props => {
             },
           },
           {
-            label: "save",
+            label: t("save"),
             disabled: !formMethods.formState.isValid,
             action: () => {
               formMethods.handleSubmit(submitForm)();
