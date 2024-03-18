@@ -1,3 +1,12 @@
+import React from "react";
+import { ReactNode } from "react";
+import { Domain } from "../../domain/domainInterface";
+import { useDomains } from "../../../../api/fetchApiV2";
+
+interface Units {
+  [key: number]: ReactNode | string;
+}
+
 /**
  * `TestResultParameterUnits` is an object that maps GeolCodes of the Hydrotest.parameter codelist "htestres101" to their corresponding units of measurement.
  *
@@ -17,7 +26,7 @@
  * - `8`: "m" (meters)
  */
 
-export const TestResultParameterUnits = {
+export const TestResultParameterUnits: Units = {
   1: <>m/s</>,
   2: <>m/s</>,
   3: (
@@ -49,7 +58,7 @@ export const TestResultParameterUnits = {
  * - `7`: "mg/L" (milligrams per liter)
  */
 
-export const FieldMeasurementParameterUnits = {
+export const FieldMeasurementParameterUnits: Units = {
   1: "°C",
   2: "",
   3: "µS/cm",
@@ -58,3 +67,18 @@ export const FieldMeasurementParameterUnits = {
   6: "%",
   7: "mg/L",
 };
+
+export const getTestResultParameterUnits = (parameterId: number, domains: any): ReactNode | string | null => {
+  return getParameterUnit(parameterId, TestResultParameterUnits, domains);
+};
+
+export const getFieldMeasurementParameterUnits = (parameterId: number, domains: any): ReactNode | string | null => {
+  return getParameterUnit(parameterId, FieldMeasurementParameterUnits, domains);
+};
+
+function getParameterUnit(parameterId: number, units: Units, domains: any): ReactNode | string | null {
+  if (!parameterId) {
+    return null;
+  }
+  return units[domains?.data?.find((d: Domain) => d.id === parameterId)?.geolcode];
+}

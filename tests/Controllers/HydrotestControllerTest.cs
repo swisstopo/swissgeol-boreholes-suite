@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using Amazon.Runtime.Internal.Util;
+using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -126,10 +127,10 @@ public class HydrotestControllerTests
         context.Hydrotests.Add(originalHydrotest);
         await context.SaveChangesAsync();
 
-        var result = await controller.EditHydrotestAsync(updatedHydrotest);
+        var response = await controller.EditAsync(updatedHydrotest);
 
-        Assert.IsNotNull(result);
-        ActionResultAssert.IsOk(result);
+        Assert.IsNotNull(response);
+        ActionResultAssert.IsOk(response.Result);
 
         var editedHydrotest = context.Hydrotests.Single(w => w.Id == 1);
         Assert.AreEqual(updatedHydrotest.Id, editedHydrotest.Id);
@@ -155,8 +156,8 @@ public class HydrotestControllerTests
     {
         var nonExistentHydrotest = new Hydrotest { Id = 678135 };
 
-        var result = await controller.EditHydrotestAsync(nonExistentHydrotest);
-        ActionResultAssert.IsNotFound(result);
+        var response = await controller.EditAsync(nonExistentHydrotest);
+        ActionResultAssert.IsNotFound(response.Result);
     }
 
     [TestMethod]
@@ -180,9 +181,8 @@ public class HydrotestControllerTests
             HydrotestResults = new List<HydrotestResult>() { new HydrotestResult { ParameterId = 15203194 } },
         };
 
-        var okObjectResult = (OkObjectResult)await controller.CreateAsync(newHydrotest);
-        ActionResultAssert.IsOk(okObjectResult);
-        var addedHydrotest = (Hydrotest)okObjectResult.Value!;
+        var response = await controller.CreateAsync(newHydrotest);
+        ActionResultAssert.IsOkObjectResult<Hydrotest>(response.Result);
 
         newHydrotest = await context.Hydrotests.FindAsync(newHydrotest.Id);
         Assert.IsNotNull(newHydrotest);
@@ -223,11 +223,10 @@ public class HydrotestControllerTests
             },
         };
 
-        var okObjectResult = (ObjectResult)await controller.CreateAsync(newHydrotest);
-        ActionResultAssert.IsOk(okObjectResult);
-        var addedHydrotest = (Hydrotest)okObjectResult.Value!;
+        var response = await controller.CreateAsync(newHydrotest);
+        ActionResultAssert.IsOkObjectResult<Hydrotest>(response.Result);
 
-        var savedHydrotest = context.Hydrotests.SingleOrDefault(w => w.Id == addedHydrotest.Id);
+        var savedHydrotest = context.Hydrotests.SingleOrDefault(w => w.Id == newHydrotest.Id);
 
         Assert.AreEqual(savedHydrotest.Codelists.Count, 3);
         Assert.AreEqual(savedHydrotest.Codelists.Single(c => c.Geolcode == 2).De, context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).De);
@@ -243,7 +242,7 @@ public class HydrotestControllerTests
         };
 
         var createResponse = await controller.CreateAsync(newHydrotest);
-        ActionResultAssert.IsBadRequest(createResponse);
+        ActionResultAssert.IsBadRequest(createResponse.Result);
     }
 
     [TestMethod]
@@ -258,6 +257,6 @@ public class HydrotestControllerTests
         };
 
         var createResponse = await controller.CreateAsync(newHydrotest);
-        ActionResultAssert.IsBadRequest(createResponse);
+        ActionResultAssert.IsBadRequest(createResponse.Result);
     }
 }
