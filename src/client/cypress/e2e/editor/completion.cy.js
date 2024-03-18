@@ -1,4 +1,10 @@
-import { createBorehole, startBoreholeEditing, loginAsAdmin, handlePrompt } from "../helpers/testHelpers";
+import {
+  createBorehole,
+  createCompletion,
+  startBoreholeEditing,
+  loginAsAdmin,
+  handlePrompt,
+} from "../helpers/testHelpers";
 import {
   setInput,
   evaluateInput,
@@ -22,7 +28,6 @@ const toggleHeaderOpen = () => {
 };
 
 const addCompletion = () => {
-  cy.wait(500);
   addItem("addCompletion");
   cy.wait("@codelist_GET");
 };
@@ -382,24 +387,24 @@ describe("completion crud tests", () => {
   });
 
   it("checks completion content validation", () => {
-    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
+    createBorehole({ "extended.original_name": "INTEADAL" })
+      .as("borehole_id")
+      .then(id => createCompletion("Compl-1", id, 16000001, true))
+      .then(response => {
+        expect(response).to.be.above(0);
+      });
+
+    // open completion editor
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
       cy.visit(`/editor/${id}/completion`);
     });
     cy.wait("@get-completions-by-boreholeId");
-    cy.contains("No completion available");
 
     // start editing session
     startBoreholeEditing();
 
-    addCompletion();
-    setInput("name", "Compl-1");
-    setSelect("kindId", 1);
-    saveChanges();
-
     // cancel switching content tabs
-    cy.wait(1000);
     addItem("addCasing");
     cy.wait("@codelist_GET");
     setInput("name", "casing 1", "casing-card.0.edit");
@@ -419,7 +424,7 @@ describe("completion crud tests", () => {
     cy.get('[data-cy="casing-card.0"]').should("not.exist");
 
     // save when switching content tabs
-    cy.wait(1000);
+    cy.wait(500);
     addItem("addCasing");
     cy.wait("@codelist_GET");
     setInput("name", "casing 1", "casing-card.0.edit");
@@ -435,7 +440,7 @@ describe("completion crud tests", () => {
     // cancel switching header tabs when content changes are present
     setContentTab("backfill");
     cy.wait("@backfill_GET");
-    cy.wait(1000);
+    cy.wait(500);
     addItem("addBackfill");
     cy.wait("@casing_GET");
     setInput("fromDepth", 0);
@@ -458,7 +463,7 @@ describe("completion crud tests", () => {
     cy.get('[data-cy="backfill-card.0"]').should("not.exist");
 
     // save content changes when switching header tabs
-    cy.wait(1000);
+    cy.wait(500);
     addItem("addBackfill");
     cy.wait("@casing_GET");
     setInput("fromDepth", 0);
@@ -476,7 +481,7 @@ describe("completion crud tests", () => {
     // cancel header changes, no prompt should be displayed for content changes because tab switching was already canceled
     setContentTab("instrumentation");
     cy.wait("@instrumentation_GET");
-    cy.wait(1000);
+    cy.wait(500);
     addItem("addInstrument");
     cy.wait("@casing_GET");
     setInput("fromDepth", "0");
@@ -499,7 +504,7 @@ describe("completion crud tests", () => {
     // reset header changes, cancel content changes
     addCompletion();
     handlePrompt("Completion: Unsaved changes", "Reset");
-    cy.wait(1000);
+    cy.wait(500);
     handlePrompt("Instrumentation: Unsaved changes", "Cancel");
     isHeaderTabSelected(0);
     isContentTabSelected("instrumentation");
@@ -512,7 +517,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
     handlePrompt("Completion: Unsaved changes", "Reset");
-    cy.wait(1000);
+    cy.wait(500);
     handlePrompt("Instrumentation: Unsaved changes", "Reset");
     isHeaderTabSelected(1);
     setHeaderTab(0);
@@ -522,7 +527,7 @@ describe("completion crud tests", () => {
     cy.get('[data-cy="instrumentation-card.0"]').should("not.exist");
 
     //reset header changes, save content changes
-    cy.wait(1000);
+    cy.wait(500);
     addItem("addInstrument");
     cy.wait("@casing_GET");
     setInput("fromDepth", "0");
@@ -534,7 +539,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
     handlePrompt("Completion: Unsaved changes", "Reset");
-    cy.wait(1000);
+    cy.wait(500);
     handlePrompt("Instrumentation: Unsaved changes", "Save");
     isHeaderTabSelected(1);
     setHeaderTab(0);
@@ -549,7 +554,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
     handlePrompt("Completion: Unsaved changes", "Save");
-    cy.wait(1000);
+    cy.wait(500);
     handlePrompt("Instrumentation: Unsaved changes", "Cancel");
     isHeaderTabSelected(0);
     isContentTabSelected("instrumentation");
@@ -561,7 +566,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-1 updated again", "completion-header");
     addCompletion();
     handlePrompt("Completion: Unsaved changes", "Save");
-    cy.wait(1000);
+    cy.wait(500);
     handlePrompt("Instrumentation: Unsaved changes", "Reset");
     isHeaderTabSelected(1);
     setHeaderTab(0);
@@ -577,7 +582,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-1 updated again and again", "completion-header");
     addCompletion();
     handlePrompt("Completion: Unsaved changes", "Save");
-    cy.wait(1000);
+    cy.wait(500);
     handlePrompt("Instrumentation: Unsaved changes", "Save");
     isHeaderTabSelected(1);
     setHeaderTab(0);
