@@ -144,7 +144,7 @@ const FieldMeasurementInput = props => {
                 <Stack direction={"row"} sx={{ width: "100%" }} spacing={1} justifyContent={"space-between"}>
                   <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("fieldMeasurementResult")}</Typography>
                   <AddButton
-                    label="addFieldmeasurementResult"
+                    label="addFieldMeasurementResult"
                     onClick={() => {
                       append({ parameterId: "", value: null, minValue: null, maxValue: null }, { shouldFocus: false });
                     }}
