@@ -155,7 +155,7 @@ const FieldMeasurementInput = props => {
                 <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`fieldMeasurementResult-${index}`}>
                   <FormSelect
                     fieldName={`fieldMeasurementResults.${index}.sampleTypeId`}
-                    label="field_measurement_sample_type"
+                    label="fieldMeasurementSampleType"
                     selected={field.sampleTypeId}
                     required={true}
                     values={domains?.data
