@@ -22,7 +22,7 @@ export const AuthOverlay: React.FC<AuthOverlayProps> = ({ children }) => {
     const auth = useAuth();
     const dispatch = useDispatch();
     const user = useSelector<ReduxState, User>(state => state.core_user);
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
 
     const signIn = () => {
         auth.signinRedirect({
