@@ -8,6 +8,7 @@
 - Quality attribute for stratigraphy.
 - Support Amazon Cognito logout flow.
 - IsOpenBorehole option for instrumentation and backfill.
+- Support adding multiple field measurement results in `hydrogeology`.
 - Show prompt for unsaved changes when switching data card or completion tabs.
 - Show prompt before deleting data card.
 
