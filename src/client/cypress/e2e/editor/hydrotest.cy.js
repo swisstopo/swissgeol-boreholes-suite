@@ -7,8 +7,6 @@ import {
 } from "../helpers/testHelpers";
 import {
   evaluateDisplayValue,
-  evaluateInput,
-  evaluateSelect,
   evaluateTextarea,
   setInput,
   setSelect,
@@ -177,35 +175,15 @@ describe("Tests for the hydrotest editor.", () => {
     });
     startBoreholeEditing();
 
-    // no prompt should be displayed when no card is currently in edit mode
     addItem("addHydrotest");
+    cy.get('[data-cy="addHydrotest-button"]').should("be.disabled");
     cy.wait("@casing_GET");
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 1);
-
-    // can cancel switching tabs without loosing data
-    addItem("addHydrotest");
-    handlePrompt("Hydrotest: Unsaved changes", "Cancel");
-    evaluateInput("startTime", "2012-11-14T12:06");
-    evaluateSelect("reliabilityId", "15203157");
     toggleMultiSelect("testKindId", [2]);
+    saveForm();
+    cy.get('[data-cy="addHydrotest-button"]').should("be.enabled");
 
-    // can reset new card form
-    addItem("addHydrotest");
-    handlePrompt("Hydrotest: Unsaved changes", "Reset");
-    cy.get('[data-cy="hydrotest-card.0.edit"]').should("exist");
-
-    // can save new card and switch to new card
-    setInput("startTime", "2012-11-14T12:06");
-    setSelect("reliabilityId", 1);
-    toggleMultiSelect("testKindId", [2]);
-    addItem("addHydrotest");
-    handlePrompt("Hydrotest: Unsaved changes", "Save");
-    cy.wait("@hydrotest_GET");
-    cy.get('[data-cy="hydrotest-card.0.edit"]').should("exist");
-    cy.get('[data-cy="hydrotest-card.1"]').should("exist");
-
-    // can switch cards without prompt if no changes were made
     startEditing();
     setInput("comment", "Lorem.");
 

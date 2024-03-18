@@ -179,35 +179,15 @@ describe("Casing crud tests", () => {
   });
 
   it("checks for unsaved changes when switching between cards", () => {
-    // no prompt should be displayed when no card is currently in edit mode
     addItem("addCasing");
-    setInput("name", "casing 1");
-    setInput("casingElements.0.fromDepth", "5");
-    setInput("casingElements.0.toDepth", "10");
-
-    // can cancel switching tabs without loosing data
-    addItem("addCasing");
-    handlePrompt("Casing: Unsaved changes", "Cancel");
-    evaluateInput("name", "casing 1");
-    evaluateInput("fromDepth", "5");
-    evaluateInput("toDepth", "10");
-    setSelect("casingElements.0.kindId", 2);
-
-    // can reset new card form
-    addItem("addCasing");
-    handlePrompt("Casing: Unsaved changes", "Reset");
-    cy.get('[data-cy="casing-card.0.edit"]').should("exist");
-
-    // can save new card and switch to new card
+    cy.get('[data-cy="addCasing-button"]').should("be.disabled");
+    cy.wait("@codelist_GET");
     setInput("name", "casing 1");
     setInput("casingElements.0.fromDepth", "5");
     setInput("casingElements.0.toDepth", "10");
     setSelect("casingElements.0.kindId", 2);
-    addItem("addCasing");
-    handlePrompt("Casing: Unsaved changes", "Save");
-    cy.wait("@casing_GET");
-    cy.get('[data-cy="casing-card.0.edit"]').should("exist");
-    cy.get('[data-cy="casing-card.1"]').should("exist");
+    saveForm();
+    cy.get('[data-cy="addCasing-button"]').should("be.enabled");
 
     // can switch cards without prompt if no changes were made
     startEditing();
