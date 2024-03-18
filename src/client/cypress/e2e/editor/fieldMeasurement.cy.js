@@ -52,25 +52,24 @@ describe("Tests for the field measurement editor.", () => {
     setInput("startTime", "2012-11-14T12:06");
     setSelect("casingId", 1);
 
-    // close editing mask
-    saveForm();
-
-    //assert field measurementis displayed
-    cy.wait("@fieldmeasurement_GET");
-    evaluateDisplayValue("casingName", "test fieldmeasurement - casing-1");
-
-    // edit field measurement
-    startEditing();
-    addItem("addFieldmeasurementResult");
     setSelect("fieldMeasurementResults.0.sampleTypeId", 0);
     setSelect("fieldMeasurementResults.0.parameterId", 0, 9);
     setInput("fieldMeasurementResults.0.value", "10");
     saveForm();
     cy.wait("@fieldmeasurement_GET");
 
+    evaluateDisplayValue("casingName", "test fieldmeasurement - casing-1");
     evaluateDisplayValue("fieldMeasurementResult.0.sampleType", "Pumpprobe");
     evaluateDisplayValue("fieldMeasurementResult.0.parameter", "Temperatur");
     evaluateDisplayValue("fieldMeasurementResult.0.value", "10 °C");
+    evaluateDisplayValue("reliability", "fraglich");
+
+    // edit field measurement
+    startEditing();
+    setSelect("reliabilityId", 2);
+    saveForm();
+    cy.wait("@fieldmeasurement_GET");
+    evaluateDisplayValue("reliability", "andere");
 
     // delete field measurement
     deleteItem();

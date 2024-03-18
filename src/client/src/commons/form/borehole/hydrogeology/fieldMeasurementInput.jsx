@@ -23,7 +23,9 @@ const FieldMeasurementInput = props => {
   const formMethods = useForm({
     mode: "all",
     defaultValues: {
-      fieldMeasurementResults: item?.fieldMeasurementResults || [],
+      fieldMeasurementResults: item?.fieldMeasurementResults || [
+        { parameterId: "", value: null, minValue: null, maxValue: null },
+      ],
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -134,78 +136,74 @@ const FieldMeasurementInput = props => {
         <form onSubmit={formMethods.handleSubmit(submitForm)}>
           <Stack direction="column" sx={{ width: "100%" }} spacing={1}>
             <ObservationInput observation={item} boreholeId={parentId} />
-            {formMethods.getValues().reliabilityId && formMethods.getValues().startTime && (
-              <Box
-                sx={{
-                  paddingBottom: "8.5px",
-                  marginRight: "8px !important",
-                  marginTop: "18px !important",
-                }}>
-                <Stack direction={"row"} sx={{ width: "100%" }} spacing={1} justifyContent={"space-between"}>
-                  <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("fieldMeasurementResult")}</Typography>
-                  <AddButton
-                    label="addFieldmeasurementResult"
-                    onClick={() => {
-                      append({ parameterId: "", value: null, minValue: null, maxValue: null }, { shouldFocus: false });
+            <Box
+              sx={{
+                paddingBottom: "8.5px",
+                marginRight: "8px !important",
+                marginTop: "18px !important",
+              }}>
+              <Stack direction={"row"} sx={{ width: "100%" }} spacing={1} justifyContent={"space-between"}>
+                <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("fieldMeasurementResult")}</Typography>
+                <AddButton
+                  label="addFieldmeasurementResult"
+                  onClick={() => {
+                    append({ parameterId: "", value: null, minValue: null, maxValue: null }, { shouldFocus: false });
+                  }}
+                />
+              </Stack>
+              {fields.map((field, index) => (
+                <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`fieldMeasurementResult-${index}`}>
+                  <FormSelect
+                    fieldName={`fieldMeasurementResults.${index}.sampleTypeId`}
+                    label="field_measurement_sample_type"
+                    selected={field.sampleTypeId}
+                    required={true}
+                    values={domains?.data
+                      ?.filter(d => d.schema === hydrogeologySchemaConstants.fieldMeasurementSampleType)
+                      .sort((a, b) => a.order - b.order)
+                      .map(d => ({
+                        key: d.id,
+                        name: d[i18n.language],
+                      }))}
+                  />
+                  <FormSelect
+                    fieldName={`fieldMeasurementResults.${index}.parameterId`}
+                    label="parameter"
+                    selected={field.parameterId}
+                    required={true}
+                    values={domains?.data
+                      ?.filter(d => d.schema === hydrogeologySchemaConstants.fieldMeasurementParameter)
+                      .sort((a, b) => a.order - b.order)
+                      .map(d => ({
+                        key: d.id,
+                        name: d[i18n.language],
+                      }))}
+                    onUpdate={value => {
+                      setUnits({ ...units, [index]: getFieldMeasurementParameterUnits(value) });
                     }}
                   />
-                </Stack>
-                {fields.map((field, index) => (
-                  <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`fieldMeasurementResult-${index}`}>
-                    <FormSelect
-                      fieldName={`fieldMeasurementResults.${index}.sampleTypeId`}
-                      label="field_measurement_sample_type"
-                      selected={field.sampleTypeId}
-                      required={true}
-                      values={domains?.data
-                        ?.filter(d => d.schema === hydrogeologySchemaConstants.fieldMeasurementSampleType)
-                        .sort((a, b) => a.order - b.order)
-                        .map(d => ({
-                          key: d.id,
-                          name: d[i18n.language],
-                        }))}
-                    />
-                    <FormSelect
-                      fieldName={`fieldMeasurementResults.${index}.parameterId`}
-                      label="parameter"
-                      selected={field.parameterId}
-                      required={true}
-                      values={domains?.data
-                        ?.filter(d => d.schema === hydrogeologySchemaConstants.fieldMeasurementParameter)
-                        .sort((a, b) => a.order - b.order)
-                        .map(d => ({
-                          key: d.id,
-                          name: d[i18n.language],
-                        }))}
-                      onUpdate={value => {
-                        setUnits({ ...units, [index]: getFieldMeasurementParameterUnits(value) });
-                      }}
-                    />
 
-                    <FormInput
-                      fieldName={`fieldMeasurementResults.${index}.value`}
-                      label="value"
-                      value={field.value}
-                      type="number"
-                      required={true}
-                      inputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>
-                        ),
-                      }}
-                    />
-                    <IconButton
-                      onClick={() => remove(index)}
-                      color="error"
-                      sx={{
-                        marginTop: "10px !important",
-                      }}>
-                      <Delete />
-                    </IconButton>
-                  </Stack>
-                ))}
-              </Box>
-            )}
+                  <FormInput
+                    fieldName={`fieldMeasurementResults.${index}.value`}
+                    label="value"
+                    value={field.value}
+                    type="number"
+                    required={true}
+                    inputProps={{
+                      endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
+                    }}
+                  />
+                  <IconButton
+                    onClick={() => remove(index)}
+                    color="error"
+                    sx={{
+                      marginTop: "10px !important",
+                    }}>
+                    <Delete />
+                  </IconButton>
+                </Stack>
+              ))}
+            </Box>
           </Stack>
           <DataCardButtonContainer>
             <CancelButton
