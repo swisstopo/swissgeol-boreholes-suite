@@ -9,6 +9,7 @@
 - Support Amazon Cognito logout flow.
 - IsOpenBorehole option for instrumentation and backfill.
 - Show prompt for unsaved changes when switching data card or completion tabs.
+- Add entry `resin` to codelist `backfill_material` and entries `U-probe` and `double U-probe` to codelist `casing_type`.
 
 ### Changed
 
