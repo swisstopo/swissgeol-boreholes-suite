@@ -79,6 +79,8 @@
   "deletelayerconfirmation": "You are about to delete this layer, how do you want to proceed?",
   "deleteCompletionTitle": "Do you really want to delete this completion?",
   "deleteCompletionMessage": "This completion including its casings, instruments and backfills will be permanently deleted from the database.",
+  "deleteTitle": "Do you really want to delete this entry?",
+  "deleteMessage": "The entry will be permanently deleted from the database.",
   "deleting": "Deleting {{what}}",
   "depthMD": "Depth [m\u00A0MD]",
   "details": "Details",

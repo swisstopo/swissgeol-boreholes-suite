@@ -79,6 +79,8 @@
   "deletelayerconfirmation": "Sie löschen diese Schicht. Wie wollen Sie fortfahren?",
   "deleteCompletionTitle": "Wollen Sie diesen Ausbau wirklich löschen?",
   "deleteCompletionMessage": "Der Ausbau wird zusammen mit seinen Verrohrungen, Instrumentierungen und Hinterfüllungen dauerhaft gelöscht.",
+  "deleteTitle": "Wollen Sie diesen Eintrag wirklich löschen?",
+  "deleteMessage": "Der Eintrag wird dauerhaft aus der Datenbank gelöscht.",
   "deleting": "{{what}} löschen",
   "depthMD": "Tiefe [m\u00A0MD]",
   "details": "Einzelheiten",

@@ -79,6 +79,8 @@
   "deletelayerconfirmation": "Vous êtes sur le point de supprimer cette couche, comment voulez-vous procéder?",
   "deleteCompletionTitle": "Voulez-vous vraiment supprimer cet aménagement?",
   "deleteCompletionMessage": "Cet aménagement, y compris les tubage, les instruments et les remplissages, sera définitivement supprimé de la base de données.",
+  "deleteTitle": "Voulez-vous vraiment supprimer cette entrée ?",
+  "deleteMessage": "L'entrée sera définitivement supprimée de la base de données.",
   "deleting": "Suppression de {{what}}",
   "depthMD": "Profondeur [m\u00A0MD]",
   "details": "Détails",
