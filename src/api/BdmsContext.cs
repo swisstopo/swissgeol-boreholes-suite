@@ -33,6 +33,7 @@ public class BdmsContext : DbContext
     public DbSet<HydrotestResult> HydrotestResults { get; set; }
     public DbSet<GroundwaterLevelMeasurement> GroundwaterLevelMeasurements { get; set; }
     public DbSet<FieldMeasurement> FieldMeasurements { get; set; }
+    public DbSet<FieldMeasurementResult> FieldMeasurementResults { get; set; }
     public DbSet<Completion> Completions { get; set; }
     public DbSet<Instrumentation> Instrumentations { get; set; }
     public DbSet<Backfill> Backfills { get; set; }
@@ -293,13 +294,13 @@ public class BdmsContext : DbContext
             .HasForeignKey(g => g.KindId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        modelBuilder.Entity<FieldMeasurement>()
+        modelBuilder.Entity<FieldMeasurementResult>()
             .HasOne(f => f.Parameter)
             .WithMany()
             .HasForeignKey(f => f.ParameterId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        modelBuilder.Entity<FieldMeasurement>()
+        modelBuilder.Entity<FieldMeasurementResult>()
             .HasOne(f => f.SampleType)
             .WithMany()
             .HasForeignKey(f => f.SampleTypeId)

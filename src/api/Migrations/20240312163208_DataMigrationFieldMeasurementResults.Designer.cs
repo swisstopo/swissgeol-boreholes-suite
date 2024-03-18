@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240312163208_DataMigrationFieldMeasurementResults")]
+    partial class DataMigrationFieldMeasurementResults
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -809,6 +812,77 @@ namespace BDMS.Migrations
                     b.HasKey("Name");
 
                     b.ToTable("config", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.Content", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id_cnt");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Creation")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation_cnt");
+
+                    b.Property<DateTime?>("Expired")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expired_cnt");
+
+                    b.Property<bool?>("IsDraft")
+                        .HasColumnType("boolean")
+                        .HasColumnName("draft_cnt");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name_cnt");
+
+                    b.Property<string>("TextDe")
+                        .HasColumnType("text")
+                        .HasColumnName("text_cnt_de");
+
+                    b.Property<string>("TextEn")
+                        .HasColumnType("text")
+                        .HasColumnName("text_cnt_en");
+
+                    b.Property<string>("TextFr")
+                        .HasColumnType("text")
+                        .HasColumnName("text_cnt_fr");
+
+                    b.Property<string>("TextIt")
+                        .HasColumnType("text")
+                        .HasColumnName("text_cnt_it");
+
+                    b.Property<string>("TextRo")
+                        .HasColumnType("text")
+                        .HasColumnName("text_cnt_ro");
+
+                    b.Property<string>("TitelRo")
+                        .HasColumnType("text")
+                        .HasColumnName("title_cnt_ro");
+
+                    b.Property<string>("TitleDe")
+                        .HasColumnType("text")
+                        .HasColumnName("title_cnt_de");
+
+                    b.Property<string>("TitleEn")
+                        .HasColumnType("text")
+                        .HasColumnName("title_cnt_en");
+
+                    b.Property<string>("TitleFr")
+                        .HasColumnType("text")
+                        .HasColumnName("title_cnt_fr");
+
+                    b.Property<string>("TitleIt")
+                        .HasColumnType("text")
+                        .HasColumnName("title_cnt_it");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("contents", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.FaciesDescription", b =>
@@ -1895,6 +1969,22 @@ namespace BDMS.Migrations
                 {
                     b.HasBaseType("BDMS.Models.Observation");
 
+                    b.Property<int>("ParameterId")
+                        .HasColumnType("integer")
+                        .HasColumnName("parameter");
+
+                    b.Property<int>("SampleTypeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("sample_type");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("double precision")
+                        .HasColumnName("value");
+
+                    b.HasIndex("ParameterId");
+
+                    b.HasIndex("SampleTypeId");
+
                     b.ToTable("field_measurement", "bdms");
                 });
 
@@ -2866,6 +2956,22 @@ namespace BDMS.Migrations
                         .HasForeignKey("BDMS.Models.FieldMeasurement", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "Parameter")
+                        .WithMany()
+                        .HasForeignKey("ParameterId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "SampleType")
+                        .WithMany()
+                        .HasForeignKey("SampleTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Parameter");
+
+                    b.Navigation("SampleType");
                 });
 
             modelBuilder.Entity("BDMS.Models.GroundwaterLevelMeasurement", b =>
