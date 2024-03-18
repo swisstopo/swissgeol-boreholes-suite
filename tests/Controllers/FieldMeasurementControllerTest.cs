@@ -61,7 +61,7 @@ public class FieldMeasurementControllerTest
         Assert.AreEqual(fieldMeasurement.ToDepthM, 1446.5446650011208);
         Assert.AreEqual(fieldMeasurement.FromDepthMasl, 1554.9724295800424);
         Assert.AreEqual(fieldMeasurement.ToDepthMasl, 3565.501249085414);
-        Assert.AreEqual(fieldMeasurement.CompletionFinished, false);
+        Assert.AreEqual(fieldMeasurement.IsOpenBorehole, false);
         Assert.AreEqual(fieldMeasurement.Comment, "Accusamus voluptates aut sit ducimus.");
         Assert.AreEqual(fieldMeasurement.ReliabilityId, 15203159);
         Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.Count, 10);
@@ -85,7 +85,7 @@ public class FieldMeasurementControllerTest
             ToDepthM = 78.15634,
             FromDepthMasl = 67.112,
             ToDepthMasl = 78.0043,
-            CompletionFinished = true,
+            IsOpenBorehole = true,
             Comment = "Test comment",
             BoreholeId = 1001104,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
@@ -119,7 +119,7 @@ public class FieldMeasurementControllerTest
             ToDepthM = 7602.12,
             FromDepthMasl = 828.774,
             ToDepthMasl = 27603.2,
-            CompletionFinished = true,
+            IsOpenBorehole = true,
             Comment = "Updated test comment",
             BoreholeId = 1001105,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
@@ -153,7 +153,7 @@ public class FieldMeasurementControllerTest
         Assert.AreEqual(updatedFieldMeasurement.ToDepthM, editedFieldMeasurement.ToDepthM);
         Assert.AreEqual(updatedFieldMeasurement.FromDepthMasl, editedFieldMeasurement.FromDepthMasl);
         Assert.AreEqual(updatedFieldMeasurement.ToDepthMasl, editedFieldMeasurement.ToDepthMasl);
-        Assert.AreEqual(updatedFieldMeasurement.CompletionFinished, editedFieldMeasurement.CompletionFinished);
+        Assert.AreEqual(updatedFieldMeasurement.IsOpenBorehole, editedFieldMeasurement.IsOpenBorehole);
         Assert.AreEqual(updatedFieldMeasurement.Comment, editedFieldMeasurement.Comment);
         Assert.AreEqual(updatedFieldMeasurement.BoreholeId, editedFieldMeasurement.BoreholeId);
         Assert.AreEqual(updatedFieldMeasurement.ReliabilityId, editedFieldMeasurement.ReliabilityId);
@@ -187,7 +187,7 @@ public class FieldMeasurementControllerTest
             ToDepthM = 702.12,
             FromDepthMasl = 82.714,
             ToDepthMasl = 2633.2,
-            CompletionFinished = false,
+            IsOpenBorehole = false,
             Comment = "New test comment",
             BoreholeId = 1001493,
             ReliabilityId = context.Codelists.Where(c => c.Schema == "observation_reliability").Single(c => c.Geolcode == 3).Id,
@@ -221,7 +221,7 @@ public class FieldMeasurementControllerTest
         Assert.AreEqual(newFieldMeasurement.ToDepthM, 702.12);
         Assert.AreEqual(newFieldMeasurement.FromDepthMasl, 82.714);
         Assert.AreEqual(newFieldMeasurement.ToDepthMasl, 2633.2);
-        Assert.AreEqual(newFieldMeasurement.CompletionFinished, false);
+        Assert.AreEqual(newFieldMeasurement.IsOpenBorehole, false);
         Assert.AreEqual(newFieldMeasurement.Comment, "New test comment");
         Assert.AreEqual(newFieldMeasurement.BoreholeId, 1001493);
         Assert.AreEqual(newFieldMeasurement.ReliabilityId, 15203158);

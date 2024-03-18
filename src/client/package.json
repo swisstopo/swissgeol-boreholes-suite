@@ -88,7 +88,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "cypress run",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
     "cy": "cypress open"
   }
 }

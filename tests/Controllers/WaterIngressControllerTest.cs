@@ -72,7 +72,7 @@ public class WaterIngressControllerTests
         Assert.AreEqual(waterIngress.ToDepthM, 4352.2518247958515);
         Assert.AreEqual(waterIngress.FromDepthMasl, 2340.3837938361726);
         Assert.AreEqual(waterIngress.ToDepthMasl, 891.04182925729162);
-        Assert.AreEqual(waterIngress.CompletionFinished, false);
+        Assert.AreEqual(waterIngress.IsOpenBorehole, false);
         Assert.AreEqual(waterIngress.Comment, "Assumenda minima placeat ea quidem unde accusamus neque qui omnis.");
         Assert.AreEqual(waterIngress.ReliabilityId, 15203157);
         Assert.AreEqual(waterIngress.QuantityId, 15203163);
@@ -93,7 +93,7 @@ public class WaterIngressControllerTests
             ToDepthM = 78.15634,
             FromDepthMasl = 67.112,
             ToDepthMasl = 78.0043,
-            CompletionFinished = true,
+            IsOpenBorehole = true,
             Comment = "Test comment",
             BoreholeId = 1002296,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
@@ -112,7 +112,7 @@ public class WaterIngressControllerTests
             ToDepthM = 7602.12,
             FromDepthMasl = 828.774,
             ToDepthMasl = 27603.2,
-            CompletionFinished = true,
+            IsOpenBorehole = true,
             Comment = "Updated test comment",
             BoreholeId = 1002296,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
@@ -138,7 +138,7 @@ public class WaterIngressControllerTests
         Assert.AreEqual(updatedWaterIngress.ToDepthM, editedWaterIngress.ToDepthM);
         Assert.AreEqual(updatedWaterIngress.FromDepthMasl, editedWaterIngress.FromDepthMasl);
         Assert.AreEqual(updatedWaterIngress.ToDepthMasl, editedWaterIngress.ToDepthMasl);
-        Assert.AreEqual(updatedWaterIngress.CompletionFinished, editedWaterIngress.CompletionFinished);
+        Assert.AreEqual(updatedWaterIngress.IsOpenBorehole, editedWaterIngress.IsOpenBorehole);
         Assert.AreEqual(updatedWaterIngress.Comment, editedWaterIngress.Comment);
         Assert.AreEqual(updatedWaterIngress.BoreholeId, editedWaterIngress.BoreholeId);
         Assert.AreEqual(updatedWaterIngress.ReliabilityId, editedWaterIngress.ReliabilityId);
@@ -168,7 +168,7 @@ public class WaterIngressControllerTests
             ToDepthM = 702.12,
             FromDepthMasl = 82.714,
             ToDepthMasl = 2633.2,
-            CompletionFinished = false,
+            IsOpenBorehole = false,
             Comment = "New test comment",
             BoreholeId = 1002296,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
@@ -189,7 +189,7 @@ public class WaterIngressControllerTests
         Assert.AreEqual(newWaterIngress.ToDepthM, 702.12);
         Assert.AreEqual(newWaterIngress.FromDepthMasl, 82.714);
         Assert.AreEqual(newWaterIngress.ToDepthMasl, 2633.2);
-        Assert.AreEqual(newWaterIngress.CompletionFinished, false);
+        Assert.AreEqual(newWaterIngress.IsOpenBorehole, false);
         Assert.AreEqual(newWaterIngress.Comment, "New test comment");
         Assert.AreEqual(newWaterIngress.BoreholeId, 1002296);
         Assert.AreEqual(newWaterIngress.ReliabilityId, 15203158);
