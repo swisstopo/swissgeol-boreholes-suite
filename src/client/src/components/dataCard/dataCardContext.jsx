@@ -17,6 +17,12 @@ export const DataCardSwitchContext = createContext({
   leaveInput: () => {},
 });
 
+export const DataCardExternalContext = createContext({
+  resetCanSwitch: () => {},
+  triggerCanSwitch: () => {},
+  canSwitch: 0,
+});
+
 export const DataCardProvider = props => {
   const [cards, setCards] = useState([]);
   const [displayedCards, setDisplayedCards] = useState([]);
@@ -24,6 +30,7 @@ export const DataCardProvider = props => {
   const [shouldReload, setShouldReload] = useState(false);
   const [checkIsDirty, setCheckIsDirty] = useState(false);
   const [newCardId, setNewCardId] = useState(null);
+  const [canSwitch, setCanSwitch] = useState(0);
 
   const tempCard = { id: 0 };
 
@@ -31,11 +38,12 @@ export const DataCardProvider = props => {
     setShouldReload(false);
     setCards(loadedCards);
 
-    if (newCardId !== null) {
+    if (checkIsDirty) {
       leaveInput(true, loadedCards);
     } else {
       setDisplayedCards(loadedCards);
       setSelectedCard(null);
+      setCanSwitch(0);
     }
   };
 
@@ -73,6 +81,20 @@ export const DataCardProvider = props => {
     }
     setCheckIsDirty(false);
     setNewCardId(null);
+    setCanSwitch(canLeave ? 1 : -1);
+  };
+
+  const triggerCanSwitch = () => {
+    if (selectedCard !== null) {
+      setCanSwitch(0);
+      setCheckIsDirty(true);
+    } else {
+      setCanSwitch(1);
+    }
+  };
+
+  const resetCanSwitch = () => {
+    setCanSwitch(0);
   };
 
   return (
@@ -92,7 +114,9 @@ export const DataCardProvider = props => {
           switchToCard,
           leaveInput,
         }}>
-        {props.children}
+        <DataCardExternalContext.Provider value={{ resetCanSwitch, triggerCanSwitch, canSwitch }}>
+          {props.children}
+        </DataCardExternalContext.Provider>
       </DataCardSwitchContext.Provider>
     </DataCardContext.Provider>
   );

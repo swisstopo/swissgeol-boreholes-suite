@@ -32,6 +32,7 @@ const BackfillInput = ({ item, parentId }) => {
       item={item}
       addData={addBackfill}
       updateData={updateBackfill}
+      promptLabel="filling"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <StackFullWidth direction="row">
         <FormInput fieldName="fromDepth" label="fromdepth" value={item.fromDepth} type="number" required={true} />
