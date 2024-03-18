@@ -127,6 +127,7 @@ describe("Tests for the hydrotest editor.", () => {
     saveForm();
     cy.wait("@hydrotest_GET");
 
+    cy.wait(500);
     addItem("addHydrotest");
     cy.wait("@casing_GET");
     setInput("fromDepthM", 0);

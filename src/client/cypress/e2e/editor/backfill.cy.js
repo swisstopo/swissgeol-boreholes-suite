@@ -106,6 +106,7 @@ describe("Backfill crud tests", () => {
     setSelect("casingId", 3);
     saveForm();
 
+    cy.wait(500);
     addItem("addBackfill");
     cy.wait("@codelist_GET");
     setInput("notes", "Lorem.");

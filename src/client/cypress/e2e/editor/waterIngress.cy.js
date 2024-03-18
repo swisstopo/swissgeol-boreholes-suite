@@ -97,6 +97,7 @@ describe("Tests for the wateringress editor.", () => {
     saveForm();
     cy.wait("@wateringress_GET");
 
+    cy.wait(500);
     addItem("addWaterIngress");
     cy.wait("@casing_GET");
     setInput("fromDepthM", 0);
