@@ -45,7 +45,7 @@ describe("Tests for the field measurement editor.", () => {
 
     cy.wait(1000);
     // create field measurement
-    addItem("addFieldmeasurement");
+    addItem("addFieldMeasurement");
     cy.wait("@casing_GET");
 
     setSelect("reliabilityId", 1);
@@ -61,7 +61,7 @@ describe("Tests for the field measurement editor.", () => {
 
     // edit field measurement
     startEditing();
-    addItem("addFieldmeasurementResult");
+    addItem("addFieldMeasurementResult");
     setSelect("fieldMeasurementResults.0.sampleTypeId", 0);
     setSelect("fieldMeasurementResults.0.parameterId", 0, 9);
     setInput("fieldMeasurementResults.0.value", "10");
@@ -87,7 +87,7 @@ describe("Tests for the field measurement editor.", () => {
     });
     startBoreholeEditing();
 
-    addItem("addFieldmeasurement");
+    addItem("addFieldMeasurement");
     cy.wait("@casing_GET");
     setInput("fromDepthM", 0);
     setInput("toDepthM", 10);
@@ -97,7 +97,7 @@ describe("Tests for the field measurement editor.", () => {
     cy.wait("@fieldmeasurement_GET");
 
     cy.wait(1000);
-    addItem("addFieldmeasurement");
+    addItem("addFieldMeasurement");
     cy.wait("@casing_GET");
     setInput("fromDepthM", 0);
     setInput("toDepthM", 12);

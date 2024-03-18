@@ -35,7 +35,7 @@ const FieldMeasurementInput = props => {
   useEffect(() => {
     if (checkIsDirty) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        showPrompt(t("unsavedChangesTitle", { where: t("field_measurement") }), t("unsavedChangesMessage"), [
+        showPrompt(t("unsavedChangesTitle", { where: t("fieldMeasurement") }), t("unsavedChangesMessage"), [
           {
             label: t("cancel"),
             action: () => {
@@ -144,7 +144,7 @@ const FieldMeasurementInput = props => {
                 <Stack direction={"row"} sx={{ width: "100%" }} spacing={1} justifyContent={"space-between"}>
                   <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("fieldMeasurementResult")}</Typography>
                   <AddButton
-                    label="addFieldmeasurementResult"
+                    label="addFieldMeasurementResult"
                     onClick={() => {
                       append({ parameterId: "", value: null, minValue: null, maxValue: null }, { shouldFocus: false });
                     }}
@@ -154,7 +154,7 @@ const FieldMeasurementInput = props => {
                   <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`fieldMeasurementResult-${index}`}>
                     <FormSelect
                       fieldName={`fieldMeasurementResults.${index}.sampleTypeId`}
-                      label="field_measurement_sample_type"
+                      label="fieldMeasurementSampleType"
                       selected={field.sampleTypeId}
                       required={true}
                       values={domains?.data
