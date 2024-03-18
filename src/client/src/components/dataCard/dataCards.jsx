@@ -41,7 +41,7 @@ export const DataCards = props => {
       mounted.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parentId]);
+  }, [parentId, isEditable]);
 
   useEffect(() => {
     if (shouldReload) {
