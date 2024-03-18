@@ -24,7 +24,7 @@ const CompletionContent = ({ completion, isEditable }) => {
       hash: "casing",
     },
     { label: t("instrument"), hash: "instrumentation" },
-    { label: t("filling"), hash: "backfill" },
+    { label: t("backfill"), hash: "backfill" },
   ];
   const [activeIndex, setActiveIndex] = useState(0);
   const [newIndex, setNewIndex] = useState(null);
