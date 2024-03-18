@@ -382,10 +382,8 @@ describe("completion crud tests", () => {
   });
 
   it("checks completion content validation", () => {
-    var boreholeId;
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      boreholeId = id;
       loginAsAdmin();
       cy.visit(`/editor/${id}/completion`);
     });

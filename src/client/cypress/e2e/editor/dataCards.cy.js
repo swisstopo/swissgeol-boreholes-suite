@@ -11,7 +11,6 @@ describe("Tests for the data cards in the editor.", () => {
     });
     startBoreholeEditing();
 
-    // no prompt should be displayed when no card is currently in edit mode
     addItem("addWaterIngress");
     cy.get('[data-cy="addWaterIngress-button"]').should("be.disabled");
     cy.wait("@casing_GET");
