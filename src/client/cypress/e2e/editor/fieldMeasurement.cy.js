@@ -55,6 +55,7 @@ describe("Tests for the field measurement editor.", () => {
     saveForm();
 
     //assert field measurementis displayed
+    cy.wait("@fieldmeasurement_GET");
     evaluateDisplayValue("casingName", "test fieldmeasurement - casing-1");
 
     // edit field measurement
