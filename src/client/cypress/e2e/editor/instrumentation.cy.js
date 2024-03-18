@@ -1,4 +1,10 @@
-import { loginAsAdmin, createBorehole, startBoreholeEditing, createCompletion } from "../helpers/testHelpers";
+import {
+  loginAsAdmin,
+  createBorehole,
+  startBoreholeEditing,
+  createCompletion,
+  handlePrompt,
+} from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, cancelEditing, deleteItem } from "../helpers/buttonHelpers";
 
@@ -94,6 +100,7 @@ describe("Instrumentation crud tests", () => {
 
     // delete instrumentation
     deleteItem();
+    handlePrompt("Do you really want to delete this entry?", "Delete");
     cy.contains("From depth").should("not.exist");
   });
 
