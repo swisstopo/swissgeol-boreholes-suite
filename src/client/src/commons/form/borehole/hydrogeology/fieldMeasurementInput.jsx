@@ -13,6 +13,8 @@ import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { getFieldMeasurementParameterUnits } from "./parameterUnits";
 import Delete from "@mui/icons-material/Delete";
+import { prepareCasingDataForSubmit } from "../completion/casingUtils";
+
 const FieldMeasurementInput = props => {
   const { item, parentId } = props;
   const { triggerReload, selectCard } = useContext(DataCardContext);
@@ -103,6 +105,7 @@ const FieldMeasurementInput = props => {
   };
 
   const prepareFormDataForSubmit = data => {
+    data = prepareCasingDataForSubmit(data);
     data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
     data.type = ObservationType.fieldMeasurement;
