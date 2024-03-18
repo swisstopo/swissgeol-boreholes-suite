@@ -45,6 +45,8 @@
 - Removed property _isLast_ from `ChronostratigraphyLayer`, `LithostratigraphyLayer`, `LithologicalDescription` and `FaciesDescription`.
 - Removed feedback functionality.
 - Included new `swissgeol boreholes` logo and icon.
+- Removed the configurable welcome message on the login overlay.
+- Login is performed automatically on page visit.
 
 ### Fixed
 
