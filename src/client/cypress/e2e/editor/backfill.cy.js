@@ -46,7 +46,7 @@ describe("Backfill crud tests", () => {
   it("adds, edits and deletes backfills", () => {
     // add new backfill card
     cy.wait(1000);
-    addItem("addFilling");
+    addItem("addBackfill");
     cy.wait("@codelist_GET");
 
     // fill out form
@@ -95,7 +95,7 @@ describe("Backfill crud tests", () => {
 
   it("sorts backfill", () => {
     cy.wait(1000);
-    addItem("addFilling");
+    addItem("addBackfill");
     cy.wait("@codelist_GET");
     setInput("notes", "Lorem.");
     setInput("fromDepth", "0");
@@ -106,7 +106,7 @@ describe("Backfill crud tests", () => {
     saveForm();
 
     cy.wait(1000);
-    addItem("addFilling");
+    addItem("addBackfill");
     cy.wait("@codelist_GET");
     setInput("notes", "Lorem.");
     setInput("fromDepth", "0");

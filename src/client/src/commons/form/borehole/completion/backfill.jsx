@@ -11,8 +11,8 @@ const Backfill = ({ isEditable, completionId }) => {
       parentId={completionId}
       getData={getBackfills}
       cyLabel="backfill"
-      addLabel="addFilling"
-      emptyLabel="msgFillingEmpty"
+      addLabel="addBackfill"
+      emptyLabel="msgBackfillEmpty"
       renderInput={props => <BackfillInput {...props} />}
       renderDisplay={props => <BackfillDisplay {...props} />}
       sortDisplayed={(a, b) => {

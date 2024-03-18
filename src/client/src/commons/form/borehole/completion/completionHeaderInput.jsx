@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack } from "@mui/material";
@@ -7,10 +7,11 @@ import { completionSchemaConstants } from "./completionSchemaConstants";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { FormInput, FormSelect, FormCheckbox } from "../../../../components/form/form";
 import { CancelButton, SaveButton } from "../../../../components/buttons/buttons";
-import Prompt from "../../../../components/prompt/prompt";
+import { PromptContext } from "../../../../components/prompt/promptContext";
 
 const CompletionHeaderInput = props => {
   const { completion, cancelChanges, saveCompletion, trySwitchTab, switchTabs } = props;
+  const { showPrompt } = useContext(PromptContext);
   const domains = useDomains();
   const formMethods = useForm({ mode: "all" });
   const { t, i18n } = useTranslation();
@@ -18,7 +19,6 @@ const CompletionHeaderInput = props => {
   const [selectedCompletion, setSelectedCompletion] = useState({
     ...completion,
   });
-  const [showSavePrompt, setShowSavePrompt] = useState(false);
 
   // trigger form validation on mount
   useEffect(() => {
@@ -33,7 +33,28 @@ const CompletionHeaderInput = props => {
   useEffect(() => {
     if (trySwitchTab) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        setShowSavePrompt(true);
+        showPrompt(t("unsavedChangesTitle", { where: t("completion") }), t("unsavedChangesMessage"), [
+          {
+            label: t("cancel"),
+            action: () => {
+              switchTabs(false);
+            },
+          },
+          {
+            label: t("reset"),
+            action: () => {
+              formMethods.reset(selectedCompletion);
+              switchTabs(true);
+            },
+          },
+          {
+            label: t("save"),
+            disabled: !formMethods.formState.isValid,
+            action: () => {
+              formMethods.handleSubmit(submitForm)();
+            },
+          },
+        ]);
       } else {
         switchTabs(true);
       }
@@ -124,34 +145,6 @@ const CompletionHeaderInput = props => {
           </Stack>
         </form>
       </FormProvider>
-      <Prompt
-        open={showSavePrompt}
-        setOpen={setShowSavePrompt}
-        title={t("unsavedChangesTitle", { where: t("completion") })}
-        message={t("unsavedChangesMessage")}
-        actions={[
-          {
-            label: t("cancel"),
-            action: () => {
-              switchTabs(false);
-            },
-          },
-          {
-            label: t("reset"),
-            action: () => {
-              formMethods.reset(selectedCompletion);
-              switchTabs(true);
-            },
-          },
-          {
-            label: t("save"),
-            disabled: !formMethods.formState.isValid,
-            action: () => {
-              formMethods.handleSubmit(submitForm)();
-            },
-          },
-        ]}
-      />
     </>
   );
 };
