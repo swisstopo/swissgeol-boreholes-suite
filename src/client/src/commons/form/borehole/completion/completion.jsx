@@ -13,14 +13,15 @@ import {
 import CompletionContent from "./completionContent";
 import CompletionHeaderInput from "./completionHeaderInput";
 import CompletionHeaderDisplay from "./completionHeaderDisplay";
-import Prompt from "../../../../components/prompt/prompt";
 import { AddButton } from "../../../../components/buttons/buttons";
 import { FullPage } from "../../../../components/baseComponents";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext";
+import { PromptContext } from "../../../../components/prompt/promptContext";
 
 const Completion = props => {
   const { isEditable } = props;
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
+  const { showPrompt } = useContext(PromptContext);
   const { boreholeId, completionId } = useParams();
   const history = useHistory();
   const location = useLocation();
@@ -37,7 +38,6 @@ const Completion = props => {
   });
   const [checkContentDirty, setCheckContentDirty] = useState(false);
   const [completionToBeSaved, setCompletionToBeSaved] = useState(null);
-  const [showDeletePrompt, setShowDeletePrompt] = useState(false);
 
   const resetState = () => {
     setState({
@@ -209,7 +209,16 @@ const Completion = props => {
   };
 
   const deleteSelectedCompletion = () => {
-    setShowDeletePrompt(true);
+    showPrompt(t("deleteCompletionTitle"), t("deleteCompletionMessage"), [
+      {
+        label: t("cancel"),
+        action: null,
+      },
+      {
+        label: t("delete"),
+        action: onDeleteConfirmed,
+      },
+    ]);
   };
 
   const onDeleteConfirmed = () => {
@@ -355,22 +364,6 @@ const Completion = props => {
           )}
         </Stack>
       </FullPage>
-      <Prompt
-        open={showDeletePrompt}
-        setOpen={setShowDeletePrompt}
-        title={t("deleteCompletionTitle")}
-        message={t("deleteCompletionMessage")}
-        actions={[
-          {
-            label: t("cancel"),
-            action: null,
-          },
-          {
-            label: t("delete"),
-            action: onDeleteConfirmed,
-          },
-        ]}
-      />
     </>
   );
 };
