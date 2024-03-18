@@ -39,13 +39,11 @@ describe("Backfill crud tests", () => {
 
     // start editing session
     startBoreholeEditing();
+    cy.get("[data-cy=completion-content-tab-backfill]").click();
+    cy.wait("@backfill_GET");
   });
 
   it("adds, edits and deletes backfills", () => {
-    // select backfill tab
-    cy.get("[data-cy=completion-content-header-tab-backfill]").click();
-    cy.wait("@backfill_GET");
-
     // add new backfill card
     cy.wait(1000);
     addItem("addFilling");
@@ -96,10 +94,6 @@ describe("Backfill crud tests", () => {
   });
 
   it("sorts backfill", () => {
-    // select backfill tab
-    cy.get("[data-cy=completion-content-header-tab-backfill]").click();
-    cy.wait("@backfill_GET");
-
     cy.wait(1000);
     addItem("addFilling");
     cy.wait("@codelist_GET");

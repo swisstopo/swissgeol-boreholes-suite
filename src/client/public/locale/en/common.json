@@ -370,7 +370,7 @@
   "upload": "Upload",
   "uploaded": "Uploaded",
   "uploadNewFile": "Upload a new file",
-  "unsavedChangesTitle": "Unsaved changes",
+  "unsavedChangesTitle": "{{where}}: Unsaved changes",
   "unsavedChangesMessage": "You have unsaved changes. How would you like to proceed?",
   "unselectAll": "Unselect all",
   "user": "User",

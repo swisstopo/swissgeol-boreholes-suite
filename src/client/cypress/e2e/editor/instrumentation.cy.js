@@ -39,7 +39,7 @@ describe("Instrumentation crud tests", () => {
   });
 
   it("adds, edits and deletes instrumentations", () => {
-    cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
+    cy.get("[data-cy=completion-content-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
     // create instrumentation
@@ -94,7 +94,7 @@ describe("Instrumentation crud tests", () => {
   });
 
   it("sorts instrumentation", () => {
-    cy.get("[data-cy=completion-content-header-tab-instrumentation]").click();
+    cy.get("[data-cy=completion-content-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
     addItem("addInstrument");

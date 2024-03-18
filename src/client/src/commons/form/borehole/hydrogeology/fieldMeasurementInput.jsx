@@ -205,17 +205,17 @@ const FieldMeasurementInput = props => {
       <Prompt
         open={showSavePrompt}
         setOpen={setShowSavePrompt}
-        titleLabel="unsavedChangesTitle"
-        messageLabel="unsavedChangesMessage"
+        titleLabel={t("unsavedChangesTitle", { where: t("field_measurement") })}
+        messageLabel={t("unsavedChangesMessage")}
         actions={[
           {
-            label: "cancel",
+            label: t("cancel"),
             action: () => {
               leaveInput(false);
             },
           },
           {
-            label: "reset",
+            label: t("reset"),
             action: () => {
               formMethods.reset();
               selectCard(null);
@@ -223,7 +223,7 @@ const FieldMeasurementInput = props => {
             },
           },
           {
-            label: "save",
+            label: t("save"),
             disabled: !formMethods.formState.isValid,
             action: () => {
               formMethods.handleSubmit(submitForm)();

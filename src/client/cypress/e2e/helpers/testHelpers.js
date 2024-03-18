@@ -407,3 +407,11 @@ export const handlePrompt = (title, action) => {
   cy.contains(title);
   cy.get('[data-cy="prompt-button-' + action + '"]').click();
 };
+
+export const createBaseSelector = parent => {
+  if (parent) {
+    return `[data-cy="${parent}"] `;
+  } else {
+    return "";
+  }
+};

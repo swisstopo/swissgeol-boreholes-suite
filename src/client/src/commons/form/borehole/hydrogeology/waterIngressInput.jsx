@@ -32,6 +32,7 @@ const WaterIngressInput = props => {
       item={item}
       addData={addWaterIngress}
       updateData={updateWaterIngress}
+      promptLabel="water_ingress"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <ObservationInput observation={item} boreholeId={parentId} />
       <Stack direction="row" sx={{ paddingTop: "10px" }}>

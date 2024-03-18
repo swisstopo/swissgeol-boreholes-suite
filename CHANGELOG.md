@@ -7,9 +7,9 @@
 - Reusable form components.
 - Quality attribute for stratigraphy.
 - Support Amazon Cognito logout flow.
-- IsOpenBorehole option for instrumentation and backfill
-- Support adding multiple field measurement results in `hydrogeology`.
+- IsOpenBorehole option for instrumentation and backfill.
 - Show prompt for unsaved changes when switching data card.
+- Support adding multiple field measurement results in `hydrogeology`.
 
 ### Changed
 

@@ -357,17 +357,17 @@ const HydrotestInput = props => {
       <Prompt
         open={showSavePrompt}
         setOpen={setShowSavePrompt}
-        titleLabel="unsavedChangesTitle"
-        messageLabel="unsavedChangesMessage"
+        title={t("unsavedChangesTitle", { where: t("hydrotest") })}
+        message={t("unsavedChangesMessage")}
         actions={[
           {
-            label: "cancel",
+            label: t("cancel"),
             action: () => {
               leaveInput(false);
             },
           },
           {
-            label: "reset",
+            label: t("reset"),
             action: () => {
               formMethods.reset();
               selectCard(null);
@@ -375,7 +375,7 @@ const HydrotestInput = props => {
             },
           },
           {
-            label: "save",
+            label: t("save"),
             disabled: !formMethods.formState.isValid,
             action: () => {
               formMethods.handleSubmit(submitForm)();

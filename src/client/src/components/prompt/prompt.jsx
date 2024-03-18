@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { styled } from "@mui/system";
 
@@ -13,13 +12,12 @@ export const PromptButton = styled(Button)({
 });
 
 const Prompt = props => {
-  const { open, setOpen, titleLabel, messageLabel, actions } = props;
-  const { t } = useTranslation();
+  const { open, setOpen, title, message, actions } = props;
   return (
     <Dialog open={open} data-cy="prompt">
-      <DialogTitle>{t(titleLabel)}</DialogTitle>
+      <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText>{t(messageLabel)}</DialogContentText>
+        <DialogContentText>{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
         {actions?.map((action, index) => (
@@ -33,7 +31,7 @@ const Prompt = props => {
             }}
             disabled={action.disabled === true}
             data-cy={"prompt-button-" + action.label}>
-            {t(action.label)}
+            {action.label}
           </PromptButton>
         ))}
       </DialogActions>

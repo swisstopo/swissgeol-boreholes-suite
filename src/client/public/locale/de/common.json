@@ -370,7 +370,7 @@
   "upload": "Hochladen",
   "uploaded": "Hochgeladen",
   "uploadNewFile": "Hochladen einer neuen Datei",
-  "unsavedChangesTitle": "Ungespeicherte Änderungen",
+  "unsavedChangesTitle": "{{where}}: Ungespeicherte Änderungen",
   "unsavedChangesMessage": "Sie haben ungespeicherte Änderungen. Wie möchten Sie fortfahren?",
   "unselectAll": "Alle abwählen",
   "user": "Benutzer",
