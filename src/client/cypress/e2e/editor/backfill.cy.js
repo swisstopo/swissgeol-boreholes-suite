@@ -4,6 +4,7 @@ import {
   createCompletion,
   createCasing,
   startBoreholeEditing,
+  handlePrompt,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, cancelEditing, deleteItem } from "../helpers/buttonHelpers";
@@ -90,6 +91,7 @@ describe("Backfill crud tests", () => {
 
     // delete backfill
     deleteItem();
+    handlePrompt("Do you really want to delete this entry?", "Delete");
     cy.contains("From depth").should("not.exist");
   });
 

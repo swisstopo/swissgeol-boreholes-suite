@@ -4,6 +4,7 @@ import {
   startBoreholeEditing,
   createCompletion,
   createCasing,
+  handlePrompt,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
@@ -70,6 +71,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     // delete groundwater level measurement
     deleteItem();
+    handlePrompt("Wollen Sie diesen Eintrag wirklich löschen?", "Löschen");
     cy.wait("@groundwaterlevelmeasurement_DELETE");
     cy.get("body").should("not.contain", "Drucksonde");
   });
