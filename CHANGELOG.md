@@ -49,6 +49,9 @@
 - Removed feedback functionality.
 - Included new `swissgeol boreholes` logo and icon.
 - Removed `completed` checkbox from hydrogeology observations and added option `open hole` to completion name.
+- Removed the configurable welcome message on the login overlay.
+- Login is performed automatically on page visit.
+- Use a non-root user to run the boreholes web application.
 
 ### Fixed
 

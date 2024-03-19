@@ -3,6 +3,35 @@ import { setInput, evaluateTextarea, setSelect, evaluateDisplayValue } from "../
 import { addItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Tests for the data cards in the editor.", () => {
+  it("resets datacards when stop editing", () => {
+    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      loginAsAdmin();
+      cy.visit(`/editor/${id}/hydrogeology/wateringress`);
+    });
+
+    startBoreholeEditing();
+    cy.wait(500);
+    addItem("addWaterIngress");
+    cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
+    cy.contains("a", "Stop editing").click();
+    cy.get('[data-cy="waterIngress-card.0.edit"]').should("not.exist");
+
+    startBoreholeEditing();
+    cy.wait(500);
+    addItem("addWaterIngress");
+    cy.wait("@casing_GET");
+    setInput("startTime", "2012-11-14T12:06");
+    setSelect("reliabilityId", 1);
+    setSelect("quantityId", 2);
+    saveForm();
+    cy.wait("@wateringress_GET");
+    startEditing();
+    setInput("comment", "Lorem.");
+    cy.contains("a", "Stop editing").click();
+    evaluateDisplayValue("comment", "-");
+  });
+
   it("checks for unsaved changes when switching between cards", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {

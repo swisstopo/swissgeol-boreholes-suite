@@ -247,7 +247,6 @@
   "locked_at": "Bloccato il",
   "locked_by": "Modifiche in corso da parte di",
   "locked_status": "Stato",
-  "loginScreen": "Schermata di login",
   "mainStratigraphy": "Questa è la stratigrafia principale",
   "map": "Mappa",
   "materialCasingLayer": "Tipo di materiale della tubatura",
@@ -273,8 +272,6 @@
   "msgReenablingTip": "Sarai in grado di riattivarlo in seguito",
   "msgStratigraphyEmpty": "Nessuna stratigrafia disponibile",
   "msgWateringressesEmpty": "Nessun ingresso d'acqua disponibile",
-  "msgWelcomeMessage_publish_title": "Pubblicare il messaggio di benvenuto",
-  "msgWelcomeMessage_publish_message": "Vuoi pubblicare il messaggio di benvenuto?",
   "municipality": "Comune",
   "name": "Nome",
   "new": "Nuovo {{what}}",
@@ -456,5 +453,6 @@
   "msgLithostratigraphyEmpty": "Nessun profilo litostratigrafico disponibile",
   "msgLithostratigraphyEmptyEditing": "Prima di creare un profilo litostratigrafico è necessario creare una stratigrafia",
   "msgChronostratigraphyEmpty": "Nessun profilo cronostratigrafico disponibile",
-  "msgChronostratigraphyEmptyEditing": "Prima di creare un profilo cronostratigrafico è necessario creare una stratigrafia"
+  "msgChronostratigraphyEmptyEditing": "Prima di creare un profilo cronostratigrafico è necessario creare una stratigrafia",
+  "welcomeMessage": "Benvenuti su"
 }

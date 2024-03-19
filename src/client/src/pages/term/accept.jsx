@@ -39,7 +39,9 @@ class AcceptTerms extends React.Component {
   }
 
   render() {
-    return (
+    return this.props.loader.terms ? (
+      this.props.children
+    ) : (
       <div
         style={{
           alignItems: "center",
@@ -144,6 +146,7 @@ AcceptTerms.propTypes = {
 const mapStateToProps = state => {
   return {
     user: state.core_user,
+    loader: state.dataLoaderState,
   };
 };
 

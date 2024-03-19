@@ -53,10 +53,6 @@ from bms.v1.borehole.codelist.handler import CodeListHandler
 # Workflows handlers
 from bms.v1.workflow.producer import WorkflowProducerHandler
 
-# Content handlers
-from bms.v1.content.handler import ContentHandler
-from bms.v1.content.admin import ContentAdminHandler
-
 # Terms handlers
 from bms.v1.terms.handler import TermsHandler
 from bms.v1.terms.admin import TermsAdminHandler

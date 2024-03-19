@@ -17,7 +17,8 @@ export const DataCards = props => {
   const { t } = useTranslation();
   const mounted = useRef(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
-  const { displayedCards, selectedCard, addCard, shouldReload, setLoadedCards } = useContext(DataCardContext);
+  const { displayedCards, selectedCard, addCard, selectCard, shouldReload, setLoadedCards } =
+    useContext(DataCardContext);
   const { switchToCard } = useContext(DataCardSwitchContext);
 
   const loadData = () => {
@@ -33,6 +34,13 @@ export const DataCards = props => {
       setIsLoadingData(false);
     }
   };
+
+  useEffect(() => {
+    if (!isEditable) {
+      selectCard(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditable]);
 
   useEffect(() => {
     mounted.current = true;

@@ -41,4 +41,6 @@ RUN npx license-checker --json --production \
   --customPath licenseCustomFormat.json \
   --out /app/dist/license.json
 
+USER node
+
 ENTRYPOINT ["node", "server.cjs"]

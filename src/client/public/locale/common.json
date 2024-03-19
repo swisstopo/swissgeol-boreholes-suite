@@ -243,7 +243,6 @@
   "locked_at": "",
   "locked_by": "",
   "locked_status": "",
-  "loginScreen": "",
   "mainStratigraphy": "",
   "map": "",
   "materialCasingLayer": "",
@@ -268,8 +267,6 @@
   "msgReenablingTip": "",
   "msgStratigraphyEmpty": "",
   "msgWateringressesEmpty": "",
-  "msgWelcomeMessage_publish_title": "",
-  "msgWelcomeMessage_publish_message": "",
   "municipality": "",
   "name": "",
   "new": "",
@@ -424,5 +421,6 @@
   "msgLithostratigraphyEmpty": "",
   "msgLithostratigraphyEmptyEditing": "",
   "msgChronostratigraphyEmpty": "",
-  "msgChronostratigraphyEmptyEditing": ""
+  "msgChronostratigraphyEmptyEditing": "",
+  "welcomeMessage":  ""
 }
