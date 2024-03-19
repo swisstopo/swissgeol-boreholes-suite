@@ -50,7 +50,7 @@ describe("Tests for the field measurement editor.", () => {
 
     setSelect("reliabilityId", 1);
     setInput("startTime", "2012-11-14T12:06");
-    setSelect("casingId", 1);
+    setSelect("casingId", 2);
 
     // close editing mask
     saveForm();

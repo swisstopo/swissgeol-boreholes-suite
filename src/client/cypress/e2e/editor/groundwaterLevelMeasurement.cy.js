@@ -49,7 +49,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     setSelect("kindId", 2);
     setSelect("reliabilityId", 1);
-    setSelect("casingId", 1);
+    setSelect("casingId", 2);
     setInput("startTime", "2012-11-14T12:06");
     setInput("levelM", "789.12");
     setInput("levelMasl", "5.4567");
