@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Stack } from "@mui/material";
-import { FormInput, FormSelect, FormCheckbox } from "../../../../components/form/form";
+import { FormInput, FormSelect } from "../../../../components/form/form";
 import { useDomains, getCasingsByBoreholeId } from "../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
