@@ -15,7 +15,6 @@ describe("Tests for the data cards in the editor.", () => {
     addItem("addWaterIngress");
     cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
     cy.contains("a", "Stop editing").click();
-    cy.wait("@wateringress_GET");
     cy.get('[data-cy="waterIngress-card.0.edit"]').should("not.exist");
 
     startBoreholeEditing();
@@ -30,7 +29,6 @@ describe("Tests for the data cards in the editor.", () => {
     startEditing();
     setInput("comment", "Lorem.");
     cy.contains("a", "Stop editing").click();
-    cy.wait("@wateringress_GET");
     evaluateDisplayValue("comment", "-");
   });
 
