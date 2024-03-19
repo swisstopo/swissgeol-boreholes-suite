@@ -247,7 +247,6 @@
   "locked_at": "Verrouillé le",
   "locked_by": "Changements en cours par",
   "locked_status": "Statut",
-  "loginScreen": "Fenêtre de connexion",
   "mainStratigraphy": "Ceci est la stratigraphie principale",
   "map": "Carte",
   "materialCasingLayer": "Matériau du casing",
@@ -273,8 +272,6 @@
   "msgReenablingTip": "Vous pourrez le réactiver plus tard",
   "msgStratigraphyEmpty": "Aucune stratigraphie disponible",
   "msgWateringressesEmpty": "Aucune entrée d'eau disable",
-  "msgWelcomeMessage_publish_title": "Publier le message de bienvenue",
-  "msgWelcomeMessage_publish_message": "Voulez-vous publier le message de bienvenue?",
   "municipality": "Commune",
   "name": "Nom",
   "new": "Nouveau {{what}}",
@@ -457,5 +454,6 @@
   "msgLithostratigraphyEmpty": "Aucun profil lithostratigraphique disponible",
   "msgLithostratigraphyEmptyEditing": "Vous devez d'abord créer une stratigraphie avant de pouvoir créer un profil lithostratigraphique",
   "msgChronostratigraphyEmpty": "Aucun profil chronostratigraphique disponible",
-  "msgChronostratigraphyEmptyEditing": "Vous devez d'abord créer une stratigraphie avant de pouvoir créer un profil chronostratigraphique"
+  "msgChronostratigraphyEmptyEditing": "Vous devez d'abord créer une stratigraphie avant de pouvoir créer un profil chronostratigraphique",
+  "welcomeMessage": "Bienvenue sur"
 }

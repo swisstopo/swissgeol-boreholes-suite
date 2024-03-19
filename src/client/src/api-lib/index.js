@@ -4,8 +4,6 @@ import { loadSettings, patchSettings } from "./actions/settings";
 
 import { acceptTerms, draftTerms, getTerms, getTermsDraft, publishTerms } from "./actions/terms";
 
-import { draftContent, getContent, getContentDraft, publishContent } from "./actions/content";
-
 import {
   setAuthentication,
   unsetAuthentication,
@@ -83,10 +81,6 @@ export {
   getTerms,
   getTermsDraft,
   publishTerms,
-  draftContent,
-  getContent,
-  getContentDraft,
-  publishContent,
   setAuthentication,
   unsetAuthentication,
   loadUser,
