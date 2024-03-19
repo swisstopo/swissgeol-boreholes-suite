@@ -62,7 +62,7 @@ describe("Tests for the wateringress editor.", () => {
 
     evaluateDisplayValue("quantity", "viel (> 120 l/min)");
     evaluateDisplayValue("reliability", "fraglich");
-    evaluateDisplayValue("casingName", "test wateringress - casing-1");
+    evaluateDisplayValue("casingName", "casing-1");
 
     // edit wateringress
     startEditing();
@@ -71,7 +71,7 @@ describe("Tests for the wateringress editor.", () => {
     saveForm();
     evaluateDisplayValue("quantity", "mittel (30 - 120 l/min)");
     evaluateDisplayValue("conditions", "frei/ungespannt");
-    evaluateDisplayValue("casingName", "test wateringress - casing-1");
+    evaluateDisplayValue("casingName", "casing-1");
 
     // delete wateringress
     deleteItem();
