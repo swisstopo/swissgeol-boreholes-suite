@@ -91,6 +91,7 @@ describe("completion crud tests", () => {
     cy.contains("No completion available");
 
     startBoreholeEditing();
+    cy.wait(500);
 
     // add completion
     addCompletion();
@@ -160,6 +161,7 @@ describe("completion crud tests", () => {
 
     // start editing session
     startBoreholeEditing();
+    cy.wait(500);
 
     // update url on cancel
     addCompletion();
