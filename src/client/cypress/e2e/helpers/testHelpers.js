@@ -1,6 +1,5 @@
 import adminUser from "../../fixtures/adminUser.json";
 import editorUser from "../../fixtures/editorUser.json";
-import viewerUser from "../../fixtures/viewerUser.json";
 
 export const bearerAuth = token => ({ bearer: token });
 
@@ -136,17 +135,6 @@ export const loginAsEditor = () => {
     statusCode: 200,
     body: JSON.stringify(editorUser),
   }).as("stubEditorUser");
-};
-
-/**
- * Login into the application as viewer.
- */
-export const loginAsEditorInViewerMode = () => {
-  login("editor");
-  cy.intercept("/api/v1/user", {
-    statusCode: 200,
-    body: JSON.stringify(viewerUser),
-  }).as("stubViewerUser");
 };
 
 export const newEditableBorehole = () => {

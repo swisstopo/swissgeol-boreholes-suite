@@ -1,4 +1,4 @@
-import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/helpers/testHelpers";
+import { loginAsAdmin } from "../e2e/helpers/testHelpers";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
@@ -39,33 +39,6 @@ describe("Search filter tests", () => {
         expect(options[5]).to.have.text("other");
         expect(options[6]).to.have.text("not specified");
       });
-  });
-
-  it("shows 'fiter by map' in editor on 'Large Map' appearance", () => {
-    loginAsEditorInViewerMode();
-    cy.visit("/setting/editor");
-
-    // Check if Editor mode settings are apparant
-    cy.contains("Location filters");
-
-    // Switch to Viewer mode settings
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Settings").click();
-    cy.contains("h3", "Viewer").click();
-
-    // Chanage Appearance settings
-    cy.contains("Appearance").click();
-    cy.contains("Large Map").children(".checkbox").click();
-    cy.get('[data-cy="menu"]').click();
-    cy.contains("h4", "Editor").click();
-
-    cy.contains("Filter by map");
-
-    // reset appearance
-    cy.get('[data-cy="menu"]').click();
-    cy.contains("h4", "Settings").click();
-    cy.contains("Appearance").click();
-    cy.contains("Full").children(".checkbox").click();
   });
 
   it("checks that the registration filter settings control the filter visibility.", () => {
@@ -179,14 +152,6 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 21);
   });
 
-  it("filters boreholes by original lithology in viewer mode", () => {
-    loginAsEditorInViewerMode();
-    cy.visit("/");
-    filterByOriginalLithology();
-    cy.wait("@borehole");
-    cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 21);
-  });
-
   it("filters boreholes by creation date", () => {
     loginAsAdmin();
     cy.visit("/editor");
@@ -216,7 +181,7 @@ describe("Search filter tests", () => {
     cy.contains("td", "09.11.2021");
   });
 
-  it("filters boreholes by workgroup in viewer", () => {
+  it("filters boreholes by workgroup", () => {
     loginAsAdmin();
     cy.visit("/");
     cy.contains("Workgroup").click();
