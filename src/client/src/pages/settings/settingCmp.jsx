@@ -3,13 +3,12 @@ import { Route, Switch } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 import MenuSettings from "../../commons/menu/settings/menuSettings";
 import MenuContainer from "../../commons/menu/menuContainer";
-import ExplorerSettings from "./explorerSettings";
 import EditorSettings from "./editorSettings";
 import AdminSettings from "./admin/adminSettings";
 import AboutSettings from "./aboutSettings";
 import TermSettings from "./termSettings";
 
-const SettingCmp = props => {
+const SettingCmp = () => {
   return (
     <div
       style={{
@@ -32,7 +31,7 @@ const SettingCmp = props => {
             flexDirection: "column",
             width: "250px",
           }}>
-          <MenuSettings mode={props.mode} />
+          <MenuSettings />
         </div>
         <div
           style={{
@@ -40,7 +39,6 @@ const SettingCmp = props => {
             overflowY: "auto",
           }}>
           <Switch>
-            <Route component={ExplorerSettings} path={"/setting/explorer"} />
             <Route component={EditorSettings} path={"/setting/editor"} />
             <Route component={AdminSettings} path={"/setting/admin"} />
             <Route component={TermSettings} path={"/setting/term"} />

@@ -115,7 +115,7 @@ class MenuComponent extends React.Component {
               <List.Item
                 onClick={() => {
                   if (_.isFunction(handleModeChange)) {
-                    handleModeChange("setting/explorer");
+                    handleModeChange("setting/editor");
                   }
                 }}
                 style={{

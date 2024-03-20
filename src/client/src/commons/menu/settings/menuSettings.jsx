@@ -5,12 +5,12 @@ import { withRouter } from "react-router-dom";
 import ListItem from "../components/listItem";
 
 const MenuSettings = props => {
-  const { history, t, location, mode } = props;
+  const { history, t, location } = props;
 
   return (
     <div>
       <ListItem
-        path={mode === "viewer" ? "/" : "/editor"}
+        path="/editor"
         name="done"
         location={location}
         history={history}
@@ -18,7 +18,6 @@ const MenuSettings = props => {
         t={t}
         hasTranslation
       />
-      <ListItem path="/setting/explorer" name="Viewer" location={location} history={history} icon="binoculars" />
       <ListItem path="/setting/editor" name="Editor" location={location} history={history} icon="edit" />
 
       {props.user.data.admin === true && (
