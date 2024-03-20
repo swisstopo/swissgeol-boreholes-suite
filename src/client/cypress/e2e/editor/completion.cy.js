@@ -451,13 +451,13 @@ describe("completion crud tests", () => {
     setSelect("materialId", 1);
 
     addCompletion();
-    handlePrompt("Backfill: Unsaved changes", "Cancel");
+    handlePrompt("Sealing/Backfilling: Unsaved changes", "Cancel");
     isHeaderTabSelected(0);
     isContentTabSelected("backfill");
 
     // reset content changes when switching header tabs
     addCompletion();
-    handlePrompt("Backfill: Unsaved changes", "Reset");
+    handlePrompt("Sealing/Backfilling: Unsaved changes", "Reset");
     isHeaderTabSelected(1);
     cancelEditing();
     setContentTab("backfill");
@@ -473,7 +473,7 @@ describe("completion crud tests", () => {
     setSelect("kindId", 1);
     setSelect("materialId", 1);
     addCompletion();
-    handlePrompt("Backfill: Unsaved changes", "Save");
+    handlePrompt("Sealing/Backfilling: Unsaved changes", "Save");
     isHeaderTabSelected(1);
     cancelEditing();
     setContentTab("backfill");
