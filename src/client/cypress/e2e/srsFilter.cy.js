@@ -17,8 +17,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get("@checkbox").check({ force: true });
     cy.get("@checkbox").should("be.checked");
 
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Editor").click();
+    cy.contains("h3", "Done").click();
     cy.contains("span", "Location").click();
     cy.get('[data-cy="spatial-reference-filter"]').should("exist");
 
@@ -26,8 +25,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get("@checkbox").uncheck({ force: true });
     cy.get("@checkbox").should("not.be.checked");
 
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Editor").click();
+    cy.contains("h3", "Done").click();
     cy.contains("span", "Location").click();
     cy.get('[data-cy="spatial-reference-filter"]').should("not.exist");
   });

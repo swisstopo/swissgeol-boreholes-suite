@@ -62,8 +62,7 @@ describe("Search filter tests", () => {
     cy.wait("@setting");
 
     // check visibility of filters
-    cy.get('[data-cy="menu"]').click();
-    cy.contains("h4", "Editor").click();
+    cy.contains("h3", "Done").click();
     cy.contains("Registration").click();
     cy.contains("Created by");
     cy.contains("Creation date");
