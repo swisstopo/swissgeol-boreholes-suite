@@ -182,7 +182,6 @@ const mapStateToProps = state => {
   return {
     leftmenu: state.leftmenu,
     detail: state.detail_borehole,
-    home: state.home,
     search: state.search,
     boreholes: state.core_borehole_list,
     setting: state.setting,
@@ -192,12 +191,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     dispatch: dispatch,
-    boreholeSeleced: () => {
-      dispatch({
-        type: "HOME_BOREHOLE_SELECTED",
-        id: null,
-      });
-    },
     refresh: () => {
       dispatch({
         type: "SEARCH_FILTER_REFRESH",

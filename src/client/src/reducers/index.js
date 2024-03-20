@@ -1,5 +1,4 @@
 import dataLoaderState from "../pages/settings/dataLoaderState";
-import home from "../pages/home/homeState";
 import checkout from "../pages/checkout/checkoutState";
 import editor from "../pages/editor/editorState";
 import leftmenu from "./leftmenu";
@@ -34,7 +33,6 @@ const reducers = {
   developer,
   dataLoaderState,
   leftmenu,
-  home,
   checkout,
   detail_borehole,
   search,
