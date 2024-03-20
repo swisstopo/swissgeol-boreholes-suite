@@ -92,37 +92,3 @@ VALUES
 (5, 4, 1),
 (6, 4, 1),
 (7, 4, 1);
-
-
-INSERT INTO bdms.contents(
-	name_cnt,
-	draft_cnt,
-
-    title_cnt_en,
-    text_cnt_en,
-
-    title_cnt_de,
-    text_cnt_de,
-
-    title_cnt_fr,
-    text_cnt_fr,
-
-    title_cnt_it,
-    text_cnt_it
-
-) VALUES (
-    'login',
-    FALSE,
-
-    'Welcome to boreholes.ch',
-    'A platform to acquire borehole data according to the Borehole data model defined by the Swiss Geological Survey at swisstopo ([more](https://geoservice2.ist.supsi.ch/docs/bdms)).',
-
-    'Willkommen bei boreholes.ch',
-    'Eine Plattform zur Erfassung von Bohrlochdaten nach dem von der Schweizerischen Landesgeologie bei swisstopo definierten Bohrlochdatenmodell ([mehr](https://geoservice2.ist.supsi.ch/docs/bdms)).',
-
-    'Bienvenue sur boreholes.ch',
-    'Une plate-forme pour l''acquisition de données de forage selon le modèle de données de forage défini par le Service géologique suisse à swisstopo ([en savoir plus](https://geoservice2.ist.supsi.ch/docs/bdms)).',
-
-    'Benvenuti su boreholes.ch',
-    'Una piattaforma per l''acquisizione di dati di trivellazione secondo il modello di dati di trivellazione definito dal Servizio geologico nazionale di swisstopo ([altro](https://geoservice2.ist.supsi.ch/docs/bdms)).'
-);

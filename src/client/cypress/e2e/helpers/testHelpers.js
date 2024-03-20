@@ -86,7 +86,6 @@ export const login = user => {
     () => {
       cy.intercept("http://localhost:4011/connect/token").as("token");
       cy.visit("/");
-      cy.get('[data-cy="login-button"]').click({ force: true });
       cy.origin("http://localhost:4011", { args: { user } }, ({ user }) => {
         cy.get("#Username").type(user);
         cy.get("#Password").type("swissforages");

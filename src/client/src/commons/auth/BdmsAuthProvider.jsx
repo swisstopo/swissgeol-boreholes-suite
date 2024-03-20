@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { AuthProvider } from "react-oidc-context";
 import { UserManager, WebStorageStateStore } from "oidc-client-ts";
+import { CircularProgress } from "@mui/material";
 import { CognitoLogoutHandler } from "./CognitoLogoutHandler.js";
 import { AuthenticationStoreSync } from "./AuthenticationStoreSync.js";
+import { SplashScreen } from "./SplashScreen";
+import { AuthOverlay } from "./AuthOverlay";
 
 export const BdmsAuthProvider = props => {
   const [serverConfig, setServerConfig] = useState(undefined);
@@ -45,7 +48,11 @@ export const BdmsAuthProvider = props => {
     <AuthProvider {...oidcConfig}>
       <AuthenticationStoreSync />
       <CognitoLogoutHandler userManager={oidcConfig.userManager} />
-      {props.children}
+      <AuthOverlay>{props.children}</AuthOverlay>
     </AuthProvider>
-  ) : null;
+  ) : (
+    <SplashScreen>
+      <CircularProgress />
+    </SplashScreen>
+  );
 };

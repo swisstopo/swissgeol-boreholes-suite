@@ -8,7 +8,6 @@ import EditorSettings from "./editorSettings";
 import AdminSettings from "./admin/adminSettings";
 import AboutSettings from "./aboutSettings";
 import TermSettings from "./termSettings";
-import LoginScreen from "./loginScreen";
 
 const SettingCmp = props => {
   return (
@@ -45,7 +44,6 @@ const SettingCmp = props => {
             <Route component={EditorSettings} path={"/setting/editor"} />
             <Route component={AdminSettings} path={"/setting/admin"} />
             <Route component={TermSettings} path={"/setting/term"} />
-            <Route component={LoginScreen} path={"/setting/login"} />
             <Route component={AboutSettings} path={"/setting/about"} />
           </Switch>
         </div>

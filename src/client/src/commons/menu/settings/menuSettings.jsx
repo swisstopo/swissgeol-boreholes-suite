@@ -33,15 +33,6 @@ const MenuSettings = props => {
             t={t}
             hasTranslation
           />
-          <ListItem
-            path="/setting/login"
-            name="loginScreen"
-            location={location}
-            history={history}
-            icon="sign-in"
-            t={t}
-            hasTranslation
-          />
         </>
       )}
 
