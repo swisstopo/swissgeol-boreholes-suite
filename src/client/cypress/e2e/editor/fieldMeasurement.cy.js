@@ -37,9 +37,9 @@ describe("Tests for the field measurement editor.", () => {
     // switch to german
     cy.get('[data-cy="menu"]').click({ force: true });
     cy.contains("span", "DE").click({ force: true });
+    cy.wait(1000);
 
     // create field measurement
-    cy.wait(1000);
     addItem("addFieldMeasurement");
     cy.wait("@casing_GET");
 
