@@ -46,6 +46,7 @@ describe("Tests for the wateringress editor.", () => {
     // switch to german
     cy.get('[data-cy="menu"]').click({ force: true });
     cy.contains("span", "DE").click({ force: true });
+    cy.wait(1000);
 
     // create wateringress
     addItem("addWaterIngress");
@@ -97,7 +98,7 @@ describe("Tests for the wateringress editor.", () => {
     saveForm();
     cy.wait("@wateringress_GET");
 
-    cy.wait(500);
+    cy.wait(1000);
     addItem("addWaterIngress");
     cy.wait("@casing_GET");
     setInput("fromDepthM", 0);

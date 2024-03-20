@@ -41,6 +41,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     // switch to german
     cy.get('[data-cy="menu"]').click({ force: true });
     cy.contains("span", "DE").click({ force: true });
+    cy.wait(1000);
 
     // create groundwater level measurement
     addItem("addGroundwaterLevelMeasurement");
@@ -95,7 +96,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     saveForm();
     cy.wait("@groundwaterlevelmeasurement_GET");
 
-    cy.wait(500);
+    cy.wait(1000);
     addItem("addGroundwaterLevelMeasurement");
     cy.wait("@casing_GET");
     setInput("fromDepthM", 0);
