@@ -203,7 +203,7 @@ describe("Tests for the hydrotest editor.", () => {
     setSelect("reliabilityId", 1);
     startEditing();
     handlePrompt("Hydrotest: Unsaved changes", "Reset");
-    cy.get('[data-cy="hydrotest-card.0.edit"]').should("exist");
+    cy.get('[data-cy="hydrotest-card.0.edit"]').should("be.visible");
     cy.get('[data-cy="hydrotest-card.1"]').should("not.exist");
 
     // can save new card and switch to existing card
