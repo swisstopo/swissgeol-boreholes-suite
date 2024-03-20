@@ -1,4 +1,4 @@
-import { getHeight, downloadBorehole } from "./actions";
+import { getHeight } from "./actions";
 
 import { loadSettings, patchSettings } from "./actions/settings";
 
@@ -73,7 +73,6 @@ import store, { injectReducer, configureStore, createReducer } from "./reducers"
 
 export {
   getHeight,
-  downloadBorehole,
   loadSettings,
   patchSettings,
   acceptTerms,
