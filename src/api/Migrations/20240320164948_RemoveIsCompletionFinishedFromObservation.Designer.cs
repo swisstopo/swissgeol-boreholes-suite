@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20240318133212_RemoveIsCompletionFinishedFromObservation")]
+    [Migration("20240320164948_RemoveIsCompletionFinishedFromObservation")]
     partial class RemoveIsCompletionFinishedFromObservation
     {
         /// <inheritdoc />
@@ -812,77 +812,6 @@ namespace BDMS.Migrations
                     b.HasKey("Name");
 
                     b.ToTable("config", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.Content", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id_cnt");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("Creation")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_cnt");
-
-                    b.Property<DateTime?>("Expired")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expired_cnt");
-
-                    b.Property<bool?>("IsDraft")
-                        .HasColumnType("boolean")
-                        .HasColumnName("draft_cnt");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name_cnt");
-
-                    b.Property<string>("TextDe")
-                        .HasColumnType("text")
-                        .HasColumnName("text_cnt_de");
-
-                    b.Property<string>("TextEn")
-                        .HasColumnType("text")
-                        .HasColumnName("text_cnt_en");
-
-                    b.Property<string>("TextFr")
-                        .HasColumnType("text")
-                        .HasColumnName("text_cnt_fr");
-
-                    b.Property<string>("TextIt")
-                        .HasColumnType("text")
-                        .HasColumnName("text_cnt_it");
-
-                    b.Property<string>("TextRo")
-                        .HasColumnType("text")
-                        .HasColumnName("text_cnt_ro");
-
-                    b.Property<string>("TitelRo")
-                        .HasColumnType("text")
-                        .HasColumnName("title_cnt_ro");
-
-                    b.Property<string>("TitleDe")
-                        .HasColumnType("text")
-                        .HasColumnName("title_cnt_de");
-
-                    b.Property<string>("TitleEn")
-                        .HasColumnType("text")
-                        .HasColumnName("title_cnt_en");
-
-                    b.Property<string>("TitleFr")
-                        .HasColumnType("text")
-                        .HasColumnName("title_cnt_fr");
-
-                    b.Property<string>("TitleIt")
-                        .HasColumnType("text")
-                        .HasColumnName("title_cnt_it");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("contents", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.FaciesDescription", b =>

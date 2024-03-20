@@ -17,14 +17,7 @@ public partial class AddIsOpenBoreholeToObservation : Migration
             type: "boolean",
             nullable: false,
             defaultValue: false);
-    }
-
-    /// <inheritdoc />
-    protected override void Down(MigrationBuilder migrationBuilder)
-    {
-        migrationBuilder.DropColumn(
-            name: "is_open_borehole",
-            schema: "bdms",
-            table: "observation");
+        
+        migrationBuilder.Sql(@"UPDATE bdms.observation SET is_open_borehole = NOT completion_finished;");
     }
 }
