@@ -218,7 +218,7 @@ describe("Casing crud tests", () => {
     setSelect("casingElements.0.kindId", 2);
     startEditing();
     handlePrompt("Casing: Unsaved changes", "Reset");
-    cy.get('[data-cy="casing-card.0.edit"]').should("exist");
+    cy.get('[data-cy="casing-card.0.edit"]').should("be.visible");
     cy.get('[data-cy="casing-card.1"]').should("not.exist");
 
     // can save new card and switch to existing card

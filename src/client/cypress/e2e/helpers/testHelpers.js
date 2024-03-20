@@ -402,7 +402,7 @@ export const createCasing = (name, boreholeId, completionId, dateStart, dateFini
 };
 
 export const handlePrompt = (title, action) => {
-  cy.get('[data-cy="prompt"]').should("exist");
+  cy.get('[data-cy="prompt"]').should("be.visible");
   cy.contains(title);
   cy.get('[data-cy="prompt-button-' + action + '"]').click();
 };
