@@ -28,9 +28,9 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
   it("creates new borehole and adds coordinates", () => {
     // fill inputs for LV95
-    cy.wait(500);
+    cy.wait(1000);
     cy.get("@LV95X-input").type("2645123");
-    cy.wait(500);
+    cy.wait(1000);
     cy.get("@LV95Y-input").type("1245794");
     // wait edits of all 4 inputs to complete
     cy.wait(["@location", "@edit_patch", "@edit_patch", "@edit_patch"]);
