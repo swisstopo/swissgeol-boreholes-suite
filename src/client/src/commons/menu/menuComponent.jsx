@@ -14,7 +14,7 @@ class MenuComponent extends React.Component {
   }
 
   render() {
-    const { handleModeChange, mode } = this.props;
+    const { handleModeChange } = this.props;
     const baseUrl = window.location.host;
 
     return (
@@ -47,37 +47,6 @@ class MenuComponent extends React.Component {
               fontWeight: "bold",
             }}>
             {baseUrl}
-          </div>
-          <div
-            style={{
-              color: "#787878",
-              fontSize: "0.8em",
-            }}>
-            {(() => {
-              switch (mode) {
-                case "viewer":
-                  return (
-                    <span style={{ color: "#ed1d24" }}>
-                      <Icon name="binoculars" /> Viewer
-                    </span>
-                  );
-                case "editor":
-                  return (
-                    <span style={{ color: "#ed1d24" }}>
-                      <Icon name="edit" /> Editor
-                    </span>
-                  );
-                case "setting":
-                  return (
-                    <span style={{ color: "#ed1d24" }}>
-                      <Icon name="setting" /> Settings
-                    </span>
-                  );
-
-                default:
-                  break;
-              }
-            })()}
           </div>
         </div>
         <div
@@ -127,9 +96,6 @@ class MenuComponent extends React.Component {
                       className="link linker"
                       onClick={() => {
                         this.props.auth.signoutRedirect();
-                        if (_.isFunction(handleModeChange)) {
-                          handleModeChange("viewer");
-                        }
                       }}>
                       Logout
                     </span>
@@ -146,48 +112,6 @@ class MenuComponent extends React.Component {
               style={{
                 marginTop: "0px",
               }}>
-              <List.Item
-                onClick={() => {
-                  if (_.isFunction(handleModeChange)) {
-                    handleModeChange("viewer");
-                  }
-                }}
-                style={{
-                  padding: "0.5em",
-                }}>
-                <List.Icon name="binoculars" verticalAlign="middle" />
-                <List.Content>
-                  <List.Header as="h4">Viewer</List.Header>
-                  <List.Description>
-                    <TranslationText id="header_viewerdesc" />
-                  </List.Description>
-                </List.Content>
-              </List.Item>
-              {this.props.user.data !== null &&
-              (this.props.user.data.roles.indexOf("VIEW") >= 0 ||
-                this.props.user.data.roles.indexOf("EDIT") >= 0 ||
-                this.props.user.data.roles.indexOf("CONTROL") >= 0 ||
-                this.props.user.data.roles.indexOf("VALID") >= 0 ||
-                this.props.user.data.roles.indexOf("PUBLIC") >= 0) ? (
-                <List.Item
-                  onClick={() => {
-                    if (_.isFunction(handleModeChange)) {
-                      handleModeChange("editor");
-                    }
-                  }}
-                  style={{
-                    padding: "0.5em",
-                  }}
-                  data-cy="editor-list-item">
-                  <List.Icon name="edit" verticalAlign="middle" />
-                  <List.Content>
-                    <List.Header as="h4">Editor</List.Header>
-                    <List.Description>
-                      <TranslationText id="header_editordesc" />
-                    </List.Description>
-                  </List.Content>
-                </List.Item>
-              ) : null}
               <List.Item
                 onClick={() => {
                   if (_.isFunction(handleModeChange)) {
