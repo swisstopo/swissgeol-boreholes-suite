@@ -91,6 +91,7 @@ describe("completion crud tests", () => {
     cy.contains("No completion available");
 
     startBoreholeEditing();
+    cy.wait(500);
 
     // add completion
     addCompletion();
@@ -160,6 +161,7 @@ describe("completion crud tests", () => {
 
     // start editing session
     startBoreholeEditing();
+    cy.wait(500);
 
     // update url on cancel
     addCompletion();
@@ -303,7 +305,7 @@ describe("completion crud tests", () => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/${completion1Id}`);
       expect(location.hash).to.eq("#casing");
     });
-    cy.contains("new completion").should("exist");
+    cy.contains("new completion").should("be.visible");
 
     setHeaderTab(2);
     deleteCompletion();
@@ -362,7 +364,7 @@ describe("completion crud tests", () => {
       expect(location.pathname).to.eq(`/editor/${boreholeId}/completion/new`);
       expect(location.hash).to.eq("");
     });
-    cy.contains("Reset compl-1").should("exist");
+    cy.contains("Reset compl-1").should("be.visible");
 
     // cancel adding new completion: last tab should be selected
     cancelEditing();
@@ -437,7 +439,7 @@ describe("completion crud tests", () => {
     handlePrompt("Casing: Unsaved changes", "Save");
     isContentTabSelected("backfill");
     setContentTab("casing");
-    cy.contains("casing 1").should("exist");
+    cy.contains("casing 1").should("be.visible");
 
     // cancel switching header tabs when content changes are present
     setContentTab("backfill");
@@ -451,13 +453,13 @@ describe("completion crud tests", () => {
     setSelect("materialId", 1);
 
     addCompletion();
-    handlePrompt("Backfill: Unsaved changes", "Cancel");
+    handlePrompt("Sealing/Backfilling: Unsaved changes", "Cancel");
     isHeaderTabSelected(0);
     isContentTabSelected("backfill");
 
     // reset content changes when switching header tabs
     addCompletion();
-    handlePrompt("Backfill: Unsaved changes", "Reset");
+    handlePrompt("Sealing/Backfilling: Unsaved changes", "Reset");
     isHeaderTabSelected(1);
     cancelEditing();
     setContentTab("backfill");
@@ -473,12 +475,12 @@ describe("completion crud tests", () => {
     setSelect("kindId", 1);
     setSelect("materialId", 1);
     addCompletion();
-    handlePrompt("Backfill: Unsaved changes", "Save");
+    handlePrompt("Sealing/Backfilling: Unsaved changes", "Save");
     isHeaderTabSelected(1);
     cancelEditing();
     setContentTab("backfill");
     cy.wait("@backfill_GET");
-    cy.get('[data-cy="backfill-card.0"]').should("exist");
+    cy.get('[data-cy="backfill-card.0"]').should("be.visible");
 
     // cancel header changes, no prompt should be displayed for content changes because tab switching was already canceled
     setContentTab("instrumentation");
@@ -547,7 +549,7 @@ describe("completion crud tests", () => {
     setHeaderTab(0);
     evaluateDisplayValue("name", "Compl-1", "completion-header");
     setContentTab("instrumentation");
-    cy.get('[data-cy="instrumentation-card.0"]').should("exist");
+    cy.get('[data-cy="instrumentation-card.0"]').should("be.visible");
 
     // save header changes, cancel content changes
     startEditing("instrumentation-card.0");
@@ -578,6 +580,7 @@ describe("completion crud tests", () => {
     evaluateDisplayValue("notes", "-");
 
     // save header changes, save content changes
+    cy.get('[data-cy="instrumentation-card.0"]').should("be.visible");
     startEditing("instrumentation-card.0");
     setInput("notes", "Lorem.");
     startEditHeader();
