@@ -43,7 +43,7 @@ class App extends React.Component {
   }
 
   render() {
-    let mode = "viewer";
+    let mode = "editor";
     return (
       <DataLoader>
         <AcceptTerms>
@@ -71,19 +71,12 @@ class App extends React.Component {
                           key={1}
                           path={"/setting/:id"}
                         />
-                        <Route
-                          render={props => {
-                            mode = "viewer";
-                            return <HomeComponent {...props} />;
-                          }}
-                          key={2}
-                          path={"/"}
-                        />
+                        <Redirect exact from="/" to="/editor" />
                         <Route
                           component={() => (
                             <Redirect
                               to={{
-                                pathname: "/",
+                                pathname: "/editor",
                               }}
                             />
                           )}
