@@ -53,7 +53,7 @@ Die Cypress Tests können mit `npm run cy` oder `npm run test` gestartet werden.
 
 ## Authentifizierung & Architektur
 
-Die Applikation nutzt das OpenID Connect (OIDC) Protokoll für die Authentifizierung und Teile der Autorisierung. Die Authentifizierung erfolgt über den OIDC Server, welcher in der Entwicklungsumgebung durch [soluto/oidc-server-mock](https://github.com/Soluto/oidc-server-mock) auf Basis von [IdentityServer4](https://identityserver4.readthedocs.io/) simuliert wird. Die Applikation nutzt das _Authorization Code Flow_ und _PKCE_ für die Authentifizierung. Für den Zugriff auf die API wird der `identity_token` verwendet, welcher die Benutzerinformationen enthält. Die Grundsätzliche Autorisierung erfolgt über die Gruppenzugehörigkeit des Benutzers, welche im `identity_token` enthalten ist. Die Autorisierung auf API-Ebene erfolgt über die in der Datenbank definierten Workgroups & Administratoren-Rechte.
+Die Applikation nutzt das OpenID Connect (OIDC) Protokoll für die Authentifizierung und Teile der Autorisierung. Die Authentifizierung erfolgt über den OIDC Server, welcher in der Entwicklungsumgebung durch [soluto/oidc-server-mock](https://github.com/Soluto/oidc-server-mock) auf Basis von [IdentityServer4](https://identityserver4.readthedocs.io/) simuliert wird. Die Applikation nutzt den _Authorization Code Flow_ mit _PKCE_ für die Authentifizierung. Für den Zugriff auf die API wird der `identity_token` verwendet, welcher die Benutzerinformationen enthält. Die Grundsätzliche Autorisierung erfolgt über die Gruppenzugehörigkeit des Benutzers, welche im `identity_token` enthalten ist. Die Autorisierung auf API-Ebene erfolgt über die in der Datenbank definierten Workgroups & Administratoren-Rechte.
 
 ### OpenID Connect (OIDC) Konfiguration
 
