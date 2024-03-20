@@ -212,6 +212,7 @@ describe("completion crud tests", () => {
     // switch tabs
     // existing editing to other existing: no prompt should be displayed when no changes have been made
     startEditHeader();
+    cy.wait(500);
     setHeaderTab(0);
     cy.get('[data-cy="prompt"]').should("not.exist");
     isHeaderTabSelected(0);
