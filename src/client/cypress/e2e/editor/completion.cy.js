@@ -405,6 +405,7 @@ describe("completion crud tests", () => {
     startBoreholeEditing();
 
     // cancel switching content tabs
+    cy.wait(1000);
     addItem("addCasing");
     cy.wait("@codelist_GET");
     setInput("name", "casing 1", "casing-card.0.edit");
