@@ -86,7 +86,7 @@ describe("Casing crud tests", () => {
     cy.get("[data-cy=completion-content-tab-instrumentation]").click();
     cy.wait("@instrumentation_GET");
 
-    cy.wait(500);
+    cy.wait(1000);
     addItem("addInstrument");
     cy.wait("@casing_GET");
 
