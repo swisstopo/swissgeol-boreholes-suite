@@ -520,8 +520,6 @@ class MenuEditorSearch extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    leftmenu: state.leftmenu,
-    home: state.home,
     search: state.search,
     editor: state.editor,
     borehole: state.core_borehole,

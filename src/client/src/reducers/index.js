@@ -1,8 +1,5 @@
 import dataLoaderState from "../pages/settings/dataLoaderState";
-import checkout from "../pages/checkout/checkoutState";
 import editor from "../pages/editor/editorState";
-import leftmenu from "./leftmenu";
-import search from "../commons/search/searchState";
 import searchEditor from "../commons/search/editor/searchEditorState";
 import setting from "../pages/settings/settingState";
 import wmts from "../commons/map/mapState";
@@ -31,9 +28,6 @@ const developer = (state = developerState, action) => {
 const reducers = {
   developer,
   dataLoaderState,
-  leftmenu,
-  checkout,
-  search,
   searchEditor,
   editor,
   setting,
