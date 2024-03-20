@@ -95,7 +95,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     saveForm();
     cy.wait("@groundwaterlevelmeasurement_GET");
 
-    cy.wait(500);
+    cy.wait(1000);
     addItem("addGroundwaterLevelMeasurement");
     cy.wait("@casing_GET");
     setInput("fromDepthM", 0);

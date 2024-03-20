@@ -39,7 +39,7 @@ describe("Tests for the field measurement editor.", () => {
     cy.contains("span", "DE").click({ force: true });
 
     // create field measurement
-    cy.wait(500);
+    cy.wait(1000);
     addItem("addFieldMeasurement");
     cy.wait("@casing_GET");
 
@@ -90,7 +90,7 @@ describe("Tests for the field measurement editor.", () => {
     saveForm();
     cy.wait("@fieldmeasurement_GET");
 
-    cy.wait(500);
+    cy.wait(1000);
     addItem("addFieldMeasurement");
     cy.wait("@casing_GET");
     setInput("fromDepthM", 0);
