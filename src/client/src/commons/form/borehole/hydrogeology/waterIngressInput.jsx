@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
+import { prepareCasingDataForSubmit } from "../completion/casingUtils";
 
 const WaterIngressInput = props => {
   const { item, parentId } = props;
@@ -13,17 +14,15 @@ const WaterIngressInput = props => {
   const { i18n } = useTranslation();
 
   const prepareFormDataForSubmit = data => {
+    data = prepareCasingDataForSubmit(data);
     data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
     data.type = ObservationType.waterIngress;
     data.boreholeId = parentId;
-    if (data.casingId == null) {
-      data.casingId = item.casingId;
-    }
-    data.casing = null;
     if (data.conditionsId === "") {
       data.conditionsId = null;
     }
+    delete data.reliability;
     return data;
   };
 

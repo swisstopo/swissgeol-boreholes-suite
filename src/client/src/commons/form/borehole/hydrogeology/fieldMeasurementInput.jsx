@@ -13,6 +13,8 @@ import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { getFieldMeasurementParameterUnits } from "./parameterUnits";
 import Delete from "@mui/icons-material/Delete";
+import { prepareCasingDataForSubmit } from "../completion/casingUtils";
+
 const FieldMeasurementInput = props => {
   const { item, parentId } = props;
   const { triggerReload, selectCard } = useContext(DataCardContext);
@@ -105,10 +107,12 @@ const FieldMeasurementInput = props => {
   };
 
   const prepareFormDataForSubmit = data => {
+    data = prepareCasingDataForSubmit(data);
     data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
     data.type = ObservationType.fieldMeasurement;
     data.boreholeId = parentId;
+    delete data.reliability;
 
     if (data.fieldMeasurementResults) {
       data.fieldMeasurementResults = data.fieldMeasurementResults.map(r => {
@@ -120,13 +124,6 @@ const FieldMeasurementInput = props => {
         };
       });
     }
-
-    if (data.casingId == null) {
-      data.casingId = item.casingId;
-    } else if (data.casingId === "") {
-      data.casingId = null;
-    }
-    data.casing = null;
     return data;
   };
 
@@ -145,7 +142,7 @@ const FieldMeasurementInput = props => {
               <Stack direction={"row"} sx={{ width: "100%" }} spacing={1} justifyContent={"space-between"}>
                 <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("fieldMeasurementResult")}</Typography>
                 <AddButton
-                  label="addFieldmeasurementResult"
+                  label="addFieldMeasurementResult"
                   onClick={() => {
                     append({ parameterId: "", value: null, minValue: null, maxValue: null }, { shouldFocus: false });
                   }}

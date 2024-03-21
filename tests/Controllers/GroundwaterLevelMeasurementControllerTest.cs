@@ -71,7 +71,7 @@ public class GroundwaterLevelMeasurementControllerTest
         Assert.AreEqual(groundwaterLevelMeasurement.ToDepthM, 3821.0916134552526);
         Assert.AreEqual(groundwaterLevelMeasurement.FromDepthMasl, 1289.6360662978311);
         Assert.AreEqual(groundwaterLevelMeasurement.ToDepthMasl, 4179.667294897915);
-        Assert.AreEqual(groundwaterLevelMeasurement.CompletionFinished, false);
+        Assert.AreEqual(groundwaterLevelMeasurement.IsOpenBorehole, false);
         Assert.AreEqual(groundwaterLevelMeasurement.Comment, "Libero voluptate corrupti et iste iure.");
         Assert.AreEqual(groundwaterLevelMeasurement.ReliabilityId, 15203157);
         Assert.AreEqual(groundwaterLevelMeasurement.KindId, 15203204);
@@ -93,7 +93,7 @@ public class GroundwaterLevelMeasurementControllerTest
             ToDepthM = 78.15634,
             FromDepthMasl = 67.112,
             ToDepthMasl = 78.0043,
-            CompletionFinished = true,
+            IsOpenBorehole = true,
             Comment = "Test comment",
             BoreholeId = 1000595,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
@@ -113,7 +113,7 @@ public class GroundwaterLevelMeasurementControllerTest
             ToDepthM = 7602.12,
             FromDepthMasl = 828.774,
             ToDepthMasl = 27603.2,
-            CompletionFinished = true,
+            IsOpenBorehole = true,
             Comment = "Updated test comment",
             BoreholeId = 1000595,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
@@ -140,7 +140,7 @@ public class GroundwaterLevelMeasurementControllerTest
         Assert.AreEqual(updatedGroundwaterLevelMeasurement.ToDepthM, editedGroundwaterLevelMeasurement.ToDepthM);
         Assert.AreEqual(updatedGroundwaterLevelMeasurement.FromDepthMasl, editedGroundwaterLevelMeasurement.FromDepthMasl);
         Assert.AreEqual(updatedGroundwaterLevelMeasurement.ToDepthMasl, editedGroundwaterLevelMeasurement.ToDepthMasl);
-        Assert.AreEqual(updatedGroundwaterLevelMeasurement.CompletionFinished, editedGroundwaterLevelMeasurement.CompletionFinished);
+        Assert.AreEqual(updatedGroundwaterLevelMeasurement.IsOpenBorehole, editedGroundwaterLevelMeasurement.IsOpenBorehole);
         Assert.AreEqual(updatedGroundwaterLevelMeasurement.Comment, editedGroundwaterLevelMeasurement.Comment);
         Assert.AreEqual(updatedGroundwaterLevelMeasurement.BoreholeId, editedGroundwaterLevelMeasurement.BoreholeId);
         Assert.AreEqual(updatedGroundwaterLevelMeasurement.ReliabilityId, editedGroundwaterLevelMeasurement.ReliabilityId);
@@ -171,7 +171,7 @@ public class GroundwaterLevelMeasurementControllerTest
             ToDepthM = 702.12,
             FromDepthMasl = 82.714,
             ToDepthMasl = 2633.2,
-            CompletionFinished = false,
+            IsOpenBorehole = false,
             Comment = "New test comment",
             BoreholeId = 1000595,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
@@ -193,7 +193,7 @@ public class GroundwaterLevelMeasurementControllerTest
         Assert.AreEqual(newGroundwaterLevelMeasurement.ToDepthM, 702.12);
         Assert.AreEqual(newGroundwaterLevelMeasurement.FromDepthMasl, 82.714);
         Assert.AreEqual(newGroundwaterLevelMeasurement.ToDepthMasl, 2633.2);
-        Assert.AreEqual(newGroundwaterLevelMeasurement.CompletionFinished, false);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.IsOpenBorehole, false);
         Assert.AreEqual(newGroundwaterLevelMeasurement.Comment, "New test comment");
         Assert.AreEqual(newGroundwaterLevelMeasurement.BoreholeId, 1000595);
         Assert.AreEqual(newGroundwaterLevelMeasurement.ReliabilityId, 15203158);

@@ -65,16 +65,16 @@ public class Observation : IChangeTracking, IIdentifyable
     public double? ToDepthMasl { get; set; }
 
     /// <summary>
-    /// Gets or sets wether the completion corresponding to the <see cref="Observation"/> is finished.
-    /// </summary>
-    [Column("completion_finished")]
-    public bool? CompletionFinished { get; set; }
-
-    /// <summary>
     /// Gets or sets id of the <see cref="Observation"/>'s casing.
     /// </summary>
     [Column("casing_id")]
     public int? CasingId { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether or not the <see cref="Observation"/> belongs to an open borehole.
+    /// </summary>
+    [Column("is_open_borehole")]
+    public bool IsOpenBorehole { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s casing.

@@ -70,7 +70,7 @@ public class HydrotestControllerTests
         Assert.AreEqual(hydrotest.ToDepthM, 324.16204650148848);
         Assert.AreEqual(hydrotest.FromDepthMasl, 2627.3088318190112);
         Assert.AreEqual(hydrotest.ToDepthMasl, 523.60024264808749);
-        Assert.AreEqual(hydrotest.CompletionFinished, false);
+        Assert.AreEqual(hydrotest.IsOpenBorehole, false);
         Assert.AreEqual(hydrotest.Comment, "Inventore velit vitae laboriosam.");
         Assert.AreEqual(hydrotest.ReliabilityId, 15203157);
 
@@ -99,7 +99,7 @@ public class HydrotestControllerTests
             ToDepthM = 78.15634,
             FromDepthMasl = 67.112,
             ToDepthMasl = 78.0043,
-            CompletionFinished = true,
+            IsOpenBorehole = true,
             Comment = "Test comment",
             BoreholeId = 1002431,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
@@ -117,7 +117,7 @@ public class HydrotestControllerTests
             ToDepthM = 7602.12,
             FromDepthMasl = 828.774,
             ToDepthMasl = 27603.2,
-            CompletionFinished = true,
+            IsOpenBorehole = true,
             Comment = "Updated test comment",
             BoreholeId = 1002431,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
@@ -142,7 +142,7 @@ public class HydrotestControllerTests
         Assert.AreEqual(updatedHydrotest.ToDepthM, editedHydrotest.ToDepthM);
         Assert.AreEqual(updatedHydrotest.FromDepthMasl, editedHydrotest.FromDepthMasl);
         Assert.AreEqual(updatedHydrotest.ToDepthMasl, editedHydrotest.ToDepthMasl);
-        Assert.AreEqual(updatedHydrotest.CompletionFinished, editedHydrotest.CompletionFinished);
+        Assert.AreEqual(updatedHydrotest.IsOpenBorehole, editedHydrotest.IsOpenBorehole);
         Assert.AreEqual(updatedHydrotest.Comment, editedHydrotest.Comment);
         Assert.AreEqual(updatedHydrotest.BoreholeId, editedHydrotest.BoreholeId);
         Assert.AreEqual(updatedHydrotest.ReliabilityId, editedHydrotest.ReliabilityId);
@@ -173,7 +173,7 @@ public class HydrotestControllerTests
             ToDepthM = 702.12,
             FromDepthMasl = 82.714,
             ToDepthMasl = 2633.2,
-            CompletionFinished = false,
+            IsOpenBorehole = false,
             Comment = "New test comment",
             BoreholeId = 1002431,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
@@ -194,7 +194,7 @@ public class HydrotestControllerTests
         Assert.AreEqual(newHydrotest.ToDepthM, 702.12);
         Assert.AreEqual(newHydrotest.FromDepthMasl, 82.714);
         Assert.AreEqual(newHydrotest.ToDepthMasl, 2633.2);
-        Assert.AreEqual(newHydrotest.CompletionFinished, false);
+        Assert.AreEqual(newHydrotest.IsOpenBorehole, false);
         Assert.AreEqual(newHydrotest.Comment, "New test comment");
         Assert.AreEqual(newHydrotest.BoreholeId, 1002431);
         Assert.AreEqual(newHydrotest.ReliabilityId, 15203158);

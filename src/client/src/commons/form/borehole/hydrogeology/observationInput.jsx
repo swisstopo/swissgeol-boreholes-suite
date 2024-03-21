@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import { Stack } from "@mui/material";
-import { FormInput, FormSelect, FormCheckbox } from "../../../../components/form/form";
+import { FormInput, FormSelect } from "../../../../components/form/form";
 import { useDomains, getCasingsByBoreholeId } from "../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { StackHalfWidth } from "../../../../components/baseComponents";
+import { useGetCasingOptions } from "../completion/casingUtils";
 
 const ObservationInput = props => {
   const { observation, boreholeId } = props;
   const { i18n } = useTranslation();
   const domains = useDomains();
   const [casings, setCasings] = useState([]);
+  const getCasingOptions = useGetCasingOptions();
 
   useEffect(() => {
     if (boreholeId) {
@@ -41,49 +43,30 @@ const ObservationInput = props => {
         <FormInput fieldName="endTime" label="endTime" value={observation.endTime} type="datetime-local" />
       </Stack>
       <Stack direction="row">
-        <FormSelect
-          fieldName="reliabilityId"
-          label="reliability"
-          selected={observation.reliabilityId}
-          required={true}
-          values={domains?.data
-            ?.filter(d => d.schema === hydrogeologySchemaConstants.observationReliability)
-            .sort((a, b) => a.order - b.order)
-            .map(d => ({
-              key: d.id,
-              name: d[i18n.language],
-            }))}
-        />
-        <FormCheckbox
-          fieldName="completionFinished"
-          label="completionFinished"
-          checked={observation.completionFinished}
-        />
+        <StackHalfWidth direction="row">
+          <FormSelect
+            fieldName="reliabilityId"
+            label="reliability"
+            selected={observation.reliabilityId}
+            required={true}
+            values={domains?.data
+              ?.filter(d => d.schema === hydrogeologySchemaConstants.observationReliability)
+              .sort((a, b) => a.order - b.order)
+              .map(d => ({
+                key: d.id,
+                name: d[i18n.language],
+              }))}
+          />
+        </StackHalfWidth>
+        <StackHalfWidth direction="row">
+          <FormSelect
+            fieldName="casingId"
+            label="casingName"
+            selected={observation.isOpenBorehole ? -1 : observation.casingId}
+            values={getCasingOptions(casings)}
+          />
+        </StackHalfWidth>
       </Stack>
-      <StackHalfWidth direction="row">
-        <FormSelect
-          fieldName="casingId"
-          label="casingName"
-          selected={observation?.casingId}
-          disabled={!casings?.length}
-          values={casings
-            ?.sort((a, b) => {
-              if (a.completion.name !== b.completion.name) {
-                return a.completion.name < b.completion.name ? -1 : 1;
-              } else {
-                if (a.name !== b.name) {
-                  return a.name < b.name ? -1 : 1;
-                } else {
-                  return 0;
-                }
-              }
-            })
-            .map(casing => ({
-              key: casing.id,
-              name: `${casing.completion.name} - ${casing.name}`,
-            }))}
-        />
-      </StackHalfWidth>
       <Stack direction="row">
         <FormInput fieldName="comment" label="comment" multiline={true} rows={3} value={observation?.comment} />
       </Stack>

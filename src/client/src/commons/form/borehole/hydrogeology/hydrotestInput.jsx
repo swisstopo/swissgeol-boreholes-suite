@@ -14,6 +14,7 @@ import { getTestResultParameterUnits } from "./parameterUnits";
 import Delete from "@mui/icons-material/Delete";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
 import { PromptContext } from "../../../../components/prompt/promptContext";
+import { prepareCasingDataForSubmit } from "../completion/casingUtils";
 
 const HydrotestInput = props => {
   const { item, parentId } = props;
@@ -150,6 +151,7 @@ const HydrotestInput = props => {
   }, [item, formMethods.getValues()["testKindId"]]);
 
   const prepareFormDataForSubmit = data => {
+    data = prepareCasingDataForSubmit(data);
     data?.startTime ? (data.startTime += ":00.000Z") : (data.startTime = null);
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
     data.type = ObservationType.fieldMeasurement;
@@ -178,21 +180,16 @@ const HydrotestInput = props => {
       });
     }
 
-    if (data.casingId == null) {
-      data.casingId = item.casingId;
-    } else if (data.casingId === "") {
-      data.casingId = null;
-    }
-    data.casing = null;
-
     delete data.testKindId;
     delete data.flowDirectionId;
     delete data.evaluationMethodId;
+    delete data.reliability;
     return data;
   };
 
   const submitForm = data => {
     data = prepareFormDataForSubmit(data);
+
     if (item.id === 0) {
       addHydrotest({
         ...data,

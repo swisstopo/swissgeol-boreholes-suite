@@ -758,7 +758,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.ToDepthM, f => f.Random.Double(1, 5000))
             .RuleFor(o => o.FromDepthMasl, f => f.Random.Double(1, 5000))
             .RuleFor(o => o.ToDepthMasl, f => f.Random.Double(1, 5000))
-            .RuleFor(o => o.CompletionFinished, f => f.Random.Bool())
+            .RuleFor(o => o.IsOpenBorehole, f => f.Random.Bool())
             .RuleFor(o => o.Comment, f => f.Lorem.Sentence())
             .RuleFor(o => o.ReliabilityId, f => f.PickRandom(waterIngressReliabilityIds))
             .RuleFor(o => o.Reliability, _ => default!)
