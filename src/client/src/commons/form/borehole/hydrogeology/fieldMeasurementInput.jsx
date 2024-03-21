@@ -123,14 +123,6 @@ const FieldMeasurementInput = props => {
         };
       });
     }
-
-    if (data.casingId == null) {
-      data.casingId = item.casingId;
-    } else if (data.casingId === "") {
-      data.casingId = null;
-    }
-    data.casing = null;
-    return data;
   };
 
   return (
@@ -148,7 +140,7 @@ const FieldMeasurementInput = props => {
               <Stack direction={"row"} sx={{ width: "100%" }} spacing={1} justifyContent={"space-between"}>
                 <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("fieldMeasurementResult")}</Typography>
                 <AddButton
-                  label="addFieldmeasurementResult"
+                  label="addFieldMeasurementResult"
                   onClick={() => {
                     append({ parameterId: "", value: null, minValue: null, maxValue: null }, { shouldFocus: false });
                   }}

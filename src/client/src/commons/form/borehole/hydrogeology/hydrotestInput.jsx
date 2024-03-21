@@ -180,13 +180,6 @@ const HydrotestInput = props => {
       });
     }
 
-    if (data.casingId == null) {
-      data.casingId = item.casingId;
-    } else if (data.casingId === "") {
-      data.casingId = null;
-    }
-    data.casing = null;
-
     delete data.testKindId;
     delete data.flowDirectionId;
     delete data.evaluationMethodId;
