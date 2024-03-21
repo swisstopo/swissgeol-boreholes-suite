@@ -381,6 +381,37 @@ export const createCompletion = (name, boreholeId, kindId, isPrimary) => {
   });
 };
 
+export const createFieldMeasurement = (
+  boreholeId,
+  startTime,
+  reliabilityId,
+  sampleTypeId,
+  parameterId,
+  value,
+  casingId = null,
+  fromDepthM = null,
+  toDepthM = null,
+) => {
+  return cy.get("@id_token").then(token => {
+    return cy.request({
+      method: "POST",
+      url: "/api/v2/fieldmeasurement",
+      body: {
+        boreholeId: boreholeId,
+        startTime: startTime,
+        reliabilityId: reliabilityId,
+        fieldMeasurementResults: [{ sampleTypeId: sampleTypeId, parameterId, value: value }],
+        casingId: casingId,
+        fromDepthM: fromDepthM,
+        toDepthM: toDepthM,
+      },
+      cache: "no-cache",
+      credentials: "same-origin",
+      auth: bearerAuth(token),
+    });
+  });
+};
+
 export const createCasing = (name, boreholeId, completionId, dateStart, dateFinish, casingElements) => {
   cy.get("@id_token").then(token => {
     return cy.request({

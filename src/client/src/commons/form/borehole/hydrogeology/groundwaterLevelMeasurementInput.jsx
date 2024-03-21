@@ -23,9 +23,12 @@ const GroundwaterLevelMeasurementInput = props => {
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
     data.type = ObservationType.groundwaterLevelMeasurement;
     data.boreholeId = parentId;
+
     if (data.casingId == null) {
       data.casingId = item.casingId;
     }
+    delete data.reliability;
+
     return data;
   };
 

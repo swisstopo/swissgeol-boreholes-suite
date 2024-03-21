@@ -112,6 +112,7 @@ const FieldMeasurementInput = props => {
     data?.endTime ? (data.endTime += ":00.000Z") : (data.endTime = null);
     data.type = ObservationType.fieldMeasurement;
     data.boreholeId = parentId;
+    delete data.reliability;
 
     if (data.fieldMeasurementResults) {
       data.fieldMeasurementResults = data.fieldMeasurementResults.map(r => {
@@ -123,6 +124,7 @@ const FieldMeasurementInput = props => {
         };
       });
     }
+    return data;
   };
 
   return (

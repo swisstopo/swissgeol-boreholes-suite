@@ -183,6 +183,7 @@ const HydrotestInput = props => {
     delete data.testKindId;
     delete data.flowDirectionId;
     delete data.evaluationMethodId;
+    delete data.reliability;
     return data;
   };
 
