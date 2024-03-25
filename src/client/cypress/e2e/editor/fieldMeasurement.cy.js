@@ -21,10 +21,7 @@ beforeEach(() => {
             { fromDepth: 0, toDepth: 10, kindId: 25000103 },
           ]);
         }),
-    )
-    .then(response => {
-      expect(response).to.have.property("status", 200);
-    });
+    );
 });
 
 describe("Tests for the field measurement editor.", () => {

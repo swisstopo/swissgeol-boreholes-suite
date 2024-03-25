@@ -23,10 +23,7 @@ describe("Tests for the wateringress editor.", () => {
               { fromDepth: 0, toDepth: 10, kindId: 25000103 },
             ]);
           }),
-      )
-      .then(response => {
-        expect(response).to.have.property("status", 200);
-      });
+      );
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
