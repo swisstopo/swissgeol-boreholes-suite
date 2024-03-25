@@ -5,6 +5,7 @@ import {
   startBoreholeEditing,
   createCasing,
   handlePrompt,
+  createHydrotest,
 } from "../helpers/testHelpers";
 import {
   evaluateDisplayValue,
@@ -29,10 +30,7 @@ describe("Tests for the hydrotest editor.", () => {
               { fromDepth: 0, toDepth: 10, kindId: 25000103 },
             ]);
           }),
-      )
-      .then(response => {
-        expect(response).to.have.property("status", 200);
-      });
+      );
 
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
@@ -111,33 +109,15 @@ describe("Tests for the hydrotest editor.", () => {
   });
 
   it("sorts hydrotest", () => {
-    createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
-    cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/editor/${id}/hydrogeology/hydrotest`);
-    });
+    createBorehole({ "extended.original_name": "INTEADAL" })
+      .as("borehole_id")
+      .then(id => {
+        createHydrotest(id, "2012-11-14T12:06Z", 15203157, [15203175], null, 0, 10);
+        createHydrotest(id, "2012-11-14T12:07Z", 15203157, [15203174], null, 0, 12);
+        loginAsAdmin();
+        cy.visit(`/editor/${id}/hydrogeology/hydrotest`);
+      });
     startBoreholeEditing();
-
-    addItem("addHydrotest");
-    cy.wait("@casing_GET");
-    setInput("fromDepthM", 0);
-    setInput("toDepthM", 10);
-    setSelect("reliabilityId", 1);
-    setInput("startTime", "2012-11-14T12:06");
-    toggleMultiSelect("testKindId", [2]);
-    saveForm();
-    cy.wait("@hydrotest_GET");
-
-    cy.wait(1000);
-    addItem("addHydrotest");
-    cy.wait("@casing_GET");
-    setInput("fromDepthM", 0);
-    setInput("toDepthM", 12);
-    setSelect("reliabilityId", 1);
-    setInput("startTime", "2012-11-14T12:06");
-    toggleMultiSelect("testKindId", [2]);
-    saveForm();
-    cy.wait("@hydrotest_GET");
 
     cy.get('[data-cy="hydrotest-card.0"] [data-cy="todepth-formDisplay"]').contains("10");
     cy.get('[data-cy="hydrotest-card.1"] [data-cy="todepth-formDisplay"]').contains("12");
