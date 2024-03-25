@@ -5,6 +5,7 @@ import {
   createCasing,
   startBoreholeEditing,
   handlePrompt,
+  createBackfill,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, cancelEditing, deleteItem } from "../helpers/buttonHelpers";
@@ -20,31 +21,26 @@ describe("Backfill crud tests", () => {
           .then(completionId => {
             createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
               { fromDepth: 0, toDepth: 10, kindId: 25000103 },
-            ]);
+            ]).as("casing1_id");
             createCasing("casing-2", id, completionId, "2021-01-03", "2021-01-04", [
               { fromDepth: 5, toDepth: 12, kindId: 25000105 },
-            ]);
+            ]).as("casing2_id");
           }),
-      )
-      .then(response => {
-        expect(response).to.have.property("status", 200);
-      });
+      );
+  });
 
-    // open completion editor
+  it("adds, edits and deletes backfills", () => {
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
       cy.visit(`/editor/${id}/completion`);
     });
-
     cy.wait("@get-completions-by-boreholeId");
 
     // start editing session
     startBoreholeEditing();
     cy.get("[data-cy=completion-content-tab-backfill]").click();
     cy.wait("@backfill_GET");
-  });
 
-  it("adds, edits and deletes backfills", () => {
     // add new backfill card
     addItem("addBackfill");
     cy.wait("@codelist_GET");
@@ -94,27 +90,23 @@ describe("Backfill crud tests", () => {
     cy.contains("From depth").should("not.exist");
   });
 
-  it("sorts backfill", () => {
-    addItem("addBackfill");
-    cy.wait("@codelist_GET");
-    setInput("notes", "Lorem.");
-    setInput("fromDepth", "0");
-    setInput("toDepth", "10");
-    setSelect("kindId", 2);
-    setSelect("materialId", 1);
-    setSelect("casingId", 3);
-    saveForm();
+  it("sorts backfills", () => {
+    cy.get("@completion_id").then(id => {
+      cy.get("@casing1_id").then(casingId => {
+        createBackfill(id, casingId, 25000112, 25000100, 0, 12, "Lorem.");
+      });
+      cy.get("@casing2_id").then(casingId => {
+        createBackfill(id, casingId, 25000109, 25000102, 0, 10, "Lorem.");
+      });
+    });
 
-    cy.wait(1000);
-    addItem("addBackfill");
-    cy.wait("@codelist_GET");
-    setInput("notes", "Lorem.");
-    setInput("fromDepth", "0");
-    setInput("toDepth", "12");
-    setSelect("kindId", 2);
-    setSelect("materialId", 1);
-    setSelect("casingId", 2);
-    saveForm();
+    cy.get("@borehole_id").then(id => {
+      loginAsAdmin();
+      cy.visit(`/editor/${id}/completion`);
+      startBoreholeEditing();
+    });
+    cy.get("[data-cy=completion-content-tab-backfill]").click();
+    cy.wait("@backfill_GET");
 
     cy.get('[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]').contains("12");
     cy.get('[data-cy="backfill-card.1"] [data-cy="todepth-formDisplay"]').contains("10");

@@ -5,6 +5,7 @@ import {
   createCompletion,
   createCasing,
   handlePrompt,
+  createInstrument,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, cancelEditing, deleteItem } from "../helpers/buttonHelpers";
@@ -20,12 +21,9 @@ describe("Instrumentation crud tests", () => {
           .then(completionId => {
             createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
               { fromDepth: 0, toDepth: 10, kindId: 25000103 },
-            ]);
+            ]).as("casing1_id");
           }),
-      )
-      .then(response => {
-        expect(response).to.have.property("status", 200);
-      });
+      );
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
@@ -96,29 +94,14 @@ describe("Instrumentation crud tests", () => {
   });
 
   it("sorts instrumentation", () => {
+    cy.get("@completion_id").then(id => {
+      cy.get("@casing1_id").then(casingId => {
+        createInstrument(id, casingId, "Inst-1", 25000212, 25000102, 0, 10, "Lorem.");
+        createInstrument(id, casingId, "Inst-2", 25000215, 25000100, 0, 12, "Lorem.");
+      });
+    });
+
     cy.get("[data-cy=completion-content-tab-instrumentation]").click();
-    cy.wait("@instrumentation_GET");
-
-    addItem("addInstrument");
-    cy.wait("@casing_GET");
-    setInput("notes", "Lorem.");
-    setInput("name", "Inst-1");
-    setInput("fromDepth", "0");
-    setInput("toDepth", "10");
-    setSelect("kindId", 2);
-    setSelect("statusId", 1);
-    saveForm();
-    cy.wait("@instrumentation_GET");
-
-    addItem("addInstrument");
-    cy.wait("@casing_GET");
-    setInput("notes", "Lorem.");
-    setInput("name", "Inst-2");
-    setInput("fromDepth", "0");
-    setInput("toDepth", "12");
-    setSelect("kindId", 2);
-    setSelect("statusId", 1);
-    saveForm();
     cy.wait("@instrumentation_GET");
 
     cy.get('[data-cy="instrumentation-card.0"] [data-cy="name-formDisplay"]').contains("Inst-1");
