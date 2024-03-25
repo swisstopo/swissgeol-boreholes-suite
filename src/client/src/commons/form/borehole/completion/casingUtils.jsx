@@ -24,21 +24,30 @@ export const extractCasingDepth = casing => {
 export const useGetCasingName = () => {
   const { t } = useTranslation();
 
+  const getCasingNameCommon = (item, withCompletion) => {
+    if (item?.isOpenBorehole) {
+      return t("openBorehole");
+    } else if (item?.casingId) {
+      return withCompletion ? `${item?.casing?.completion?.name} - ${item?.casing?.name}` : item?.casing?.name;
+    }
+    return null;
+  };
+
   /**
    * Gets the name of the casing; or if the item references an open borehole, it returns the open borehole string
    * @param {any} item An object that references a casing
    * @returns The name to be displayed
    */
-  const getCasingName = item => {
-    if (item?.isOpenBorehole) {
-      return t("openBorehole");
-    } else if (item?.casingId) {
-      return item?.casing?.name;
-    }
-    return null;
-  };
+  const getCasingName = item => getCasingNameCommon(item, false);
 
-  return getCasingName;
+  /**
+   * Gets the name of the casing with the name of the completion; or if the item references an open borehole, it returns the open borehole string
+   * @param {any} item An object that references a casing
+   * @returns The name to be displayed
+   */
+  const getCasingNameWithCompletion = item => getCasingNameCommon(item, true);
+
+  return { getCasingName, getCasingNameWithCompletion };
 };
 
 export const useGetCasingOptions = () => {

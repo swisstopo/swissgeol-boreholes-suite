@@ -51,7 +51,7 @@ describe("Tests for the field measurement editor.", () => {
 
       //assert field measurementis displayed
       cy.wait("@fieldmeasurement_GET");
-      evaluateDisplayValue("casingName", "casing-1");
+      evaluateDisplayValue("casingName", "test fieldmeasurement - casing-1");
 
       // add another field measurement result
       startEditing();
@@ -64,7 +64,7 @@ describe("Tests for the field measurement editor.", () => {
       saveForm();
       cy.wait("@fieldmeasurement_GET");
 
-      evaluateDisplayValue("casingName", "casing-1");
+      evaluateDisplayValue("casingName", "test fieldmeasurement - casing-1");
       evaluateDisplayValue("fieldMeasurementResult.0.sampleType", "Pumpprobe");
       evaluateDisplayValue("fieldMeasurementResult.0.parameter", "Temperatur");
       evaluateDisplayValue("fieldMeasurementResult.0.value", "10 °C");
