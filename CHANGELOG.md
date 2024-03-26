@@ -51,6 +51,7 @@
 - Removed the configurable welcome message on the login overlay.
 - Login is performed automatically on page visit.
 - Use a non-root user to run the boreholes web application.
+- Disabled viewer mode, moved map settings from viewer settings to editor settings.
 
 ### Fixed
 
