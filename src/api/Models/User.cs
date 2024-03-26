@@ -65,7 +65,7 @@ public class User : IIdentifyable
     /// Gets or sets the WorkgroupRoles.
     /// </summary>
     public ICollection<UserWorkgroupRole> WorkgroupRoles { get; set; }
-     
+
     /// <summary>
     /// Gets the events.
     /// </summary>
