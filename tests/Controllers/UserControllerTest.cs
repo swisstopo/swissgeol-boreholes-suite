@@ -17,11 +17,11 @@ public class UserControllerTest
     public async Task GetAll()
     {
         var users = await new UserController(context).GetAll().ConfigureAwait(false);
-        Assert.AreEqual(7, users.Count());
+        Assert.AreEqual(8, users.Count());
 
         foreach (var user in users)
         {
-            Assert.AreEqual(user.SubjectId == "sub_deletableUser", user.Deletable);
+            Assert.AreEqual(user.SubjectId == "sub_deletableUser" || user.SubjectId == "sub_viewer", user.Deletable);
         }
     }
 }

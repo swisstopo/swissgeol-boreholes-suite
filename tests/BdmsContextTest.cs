@@ -24,7 +24,7 @@ public class BdmsContextTest
             .Include(s => s.WorkgroupRoles)
             .AsQueryable();
 
-        Assert.AreEqual(7, users.Count());
+        Assert.AreEqual(8, users.Count());
 
         var admin = users.Single(u => u.SubjectId == "sub_admin");
         Assert.AreEqual("sub_admin", admin.SubjectId);
