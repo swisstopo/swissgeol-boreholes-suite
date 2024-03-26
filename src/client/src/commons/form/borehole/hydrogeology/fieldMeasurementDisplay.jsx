@@ -50,7 +50,7 @@ const FieldMeasurementDisplay = props => {
               {result?.value && (
                 <>
                   <span>{result?.value + " "}</span>
-                  {getFieldMeasurementParameterUnits(result.parameterId, domains)}
+                  {getFieldMeasurementParameterUnits(result.parameterId, domains.data)}
                 </>
               )}
             </TableCell>
