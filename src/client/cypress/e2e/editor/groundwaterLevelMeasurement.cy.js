@@ -54,7 +54,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     // close editing mask
     saveForm();
-    evaluateDisplayValue("casingName", "casing-1");
+    evaluateDisplayValue("casingName", "test groundwaterlevel measurement - casing-1");
     evaluateDisplayValue("gwlm_kind", "Manometer");
     evaluateDisplayValue("gwlm_levelm", "789.12");
     evaluateDisplayValue("gwlm_levelmasl", "5.4567");
@@ -65,7 +65,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     setSelect("kindId", 1);
     saveForm();
     evaluateDisplayValue("gwlm_kind", "Drucksonde");
-    evaluateDisplayValue("casingName", "casing-1");
+    evaluateDisplayValue("casingName", "test groundwaterlevel measurement - casing-1");
 
     // delete groundwater level measurement
     deleteItem();
