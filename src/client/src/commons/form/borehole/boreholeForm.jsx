@@ -72,7 +72,6 @@ class BoreholeForm extends React.Component {
   }
 
   loadOrCreate(id) {
-    const self = this;
     if (_.isInteger(id)) {
       // request to edit a borehole
       this.setState(
@@ -88,7 +87,7 @@ class BoreholeForm extends React.Component {
             .getBorehole(id)
             .then(response => {
               if (response.success) {
-                self.setState({
+                this.setState({
                   loadingFetch: false,
                   stratigraphy_id:
                     _.isArray(response.data.stratigraphy) && response.data.stratigraphy.length > 0

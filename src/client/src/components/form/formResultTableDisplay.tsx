@@ -1,11 +1,17 @@
 import React, { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Table, TableHead, TableBody, TableContainer, TableRow, TableCell, Typography } from "@mui/material";
+import { Table, TableHead, TableBody, TableContainer, TableRow, Typography } from "@mui/material";
+import { FieldMeasurementResult } from "../../commons/form/borehole/hydrogeology/FieldMeasurementInterface";
+import { HydrotestResult } from "../../commons/form/borehole/hydrogeology/HydrotestInterface";
 
 interface FormResultTableDisplayProps {
   title: string;
-  results: any[];
-  renderBody: (result: any, index: number, styles: React.CSSProperties) => ReactNode;
+  results: HydrotestResult[] | FieldMeasurementResult[];
+  renderBody: (
+    result: HydrotestResult | FieldMeasurementResult,
+    index: number,
+    styles: React.CSSProperties,
+  ) => ReactNode;
   renderHeader: (styles: React.CSSProperties) => ReactNode;
 }
 
@@ -43,7 +49,7 @@ export const FormResultTableDisplay: React.FC<FormResultTableDisplayProps> = ({
             <TableRow>{renderHeader(tableHeaderStyles)}</TableRow>
           </TableHead>
           <TableBody>
-            {results?.map((result: any, index: number) => (
+            {results?.map((result: HydrotestResult | FieldMeasurementResult, index: number) => (
               <TableRow key={index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                 {renderBody(result, index, tableCellStyles)}
               </TableRow>
