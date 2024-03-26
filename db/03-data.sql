@@ -80,7 +80,8 @@ VALUES
 (4, false, true, 'validator', crypt('swissforages', gen_salt('md5')), 'validator', 'user'),
 (5, false, true, 'publisher', crypt('swissforages', gen_salt('md5')), 'publisher', 'user'),
 (6, false, true, 'filesUser', crypt('swissforages', gen_salt('md5')), 'user_that_only', 'has_files'),
-(7, false, true, 'deletableUser', crypt('swissforages', gen_salt('md5')), 'user_that_can', 'be_deleted');
+(7, false, true, 'deletableUser', crypt('swissforages', gen_salt('md5')), 'user_that_can', 'be_deleted'),
+(8, false, true, 'viewer', crypt('swissforages', gen_salt('md5')), 'viewer', 'user');
 
 SELECT pg_catalog.setval('bdms.users_id_usr_seq', 7, true);
 
@@ -91,4 +92,6 @@ VALUES
 (4, 3, 1),
 (5, 4, 1),
 (6, 4, 1),
-(7, 4, 1);
+(7, 4, 1)
+(8, 0, 1);
+;
