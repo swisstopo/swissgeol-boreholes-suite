@@ -1,7 +1,5 @@
-import React from "react";
 import { ReactNode } from "react";
-import { Domain } from "../../domain/domainInterface";
-import { useDomains } from "../../../../api/fetchApiV2";
+import { Codelist } from "../../domain/domainInterface";
 
 interface Units {
   [key: number]: ReactNode | string;
@@ -68,17 +66,21 @@ export const FieldMeasurementParameterUnits: Units = {
   7: "mg/L",
 };
 
-export const getTestResultParameterUnits = (parameterId: number, domains: any): ReactNode | string | null => {
-  return getParameterUnit(parameterId, TestResultParameterUnits, domains);
+export const getTestResultParameterUnits = (parameterId: number, codelists: Codelist[]): ReactNode | string | null => {
+  return getParameterUnit(parameterId, TestResultParameterUnits, codelists);
 };
 
-export const getFieldMeasurementParameterUnits = (parameterId: number, domains: any): ReactNode | string | null => {
-  return getParameterUnit(parameterId, FieldMeasurementParameterUnits, domains);
+export const getFieldMeasurementParameterUnits = (
+  parameterId: number,
+  codelists: Codelist[],
+): ReactNode | string | null => {
+  return getParameterUnit(parameterId, FieldMeasurementParameterUnits, codelists);
 };
 
-function getParameterUnit(parameterId: number, units: Units, domains: any): ReactNode | string | null {
-  if (!parameterId) {
+function getParameterUnit(parameterId: number, units: Units, codelists: Codelist[]): ReactNode | string | null {
+  if (!parameterId || !Array.isArray(codelists)) {
     return null;
   }
-  return units[domains?.data?.find((d: Domain) => d.id === parameterId)?.geolcode];
+  const geolcode = codelists.find((d: Codelist) => d.id === parameterId)?.geolcode;
+  return geolcode !== undefined ? units[geolcode] : null;
 }

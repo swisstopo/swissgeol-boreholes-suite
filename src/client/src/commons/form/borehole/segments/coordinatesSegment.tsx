@@ -11,46 +11,15 @@ import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
 import { DisabledRadio } from "./styledComponents.jsx";
 import {
   CoordinatesSegmentProps,
-  FieldNameDirectionKeys,
-  ReferenceSystem,
   ReferenceSystemKey,
   ReferenceSystemCode,
   Direction,
   CoordinatePrecisions,
   Coordinates,
-  CoordinateLimits,
   FormValues,
+  Location,
 } from "./coordinateSegmentInterfaces.js";
-
-const webApilv95tolv03 = "https://geodesy.geo.admin.ch/reframe/lv95tolv03";
-const webApilv03tolv95 = "https://geodesy.geo.admin.ch/reframe/lv03tolv95";
-
-// --- Constants ---
-
-// bounding box for Switzerland
-export const boundingBox: CoordinateLimits = {
-  LV95: {
-    X: { Min: 2485869.5728, Max: 2837076.5648 },
-    Y: { Min: 1076443.1884, Max: 1299941.7864 },
-  },
-  LV03: {
-    X: { Min: 485870.0968, Max: 837076.3921 },
-    Y: { Min: 76442.8707, Max: 299941.9083 },
-  },
-};
-
-export const referenceSystems: { [key: string]: ReferenceSystem } = {
-  LV95: {
-    code: ReferenceSystemCode.LV95,
-    name: ReferenceSystemKey.LV95,
-    fieldName: { X: FieldNameDirectionKeys.location_x, Y: FieldNameDirectionKeys.location_y },
-  },
-  LV03: {
-    code: ReferenceSystemCode.LV03,
-    name: ReferenceSystemKey.LV03,
-    fieldName: { X: FieldNameDirectionKeys.location_x_lv03, Y: FieldNameDirectionKeys.location_y_lv03 },
-  },
-};
+import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.js";
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
@@ -98,7 +67,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   }, []);
 
   // get location information from coodinates.
-  const getLocationInfo = useCallback(async (coordinates: Coordinates): Promise<any> => {
+  const getLocationInfo = useCallback(async (coordinates: Coordinates): Promise<Location> => {
     return await fetchApiV2(`location/identify?east=${coordinates.LV95.x}&north=${coordinates.LV95.y}`, "GET");
   }, []);
 
@@ -119,7 +88,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   const updateCoordinatesWithPrecision = useCallback(
     async (coordinates: Coordinates, precisions: CoordinatePrecisions): Promise<void> => {
       try {
-        var location = coordinates.LV95.x && coordinates.LV95.y ? await getLocationInfo(coordinates) : null;
+        const location = coordinates.LV95.x && coordinates.LV95.y ? await getLocationInfo(coordinates) : null;
 
         updateChange(
           "location",
@@ -127,9 +96,9 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
             coordinates.LV95.x,
             coordinates.LV95.y,
             borehole.data.elevation_z,
-            location?.country,
-            location?.canton,
-            location?.municipality,
+            location ? location.country : null,
+            location ? location.canton : null,
+            location ? location.municipality : null,
           ],
           false,
         );
@@ -139,31 +108,24 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       } finally {
         updateNumber(referenceSystems.LV03.fieldName.X, coordinates.LV03.x);
         updateNumber(referenceSystems.LV03.fieldName.Y, coordinates.LV03.y);
-        updatePrecisions(precisions);
+        updateNumber("precision_location_x", precisions.LV95.x);
+        updateNumber("precision_location_y", precisions.LV95.y);
+        updateNumber("precision_location_x_lv03", precisions.LV03.x);
+        updateNumber("precision_location_y_lv03", precisions.LV03.y);
       }
     },
     [borehole.data.elevation_z, getLocationInfo, updateChange, updateNumber],
   );
 
   // --- Utility functions ---
-  function updatePrecisions(precisions: CoordinatePrecisions): void {
-    updateNumber("precision_location_x", precisions.LV95.x);
-    updateNumber("precision_location_y", precisions.LV95.y);
-    updateNumber("precision_location_x_lv03", precisions.LV03.x);
-    updateNumber("precision_location_y_lv03", precisions.LV03.y);
-  }
-
-  function updateFormValues(
-    refSystem: string,
-    locationX: number,
-    locationY: number,
-    precisionX: number,
-    precisionY: number,
-  ) {
-    if (locationX && locationY) {
-      setValuesForReferenceSystem(refSystem, locationX.toFixed(precisionX), locationY.toFixed(precisionY));
-    }
-  }
+  const updateFormValues = useCallback(
+    (refSystem: string, locationX: number, locationY: number, precisionX: number, precisionY: number) => {
+      if (locationX && locationY) {
+        setValuesForReferenceSystem(refSystem, locationX.toFixed(precisionX), locationY.toFixed(precisionY));
+      }
+    },
+    [setValuesForReferenceSystem],
+  );
 
   function getCoordinatesFromForm(referenceSystem: string, direction: Direction, value: number): Coordinates {
     const currentFieldName = referenceSystems[referenceSystem].fieldName[direction];
@@ -207,47 +169,50 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     };
   }
 
-  async function handleCoordinateTransformation(
-    sourceSystem: ReferenceSystemKey,
-    targetSystem: ReferenceSystemKey,
-    X: number,
-    Y: number,
-    XPrecision: number,
-    YPrecision: number,
-  ) {
-    const response = await transformCoordinates(sourceSystem, X, Y);
-    if (!response) return; // Ensure response is valid
+  const handleCoordinateTransformation = useCallback(
+    async (
+      sourceSystem: ReferenceSystemKey,
+      targetSystem: ReferenceSystemKey,
+      X: number,
+      Y: number,
+      XPrecision: number,
+      YPrecision: number,
+    ) => {
+      const response = await transformCoordinates(sourceSystem, X, Y);
+      if (!response) return; // Ensure response is valid
 
-    const maxPrecision = Math.max(XPrecision, YPrecision);
-    const transformedX = parseFloat(response.easting).toFixed(maxPrecision);
-    const transformedY = parseFloat(response.northing).toFixed(maxPrecision);
+      const maxPrecision = Math.max(XPrecision, YPrecision);
+      const transformedX = parseFloat(response.easting).toFixed(maxPrecision);
+      const transformedY = parseFloat(response.northing).toFixed(maxPrecision);
 
-    setValuesForReferenceSystem(targetSystem, transformedX, transformedY);
-    setValuesForReferenceSystem(sourceSystem, X.toFixed(XPrecision), Y.toFixed(YPrecision));
+      setValuesForReferenceSystem(targetSystem, transformedX, transformedY);
+      setValuesForReferenceSystem(sourceSystem, X.toFixed(XPrecision), Y.toFixed(YPrecision));
 
-    updateCoordinatesWithPrecision(
-      {
-        LV95: {
-          x: sourceSystem === ReferenceSystemKey.LV95 ? X : parseFloat(transformedX),
-          y: sourceSystem === ReferenceSystemKey.LV95 ? Y : parseFloat(transformedY),
+      updateCoordinatesWithPrecision(
+        {
+          LV95: {
+            x: sourceSystem === ReferenceSystemKey.LV95 ? X : parseFloat(transformedX),
+            y: sourceSystem === ReferenceSystemKey.LV95 ? Y : parseFloat(transformedY),
+          },
+          LV03: {
+            x: sourceSystem === ReferenceSystemKey.LV03 ? X : parseFloat(transformedX),
+            y: sourceSystem === ReferenceSystemKey.LV03 ? Y : parseFloat(transformedY),
+          },
         },
-        LV03: {
-          x: sourceSystem === ReferenceSystemKey.LV03 ? X : parseFloat(transformedX),
-          y: sourceSystem === ReferenceSystemKey.LV03 ? Y : parseFloat(transformedY),
+        {
+          LV95: {
+            x: sourceSystem === ReferenceSystemKey.LV95 ? XPrecision : maxPrecision,
+            y: sourceSystem === ReferenceSystemKey.LV95 ? YPrecision : maxPrecision,
+          },
+          LV03: {
+            x: sourceSystem === ReferenceSystemKey.LV03 ? XPrecision : maxPrecision,
+            y: sourceSystem === ReferenceSystemKey.LV03 ? YPrecision : maxPrecision,
+          },
         },
-      },
-      {
-        LV95: {
-          x: sourceSystem === ReferenceSystemKey.LV95 ? XPrecision : maxPrecision,
-          y: sourceSystem === ReferenceSystemKey.LV95 ? YPrecision : maxPrecision,
-        },
-        LV03: {
-          x: sourceSystem === ReferenceSystemKey.LV03 ? XPrecision : maxPrecision,
-          y: sourceSystem === ReferenceSystemKey.LV03 ? YPrecision : maxPrecision,
-        },
-      },
-    );
-  }
+      );
+    },
+    [updateCoordinatesWithPrecision, setValuesForReferenceSystem, transformCoordinates],
+  );
 
   //  --- Effect hooks ---
 
@@ -302,6 +267,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     setMapPointChange,
     updateNumber,
     currentReferenceSystem,
+    updateFormValues,
+    handleCoordinateTransformation,
   ]);
 
   // --- Event handlers --- /
@@ -654,7 +621,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
           <Form.Field required>
             <label>{t("reference_elevation_qt")}</label>
             <DomainDropdown
-              onSelected={(selected: { id: any }) => {
+              onSelected={(selected: { id: string | number }) => {
                 updateChange("qt_reference_elevation", selected.id, false);
               }}
               schema="elevation_precision"
