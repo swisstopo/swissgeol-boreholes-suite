@@ -58,7 +58,7 @@ describe("Tests for the hydrotest editor.", () => {
     saveForm();
     cy.wait("@hydrotest_GET");
     evaluateDisplayValue("reliability", "fraglich");
-    evaluateDisplayValue("casingName", "casing-1");
+    evaluateDisplayValue("casingName", "test hydrotest - casing-1");
     evaluateDisplayValue("hydrotestKind", "Pump-/Injektionsversuch, variable Rate");
 
     // update hydrotest
@@ -86,7 +86,7 @@ describe("Tests for the hydrotest editor.", () => {
     saveForm();
     cy.wait("@hydrotest_GET");
 
-    evaluateDisplayValue("casingName", "casing-1");
+    evaluateDisplayValue("casingName", "test hydrotest - casing-1");
     evaluateDisplayValue("hydrotestKind", "Pump-/Injektionsversuch, variable Rate");
     evaluateDisplayValue("flowDirection", ["Entnahme", "Injektion"]);
     evaluateDisplayValue("evaluationMethod", ["stationär", "instationär"]);

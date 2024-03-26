@@ -6,7 +6,7 @@ import { useGetCasingName } from "../completion/casingUtils";
 const ObservationDisplay = props => {
   const { observation } = props;
   const { t } = useTranslation();
-  const getCasingName = useGetCasingName();
+  const { getCasingNameWithCompletion } = useGetCasingName();
 
   function timesToReadableDuration(startTime, endTime) {
     const timestampStart = new Date(startTime).getTime();
@@ -51,7 +51,7 @@ const ObservationDisplay = props => {
           />
           <StackFullWidth direction="row" spacing={1}>
             <FormDisplay label="reliability" value={observation?.reliability} type={FormDisplayType.Domain} />
-            <FormDisplay label="casingName" value={getCasingName(observation)} />
+            <FormDisplay label="casingName" value={getCasingNameWithCompletion(observation)} />
           </StackFullWidth>
           <FormDisplay label="comment" value={observation?.comment} />
         </>

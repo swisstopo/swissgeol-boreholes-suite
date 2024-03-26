@@ -7,7 +7,7 @@ import { deleteBackfill } from "../../../../api/fetchApiV2";
 
 const BackfillDisplay = props => {
   const { item, isEditable } = props;
-  const getCasingName = useGetCasingName();
+  const { getCasingName } = useGetCasingName();
 
   return (
     <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteBackfill}>
