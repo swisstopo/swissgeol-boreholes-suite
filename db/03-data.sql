@@ -83,7 +83,7 @@ VALUES
 (7, false, true, 'deletableUser', crypt('swissforages', gen_salt('md5')), 'user_that_can', 'be_deleted'),
 (8, false, true, 'viewer', crypt('swissforages', gen_salt('md5')), 'viewer', 'user');
 
-SELECT pg_catalog.setval('bdms.users_id_usr_seq', 7, true);
+SELECT pg_catalog.setval('bdms.users_id_usr_seq', 8, true);
 
 INSERT INTO bdms.users_roles(id_usr_fk, id_rol_fk, id_wgp_fk)
 VALUES
@@ -92,6 +92,5 @@ VALUES
 (4, 3, 1),
 (5, 4, 1),
 (6, 4, 1),
-(7, 4, 1)
+(7, 4, 1),
 (8, 0, 1);
-;
