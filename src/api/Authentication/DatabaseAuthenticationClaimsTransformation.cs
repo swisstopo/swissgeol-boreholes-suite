@@ -52,7 +52,19 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
         if (subjectId is null)
             return null;
 
-        var user = dbContext.Users.SingleOrDefault(u => u.SubjectId == subjectId) ?? new User { SubjectId = subjectId, IsViewer = true };
+        var user = dbContext.Users.SingleOrDefault(u => u.SubjectId == subjectId) ?? new User
+        {
+            SubjectId = subjectId,
+            IsViewer = true,
+            WorkgroupRoles = new List<UserWorkgroupRole>
+            {
+                new UserWorkgroupRole
+                {
+                    WorkgroupId = 1, // Workgroup Default
+                    Role = Role.View,
+                },
+            },
+        };
         user.FirstName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? user.FirstName;
         user.LastName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? user.LastName;
         user.Name = $"{user.FirstName[0]}. {user.LastName}";

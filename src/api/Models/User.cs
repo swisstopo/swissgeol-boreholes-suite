@@ -62,10 +62,10 @@ public class User : IIdentifyable
     public DateTime? DisabledAt { get; set; }
 
     /// <summary>
-    /// Gets the WorkgroupRoles.
+    /// Gets or sets the WorkgroupRoles.
     /// </summary>
-    public IEnumerable<UserWorkgroupRole> WorkgroupRoles { get; }
-
+    public ICollection<UserWorkgroupRole> WorkgroupRoles { get; set; }
+     
     /// <summary>
     /// Gets the events.
     /// </summary>
