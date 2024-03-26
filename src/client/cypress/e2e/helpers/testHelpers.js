@@ -210,7 +210,7 @@ export const createBorehole = values => {
 export const createAndEditBoreholeAsAdmin = values => {
   return createBorehole(values).then(value => {
     loginAsAdmin();
-    cy.visit(`/detail/${value}`);
+    cy.visit(`/${value}`);
   });
 };
 

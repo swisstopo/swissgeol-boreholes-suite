@@ -450,7 +450,7 @@ class MenuEditorSearch extends React.Component {
                               modal: false,
                             },
                             () => {
-                              history.push("/detail/" + response.data.id);
+                              history.push("/" + response.data.id);
                             },
                           );
                         } else {

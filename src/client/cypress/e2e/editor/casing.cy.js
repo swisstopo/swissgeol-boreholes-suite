@@ -22,7 +22,7 @@ describe("Casing crud tests", () => {
     // open completion editor
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/detail/${id}/completion`);
+      cy.visit(`/${id}/completion`);
     });
 
     cy.wait("@get-completions-by-boreholeId");
@@ -127,7 +127,7 @@ describe("Casing crud tests", () => {
         ]);
       });
       loginAsAdmin();
-      cy.visit(`/detail/${id}/completion`);
+      cy.visit(`/${id}/completion`);
     });
 
     // casing 1
