@@ -11,8 +11,7 @@ Zunächst sollte die CSV-Datei den Anforderungen und dem Format entsprechen, wie
 ### Schritt 2: Navigieren zum Import-Bereich
 
 1. In der Webapplikation anmelden.
-2. In die Editor-Ansicht wechseln.
-3. Unten links auf die Schaltfläche _Importieren_ klicken.
+2. Unten links auf die Schaltfläche _Importieren_ klicken.
 
 ### Schritt 3: Bohrloch CSV-Datei selektieren
 
