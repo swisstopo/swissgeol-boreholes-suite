@@ -8,37 +8,6 @@ describe("Tests for filtering data by reference system.", () => {
     cy.contains("div", "Location filters").click();
   }
 
-  function goToViewerLocationFilter() {
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Settings").click();
-    cy.contains("h3", "Viewer").click();
-    cy.contains("div", "Location filters").click();
-  }
-
-  it("can set filters as viewer", () => {
-    loginAsAdmin();
-    cy.visit("/");
-    goToViewerLocationFilter();
-
-    cy.contains("div", "Spatial reference system").children().first().children().first().as("checkbox");
-    cy.get("@checkbox").check({ force: true });
-    cy.get("@checkbox").should("be.checked");
-
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Viewer").click();
-    cy.contains("span", "Location").click();
-    cy.get('[data-cy="spatial-reference-filter"]').should("exist");
-
-    goToViewerLocationFilter();
-    cy.get("@checkbox").uncheck({ force: true });
-    cy.get("@checkbox").should("not.be.checked");
-
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Viewer").click();
-    cy.contains("span", "Location").click();
-    cy.get('[data-cy="spatial-reference-filter"]').should("not.exist");
-  });
-
   it("can set filters as editor", () => {
     loginAsAdmin();
     cy.visit("/editor");
@@ -48,8 +17,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get("@checkbox").check({ force: true });
     cy.get("@checkbox").should("be.checked");
 
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Editor").click();
+    cy.contains("h3", "Done").click();
     cy.contains("span", "Location").click();
     cy.get('[data-cy="spatial-reference-filter"]').should("exist");
 
@@ -57,8 +25,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get("@checkbox").uncheck({ force: true });
     cy.get("@checkbox").should("not.be.checked");
 
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Editor").click();
+    cy.contains("h3", "Done").click();
     cy.contains("span", "Location").click();
     cy.get('[data-cy="spatial-reference-filter"]').should("not.exist");
   });

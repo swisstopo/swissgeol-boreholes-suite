@@ -176,6 +176,7 @@ class MenuEditorSearch extends React.Component {
         }}>
         <Menu.Item
           disabled={this.props.user.data.roles.indexOf("EDIT") === -1}
+          data-cy="import-borehole-button"
           onClick={() => {
             this.setState({
               modal: true,
@@ -191,6 +192,7 @@ class MenuEditorSearch extends React.Component {
         </Menu.Item>
         <Menu.Item
           disabled={this.props.user.data.roles.indexOf("EDIT") === -1}
+          data-cy="new-borehole-button"
           onClick={() => {
             this.setState({
               modal: true,
@@ -520,8 +522,6 @@ class MenuEditorSearch extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    leftmenu: state.leftmenu,
-    home: state.home,
     search: state.search,
     editor: state.editor,
     borehole: state.core_borehole,

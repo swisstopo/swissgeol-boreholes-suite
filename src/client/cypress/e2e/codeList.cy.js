@@ -1,4 +1,4 @@
-import { loginAsAdmin, loginAsEditorInViewerMode } from "../e2e/helpers/testHelpers";
+import { loginAsAdmin, loginAsEditor } from "../e2e/helpers/testHelpers";
 
 describe("Codelist translations tests", () => {
   it("Admin can open codelist translation section", () => {
@@ -72,7 +72,7 @@ describe("Codelist translations tests", () => {
   });
 
   it("Editor cannot open codelist translation section", () => {
-    loginAsEditorInViewerMode();
+    loginAsEditor();
     cy.visit("/setting/editor");
     // Codelist translation section is not available
     cy.get("div").should("not.contain", "Codelist translations");

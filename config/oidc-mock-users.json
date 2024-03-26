@@ -1,8 +1,8 @@
 [
   {
-    "SubjectId":"sub_admin",
-    "Username":"admin",
-    "Password":"swissforages",
+    "SubjectId": "sub_admin",
+    "Username": "admin",
+    "Password": "swissforages",
     "Claims": [
       {
         "Type": "name",
@@ -37,9 +37,9 @@
     ]
   },
   {
-    "SubjectId":"sub_editor",
-    "Username":"editor",
-    "Password":"swissforages",
+    "SubjectId": "sub_editor",
+    "Username": "editor",
+    "Password": "swissforages",
     "Claims": [
       {
         "Type": "name",
@@ -59,6 +59,43 @@
       {
         "Type": "email",
         "Value": "editor.user@local.dev",
+        "ValueType": "string"
+      },
+      {
+        "Type": "email_verified",
+        "Value": "true",
+        "ValueType": "boolean"
+      },
+      {
+        "Type": "local_groups_claim",
+        "Value": "[\"boreholes_dev_group\"]",
+        "ValueType": "json"
+      }
+    ]
+  },
+  {
+    "SubjectId": "sub_viewer",
+    "Username": "viewer",
+    "Password": "swissforages",
+    "Claims": [
+      {
+        "Type": "name",
+        "Value": "Viewer User",
+        "ValueType": "string"
+      },
+      {
+        "Type": "family_name",
+        "Value": "User",
+        "ValueType": "string"
+      },
+      {
+        "Type": "given_name",
+        "Value": "Viewer",
+        "ValueType": "string"
+      },
+      {
+        "Type": "email",
+        "Value": "viewer.user@local.dev",
         "ValueType": "string"
       },
       {

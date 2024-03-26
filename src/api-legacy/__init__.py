@@ -38,9 +38,6 @@ from bms.v1.borehole.identifier import IdentifierViewerHandler
 from bms.v1.borehole.profile.layer.viewer import ProfileLayerViewerHandler
 from bms.v1.borehole.profile.layer.producer import ProfileLayerProducerHandler
 
-# ACTION Handlers exports
-from bms.v1.borehole.export.exporter import ExportHandler
-
 # Stratigraphy's layers handlers
 from bms.v1.borehole.stratigraphy.layer.producer import LayerProducerHandler
 from bms.v1.borehole.stratigraphy.layer.viewer import LayerViewerHandler

@@ -2,10 +2,11 @@
   "success": true,
   "data": {
     "admin": false,
-    "name": "Editor User",
+    "name": "Viewer User",
     "roles": ["VIEW"],
     "terms": true,
-    "username": "E. User",
+    "id": 3,
+    "username": "V. User",
     "viewer": true,
     "workgroups": [
       {

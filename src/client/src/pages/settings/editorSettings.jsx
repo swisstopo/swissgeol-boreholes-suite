@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
+import _ from "lodash";
 import { Button, Divider, Segment } from "semantic-ui-react";
 import { patchCodeConfig, patchSettings } from "../../api-lib/index";
 
@@ -10,19 +11,51 @@ import CodeListSettings from "./editor/codeListSettings";
 
 import TranslationText from "../../commons/form/translationText";
 import EditorSettingList from "./components/editorSettingList/editorSettingList";
+import { optionsFromCapabilities } from "ol/source/WMTS";
+import { register } from "ol/proj/proj4";
+import proj4 from "proj4";
 import { boreholeEditorData } from "./data/boreholeEditorData";
 import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData";
 import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData";
+import MapSettings from "./components/editorSettingList/mapSettings";
 import { locationEditorData } from "./data/locationEditorData";
 import { registrationEditorData } from "./data/registrationEditorData";
+
+const projections = {
+  "EPSG:21781":
+    "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs",
+  "EPSG:2056":
+    "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs",
+  "EPSG:21782":
+    "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=0 +y_0=0 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs",
+  "EPSG:4149": "+proj=longlat +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +no_defs",
+  "EPSG:4150": "+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs",
+};
 
 class EditorSettings extends React.Component {
   constructor(props) {
     super(props);
+    _.forEach(projections, function (proj, srs) {
+      proj4.defs(srs, proj);
+    });
+    register(proj4);
     this.state = {
       fields: false,
       identifiers: false,
       codeLists: false,
+      searchFiltersBoreholes: false,
+      searchFiltersLayers: false,
+      map: false,
+
+      wmtsFetch: false,
+      searchWmts: "",
+      searchWmtsUser: "",
+      wmts: null,
+
+      wmsFetch: false,
+      searchWms: "",
+      searchWmsUser: "",
+      wms: null,
       searchList: [
         {
           id: 0,
@@ -58,6 +91,23 @@ class EditorSettings extends React.Component {
       ],
     };
   }
+
+  isVisible(field) {
+    const { geocode, codes } = this.props;
+    if (_.has(codes, "data.layer_kind") && _.isArray(codes.data.layer_kind)) {
+      for (let idx = 0; idx < codes.data.layer_kind.length; idx++) {
+        const element = codes.data.layer_kind[idx];
+        if (element.code === geocode) {
+          if (_.isObject(element.conf) && _.has(element.conf, `fields.${field}`)) {
+            return element.conf.fields[field];
+          } else {
+            return false;
+          }
+        }
+      }
+    }
+    return false;
+  }
   handleButtonSelected(name, isSelected) {
     let selectedData = null;
     if (name === "location" && isSelected) {
@@ -76,13 +126,57 @@ class EditorSettings extends React.Component {
     return selectedData;
   }
   render() {
-    const { setting, toggleField, toggleFilter, toggleFieldArray, toggleFilterArray } = this.props;
+    const {
+      addExplorerMap,
+      rmExplorerMap,
+      t,
+      setting,
+      i18n,
+      toggleFilter,
+      toggleFieldArray,
+      toggleFilterArray,
+      toggleField,
+    } = this.props;
     return (
       <div
         style={{
           padding: "1em",
           flex: 1,
         }}>
+        <MapSettings
+          setting={setting}
+          i18n={i18n}
+          rmExplorerMap={rmExplorerMap}
+          addExplorerMap={addExplorerMap}
+          toggleFilter={toggleFilter}
+          t={t}
+          handleAddItem={value => {
+            this.setState(
+              {
+                wmsFetch: false,
+                wms: null,
+                wmts: null,
+              },
+              () => {
+                this.props.handleAddItem(value);
+              },
+            );
+          }}
+          handleOnChange={value => {
+            this.setState(
+              {
+                wmsFetch: false,
+                wms: null,
+                wmts: null,
+              },
+              () => {
+                this.props.handleOnChange(value);
+              },
+            );
+          }}
+          state={this.state}
+          setState={this.setState.bind(this)}></MapSettings>
+
         {this.state?.searchList?.map((filter, idx) => (
           <div key={idx}>
             <div
@@ -90,9 +184,8 @@ class EditorSettings extends React.Component {
                 this.setState(prevState => ({
                   ...prevState,
                   // update an array of objects:
-                  searchList: prevState.searchList.map(
-                    obj => (obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj }),
-                    // : { ...obj, isSelected: false }, if you want to select only one filter
+                  searchList: prevState.searchList.map(obj =>
+                    obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj },
                   ),
                 }));
               }}
@@ -285,6 +378,93 @@ const mapDispatchToProps = dispatch => {
     },
     toggleFilter: (filter, enabled) => {
       dispatch(patchSettings(`efilter.${filter}`, enabled));
+    },
+    addExplorerMap: (layer, type, result, position = 0) => {
+      if (type === "WMS") {
+        if (!layer.CRS.includes("EPSG:2056")) {
+          this.context.error("Only EPSG:2056 is supported");
+        } else {
+          dispatch(
+            patchSettings(
+              "map.explorer",
+              {
+                Identifier: layer.Name,
+                Abstract: layer.Abstract,
+                position: position,
+                Title: layer.Title,
+                transparency: 0,
+                type: "WMS",
+                url: result.Service.OnlineResource,
+                visibility: true,
+                queryable: layer.queryable,
+              },
+              layer.Name,
+            ),
+          );
+        }
+      } else if (type === "WMTS") {
+        const conf = optionsFromCapabilities(result, {
+          layer: layer.Identifier,
+        });
+        if (Object.prototype.hasOwnProperty.call(conf, "matrixSet") && !conf.matrixSet.includes("2056")) {
+          this.context.error("Only EPSG:2056 is supported");
+        } else {
+          dispatch(
+            patchSettings(
+              "map.explorer",
+              {
+                Identifier: layer.Identifier,
+                Abstract: layer.Abstract,
+                position: position,
+                Title: layer.Title,
+                transparency: 0,
+                type: "WMTS",
+                url: conf.urls,
+                visibility: true,
+                queryable: false,
+                conf: {
+                  ...conf,
+                  projection: {
+                    code: conf.projection.code_,
+                    units: conf.projection.units_,
+                    extent: conf.projection.extent_,
+                    axisOrientation: conf.projection.axisOrientation_,
+                    global: conf.projection.global_,
+                    metersPerUnit: conf.projection.metersPerUnit_,
+                    worldExtent: conf.projection.worldExtent_,
+                  },
+                  tileGrid: {
+                    extent: conf.tileGrid.extent_,
+                    origin: conf.tileGrid.origin_,
+                    origins: conf.tileGrid.origins_,
+                    resolutions: conf.tileGrid.resolutions_,
+                    matrixIds: conf.tileGrid.matrixIds_,
+                    tileSize: conf.tileGrid.tileSize_,
+                    tileSizes: conf.tileGrid.tileSizes_,
+                  },
+                },
+              },
+              layer.Identifier,
+            ),
+          );
+        }
+      }
+    },
+    rmExplorerMap: config => {
+      dispatch(patchSettings("map.explorer", null, config.Identifier));
+    },
+
+    handleAddItem: value => {
+      dispatch({
+        type: "WMS_ADDED",
+        url: value,
+      });
+    },
+    handleOnChange: value => {
+      dispatch({
+        type: "WMS_SELECTED",
+        url: value,
+      });
     },
   };
 };

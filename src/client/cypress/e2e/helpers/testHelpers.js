@@ -141,8 +141,8 @@ export const loginAsEditor = () => {
 /**
  * Login into the application as viewer.
  */
-export const loginAsEditorInViewerMode = () => {
-  login("editor");
+export const loginAsViewer = () => {
+  login("viewer");
   cy.intercept("/api/v1/user", {
     statusCode: 200,
     body: JSON.stringify(viewerUser),

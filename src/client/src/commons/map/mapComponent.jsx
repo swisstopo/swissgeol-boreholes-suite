@@ -845,13 +845,15 @@ class MapComponent extends React.Component {
               }}
               value={this.state.basemap}
             />
-            <div
-              style={{
-                fontWeight: "bold",
-                padding: "1em 0px 0.5em 0px",
-              }}>
-              {t("common:overlay")}
-            </div>
+            {Object.keys(this.props.layers).length !== 0 && (
+              <div
+                style={{
+                  fontWeight: "bold",
+                  padding: "1em 0px 0.5em 0px",
+                }}>
+                {t("common:overlay")}
+              </div>
+            )}
             <MapOverlay
               setSelectedLayer={layer => {
                 this.setState({
@@ -913,4 +915,5 @@ MapComponent.defaultProps = {
 };
 
 const TranslatedMapComponent = withTranslation(["common"])(MapComponent);
+
 export default TranslatedMapComponent;

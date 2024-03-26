@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./AppTheme.js";
-import HomeComponent from "./pages/home/homeComponent";
 import EditorComponent from "./pages/editor/editorComponent";
 import SettingCmp from "./pages/settings/settingCmp";
 import { DataLoader } from "./pages/settings/dataLoader";
@@ -43,7 +42,6 @@ class App extends React.Component {
   }
 
   render() {
-    let mode = "viewer";
     return (
       <DataLoader>
         <AcceptTerms>
@@ -58,32 +56,19 @@ class App extends React.Component {
                       <Switch>
                         <Route
                           render={props => {
-                            mode = "editor";
                             return <EditorComponent {...props} />;
                           }}
                           exact={false}
                           key={0}
                           path={"/editor"}
                         />
-                        <Route
-                          render={props => <SettingCmp {...props} mode={mode} />}
-                          exact={true}
-                          key={1}
-                          path={"/setting/:id"}
-                        />
-                        <Route
-                          render={props => {
-                            mode = "viewer";
-                            return <HomeComponent {...props} />;
-                          }}
-                          key={2}
-                          path={"/"}
-                        />
+                        <Route render={() => <SettingCmp />} exact={true} key={1} path={"/setting/:id"} />
+                        <Redirect exact from="/" to="/editor" />
                         <Route
                           component={() => (
                             <Redirect
                               to={{
-                                pathname: "/",
+                                pathname: "/editor",
                               }}
                             />
                           )}

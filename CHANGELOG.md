@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Disabled viewer mode, moved map settings from viewer settings to editor settings.
+
 ## v2.0.644 - 2024-03-22
 
 ### Added
