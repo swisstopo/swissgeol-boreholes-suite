@@ -5,19 +5,7 @@ import MenuComponent from "./menuComponent";
 
 class MenuContainer extends React.Component {
   render() {
-    const { history } = this.props;
-    return (
-      <MenuComponent
-        handleModeChange={mode => {
-          if (mode === "editor") {
-            history.push(`/editor`);
-          } else if (mode.indexOf("setting") >= 0) {
-            history.push(`/${mode}`);
-          }
-        }}>
-        {this.props.children}
-      </MenuComponent>
-    );
+    return <MenuComponent>{this.props.children}</MenuComponent>;
   }
 }
 

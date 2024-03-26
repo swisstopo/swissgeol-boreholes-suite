@@ -266,7 +266,7 @@ class BoreholeForm extends React.Component {
         <Switch>
           <Route
             exact
-            path={"/editor/:id"}
+            path={"/detail/:id"}
             render={() => (
               <div
                 style={{
@@ -302,7 +302,7 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={"/editor/:id/borehole"}
+            path={"/detail/:id/borehole"}
             render={() => (
               <div
                 style={{
@@ -329,40 +329,40 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={"/editor/:id/stratigraphy"}
+            path={"/detail/:id/stratigraphy"}
             render={() => <Profile id={parseInt(this.props.match.params.id, 10)} unlocked={isEditable} />}
           />
           <Route
             exact
-            path={"/editor/:id/stratigraphy/chronostratigraphy"}
+            path={"/detail/:id/stratigraphy/chronostratigraphy"}
             render={() => (
               <ChronostratigraphyPanel id={parseInt(this.props.match.params.id, 10)} isEditable={isEditable} />
             )}
           />
           <Route
             exact
-            path={"/editor/:id/stratigraphy/lithostratigraphy"}
+            path={"/detail/:id/stratigraphy/lithostratigraphy"}
             render={() => (
               <LithostratigraphyPanel id={parseInt(this.props.match.params.id, 10)} isEditable={isEditable} />
             )}
           />
           <Route
             exact
-            path={"/editor/:id/attachments"}
+            path={"/detail/:id/attachments"}
             render={() => (
               <EditorBoreholeFilesTable id={parseInt(this.props.match.params.id, 10)} unlocked={isEditable} />
             )}
           />
           <Route
             exact
-            path={"/editor/:id/hydrogeology/wateringress"}
+            path={"/detail/:id/hydrogeology/wateringress"}
             render={() => (
               <WaterIngress isEditable={isEditable} boreholeId={parseInt(this.props.match.params.id, 10)} />
             )}
           />
           <Route
             exact
-            path={"/editor/:id/hydrogeology/groundwaterlevelmeasurement"}
+            path={"/detail/:id/hydrogeology/groundwaterlevelmeasurement"}
             render={() => (
               <GroundwaterLevelMeasurement
                 isEditable={isEditable}
@@ -372,19 +372,19 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={"/editor/:id/hydrogeology/fieldmeasurement"}
+            path={"/detail/:id/hydrogeology/fieldmeasurement"}
             render={() => (
               <FieldMeasurement isEditable={isEditable} boreholeId={parseInt(this.props.match.params.id, 10)} />
             )}
           />
           <Route
             exact
-            path={"/editor/:id/hydrogeology/hydrotest"}
+            path={"/detail/:id/hydrogeology/hydrotest"}
             render={() => <Hydrotest isEditable={isEditable} boreholeId={parseInt(this.props.match.params.id, 10)} />}
           />
           <Route
             exact
-            path={"/editor/:id/hydrogeology/groundwaterlevelmeasurement"}
+            path={"/detail/:id/hydrogeology/groundwaterlevelmeasurement"}
             render={() => (
               <GroundwaterLevelMeasurement
                 isEditable={isEditable}
@@ -393,10 +393,10 @@ class BoreholeForm extends React.Component {
             )}
           />
           <Route
-            path={"/editor/:boreholeId/completion/:completionId"}
+            path={"/detail/:boreholeId/completion/:completionId"}
             render={() => <Completion isEditable={isEditable} />}
           />
-          <Route path={"/editor/:boreholeId/completion"} render={() => <Completion isEditable={isEditable} />} />
+          <Route path={"/detail/:boreholeId/completion"} render={() => <Completion isEditable={isEditable} />} />
         </Switch>
       </Dimmer.Dimmable>
     );

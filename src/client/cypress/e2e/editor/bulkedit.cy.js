@@ -4,7 +4,7 @@ import adminUser from "../../fixtures/adminUser.json";
 describe("Test the borehole bulk edit feature.", () => {
   it("opens the bulk edit dialog with all boreholes selected", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.wait("@edit_ids");
@@ -12,7 +12,7 @@ describe("Test the borehole bulk edit feature.", () => {
 
   it("checks if all toggle buttons do something", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 
@@ -28,7 +28,7 @@ describe("Test the borehole bulk edit feature.", () => {
 
   it("displays workgroup toggle only if user has permission for more than one workgroup", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.get(".modal .toggle").should("have.length", 30);
@@ -46,7 +46,7 @@ describe("Test the borehole bulk edit feature.", () => {
       statusCode: 200,
       body: JSON.stringify(adminUser2Workgroups),
     }).as("adminUser2Workgroups");
-    cy.visit("/editor");
+    cy.visit("/");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 
@@ -67,7 +67,7 @@ describe("Test the borehole bulk edit feature.", () => {
     createBorehole({ "extended.original_name": "LOMONE" }).as("borehole_id_2");
 
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.wait("@borehole");
 
     // select the boreholes for bulk edit

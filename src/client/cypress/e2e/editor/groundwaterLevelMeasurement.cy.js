@@ -27,7 +27,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/editor/${id}/completion`);
+      cy.visit(`/detail/${id}/completion`);
     });
     startBoreholeEditing();
 
@@ -80,7 +80,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
       createGroundwaterLevelMeasurement(id, "2012-11-14T12:06Z", 15203157, 15203208, null, 0, 10);
       createGroundwaterLevelMeasurement(id, "2012-11-14T12:07Z", 15203157, 15203207, null, 0, 12);
       loginAsAdmin();
-      cy.visit(`/editor/${id}/hydrogeology/groundwaterlevelmeasurement`);
+      cy.visit(`/detail/${id}/hydrogeology/groundwaterlevelmeasurement`);
     });
     startBoreholeEditing();
 

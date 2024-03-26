@@ -10,7 +10,7 @@ describe("Tests for filtering data by reference system.", () => {
 
   it("can set filters as editor", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     goToEditorLocationFilter();
 
     cy.contains("div", "Spatial reference system").children().first().children().first().as("checkbox");

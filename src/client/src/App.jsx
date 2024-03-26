@@ -54,21 +54,20 @@ class App extends React.Component {
                   <QueryClientProvider client={queryClient}>
                     <Router>
                       <Switch>
+                        <Route render={props => <SettingCmp {...props} />} key={1} path={"/setting"} />
                         <Route
                           render={props => {
                             return <EditorComponent {...props} />;
                           }}
                           exact={false}
                           key={0}
-                          path={"/editor"}
+                          path={"/"}
                         />
-                        <Route render={() => <SettingCmp />} exact={true} key={1} path={"/setting/:id"} />
-                        <Redirect exact from="/" to="/editor" />
                         <Route
                           component={() => (
                             <Redirect
                               to={{
-                                pathname: "/editor",
+                                pathname: "/",
                               }}
                             />
                           )}
