@@ -5,7 +5,7 @@ describe("Admin settings test", () => {
     loginAsAdmin();
     cy.visit("/setting/admin");
 
-    cy.get('[data-cy="user-list-table-body"]').children().should("have.length", 7);
+    cy.get('[data-cy="user-list-table-body"]').children().should("have.length", 8);
   });
 
   it("displays correct message when enabling user.", () => {
@@ -15,7 +15,7 @@ describe("Admin settings test", () => {
 
     cy.get('.modal [data-cy="disable-user-button"]').click();
 
-    cy.get('[data-cy="user-list-table-body"]').children().should("have.length", 6);
+    cy.get('[data-cy="user-list-table-body"]').children().should("have.length", 7);
 
     // show disabled users
     cy.contains("Show Disabled").click();
@@ -36,7 +36,7 @@ describe("Admin settings test", () => {
     // show all users
     cy.contains("Show All").click();
 
-    cy.get('[data-cy="user-list-table-body"]').children().should("have.length", 7);
+    cy.get('[data-cy="user-list-table-body"]').children().should("have.length", 8);
   });
 
   it("can toggle administrator privileges.", () => {
