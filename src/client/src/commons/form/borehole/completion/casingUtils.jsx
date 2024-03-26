@@ -24,6 +24,13 @@ export const extractCasingDepth = casing => {
 export const useGetCasingName = () => {
   const { t } = useTranslation();
 
+  /**
+   * Gets the name of the casing or the name of the casing with the name of the completion, depending on the 'withCompletion' parameter.
+   * If the item references an open borehole, it returns the open borehole string.
+   * @param {any} item An object that references a casing
+   * @param {boolean} withCompletion A flag indicating whether to include the completion name
+   * @returns The name to be displayed
+   */
   const getCasingNameCommon = (item, withCompletion) => {
     if (item?.isOpenBorehole) {
       return t("openBorehole");
