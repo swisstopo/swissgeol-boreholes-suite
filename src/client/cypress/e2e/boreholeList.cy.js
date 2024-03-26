@@ -99,6 +99,9 @@ describe("Borehole list tests", () => {
     cy.visit("/editor");
 
     // sort by name ascending
+    cy.contains("th", "Original name").click();
+    cy.wait("@edit_list");
+
     cy.contains("th", "Original name")
       .children()
       .first()
