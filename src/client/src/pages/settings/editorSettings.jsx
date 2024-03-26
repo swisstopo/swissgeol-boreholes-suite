@@ -405,7 +405,6 @@ const mapDispatchToProps = dispatch => {
       } else if (type === "WMTS") {
         const conf = optionsFromCapabilities(result, {
           layer: layer.Identifier,
-          // projection: 'EPSG:2056'
         });
         if (Object.prototype.hasOwnProperty.call(conf, "matrixSet") && !conf.matrixSet.includes("2056")) {
           this.context.error("Only EPSG:2056 is supported");
@@ -440,10 +439,8 @@ const mapDispatchToProps = dispatch => {
                     origins: conf.tileGrid.origins_,
                     resolutions: conf.tileGrid.resolutions_,
                     matrixIds: conf.tileGrid.matrixIds_,
-                    // sizes: conf.tileGrid.sizes,
                     tileSize: conf.tileGrid.tileSize_,
                     tileSizes: conf.tileGrid.tileSizes_,
-                    // widths: conf.tileGrid.widths
                   },
                 },
               },
