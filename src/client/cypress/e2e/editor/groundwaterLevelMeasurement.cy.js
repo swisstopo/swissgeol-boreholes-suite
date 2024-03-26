@@ -4,6 +4,7 @@ import {
   startBoreholeEditing,
   createCompletion,
   createCasing,
+  createGroundwaterLevelMeasurement,
   handlePrompt,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
@@ -22,10 +23,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
               { fromDepth: 0, toDepth: 10, kindId: 25000103 },
             ]);
           }),
-      )
-      .then(response => {
-        expect(response).to.have.property("status", 200);
-      });
+      );
 
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
@@ -49,7 +47,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     setSelect("kindId", 2);
     setSelect("reliabilityId", 1);
-    setSelect("casingId", 1);
+    setSelect("casingId", 2);
     setInput("startTime", "2012-11-14T12:06");
     setInput("levelM", "789.12");
     setInput("levelMasl", "5.4567");
@@ -79,35 +77,12 @@ describe("Tests for the groundwater level measurement editor.", () => {
   it("sorts groundwaterlevelmeasurement", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
+      createGroundwaterLevelMeasurement(id, "2012-11-14T12:06Z", 15203157, 15203208, null, 0, 10);
+      createGroundwaterLevelMeasurement(id, "2012-11-14T12:07Z", 15203157, 15203207, null, 0, 12);
       loginAsAdmin();
       cy.visit(`/editor/${id}/hydrogeology/groundwaterlevelmeasurement`);
     });
     startBoreholeEditing();
-
-    addItem("addGroundwaterLevelMeasurement");
-    cy.wait("@casing_GET");
-    setInput("fromDepthM", 0);
-    setInput("toDepthM", 10);
-    setSelect("kindId", 2);
-    setSelect("reliabilityId", 1);
-    setInput("startTime", "2012-11-14T12:06");
-    setInput("levelM", "789.12");
-    setInput("levelMasl", "5.4567");
-    saveForm();
-    cy.wait("@groundwaterlevelmeasurement_GET");
-
-    cy.wait(1000);
-    addItem("addGroundwaterLevelMeasurement");
-    cy.wait("@casing_GET");
-    setInput("fromDepthM", 0);
-    setInput("toDepthM", 12);
-    setSelect("kindId", 2);
-    setSelect("reliabilityId", 1);
-    setInput("startTime", "2012-11-14T12:06");
-    setInput("levelM", "789.12");
-    setInput("levelMasl", "5.4567");
-    saveForm();
-    cy.wait("@groundwaterlevelmeasurement_GET");
 
     cy.get('[data-cy="groundwaterLevelMeasurement-card.0"] [data-cy="todepth-formDisplay"]').contains("10");
     cy.get('[data-cy="groundwaterLevelMeasurement-card.1"] [data-cy="todepth-formDisplay"]').contains("12");

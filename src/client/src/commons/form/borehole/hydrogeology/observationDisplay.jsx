@@ -1,10 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
+import { useGetCasingName } from "../completion/casingUtils";
 
 const ObservationDisplay = props => {
   const { observation } = props;
   const { t } = useTranslation();
+  const { getCasingNameWithCompletion } = useGetCasingName();
 
   function timesToReadableDuration(startTime, endTime) {
     const timestampStart = new Date(startTime).getTime();
@@ -49,18 +51,8 @@ const ObservationDisplay = props => {
           />
           <StackFullWidth direction="row" spacing={1}>
             <FormDisplay label="reliability" value={observation?.reliability} type={FormDisplayType.Domain} />
-            <FormDisplay
-              label="completionFinished"
-              value={observation?.completionFinished}
-              type={FormDisplayType.Boolean}
-            />
+            <FormDisplay label="casingName" value={getCasingNameWithCompletion(observation)} />
           </StackFullWidth>
-          <FormDisplay
-            label="casingName"
-            value={
-              observation?.casingId ? `${observation?.casing?.completion.name} - ${observation?.casing?.name}` : null
-            }
-          />
           <FormDisplay label="comment" value={observation?.comment} />
         </>
       )}

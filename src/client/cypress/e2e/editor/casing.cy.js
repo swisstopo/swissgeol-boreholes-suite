@@ -4,6 +4,7 @@ import {
   createCompletion,
   startBoreholeEditing,
   handlePrompt,
+  createCasing,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateInput, evaluateTextarea, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
@@ -13,6 +14,7 @@ describe("Casing crud tests", () => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
       .then(id => createCompletion("test casing", id, 16000002, true))
+      .as("completion_id")
       .then(response => {
         expect(response).to.be.above(0);
       });
@@ -114,48 +116,29 @@ describe("Casing crud tests", () => {
   });
 
   it("sorts casings", () => {
-    addItem("addCasing");
-    cy.wait("@codelist_GET");
-    cy.get('[data-cy="casingElements.0.delete"]').should("be.disabled");
+    cy.get("@borehole_id").then(id => {
+      cy.get("@completion_id").then(completionId => {
+        createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
+          { fromDepth: 5, toDepth: 10, kindId: 25000103 },
+          { fromDepth: 0, toDepth: 5, kindId: 25000103 },
+        ]);
+        createCasing("casing-2", id, completionId, "2021-01-01", "2021-01-02", [
+          { fromDepth: 0, toDepth: 12, kindId: 25000103 },
+        ]);
+      });
+      loginAsAdmin();
+      cy.visit(`/editor/${id}/completion`);
+    });
 
-    setInput("name", "casing-1");
-    setInput("casingElements.0.fromDepth", "5");
-    evaluateInput("fromDepth", "5");
-    setInput("casingElements.0.toDepth", "10");
-    evaluateInput("toDepth", "10");
-    setSelect("casingElements.0.kindId", 2);
-    saveForm();
-    cy.wait("@casing_GET");
-    evaluateDisplayValue("casingElements.0.fromDepth", "5");
-    evaluateDisplayValue("casingElements.0.toDepth", "10");
-
-    startEditing();
-    addItem("addCasingElement");
-    cy.get('[data-cy="casingElements.0.delete"]').should("be.enabled");
-    cy.get('[data-cy="casingElements.1.delete"]').should("be.enabled");
-    setInput("casingElements.1.fromDepth", "0");
-    evaluateInput("fromDepth", "0");
-    setInput("casingElements.1.toDepth", "5");
-    evaluateInput("toDepth", "10");
-    setSelect("casingElements.1.kindId", 2);
-
-    saveForm();
-    cy.wait("@casing_GET");
-
+    // casing 1
     evaluateDisplayValue("casingElements.0.fromDepth", "0");
     evaluateDisplayValue("casingElements.0.toDepth", "5");
     evaluateDisplayValue("casingElements.1.fromDepth", "5");
     evaluateDisplayValue("casingElements.1.toDepth", "10");
 
-    addItem("addCasing");
-    cy.wait("@codelist_GET");
-    setInput("name", "casing-2");
-
-    setInput("casingElements.0.fromDepth", "0");
-    setInput("casingElements.0.toDepth", "12");
-    setSelect("casingElements.0.kindId", 2);
-    saveForm();
-    cy.wait("@casing_GET");
+    // casing 2
+    evaluateDisplayValue("casingElements.0.fromDepth", "0");
+    evaluateDisplayValue("casingElements.0.toDepth", "12");
 
     cy.get('[data-cy="casing-card.0"] [data-cy="name-formDisplay"]').contains("casing-1");
     cy.get('[data-cy="casing-card.1"] [data-cy="name-formDisplay"]').contains("casing-2");

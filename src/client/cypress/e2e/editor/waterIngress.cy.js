@@ -5,6 +5,7 @@ import {
   loginAsAdmin,
   createCasing,
   handlePrompt,
+  createWateringress,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
@@ -22,10 +23,7 @@ describe("Tests for the wateringress editor.", () => {
               { fromDepth: 0, toDepth: 10, kindId: 25000103 },
             ]);
           }),
-      )
-      .then(response => {
-        expect(response).to.have.property("status", 200);
-      });
+      );
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
@@ -54,7 +52,7 @@ describe("Tests for the wateringress editor.", () => {
 
     setSelect("quantityId", 2);
     setSelect("reliabilityId", 1);
-    setSelect("casingId", 1);
+    setSelect("casingId", 2);
     setInput("startTime", "2012-11-14T12:06");
 
     // close editing mask
@@ -83,31 +81,12 @@ describe("Tests for the wateringress editor.", () => {
   it("sorts wateringress", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
+      createWateringress(id, "2012-11-14T12:06Z", 15203157, 15203161, null, 0, 10);
+      createWateringress(id, "2012-11-14T12:07Z", 15203157, 15203162, null, 0, 12);
       loginAsAdmin();
       cy.visit(`/editor/${id}/hydrogeology/wateringress`);
     });
     startBoreholeEditing();
-
-    addItem("addWaterIngress");
-    cy.wait("@casing_GET");
-    setInput("fromDepthM", 0);
-    setInput("toDepthM", 10);
-    setSelect("quantityId", 2);
-    setSelect("reliabilityId", 1);
-    setInput("startTime", "2012-11-14T12:06");
-    saveForm();
-    cy.wait("@wateringress_GET");
-
-    cy.wait(1000);
-    addItem("addWaterIngress");
-    cy.wait("@casing_GET");
-    setInput("fromDepthM", 0);
-    setInput("toDepthM", 12);
-    setSelect("quantityId", 2);
-    setSelect("reliabilityId", 1);
-    setInput("startTime", "2012-11-14T12:06");
-    saveForm();
-    cy.wait("@wateringress_GET");
 
     cy.get('[data-cy="waterIngress-card.0"] [data-cy="todepth-formDisplay"]').contains("10");
     cy.get('[data-cy="waterIngress-card.1"] [data-cy="todepth-formDisplay"]').contains("12");

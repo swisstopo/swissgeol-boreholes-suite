@@ -382,17 +382,182 @@ export const createCompletion = (name, boreholeId, kindId, isPrimary) => {
 };
 
 export const createCasing = (name, boreholeId, completionId, dateStart, dateFinish, casingElements) => {
+  return cy.get("@id_token").then(token => {
+    return cy
+      .request({
+        method: "POST",
+        url: "/api/v2/casing",
+        body: {
+          name: name,
+          boreholeId: boreholeId,
+          completionId: completionId,
+          dateStart: dateStart,
+          dateFinish: dateFinish,
+          casingElements: casingElements,
+        },
+        cache: "no-cache",
+        credentials: "same-origin",
+        auth: bearerAuth(token),
+      })
+      .then(res => {
+        return cy.wrap(res.body.id);
+      });
+  });
+};
+
+export const createFieldMeasurement = (
+  boreholeId,
+  startTime,
+  reliabilityId,
+  sampleTypeId,
+  parameterId,
+  value,
+  casingId = null,
+  fromDepthM = null,
+  toDepthM = null,
+) => {
+  return cy.get("@id_token").then(token => {
+    return cy.request({
+      method: "POST",
+      url: "/api/v2/fieldmeasurement",
+      body: {
+        boreholeId: boreholeId,
+        startTime: startTime,
+        reliabilityId: reliabilityId,
+        fieldMeasurementResults: [{ sampleTypeId: sampleTypeId, parameterId, value: value }],
+        casingId: casingId,
+        fromDepthM: fromDepthM,
+        toDepthM: toDepthM,
+      },
+      cache: "no-cache",
+      credentials: "same-origin",
+      auth: bearerAuth(token),
+    });
+  });
+};
+
+export const createWateringress = (
+  boreholeId,
+  startTime,
+  reliabilityId,
+  quantityId,
+  casingId = null,
+  fromDepthM = null,
+  toDepthM = null,
+) => {
+  return cy.get("@id_token").then(token => {
+    return cy.request({
+      method: "POST",
+      url: "/api/v2/wateringress",
+      body: {
+        boreholeId: boreholeId,
+        startTime: startTime,
+        reliabilityId: reliabilityId,
+        quantityId: quantityId,
+        casingId: casingId,
+        fromDepthM: fromDepthM,
+        toDepthM: toDepthM,
+      },
+      cache: "no-cache",
+      credentials: "same-origin",
+      auth: bearerAuth(token),
+    });
+  });
+};
+
+export const createGroundwaterLevelMeasurement = (
+  boreholeId,
+  startTime,
+  reliabilityId,
+  kindId,
+  casingId = null,
+  fromDepthM = null,
+  toDepthM = null,
+) => {
+  return cy.get("@id_token").then(token => {
+    return cy.request({
+      method: "POST",
+      url: "/api/v2/groundwaterlevelmeasurement",
+      body: {
+        boreholeId: boreholeId,
+        startTime: startTime,
+        reliabilityId: reliabilityId,
+        kindId: kindId,
+        casingId: casingId,
+        fromDepthM: fromDepthM,
+        toDepthM: toDepthM,
+      },
+      cache: "no-cache",
+      credentials: "same-origin",
+      auth: bearerAuth(token),
+    });
+  });
+};
+
+export const createHydrotest = (
+  boreholeId,
+  startTime,
+  reliabilityId,
+  codelistIds,
+  casingId = null,
+  fromDepthM = null,
+  toDepthM = null,
+) => {
+  return cy.get("@id_token").then(token => {
+    return cy.request({
+      method: "POST",
+      url: "/api/v2/hydrotest",
+      body: {
+        boreholeId: boreholeId,
+        startTime: startTime,
+        reliabilityId: reliabilityId,
+        codelistIds: codelistIds,
+        casingId: casingId,
+        fromDepthM: fromDepthM,
+        toDepthM: toDepthM,
+      },
+      cache: "no-cache",
+      credentials: "same-origin",
+      auth: bearerAuth(token),
+    });
+  });
+};
+
+export const createBackfill = (completionId, casingId, materialId, kindId, fromDepth, toDepth, notes) => {
   cy.get("@id_token").then(token => {
     return cy.request({
       method: "POST",
-      url: "/api/v2/casing",
+      url: "/api/v2/backfill",
       body: {
-        name: name,
-        boreholeId: boreholeId,
         completionId: completionId,
-        dateStart: dateStart,
-        dateFinish: dateFinish,
-        casingElements: casingElements,
+        casingId: casingId,
+        materialId: materialId,
+        kindId: kindId,
+        fromDepth: fromDepth,
+        toDepth: toDepth,
+        notes: notes,
+      },
+      cache: "no-cache",
+      credentials: "same-origin",
+      auth: bearerAuth(token),
+    });
+  });
+};
+
+export const createInstrument = (completionId, casingId, name, statusId, kindId, fromDepth, toDepth, notes) => {
+  cy.get("@id_token").then(token => {
+    return cy.request({
+      method: "POST",
+      url: "/api/v2/instrumentation",
+      body: {
+        completionId: completionId,
+        casingId: casingId,
+        name: name,
+        statusId: statusId,
+        kindId: kindId,
+        fromDepth: fromDepth,
+        toDepth: toDepth,
+        notes: notes,
       },
       cache: "no-cache",
       credentials: "same-origin",
