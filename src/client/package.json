@@ -66,6 +66,8 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
     "@vitejs/plugin-react": "^4.2.1",
     "cypress": "^13.6.1",
     "cypress-vite": "^1.5.0",
@@ -88,7 +90,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "cypress run",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "cy": "cypress open"
   }
 }
