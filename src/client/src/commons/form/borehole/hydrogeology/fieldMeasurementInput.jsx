@@ -81,7 +81,7 @@ const FieldMeasurementInput = props => {
     formMethods.getValues()["fieldMeasurementResults"].forEach((element, index) => {
       currentUnits = {
         ...currentUnits,
-        [index]: getFieldMeasurementParameterUnits(element.parameterId),
+        [index]: getFieldMeasurementParameterUnits(element.parameterId, domains.data),
       };
     });
     setUnits(currentUnits);
@@ -152,7 +152,7 @@ const FieldMeasurementInput = props => {
                 <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`fieldMeasurementResult-${index}`}>
                   <FormSelect
                     fieldName={`fieldMeasurementResults.${index}.sampleTypeId`}
-                    label="field_measurement_sample_type"
+                    label="fieldMeasurementSampleType"
                     selected={field.sampleTypeId}
                     required={true}
                     values={domains?.data
@@ -176,7 +176,7 @@ const FieldMeasurementInput = props => {
                         name: d[i18n.language],
                       }))}
                     onUpdate={value => {
-                      setUnits({ ...units, [index]: getFieldMeasurementParameterUnits(value) });
+                      setUnits({ ...units, [index]: getFieldMeasurementParameterUnits(value, domains.data) });
                     }}
                   />
 

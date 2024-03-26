@@ -6,7 +6,7 @@ import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import ObservationDisplay from "./observationDisplay";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { getTestResultParameterUnits } from "./parameterUnits";
+import { getHydrotestParameterUnits } from "./parameterUnits";
 import { useDomains, deleteHydrotest } from "../../../../api/fetchApiV2";
 
 const HydrotestDisplay = props => {
@@ -71,7 +71,7 @@ const HydrotestDisplay = props => {
                 {result?.value && (
                   <>
                     <span>{result?.value + " "}</span>
-                    {getTestResultParameterUnits(result.parameterId, domains)}
+                    {getHydrotestParameterUnits(result.parameterId, domains.data)}
                   </>
                 )}
               </TableCell>
@@ -79,7 +79,7 @@ const HydrotestDisplay = props => {
                 {result?.minValue && (
                   <>
                     <span>{result?.minValue + " "}</span>
-                    {getTestResultParameterUnits(result.parameterId, domains)}
+                    {getHydrotestParameterUnits(result.parameterId, domains.data)}
                   </>
                 )}
               </TableCell>
@@ -87,7 +87,7 @@ const HydrotestDisplay = props => {
                 {result?.maxValue && (
                   <>
                     <span>{result?.maxValue + " "}</span>
-                    {getTestResultParameterUnits(result.parameterId, domains)}
+                    {getHydrotestParameterUnits(result.parameterId, domains.data)}
                   </>
                 )}
               </TableCell>

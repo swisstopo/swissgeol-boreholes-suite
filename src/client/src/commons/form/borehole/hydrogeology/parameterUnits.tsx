@@ -1,10 +1,7 @@
-import React from "react";
-import { ReactNode } from "react";
-import { Domain } from "../../domain/domainInterface";
-import { useDomains } from "../../../../api/fetchApiV2";
+import { Codelist } from "../../domain/domainInterface";
 
 interface Units {
-  [key: number]: ReactNode | string;
+  [key: number]: string;
 }
 
 /**
@@ -18,7 +15,7 @@ interface Units {
  *
  * Key-value pairs in `TestResultParameterUnits`:
  * - `1`, `2`: "m/s" (meters per second)
- * - `3`: "m2/s" (square meters per second)
+ * - `3`: "m²/s" (square meters per second)
  * - `4`, `9`: "" (no unit)
  * - `5`: "Pa" (Pascals)
  * - `6`: "1/m" (inverse meters)
@@ -27,19 +24,15 @@ interface Units {
  */
 
 export const TestResultParameterUnits: Units = {
-  1: <>m/s</>,
-  2: <>m/s</>,
-  3: (
-    <>
-      m<sup>2</sup>/s
-    </>
-  ),
-  4: <></>,
-  5: <>Pa</>,
-  6: <>1/m</>,
-  7: <>Lu</>,
-  8: <>m</>,
-  9: <></>,
+  1: "m/s",
+  2: "m/s",
+  3: "m²/s",
+  4: "",
+  5: "Pa",
+  6: "1/m",
+  7: "Lu",
+  8: "m",
+  9: "",
 };
 
 /**
@@ -68,17 +61,18 @@ export const FieldMeasurementParameterUnits: Units = {
   7: "mg/L",
 };
 
-export const getTestResultParameterUnits = (parameterId: number, domains: any): ReactNode | string | null => {
-  return getParameterUnit(parameterId, TestResultParameterUnits, domains);
+export const getHydrotestParameterUnits = (parameterId: number, codelists: Codelist[]): string | null => {
+  return getParameterUnit(parameterId, TestResultParameterUnits, codelists);
 };
 
-export const getFieldMeasurementParameterUnits = (parameterId: number, domains: any): ReactNode | string | null => {
-  return getParameterUnit(parameterId, FieldMeasurementParameterUnits, domains);
+export const getFieldMeasurementParameterUnits = (parameterId: number, codelists: Codelist[]): string | null => {
+  return getParameterUnit(parameterId, FieldMeasurementParameterUnits, codelists);
 };
 
-function getParameterUnit(parameterId: number, units: Units, domains: any): ReactNode | string | null {
-  if (!parameterId) {
+function getParameterUnit(parameterId: number, units: Units, codelists: Codelist[]): string | null {
+  if (!parameterId || !Array.isArray(codelists)) {
     return null;
   }
-  return units[domains?.data?.find((d: Domain) => d.id === parameterId)?.geolcode];
+  const geolcode = codelists.find((d: Codelist) => d.id === parameterId)?.geolcode;
+  return geolcode !== undefined ? units[geolcode] : null;
 }

@@ -11,7 +11,7 @@ interface AuthOverlayProps {
 }
 
 interface User {
-  data: Object;
+  data: object;
   error?: string;
 }
 interface ReduxState {
