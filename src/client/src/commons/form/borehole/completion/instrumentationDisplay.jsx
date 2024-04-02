@@ -6,7 +6,7 @@ import { deleteInstrumentation } from "../../../../api/fetchApiV2";
 
 const InstrumentationDisplay = props => {
   const { item, isEditable } = props;
-  const { getCasingName } = useGetCasingName();
+  const { getCasingNameWithCompletion } = useGetCasingName();
 
   return (
     <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteInstrumentation}>
@@ -16,7 +16,7 @@ const InstrumentationDisplay = props => {
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay label="name" value={item?.name} />
-        <FormDisplay label="casingName" value={getCasingName(item)} />
+        <FormDisplay label="casingName" value={getCasingNameWithCompletion(item)} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
         <FormDisplay label="kindInstrument" value={item?.kind} type={FormDisplayType.Domain} />

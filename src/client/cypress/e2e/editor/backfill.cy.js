@@ -74,6 +74,7 @@ describe("Backfill crud tests", () => {
     cy.contains("casing-1");
     cy.contains("222");
     cy.contains("inactive");
+    evaluateDisplayValue("casingName", "test backfill - casing-1");
 
     startEditing();
     cy.wait("@casing_GET");
