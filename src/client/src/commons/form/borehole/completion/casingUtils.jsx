@@ -25,36 +25,20 @@ export const useGetCasingName = () => {
   const { t } = useTranslation();
 
   /**
-   * Gets the name of the casing or the name of the casing with the name of the completion, depending on the 'withCompletion' parameter.
-   * If the item references an open borehole, it returns the open borehole string.
-   * @param {any} item An object that references a casing
-   * @param {boolean} withCompletion A flag indicating whether to include the completion name
-   * @returns The name to be displayed
-   */
-  const getCasingNameCommon = (item, withCompletion) => {
-    if (item?.isOpenBorehole) {
-      return t("openBorehole");
-    } else if (item?.casingId) {
-      return withCompletion ? `${item?.casing?.completion?.name} - ${item?.casing?.name}` : item?.casing?.name;
-    }
-    return null;
-  };
-
-  /**
-   * Gets the name of the casing; or if the item references an open borehole, it returns the open borehole string
-   * @param {any} item An object that references a casing
-   * @returns The name to be displayed
-   */
-  const getCasingName = item => getCasingNameCommon(item, false);
-
-  /**
    * Gets the name of the casing with the name of the completion; or if the item references an open borehole, it returns the open borehole string
    * @param {any} item An object that references a casing
    * @returns The name to be displayed
    */
-  const getCasingNameWithCompletion = item => getCasingNameCommon(item, true);
+  const getCasingNameWithCompletion = item => {
+    if (item?.isOpenBorehole) {
+      return t("openBorehole");
+    } else if (item?.casingId) {
+      return `${item?.casing?.completion?.name} - ${item?.casing?.name}`;
+    }
+    return null;
+  };
 
-  return { getCasingName, getCasingNameWithCompletion };
+  return { getCasingNameWithCompletion };
 };
 
 export const useGetCasingOptions = () => {
@@ -76,7 +60,7 @@ export const useGetCasingOptions = () => {
         }
       })
       .forEach(casing => {
-        options.push({ key: casing.id, name: casing.name });
+        options.push({ key: casing.id, name: `${casing.completion.name} - ${casing.name}` });
       });
     return options;
   };

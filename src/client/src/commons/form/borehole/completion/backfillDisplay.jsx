@@ -7,7 +7,7 @@ import { deleteBackfill } from "../../../../api/fetchApiV2";
 
 const BackfillDisplay = props => {
   const { item, isEditable } = props;
-  const { getCasingName } = useGetCasingName();
+  const { getCasingNameWithCompletion } = useGetCasingName();
 
   return (
     <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteBackfill}>
@@ -20,7 +20,7 @@ const BackfillDisplay = props => {
         <FormDisplay label="materialBackfill" value={item?.material} type={FormDisplayType.Domain} />
       </StackFullWidth>
       <StackHalfWidth>
-        <FormDisplay label="casingName" value={getCasingName(item)} />
+        <FormDisplay label="casingName" value={getCasingNameWithCompletion(item)} />
       </StackHalfWidth>
       <FormDisplay label="notes" value={item?.notes} />
     </DataDisplayCard>

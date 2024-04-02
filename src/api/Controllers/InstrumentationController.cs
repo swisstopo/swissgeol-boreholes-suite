@@ -23,11 +23,7 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Instrumentation>> GetAsync([FromQuery] int? completionId = null)
     {
-        var instrumentations = Context.Instrumentations
-            .Include(i => i.Status)
-            .Include(i => i.Kind)
-            .Include(i => i.Casing)
-            .AsNoTracking();
+        var instrumentations = GetInstrumentationsWithIncludes();
 
         if (completionId != null)
         {
@@ -44,11 +40,7 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Instrumentation>> GetByIdAsync(int id)
     {
-        var instrumentation = await Context.Instrumentations
-            .Include(i => i.Status)
-            .Include(i => i.Kind)
-            .Include(i => i.Casing)
-            .AsNoTracking()
+        var instrumentation = await GetInstrumentationsWithIncludes()
             .SingleOrDefaultAsync(i => i.Id == id)
             .ConfigureAwait(false);
 
@@ -82,6 +74,15 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
     [Authorize(Policy = PolicyNames.Viewer)]
     public override Task<IActionResult> DeleteAsync(int id)
         => base.DeleteAsync(id);
+
+    private IQueryable<Instrumentation> GetInstrumentationsWithIncludes()
+    {
+        return Context.Instrumentations
+            .Include(i => i.Status)
+            .Include(i => i.Kind)
+            .Include(i => i.Casing).ThenInclude(c => c.Completion)
+            .AsNoTracking();
+    }
 
     /// <inheritdoc />
     protected override async Task<int?> GetBoreholeId(Instrumentation entity)
