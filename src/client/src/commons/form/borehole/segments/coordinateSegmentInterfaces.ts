@@ -1,3 +1,6 @@
+import { User } from "./userInterface";
+import { Borehole } from "../boreholeInterface";
+
 export enum ReferenceSystemCode {
   LV95 = 20104001,
   LV03 = 20104002,
@@ -74,9 +77,19 @@ export interface CoordinatesSegmentProps {
   size: string;
   borehole: Borehole;
   user: User;
-  updateChange: (fieldName: keyof Borehole["data"] | "location", value: any, to?: boolean) => void;
+  updateChange: (
+    fieldName: keyof Borehole["data"] | "location",
+    value: string | number | null | (number | string | null)[],
+    to?: boolean,
+  ) => void;
   updateNumber: (fieldName: keyof Borehole["data"], value: number | null) => void;
   checkLock: () => boolean;
   mapPointChange: boolean;
   setMapPointChange: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export interface Location {
+  country: string;
+  canton: string;
+  municipality: string;
 }

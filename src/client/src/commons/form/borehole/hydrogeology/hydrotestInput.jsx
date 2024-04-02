@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useHydrotestDomains, useDomains, addHydrotest, updateHydrotest } from "../../../../api/fetchApiV2";
 import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { getTestResultParameterUnits } from "./parameterUnits";
+import { getHydrotestParameterUnits } from "./parameterUnits";
 import Delete from "@mui/icons-material/Delete";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
 import { PromptContext } from "../../../../components/prompt/promptContext";
@@ -135,7 +135,7 @@ const HydrotestInput = props => {
     formMethods.getValues()["hydrotestResults"].forEach((element, index) => {
       currentUnits = {
         ...currentUnits,
-        [index]: getTestResultParameterUnits(element.parameterId, domains),
+        [index]: getHydrotestParameterUnits(element.parameterId, domains.data),
       };
     });
     setUnits(currentUnits);
@@ -308,7 +308,7 @@ const HydrotestInput = props => {
                           name: d[i18n.language],
                         }))}
                       onUpdate={value => {
-                        setUnits({ ...units, [index]: getTestResultParameterUnits(value, domains) });
+                        setUnits({ ...units, [index]: getHydrotestParameterUnits(value, domains.data) });
                       }}
                     />
                     <FormInput
