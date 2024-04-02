@@ -158,7 +158,7 @@ export const newEditableBorehole = () => {
 
 export const newUneditableBorehole = () => {
   loginAsAdmin();
-  cy.visit("/editor");
+  cy.visit("/");
   cy.contains("a", "New").click();
   cy.contains("button", "Create").click();
   const id = waitForCreation();
@@ -210,7 +210,7 @@ export const createBorehole = values => {
 export const createAndEditBoreholeAsAdmin = values => {
   return createBorehole(values).then(value => {
     loginAsAdmin();
-    cy.visit(`/editor/${value}`);
+    cy.visit(`/${value}`);
   });
 };
 

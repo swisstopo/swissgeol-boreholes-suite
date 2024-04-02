@@ -3,7 +3,7 @@ import { loginAsAdmin } from "./helpers/testHelpers";
 describe("Hierachical data filter tests", () => {
   it("check visible filters", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.contains("span", "Chronostratigraphy").click();
     cy.get("Show all fields").should("not.exist");
     cy.get('[data-cy="hierarchical-data-search"]').should("have.length", 7);
@@ -14,7 +14,7 @@ describe("Hierachical data filter tests", () => {
 
   it("check sorting of filter values", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.contains("span", "Chronostratigraphy").click();
     let periodsDropdown = cy.contains("label", "Period").next();
     periodsDropdown.click();
@@ -49,7 +49,7 @@ describe("Hierachical data filter tests", () => {
       "late Burdigalian",
     ];
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.contains("span", "Chronostratigraphy").click();
     cy.get('[data-cy="hierarchical-data-search"]')
       .eq(filterValues.length - 1)

@@ -7,7 +7,7 @@ describe("Tests for the data cards in the editor.", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/editor/${id}/hydrogeology/wateringress`);
+      cy.visit(`/${id}/hydrogeology/wateringress`);
     });
 
     startBoreholeEditing();
@@ -36,7 +36,7 @@ describe("Tests for the data cards in the editor.", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/editor/${id}/hydrogeology/wateringress`);
+      cy.visit(`/${id}/hydrogeology/wateringress`);
     });
     startBoreholeEditing();
 

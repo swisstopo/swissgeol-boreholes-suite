@@ -3,7 +3,7 @@ import { loginAsAdmin, getImportFileFromFixtures } from "../../e2e/helpers/testH
 describe("Test for importing boreholes.", () => {
   it("Successfully imports multiple boreholes.", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.contains("a", "Import").click();
 
     // Select borehole csv file
@@ -71,7 +71,7 @@ describe("Test for importing boreholes.", () => {
 
   it("Displays borehole validation errors.", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.contains("a", "Import").click();
 
     // Select borehole csv file
@@ -111,7 +111,7 @@ describe("Test for importing boreholes.", () => {
 
   it("Displays lithology validation errors.", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.contains("a", "Import").click();
 
     // Select borehole csv file

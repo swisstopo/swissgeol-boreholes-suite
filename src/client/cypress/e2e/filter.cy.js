@@ -44,7 +44,7 @@ describe("Search filter tests", () => {
   it("checks that the registration filter settings control the filter visibility.", () => {
     // precondition filters not visible
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.contains("Registration").click();
     cy.contains("Show all fields")
       .next()
@@ -56,7 +56,6 @@ describe("Search filter tests", () => {
     // turn on registration filters
     cy.get('[data-cy="menu"]').click();
     cy.contains("h4", "Settings").click();
-    cy.contains("Editor").click();
     cy.contains("Registration filters").click();
     cy.contains("Select all").click();
     cy.wait("@setting");
@@ -70,7 +69,6 @@ describe("Search filter tests", () => {
     // reset setting
     cy.get('[data-cy="menu"]').click();
     cy.contains("h4", "Settings").click();
-    cy.contains("Editor").click();
     cy.contains("Registration filters").click();
     cy.contains("Unselect all").click();
     cy.wait("@setting");
@@ -78,7 +76,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by creator name", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -97,7 +95,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by color and uscs3", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.contains("Lithology").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -145,7 +143,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by original lithology in editor mode", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     filterByOriginalLithology();
     cy.wait("@edit_list");
     cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 21);
@@ -153,7 +151,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by creation date", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 

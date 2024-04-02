@@ -28,7 +28,7 @@ describe("Tests for the wateringress editor.", () => {
     // open completion editor
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/editor/${id}/completion`);
+      cy.visit(`/${id}/completion`);
     });
 
     cy.wait("@get-completions-by-boreholeId");
@@ -84,7 +84,7 @@ describe("Tests for the wateringress editor.", () => {
       createWateringress(id, "2012-11-14T12:06Z", 15203157, 15203161, null, 0, 10);
       createWateringress(id, "2012-11-14T12:07Z", 15203157, 15203162, null, 0, 12);
       loginAsAdmin();
-      cy.visit(`/editor/${id}/hydrogeology/wateringress`);
+      cy.visit(`/${id}/hydrogeology/wateringress`);
     });
     startBoreholeEditing();
 

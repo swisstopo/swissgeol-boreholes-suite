@@ -9,16 +9,8 @@ const MenuSettings = props => {
 
   return (
     <div>
-      <ListItem
-        path="/editor"
-        name="done"
-        location={location}
-        history={history}
-        icon="arrow left"
-        t={t}
-        hasTranslation
-      />
-      <ListItem path="/setting/editor" name="Editor" location={location} history={history} icon="edit" />
+      <ListItem path="/" name="done" location={location} history={history} icon="arrow left" t={t} hasTranslation />
+      <ListItem path="/setting" name={t("header_settings")} location={location} history={history} icon="cog" />
 
       {props.user.data.admin === true && (
         <>

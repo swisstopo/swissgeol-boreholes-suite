@@ -56,8 +56,8 @@ class EditorComponent extends React.Component {
               width: "250px",
             }}>
             <Switch>
-              <Route component={MenuEditorSearch} exact path={"/editor"} />
-              <Route component={MenuEditorForm} path={"/editor/:id"} />
+              <Route component={MenuEditorSearch} exact path={"/"} />
+              <Route component={MenuEditorForm} path={"/:id"} />
             </Switch>
           </div>
 
@@ -71,7 +71,7 @@ class EditorComponent extends React.Component {
             <Switch>
               <Route
                 exact
-                path={"/editor"}
+                path={"/"}
                 render={() => (
                   <div
                     style={{
@@ -177,7 +177,7 @@ class EditorComponent extends React.Component {
               />
               <Route
                 exact={false}
-                path={"/editor/:id"}
+                path={"/:id"}
                 render={() => (
                   <div
                     style={{
@@ -207,7 +207,7 @@ class EditorComponent extends React.Component {
                   <WorkflowForm id={parseInt(match.params.id, 10)} />
                 </div>
               )}
-              path={"/editor/:id"}
+              path={"/:id"}
             />
           </Switch>
         </div>
@@ -275,7 +275,7 @@ const mapDispatchToProps = (dispatch, ownprops) => {
         type: "CLEAR",
         path: "/borehole",
       });
-      ownprops.history.push("/editor/" + id);
+      ownprops.history.push("/" + id);
     },
     multipleSelected: (selection, filter = null) => {
       dispatch({
