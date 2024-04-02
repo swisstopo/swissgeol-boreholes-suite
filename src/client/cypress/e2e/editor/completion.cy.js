@@ -553,6 +553,7 @@ describe("completion crud tests", () => {
 
     // save header changes, cancel content changes
     startEditing("instrumentation-card.0");
+    cy.wait("@casing_GET");
     setInput("notes", "Lorem.");
     startEditHeader();
     setInput("name", "Compl-1 updated", "completion-header");
@@ -582,6 +583,7 @@ describe("completion crud tests", () => {
     // save header changes, save content changes
     cy.get('[data-cy="instrumentation-card.0"]').should("be.visible");
     startEditing("instrumentation-card.0");
+    cy.wait("@casing_GET");
     setInput("notes", "Lorem.");
     startEditHeader();
     setInput("name", "Compl-1 updated again and again", "completion-header");
