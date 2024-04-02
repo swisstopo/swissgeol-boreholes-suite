@@ -39,10 +39,10 @@ const SettingCmp = () => {
             overflowY: "auto",
           }}>
           <Switch>
-            <Route component={EditorSettings} path={"/setting/editor"} />
             <Route component={AdminSettings} path={"/setting/admin"} />
             <Route component={TermSettings} path={"/setting/term"} />
             <Route component={AboutSettings} path={"/setting/about"} />
+            <Route component={EditorSettings} path={"/setting"} exact />
           </Switch>
         </div>
       </div>

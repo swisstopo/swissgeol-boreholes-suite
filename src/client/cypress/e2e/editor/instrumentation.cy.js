@@ -28,7 +28,7 @@ describe("Instrumentation crud tests", () => {
     // open completion editor
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/editor/${id}/completion`);
+      cy.visit(`/${id}/completion`);
     });
 
     cy.wait("@get-completions-by-boreholeId");
@@ -77,6 +77,7 @@ describe("Instrumentation crud tests", () => {
     cy.contains("casing-1");
     cy.contains("222");
     cy.contains("inactive");
+    evaluateDisplayValue("casingName", "test instruments - casing-1");
 
     startEditing();
     cy.wait("@casing_GET");

@@ -265,7 +265,7 @@ class BoreholeForm extends React.Component {
         <Switch>
           <Route
             exact
-            path={"/editor/:id"}
+            path={"/:id"}
             render={() => (
               <div
                 style={{
@@ -301,7 +301,7 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={"/editor/:id/borehole"}
+            path={"/:id/borehole"}
             render={() => (
               <div
                 style={{
@@ -328,40 +328,40 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={"/editor/:id/stratigraphy"}
+            path={"/:id/stratigraphy"}
             render={() => <Profile id={parseInt(this.props.match.params.id, 10)} unlocked={isEditable} />}
           />
           <Route
             exact
-            path={"/editor/:id/stratigraphy/chronostratigraphy"}
+            path={"/:id/stratigraphy/chronostratigraphy"}
             render={() => (
               <ChronostratigraphyPanel id={parseInt(this.props.match.params.id, 10)} isEditable={isEditable} />
             )}
           />
           <Route
             exact
-            path={"/editor/:id/stratigraphy/lithostratigraphy"}
+            path={"/:id/stratigraphy/lithostratigraphy"}
             render={() => (
               <LithostratigraphyPanel id={parseInt(this.props.match.params.id, 10)} isEditable={isEditable} />
             )}
           />
           <Route
             exact
-            path={"/editor/:id/attachments"}
+            path={"/:id/attachments"}
             render={() => (
               <EditorBoreholeFilesTable id={parseInt(this.props.match.params.id, 10)} unlocked={isEditable} />
             )}
           />
           <Route
             exact
-            path={"/editor/:id/hydrogeology/wateringress"}
+            path={"/:id/hydrogeology/wateringress"}
             render={() => (
               <WaterIngress isEditable={isEditable} boreholeId={parseInt(this.props.match.params.id, 10)} />
             )}
           />
           <Route
             exact
-            path={"/editor/:id/hydrogeology/groundwaterlevelmeasurement"}
+            path={"/:id/hydrogeology/groundwaterlevelmeasurement"}
             render={() => (
               <GroundwaterLevelMeasurement
                 isEditable={isEditable}
@@ -371,19 +371,19 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={"/editor/:id/hydrogeology/fieldmeasurement"}
+            path={"/:id/hydrogeology/fieldmeasurement"}
             render={() => (
               <FieldMeasurement isEditable={isEditable} boreholeId={parseInt(this.props.match.params.id, 10)} />
             )}
           />
           <Route
             exact
-            path={"/editor/:id/hydrogeology/hydrotest"}
+            path={"/:id/hydrogeology/hydrotest"}
             render={() => <Hydrotest isEditable={isEditable} boreholeId={parseInt(this.props.match.params.id, 10)} />}
           />
           <Route
             exact
-            path={"/editor/:id/hydrogeology/groundwaterlevelmeasurement"}
+            path={"/:id/hydrogeology/groundwaterlevelmeasurement"}
             render={() => (
               <GroundwaterLevelMeasurement
                 isEditable={isEditable}
@@ -391,11 +391,8 @@ class BoreholeForm extends React.Component {
               />
             )}
           />
-          <Route
-            path={"/editor/:boreholeId/completion/:completionId"}
-            render={() => <Completion isEditable={isEditable} />}
-          />
-          <Route path={"/editor/:boreholeId/completion"} render={() => <Completion isEditable={isEditable} />} />
+          <Route path={"/:boreholeId/completion/:completionId"} render={() => <Completion isEditable={isEditable} />} />
+          <Route path={"/:boreholeId/completion"} render={() => <Completion isEditable={isEditable} />} />
         </Switch>
       </Dimmer.Dimmable>
     );

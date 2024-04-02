@@ -4,7 +4,7 @@ describe("Codelist translations tests", () => {
   it("Admin can open codelist translation section", () => {
     // Login and navigate to editor settings
     loginAsAdmin();
-    cy.visit("/setting/editor");
+    cy.visit("/setting");
 
     cy.get("button").should("not.contain", "Collapse");
 
@@ -15,7 +15,7 @@ describe("Codelist translations tests", () => {
 
   it("Admin can edit translations", () => {
     loginAsAdmin();
-    cy.visit("/setting/editor");
+    cy.visit("/setting");
     cy.contains("div", "Codelist translations").parent("div").children("div").find("button").click();
 
     cy.contains("p", "compactness").click();
@@ -73,14 +73,14 @@ describe("Codelist translations tests", () => {
 
   it("Editor cannot open codelist translation section", () => {
     loginAsEditor();
-    cy.visit("/setting/editor");
+    cy.visit("/setting");
     // Codelist translation section is not available
     cy.get("div").should("not.contain", "Codelist translations");
   });
 
   it("Admin can edit order", () => {
     loginAsAdmin();
-    cy.visit("/setting/editor");
+    cy.visit("/setting");
     cy.contains("div", "Codelist translations").parent("div").children("div").find("button").click();
 
     cy.contains("p", "custom.cuttings").click();

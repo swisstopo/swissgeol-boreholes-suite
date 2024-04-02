@@ -32,7 +32,7 @@ describe("Backfill crud tests", () => {
   it("adds, edits and deletes backfills", () => {
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/editor/${id}/completion`);
+      cy.visit(`/${id}/completion`);
     });
     cy.wait("@get-completions-by-boreholeId");
 
@@ -74,6 +74,7 @@ describe("Backfill crud tests", () => {
     cy.contains("casing-1");
     cy.contains("222");
     cy.contains("inactive");
+    evaluateDisplayValue("casingName", "test backfill - casing-1");
 
     startEditing();
     cy.wait("@casing_GET");
@@ -102,7 +103,7 @@ describe("Backfill crud tests", () => {
 
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/editor/${id}/completion`);
+      cy.visit(`/${id}/completion`);
       startBoreholeEditing();
     });
     cy.get("[data-cy=completion-content-tab-backfill]").click();

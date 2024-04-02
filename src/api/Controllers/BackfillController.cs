@@ -78,7 +78,7 @@ public class BackfillController : BdmsControllerBase<Backfill>
         return Context.Backfills
             .Include(b => b.Material)
             .Include(b => b.Kind)
-            .Include(b => b.Casing)
+            .Include(b => b.Casing).ThenInclude(c => c.Completion)
             .AsNoTracking();
     }
 

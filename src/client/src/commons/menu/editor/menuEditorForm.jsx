@@ -69,7 +69,7 @@ class MenuEditorForm extends React.Component {
                   delete: false,
                 },
                 () => {
-                  history.push("/editor");
+                  history.push("/");
                 },
               );
             }}
@@ -84,13 +84,13 @@ class MenuEditorForm extends React.Component {
             </List.Content>
           </List.Item>
           <List.Item
-            active={location.pathname === "/editor/" + match.params.id}
+            active={location.pathname === "/" + match.params.id}
             onClick={() => {
-              history.push("/editor/" + match.params.id);
+              history.push("/" + match.params.id);
             }}
             style={{
               padding: "1em",
-              borderLeft: location.pathname === "/editor/" + match.params.id ? "0.25em solid rgb(237, 29, 36)" : null,
+              borderLeft: location.pathname === "/" + match.params.id ? "0.25em solid rgb(237, 29, 36)" : null,
             }}>
             <List.Icon name="map marker" size="large" verticalAlign="middle" />
             <List.Content>
@@ -100,14 +100,13 @@ class MenuEditorForm extends React.Component {
             </List.Content>
           </List.Item>
           <List.Item
-            active={location.pathname === `/editor/${match.params.id}/borehole`}
+            active={location.pathname === `/${match.params.id}/borehole`}
             onClick={() => {
-              history.push(`/editor/${match.params.id}/borehole`);
+              history.push(`/${match.params.id}/borehole`);
             }}
             style={{
               padding: "1em",
-              borderLeft:
-                location.pathname === `/editor/${match.params.id}/borehole` ? "0.25em solid rgb(237, 29, 36)" : null,
+              borderLeft: location.pathname === `/${match.params.id}/borehole` ? "0.25em solid rgb(237, 29, 36)" : null,
             }}>
             <List.Icon name="info" size="large" verticalAlign="middle" />
             <List.Content>
@@ -127,9 +126,9 @@ class MenuEditorForm extends React.Component {
               padding: "1em",
               display: "flex",
               borderLeft: [
-                `/editor/${match.params.id}/stratigraphy`,
-                `/editor/${match.params.id}/stratigraphy/chronostratigraphy`,
-                `/editor/${match.params.id}/stratigraphy/lithostratigraphy`,
+                `/${match.params.id}/stratigraphy`,
+                `/${match.params.id}/stratigraphy/chronostratigraphy`,
+                `/${match.params.id}/stratigraphy/lithostratigraphy`,
               ].includes(location.pathname)
                 ? "0.25em solid rgb(237, 29, 36)"
                 : null,
@@ -148,18 +147,16 @@ class MenuEditorForm extends React.Component {
           {this.state.stratigraphyIsVisible && (
             <>
               <List.Item
-                active={location.pathname === `/editor/${match.params.id}/stratigraphy`}
+                active={location.pathname === `/${match.params.id}/stratigraphy`}
                 onClick={() => {
-                  history.push(`/editor/${match.params.id}/stratigraphy`);
+                  history.push(`/${match.params.id}/stratigraphy`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname === `/editor/${match.params.id}/stratigraphy`
-                      ? "0.25em solid rgb(237, 29, 36)"
-                      : null,
+                    location.pathname === `/${match.params.id}/stratigraphy` ? "0.25em solid rgb(237, 29, 36)" : null,
                 }}>
                 <List.Icon name="align justify" size="large" verticalAlign="middle" />
                 <List.Content>
@@ -169,16 +166,16 @@ class MenuEditorForm extends React.Component {
                 </List.Content>
               </List.Item>
               <List.Item
-                active={location.pathname === `/editor/${match.params.id}/stratigraphy/chronostratigraphy`}
+                active={location.pathname === `/${match.params.id}/stratigraphy/chronostratigraphy`}
                 onClick={() => {
-                  history.push(`/editor/${match.params.id}/stratigraphy/chronostratigraphy`);
+                  history.push(`/${match.params.id}/stratigraphy/chronostratigraphy`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname === `/editor/${match.params.id}/stratigraphy/chronostratigraphy`
+                    location.pathname === `/${match.params.id}/stratigraphy/chronostratigraphy`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -190,16 +187,16 @@ class MenuEditorForm extends React.Component {
                 </List.Content>
               </List.Item>
               <List.Item
-                active={location.pathname === `/editor/${match.params.id}/stratigraphy/lithostratigraphy`}
+                active={location.pathname === `/${match.params.id}/stratigraphy/lithostratigraphy`}
                 onClick={() => {
-                  history.push(`/editor/${match.params.id}/stratigraphy/lithostratigraphy`);
+                  history.push(`/${match.params.id}/stratigraphy/lithostratigraphy`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname === `/editor/${match.params.id}/stratigraphy/lithostratigraphy`
+                    location.pathname === `/${match.params.id}/stratigraphy/lithostratigraphy`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -221,7 +218,7 @@ class MenuEditorForm extends React.Component {
             style={{
               padding: "1em",
               display: "flex",
-              borderLeft: [`/editor/${match.params.id}/hydrogeology/watgeringress`].includes(location.pathname)
+              borderLeft: [`/${match.params.id}/hydrogeology/watgeringress`].includes(location.pathname)
                 ? "0.25em solid rgb(237, 29, 36)"
                 : null,
             }}>
@@ -247,16 +244,16 @@ class MenuEditorForm extends React.Component {
           {this.state.hydrogeologyIsVisible && (
             <>
               <List.Item
-                active={location.pathname === `/editor/${match.params.id}/hydrogeology/wateringress`}
+                active={location.pathname === `/${match.params.id}/hydrogeology/wateringress`}
                 onClick={() => {
-                  history.push(`/editor/${match.params.id}/hydrogeology/wateringress`);
+                  history.push(`/${match.params.id}/hydrogeology/wateringress`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname === `/editor/${match.params.id}/hydrogeology/wateringress`
+                    location.pathname === `/${match.params.id}/hydrogeology/wateringress`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -276,16 +273,16 @@ class MenuEditorForm extends React.Component {
                 </List.Content>
               </List.Item>
               <List.Item
-                active={location.pathname === `/editor/${match.params.id}/hydrogeology/hydrotest`}
+                active={location.pathname === `/${match.params.id}/hydrogeology/hydrotest`}
                 onClick={() => {
-                  history.push(`/editor/${match.params.id}/hydrogeology/hydrotest`);
+                  history.push(`/${match.params.id}/hydrogeology/hydrotest`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname === `/editor/${match.params.id}/hydrogeology/hydrotest`
+                    location.pathname === `/${match.params.id}/hydrogeology/hydrotest`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -309,16 +306,16 @@ class MenuEditorForm extends React.Component {
           {this.state.hydrogeologyIsVisible && (
             <>
               <List.Item
-                active={location.pathname === `/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`}
+                active={location.pathname === `/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`}
                 onClick={() => {
-                  history.push(`/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`);
+                  history.push(`/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname === `/editor/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`
+                    location.pathname === `/${match.params.id}/hydrogeology/groundwaterlevelmeasurement`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -338,16 +335,16 @@ class MenuEditorForm extends React.Component {
                 </List.Content>
               </List.Item>
               <List.Item
-                active={location.pathname === `/editor/${match.params.id}/hydrogeology/fieldmeasurement`}
+                active={location.pathname === `/${match.params.id}/hydrogeology/fieldmeasurement`}
                 onClick={() => {
-                  history.push(`/editor/${match.params.id}/hydrogeology/fieldmeasurement`);
+                  history.push(`/${match.params.id}/hydrogeology/fieldmeasurement`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname === `/editor/${match.params.id}/hydrogeology/fieldmeasurement`
+                    location.pathname === `/${match.params.id}/hydrogeology/fieldmeasurement`
                       ? "0.25em solid rgb(237, 29, 36)"
                       : null,
                 }}>
@@ -369,14 +366,14 @@ class MenuEditorForm extends React.Component {
             </>
           )}
           <List.Item
-            active={location.pathname.includes(`/editor/${match.params.id}/completion`)}
+            active={location.pathname.includes(`/${match.params.id}/completion`)}
             onClick={() => {
-              history.push(`/editor/${match.params.id}/completion`);
+              history.push(`/${match.params.id}/completion`);
             }}
             style={{
               padding: "1em",
               display: "flex",
-              borderLeft: location.pathname.includes(`/editor/${match.params.id}/completion`)
+              borderLeft: location.pathname.includes(`/${match.params.id}/completion`)
                 ? "0.25em solid rgb(237, 29, 36)"
                 : null,
             }}>
@@ -386,7 +383,7 @@ class MenuEditorForm extends React.Component {
               style={{
                 height: "1.5em",
                 paddingRight: "1em",
-                opacity: location.pathname === `/editor/${match.params.id}/completion` ? 1 : 0.5,
+                opacity: location.pathname === `/${match.params.id}/completion` ? 1 : 0.5,
               }}
             />
             <List.Content>
@@ -396,14 +393,14 @@ class MenuEditorForm extends React.Component {
             </List.Content>
           </List.Item>
           <List.Item
-            active={location.pathname === `/editor/${match.params.id}/attachments`}
+            active={location.pathname === `/${match.params.id}/attachments`}
             onClick={() => {
-              history.push(`/editor/${match.params.id}/attachments`);
+              history.push(`/${match.params.id}/attachments`);
             }}
             style={{
               padding: "1em",
               borderLeft:
-                location.pathname === `/editor/${match.params.id}/attachments` ? "0.25em solid rgb(237, 29, 36)" : null,
+                location.pathname === `/${match.params.id}/attachments` ? "0.25em solid rgb(237, 29, 36)" : null,
             }}>
             <List.Icon name="attach" size="large" verticalAlign="middle" />
             <List.Content>
@@ -698,7 +695,7 @@ class MenuEditorForm extends React.Component {
                     },
                     () => {
                       deleteBorehole(borehole.data.id).then(function () {
-                        history.push("/editor");
+                        history.push("/");
                       });
                     },
                   );

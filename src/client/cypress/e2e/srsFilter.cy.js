@@ -4,13 +4,12 @@ describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {
     cy.get("i[class='th big icon']").click();
     cy.contains("h4", "Settings").click();
-    cy.contains("h3", "Editor").click();
     cy.contains("div", "Location filters").click();
   }
 
   it("can set filters as editor", () => {
     loginAsAdmin();
-    cy.visit("/editor");
+    cy.visit("/");
     goToEditorLocationFilter();
 
     cy.contains("div", "Spatial reference system").children().first().children().first().as("checkbox");
