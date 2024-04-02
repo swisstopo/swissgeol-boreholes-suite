@@ -4,7 +4,6 @@ describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {
     cy.get("i[class='th big icon']").click();
     cy.contains("h4", "Settings").click();
-    cy.contains("h3", "Editor").click();
     cy.contains("div", "Location filters").click();
   }
 

@@ -3,13 +3,13 @@ import { loginAsAdmin } from "../e2e/helpers/testHelpers";
 describe("Search filter tests", () => {
   it("has search filters", () => {
     loginAsAdmin();
-
+    cy.visit("/");
     cy.contains("Search filters:");
   });
 
   it("shows the correct dropdowns", () => {
     loginAsAdmin();
-
+    cy.visit("/");
     cy.contains("span", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
     let indentifierDropdown = cy.contains("label", "ID type").next();
@@ -56,7 +56,6 @@ describe("Search filter tests", () => {
     // turn on registration filters
     cy.get('[data-cy="menu"]').click();
     cy.contains("h4", "Settings").click();
-    cy.contains("Editor").click();
     cy.contains("Registration filters").click();
     cy.contains("Select all").click();
     cy.wait("@setting");
@@ -70,7 +69,6 @@ describe("Search filter tests", () => {
     // reset setting
     cy.get('[data-cy="menu"]').click();
     cy.contains("h4", "Settings").click();
-    cy.contains("Editor").click();
     cy.contains("Registration filters").click();
     cy.contains("Unselect all").click();
     cy.wait("@setting");
@@ -182,7 +180,7 @@ describe("Search filter tests", () => {
 
   it("filters boreholes by workgroup", () => {
     loginAsAdmin();
-
+    cy.visit("/");
     cy.contains("Workgroup").click();
     cy.contains("Default").click();
     cy.wait("@borehole");
