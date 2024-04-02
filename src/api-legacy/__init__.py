@@ -33,7 +33,6 @@ from bms.v1.borehole.identifier import IdentifierViewerHandler
 
 # Profiles layers's ACTION Handlers
 from bms.v1.borehole.profile.layer.viewer import ProfileLayerViewerHandler
-from bms.v1.borehole.profile.layer.producer import ProfileLayerProducerHandler
 
 # Stratigraphy's layers handlers
 from bms.v1.borehole.stratigraphy.layer.producer import LayerProducerHandler
@@ -64,7 +63,6 @@ from bms.v1.geoapi import Wms
 # User actions
 from bms.v1.user.handler import UserHandler
 from bms.v1.user.admin import AdminHandler
-from bms.v1.user import CheckUsername
 
 # Workgroup actions
 from bms.v1.user.workgrpup.admin import WorkgroupAdminHandler

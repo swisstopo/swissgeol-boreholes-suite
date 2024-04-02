@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from typing import List
 from bms.v1.action import Action
 from bms.v1.borehole.get import GetBorehole
 from bms.v1.borehole.profile import ValidateProfile
