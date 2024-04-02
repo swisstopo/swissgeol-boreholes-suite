@@ -7,6 +7,7 @@ describe("General app tests", () => {
 
     // Fail GET of auth setting to prevent auto login.
     cy.intercept("/api/v2/settings/auth", req => req.destroy());
+
     cy.visit("/");
     cy.contains("Welcome to");
 
@@ -26,7 +27,6 @@ describe("General app tests", () => {
   it("Displays the current host as app title", () => {
     loginAsEditor();
     cy.visit("/");
-
     cy.get('[data-cy="app-title"]').contains("localhost");
   });
 });
