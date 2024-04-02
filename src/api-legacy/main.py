@@ -107,8 +107,6 @@ if __name__ == "__main__":
     options.parse_command_line()
 
     from bms import (
-        # Internationalization
-        LocalesHandler,
 
         # Exceptions
         BmsDatabaseException,
@@ -156,11 +154,9 @@ if __name__ == "__main__":
 
     application = web.Application([
 
-        # Translations service
-        (r'/api/v1/locale/(?P<lng>.+)/(?P<ns>\w*)', LocalesHandler),
-
-        # Borehole handlers
         (r'/api/v1/setting', SettingHandler),
+
+        # User handlers
         (r'/api/v1/user', UserHandler),
         (r'/api/v1/user/edit', AdminHandler),
 
@@ -169,7 +165,6 @@ if __name__ == "__main__":
         # Borehole handlers
         (r'/api/v1/borehole', BoreholeViewerHandler),
         (r'/api/v1/borehole/edit', BoreholeProducerHandler),
-        (r'/api/v1/borehole/edit/import', BoreholeProducerHandler),
 
         # Stratigraphy handlers
         (r'/api/v1/borehole/identifier', IdentifierViewerHandler),
