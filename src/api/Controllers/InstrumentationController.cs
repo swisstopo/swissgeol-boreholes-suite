@@ -75,7 +75,7 @@ public class InstrumentationController : BdmsControllerBase<Instrumentation>
     public override Task<IActionResult> DeleteAsync(int id)
         => base.DeleteAsync(id);
 
-        private IQueryable<Instrumentation> GetInstrumentationsWithIncludes()
+    private IQueryable<Instrumentation> GetInstrumentationsWithIncludes()
     {
         return Context.Instrumentations
             .Include(i => i.Status)
