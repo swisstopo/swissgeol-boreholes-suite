@@ -4,12 +4,12 @@ import Casing from "./casing";
 import Backfill from "./backfill";
 import Instrumentation from "./instrumentation";
 import { Stack } from "@mui/material";
-import { CompletionBox, CompletionTabs, CompletionTab } from "./styledComponents";
+import { BdmsTabContentBox, BdmsTabs, BdmsTab } from "../../../../components/styledTabComponents";
 import { useTranslation } from "react-i18next";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext";
 
 const CompletionContentTabBox = props => {
-  return <CompletionBox flex="1 0 0">{props.children()}</CompletionBox>;
+  return <BdmsTabContentBox flex="1 0 0">{props.children()}</BdmsTabContentBox>;
 };
 export const MemoizedCompletionContentTabBox = React.memo(CompletionContentTabBox);
 
@@ -75,17 +75,17 @@ const CompletionContent = ({ completion, isEditable }) => {
   return (
     <Stack direction="column" flex="1 0 0">
       <Stack direction="row" justifyContent="space-between" alignItems="center" flex="0 1 auto">
-        <CompletionTabs value={activeIndex} onChange={handleCompletionChanged}>
+        <BdmsTabs value={activeIndex} onChange={handleCompletionChanged}>
           {tabs.map((tab, index) => {
             return (
-              <CompletionTab
+              <BdmsTab
                 data-cy={"completion-content-tab-" + tab.hash}
                 label={tab.label === null || tab.label === "" ? t("common:np") : tab.label}
                 key={index}
               />
             );
           })}
-        </CompletionTabs>
+        </BdmsTabs>
       </Stack>
       {
         // eslint-disable-next-line react/no-children-prop
