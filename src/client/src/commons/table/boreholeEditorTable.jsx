@@ -197,6 +197,7 @@ class BoreholeEditorTable extends TTable {
         {this.canEdit && (
           <Table.HeaderCell style={{ width: "2em" }}>
             <Checkbox
+              data-cy="select-all-checkbox"
               checked={all === true}
               onClick={e => {
                 e.stopPropagation();
@@ -235,7 +236,7 @@ class BoreholeEditorTable extends TTable {
           }}
           style={{ width: "2em" }}>
           {item.lock === null ? (
-            <Checkbox checked={this.inSelection(item.id)} />
+            <Checkbox data-cy="select-checkbox" checked={this.inSelection(item.id)} />
           ) : (
             <Icon color="red" name="lock" size="small" />
           )}
