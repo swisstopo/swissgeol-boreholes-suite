@@ -78,6 +78,7 @@ describe("Tests the publication workflow.", () => {
     cy.contains("a", "Start editing").click();
     cy.contains("span", "Restart the workflow").click();
     cy.get("[data-cy=workflow_dialog_confirm_restart]").click();
+    cy.wait("@workflow_edit_list");
 
     verifyStatusTextsInHeader(["edit"]);
     verifyStatusTextsNotInHeader(["control", "valid", "public"]);
