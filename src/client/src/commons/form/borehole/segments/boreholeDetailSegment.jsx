@@ -40,7 +40,7 @@ const BoreholeDetailSegment = props => {
               onSelected={selected => {
                 updateChange("custom.qt_depth", selected.id, false);
               }}
-              schema="custom.qt_top_bedrock"
+              schema="depth_precision"
               selected={borehole.data.custom.qt_depth}
               readOnly={!isEditable}
             />
@@ -73,7 +73,7 @@ const BoreholeDetailSegment = props => {
               onSelected={selected => {
                 updateChange("qt_total_depth_tvd", selected.id, false);
               }}
-              schema="custom.qt_top_bedrock"
+              schema="depth_precision"
               selected={borehole.data.qt_total_depth_tvd}
               readOnly={!isEditable}
             />

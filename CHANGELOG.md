@@ -5,6 +5,7 @@
 ### Changed
 
 - Disabled viewer mode, moved map settings from viewer settings to editor settings.
+- Renamed codelist `custom.qt_top_bedrock` to `depth_precision`.
 - Placed `casing_elements` inputs on two lines for better readability.
 - Sorted common.json files alphabetically.
 
