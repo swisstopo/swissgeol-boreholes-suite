@@ -43,6 +43,7 @@ class BoreholeEditorTable extends TTable {
     this.getHeaderLabel = this.getHeaderLabel.bind(this);
     this.getHeader = this.getHeader.bind(this);
     this.getCols = this.getCols.bind(this);
+    this.canEdit = this.props.user.data.roles.includes("EDIT");
   }
 
   componentDidMount() {
@@ -193,18 +194,21 @@ class BoreholeEditorTable extends TTable {
     const { all } = this.state;
     return (
       <Table.Row>
-        <Table.HeaderCell style={{ width: "2em" }}>
-          <Checkbox
-            checked={all === true}
-            onClick={e => {
-              e.stopPropagation();
-              this.setState({
-                all: !all,
-                selected: [],
-              });
-            }}
-          />
-        </Table.HeaderCell>
+        {this.canEdit && (
+          <Table.HeaderCell style={{ width: "2em" }}>
+            <Checkbox
+              data-cy="select-all-checkbox"
+              checked={all === true}
+              onClick={e => {
+                e.stopPropagation();
+                this.setState({
+                  all: !all,
+                  selected: [],
+                });
+              }}
+            />
+          </Table.HeaderCell>
+        )}
         {this.getHeaderLabel("workgroup")}
         {this.getHeaderLabel("creationdate")}
         {this.getHeaderLabel("createdBy")}
@@ -221,21 +225,23 @@ class BoreholeEditorTable extends TTable {
   getCols(item, idx) {
     let colIdx = 0;
     return [
-      <Table.Cell
-        key={this.uid + "_" + idx + "_" + colIdx++}
-        onClick={e => {
-          e.stopPropagation();
-          if (item.lock === null) {
-            this.add2selection(item.id);
-          }
-        }}
-        style={{ width: "2em" }}>
-        {item.lock === null ? (
-          <Checkbox checked={this.inSelection(item.id)} />
-        ) : (
-          <Icon color="red" name="lock" size="small" />
-        )}
-      </Table.Cell>,
+      this.canEdit && (
+        <Table.Cell
+          key={this.uid + "_" + idx + "_" + colIdx++}
+          onClick={e => {
+            e.stopPropagation();
+            if (item.lock === null) {
+              this.add2selection(item.id);
+            }
+          }}
+          style={{ width: "2em" }}>
+          {item.lock === null ? (
+            <Checkbox data-cy="select-checkbox" checked={this.inSelection(item.id)} />
+          ) : (
+            <Icon color="red" name="lock" size="small" />
+          )}
+        </Table.Cell>
+      ),
       <Table.Cell key={this.uid + "_" + idx + "_" + colIdx++}>
         <span
           style={{
