@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { AuthProvider } from "react-oidc-context";
-import { UserManager, WebStorageStateStore } from "oidc-client-ts";
+import { WebStorageStateStore } from "oidc-client-ts";
 import { CircularProgress } from "@mui/material";
-import { CognitoLogoutHandler } from "./CognitoLogoutHandler.js";
+import { CognitoUserManager } from "./CognitoUserManager";
 import { AuthenticationStoreSync } from "./AuthenticationStoreSync.js";
 import { SplashScreen } from "./SplashScreen";
 import { AuthOverlay } from "./AuthOverlay";
@@ -30,7 +30,7 @@ export const BdmsAuthProvider = props => {
       userStore: new WebStorageStateStore({ store: window.localStorage }),
     };
 
-    var userManager = new UserManager(oidcClientSettings);
+    var userManager = new CognitoUserManager(oidcClientSettings);
 
     const onSigninCallback = user => {
       const preLoginState = JSON.parse(atob(user.url_state));
@@ -47,7 +47,6 @@ export const BdmsAuthProvider = props => {
   return oidcConfig ? (
     <AuthProvider {...oidcConfig}>
       <AuthenticationStoreSync />
-      <CognitoLogoutHandler userManager={oidcConfig.userManager} />
       <AuthOverlay>{props.children}</AuthOverlay>
     </AuthProvider>
   ) : (
