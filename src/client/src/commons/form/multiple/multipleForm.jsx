@@ -61,7 +61,7 @@ class MultipleForm extends React.Component {
         inclination_direction: { api: "inclination_direction", value: null },
         qt_bore_inc_dir: { api: "custom.qt_bore_inc_dir", value: null },
         totaldepth: { api: "total_depth", value: null },
-        qt_depth: { api: "custom.qt_top_bedrock", value: null },
+        qt_depth: { api: "depth_precision", value: null },
         total_depth_tvd: { api: "total_depth_tvd", value: null },
         total_depth_tvd_qt: { api: "qt_total_depth_tvd", value: null },
         top_bedrock: { api: "extended.top_bedrock", value: null },
@@ -401,11 +401,8 @@ class MultipleForm extends React.Component {
               this.getInput("total_depth_tvd", "number"),
               this.getDomain("total_depth_tvd_qt", "depth_precision"),
             ])}
-            {this.getGroup([this.getInput("top_bedrock", "number"), this.getDomain("qt_top_bedrock")])}
-            {this.getGroup([
-              this.getInput("top_bedrock_tvd", "number"),
-              this.getDomain("top_bedrock_tvd_qt", "depth_precision"),
-            ])}
+            {this.getGroup([this.getInput("top_bedrock", "number"), this.getInput("qt_top_bedrock", "number")])}
+            {this.getGroup([this.getInput("top_bedrock_tvd", "number"), this.getInput("top_bedrock_tvd_qt", "number")])}
             {this.getRadio("groundwater")}
             {this.getDomain("lithology_top_bedrock", "custom.lithology_top_bedrock")}
             {this.getDomain("lithostratigraphy_top_bedrock", "custom.lithostratigraphy_top_bedrock")}

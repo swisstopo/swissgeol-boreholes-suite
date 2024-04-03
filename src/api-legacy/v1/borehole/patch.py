@@ -174,6 +174,9 @@ class PatchBorehole(Action):
         elif field == 'custom.qt_depth':
             column = 'qt_depth_id_cli'
 
+        elif field == 'depth_precision':
+            column = 'qt_depth_id_cli'
+
         elif field == 'custom.qt_top_bedrock':
             column = 'qt_top_bedrock'
 
@@ -222,6 +225,7 @@ class PatchBorehole(Action):
                 'country_bho',
                 'canton_bho',
                 'municipality_bho',
+                'depth_precision',
                 'drill_diameter',
                 'custom.drill_diameter',
                 'inclination',
