@@ -1,6 +1,7 @@
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import { Box, IconButton, Stack, Typography } from "@mui/material";
+import { Box, IconButton, Stack, Typography, Divider } from "@mui/material";
+import { StackFullWidth } from "../../../../components/baseComponents";
 import Delete from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 import { addCasing, updateCasing, useDomains } from "../../../../api/fetchApiV2";
@@ -168,69 +169,78 @@ const CasingInput = props => {
               {fields
                 .sort((a, b) => (a.fromDepth || Infinity) - (b.fromDepth || Infinity))
                 .map((field, index) => (
-                  <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`casingElement-${index}`}>
-                    <FormInput
-                      fieldName={`casingElements.${index}.fromDepth`}
-                      label="fromdepth"
-                      value={field.fromDepth}
-                      type="number"
-                      required={true}
-                      onUpdate={updateDepth}
-                    />
-                    <FormInput
-                      fieldName={`casingElements.${index}.toDepth`}
-                      label="todepth"
-                      value={field.toDepth}
-                      type="number"
-                      required={true}
-                      onUpdate={updateDepth}
-                    />
-                    <FormSelect
-                      fieldName={`casingElements.${index}.kindId`}
-                      label="kindCasingLayer"
-                      selected={field.kindId}
-                      required={true}
-                      values={domains?.data
-                        ?.filter(d => d.schema === completionSchemaConstants.casingType)
-                        .sort((a, b) => a.order - b.order)
-                        .map(d => ({
-                          key: d.id,
-                          name: d[i18n.language],
-                        }))}
-                    />
-                    <FormSelect
-                      fieldName={`casingElements.${index}.materialId`}
-                      label="materialCasingLayer"
-                      selected={field.materialId}
-                      values={domains?.data
-                        ?.filter(d => d.schema === completionSchemaConstants.casingMaterial)
-                        .sort((a, b) => a.order - b.order)
-                        .map(d => ({
-                          key: d.id,
-                          name: d[i18n.language],
-                        }))}
-                    />
-                    <FormInput
-                      fieldName={`casingElements.${index}.innerDiameter`}
-                      label="casingInnerDiameter"
-                      value={field.innerDiameter}
-                      type="number"
-                    />
-                    <FormInput
-                      fieldName={`casingElements.${index}.outerDiameter`}
-                      label="casingOuterDiameter"
-                      value={field.outerDiameter}
-                      type="number"
-                    />
-                    <IconButton
-                      onClick={() => remove(index)}
-                      data-cy={`casingElements.${index}.delete`}
-                      disabled={fields.length === 1}
-                      color="error"
-                      sx={{ marginTop: "10px !important" }}>
-                      <Delete />
-                    </IconButton>
-                  </Stack>
+                  <>
+                    <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`casingElement-${index}`}>
+                      <StackFullWidth direction={"column"} spacing={1}>
+                        <StackFullWidth direction="row">
+                          <FormInput
+                            fieldName={`casingElements.${index}.fromDepth`}
+                            label="fromdepth"
+                            value={field.fromDepth}
+                            type="number"
+                            required={true}
+                            onUpdate={updateDepth}
+                          />
+                          <FormInput
+                            fieldName={`casingElements.${index}.toDepth`}
+                            label="todepth"
+                            value={field.toDepth}
+                            type="number"
+                            required={true}
+                            onUpdate={updateDepth}
+                          />
+                          <FormSelect
+                            fieldName={`casingElements.${index}.kindId`}
+                            label="kindCasingLayer"
+                            selected={field.kindId}
+                            required={true}
+                            values={domains?.data
+                              ?.filter(d => d.schema === completionSchemaConstants.casingType)
+                              .sort((a, b) => a.order - b.order)
+                              .map(d => ({
+                                key: d.id,
+                                name: d[i18n.language],
+                              }))}
+                          />
+                        </StackFullWidth>
+                        <StackFullWidth direction="row">
+                          <FormSelect
+                            fieldName={`casingElements.${index}.materialId`}
+                            label="materialCasingLayer"
+                            selected={field.materialId}
+                            values={domains?.data
+                              ?.filter(d => d.schema === completionSchemaConstants.casingMaterial)
+                              .sort((a, b) => a.order - b.order)
+                              .map(d => ({
+                                key: d.id,
+                                name: d[i18n.language],
+                              }))}
+                          />
+                          <FormInput
+                            fieldName={`casingElements.${index}.innerDiameter`}
+                            label="casingInnerDiameter"
+                            value={field.innerDiameter}
+                            type="number"
+                          />
+                          <FormInput
+                            fieldName={`casingElements.${index}.outerDiameter`}
+                            label="casingOuterDiameter"
+                            value={field.outerDiameter}
+                            type="number"
+                          />
+                        </StackFullWidth>
+                      </StackFullWidth>
+                      <IconButton
+                        onClick={() => remove(index)}
+                        data-cy={`casingElements.${index}.delete`}
+                        disabled={fields.length === 1}
+                        color="error"
+                        sx={{ marginTop: "10px !important" }}>
+                        <Delete />
+                      </IconButton>
+                    </Stack>
+                    {index < fields.length - 1 && <Divider sx={{ marginTop: "15px" }} />}
+                  </>
                 ))}
             </Box>
           </Stack>
