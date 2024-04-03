@@ -399,12 +399,12 @@ class MultipleForm extends React.Component {
             {this.getGroup([this.getInput("totaldepth", "number"), this.getDomain("qt_depth")])}
             {this.getGroup([
               this.getInput("total_depth_tvd", "number"),
-              this.getDomain("total_depth_tvd_qt", "custom.qt_top_bedrock"),
+              this.getDomain("total_depth_tvd_qt", "depth_precision"),
             ])}
             {this.getGroup([this.getInput("top_bedrock", "number"), this.getDomain("qt_top_bedrock")])}
             {this.getGroup([
               this.getInput("top_bedrock_tvd", "number"),
-              this.getDomain("top_bedrock_tvd_qt", "custom.qt_top_bedrock"),
+              this.getDomain("top_bedrock_tvd_qt", "depth_precision"),
             ])}
             {this.getRadio("groundwater")}
             {this.getDomain("lithology_top_bedrock", "custom.lithology_top_bedrock")}

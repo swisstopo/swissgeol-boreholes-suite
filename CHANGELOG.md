@@ -5,6 +5,7 @@
 ### Changed
 
 - Disabled viewer mode, moved map settings from viewer settings to editor settings.
+- Renamed codelist `custom.qt_top_bedrock` to `depth_precision`.
 
 ## v2.0.644 - 2024-03-22
 

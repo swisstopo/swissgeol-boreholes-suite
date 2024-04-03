@@ -327,7 +327,7 @@ class PatchBorehole(Action):
                     schema = 'custom.chronostratigraphy_top_bedrock'
 
                 elif field == 'custom.qt_top_bedrock_tvd':
-                    schema = 'custom.qt_top_bedrock'
+                    schema = 'depth_precision'
 
                 elif field == 'qt_reference_elevation':
                     schema = 'elevation_precision'
@@ -336,10 +336,10 @@ class PatchBorehole(Action):
                     schema = 'reference_elevation_type'
 
                 elif field == 'qt_total_depth_tvd':
-                    schema = 'custom.qt_top_bedrock'
+                    schema = 'depth_precision'
                 
                 elif field == 'custom.qt_depth':
-                    schema = 'custom.qt_top_bedrock'
+                    schema = 'depth_precision'
 
                 # Check if domain is extracted from the correct schema
                 if value is not None and schema != (
