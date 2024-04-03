@@ -11,14 +11,3 @@ class DeleteBoreholes(Action):
             """, ids
         )
         return None
-
-
-class DeleteBoreholesByWorkgroup(Action):
-
-    async def execute(self, id):
-        await self.conn.execute("""
-                DELETE FROM bdms.borehole
-                WHERE id_wgp_fk = $1
-            """, id
-        )
-        return None

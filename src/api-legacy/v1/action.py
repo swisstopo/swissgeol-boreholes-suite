@@ -21,9 +21,6 @@ class Action():
             return nullValue
         return json.loads(text)
 
-    def encode(self, value):
-        return json.dumps(value)
-
     def run_until_complete(self, tasks):
         loop = asyncio.get_event_loop()
         return loop.run_until_complete(
@@ -31,28 +28,9 @@ class Action():
                 [loop.create_task(x) for x in tasks]
             )
         )
-        # loop.close()
 
     async def execute(self, *arg, **args):
         pass
-
-    async def notify(self, user, topic, payload={}):
-        evs = await self.conn.fetchval(
-            """
-                INSERT INTO bdms.events(
-                    id_usr_fk,
-                    topic_evs,
-                    payload_evs
-                )
-                VALUES (
-                    $1, $2, $3
-                ) RETURNING id_evs
-            """,
-            user['id'], topic, self.encode(payload)
-        )
-        await self.conn.execute(f'''
-            NOTIFY "{topic}", '{evs}'
-        ''')
 
     def getIdx(self):
         self.idx += 1
@@ -172,8 +150,6 @@ class Action():
         params = []
         where = []
         joins = []
-
-        layer_codelist = []
 
         keys = filter.keys()
 

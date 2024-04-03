@@ -17,9 +17,6 @@ from bms.v1.exceptions import NotFound
 from bms.v1.exceptions import MissingParameter
 from bms.v1.exceptions import DuplicateException
 
-# Borehole's Internationalization Handlers
-from bms.v1.locales.handler import LocalesHandler
-
 # Borehole's ACTION Handlers
 from bms.v1.borehole.producer import BoreholeProducerHandler
 from bms.v1.borehole.viewer import BoreholeViewerHandler
@@ -36,7 +33,6 @@ from bms.v1.borehole.identifier import IdentifierViewerHandler
 
 # Profiles layers's ACTION Handlers
 from bms.v1.borehole.profile.layer.viewer import ProfileLayerViewerHandler
-from bms.v1.borehole.profile.layer.producer import ProfileLayerProducerHandler
 
 # Stratigraphy's layers handlers
 from bms.v1.borehole.stratigraphy.layer.producer import LayerProducerHandler
@@ -67,7 +63,6 @@ from bms.v1.geoapi import Wms
 # User actions
 from bms.v1.user.handler import UserHandler
 from bms.v1.user.admin import AdminHandler
-from bms.v1.user import CheckUsername
 
 # Workgroup actions
 from bms.v1.user.workgrpup.admin import WorkgroupAdminHandler

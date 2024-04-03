@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from re import T
 from bms.v1.action import Action
 from bms.v1.exceptions import (
     PatchAttributeException

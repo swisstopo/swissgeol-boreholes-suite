@@ -14,7 +14,6 @@ import asyncio
 import asyncpg
 from tornado.httpserver import HTTPServer
 import sys
-from pathlib import Path
 import traceback
 
 sys.path.append('.')
@@ -27,32 +26,7 @@ define("pg_host", default=None, help="PostgreSQL database host")
 define("pg_port", default="5432", help="PostgreSQL database port")
 define("pg_database", default=None, help="PostgreSQL database name")
 
-# Ordered list of upgradable versions
-versions = [
-    "1.0.0",
-    "1.0.1",
-    "1.0.2",
-    "1.0.3",
-    "1.0.4",
-    "1.0.5",
-    "1.0.6-beta.1"
-]
-
 # SQL upgrades directory
-udir = "./bms/assets/sql/"
-
-# SQL to execute for upgrades
-sql_files = {
-    "1.0.0": f"{udir}1.0.0_to_1.0.1.sql",
-    "1.0.1": f"{udir}1.0.1_to_1.0.2.sql",
-    "1.0.2": f"{udir}1.0.2_to_1.0.3.sql",
-    "1.0.3": f"{udir}1.0.3_to_1.0.4.sql",
-    "1.0.4": f"{udir}1.0.4_to_1.0.5.sql",
-    "1.0.5": f"{udir}1.0.5_to_1.0.6-beta.1.sql",
-    "1.0.6-beta.1": f"{udir}1.0.6-beta.1_to_1.0.6-beta.2.sql",
-}
-
-listeners = []
 
 async def get_conn():
     try:
@@ -107,8 +81,6 @@ if __name__ == "__main__":
     options.parse_command_line()
 
     from bms import (
-        # Internationalization
-        LocalesHandler,
 
         # Exceptions
         BmsDatabaseException,
@@ -156,11 +128,9 @@ if __name__ == "__main__":
 
     application = web.Application([
 
-        # Translations service
-        (r'/api/v1/locale/(?P<lng>.+)/(?P<ns>\w*)', LocalesHandler),
-
-        # Borehole handlers
         (r'/api/v1/setting', SettingHandler),
+
+        # User handlers
         (r'/api/v1/user', UserHandler),
         (r'/api/v1/user/edit', AdminHandler),
 
@@ -169,7 +139,6 @@ if __name__ == "__main__":
         # Borehole handlers
         (r'/api/v1/borehole', BoreholeViewerHandler),
         (r'/api/v1/borehole/edit', BoreholeProducerHandler),
-        (r'/api/v1/borehole/edit/import', BoreholeProducerHandler),
 
         # Stratigraphy handlers
         (r'/api/v1/borehole/identifier', IdentifierViewerHandler),
