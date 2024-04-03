@@ -6,7 +6,7 @@
 
 - Disabled viewer mode, moved map settings from viewer settings to editor settings.
 - Placed `casing_elements` inputs on two lines for better readability.
-- Sorted common.json files alphabetically.
+- Sorted common.json files alphabetically and removed unused entries.
 
 ## v2.0.644 - 2024-03-22
 
