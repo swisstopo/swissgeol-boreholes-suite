@@ -45,7 +45,7 @@ trim_trailing_whitespace = false
 [CHANGELOG.md]
 end_of_line = lf
 
-[*.{json,yml,xml,config,*proj,nuspec,props,resx,targets,tasks,js}]
+[*.{json,yml,xml,config,*proj,nuspec,props,resx,targets,tasks,js,jsx,ts,tsx}]
 indent_size = 2
 
 [VERSION]

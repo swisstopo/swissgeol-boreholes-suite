@@ -2,7 +2,6 @@
 from tornado import web
 import json
 import traceback
-import base64
 from bms.v1.exceptions import (
     BmsException,
     AuthenticationException,

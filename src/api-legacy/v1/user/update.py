@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from bms.v1.action import Action
-from . import CheckUsername
 from bms.v1.exceptions import DuplicateException
 
 
@@ -9,15 +8,6 @@ class UpdateUser(Action):
     async def execute(
         self, user_id, admin = False
     ):
-
-        old_username = await self.conn.fetchval("""
-            SELECT
-                username
-            FROM
-                bdms.users
-            WHERE
-                id_usr = $1
-        """, user_id)
 
         return {
             "id": (
