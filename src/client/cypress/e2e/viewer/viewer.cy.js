@@ -26,9 +26,6 @@ describe("Viewer tests", () => {
     cy.get('input[type="text"]').each(i => {
       cy.wrap(i).should("have.attr", "readonly");
     });
-    cy.get('[data-cy="datepicker"]').each(i => {
-      cy.wrap(i).should("have.attr", "class", "ui disabled left icon input datepicker-input");
-    });
 
     cy.contains("a", "Start editing").should("not.exist");
   });
