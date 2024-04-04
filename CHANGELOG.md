@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added borehole sections panel.
+
 ### Changed
 
 - Disabled viewer mode, moved map settings from viewer settings to editor settings.
