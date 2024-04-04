@@ -1,26 +1,41 @@
 import BoreholeGeneralSegment from "../segments/boreholeGeneralSegment";
 import BoreholeDetailSegment from "../segments/boreholeDetailSegment";
 import { useTranslation } from "react-i18next";
+import React, { useState } from "react";
+import { BdmsTabContentBox, BdmsTabs, BdmsTab } from "../../../../components/styledTabComponents";
 
 const BoreholePanel = ({ size, borehole, updateChange, updateNumber, isEditable }) => {
   const { t } = useTranslation();
 
+  const [activeIndex, setActiveIndex] = useState(0);
+
   return (
     <>
-      <BoreholeGeneralSegment
-        size={size}
-        borehole={borehole}
-        updateChange={updateChange}
-        updateNumber={updateNumber}
-        isEditable={isEditable}
-      />
-      <BoreholeDetailSegment
-        size={size}
-        borehole={borehole}
-        updateChange={updateChange}
-        updateNumber={updateNumber}
-        isEditable={isEditable}
-      />
+      <BdmsTabs value={activeIndex} onChange={(event, newValue) => setActiveIndex(newValue)}>
+        <BdmsTab label={t("general")} data-cy={"general-tab"} />
+        <BdmsTab label={t("sections")} data-cy={"sections-tab"} />
+      </BdmsTabs>
+      <BdmsTabContentBox flex="1 0 0">
+        {activeIndex === 0 && (
+          <>
+            <BoreholeGeneralSegment
+              size={size}
+              borehole={borehole}
+              updateChange={updateChange}
+              updateNumber={updateNumber}
+              isEditable={isEditable}
+            />
+            <BoreholeDetailSegment
+              size={size}
+              borehole={borehole}
+              updateChange={updateChange}
+              updateNumber={updateNumber}
+              isEditable={isEditable}
+            />
+          </>
+        )}
+        {activeIndex === 1 && <p>Sections</p>}
+      </BdmsTabContentBox>
     </>
   );
 };
