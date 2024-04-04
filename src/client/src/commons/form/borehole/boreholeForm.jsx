@@ -304,6 +304,7 @@ class BoreholeForm extends React.Component {
             render={() => (
               <BoreholePanel
                 size={size}
+                boreholeId={this.props.match.params.id}
                 borehole={borehole}
                 updateChange={this.updateChange}
                 updateNumber={this.updateNumber}

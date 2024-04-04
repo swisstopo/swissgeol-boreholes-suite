@@ -2,9 +2,10 @@ import BoreholeGeneralSegment from "../segments/boreholeGeneralSegment";
 import BoreholeDetailSegment from "../segments/boreholeDetailSegment";
 import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
+import Sections from "./sections";
 import { BdmsTabContentBox, BdmsTabs, BdmsTab } from "../../../../components/styledTabComponents";
 
-const BoreholePanel = ({ size, borehole, updateChange, updateNumber, isEditable }) => {
+const BoreholePanel = ({ size, boreholeId, borehole, updateChange, updateNumber, isEditable }) => {
   const { t } = useTranslation();
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -34,7 +35,7 @@ const BoreholePanel = ({ size, borehole, updateChange, updateNumber, isEditable 
             />
           </>
         )}
-        {activeIndex === 1 && <p>Sections</p>}
+        {activeIndex === 1 && <Sections isEditable={isEditable} boreholeId={boreholeId} />}
       </BdmsTabContentBox>
     </>
   );
