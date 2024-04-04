@@ -1,10 +1,5 @@
-import {
-  loginAsAdmin,
-  createBorehole,
-  startBoreholeEditing,
-  handlePrompt,
-} from "../helpers/testHelpers";
-import { evaluateDisplayValue, evaluateInput, setInput, setSelect, evaluateSelect } from "../helpers/formHelpers";
+import { loginAsAdmin, createBorehole, startBoreholeEditing, handlePrompt } from "../helpers/testHelpers";
+import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
 import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
 
 describe("Section crud tests", () => {
@@ -124,7 +119,10 @@ describe("Section crud tests", () => {
     saveForm();
 
     evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
-    evaluateDisplayValue("0.drilling_mud_subtype", "water-based dispersed - lime, gypsum, NaCl, CaCl2, lignite, lignosulfonate, bentonite, polymers");
+    evaluateDisplayValue(
+      "0.drilling_mud_subtype",
+      "water-based dispersed - lime, gypsum, NaCl, CaCl2, lignite, lignosulfonate, bentonite, polymers",
+    );
 
     startEditing();
     setSelect("sectionElements.0.drillingMudTypeId", 3);
@@ -155,5 +153,5 @@ describe("Section crud tests", () => {
 
     evaluateDisplayValue("0.drilling_mud_type", "-");
     evaluateDisplayValue("0.drilling_mud_subtype", "-");
-  })
+  });
 });

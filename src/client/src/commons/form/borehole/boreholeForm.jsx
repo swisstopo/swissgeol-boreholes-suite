@@ -308,7 +308,8 @@ class BoreholeForm extends React.Component {
                 borehole={borehole}
                 updateChange={this.updateChange}
                 updateNumber={this.updateNumber}
-                isEditable={isEditable} />
+                isEditable={isEditable}
+              />
             )}
           />
           <Route

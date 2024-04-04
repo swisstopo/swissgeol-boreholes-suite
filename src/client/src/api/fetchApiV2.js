@@ -518,14 +518,14 @@ export const getSectionsByBoreholeId = async boreholeId => {
 
 export const addSection = async section => {
   return await fetchApiV2("section", "POST", section);
-}
+};
 
 export const updateSection = async section => {
   return await fetchApiV2("section", "PUT", section);
-}
+};
 
 export const deleteSection = async id => {
   return await fetchApiV2(`section?id=${id}`, "DELETE");
-}
+};
 
 export const downloadCodelistCsv = () => fetchApiV2(`codelist/csv`, "GET", null, false, true);

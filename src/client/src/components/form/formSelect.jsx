@@ -46,13 +46,11 @@ export const FormSelect = props => {
           size="small"
           label={t(label)}
           variant="outlined"
-
           name={field.name}
           onChange={field.onChange}
           onBlur={field.onBlur}
           inputRef={field.ref}
           value={field.value || ""}
-
           disabled={disabled || false}
           data-cy={fieldName + "-formSelect"}
           InputLabelProps={{ shrink: true }}>

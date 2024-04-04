@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { IconButton, Typography, Checkbox, FormControlLabel, Divider } from "@mui/material";
+import { IconButton, Checkbox, FormControlLabel, Divider } from "@mui/material";
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplayType, FormInput, FormSelect } from "../../../../components/form/form";
 import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2";

@@ -1,7 +1,7 @@
 import BoreholeGeneralSegment from "../segments/boreholeGeneralSegment";
 import BoreholeDetailSegment from "../segments/boreholeDetailSegment";
 import { useTranslation } from "react-i18next";
-import React, { useState } from "react";
+import { useState } from "react";
 import Sections from "./sections";
 import { BdmsTabContentBox, BdmsTabs, BdmsTab } from "../../../../components/styledTabComponents";
 
