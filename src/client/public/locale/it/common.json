@@ -103,7 +103,7 @@
   "drill_diameter": "Diametro perforazione [mm]",
   "drilling_end_date": "Data fine della perforazione",
   "drilling_method": "Metodo di perforazione",
-  "drilling_mud_subtype": "Sottotipo di fango di perforazion",
+  "drilling_mud_subtype": "Sottotipo di fango di perforazione",
   "drilling_mud_type": "Tipo di fango di perforazione",
   "dropZoneAttachmentsText": "Trascina qui i file con i appendici o clicca per caricarli",
   "dropZoneBoreholesText": "Trascina qui il file CSV con i perforazioni o clicca per caricarlo CSV",
