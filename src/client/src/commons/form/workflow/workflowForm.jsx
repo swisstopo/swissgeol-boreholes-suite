@@ -285,8 +285,9 @@ class WorkflowForm extends React.Component {
                                     color={readOnly ? null : "blue"}
                                     name="repeat"
                                   />,
-                                  <span
+                                  <a
                                     key="bdms-workflow-form-push-back-2"
+                                    data-cy="workflow_restart"
                                     className={!readOnly ? "linker" : null}
                                     style={{
                                       marginLeft: "0.2em",
@@ -300,7 +301,7 @@ class WorkflowForm extends React.Component {
                                       }
                                     }}>
                                     <TranslationText id={"flowRestart"} />
-                                  </span>,
+                                  </a>,
                                 ]
                               : null}
                           </div>

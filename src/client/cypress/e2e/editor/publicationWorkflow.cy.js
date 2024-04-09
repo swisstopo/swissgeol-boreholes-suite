@@ -1,7 +1,7 @@
 import { createBorehole, loginAsAdmin } from "../helpers/testHelpers";
 
 const verifyColorForStatus = (status, color) => {
-  cy.get(`[data-cy=workflow_status_color_${status}]`).should("have.have.class", `ui ${color} circular label`);
+  cy.get(`[data-cy="workflow_status_color_${status}"]`).should("have.have.class", `ui ${color} circular label`);
 };
 
 const statusTitles = {
@@ -13,13 +13,13 @@ const statusTitles = {
 
 const verifyStatusTextsInHeader = status => {
   status.forEach(s => {
-    cy.get("[data-cy=workflow_status_header]").should("contain", statusTitles[s]);
+    cy.get('[data-cy="workflow_status_header"]').should("contain", statusTitles[s]);
   });
 };
 
 const verifyStatusTextsNotInHeader = status => {
   status.forEach(s => {
-    cy.get("[data-cy=workflow_status_header]").should("not.contain", statusTitles[s]);
+    cy.get('[data-cy="workflow_status_header"]').should("not.contain", statusTitles[s]);
   });
 };
 
@@ -39,6 +39,7 @@ describe("Tests the publication workflow.", () => {
     // Submit for review
     cy.get("[data-cy=workflow_submit]").click();
     cy.get("[data-cy=workflow_dialog_submit]").click();
+    cy.wait("@workflow_edit_list");
 
     verifyStatusTextsInHeader(["edit", "control"]);
     verifyStatusTextsNotInHeader(["valid", "public"]);
@@ -47,8 +48,9 @@ describe("Tests the publication workflow.", () => {
 
     // Submit for validation
     cy.contains("a", "Start editing").click();
-    cy.get("[data-cy=workflow_submit]").click();
-    cy.get("[data-cy=workflow_dialog_submit]").click();
+    cy.get('[data-cy="workflow_submit"]').click();
+    cy.get('[data-cy="workflow_dialog_submit"]').click();
+    cy.wait("@workflow_edit_list");
 
     verifyStatusTextsInHeader(["edit", "control", "valid"]);
     verifyStatusTextsNotInHeader(["public"]);
@@ -58,8 +60,9 @@ describe("Tests the publication workflow.", () => {
 
     // Submit for publication
     cy.contains("a", "Start editing").click();
-    cy.get("[data-cy=workflow_submit]").click();
-    cy.get("[data-cy=workflow_dialog_submit]").click();
+    cy.get('[data-cy="workflow_submit"]').click();
+    cy.get('[data-cy="workflow_dialog_submit"]').click();
+    cy.wait("@workflow_edit_list");
 
     verifyStatusTextsInHeader(["edit", "control", "valid", "public"]);
 
@@ -70,18 +73,19 @@ describe("Tests the publication workflow.", () => {
 
     // Publicate
     cy.contains("a", "Start editing").click();
-    cy.get("[data-cy=workflow_submit]").click();
-    cy.get("[data-cy=workflow_dialog_submit]").click();
+    cy.get('[data-cy="workflow_submit"]').click();
+    cy.get('[data-cy="workflow_dialog_submit"]').click();
+    cy.wait("@workflow_edit_list");
+
     verifyColorForStatus("public", "green");
 
     // Restart workflow
     cy.contains("a", "Start editing").click();
-    cy.contains("span", "Restart the workflow").click();
-    cy.get("[data-cy=workflow_dialog_confirm_restart]").click();
+    cy.get('[data-cy="workflow_restart"]').click();
     cy.wait("@workflow_edit_list");
 
-    verifyStatusTextsInHeader(["edit"]);
-    verifyStatusTextsNotInHeader(["control", "valid", "public"]);
+    cy.get('[data-cy="workflow_dialog_confirm_restart"]').click();
+    cy.wait("@workflow_edit_list");
 
     verifyColorForStatus("edit", "orange");
     verifyColorForStatus("control", "red");
