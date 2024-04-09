@@ -109,6 +109,7 @@ public static class BdmsContextExtensions
         List<int> fieldMeasurementSampleTypeIds = codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Select(s => s.Id).ToList();
         List<int> fieldMeasurementParameterIds = codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).Select(s => s.Id).ToList();
         List<int> completionKindIds = codelists.Where(c => c.Schema == CompletionSchemas.CompletionKindSchema).Select(s => s.Id).ToList();
+        List<int> drillingMudTypeIds = codelists.Where(c => c.Schema == "drilling_mud_type").Select(s => s.Id).ToList();
 
         // Seed Boreholes
         var borehole_ids = 1_000_000;
@@ -886,6 +887,77 @@ public static class BdmsContextExtensions
 
         context.SaveChanges();
 
+        // Seed sections
+        var section_ids = 19_000_000;
+        var sectionRange = Enumerable.Range(section_ids, 500).ToList();
+        var fakeSections = new Faker<Section>()
+            .StrictMode(true)
+            .RuleFor(o => o.Id, f => section_ids++)
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange.Take(sectionRange.Count)))
+            .RuleFor(o => o.Borehole, _ => default!)
+            .RuleFor(o => o.Name, f => f.Random.Word())
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!)
+            .RuleFor(o => o.SectionElements, _ => default!);
+
+        Section SeededSection(int seed) => fakeSections.UseSeed(seed).Generate();
+        var sections = sectionRange.Select(SeededSection).ToList();
+
+        // Seed section elements
+        var sectionElement_ids = 20_000_000;
+        var fakeSectionElements = new Faker<SectionElement>()
+            .StrictMode(true)
+            .RuleFor(o => o.Id, f => sectionElement_ids++)
+            .RuleFor(o => o.SectionId, f => f.PickRandom(sectionRange))
+            .RuleFor(o => o.Section, _ => default!)
+            .RuleFor(o => o.FromDepth, f => f.Random.Int(0, 99))
+            .RuleFor(o => o.ToDepth, f => f.Random.Int(100, 199))
+            .RuleFor(o => o.Order, f => f.Random.Int(0, 99))
+            .RuleFor(o => o.DrillingMethodId, f => f.PickRandom(drillingMethodIds).OrNull(f, .2f))
+            .RuleFor(o => o.DrillingMethod, _ => default!)
+            .RuleFor(o => o.SpudDate, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .2f))
+            .RuleFor(o => o.DrillingEndDate, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .2f))
+            .RuleFor(o => o.CuttingsId, f => f.PickRandom(cuttingsIds).OrNull(f, .2f))
+            .RuleFor(o => o.Cuttings, _ => default!)
+            .RuleFor(o => o.DrillingDiameter, f => f.Random.Double(0, 20).OrNull(f, .2f))
+            .RuleFor(o => o.DrillingCoreDiameter, f => f.Random.Double(0, 20).OrNull(f, .2f))
+            .RuleFor(o => o.DrillingMudTypeId, f => f.PickRandom(drillingMudTypeIds).OrNull(f, .2f))
+            .RuleFor(o => o.DrillingMudType, _ => default!)
+            .RuleFor(o => o.DrillingMudSubtypeId, f => f.PickRandom(drillingMudTypeIds).OrNull(f, .2f))
+            .RuleFor(o => o.DrillingMudSubtype, _ => default!)
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!);
+
+        SectionElement SeededSectionElement(int sectionId, int order) =>
+            fakeSectionElements
+                .UseSeed(sectionElement_ids)
+                .RuleFor(o => o.SectionId, _ => sectionId)
+                .RuleFor(o => o.Order, _ => order)
+                .Generate();
+
+        var sectionElementsToInsert = new List<SectionElement>((sectionRange.Count * 2) + 2);
+        foreach (var sectionId in sectionRange)
+        {
+            // Add 1, 2 or 3 section elements per section.
+            var sectionElements = (sectionId % 3) + 1;
+            for (int i = 0; i < sectionElements; i++)
+            {
+                sectionElementsToInsert.Add(SeededSectionElement(sectionId, i));
+            }
+        }
+
+        context.BulkInsert(sections, bulkConfig);
+        context.BulkInsert(sectionElementsToInsert, bulkConfig);
+        context.SaveChanges();
+
         // Sync all database sequences
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workgroups', 'id_wgp'), {workgroup_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.borehole', 'id_bho'), {borehole_ids - 1})");
@@ -897,6 +969,8 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.observation', 'id'), {observation_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.hydrotest_result', 'id'), {hydrotestResult_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.fieldmeasurement_result', 'id'), {fieldMeasurementResult_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.section', 'id'), {section_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.section_element', 'id'), {sectionElement_ids - 1})");
     }
 }
 #pragma warning restore CA1505

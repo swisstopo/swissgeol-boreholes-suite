@@ -11,6 +11,24 @@ const DataCardsContainer = props => {
 };
 export const MemoizedDataCardsContainer = React.memo(DataCardsContainer);
 
+/**
+ * DataCards Component
+ *
+ * The parent component must use display: flex, otherwise the DataCards may not be visible.
+ *
+ * @param {Object} props - The properties that define the component.
+ * @param {boolean} props.isEditable - Determines if the data cards are editable.
+ * @param {string|number} props.parentId - The ID of the parent entity.
+ * @param {Function} props.getData - A function to fetch data based on the parentId.
+ * @param {string} props.cyLabel - The label used for Cypress testing.
+ * @param {string} props.addLabel - The label for the "Add" button.
+ * @param {string} props.emptyLabel - The label displayed when there are no data cards.
+ * @param {Function} props.renderInput - A function to render the input form when a card is in edit mode.
+ * @param {Function} props.renderDisplay - A function to render the display view of a card.
+ * @param {Function} props.sortDisplayed - A function to sort the displayed cards.
+ *
+ * @returns {JSX.Element} The DataCards component.
+ */
 export const DataCards = props => {
   const { isEditable, parentId, getData, cyLabel, addLabel, emptyLabel, renderInput, renderDisplay, sortDisplayed } =
     props;

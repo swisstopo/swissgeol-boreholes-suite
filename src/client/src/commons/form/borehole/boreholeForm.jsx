@@ -14,8 +14,7 @@ import Profile from "../profile";
 import IdentifierSegment from "./segments/indentifierSegment";
 import NameSegment from "./segments/nameSegment";
 import RestrictionSegment from "./segments/restrictionSegment";
-import BoreholeGeneralSegment from "./segments/boreholeGeneralSegment";
-import BoreholeDetailSegment from "./segments/boreholeDetailSegment";
+import BoreholePanel from "./borehole/boreholePanel";
 import LocationSegment from "./segments/locationSegment";
 import WaterIngress from "./hydrogeology/waterIngress";
 import GroundwaterLevelMeasurement from "./hydrogeology/groundwaterLevelMeasurement";
@@ -303,27 +302,14 @@ class BoreholeForm extends React.Component {
             exact
             path={"/:id/borehole"}
             render={() => (
-              <div
-                style={{
-                  flex: "1 1 0%",
-                  padding: "1em",
-                  overflowY: "auto",
-                }}>
-                <BoreholeGeneralSegment
-                  size={size}
-                  borehole={borehole}
-                  updateChange={this.updateChange}
-                  updateNumber={this.updateNumber}
-                  isEditable={isEditable}></BoreholeGeneralSegment>
-                <BoreholeDetailSegment
-                  size={size}
-                  borehole={borehole}
-                  updateChange={this.updateChange}
-                  updateNumber={this.updateNumber}
-                  t={t}
-                  debug={this.props.developer.debug}
-                  isEditable={isEditable}></BoreholeDetailSegment>
-              </div>
+              <BoreholePanel
+                size={size}
+                boreholeId={this.props.match.params.id}
+                borehole={borehole}
+                updateChange={this.updateChange}
+                updateNumber={this.updateNumber}
+                isEditable={isEditable}
+              />
             )}
           />
           <Route

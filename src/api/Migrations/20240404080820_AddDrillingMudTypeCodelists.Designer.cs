@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240404080820_AddDrillingMudTypeCodelists")]
+    partial class AddDrillingMudTypeCodelists
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1671,7 +1674,7 @@ namespace BDMS.Migrations
 
                     b.Property<int?>("CuttingsId")
                         .HasColumnType("integer")
-                        .HasColumnName("cuttings_id");
+                        .HasColumnName("cuttings_id_cli");
 
                     b.Property<double?>("DrillingCoreDiameter")
                         .HasColumnType("double precision")
@@ -1687,15 +1690,15 @@ namespace BDMS.Migrations
 
                     b.Property<int?>("DrillingMethodId")
                         .HasColumnType("integer")
-                        .HasColumnName("drilling_method_id");
+                        .HasColumnName("drilling_method_id_cli");
 
                     b.Property<int?>("DrillingMudSubtypeId")
                         .HasColumnType("integer")
-                        .HasColumnName("mud_subtype_id");
+                        .HasColumnName("mud_subtype_id_cli");
 
                     b.Property<int?>("DrillingMudTypeId")
                         .HasColumnType("integer")
-                        .HasColumnName("mud_type_id");
+                        .HasColumnName("mud_type_id_cli");
 
                     b.Property<double>("FromDepth")
                         .HasColumnType("double precision")

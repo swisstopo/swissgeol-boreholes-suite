@@ -75,6 +75,12 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/stratigraphy*", req => {
     return (req.alias = `stratigraphy_${req.method}`);
   });
+
+  cy.intercept("/api/v2/section?boreholeId=**").as("get-sections-by-boreholeId");
+
+  cy.intercept("/api/v2/section*", req => {
+    return (req.alias = `section_${req.method}`);
+  });
 };
 
 /**

@@ -1,8 +1,8 @@
 import { Box, Tabs, Tab } from "@mui/material";
 import { styled } from "@mui/system";
-import { theme } from "../../../../AppTheme.js";
+import { theme } from "../AppTheme.js";
 
-export const CompletionBox = styled(Box)(() => ({
+export const BdmsTabContentBox = styled(Box)(() => ({
   backgroundColor: theme.palette.secondary.background,
   borderRadius: "3px",
   padding: "10px 10px 5px 10px",
@@ -12,14 +12,14 @@ export const CompletionBox = styled(Box)(() => ({
   boxShadow: "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
 }));
 
-export const CompletionTabs = styled(Tabs)({
+export const BdmsTabs = styled(Tabs)({
   margin: "0 4px",
   "& .MuiTabs-indicator": {
     display: "none",
   },
 });
 
-export const CompletionTab = styled(props => <Tab disableRipple {...props} />)(() => ({
+export const BdmsTab = styled(props => <Tab disableRipple {...props} />)(() => ({
   "&.Mui-selected": {
     backgroundColor: theme.palette.secondary.background,
     borderRadius: "3px",

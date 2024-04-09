@@ -2,7 +2,7 @@ import { useState, useEffect, useContext, useRef } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Stack, Typography } from "@mui/material";
-import { CompletionBox, CompletionTabs, CompletionTab } from "./styledComponents";
+import { BdmsTabContentBox, BdmsTabs, BdmsTab } from "../../../../components/styledTabComponents";
 import {
   getCompletions,
   addCompletion,
@@ -300,18 +300,18 @@ const Completion = props => {
       <FullPage>
         <Stack flex="0 1 auto">
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <CompletionTabs value={state.index} onChange={handleCompletionChanged}>
+            <BdmsTabs value={state.index} onChange={handleCompletionChanged}>
               {state.displayed?.length > 0 &&
                 state.displayed.map((item, index) => {
                   return (
-                    <CompletionTab
+                    <BdmsTab
                       data-cy={"completion-header-tab-" + index}
                       label={item.name === null || item.name === "" ? t("common:np") : item.name}
                       key={item.id}
                     />
                   );
                 })}
-            </CompletionTabs>
+            </BdmsTabs>
             {isEditable && (
               <AddButton
                 label="addCompletion"
@@ -325,7 +325,7 @@ const Completion = props => {
           </Stack>
           {state.selected != null && (
             <>
-              <CompletionBox sx={{ padding: "18px" }} data-cy="completion-header">
+              <BdmsTabContentBox sx={{ padding: "18px" }} data-cy="completion-header">
                 {state.editing ? (
                   <CompletionHeaderInput
                     completion={state.selected}
@@ -346,7 +346,7 @@ const Completion = props => {
                     deleteCompletion={deleteSelectedCompletion}
                   />
                 )}
-              </CompletionBox>
+              </BdmsTabContentBox>
             </>
           )}
         </Stack>
