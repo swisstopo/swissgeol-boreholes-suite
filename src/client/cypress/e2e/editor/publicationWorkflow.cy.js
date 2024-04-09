@@ -71,7 +71,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("valid", "green");
     verifyColorForStatus("public", "orange");
 
-    // Publicate
+    // Publish
     cy.contains("a", "Start editing").click();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
