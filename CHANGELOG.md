@@ -8,6 +8,7 @@
 - Renamed codelist `custom.qt_top_bedrock` to `depth_precision`.
 - Placed `casing_elements` inputs on two lines for better readability.
 - Sorted common.json files alphabetically and removed unused entries.
+- Removed `public` field in publication workflow.
 
 ## v2.0.644 - 2024-03-22
 
