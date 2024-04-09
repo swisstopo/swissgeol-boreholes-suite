@@ -126,7 +126,7 @@ class MenuEditorForm extends React.Component {
               padding: "1em",
               display: "flex",
               borderLeft: [
-                `/${match.params.id}/stratigraphy`,
+                `/${match.params.id}/stratigraphy/lithology`,
                 `/${match.params.id}/stratigraphy/chronostratigraphy`,
                 `/${match.params.id}/stratigraphy/lithostratigraphy`,
               ].includes(location.pathname)
@@ -147,16 +147,18 @@ class MenuEditorForm extends React.Component {
           {this.state.stratigraphyIsVisible && (
             <>
               <List.Item
-                active={location.pathname === `/${match.params.id}/stratigraphy`}
+                active={location.pathname === `/${match.params.id}/stratigraphy/lithology`}
                 onClick={() => {
-                  history.push(`/${match.params.id}/stratigraphy`);
+                  history.push(`/${match.params.id}/stratigraphy/lithology`);
                 }}
                 style={{
                   padding: "1em",
                   paddingLeft: 40,
                   display: "flex",
                   borderLeft:
-                    location.pathname === `/${match.params.id}/stratigraphy` ? "0.25em solid rgb(237, 29, 36)" : null,
+                    location.pathname === `/${match.params.id}/stratigraphy/lithology`
+                      ? "0.25em solid rgb(237, 29, 36)"
+                      : null,
                 }}>
                 <List.Icon name="align justify" size="large" verticalAlign="middle" />
                 <List.Content>

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-import { Route, Switch, withRouter } from "react-router-dom";
+import { Route, Switch, Redirect, withRouter } from "react-router-dom";
 import { updateBorehole, loadBorehole, patchBorehole } from "../../../api-lib/index";
 
 import EditorBoreholeFilesTable from "../../files/table/editorBoreholeFilesTable";
@@ -314,7 +314,7 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={"/:id/stratigraphy"}
+            path={"/:id/stratigraphy/lithology"}
             render={() => <Profile id={parseInt(this.props.match.params.id, 10)} unlocked={isEditable} />}
           />
           <Route
@@ -330,6 +330,18 @@ class BoreholeForm extends React.Component {
             render={() => (
               <LithostratigraphyPanel id={parseInt(this.props.match.params.id, 10)} isEditable={isEditable} />
             )}
+          />
+          <Route
+            path={"/:id/stratigraphy"}
+            render={() => {
+              return (
+                <Redirect
+                  to={{
+                    pathname: `/${this.props.match.params.id}/stratigraphy/lithology`,
+                  }}
+                />
+              );
+            }}
           />
           <Route
             exact
