@@ -4,12 +4,11 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
 
-import { Button, Checkbox, Header, Icon, Label, Modal } from "semantic-ui-react";
+import { Button, Header, Icon, Label, Modal } from "semantic-ui-react";
 
 import {
   loadBorehole,
   loadWorkflows,
-  patchBorehole,
   patchWorkflow,
   updateBorehole,
   updateWorkflow,
@@ -97,8 +96,6 @@ class WorkflowForm extends React.Component {
     const filtered = workflows.data.filter(flow => flow.finished !== null);
 
     const readOnly = borehole.data.lock === null || borehole.data.lock.id !== user.data.id;
-
-    const supplier = borehole.data.workgroup && borehole.data.workgroup.supplier;
 
     return (
       <div
@@ -266,6 +263,7 @@ class WorkflowForm extends React.Component {
                           <div>
                             <Label
                               circular
+                              data-cy={`workflow_status_color_${role.toLowerCase()}`}
                               color={status[role].finished === null ? "orange" : current === true ? "red" : "green"}
                             />
                           </div>
@@ -274,7 +272,7 @@ class WorkflowForm extends React.Component {
                               marginLeft: "0.7em",
                               whiteSpace: "nowrap",
                             }}>
-                            <div className="bdms-header">
+                            <div className="bdms-header" data-cy="workflow_status_header">
                               <TranslationText id={`status${role.toLowerCase()}`} />
                             </div>
                             {(this.props.user.data.admin === true ||
@@ -287,8 +285,9 @@ class WorkflowForm extends React.Component {
                                     color={readOnly ? null : "blue"}
                                     name="repeat"
                                   />,
-                                  <span
+                                  <a
                                     key="bdms-workflow-form-push-back-2"
+                                    data-cy="workflow_restart"
                                     className={!readOnly ? "linker" : null}
                                     style={{
                                       marginLeft: "0.2em",
@@ -302,7 +301,7 @@ class WorkflowForm extends React.Component {
                                       }
                                     }}>
                                     <TranslationText id={"flowRestart"} />
-                                  </span>,
+                                  </a>,
                                 ]
                               : null}
                           </div>
@@ -373,6 +372,7 @@ class WorkflowForm extends React.Component {
                               ) : null}
                               <Button
                                 disabled={readOnly || workflows.isRejecting}
+                                data-cy="workflow_submit"
                                 loading={workflows.isSubmitting === true}
                                 onClick={() => {
                                   this.setState({
@@ -383,20 +383,6 @@ class WorkflowForm extends React.Component {
                                 size="mini">
                                 <TranslationText id="submit" />
                               </Button>
-                              {role === "PUBLIC" ? (
-                                <Button
-                                  disabled={readOnly || workflows.isRejecting}
-                                  loading={workflows.isSubmitting === true}
-                                  onClick={() => {
-                                    this.setState({
-                                      modal: 2,
-                                    });
-                                  }}
-                                  secondary
-                                  size="mini">
-                                  <TranslationText id="public" />
-                                </Button>
-                              ) : null}
                               <Modal
                                 // basic
                                 closeIcon
@@ -416,6 +402,7 @@ class WorkflowForm extends React.Component {
                                 <Modal.Actions>
                                   {this.state.modal < 3 ? (
                                     <Button
+                                      data-cy="workflow_dialog_submit"
                                       disabled={readOnly || workflows.isRejecting}
                                       loading={workflows.isSubmitting === true}
                                       onClick={() => {
@@ -496,87 +483,6 @@ class WorkflowForm extends React.Component {
                 return ret;
               });
             })()}
-        {workflow.data !== null && workflow.data.role === "PUBLIC" && workflow.data.finished !== null ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "0.5em 0px",
-            }}>
-            <h4>
-              <TranslationText id="visibility" />
-            </h4>
-            <div
-              style={{
-                alignItems: "center",
-                display: "flex",
-                flexDirection: "row",
-              }}>
-              <div
-                style={{
-                  flex: "1 1 100%",
-                  textAlign: "right",
-                  fontWeight: this.props.borehole.data.visible === false ? "bold" : null,
-                }}>
-                <TranslationText id="hidden" />
-              </div>
-              <div
-                style={{
-                  padding: "0px 1em",
-                }}>
-                <Checkbox
-                  checked={borehole.data.visible}
-                  onChange={(e, data) => {
-                    if (
-                      this.props.borehole.data.lock === null ||
-                      this.props.borehole.data.lock.id !== this.props.user.data.id
-                    ) {
-                      this.context.error(t("common:errorStartEditing"));
-                    } else {
-                      const borehole = {
-                        ...this.props.borehole.data,
-                      };
-                      borehole.visible = data.checked;
-                      patchBorehole(borehole.id, "visible", borehole.visible).then(() => {
-                        this.props.updateBorehole(borehole);
-                      });
-                    }
-                  }}
-                  toggle
-                />
-              </div>
-              <div
-                style={{
-                  flex: "1 1 100%",
-                  textAlign: "left",
-                  fontWeight: this.props.borehole.data.visible === true ? "bold" : null,
-                }}>
-                <TranslationText id="visible" />
-              </div>
-            </div>
-            {supplier === false && (
-              <div
-                style={{
-                  padding: "2em 1em 0px 1em",
-                }}>
-                <Button
-                  disabled={
-                    this.props.borehole.data.lock === null ||
-                    this.props.borehole.data.lock.id !== this.props.user.data.id
-                  }
-                  fluid
-                  loading={workflows.isRejecting === true}
-                  negative
-                  onClick={() => {
-                    this.props.rejectWorkflow(workflow.data.id);
-                  }}
-                  size="mini">
-                  <TranslationText id="reject" />
-                </Button>
-              </div>
-            )}
-          </div>
-        ) : null}
-
         {
           // Modals
         }
@@ -590,10 +496,7 @@ class WorkflowForm extends React.Component {
           }}
           open={this.state.modalRestart === true}
           size="mini">
-          <Header
-            content={t(`flowRestart`)}
-            // icon='archive'
-          />
+          <Header content={t(`flowRestart`)} />
           <Modal.Content>
             <p>
               <TranslationText id="sure" />
@@ -602,6 +505,7 @@ class WorkflowForm extends React.Component {
           <Modal.Actions>
             <Button
               loading={this.state.resetting === true}
+              data-cy="workflow_dialog_confirm_restart"
               secondary
               onClick={() => {
                 this.setState(
