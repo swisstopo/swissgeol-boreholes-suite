@@ -81,7 +81,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get(".modal .toggle").click({ multiple: true });
 
     cy.get('[data-cy="text-input"]')
-      .should("have.length", 8)
+      .should("have.length", 10)
       .each((el, index) => cy.wrap(el).scrollIntoView().type(`A${index}`));
 
     cy.get("form .field > .react-datepicker-wrapper .datepicker-input")
@@ -99,7 +99,7 @@ describe("Test the borehole bulk edit feature.", () => {
       });
 
     cy.get('[data-cy="domain-dropdown"]')
-      .should("have.length", 15)
+      .should("have.length", 13)
       .each(el => cy.wrap(el).click().find('[role="option"]').last().click());
 
     cy.get('[data-cy="domain-tree"] > input')
