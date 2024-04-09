@@ -42,7 +42,7 @@ public class SectionElement : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="SectionElement"/>'s drilling method Id.
     /// </summary>
-    [Column("drilling_method_id_cli")]
+    [Column("drilling_method_id")]
     public int? DrillingMethodId { get; set; }
 
     /// <summary>
@@ -66,7 +66,7 @@ public class SectionElement : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="SectionElement"/>'s cuttings id.
     /// </summary>
-    [Column("cuttings_id_cli")]
+    [Column("cuttings_id")]
     public int? CuttingsId { get; set; }
 
     /// <summary>
@@ -90,7 +90,7 @@ public class SectionElement : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="SectionElement"/>'s drilling mud type id.
     /// </summary>
-    [Column("mud_type_id_cli")]
+    [Column("mud_type_id")]
     public int? DrillingMudTypeId { get; set; }
 
     /// <summary>
@@ -102,7 +102,7 @@ public class SectionElement : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="SectionElement"/>'s drilling mud subtype id.
     /// </summary>
-    [Column("mud_subtype_id_cli")]
+    [Column("mud_subtype_id")]
     public int? DrillingMudSubtypeId { get; set; }
 
     /// <summary>
