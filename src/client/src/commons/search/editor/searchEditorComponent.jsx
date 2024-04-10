@@ -239,7 +239,6 @@ SearchEditorComponent.propTypes = {
 
 const mapStateToProps = state => {
   return {
-    developer: state.developer,
     search: state.searchEditor,
     settings: state.setting,
     user: state.core_user,
