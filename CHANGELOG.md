@@ -14,6 +14,10 @@
 - Sorted common.json files alphabetically and removed unused entries.
 - Removed `public` field in publication workflow.
 
+### Fixed
+
+- Fixed direct navigation to nested urls.
+
 ## v2.0.644 - 2024-03-22
 
 ### Added

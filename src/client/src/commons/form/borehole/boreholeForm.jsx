@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-import { Route, Switch, withRouter } from "react-router-dom";
+import { Route, Switch, Redirect, withRouter } from "react-router-dom";
 import { updateBorehole, loadBorehole, patchBorehole } from "../../../api-lib/index";
 
 import EditorBoreholeFilesTable from "../../files/table/editorBoreholeFilesTable";
@@ -238,6 +238,8 @@ class BoreholeForm extends React.Component {
       return <div>{t(borehole.error, borehole.data)}</div>;
     }
 
+    const id = this.props?.match?.params?.id;
+
     return (
       <Dimmer.Dimmable
         as={"div"}
@@ -304,7 +306,7 @@ class BoreholeForm extends React.Component {
             render={() => (
               <BoreholePanel
                 size={size}
-                boreholeId={this.props.match.params.id}
+                boreholeId={id}
                 borehole={borehole}
                 updateChange={this.updateChange}
                 updateNumber={this.updateNumber}
@@ -314,68 +316,72 @@ class BoreholeForm extends React.Component {
           />
           <Route
             exact
-            path={"/:id/stratigraphy"}
-            render={() => <Profile id={parseInt(this.props.match.params.id, 10)} unlocked={isEditable} />}
+            path={"/:id/stratigraphy/lithology"}
+            render={() => <Profile id={parseInt(id, 10)} unlocked={isEditable} />}
           />
           <Route
             exact
             path={"/:id/stratigraphy/chronostratigraphy"}
-            render={() => (
-              <ChronostratigraphyPanel id={parseInt(this.props.match.params.id, 10)} isEditable={isEditable} />
-            )}
+            render={() => <ChronostratigraphyPanel id={parseInt(id, 10)} isEditable={isEditable} />}
           />
           <Route
             exact
             path={"/:id/stratigraphy/lithostratigraphy"}
-            render={() => (
-              <LithostratigraphyPanel id={parseInt(this.props.match.params.id, 10)} isEditable={isEditable} />
-            )}
+            render={() => <LithostratigraphyPanel id={parseInt(id, 10)} isEditable={isEditable} />}
+          />
+          <Route
+            path={"/:id/stratigraphy"}
+            render={() => {
+              return (
+                <Redirect
+                  to={{
+                    pathname: `/${id}/stratigraphy/lithology`,
+                  }}
+                />
+              );
+            }}
           />
           <Route
             exact
             path={"/:id/attachments"}
-            render={() => (
-              <EditorBoreholeFilesTable id={parseInt(this.props.match.params.id, 10)} unlocked={isEditable} />
-            )}
+            render={() => <EditorBoreholeFilesTable id={parseInt(id, 10)} unlocked={isEditable} />}
           />
           <Route
             exact
             path={"/:id/hydrogeology/wateringress"}
-            render={() => (
-              <WaterIngress isEditable={isEditable} boreholeId={parseInt(this.props.match.params.id, 10)} />
-            )}
+            render={() => <WaterIngress isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
           />
           <Route
             exact
             path={"/:id/hydrogeology/groundwaterlevelmeasurement"}
-            render={() => (
-              <GroundwaterLevelMeasurement
-                isEditable={isEditable}
-                boreholeId={parseInt(this.props.match.params.id, 10)}
-              />
-            )}
+            render={() => <GroundwaterLevelMeasurement isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
           />
           <Route
             exact
             path={"/:id/hydrogeology/fieldmeasurement"}
-            render={() => (
-              <FieldMeasurement isEditable={isEditable} boreholeId={parseInt(this.props.match.params.id, 10)} />
-            )}
+            render={() => <FieldMeasurement isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
           />
           <Route
             exact
             path={"/:id/hydrogeology/hydrotest"}
-            render={() => <Hydrotest isEditable={isEditable} boreholeId={parseInt(this.props.match.params.id, 10)} />}
+            render={() => <Hydrotest isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
           />
           <Route
             exact
             path={"/:id/hydrogeology/groundwaterlevelmeasurement"}
-            render={() => (
-              <GroundwaterLevelMeasurement
-                isEditable={isEditable}
-                boreholeId={parseInt(this.props.match.params.id, 10)}
-              />
-            )}
+            render={() => <GroundwaterLevelMeasurement isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
+          />
+          <Route
+            path={"/:id/hydrogeology"}
+            render={() => {
+              return (
+                <Redirect
+                  to={{
+                    pathname: `/${id}/hydrogeology/wateringress`,
+                  }}
+                />
+              );
+            }}
           />
           <Route path={"/:boreholeId/completion/:completionId"} render={() => <Completion isEditable={isEditable} />} />
           <Route path={"/:boreholeId/completion"} render={() => <Completion isEditable={isEditable} />} />

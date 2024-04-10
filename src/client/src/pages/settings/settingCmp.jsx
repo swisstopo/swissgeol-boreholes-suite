@@ -42,7 +42,7 @@ const SettingCmp = () => {
             <Route component={AdminSettings} path={"/setting/admin"} />
             <Route component={TermSettings} path={"/setting/term"} />
             <Route component={AboutSettings} path={"/setting/about"} />
-            <Route component={EditorSettings} path={"/setting"} exact />
+            <Route component={EditorSettings} path={"/setting"} />
           </Switch>
         </div>
       </div>
