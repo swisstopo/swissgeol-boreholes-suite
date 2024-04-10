@@ -274,14 +274,6 @@ class AdminSettings extends React.Component {
                   whiteSpace: "nowrap",
                 }}>
                 <TranslationText extra={{ what: t("all") }} id="show" />
-                {this.props.developer.debug === true ? (
-                  <div
-                    style={{
-                      color: "red",
-                    }}>
-                    trans=all
-                  </div>
-                ) : null}
               </div>
             ) : null}
             {this.state.usersFilter !== "enabled" && this.state.usersSearch === "" ? (
@@ -297,14 +289,6 @@ class AdminSettings extends React.Component {
                   whiteSpace: "nowrap",
                 }}>
                 <TranslationText extra={{ what: t("enabled") }} id="show" />
-                {this.props.developer.debug === true ? (
-                  <div
-                    style={{
-                      color: "red",
-                    }}>
-                    trans=enabled
-                  </div>
-                ) : null}
               </div>
             ) : null}
             {this.state.usersFilter !== "disabled" && this.state.usersSearch === "" ? (
@@ -320,14 +304,6 @@ class AdminSettings extends React.Component {
                   whiteSpace: "nowrap",
                 }}>
                 <TranslationText extra={{ what: t("disabled") }} id="show" />
-                {this.props.developer.debug === true ? (
-                  <div
-                    style={{
-                      color: "red",
-                    }}>
-                    trans=disabled
-                  </div>
-                ) : null}
               </div>
             ) : null}
             <div style={{ flex: "1 1 100%" }} />
@@ -716,14 +692,6 @@ class AdminSettings extends React.Component {
                       whiteSpace: "nowrap",
                     }}>
                     <TranslationText extra={{ what: t("all") }} id="show" />
-                    {this.props.developer.debug === true ? (
-                      <div
-                        style={{
-                          color: "red",
-                        }}>
-                        trans=all
-                      </div>
-                    ) : null}
                   </div>
                 ) : null}
                 {this.state.workgroupFilter !== "enabled" && this.state.workgroupsSearch === "" ? (
@@ -739,14 +707,6 @@ class AdminSettings extends React.Component {
                       whiteSpace: "nowrap",
                     }}>
                     <TranslationText extra={{ what: t("enabled") }} id="show" />
-                    {this.props.developer.debug === true ? (
-                      <div
-                        style={{
-                          color: "red",
-                        }}>
-                        trans=enabled
-                      </div>
-                    ) : null}
                   </div>
                 ) : null}
                 {this.state.workgroupFilter !== "disabled" && this.state.workgroupsSearch === "" ? (
@@ -762,14 +722,6 @@ class AdminSettings extends React.Component {
                       whiteSpace: "nowrap",
                     }}>
                     <TranslationText extra={{ what: t("disabled") }} id="show" />
-                    {this.props.developer.debug === true ? (
-                      <div
-                        style={{
-                          color: "red",
-                        }}>
-                        trans=disabled
-                      </div>
-                    ) : null}
                   </div>
                 ) : null}
                 <div style={{ flex: "1 1 100%" }} />
@@ -807,14 +759,6 @@ class AdminSettings extends React.Component {
                     ) : (
                       <TranslationText extra={{ what: t("workgroup") }} id="disabling" />
                     )}
-                    {this.props.developer.debug === true ? (
-                      <div
-                        style={{
-                          color: "red",
-                        }}>
-                        trans=workgroup
-                      </div>
-                    ) : null}
                   </Modal.Header>
                   <Modal.Content>
                     {this.state.deleteWorkgroup === null ? null : this.state.deleteWorkgroup.disabled !== null ? (
@@ -1097,7 +1041,6 @@ class AdminSettings extends React.Component {
 }
 
 AdminSettings.propTypes = {
-  developer: PropTypes.object,
   listWorkgroups: PropTypes.func,
   reloadUser: PropTypes.func,
   t: PropTypes.func,
@@ -1107,7 +1050,6 @@ AdminSettings.propTypes = {
 
 const mapStateToProps = state => {
   return {
-    developer: state.developer,
     user: state.core_user,
     workgroups: state.core_workgroups,
   };

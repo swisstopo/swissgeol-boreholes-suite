@@ -66,15 +66,8 @@ class StatusFilter extends Component {
 }
 
 StatusFilter.propTypes = {
-  developer: PropTypes.object,
   setFilter: PropTypes.func,
   settings: PropTypes.object,
-};
-
-const mapStateToProps = state => {
-  return {
-    developer: state.developer,
-  };
 };
 
 const mapDispatchToProps = dispatch => {
@@ -83,5 +76,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const ConnectedStatusFilter = connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(StatusFilter));
+const ConnectedStatusFilter = connect(mapDispatchToProps)(withTranslation(["common"])(StatusFilter));
 export default ConnectedStatusFilter;
