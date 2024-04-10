@@ -110,8 +110,6 @@ public class UploadController : ControllerBase
                 boreholeImport.Id = borehole.Id;
 
                 // Set DateTime kind to UTC, since PSQL type 'timestamp with timezone' requires UTC as DateTime.Kind
-                borehole.SpudDate = borehole.SpudDate != null ? DateTime.SpecifyKind(borehole.SpudDate.Value, DateTimeKind.Utc) : null;
-                borehole.DrillingDate = borehole.DrillingDate != null ? DateTime.SpecifyKind(borehole.DrillingDate.Value, DateTimeKind.Utc) : null;
                 borehole.RestrictionUntil = borehole.RestrictionUntil != null ? DateTime.SpecifyKind(borehole.RestrictionUntil.Value, DateTimeKind.Utc) : null;
                 borehole.WorkgroupId = workgroupId;
 
@@ -508,11 +506,7 @@ public class UploadController : ControllerBase
             Map(m => m.LocationPrecisionId).Optional();
             Map(m => m.ElevationPrecisionId).Optional();
             Map(m => m.ProjectName).Optional();
-            Map(m => m.DrillingMethodId).Optional();
-            Map(m => m.DrillingDate).Optional();
-            Map(m => m.CuttingsId).Optional();
             Map(m => m.PurposeId).Optional();
-            Map(m => m.DrillingDiameter).Optional();
             Map(m => m.StatusId).Optional();
             Map(m => m.Inclination).Optional();
             Map(m => m.InclinationDirection).Optional();
@@ -525,7 +519,6 @@ public class UploadController : ControllerBase
             Map(m => m.LithologyTopBedrockId).Optional();
             Map(m => m.LithostratigraphyId).Optional();
             Map(m => m.ChronostratigraphyId).Optional();
-            Map(m => m.SpudDate).Optional();
             Map(m => m.TopBedrockTvd).Optional();
             Map(m => m.QtTopBedrockTvd).Optional();
             Map(m => m.ReferenceElevation).Optional();
