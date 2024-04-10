@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import TranslationText from "../form/translationText";
 import TranslationKeys from "../translationKeys";
 
-const MenuComponent = ({ user, auth, dispatch, developer }) => {
+const MenuComponent = ({ user, auth }) => {
   const baseUrl = window.location.host;
   const history = useHistory();
 
@@ -133,25 +133,6 @@ const MenuComponent = ({ user, auth, dispatch, developer }) => {
                 </List.Header>
               </List.Content>
             </List.Item>
-            {user.data.admin === true ? (
-              <List.Item
-                onClick={() => {
-                  dispatch({
-                    type: "DEBUG_SWITCH",
-                  });
-                }}
-                style={{
-                  padding: "0.5em",
-                }}>
-                <List.Icon name="edit" verticalAlign="middle" />
-                <List.Content>
-                  <List.Header as="h4">Debug</List.Header>
-                  <List.Description>
-                    {developer.debug === true ? <TranslationText id="enabled" /> : <TranslationText id="disabled" />}
-                  </List.Description>
-                </List.Content>
-              </List.Item>
-            ) : null}
             <List.Item>
               <List.Content
                 style={{
@@ -192,7 +173,6 @@ const MenuComponent = ({ user, auth, dispatch, developer }) => {
 const mapStateToProps = state => {
   return {
     checkout: state.checkout,
-    developer: state.developer,
     user: state.core_user,
   };
 };

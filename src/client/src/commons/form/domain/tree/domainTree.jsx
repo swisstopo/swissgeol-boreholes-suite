@@ -312,16 +312,6 @@ class DomainTree extends React.Component {
                           : "1 1 100%",
                     }}>
                     {domain[this.state.language].text}
-                    {this.props.developer.debug === true ? (
-                      <span
-                        style={{
-                          color: "red",
-                          margin: "5px",
-                        }}
-                        title={`gcode=${domain.id}`}>
-                        gcode={domain.id}
-                      </span>
-                    ) : null}
                   </div>
                   {domain.conf !== null && Object.prototype.hasOwnProperty.call(domain.conf, "image") ? (
                     <div
@@ -566,7 +556,6 @@ DomainTree.defaultProps = {
 
 const mapStateToProps = state => {
   return {
-    developer: state.developer,
     domains: state.core_domain_list,
   };
 };

@@ -6,27 +6,7 @@ import wmts from "../commons/map/mapState";
 
 import { injectReducer, store } from "../api-lib/index";
 
-const queryString = window.location.search;
-
-const developerState = {
-  debug: new URLSearchParams(queryString).get("debug") ? true : false,
-};
-
-const developer = (state = developerState, action) => {
-  switch (action.type) {
-    case "DEBUG_SWITCH":
-      return {
-        ...state,
-        debug: !state.debug,
-      };
-
-    default:
-      return state;
-  }
-};
-
 const reducers = {
-  developer,
   dataLoaderState,
   searchEditor,
   editor,

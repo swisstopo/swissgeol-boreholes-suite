@@ -13,6 +13,7 @@
 - Placed `casing_elements` inputs on two lines for better readability.
 - Sorted common.json files alphabetically and removed unused entries.
 - Removed `public` field in publication workflow.
+- Removed developer debug functionality.
 
 ### Fixed
 

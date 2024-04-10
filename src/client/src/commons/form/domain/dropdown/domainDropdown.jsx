@@ -202,17 +202,6 @@ class DomainDropdown extends React.Component {
                 ) : null}
               </div>
             }
-            subheader={
-              this.props.developer.debug === true ? (
-                <div
-                  style={{
-                    color: "red",
-                    fontSize: "0.8em",
-                  }}>
-                  gcode={domain.id}
-                </div>
-              ) : null
-            }
           />
         ),
       })),
@@ -259,7 +248,6 @@ DomainDropdown.defaultProps = {
 
 const mapStateToProps = state => {
   return {
-    developer: state.developer,
     domains: state.core_domain_list,
   };
 };
