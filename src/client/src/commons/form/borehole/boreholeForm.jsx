@@ -393,7 +393,6 @@ class BoreholeForm extends React.Component {
 
 BoreholeForm.propTypes = {
   borehole: PropTypes.object,
-  developer: PropTypes.object,
   getBorehole: PropTypes.func,
   id: PropTypes.number,
   match: PropTypes.shape({
@@ -413,7 +412,6 @@ BoreholeForm.defaultProps = {
 const mapStateToProps = state => {
   return {
     borehole: state.core_borehole,
-    developer: state.developer,
     workflow: state.core_workflow,
     domains: state.core_domain_list,
     user: state.core_user,
