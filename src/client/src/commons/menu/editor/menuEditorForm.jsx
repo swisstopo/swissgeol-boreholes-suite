@@ -3,6 +3,9 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import { withRouter, useLocation } from "react-router-dom";
 import { Button, Header, Icon, List, Menu, Modal, Progress } from "semantic-ui-react";
+import ListItem from "@mui/material/ListItem";
+import { styled } from "@mui/system";
+import { useTheme } from "@mui/material/styles";
 import DateText from "../../form/dateText";
 import TranslationText from "../../form/translationText";
 import moment from "moment";
@@ -17,8 +20,30 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
   const [stratigraphyIsVisible, setStratigraphyIsVisible] = useState(false);
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
   const location = useLocation();
+  const theme = useTheme();
 
-  const id = match.params.id;
+  const id = match?.params?.id;
+
+  const ParentListItem = styled(ListItem)(({ active }) => ({
+    padding: "1em",
+    display: "flex",
+    cursor: "pointer",
+    borderTop: "1px solid lightgray",
+    borderLeft: active ? `0.25em solid ${theme.palette.error.main}` : null,
+    "&:hover": {
+      backgroundColor: theme.palette.hover.main,
+    },
+  }));
+
+  const ChildListItem = styled(ParentListItem)(() => ({
+    paddingLeft: "2.5em !important",
+  }));
+
+  const StyledIcon = styled("img")(({ active }) => ({
+    height: "1.5em",
+    paddingRight: "1em",
+    opacity: active ? 1 : 0.5,
+  }));
 
   useEffect(() => {
     setStratigraphyIsVisible(location.pathname.startsWith(`/${id}/stratigraphy`));
@@ -52,63 +77,62 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
         overflow: "auto",
       }}>
       <List divided relaxed selection>
-        <List.Item
+        <ParentListItem
           onClick={() => {
             history.push("/");
-          }}
-          style={{
-            padding: "1em",
           }}>
-          <List.Icon name="arrow left" size="large" verticalAlign="middle" />
+          <List.Icon name="arrow left" size="large" verticalAlign="middle" style={{ opacity: 0.5 }} />
           <List.Content>
             <List.Header as="h3" data-cy="done-menu-item">
               <TranslationText id="done" />
             </List.Header>
           </List.Content>
-        </List.Item>
-        <List.Item
+        </ParentListItem>
+        <ParentListItem
           active={location.pathname === "/" + id}
           onClick={() => {
             history.push("/" + id);
-          }}
-          style={{
-            padding: "1em",
-            borderLeft: location.pathname === "/" + id ? "0.25em solid rgb(237, 29, 36)" : null,
           }}>
-          <List.Icon name="map marker" size="large" verticalAlign="middle" />
+          <List.Icon
+            name="map marker"
+            size="large"
+            verticalAlign="middle"
+            style={{ opacity: location.pathname === `/${id}` ? 1 : 0.5 }}
+          />
           <List.Content>
             <List.Header as="h3" data-cy="location-menu-item">
               <TranslationText firstUpperCase id="location" />
             </List.Header>
           </List.Content>
-        </List.Item>
-        <List.Item
+        </ParentListItem>
+        <ParentListItem
           active={location.pathname === `/${id}/borehole`}
           onClick={() => {
             history.push(`/${id}/borehole`);
-          }}
-          style={{
-            padding: "1em",
-            borderLeft: location.pathname === `/${id}/borehole` ? "0.25em solid rgb(237, 29, 36)" : null,
           }}>
-          <List.Icon name="info" size="large" verticalAlign="middle" />
+          <List.Icon
+            name="info"
+            size="large"
+            verticalAlign="middle"
+            style={{ opacity: location.pathname === `/${id}/borehole` ? 1 : 0.5 }}
+          />
           <List.Content>
             <List.Header as="h3" data-cy="borehole-menu-item">
               <TranslationText firstUpperCase id="borehole" />
             </List.Header>
           </List.Content>
-        </List.Item>
+        </ParentListItem>
 
-        <List.Item
+        <ParentListItem
           onClick={() => {
             setStratigraphyIsVisible(!stratigraphyIsVisible);
-          }}
-          active={location.pathname.startsWith(`/${id}/stratigraphy`)}
-          style={{
-            padding: "1em",
-            display: "flex",
           }}>
-          <List.Icon name="align justify" size="large" verticalAlign="middle" />
+          <List.Icon
+            name="align justify"
+            size="large"
+            verticalAlign="middle"
+            style={{ opacity: location.pathname.startsWith(`/${id}/stratigraphy`) ? 1 : 0.5 }}
+          />
           <List.Content>
             <List.Header as="h3" data-cy="stratigraphy-menu-item">
               <TranslationText firstUpperCase id="stratigraphy" />
@@ -118,89 +142,70 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
             {!stratigraphyIsVisible && <List.Icon name="angle down" size="big" verticalAlign="middle" />}
             {stratigraphyIsVisible && <List.Icon name="angle up" size="big" verticalAlign="middle" />}
           </div>
-        </List.Item>
+        </ParentListItem>
         {stratigraphyIsVisible && (
           <>
-            <List.Item
+            <ChildListItem
               active={location.pathname === `/${id}/stratigraphy/lithology`}
               onClick={() => {
                 history.push(`/${id}/stratigraphy/lithology`);
-              }}
-              style={{
-                padding: "1em",
-                paddingLeft: 40,
-                display: "flex",
-                borderLeft:
-                  location.pathname === `/${id}/stratigraphy/lithology` ? "0.25em solid rgb(237, 29, 36)" : null,
               }}>
-              <List.Icon name="align justify" size="large" verticalAlign="middle" />
+              <List.Icon
+                name="align justify"
+                size="large"
+                verticalAlign="middle"
+                style={{ opacity: location.pathname === `/${id}/stratigraphy/lithology` ? 1 : 0.5 }}
+              />
               <List.Content>
                 <List.Header as="h3" data-cy="lithology-menu-item">
                   <TranslationText firstUpperCase id="lithology" />
                 </List.Header>
               </List.Content>
-            </List.Item>
-            <List.Item
+            </ChildListItem>
+            <ChildListItem
               active={location.pathname === `/${id}/stratigraphy/chronostratigraphy`}
               onClick={() => {
                 history.push(`/${id}/stratigraphy/chronostratigraphy`);
-              }}
-              style={{
-                padding: "1em",
-                paddingLeft: 40,
-                display: "flex",
-                borderLeft:
-                  location.pathname === `/${id}/stratigraphy/chronostratigraphy`
-                    ? "0.25em solid rgb(237, 29, 36)"
-                    : null,
               }}>
-              <List.Icon name="align justify" size="large" verticalAlign="middle" />
+              <List.Icon
+                name="align justify"
+                size="large"
+                verticalAlign="middle"
+                style={{ opacity: location.pathname === `/${id}/stratigraphy/chronostratigraphy` ? 1 : 0.5 }}
+              />
               <List.Content>
                 <List.Header as="h3" data-cy="chronostratigraphy-menu-item">
                   <TranslationText firstUpperCase id="chronostratigraphy" />
                 </List.Header>
               </List.Content>
-            </List.Item>
-            <List.Item
+            </ChildListItem>
+            <ChildListItem
               active={location.pathname === `/${id}/stratigraphy/lithostratigraphy`}
               onClick={() => {
                 history.push(`/${id}/stratigraphy/lithostratigraphy`);
-              }}
-              style={{
-                padding: "1em",
-                paddingLeft: 40,
-                display: "flex",
-                borderLeft:
-                  location.pathname === `/${id}/stratigraphy/lithostratigraphy`
-                    ? "0.25em solid rgb(237, 29, 36)"
-                    : null,
               }}>
-              <List.Icon name="align justify" size="large" verticalAlign="middle" />
+              <List.Icon
+                name="align justify"
+                size="large"
+                verticalAlign="middle"
+                style={{ opacity: location.pathname === `/${id}/stratigraphy/lithostratigraphy` ? 1 : 0.5 }}
+              />
               <List.Content>
                 <List.Header as="h3" data-cy="lithostratigraphy-menu-item">
                   <TranslationText firstUpperCase id="lithostratigraphy" />
                 </List.Header>
               </List.Content>
-            </List.Item>
+            </ChildListItem>
           </>
         )}
-        <List.Item
+        <ParentListItem
           onClick={() => {
             setHydrogeologyIsVisible(!hydrogeologyIsVisible);
-          }}
-          active={location.pathname.startsWith(`/${id}/hydrogeology`)}
-          style={{
-            padding: "1em",
-            display: "flex",
           }}>
-          <img
+          <StyledIcon
             alt="Hydrogeology"
             src={"/img/Hydrogeology.png"}
-            style={{
-              opacity: location.pathname.startsWith(`/${id}/hydrogeology`) ? 1 : 0.5,
-              height: "1.5em",
-              paddingRight: "1em",
-            }}
+            active={location.pathname.startsWith(`/${id}/hydrogeology`)}
           />
           <List.Content>
             <List.Header as="h3" data-cy="hydrogeology-menu-item">
@@ -211,166 +216,113 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
             {!hydrogeologyIsVisible && <List.Icon name="angle down" size="big" verticalAlign="middle" />}
             {hydrogeologyIsVisible && <List.Icon name="angle up" size="big" verticalAlign="middle" />}
           </div>
-        </List.Item>
+        </ParentListItem>
         {hydrogeologyIsVisible && (
           <>
-            <List.Item
+            <ChildListItem
               active={location.pathname === `/${id}/hydrogeology/wateringress`}
               onClick={() => {
                 history.push(`/${id}/hydrogeology/wateringress`);
-              }}
-              style={{
-                padding: "1em",
-                paddingLeft: 40,
-                display: "flex",
-                borderLeft:
-                  location.pathname === `/${id}/hydrogeology/wateringress` ? "0.25em solid rgb(237, 29, 36)" : null,
               }}>
-              <img
+              <StyledIcon
                 alt="Water ingress"
                 src={"/img/Hydrogeology.png"}
-                style={{
-                  height: "1.5em",
-                  paddingRight: "1em",
-                  opacity: location.pathname === `/${id}/hydrogeology/wateringress` ? 1 : 0.5,
-                }}
+                active={location.pathname === `/${id}/hydrogeology/wateringress`}
               />
               <List.Content>
                 <List.Header as="h3" data-cy="wateringress-menu-item">
                   <TranslationText firstUpperCase id="waterIngress" />
                 </List.Header>
               </List.Content>
-            </List.Item>
-            <List.Item
+            </ChildListItem>
+            <ChildListItem
               active={location.pathname === `/${id}/hydrogeology/hydrotest`}
               onClick={() => {
                 history.push(`/${id}/hydrogeology/hydrotest`);
-              }}
-              style={{
-                padding: "1em",
-                paddingLeft: 40,
-                display: "flex",
-                borderLeft:
-                  location.pathname === `/${id}/hydrogeology/hydrotest` ? "0.25em solid rgb(237, 29, 36)" : null,
               }}>
-              <img
+              <StyledIcon
                 alt="Hydrotest"
                 src={"/img/Hydrogeology.png"}
-                style={{
-                  height: "21px",
-                  paddingRight: "1em",
-                  opacity: location.pathname === `/${id}/hydrogeology/hydrotest` ? 1 : 0.5,
-                }}
+                active={location.pathname === `/${id}/hydrogeology/hydrotest`}
               />
               <List.Content>
                 <List.Header as="h3" data-cy="hydrotest-menu-item">
                   <TranslationText firstUpperCase id="hydrotest" />
                 </List.Header>
               </List.Content>
-            </List.Item>
+            </ChildListItem>
           </>
         )}
         {hydrogeologyIsVisible && (
           <>
-            <List.Item
+            <ChildListItem
               active={location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement`}
               onClick={() => {
                 history.push(`/${id}/hydrogeology/groundwaterlevelmeasurement`);
-              }}
-              style={{
-                padding: "1em",
-                paddingLeft: 40,
-                display: "flex",
-                borderLeft:
-                  location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement`
-                    ? "0.25em solid rgb(237, 29, 36)"
-                    : null,
               }}>
-              <img
+              <StyledIcon
                 alt="Groundwater Level Measurement"
                 src={"/img/Hydrogeology.png"}
-                style={{
-                  height: "1.5em",
-                  paddingRight: "1em",
-                  opacity: location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement` ? 1 : 0.5,
-                }}
+                active={location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement`}
               />
               <List.Content>
                 <List.Header as="h3" data-cy="groundwaterlevelmeasurement-menu-item">
                   <TranslationText firstUpperCase id="groundwaterLevelMeasurementWordBreak" />
                 </List.Header>
               </List.Content>
-            </List.Item>
-            <List.Item
+            </ChildListItem>
+            <ChildListItem
               active={location.pathname === `/${id}/hydrogeology/fieldmeasurement`}
               onClick={() => {
                 history.push(`/${id}/hydrogeology/fieldmeasurement`);
-              }}
-              style={{
-                padding: "1em",
-                paddingLeft: 40,
-                display: "flex",
-                borderLeft:
-                  location.pathname === `/${id}/hydrogeology/fieldmeasurement` ? "0.25em solid rgb(237, 29, 36)" : null,
               }}>
-              <img
+              <StyledIcon
                 alt="Field Measurement"
                 src={"/img/Hydrogeology.png"}
-                style={{
-                  height: "1.5em",
-                  paddingRight: "1em",
-                  opacity: location.pathname === `/${id}/hydrogeology/fieldmeasurement` ? 1 : 0.5,
-                }}
+                active={location.pathname === `/${id}/hydrogeology/fieldmeasurement`}
               />
               <List.Content>
                 <List.Header as="h3" data-cy="fieldmeasurement-menu-item">
                   <TranslationText firstUpperCase id="fieldMeasurement" />
                 </List.Header>
               </List.Content>
-            </List.Item>
+            </ChildListItem>
           </>
         )}
-        <List.Item
+        <ParentListItem
           active={location.pathname.includes(`/${id}/completion`)}
           onClick={() => {
             history.push(`/${id}/completion`);
-          }}
-          style={{
-            padding: "1em",
-            display: "flex",
-            borderLeft: location.pathname.includes(`/${id}/completion`) ? "0.25em solid rgb(237, 29, 36)" : null,
           }}>
-          <img
-            alt="completion"
+          <StyledIcon
+            alt="Completion"
             src={"/img/Completion.png"}
-            style={{
-              height: "1.5em",
-              paddingRight: "1em",
-              opacity: location.pathname.includes(`/${id}/completion`) ? 1 : 0.5,
-            }}
+            active={location.pathname.includes(`/${id}/completion`)}
           />
           <List.Content>
             <List.Header as="h3" data-cy="completion-menu-item">
               <TranslationText firstUpperCase id="completion" />
             </List.Header>
           </List.Content>
-        </List.Item>
-        <List.Item
+        </ParentListItem>
+        <ParentListItem
           active={location.pathname === `/${id}/attachments`}
+          style={{ borderBottom: "1px solid lightgray" }}
           onClick={() => {
             history.push(`/${id}/attachments`);
-          }}
-          style={{
-            padding: "1em",
-            borderLeft: location.pathname === `/${id}/attachments` ? "0.25em solid rgb(237, 29, 36)" : null,
           }}>
-          <List.Icon name="attach" size="large" verticalAlign="middle" />
+          <List.Icon
+            name="attach"
+            size="large"
+            verticalAlign="middle"
+            style={{ opacity: location.pathname === `/${id}/attachments` ? 1 : 0.5 }}
+          />
           <List.Content>
             <List.Header as="h3" data-cy="attachments-menu-item">
               <TranslationText firstUpperCase id="attachments" />
             </List.Header>
           </List.Content>
-        </List.Item>
+        </ParentListItem>
       </List>
     </Scroller>,
     <div
@@ -398,7 +350,7 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
         <div
           style={{
             fontSize: "0.7em",
-            color: "#787878",
+            color: theme.palette.text.secondary,
           }}>
           <TranslationText id="locked_status" />
         </div>
@@ -434,7 +386,7 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
           <div
             style={{
               fontSize: "0.7em",
-              color: "#787878",
+              color: theme.palette.text.secondary,
             }}>
             {borehole.data.workgroup && borehole.data.workgroup.supplier === true ? (
               <TranslationText id="supplier" />
@@ -452,7 +404,7 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
             <div
               style={{
                 fontSize: "0.7em",
-                color: "#787878",
+                color: theme.palette.text.secondary,
               }}>
               {borehole.data.imported === true ? (
                 <TranslationText id="importedBy" />
@@ -475,7 +427,7 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
           <div
             style={{
               fontSize: "0.7em",
-              color: "#787878",
+              color: theme.palette.text.secondary,
             }}>
             {borehole.data.imported === true ? (
               <TranslationText id="importDate" />
@@ -506,7 +458,7 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
             <div
               style={{
                 fontSize: "0.7em",
-                color: "#787878",
+                color: theme.palette.text.secondary,
               }}>
               {borehole.data.lock !== null ? <TranslationText id="locked_by" /> : <TranslationText id="updatedBy" />}:
             </div>
@@ -525,7 +477,7 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
             <div
               style={{
                 fontSize: "0.7em",
-                color: "#787878",
+                color: theme.palette.text.secondary,
               }}>
               {borehole.data.lock !== null ? <TranslationText id="locked_at" /> : <TranslationText id="updateDate" />}:
             </div>

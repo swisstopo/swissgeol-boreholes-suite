@@ -21,6 +21,9 @@ export const theme = createTheme({
       main: "#d8d8d8",
       contrastText: "#000000",
     },
+    hover: {
+      main: "#f5f5f5",
+    },
   },
   typography: {
     fontFamily: "Lato",
