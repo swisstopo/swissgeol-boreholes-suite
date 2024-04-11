@@ -101,8 +101,6 @@ class ListEditingBorehole(Action):
                 srs_id_cli as spatial_reference_system,
                 elevation_z_bho as elevation_z,
                 hrs_id_cli as height_reference_system,
-                drilling_date_bho as drilling_date,
-                spud_date_bho as spud_date,
                 total_depth_bho as total_depth,
                 (
                     select row_to_json(t)

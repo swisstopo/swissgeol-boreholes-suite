@@ -5,34 +5,9 @@ export const boreholeEditorData = [
     value: "borehole_type",
   },
   {
-    id: 1,
-    label: "drilling_method",
-    value: "extended.method",
-  },
-  {
     id: 2,
     label: "purpose",
     value: "extended.purpose",
-  },
-  {
-    id: 3,
-    label: "cuttings",
-    value: "custom.cuttings",
-  },
-  {
-    id: 4,
-    label: "spud_date",
-    value: "spud_date",
-  },
-  {
-    id: 5,
-    label: "drilling_end_date",
-    value: "drilling_date",
-  },
-  {
-    id: 6,
-    label: "drill_diameter",
-    value: "custom.drill_diameter",
   },
   {
     id: 7,

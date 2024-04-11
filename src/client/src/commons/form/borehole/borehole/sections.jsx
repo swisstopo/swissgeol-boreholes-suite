@@ -14,7 +14,9 @@ const Sections = ({ isEditable, boreholeId }) => {
       emptyLabel="msgSectionsEmpty"
       renderInput={props => <SectionInput {...props} />}
       renderDisplay={props => <SectionDisplay {...props} />}
-      sortDisplayed={(a, b) => a.sectionElements?.at(0).fromDepth - b?.sectionElements?.at(0).fromDepth || a.id - b.id}
+      sortDisplayed={(a, b) =>
+        a.sectionElements?.at(0)?.fromDepth - b?.sectionElements?.at(0)?.fromDepth || a.id - b.id
+      }
     />
   );
 };

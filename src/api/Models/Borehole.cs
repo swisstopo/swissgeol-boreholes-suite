@@ -229,34 +229,6 @@ public class Borehole : IChangeTracking, IIdentifyable
     public string? Municipality { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s drilling method Id.
-    /// </summary>
-    [Column("drilling_method_id_cli")]
-    public int? DrillingMethodId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s drilling method.
-    /// </summary>
-    public Codelist? DrillingMethod { get; set; }
-
-    /// <summary>
-    /// Gets or sets the timestamp from the drilling date of the  <see cref="Borehole"/>.
-    /// </summary>
-    [Column("drilling_date_bho")]
-    public DateTime? DrillingDate { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s cuttings id.
-    /// </summary>
-    [Column("cuttings_id_cli")]
-    public int? CuttingsId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s cuttings id.
-    /// </summary>
-    public Codelist? Cuttings { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s purpose id.
     /// </summary>
     [Column("purpose_id_cli")]
@@ -266,12 +238,6 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s purpose.
     /// </summary>
     public Codelist? Purpose { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s drilling diameter.
-    /// </summary>
-    [Column("drilling_diameter_bho")]
-    public double? DrillingDiameter { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s status id.
@@ -382,12 +348,6 @@ public class Borehole : IChangeTracking, IIdentifyable
     public Codelist? Chronostratigraphy { get; set; }
 
     /// <summary>
-    /// Gets or sets the timestamp from the spud date of the  <see cref="Borehole"/>.
-    /// </summary>
-    [Column("spud_date_bho")]
-    public DateTime? SpudDate { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s top bedrock tvd.
     /// </summary>
     [Column("top_bedrock_tvd_bho")]
@@ -453,6 +413,11 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets the <see cref="Borehole"/>'s completions.
     /// </summary>
     public ICollection<Completion> Completions { get; }
+
+    /// <summary>
+    /// Gets the <see cref="Borehole"/>'s <see cref="Section"/>s.
+    /// </summary>
+    public ICollection<Section> Sections { get; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s workflows.

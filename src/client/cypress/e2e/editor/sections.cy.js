@@ -61,7 +61,7 @@ describe("Section crud tests", () => {
     evaluateDisplayValue("0.drilling_method", "rotary coring");
     evaluateDisplayValue("0.cuttings", "cuttings");
     evaluateDisplayValue("0.drilling_mud_type", "pneumatic");
-    evaluateDisplayValue("0.drilling_mud_subtype", "pneumatic – gas");
+    evaluateDisplayValue("0.drilling_mud_subtype", "gas");
     evaluateDisplayValue("0.spud_date", "01. Jan. 2023");
     evaluateDisplayValue("0.drilling_end_date", "02. Jan. 2023");
     evaluateDisplayValue("0.drill_diameter", "3.4");
@@ -121,7 +121,7 @@ describe("Section crud tests", () => {
     evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
     evaluateDisplayValue(
       "0.drilling_mud_subtype",
-      "water-based dispersed - lime, gypsum, NaCl, CaCl2, lignite, lignosulfonate, bentonite, polymers",
+      "lime, gypsum, NaCl, CaCl2, lignite, lignosulfonate, bentonite, polymers",
     );
 
     startEditing();
@@ -136,7 +136,7 @@ describe("Section crud tests", () => {
     saveForm();
 
     evaluateDisplayValue("0.drilling_mud_type", "pneumatic");
-    evaluateDisplayValue("0.drilling_mud_subtype", "pneumatic – gas");
+    evaluateDisplayValue("0.drilling_mud_subtype", "gas");
 
     startEditing();
     setSelect("sectionElements.0.drillingMudSubtypeId", 5, 7);

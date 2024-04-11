@@ -15,6 +15,7 @@
 - Removed `public` field in publication workflow.
 - Removed developer debug functionality.
 - Removed unneeded scroller component.
+- Remove fields from borehole that are now part of sections.
 
 ### Fixed
 

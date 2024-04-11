@@ -59,12 +59,6 @@ class Action():
         elif orderby == 'national_interest':
             orderby = 'national_interest'
 
-        elif orderby == 'drilling_date':
-            _orderby = 'drilling_date_bho'
-
-        elif orderby == 'spud_date':
-            _orderby = 'spud_date_bho'
-
         elif orderby == 'status':
             _orderby = 'status_id_cli'
 
@@ -84,17 +78,11 @@ class Action():
             _orderby = 'elevation_z_bho' 
 
         # there are inconsitencies in the client code, that sometimes the translation key is send to the api. Therefore some duplicate keys are mapped here.
-        elif orderby == 'drilling_date':
-            _orderby = 'drilling_date_bho'
-
         elif orderby == 'boreholestatus':
             _orderby = 'status_id_cli'
 
         elif orderby == 'createdBy':
             _orderby = 'created_by_bho'
-
-        elif orderby == 'drilling_end_date':
-            _orderby = 'drilling_date_bho'
 
         elif orderby == 'creationdate':
             _orderby = 'created_bho'
@@ -449,12 +437,6 @@ class Action():
                     kind_id_cli = %s
                 """ % self.getIdx())
 
-            if 'cuttings' in keys and filter['cuttings'] not in ['', None]:
-                params.append(int(filter['cuttings']))
-                where.append("""
-                    cuttings_id_cli = %s
-                """ % self.getIdx())
-
             if 'restriction' in keys and filter[
                     'restriction'] not in ['', None]:
                 params.append(int(filter['restriction']))
@@ -467,13 +449,6 @@ class Action():
                 params.append(int(filter['status']))
                 where.append("""
                     status_id_cli = %s
-                """ % self.getIdx())
-
-            if 'method' in keys and filter[
-                    'method'] not in ['', None]:
-                params.append(int(filter['method']))
-                where.append("""
-                    drilling_method_id_cli = %s
                 """ % self.getIdx())
 
             if 'purpose' in keys and filter['purpose'] not in ['', None]:
@@ -556,42 +531,6 @@ class Action():
                     where.append("""
                         national_interest = %s
                     """ % self.getIdx())
-
-            if 'drilling_date_from' in keys and filter['drilling_date_from'] not in ['', None]:
-                params.append(filter['drilling_date_from'])
-                where.append("""
-                    drilling_date_bho >= to_date(%s, 'YYYY-MM-DD')
-                """ % self.getIdx())
-
-            if 'drilling_date_to' in keys and filter['drilling_date_to'] not in ['', None]:
-                params.append(filter['drilling_date_to'])
-                where.append("""
-                    drilling_date_bho <= to_date(%s, 'YYYY-MM-DD')
-                """ % self.getIdx())
-
-            if 'spud_date_from' in keys and filter['spud_date_from'] not in ['', None]:
-                params.append(filter['spud_date_from'])
-                where.append("""
-                    spud_date_bho >= to_date(%s, 'YYYY-MM-DD')
-                """ % self.getIdx())
-
-            if 'spud_date_to' in keys and filter['spud_date_to'] not in ['', None]:
-                params.append(filter['spud_date_to'])
-                where.append("""
-                    spud_date_bho <= to_date(%s, 'YYYY-MM-DD')
-                """ % self.getIdx())
-
-            if 'drill_diameter_from' in keys and filter['drill_diameter_from'] not in ['', None]:
-                params.append(float(filter['drill_diameter_from']))
-                where.append("""
-                    drilling_diameter_bho >= %s
-                """ % self.getIdx())
-
-            if 'drill_diameter_to' in keys and filter['drill_diameter_to'] not in ['', None]:
-                params.append(float(filter['drill_diameter_to']))
-                where.append("""
-                    drilling_diameter_bho <= %s
-                """ % self.getIdx())
 
             if 'location_precision' in keys and filter[
                     'location_precision'] not in ['', None]:
