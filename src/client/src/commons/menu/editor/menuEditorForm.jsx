@@ -4,13 +4,13 @@ import { withTranslation } from "react-i18next";
 import { withRouter, useLocation } from "react-router-dom";
 import { Button, Header, Icon, List, Menu, Modal, Progress } from "semantic-ui-react";
 import ListItem from "@mui/material/ListItem";
+import Box from "@mui/material/Box";
 import { styled } from "@mui/system";
 import { useTheme } from "@mui/material/styles";
 import DateText from "../../form/dateText";
 import TranslationText from "../../form/translationText";
 import moment from "moment";
 import { deleteBorehole, loadBorehole, lockBorehole, unlockBorehole } from "../../../api-lib/index";
-import Scroller from "../../scroller";
 
 const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, lock }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -68,7 +68,7 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
   const boreholeLockTime = 3600;
 
   return [
-    <Scroller
+    <Box
       key="sb-em-2"
       style={{
         flex: "1 1 100%",
@@ -324,7 +324,7 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
           </List.Content>
         </ParentListItem>
       </List>
-    </Scroller>,
+    </Box>,
     <div
       key="medf-prps"
       style={{

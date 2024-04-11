@@ -7,6 +7,10 @@ import { AuthenticationStoreSync } from "./AuthenticationStoreSync.js";
 import { SplashScreen } from "./SplashScreen";
 import { AuthOverlay } from "./AuthOverlay";
 
+function normalizeRedirectUri(uri) {
+  return uri.endsWith("/") ? uri.slice(0, -1) : uri;
+}
+
 export const BdmsAuthProvider = props => {
   const [serverConfig, setServerConfig] = useState(undefined);
   const [oidcConfig, setOidcConfig] = useState(undefined);
@@ -25,8 +29,8 @@ export const BdmsAuthProvider = props => {
       authority: serverConfig.authority,
       client_id: serverConfig.audience,
       scope: serverConfig.scopes,
-      redirect_uri: window.location.origin,
-      post_logout_redirect_uri: window.location.origin,
+      redirect_uri: normalizeRedirectUri(window.location.origin),
+      post_logout_redirect_uri: normalizeRedirectUri(window.location.origin),
       userStore: new WebStorageStateStore({ store: window.localStorage }),
     };
 

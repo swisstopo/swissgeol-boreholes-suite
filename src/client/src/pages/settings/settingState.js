@@ -5,7 +5,6 @@ const initialState = {
   pathching: [],
   rtime: 0, // fetch time
   fcnt: 0, // fetch counter
-  scrollbar: "10px",
   page: 0,
   selectedWMS: "https://wms.geo.admin.ch?request=getCapabilities&service=WMS",
   WMS: [
@@ -254,12 +253,6 @@ const setting = (state = initialState, action) => {
       const copy = { ...state };
       _.set(copy, `data.filter.${action.filter}`, action.enabled);
       return copy;
-    }
-    case "SETTING_SCROLLBAR_WIDTH": {
-      return {
-        ...state,
-        scrollbar: action.width,
-      };
     }
     case "SETTING_SET_PAGE": {
       return {
