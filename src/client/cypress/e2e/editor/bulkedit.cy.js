@@ -17,7 +17,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.contains("button", "Bulk editing").click({ force: true });
 
     cy.get(".modal .toggle")
-      .should("have.length", 30)
+      .should("have.length", 25)
       .each(el => {
         cy.wrap(el).click({ force: true });
         cy.get(".modal form .field").should("exist");
@@ -31,7 +31,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.visit("/");
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
-    cy.get(".modal .toggle").should("have.length", 30);
+    cy.get(".modal .toggle").should("have.length", 25);
 
     loginAsAdmin("admin");
     const adminUser2Workgroups = Object.assign({}, adminUser);
@@ -50,7 +50,7 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 
-    cy.get(".modal .toggle").should("have.length", 31);
+    cy.get(".modal .toggle").should("have.length", 26);
     // select all bulk edit fields and insert values
     cy.contains("button", "Workgroup").click({ force: true });
     cy.get('[data-cy="workgroup-select"]')
@@ -81,11 +81,11 @@ describe("Test the borehole bulk edit feature.", () => {
     cy.get(".modal .toggle").click({ multiple: true });
 
     cy.get('[data-cy="text-input"]')
-      .should("have.length", 10)
+      .should("have.length", 9)
       .each((el, index) => cy.wrap(el).scrollIntoView().type(`A${index}`));
 
     cy.get("form .field > .react-datepicker-wrapper .datepicker-input")
-      .should("have.length", 3)
+      .should("have.length", 1)
       .each(el => {
         cy.wrap(el).click();
         cy.get(`.react-datepicker__day--013`).click();
@@ -99,7 +99,7 @@ describe("Test the borehole bulk edit feature.", () => {
       });
 
     cy.get('[data-cy="domain-dropdown"]')
-      .should("have.length", 13)
+      .should("have.length", 11)
       .each(el => cy.wrap(el).click().find('[role="option"]').last().click());
 
     cy.get('[data-cy="domain-tree"] > input')
