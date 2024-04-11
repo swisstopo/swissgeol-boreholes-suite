@@ -84,9 +84,6 @@ class PatchBorehole(Action):
         elif field == 'canton':
             column = 'canton_num'
 
-        elif field == 'custom.drill_diameter':
-            column = 'drilling_diameter_bho'
-
         elif field == 'inclination':
             column = 'inclination_bho'
 
@@ -120,12 +117,6 @@ class PatchBorehole(Action):
         elif field == 'restriction_until':
             column = 'restriction_until_bho'
 
-        elif field == 'drilling_date':
-            column = 'drilling_date_bho'
-
-        elif field == 'spud_date':
-            column = 'spud_date_bho'
-
         elif field == 'restriction':
             column = 'restriction_id_cli'
 
@@ -155,12 +146,6 @@ class PatchBorehole(Action):
 
         elif field == 'height_reference_system':
             column = 'hrs_id_cli'
-
-        elif field == 'extended.drilling_method':
-            column = 'drilling_method_id_cli'
-
-        elif field == 'custom.cuttings':
-            column = 'cuttings_id_cli'
 
         elif field == 'extended.purpose':
             column = 'purpose_id_cli'
