@@ -351,7 +351,7 @@
   "someSelected": "{{howMany}} Bohrungen ausgewählt",
   "sourceCode": "Quellcode",
   "spatial_reference_system": "Räumliches Bezugssystem",
-  "spud_date": "Datum Bohrbeginn",
+  "drilling_start_date": "Datum Bohrbeginn",
   "start": "Diese Seite ist auf Deutsch.",
   "startTime": "Beginn",
   "status": "Status",

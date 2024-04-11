@@ -38,7 +38,7 @@ describe("Section crud tests", () => {
     setSelect("sectionElements.0.cuttingsId", 2);
     setSelect("sectionElements.0.drillingMudTypeId", 3);
     setSelect("sectionElements.0.drillingMudSubtypeId", 2);
-    setInput("sectionElements.0.spudDate", "2023-01-01");
+    setInput("sectionElements.0.drillingStartDate", "2023-01-01");
     setInput("sectionElements.0.drillingEndDate", "2023-01-02");
     setInput("sectionElements.0.drillingDiameter", "3.4");
     setInput("sectionElements.0.drillingCoreDiameter", "5.6");
@@ -62,7 +62,7 @@ describe("Section crud tests", () => {
     evaluateDisplayValue("0.cuttings", "cuttings");
     evaluateDisplayValue("0.drilling_mud_type", "pneumatic");
     evaluateDisplayValue("0.drilling_mud_subtype", "gas");
-    evaluateDisplayValue("0.spud_date", "01. Jan. 2023");
+    evaluateDisplayValue("0.drilling_start_date", "01. Jan. 2023");
     evaluateDisplayValue("0.drilling_end_date", "02. Jan. 2023");
     evaluateDisplayValue("0.drill_diameter", "3.4");
     evaluateDisplayValue("0.drill_core_diameter", "5.6");
@@ -74,7 +74,7 @@ describe("Section crud tests", () => {
     evaluateDisplayValue("1.cuttings", "-");
     evaluateDisplayValue("1.drilling_mud_type", "-");
     evaluateDisplayValue("1.drilling_mud_subtype", "-");
-    evaluateDisplayValue("1.spud_date", "-");
+    evaluateDisplayValue("1.drilling_start_date", "-");
     evaluateDisplayValue("1.drilling_end_date", "-");
     evaluateDisplayValue("1.drill_diameter", "-");
     evaluateDisplayValue("1.drill_core_diameter", "-");
