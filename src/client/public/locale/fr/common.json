@@ -351,7 +351,7 @@
   "someSelected": "{{howMany}} forages sélectionnés",
   "sourceCode": "Code source",
   "spatial_reference_system": "Système de cordonnées",
-  "spud_date": "Date de début du forage",
+  "drilling_start_date": "Date de début du forage",
   "start": "Cette page est en français",
   "startTime": "Début",
   "status": "Statut",

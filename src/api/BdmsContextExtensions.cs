@@ -912,7 +912,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Order, f => f.Random.Int(0, 99))
             .RuleFor(o => o.DrillingMethodId, f => f.PickRandom(drillingMethodIds).OrNull(f, .2f))
             .RuleFor(o => o.DrillingMethod, _ => default!)
-            .RuleFor(o => o.SpudDate, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .2f))
+            .RuleFor(o => o.DrillingStartDate, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .2f))
             .RuleFor(o => o.DrillingEndDate, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .2f))
             .RuleFor(o => o.CuttingsId, f => f.PickRandom(cuttingsIds).OrNull(f, .2f))
             .RuleFor(o => o.Cuttings, _ => default!)

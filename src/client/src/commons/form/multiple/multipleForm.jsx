@@ -381,11 +381,9 @@ class MultipleForm extends React.Component {
             ])}
             {this.getGroup([
               this.getDomain("borehole_type"),
-              this.getDomain("drilling_method"),
               this.getDomain("purpose"),
+              this.getDomain("boreholestatus"),
             ])}
-            {this.getGroup([this.getDomain("cuttings"), this.getDate("spud_date"), this.getDate("drilling_end_date")])}
-            {this.getGroup([this.getInput("drill_diameter", "number"), this.getDomain("boreholestatus")])}
             {this.getGroup([
               this.getInput("inclination", "number"),
               this.getInput("inclination_direction", "number"),

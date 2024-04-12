@@ -55,8 +55,8 @@ const SectionDisplay = ({ item, isEditable }) => {
             <StackFullWidth direction="row" spacing={1}>
               <FormDisplay
                 prefix={`${index}.`}
-                label="spud_date"
-                value={element.spudDate}
+                label="drilling_start_date"
+                value={element.drillingStartDate}
                 type={FormDisplayType.Date}
               />
               <FormDisplay

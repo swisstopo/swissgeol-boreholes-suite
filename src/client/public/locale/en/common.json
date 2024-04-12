@@ -351,7 +351,7 @@
   "someSelected": "{{howMany}} boreholes selected",
   "sourceCode": "Source code",
   "spatial_reference_system": "Spatial reference system",
-  "spud_date": "Drilling date: start",
+  "drilling_start_date": "Drilling date: start",
   "start": "This page is in English",
   "startTime": "Start",
   "status": "Status",
