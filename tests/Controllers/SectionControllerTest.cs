@@ -47,12 +47,12 @@ public class SectionControllerTest
         var boreholes = await context.Sections.ToListAsync();
         var boreholeId = boreholes
             .GroupBy(i => i.BoreholeId)
-            .Where(g => g.Count() == 2)
+            .Where(g => g.Count() == 5)
             .First().Key;
 
         IEnumerable<Section>? sections = await controller.GetAsync(boreholeId).ConfigureAwait(false);
         Assert.IsNotNull(sections);
-        Assert.AreEqual(2, sections.Count());
+        Assert.AreEqual(5, sections.Count());
     }
 
     [TestMethod]
