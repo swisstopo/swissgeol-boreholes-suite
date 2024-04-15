@@ -58,25 +58,25 @@ public class GroundwaterLevelMeasurementControllerTest
     [TestMethod]
     public async Task GetEntriesByBoreholeId()
     {
-        var response = await controller.GetAsync(1000595).ConfigureAwait(false);
+        var response = await controller.GetAsync(1000098).ConfigureAwait(false);
         IEnumerable<GroundwaterLevelMeasurement>? groundwaterLevelMeasurements = response;
         Assert.IsNotNull(groundwaterLevelMeasurements);
-        Assert.AreEqual(1, groundwaterLevelMeasurements.Count());
-        var groundwaterLevelMeasurement = groundwaterLevelMeasurements.Single();
+        Assert.AreEqual(2, groundwaterLevelMeasurements.Count());
+        var groundwaterLevelMeasurement = groundwaterLevelMeasurements.First();
 
-        Assert.AreEqual(groundwaterLevelMeasurement.Id, 12000009);
+        Assert.AreEqual(groundwaterLevelMeasurement.Id, 12000022);
         Assert.AreEqual(groundwaterLevelMeasurement.Type, ObservationType.GroundwaterLevelMeasurement);
-        Assert.AreEqual(groundwaterLevelMeasurement.Duration, 3955.791535689864);
-        Assert.AreEqual(groundwaterLevelMeasurement.FromDepthM, 2480.3481396256702);
-        Assert.AreEqual(groundwaterLevelMeasurement.ToDepthM, 3821.0916134552526);
-        Assert.AreEqual(groundwaterLevelMeasurement.FromDepthMasl, 1289.6360662978311);
-        Assert.AreEqual(groundwaterLevelMeasurement.ToDepthMasl, 4179.667294897915);
-        Assert.AreEqual(groundwaterLevelMeasurement.IsOpenBorehole, false);
-        Assert.AreEqual(groundwaterLevelMeasurement.Comment, "Libero voluptate corrupti et iste iure.");
-        Assert.AreEqual(groundwaterLevelMeasurement.ReliabilityId, 15203157);
-        Assert.AreEqual(groundwaterLevelMeasurement.KindId, 15203204);
-        Assert.AreEqual(groundwaterLevelMeasurement.LevelM, 4345.999004703014);
-        Assert.AreEqual(groundwaterLevelMeasurement.LevelMasl, 4723.28331899237);
+        Assert.AreEqual(groundwaterLevelMeasurement.Duration, 1565.7558214230257);
+        Assert.AreEqual(groundwaterLevelMeasurement.FromDepthM, 522.32534943443045);
+        Assert.AreEqual(groundwaterLevelMeasurement.ToDepthM, 2790.1191959311809);
+        Assert.AreEqual(groundwaterLevelMeasurement.FromDepthMasl, 4176.5428856306444);
+        Assert.AreEqual(groundwaterLevelMeasurement.ToDepthMasl, 4925.9569437885457);
+        Assert.AreEqual(groundwaterLevelMeasurement.IsOpenBorehole, true);
+        Assert.AreEqual(groundwaterLevelMeasurement.Comment, "Assumenda cupiditate tenetur natus.");
+        Assert.AreEqual(groundwaterLevelMeasurement.ReliabilityId, 15203159);
+        Assert.AreEqual(groundwaterLevelMeasurement.KindId, 15203208);
+        Assert.AreEqual(groundwaterLevelMeasurement.LevelM, 3418.3947060282317);
+        Assert.AreEqual(groundwaterLevelMeasurement.LevelMasl, 158.41585615902014);
     }
 
     [TestMethod]

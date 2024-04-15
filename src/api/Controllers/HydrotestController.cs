@@ -24,7 +24,7 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<Hydrotest>> GetAsync([FromQuery] int? boreholeId = null)
     {
-        var hydrotestes = Context.Hydrotests
+        var hydrotests = Context.Hydrotests
             .Include(w => w.Codelists)
             .Include(w => w.Reliability)
             .Include(f => f.Casing)
@@ -34,10 +34,10 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
 
         if (boreholeId != null)
         {
-            hydrotestes = hydrotestes.Where(w => w.BoreholeId == boreholeId);
+            hydrotests = hydrotests.Where(w => w.BoreholeId == boreholeId);
         }
 
-        return await hydrotestes.ToListAsync().ConfigureAwait(false);
+        return await hydrotests.ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>
