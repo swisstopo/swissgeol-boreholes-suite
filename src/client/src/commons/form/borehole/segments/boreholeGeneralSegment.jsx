@@ -1,12 +1,8 @@
 import _ from "lodash";
-import moment from "moment";
 
 import DomainDropdown from "../../domain/dropdown/domainDropdown";
-import DateField from "../../dateField";
 import TranslationText from "../../translationText";
-import { NumericFormat } from "react-number-format";
 import { Form, Input, Segment, TextArea } from "semantic-ui-react";
-import { parseIfString } from "../../formUtils.ts";
 
 const BoreholeGeneralSegment = props => {
   const { size, borehole, updateChange, updateNumber, isEditable } = props;
@@ -40,19 +36,6 @@ const BoreholeGeneralSegment = props => {
               </Form.Field>
               <Form.Field required>
                 <label>
-                  <TranslationText id="drilling_method" />
-                </label>
-                <DomainDropdown
-                  onSelected={selected => {
-                    updateChange("extended.drilling_method", selected.id, false);
-                  }}
-                  schema="extended.drilling_method"
-                  selected={borehole.data.extended.drilling_method}
-                  readOnly={!isEditable}
-                />
-              </Form.Field>
-              <Form.Field required>
-                <label>
                   <TranslationText id="purpose" />
                 </label>
                 <DomainDropdown
@@ -61,97 +44,6 @@ const BoreholeGeneralSegment = props => {
                   }}
                   schema="extended.purpose"
                   selected={borehole.data.extended.purpose}
-                  readOnly={!isEditable}
-                />
-              </Form.Field>
-            </Form.Group>
-            <Form.Group widths="equal">
-              <div
-                style={{
-                  width: "34%",
-                  paddingRight: "2%",
-                  paddingLeft: "1%",
-                }}>
-                <Form.Field required>
-                  <label>
-                    <TranslationText id="cuttings" />
-                  </label>
-                  <DomainDropdown
-                    onSelected={selected => {
-                      updateChange("custom.cuttings", selected.id, false);
-                    }}
-                    schema="custom.cuttings"
-                    selected={borehole.data.custom.cuttings}
-                    readOnly={!isEditable}
-                  />
-                </Form.Field>
-              </div>
-              <div style={{ width: "33%", paddingRight: "1%" }}>
-                <Form.Field required>
-                  <label>
-                    <TranslationText id="spud_date" />
-                  </label>
-                  <DateField
-                    date={borehole.data.spud_date}
-                    onChange={selected => {
-                      updateChange("spud_date", selected, false);
-                    }}
-                    isEditable={isEditable}
-                  />
-                </Form.Field>
-              </div>
-              <div style={{ width: "33%", paddingLeft: "1%" }}>
-                <Form.Field
-                  error={
-                    _.isString(borehole.data.drilling_date) &&
-                    borehole.data.drilling_date !== "" &&
-                    !moment(borehole.data.drilling_date).isValid()
-                  }
-                  required>
-                  <label>
-                    <TranslationText id="drilling_end_date" />
-                  </label>
-                  <DateField
-                    date={borehole.data.drilling_date}
-                    onChange={selected => {
-                      updateChange("drilling_date", selected, false);
-                    }}
-                    isEditable={isEditable}
-                  />
-                </Form.Field>
-              </div>
-            </Form.Group>
-            <Form.Group widths="equal">
-              {/* strange bug in Edge fixed with placing
-            a hidden input */}
-              <Form.Field
-                style={{
-                  display: "none",
-                }}>
-                <label>
-                  <TranslationText id="drill_diameter" />
-                </label>
-                <Input
-                  spellCheck="false"
-                  type="number"
-                  value={_.isNil(borehole.data.custom.drill_diameter) ? "" : borehole.data.custom.drill_diameter}
-                  readOnly={!isEditable}
-                />
-              </Form.Field>
-              <Form.Field required>
-                <label>
-                  <TranslationText id="drill_diameter" />
-                </label>
-                <NumericFormat
-                  onChange={e => {
-                    updateNumber("custom.drill_diameter", e.target.value === "" ? null : parseIfString(e.target.value));
-                  }}
-                  spellCheck="false"
-                  value={(() => {
-                    const r = _.isNil(borehole.data.custom.drill_diameter) ? "" : borehole.data.custom.drill_diameter;
-                    return r;
-                  })()}
-                  thousandSeparator="'"
                   readOnly={!isEditable}
                 />
               </Form.Field>

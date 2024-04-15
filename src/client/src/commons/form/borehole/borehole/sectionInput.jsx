@@ -23,7 +23,7 @@ const SectionInput = ({ item, parentId }) => {
     cuttingsId: "",
     drillingMudTypeId: "",
     drillingMudSubtypeId: "",
-    spudDate: null,
+    drillingStartDate: null,
     drillingEndDate: null,
     drillingDiameter: null,
     drillingCoreDiameter: null,
@@ -177,9 +177,9 @@ const SectionInput = ({ item, parentId }) => {
                     </StackFullWidth>
                     <StackFullWidth direction="row" spacing={1}>
                       <FormInput
-                        fieldName={`sectionElements.${index}.spudDate`}
-                        label="spud_date"
-                        value={field.spudDate}
+                        fieldName={`sectionElements.${index}.drillingStartDate`}
+                        label="drilling_start_date"
+                        value={field.drillingStartDate}
                         type={FormDisplayType.Date}
                       />
                       <FormInput

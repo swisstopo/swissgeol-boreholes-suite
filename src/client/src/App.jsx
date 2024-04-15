@@ -1,5 +1,4 @@
 import React from "react";
-import { connect } from "react-redux";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
@@ -26,15 +25,6 @@ class App extends React.Component {
   componentDidMount() {
     // Prevent showing the 'copy' cursor when dragging over the page.
     document.addEventListener("dragover", this.handleDragOver);
-
-    // Get the scrollbar width
-    var scrollDiv = document.createElement("div");
-    scrollDiv.className = "scrollbar-measure";
-    document.body.appendChild(scrollDiv);
-    var scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
-    this.props.setScrollbarWidth(scrollbarWidth + "px");
-    // Delete the DIV
-    document.body.removeChild(scrollDiv);
   }
 
   componentWillUnmount() {
@@ -86,17 +76,4 @@ class App extends React.Component {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    dispatch: dispatch,
-    setScrollbarWidth: w => {
-      dispatch({
-        type: "SETTING_SCROLLBAR_WIDTH",
-        width: w,
-      });
-    },
-  };
-};
-
-const ConnectedApp = connect(null, mapDispatchToProps)(App);
-export default ConnectedApp;
+export default App;

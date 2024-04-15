@@ -14,6 +14,9 @@
 - Sorted common.json files alphabetically and removed unused entries.
 - Removed `public` field in publication workflow.
 - Removed developer debug functionality.
+- Removed unneeded scroller component.
+- Remove fields from borehole that are now part of sections.
+- Renamed `spud_date` to `drilling_start_date`.
 
 ### Fixed
 

@@ -50,12 +50,7 @@ class MultipleForm extends React.Component {
           value: null,
         },
         borehole_type: { api: "borehole_type", value: null },
-        drilling_method: { api: "extended.drilling_method", value: null },
         purpose: { api: "extended.purpose", value: null },
-        cuttings: { api: "custom.cuttings", value: null },
-        spud_date: { api: "spud_date", value: null },
-        drilling_end_date: { api: "drilling_date", value: null },
-        drill_diameter: { api: "custom.drill_diameter", value: null },
         boreholestatus: { api: "extended.status", value: null },
         inclination: { api: "inclination", value: null },
         inclination_direction: { api: "inclination_direction", value: null },
@@ -386,11 +381,9 @@ class MultipleForm extends React.Component {
             ])}
             {this.getGroup([
               this.getDomain("borehole_type"),
-              this.getDomain("drilling_method"),
               this.getDomain("purpose"),
+              this.getDomain("boreholestatus"),
             ])}
-            {this.getGroup([this.getDomain("cuttings"), this.getDate("spud_date"), this.getDate("drilling_end_date")])}
-            {this.getGroup([this.getInput("drill_diameter", "number"), this.getDomain("boreholestatus")])}
             {this.getGroup([
               this.getInput("inclination", "number"),
               this.getInput("inclination_direction", "number"),

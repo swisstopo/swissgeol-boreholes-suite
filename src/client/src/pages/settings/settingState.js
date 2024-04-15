@@ -5,7 +5,6 @@ const initialState = {
   pathching: [],
   rtime: 0, // fetch time
   fcnt: 0, // fetch counter
-  scrollbar: "10px",
   page: 0,
   selectedWMS: "https://wms.geo.admin.ch?request=getCapabilities&service=WMS",
   WMS: [
@@ -53,13 +52,11 @@ const initialState = {
       spatial_reference_system: true,
       elevation_z: true,
       height_reference_system: true,
-      drilling_date: true,
       bore_inc: true,
       bore_inc_dir: true,
       length: true,
       extended: {
         original_name: true,
-        method: true,
         purpose: true,
         status: true,
         top_bedrock: true,
@@ -72,8 +69,6 @@ const initialState = {
         city: true,
         address: true,
         landuse: true,
-        cuttings: true,
-        drill_diameter: true,
         lithology_top_bedrock: true,
         lithostratigraphy_top_bedrock: true,
         chronostratigraphy_top_bedrock: true,
@@ -117,13 +112,11 @@ const initialState = {
       national_interest: true,
       elevation_z: true,
       height_reference_system: true,
-      drilling_date: true,
       bore_inc: true,
       bore_inc_dir: true,
       length: true,
       extended: {
         original_name: true,
-        method: true,
         purpose: true,
         status: true,
         top_bedrock: true,
@@ -136,8 +129,6 @@ const initialState = {
         city: true,
         address: true,
         landuse: true,
-        cuttings: true,
-        drill_diameter: true,
         lithology_top_bedrock: true,
         lithostratigraphy_top_bedrock: true,
         chronostratigraphy_top_bedrock: true,
@@ -262,12 +253,6 @@ const setting = (state = initialState, action) => {
       const copy = { ...state };
       _.set(copy, `data.filter.${action.filter}`, action.enabled);
       return copy;
-    }
-    case "SETTING_SCROLLBAR_WIDTH": {
-      return {
-        ...state,
-        scrollbar: action.width,
-      };
     }
     case "SETTING_SET_PAGE": {
       return {

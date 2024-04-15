@@ -16,7 +16,7 @@ const BoreholePanel = ({ size, boreholeId, borehole, updateChange, updateNumber,
         <BdmsTab label={t("general")} data-cy={"general-tab"} />
         <BdmsTab label={t("sections")} data-cy={"sections-tab"} />
       </BdmsTabs>
-      <BdmsTabContentBox flex="1 0 0">
+      <BdmsTabContentBox flex="1 0 0" sx={{ overflow: "auto" }}>
         {activeIndex === 0 && (
           <>
             <BoreholeGeneralSegment

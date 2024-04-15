@@ -66,8 +66,6 @@ class GetBorehole(Action):
                 qt_reference_elevation_id_cli as qt_reference_elevation,
                 reference_elevation_type_id_cli as reference_elevation_type,
 
-                drilling_date_bho as drilling_date,
-                spud_date_bho as spud_date,
                 inclination_bho as inclination,
                 inclination_direction_bho as inclination_direction,
                 total_depth_bho as total_depth,
@@ -80,7 +78,6 @@ class GetBorehole(Action):
                             COALESCE(
                                 original_name_bho, ''
                             ) as original_name,
-                            drilling_method_id_cli as drilling_method,
                             purpose_id_cli as purpose,
                             status_id_cli as status,
                             top_bedrock_bho as top_bedrock,
@@ -102,8 +99,6 @@ class GetBorehole(Action):
                             country_bho as country,
                             canton_bho as canton,
                             municipality_bho as municipality,
-                            cuttings_id_cli as cuttings,
-                            drilling_diameter_bho as drill_diameter,
                             qt_inclination_direction_id_cli as qt_bore_inc_dir,
                             qt_depth_id_cli as qt_depth,
                             qt_top_bedrock,

@@ -118,8 +118,6 @@ public class BdmsContext : DbContext
                 j => j.HasKey(bf => new { bf.BoreholeId, bf.CodelistId }));
 
         modelBuilder.Entity<Borehole>().HasOne(l => l.Chronostratigraphy).WithMany().HasForeignKey(l => l.ChronostratigraphyId);
-        modelBuilder.Entity<Borehole>().HasOne(l => l.Cuttings).WithMany().HasForeignKey(l => l.CuttingsId);
-        modelBuilder.Entity<Borehole>().HasOne(l => l.DrillingMethod).WithMany().HasForeignKey(l => l.DrillingMethodId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.Type).WithMany().HasForeignKey(l => l.TypeId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.Hrs).WithMany().HasForeignKey(l => l.HrsId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.LithologyTopBedrock).WithMany().HasForeignKey(l => l.LithologyTopBedrockId);
