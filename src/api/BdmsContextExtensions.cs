@@ -114,6 +114,7 @@ public static class BdmsContextExtensions
         // Seed Boreholes
         var borehole_ids = 1_000_000;
         var boreholeRange = Enumerable.Range(borehole_ids, 3000).ToList();
+        var richBoreholeRange = Enumerable.Range(borehole_ids, 100).ToList(); // generate boreholes with more data for testing
         var fakeBoreholes = new Faker<Borehole>()
            .StrictMode(true)
            .RuleFor(o => o.Id, f => borehole_ids++)
@@ -248,7 +249,7 @@ public static class BdmsContextExtensions
             .StrictMode(true)
             .RuleFor(o => o.FileId, f => f.PickRandom(fileRange))
             .RuleFor(o => o.File, f => default!)
-            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(richBoreholeRange))
             .RuleFor(o => o.Borehole, f => default!)
             .RuleFor(o => o.UserId, f => f.PickRandom(userRange))
             .RuleFor(o => o.User, f => default!)
@@ -264,7 +265,7 @@ public static class BdmsContextExtensions
 
         BoreholeFile SeededBoreholeFiles(int seed) => fakeBoreholeFiles.UseSeed(seed).Generate();
 
-        var filesToInsert = boreholeRange
+        var filesToInsert = richBoreholeRange
             .Select(SeededBoreholeFiles)
             .GroupBy(bf => new { bf.BoreholeId, bf.FileId })
             .Select(bf => bf.FirstOrDefault())
@@ -588,7 +589,7 @@ public static class BdmsContextExtensions
         var completionRange = Enumerable.Range(completion_ids, 500);
         var fakeCompletions = new Faker<Completion>()
             .StrictMode(true)
-            .RuleFor(c => c.BoreholeId, f => f.PickRandom(boreholeRange))
+            .RuleFor(c => c.BoreholeId, f => f.PickRandom(richBoreholeRange))
             .RuleFor(c => c.Borehole, _ => default!)
             .RuleFor(c => c.Created, f => f.Date.Past().ToUniversalTime())
             .RuleFor(c => c.CreatedById, f => f.PickRandom(userRange))
@@ -744,7 +745,7 @@ public static class BdmsContextExtensions
         var observationRange = Enumerable.Range(observation_ids, 500);
         var fakeObservations = new Faker<Observation>()
             .StrictMode(true)
-            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(richBoreholeRange))
             .RuleFor(o => o.Borehole, _ => default!)
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
@@ -893,7 +894,7 @@ public static class BdmsContextExtensions
         var fakeSections = new Faker<Section>()
             .StrictMode(true)
             .RuleFor(o => o.Id, f => section_ids++)
-            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange.Take(sectionRange.Count)))
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(richBoreholeRange.Take(sectionRange.Count)))
             .RuleFor(o => o.Borehole, _ => default!)
             .RuleFor(o => o.Name, f => f.Random.Word())
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
