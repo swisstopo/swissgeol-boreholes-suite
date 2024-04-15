@@ -19,6 +19,7 @@
 ### Fixed
 
 - Fixed direct navigation to nested urls.
+- Fixed hash routing for completion tabs.
 
 ## v2.0.644 - 2024-03-22
 

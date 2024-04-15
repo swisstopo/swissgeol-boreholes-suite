@@ -52,9 +52,15 @@ const Completion = props => {
 
   const updateHistory = selectedId => {
     var newLocation = "/" + boreholeId + "/completion/" + selectedId;
+
     if (selectedId !== "new") {
-      newLocation += "#casing";
+      if (location.hash !== "") {
+        newLocation += location.hash;
+      } else {
+        newLocation += "#casing";
+      }
     }
+
     if (location.pathname + location.hash !== newLocation) {
       var locationSnippets = location.pathname.split("/");
       if (locationSnippets[locationSnippets.length - 1] === "completion") {
@@ -283,7 +289,7 @@ const Completion = props => {
       }
     } else {
       resetState();
-      history.push("/" + boreholeId + "/completion");
+      history.push("/" + boreholeId + "/completion/" + completionId + location.hash);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completions, completionId]);
