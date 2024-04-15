@@ -289,7 +289,14 @@ const Completion = props => {
       }
     } else {
       resetState();
-      history.push("/" + boreholeId + "/completion/" + completionId + location.hash);
+      let loc = "/" + boreholeId + "/completion";
+      if (completionId) {
+        loc += "/" + completionId;
+      }
+      if (location.hash) {
+        loc += location.hash;
+      }
+      history.push(loc);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completions, completionId]);
