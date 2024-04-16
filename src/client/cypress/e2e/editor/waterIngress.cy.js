@@ -28,10 +28,8 @@ describe("Tests for the wateringress editor.", () => {
     // open completion editor
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/${id}/completion`);
+      cy.visit(`/${id}`);
     });
-
-    cy.wait("@get-completions-by-boreholeId");
 
     // start editing session
     startBoreholeEditing();
