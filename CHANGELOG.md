@@ -17,6 +17,7 @@
 - Removed unneeded scroller component.
 - Remove fields from borehole that are now part of sections.
 - Renamed `spud_date` to `drilling_start_date`.
+- Adapted map icons to match common style of swissgeol applications.
 
 ### Fixed
 

@@ -21,10 +21,12 @@ import { createEmpty, extend } from "ol/extent";
 import MapOverlay from "./overlay/mapOverlay";
 import { withTranslation } from "react-i18next";
 import { getGeojson } from "../../api-lib/index";
-import { Button, Dropdown, Icon } from "semantic-ui-react";
+import { Dropdown } from "semantic-ui-react";
 import { get as getProjection } from "ol/proj";
 import { register } from "ol/proj/proj4";
 import proj4 from "proj4";
+import ZoomControls from "./ZoomControls";
+import LayerSelectControl from "./LayerSelectControl";
 
 const projections = {
   "EPSG:21781":
@@ -74,10 +76,12 @@ const outerSelectedStyle = new Style({
 class MapComponent extends React.Component {
   constructor(props) {
     super(props);
+    this.sidebarRef = React.createRef();
     this.moveEnd = this.moveEnd.bind(this);
     this.selected = this.selected.bind(this);
     this.hover = this.hover.bind(this);
     this.updateDimensions = this.updateDimensions.bind(this);
+    this.updateWidth = this.updateWidth.bind(this);
     this.timeoutFilter = null;
     this.cnt = null;
     this.parser = new WMTSCapabilities();
@@ -100,6 +104,7 @@ class MapComponent extends React.Component {
       featureExtent: [],
       sidebar: false,
       selectedLayer: null,
+      sidebarWidth: 0,
       maps: [
         {
           key: "nomap",
@@ -144,6 +149,8 @@ class MapComponent extends React.Component {
   }
 
   componentDidMount() {
+    this.updateWidth();
+    window.addEventListener("resize", this.updateWidth);
     var resolutions = [
       4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250, 1000, 750, 650, 500, 250, 100, 50, 20, 10,
       5, 2.5, 2, 1.5, 1, 0.5,
@@ -235,6 +242,7 @@ class MapComponent extends React.Component {
     this.map = new Map({
       controls: defaultControls({
         attribution: true,
+        zoom: false,
         attributionOptions: {
           collapsed: false,
           collapsible: false,
@@ -517,6 +525,14 @@ class MapComponent extends React.Component {
     this.map.updateSize();
   }
 
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateWidth);
+  }
+
+  updateWidth() {
+    this.setState({ sidebarWidth: this.sidebarRef?.current?.offsetWidth });
+  }
+
   updateDimensions() {
     this.map.updateSize();
   }
@@ -745,6 +761,36 @@ class MapComponent extends React.Component {
     }
   }
 
+  onZoomIn = () => {
+    const view = this.map.getView();
+    const zoom = view.getZoom();
+    view.setZoom(zoom + 1);
+  };
+
+  onZoomOut = () => {
+    const view = this.map.getView();
+    const zoom = view.getZoom();
+    view.setZoom(zoom - 1);
+  };
+
+  onFitToExtent = () => {
+    const view = this.map.getView();
+    const extent = this.points.getExtent();
+    view.fit(extent, this.map.getSize());
+  };
+
+  onShowLayerSelection = () => {
+    this.setState(
+      {
+        sidebar: !this.state.sidebar,
+      },
+      () => {
+        this.updateDimensions();
+        this.setState({ sidebarWidth: this.sidebarRef?.current?.offsetWidth });
+      },
+    );
+  };
+
   render() {
     const { t } = this.props;
 
@@ -760,42 +806,10 @@ class MapComponent extends React.Component {
           flexDirection: "row",
           backgroundColor: "#F2F2EF",
         }}>
-        <div
-          style={{
-            position: "absolute",
-            top: "6px",
-            right: "12px",
-            zIndex: "1",
-          }}>
-          <Button
-            icon
-            onClick={() => {
-              this.setState(
-                {
-                  sidebar: !this.state.sidebar,
-                },
-                () => {
-                  this.updateDimensions();
-                },
-              );
-            }}
-            secondary
-            size="tiny">
-            <Icon name="setting" />
-          </Button>
-        </div>
+        <LayerSelectControl onShowLayerSelection={this.onShowLayerSelection} sidebarWidth={this.state.sidebarWidth} />
 
         <div
-          id="map"
-          style={{
-            padding: "0px",
-            flex: "1 1 100%",
-            cursor: this.state.hover === null ? null : "pointer",
-            position: "relative",
-            boxShadow: "rgba(0, 0, 0, 0.17) 2px 6px 6px 0px",
-          }}
-        />
-        <div
+          ref={this.sidebarRef}
           style={{
             backgroundColor: "#f3f3f3",
             display: this.state.sidebar === true ? "block" : "none",
@@ -864,6 +878,16 @@ class MapComponent extends React.Component {
           </div>
         </div>
         <div
+          id="map"
+          style={{
+            padding: "0px",
+            flex: "1 1 100%",
+            cursor: this.state.hover === null ? null : "pointer",
+            position: "relative",
+            boxShadow: "rgba(0, 0, 0, 0.17) 2px 6px 6px 0px",
+          }}
+        />
+        <div
           style={{
             display: "none",
           }}>
@@ -890,6 +914,7 @@ class MapComponent extends React.Component {
             </div>
           </div>
         </div>
+        <ZoomControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
       </div>
     );
   }
