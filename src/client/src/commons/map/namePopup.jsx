@@ -9,9 +9,7 @@ const NamePopup = ({ state: { hover } }) => {
       <Box className="ol-popup" id="popup-overlay">
         <Box flex={1}>
           <Typography noWrap>{hoverName || null}</Typography>
-          {hoverLength !== null && hoverLength !== undefined ? (
-            <Typography noWrap>{hoverLength + " m"}</Typography>
-          ) : null}
+          {hoverLength != null && <Typography noWrap>{hoverLength + " m"}</Typography>}
         </Box>
       </Box>
     </Box>
