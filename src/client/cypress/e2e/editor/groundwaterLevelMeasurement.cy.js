@@ -27,7 +27,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/${id}/completion`);
+      cy.visit(`/${id}`);
     });
     startBoreholeEditing();
 
