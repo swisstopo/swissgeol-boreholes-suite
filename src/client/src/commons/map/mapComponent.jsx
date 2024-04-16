@@ -18,15 +18,15 @@ import { defaults as defaultControls } from "ol/control";
 import { click, pointerMove } from "ol/events/condition";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
 import { createEmpty, extend } from "ol/extent";
-import MapOverlay from "./overlay/mapOverlay";
-import { withTranslation } from "react-i18next";
 import { getGeojson } from "../../api-lib/index";
-import { Dropdown } from "semantic-ui-react";
 import { get as getProjection } from "ol/proj";
 import { register } from "ol/proj/proj4";
 import proj4 from "proj4";
-import ZoomControls from "./ZoomControls";
-import LayerSelectControl from "./LayerSelectControl";
+import { Box } from "@mui/material";
+import ZoomControls from "./zoomControls";
+import LayerSelectControl from "./layerSelectControl";
+import Sidebar from "./sidebar";
+import NamePopup from "./namePopup";
 
 const projections = {
   "EPSG:21781":
@@ -792,11 +792,9 @@ class MapComponent extends React.Component {
   };
 
   render() {
-    const { t } = this.props;
-
     return (
-      <div
-        style={{
+      <Box
+        sx={{
           width: "100%",
           height: "100%",
           padding: "0px",
@@ -807,79 +805,16 @@ class MapComponent extends React.Component {
           backgroundColor: "#F2F2EF",
         }}>
         <LayerSelectControl onShowLayerSelection={this.onShowLayerSelection} sidebarWidth={this.state.sidebarWidth} />
-
-        <div
-          ref={this.sidebarRef}
-          style={{
-            backgroundColor: "#f3f3f3",
-            display: this.state.sidebar === true ? "block" : "none",
-            overflowY: "auto",
-            width: "400px",
-          }}>
-          <div
-            style={{
-              padding: "2em 1em 1em 1em",
-            }}>
-            <div
-              style={{
-                fontWeight: "bold",
-                paddingBottom: "0.5em",
-              }}>
-              {t("common:background")}
-            </div>
-            <Dropdown
-              fluid
-              onChange={(ev, data) => {
-                this.setState(
-                  {
-                    basemap: data.value,
-                  },
-                  () => {
-                    this.layers.forEach(function (layer) {
-                      if (data.value === "nomap") {
-                        layer.setVisible(false);
-                      } else {
-                        if ((layer.get("name") !== undefined) & (layer.get("name") !== "points")) {
-                          if ((layer.get("name") !== undefined) & (layer.get("name") === data.value)) {
-                            layer.setVisible(true);
-                          } else {
-                            layer.setVisible(false);
-                          }
-                        }
-                      }
-                    });
-                  },
-                );
-              }}
-              options={this.state.maps}
-              search
-              selection
-              style={{
-                minWidth: "10em",
-              }}
-              value={this.state.basemap}
-            />
-            {Object.keys(this.props.layers).length !== 0 && (
-              <div
-                style={{
-                  fontWeight: "bold",
-                  padding: "1em 0px 0.5em 0px",
-                }}>
-                {t("common:overlay")}
-              </div>
-            )}
-            <MapOverlay
-              setSelectedLayer={layer => {
-                this.setState({
-                  selectedLayer: layer,
-                });
-              }}
-            />
-          </div>
-        </div>
-        <div
+        <Sidebar
+          sidebarRef={this.sidebarRef}
+          state={this.state}
+          setState={this.setState.bind(this)}
+          layers={this.layers}
+          additionalMapLayers={this.props.layers}
+        />
+        <Box
           id="map"
-          style={{
+          sx={{
             padding: "0px",
             flex: "1 1 100%",
             cursor: this.state.hover === null ? null : "pointer",
@@ -887,35 +822,9 @@ class MapComponent extends React.Component {
             boxShadow: "rgba(0, 0, 0, 0.17) 2px 6px 6px 0px",
           }}
         />
-        <div
-          style={{
-            display: "none",
-          }}>
-          <div className="ol-popup" id={"popup-overlay"}>
-            <div
-              style={{
-                flex: 1,
-              }}>
-              <div
-                style={{
-                  fontWeight: "bold",
-                  whiteSpace: "nowrap",
-                }}>
-                {this.state.hover !== null ? this.state.hover.get("name") : null}
-              </div>
-              {this.state.hover === null || _.isNil(this.state.hover.get("length")) ? null : (
-                <div
-                  style={{
-                    whiteSpace: "nowrap",
-                  }}>
-                  {this.state.hover.get("length") + " m"}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <NamePopup state={this.state}></NamePopup>
         <ZoomControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
-      </div>
+      </Box>
     );
   }
 }
@@ -939,6 +848,4 @@ MapComponent.defaultProps = {
   centerto: null,
 };
 
-const TranslatedMapComponent = withTranslation(["common"])(MapComponent);
-
-export default TranslatedMapComponent;
+export default MapComponent;
