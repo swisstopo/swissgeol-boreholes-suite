@@ -597,4 +597,48 @@ describe("completion crud tests", () => {
     setContentTab("instrumentation");
     evaluateDisplayValue("notes", "Lorem.");
   });
+
+  it("checks if hash is preserved when reloading", () => {
+    createBorehole({ "extended.original_name": "INTEADAL" })
+      .as("borehole_id")
+      .then(id => {
+        createCompletion("test hash 1", id, 16000002, true).as("completion1_id");
+        createCompletion("test hash 2", id, 16000002, true).as("completion2_id");
+      });
+
+    const forceReload = true;
+
+    cy.get("@borehole_id").then(id => {
+      cy.get("@completion1_id").then(completion1Id => {
+        // Preserves hash when reloading
+        cy.visit(`/${id}/completion/${completion1Id}`);
+        cy.location().should(location => {
+          expect(location.hash).to.eq("#casing");
+        });
+        cy.reload(forceReload);
+        cy.location().should(location => {
+          expect(location.pathname).to.eq(`/${id}/completion/${completion1Id}`);
+          expect(location.hash).to.eq("#casing");
+        });
+        setContentTab("instrumentation");
+        cy.location().should(location => {
+          expect(location.pathname).to.eq(`/${id}/completion/${completion1Id}`);
+          expect(location.hash).to.eq("#instrumentation");
+        });
+        cy.reload(forceReload);
+        cy.location().should(location => {
+          expect(location.pathname).to.eq(`/${id}/completion/${completion1Id}`);
+          expect(location.hash).to.eq("#instrumentation");
+        });
+        // Resets hash from #instrumentation to #casing when switching to another completion
+        cy.contains("test hash 2").click();
+        cy.get("@completion2_id").then(completion2Id => {
+          cy.location().should(location => {
+            expect(location.pathname).to.eq(`/${id}/completion/${completion2Id}`);
+            expect(location.hash).to.eq("#casing");
+          });
+        });
+      });
+    });
+  });
 });
