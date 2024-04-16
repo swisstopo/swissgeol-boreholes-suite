@@ -52,9 +52,8 @@ const Completion = props => {
 
   const updateHistory = selectedId => {
     var newLocation = "/" + boreholeId + "/completion/" + selectedId;
-
     if (selectedId !== "new") {
-      if (location.hash !== "") {
+      if (location.hash !== "" && selectedId.toString() === completionId) {
         newLocation += location.hash;
       } else {
         newLocation += "#casing";
@@ -244,7 +243,14 @@ const Completion = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boreholeId]);
 
+  const firstRender = useRef(true);
+
   useEffect(() => {
+    // Prevents resetting the url to 'completion/{id}#casing' on the first render, when completions are not yet loaded
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
     if (completionId === "new" && (state.switchTabTo === null || state.switchTabTo === -1)) {
       var tempCompletion = {
         id: 0,
@@ -289,14 +295,7 @@ const Completion = props => {
       }
     } else {
       resetState();
-      let loc = "/" + boreholeId + "/completion";
-      if (completionId) {
-        loc += "/" + completionId;
-      }
-      if (location.hash) {
-        loc += location.hash;
-      }
-      history.push(loc);
+      history.push("/" + boreholeId + "/completion");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completions, completionId]);
