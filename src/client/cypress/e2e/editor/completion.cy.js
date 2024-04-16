@@ -1,9 +1,6 @@
 import {
   createBorehole,
   createCompletion,
-  createBackfill,
-  createCasing,
-  createInstrument,
   startBoreholeEditing,
   loginAsAdmin,
   handlePrompt,
@@ -605,30 +602,8 @@ describe("completion crud tests", () => {
     createBorehole({ "extended.original_name": "INTEADAL" })
       .as("borehole_id")
       .then(id => {
-        createCompletion("test hash 1", id, 16000002, true)
-          .as("completion1_id")
-          .then(completionId =>
-            createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
-              { fromDepth: 0, toDepth: 10, kindId: 25000103 },
-            ])
-              .as("casing1_id")
-              .then(casingId => {
-                createBackfill(completionId, casingId, 25000109, 25000102, 0, 10, "Lorem.");
-                createInstrument(completionId, casingId, "Inst-1", 25000212, 25000102, 0, 10, "Lorem.");
-              }),
-          );
-        createCompletion("test hash 2", id, 16000002, true)
-          .as("completion2_id")
-          .then(completionId =>
-            createCasing("casing-2", id, completionId, "2021-01-01", "2021-01-02", [
-              { fromDepth: 0, toDepth: 10, kindId: 25000103 },
-            ])
-              .as("casing2_id")
-              .then(casingId => {
-                createBackfill(completionId, casingId, 25000109, 25000102, 0, 10, "Lorem.");
-                createInstrument(completionId, casingId, "Inst-2", 25000212, 25000102, 0, 10, "Lorem.");
-              }),
-          );
+        createCompletion("test hash 1", id, 16000002, true).as("completion1_id");
+        createCompletion("test hash 2", id, 16000002, true).as("completion2_id");
       });
 
     const forceReload = true;
