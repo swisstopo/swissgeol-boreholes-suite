@@ -24,6 +24,7 @@
 - Fixed direct navigation to nested urls.
 - Fixed hash routing for completion tabs.
 - When copying a borehole `completions`, `hydrogeological observations` and `borehole sections` were not copied.
+- Updated favicon for help.
 
 ## v2.0.644 - 2024-03-22
 
