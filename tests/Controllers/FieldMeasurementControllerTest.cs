@@ -48,27 +48,27 @@ public class FieldMeasurementControllerTest
     [TestMethod]
     public async Task GetEntriesByBoreholeId()
     {
-        var response = await controller.GetAsync(1000325).ConfigureAwait(false);
+        var response = await controller.GetAsync(1000007).ConfigureAwait(false);
         IEnumerable<FieldMeasurement>? fieldMeasurements = response;
         Assert.IsNotNull(fieldMeasurements);
         Assert.AreEqual(1, fieldMeasurements.Count());
         var fieldMeasurement = fieldMeasurements.Single();
 
-        Assert.AreEqual(fieldMeasurement.Id, 12000005);
+        Assert.AreEqual(fieldMeasurement.Id, 12000026);
         Assert.AreEqual(fieldMeasurement.Type, ObservationType.FieldMeasurement);
-        Assert.AreEqual(fieldMeasurement.Duration, 3922.1102170027375);
-        Assert.AreEqual(fieldMeasurement.FromDepthM, 6.508998146052006);
-        Assert.AreEqual(fieldMeasurement.ToDepthM, 1446.5446650011208);
-        Assert.AreEqual(fieldMeasurement.FromDepthMasl, 1554.9724295800424);
-        Assert.AreEqual(fieldMeasurement.ToDepthMasl, 3565.501249085414);
-        Assert.AreEqual(fieldMeasurement.IsOpenBorehole, false);
-        Assert.AreEqual(fieldMeasurement.Comment, "Accusamus voluptates aut sit ducimus.");
-        Assert.AreEqual(fieldMeasurement.ReliabilityId, 15203159);
-        Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.Count, 10);
-        Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.First().Id, 14000017);
-        Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.First().FieldMeasurementId, 12000005);
+        Assert.AreEqual(fieldMeasurement.Duration, 1599.4371401101523);
+        Assert.AreEqual(fieldMeasurement.FromDepthM, 2996.1644909140491);
+        Assert.AreEqual(fieldMeasurement.ToDepthM, 165.66614438531275);
+        Assert.AreEqual(fieldMeasurement.FromDepthMasl, 3911.2065223484328);
+        Assert.AreEqual(fieldMeasurement.ToDepthMasl, 541.12298960104727);
+        Assert.AreEqual(fieldMeasurement.IsOpenBorehole, true);
+        Assert.AreEqual(fieldMeasurement.Comment, "Similique voluptatem harum eaque.");
+        Assert.AreEqual(fieldMeasurement.ReliabilityId, 15203156);
+        Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.Count, 9);
+        Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.First().Id, 14000109);
+        Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.First().FieldMeasurementId, 12000026);
         Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.First().SampleTypeId, 15203211);
-        Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.First().ParameterId, 15203218);
+        Assert.AreEqual(fieldMeasurement.FieldMeasurementResults.First().ParameterId, 15203221);
     }
 
     [TestMethod]

@@ -21,6 +21,7 @@
 ### Fixed
 
 - Fixed direct navigation to nested urls.
+- When copying a borehole `completions`, `hydrogeological observations` and `borehole sections` were not copied.
 
 ## v2.0.644 - 2024-03-22
 

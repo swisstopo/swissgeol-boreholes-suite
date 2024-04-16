@@ -59,24 +59,24 @@ public class WaterIngressControllerTests
     [TestMethod]
     public async Task GetEntriesByBoreholeId()
     {
-        var response = await controller.GetAsync(1002296).ConfigureAwait(false);
+        var response = await controller.GetAsync(1000038).ConfigureAwait(false);
         IEnumerable<WaterIngress>? waterIngresses = response;
         Assert.IsNotNull(waterIngresses);
-        Assert.AreEqual(1, waterIngresses.Count());
-        var waterIngress = waterIngresses.Single();
+        Assert.AreEqual(2, waterIngresses.Count());
+        var waterIngress = waterIngresses.First();
 
-        Assert.AreEqual(waterIngress.Id, 12000012);
+        Assert.AreEqual(waterIngress.Id, 12000151);
         Assert.AreEqual(waterIngress.Type, ObservationType.WaterIngress);
-        Assert.AreEqual(waterIngress.Duration, 1481.5525247052092);
-        Assert.AreEqual(waterIngress.FromDepthM, 4335.7274957353839);
-        Assert.AreEqual(waterIngress.ToDepthM, 4352.2518247958515);
-        Assert.AreEqual(waterIngress.FromDepthMasl, 2340.3837938361726);
-        Assert.AreEqual(waterIngress.ToDepthMasl, 891.04182925729162);
-        Assert.AreEqual(waterIngress.IsOpenBorehole, false);
-        Assert.AreEqual(waterIngress.Comment, "Assumenda minima placeat ea quidem unde accusamus neque qui omnis.");
+        Assert.AreEqual(waterIngress.Duration, 152.47834908286032);
+        Assert.AreEqual(waterIngress.FromDepthM, 319.63766215212536);
+        Assert.AreEqual(waterIngress.ToDepthM, 635.008283576932);
+        Assert.AreEqual(waterIngress.FromDepthMasl, 4367.69516977933);
+        Assert.AreEqual(waterIngress.ToDepthMasl, 3487.0619212417223);
+        Assert.AreEqual(waterIngress.IsOpenBorehole, true);
+        Assert.AreEqual(waterIngress.Comment, "Et sunt dolor ut in.");
         Assert.AreEqual(waterIngress.ReliabilityId, 15203157);
-        Assert.AreEqual(waterIngress.QuantityId, 15203163);
-        Assert.AreEqual(waterIngress.ConditionsId, 15203168);
+        Assert.AreEqual(waterIngress.QuantityId, 15203161);
+        Assert.AreEqual(waterIngress.ConditionsId, 15203167);
     }
 
     [TestMethod]

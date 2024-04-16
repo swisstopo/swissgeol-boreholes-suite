@@ -54,6 +54,11 @@ public class BoreholeController : ControllerBase
             .Include(b => b.Stratigraphies).ThenInclude(s => s.FaciesDescriptions)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.ChronostratigraphyLayers)
             .Include(b => b.Stratigraphies).ThenInclude(s => s.LithostratigraphyLayers)
+            .Include(b => b.Completions).ThenInclude(c => c.Casings).ThenInclude(c => c.CasingElements)
+            .Include(b => b.Completions).ThenInclude(c => c.Instrumentations)
+            .Include(b => b.Completions).ThenInclude(c => c.Backfills)
+            .Include(b => b.Sections).ThenInclude(s => s.SectionElements)
+            .Include(b => b.Observations)
             .Include(b => b.BoreholeCodelists)
             .Include(b => b.Workflows)
             .Include(b => b.BoreholeFiles)
@@ -65,6 +70,29 @@ public class BoreholeController : ControllerBase
         {
             return NotFound();
         }
+
+        // Include FieldMeasurementResults and HydrotestResults separately since Entity Framework does not support casting in an Include statement
+        var fieldMeasurements = borehole.Observations.OfType<FieldMeasurement>().ToList();
+       #pragma warning disable CS8603
+        // Cannot include null test for fieldMeasurementResults and hydrotestResults since they are not yet loaded
+        // if there are no fieldMeasurementResults of hydrotestResults the LoadAsync method will be called but have no effect
+        foreach (var fieldMeasurement in fieldMeasurements)
+        {
+            await context.Entry(fieldMeasurement)
+                .Collection(f => f.FieldMeasurementResults)
+                .LoadAsync()
+                .ConfigureAwait(false);
+        }
+
+        var hydrotests = borehole.Observations.OfType<Hydrotest>().ToList();
+        foreach (var hydrotest in hydrotests)
+        {
+                await context.Entry(hydrotest)
+                    .Collection(h => h.HydrotestResults)
+                    .LoadAsync()
+                    .ConfigureAwait(false);
+        }
+        #pragma warning restore CS8603
 
         // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
         borehole.Id = 0;
@@ -100,6 +128,64 @@ public class BoreholeController : ControllerBase
             foreach (var lithostratigraphy in stratigraphy.LithostratigraphyLayers)
             {
                 lithostratigraphy.Id = 0;
+            }
+        }
+
+        foreach (var completion in borehole.Completions)
+        {
+            completion.Id = 0;
+            foreach (var casing in completion.Casings)
+            {
+                casing.Id = 0;
+                foreach (var casingElement in casing.CasingElements)
+                {
+                    casingElement.Id = 0;
+                }
+            }
+
+            foreach (var instrumentation in completion.Instrumentations)
+            {
+                instrumentation.Id = 0;
+            }
+
+            foreach (var backfill in completion.Backfills)
+            {
+                backfill.Id = 0;
+            }
+        }
+
+        foreach (var section in borehole.Sections)
+        {
+            section.Id = 0;
+            foreach (var sectionElement in section.SectionElements)
+            {
+                sectionElement.Id = 0;
+            }
+        }
+
+        foreach (var observation in borehole.Observations)
+        {
+            observation.Id = 0;
+            if (observation is FieldMeasurement fieldMeasurement)
+            {
+                if (fieldMeasurement.FieldMeasurementResults != null)
+                {
+                    foreach (var fieldMeasurementResult in fieldMeasurement.FieldMeasurementResults)
+                    {
+                        fieldMeasurementResult.Id = 0;
+                    }
+                }
+            }
+
+            if (observation is Hydrotest hydrotest)
+            {
+                if (hydrotest.HydrotestResults != null)
+                {
+                    foreach (var hydrotestResult in hydrotest.HydrotestResults)
+                    {
+                        hydrotestResult.Id = 0;
+                    }
+                }
             }
         }
 

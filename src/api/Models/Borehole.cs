@@ -420,6 +420,11 @@ public class Borehole : IChangeTracking, IIdentifyable
     public ICollection<Section> Sections { get; }
 
     /// <summary>
+    /// Gets the <see cref="Borehole"/>'s observations.
+    /// </summary>
+    public ICollection<Observation> Observations { get; }
+
+    /// <summary>
     /// Gets the <see cref="Borehole"/>'s workflows.
     /// </summary>
     public ICollection<Workflow> Workflows { get; } = new List<Workflow>();
