@@ -24,6 +24,10 @@ export const theme = createTheme({
     hover: {
       main: "#f5f5f5",
     },
+    mapIcon: {
+      main: "#0b7285",
+      secondary: "#a65462",
+    },
   },
   typography: {
     fontFamily: "Lato",
