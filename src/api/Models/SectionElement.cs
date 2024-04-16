@@ -52,10 +52,10 @@ public class SectionElement : IChangeTracking, IIdentifyable
     public Codelist? DrillingMethod { get; set; }
 
     /// <summary>
-    /// Gets or sets the timestamp from the spud date of the <see cref="SectionElement"/>.
+    /// Gets or sets the timestamp from the drilling start date of the <see cref="SectionElement"/>.
     /// </summary>
-    [Column("spud_date")]
-    public DateOnly? SpudDate { get; set; }
+    [Column("drilling_start_date")]
+    public DateOnly? DrillingStartDate { get; set; }
 
     /// <summary>
     /// Gets or sets the timestamp from the drilling end date of the <see cref="SectionElement"/>.

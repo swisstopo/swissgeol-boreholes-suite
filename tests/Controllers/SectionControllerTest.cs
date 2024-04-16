@@ -47,12 +47,12 @@ public class SectionControllerTest
         var boreholes = await context.Sections.ToListAsync();
         var boreholeId = boreholes
             .GroupBy(i => i.BoreholeId)
-            .Where(g => g.Count() == 2)
+            .Where(g => g.Count() == 5)
             .First().Key;
 
         IEnumerable<Section>? sections = await controller.GetAsync(boreholeId).ConfigureAwait(false);
         Assert.IsNotNull(sections);
-        Assert.AreEqual(2, sections.Count());
+        Assert.AreEqual(5, sections.Count());
     }
 
     [TestMethod]
@@ -93,7 +93,7 @@ public class SectionControllerTest
                     ToDepth = 42,
                     Order = 0,
                     DrillingMethodId = context.Codelists.First().Id,
-                    SpudDate = new DateOnly(2023, 1, 1),
+                    DrillingStartDate = new DateOnly(2023, 1, 1),
                     DrillingEndDate = new DateOnly(2023, 1, 2),
                     CuttingsId = context.Codelists.Skip(1).First().Id,
                     DrillingDiameter = 12.76,
@@ -120,7 +120,7 @@ public class SectionControllerTest
         Assert.AreEqual(42, sectionElement.ToDepth);
         Assert.AreEqual(0, sectionElement.Order);
         Assert.AreEqual(context.Codelists.First().Id, sectionElement.DrillingMethodId);
-        Assert.AreEqual(new DateOnly(2023, 1, 1), sectionElement.SpudDate);
+        Assert.AreEqual(new DateOnly(2023, 1, 1), sectionElement.DrillingStartDate);
         Assert.AreEqual(new DateOnly(2023, 1, 2), sectionElement.DrillingEndDate);
         Assert.AreEqual(context.Codelists.Skip(1).First().Id, sectionElement.CuttingsId);
         Assert.AreEqual(12.76, sectionElement.DrillingDiameter);

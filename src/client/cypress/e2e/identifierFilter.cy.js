@@ -85,7 +85,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.wait("@edit_ids");
 
     // Bulk edit dialog should open.
-    cy.get(".modal .toggle").should("have.length", 30);
+    cy.get(".modal .toggle").should("have.length", 25);
     cy.contains("button", "Cancel").click();
 
     // click reset label

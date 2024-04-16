@@ -12,7 +12,6 @@ const initialState = {
     original_name: "",
     alternate_name: "",
     borehole_type: null,
-    method: null,
     restriction: null,
     project_name: "",
     landuse: null,
@@ -28,11 +27,6 @@ const initialState = {
     top_bedrock_to: "",
     status: null,
     purpose: null,
-    cuttings: null,
-    drilling_date_from: "",
-    drilling_date_to: "",
-    drill_diameter_from: "",
-    drill_diameter_to: "",
     bore_inc_from: "",
     bore_inc_to: "",
     bore_inc_dir_from: "",
@@ -95,8 +89,6 @@ const initialState = {
     original_lithology: "",
     layer_gradation: null,
 
-    spud_date_from: "",
-    spud_date_to: "",
     qt_inclination_direction: null,
     total_depth_tvd_from: "",
     total_depth_tvd_to: "",
@@ -226,28 +218,6 @@ const searchEditor = (
         },
       };
       copy.filter.refresh = copy.filter.refresh + 1;
-      return copy;
-    }
-    case "SEARCH_EDITOR_FILTER_RESET_DRILLING": {
-      const copy = {
-        ...state,
-        filter: {
-          ...state.filter,
-        },
-      };
-      copy.filter.drilling_date_from = "";
-      copy.filter.drilling_date_to = "";
-      return copy;
-    }
-    case "SEARCH_EDITOR_FILTER_RESET_DRILL_DIAMETER": {
-      const copy = {
-        ...state,
-        filter: {
-          ...state.filter,
-        },
-      };
-      copy.filter.drill_diameter_from = "";
-      copy.filter.drill_diameter_to = "";
       return copy;
     }
     case "SEARCH_EDITOR_FILTER_RESET_BORE_INC": {

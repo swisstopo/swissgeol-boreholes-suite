@@ -58,30 +58,30 @@ public class HydrotestControllerTests
     [TestMethod]
     public async Task GetEntriesByBoreholeId()
     {
-        IEnumerable<Hydrotest>? hydrotests = await controller.GetAsync(1002658).ConfigureAwait(false);
+        IEnumerable<Hydrotest>? hydrotests = await controller.GetAsync(1000067).ConfigureAwait(false);
         Assert.IsNotNull(hydrotests);
-        Assert.AreEqual(1, hydrotests.Count());
-        var hydrotest = hydrotests.Single();
+        Assert.AreEqual(3, hydrotests.Count());
+        var hydrotest = hydrotests.First();
 
-        Assert.AreEqual(hydrotest.Id, 12000441);
+        Assert.AreEqual(hydrotest.Id, 12000075);
         Assert.AreEqual(hydrotest.Type, ObservationType.Hydrotest);
-        Assert.AreEqual(hydrotest.Duration, 2594.3739538995428);
-        Assert.AreEqual(hydrotest.FromDepthM, 4707.9754194244624);
-        Assert.AreEqual(hydrotest.ToDepthM, 324.16204650148848);
-        Assert.AreEqual(hydrotest.FromDepthMasl, 2627.3088318190112);
-        Assert.AreEqual(hydrotest.ToDepthMasl, 523.60024264808749);
+        Assert.AreEqual(hydrotest.Duration, 4511.5332940274538);
+        Assert.AreEqual(hydrotest.FromDepthM, 3306.693974039375);
+        Assert.AreEqual(hydrotest.ToDepthM, 509.6162629484275);
+        Assert.AreEqual(hydrotest.FromDepthMasl, 4410.0860721413446);
+        Assert.AreEqual(hydrotest.ToDepthMasl, 1815.9070508041918);
         Assert.AreEqual(hydrotest.IsOpenBorehole, false);
-        Assert.AreEqual(hydrotest.Comment, "Inventore velit vitae laboriosam.");
-        Assert.AreEqual(hydrotest.ReliabilityId, 15203157);
+        Assert.AreEqual(hydrotest.Comment, "Accusamus fuga incidunt quam nisi rerum labore dolorum.");
+        Assert.AreEqual(hydrotest.ReliabilityId, 15203159);
 
         // Assert hydrotestresult
-        Assert.AreEqual(hydrotest.HydrotestResults.Count, 11);
-        var testResult = hydrotest.HydrotestResults.Single(r => r.Id == 13000009);
-        Assert.AreEqual(testResult.ParameterId, 15203199);
-        Assert.AreEqual(testResult.Value, 2434.3317137124632);
-        Assert.AreEqual(testResult.MaxValue, 2884.2150221547181);
-        Assert.AreEqual(testResult.MinValue, 4675.6807535866656);
-        Assert.AreEqual(testResult.HydrotestId, 12000441);
+        Assert.AreEqual(hydrotest.HydrotestResults.Count, 10);
+        var testResult = hydrotest.HydrotestResults.Single(r => r.Id == 13000158);
+        Assert.AreEqual(testResult.ParameterId, 15203197);
+        Assert.AreEqual(testResult.Value, 1031.4824442861054);
+        Assert.AreEqual(testResult.MaxValue, 1899.3953116542639);
+        Assert.AreEqual(testResult.MinValue, 422.58444880441965);
+        Assert.AreEqual(testResult.HydrotestId, 12000075);
     }
 
     [TestMethod]

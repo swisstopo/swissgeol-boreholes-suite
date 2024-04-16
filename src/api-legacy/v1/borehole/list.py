@@ -57,17 +57,8 @@ class ListBorehole(Action):
                 ret.geolcode as reference_elevation_type,
 
                 meth.geolcode as method,
-                to_char(
-                    drilling_date_bho,
-                    'YYYY-MM-DD'
-                ) as drilling_date,
-                to_char(
-                    spud_date_bho,
-                    'YYYY-MM-DD'
-                ) as spud_date,
                 cut.geolcode as cuttings,
                 prp.geolcode as purpose,
-                drilling_diameter_bho as drill_diameter,
                 sts.geolcode as status,
                 inclination_bho as inclination,
                 inclination_direction_bho as inclination_direction,
@@ -163,12 +154,6 @@ class ListBorehole(Action):
             LEFT JOIN bdms.codelist as qt_inc_dir
                 ON qt_inc_dir.id_cli = qt_inclination_direction_id_cli
 
-            LEFT JOIN bdms.codelist as cut
-                ON cut.id_cli = cuttings_id_cli
-
-            LEFT JOIN bdms.codelist as meth
-                ON meth.id_cli = drilling_method_id_cli
-
             LEFT JOIN bdms.codelist as prp
                 ON prp.id_cli = purpose_id_cli
 
@@ -216,8 +201,6 @@ class ListBorehole(Action):
                 srs_id_cli as spatial_reference_system,
                 elevation_z_bho as elevation_z,
                 hrs_id_cli as height_reference_system,
-                drilling_date_bho as drilling_date,
-                spud_date_bho as spud_date,
                 total_depth_bho as total_depth,
                 (
                     select row_to_json(t)

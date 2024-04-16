@@ -15,11 +15,14 @@
 - Removed `public` field in publication workflow.
 - Removed developer debug functionality.
 - Removed unneeded scroller component.
+- Remove fields from borehole that are now part of sections.
+- Renamed `spud_date` to `drilling_start_date`.
 
 ### Fixed
 
 - Fixed direct navigation to nested urls.
 - Fixed hash routing for completion tabs.
+- When copying a borehole `completions`, `hydrogeological observations` and `borehole sections` were not copied.
 
 ## v2.0.644 - 2024-03-22
 

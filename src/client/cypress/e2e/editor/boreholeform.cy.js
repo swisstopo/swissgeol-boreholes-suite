@@ -11,10 +11,12 @@ describe("Test for the borehole form.", () => {
       .each(el => cy.wrap(el).click().find('[role="option"]').last().click());
 
     const locationDropdownValues = [];
-    cy.get('[data-cy="domain-dropdown"]').each(el => {
-      const value = el[0].children[1].firstChild.data;
-      locationDropdownValues.push(value);
-      if (locationDropdownValues.length === 6) {
+    cy.get('[data-cy="domain-dropdown"]')
+      .each(el => {
+        const value = el[0].children[1].firstChild.data;
+        locationDropdownValues.push(value);
+      })
+      .then(() => {
         expect(locationDropdownValues).to.deep.eq([
           "ID Kernlager",
           "not specified",
@@ -23,35 +25,29 @@ describe("Test for the borehole form.", () => {
           "not specified",
           "kelly bushing",
         ]);
-      }
-    });
+      });
 
     // fill all dropdowns on borehole tab
     cy.get('[data-cy="borehole-menu-item"]').click();
     cy.get('[data-cy="domain-dropdown"]')
-      .should("have.length", 8)
+      .should("have.length", 6)
       .each(el => cy.wrap(el).click().find('[role="option"]').eq(1).click());
 
     const boreholeDropdownValues = [];
-    cy.get('[data-cy="domain-dropdown"]').each(el => {
-      const value = el[0].children[1].firstChild.data;
-      boreholeDropdownValues.push(value);
-      if (boreholeDropdownValues.length === 10) {
-        const expectedValues = [
+    cy.get('[data-cy="domain-dropdown"]')
+      .each(el => {
+        const value = el[0].children[1].firstChild.data;
+        boreholeDropdownValues.push(value);
+      })
+      .then(() => {
+        expect(boreholeDropdownValues).to.deep.eq([
           "borehole",
-          "dynamic probing",
           "geotechnics",
           "open, no completion",
           "measured",
           "2",
           "2",
-          "2",
-          "2",
-        ];
-        expectedValues.forEach(val => {
-          expect(boreholeDropdownValues).to.include(val);
-        });
-      }
-    });
+        ]);
+      });
   });
 });

@@ -351,7 +351,7 @@
   "someSelected": "{{howMany}} perforazioni selezionate",
   "sourceCode": "Codice sorgente",
   "spatial_reference_system": "Sistema di coordinate",
-  "spud_date": "Data di inizio della perforazione",
+  "drilling_start_date": "Data di inizio della perforazione",
   "start": "Questa pagina è in italiano",
   "startTime": "Inizio",
   "status": "Stato",

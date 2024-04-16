@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240410125336_MigrateSections")]
+    partial class MigrateSections
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1673,10 +1676,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("mud_type_id");
 
-                    b.Property<DateOnly?>("DrillingStartDate")
-                        .HasColumnType("date")
-                        .HasColumnName("drilling_start_date");
-
                     b.Property<double>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("from_depth");
@@ -1688,6 +1687,10 @@ namespace BDMS.Migrations
                     b.Property<int>("SectionId")
                         .HasColumnType("integer")
                         .HasColumnName("section_id");
+
+                    b.Property<DateOnly?>("SpudDate")
+                        .HasColumnType("date")
+                        .HasColumnName("spud_date");
 
                     b.Property<double>("ToDepth")
                         .HasColumnType("double precision")
@@ -2897,7 +2900,7 @@ namespace BDMS.Migrations
             modelBuilder.Entity("BDMS.Models.Section", b =>
                 {
                     b.HasOne("BDMS.Models.Borehole", "Borehole")
-                        .WithMany("Sections")
+                        .WithMany()
                         .HasForeignKey("BoreholeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3095,8 +3098,6 @@ namespace BDMS.Migrations
                     b.Navigation("BoreholeFiles");
 
                     b.Navigation("Completions");
-
-                    b.Navigation("Sections");
 
                     b.Navigation("Stratigraphies");
 

@@ -114,6 +114,7 @@ public static class BdmsContextExtensions
         // Seed Boreholes
         var borehole_ids = 1_000_000;
         var boreholeRange = Enumerable.Range(borehole_ids, 3000).ToList();
+        var richBoreholeRange = Enumerable.Range(borehole_ids, 100).ToList(); // generate boreholes with more data for testing
         var fakeBoreholes = new Faker<Borehole>()
            .StrictMode(true)
            .RuleFor(o => o.Id, f => borehole_ids++)
@@ -153,12 +154,6 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Country, f => f.Address.Country().OrNull(f, 0.01f))
            .RuleFor(o => o.Canton, f => f.Address.State().OrNull(f, 0.01f))
            .RuleFor(o => o.Municipality, f => f.Address.City().OrNull(f, 0.01f))
-           .RuleFor(o => o.DrillingMethodId, f => f.PickRandom(drillingMethodIds).OrNull(f, .05f))
-           .RuleFor(o => o.DrillingMethod, _ => default!)
-           .RuleFor(o => o.DrillingDate, f => f.Date.Past().ToUniversalTime())
-           .RuleFor(o => o.DrillingDiameter, f => f.Random.Double(0, 20))
-           .RuleFor(o => o.CuttingsId, f => f.PickRandom(cuttingsIds).OrNull(f, .05f))
-           .RuleFor(o => o.Cuttings, _ => default!)
            .RuleFor(o => o.PurposeId, f => f.PickRandom(purposeIds).OrNull(f, .05f))
            .RuleFor(o => o.Purpose, _ => default!)
            .RuleFor(o => o.StatusId, f => f.PickRandom(statusIds).OrNull(f, .05f))
@@ -177,7 +172,6 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Lithostratigraphy, _ => default!)
            .RuleFor(o => o.ChronostratigraphyId, f => f.PickRandom(chronostratigraphyTopBedrockIds).OrNull(f, .05f))
            .RuleFor(o => o.Chronostratigraphy, _ => default!)
-           .RuleFor(o => o.SpudDate, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
            .RuleFor(o => o.TopBedrockTvd, f => f.Random.Double(0, 1000).OrNull(f, .05f))
            .RuleFor(o => o.QtTopBedrockTvd, f => f.Random.Double(0, 2).OrNull(f, .05f))
            .RuleFor(o => o.ReferenceElevation, f => f.Random.Double(0, 4500).OrNull(f, .05f))
@@ -248,7 +242,7 @@ public static class BdmsContextExtensions
             .StrictMode(true)
             .RuleFor(o => o.FileId, f => f.PickRandom(fileRange))
             .RuleFor(o => o.File, f => default!)
-            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(richBoreholeRange))
             .RuleFor(o => o.Borehole, f => default!)
             .RuleFor(o => o.UserId, f => f.PickRandom(userRange))
             .RuleFor(o => o.User, f => default!)
@@ -264,7 +258,7 @@ public static class BdmsContextExtensions
 
         BoreholeFile SeededBoreholeFiles(int seed) => fakeBoreholeFiles.UseSeed(seed).Generate();
 
-        var filesToInsert = boreholeRange
+        var filesToInsert = richBoreholeRange
             .Select(SeededBoreholeFiles)
             .GroupBy(bf => new { bf.BoreholeId, bf.FileId })
             .Select(bf => bf.FirstOrDefault())
@@ -588,7 +582,7 @@ public static class BdmsContextExtensions
         var completionRange = Enumerable.Range(completion_ids, 500);
         var fakeCompletions = new Faker<Completion>()
             .StrictMode(true)
-            .RuleFor(c => c.BoreholeId, f => f.PickRandom(boreholeRange))
+            .RuleFor(c => c.BoreholeId, f => f.PickRandom(richBoreholeRange))
             .RuleFor(c => c.Borehole, _ => default!)
             .RuleFor(c => c.Created, f => f.Date.Past().ToUniversalTime())
             .RuleFor(c => c.CreatedById, f => f.PickRandom(userRange))
@@ -744,7 +738,7 @@ public static class BdmsContextExtensions
         var observationRange = Enumerable.Range(observation_ids, 500);
         var fakeObservations = new Faker<Observation>()
             .StrictMode(true)
-            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(richBoreholeRange))
             .RuleFor(o => o.Borehole, _ => default!)
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
@@ -893,7 +887,7 @@ public static class BdmsContextExtensions
         var fakeSections = new Faker<Section>()
             .StrictMode(true)
             .RuleFor(o => o.Id, f => section_ids++)
-            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange.Take(sectionRange.Count)))
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(richBoreholeRange.Take(sectionRange.Count)))
             .RuleFor(o => o.Borehole, _ => default!)
             .RuleFor(o => o.Name, f => f.Random.Word())
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
@@ -919,7 +913,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Order, f => f.Random.Int(0, 99))
             .RuleFor(o => o.DrillingMethodId, f => f.PickRandom(drillingMethodIds).OrNull(f, .2f))
             .RuleFor(o => o.DrillingMethod, _ => default!)
-            .RuleFor(o => o.SpudDate, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .2f))
+            .RuleFor(o => o.DrillingStartDate, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .2f))
             .RuleFor(o => o.DrillingEndDate, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .2f))
             .RuleFor(o => o.CuttingsId, f => f.PickRandom(cuttingsIds).OrNull(f, .2f))
             .RuleFor(o => o.Cuttings, _ => default!)
