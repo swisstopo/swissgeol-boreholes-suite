@@ -294,7 +294,7 @@ class PatchLayer(Action):
 
                     await self.conn.executemany(f"""
                         INSERT INTO {table_name} (
-                            layer_id, id_cli_fk
+                            layer_id, identifier_id
                         ) VALUES ($1, $2)
                     """, [(id, v) for v in value])
 

@@ -90,39 +90,35 @@ class ListBorehole(Action):
 
             LEFT JOIN (
                 SELECT
-                    id_bho_fk,
-                    array_agg(id_cli_fk) as identifiers,
-                    array_agg(value_bco) as identifiers_value
+                    borehole_id,
+                    array_agg(identifier_id) as identifiers,
+                    array_agg(identifier_value) as identifiers_value
                 FROM
-                    bdms.borehole_codelist
-                WHERE
-                    code_cli = 'borehole_identifier'
-                    GROUP BY id_bho_fk
+                    bdms.borehole_identifiers_codelist
+                GROUP BY borehole_id
             ) as ids
             ON
-                ids.id_bho_fk = id_bho
+                ids.borehole_id = id_bho
             
             LEFT JOIN (
                 SELECT
-                    id_bho_fk,
+                    borehole_id,
                     array_to_json(array_agg(j)) as identifiers
                 FROM (
                     SELECT
-                        id_bho_fk,
+                        borehole_id,
                         json_build_object(
-                            'borehole_identifier', id_cli_fk,
-                            'identifier_value', value_bco
+                            'borehole_identifier', identifier_id,
+                            'identifier_value', identifier_value
                         ) as j
                     FROM
-                        bdms.borehole_codelist
-                    WHERE
-                        code_cli = 'borehole_identifier'
+                        bdms.borehole_identifiers_codelist
                 ) t
                 GROUP BY
-                    id_bho_fk
+                    borehole_id
             ) as idf
             ON
-                idf.id_bho_fk = id_bho
+                idf.borehole_id = id_bho
 
             LEFT JOIN bdms.codelist as rest
                 ON rest.id_cli = restriction_id_cli
@@ -233,39 +229,35 @@ class ListBorehole(Action):
 
             LEFT JOIN (
                 SELECT
-                    id_bho_fk,
-                    array_agg(id_cli_fk) as borehole_identifier,
-                    array_agg(value_bco) as identifier_value
+                    borehole_id,
+                    array_agg(identifier_id) as borehole_identifier,
+                    array_agg(identifier_value) as identifier_value
                 FROM
-                    bdms.borehole_codelist
-                WHERE
-                    code_cli = 'borehole_identifier'
-                    GROUP BY id_bho_fk
+                    bdms.borehole_identifiers_codelist
+                GROUP BY borehole_id
             ) as ids
             ON
-                ids.id_bho_fk = id_bho
+                ids.borehole_id = id_bho
 
             LEFT JOIN (
                 SELECT
-                    id_bho_fk,
+                    borehole_id,
                     array_to_json(array_agg(j)) as identifiers
                 FROM (
                     SELECT
-                        id_bho_fk,
+                        borehole_id,
                         json_build_object(
-                            'borehole_identifier', id_cli_fk,
-                            'identifier_value', value_bco
+                            'borehole_identifier', identifier_id,
+                            'identifier_value', identifier_value
                         ) as j
                     FROM
-                        bdms.borehole_codelist
-                    WHERE
-                        code_cli = 'borehole_identifier'
+                        bdms.borehole_identifiers_codelist
                 ) t
                 GROUP BY
-                    id_bho_fk
+                    borehole_id
             ) as idf
             ON
-                idf.id_bho_fk = id_bho
+                idf.borehole_id = id_bho
 
             INNER JOIN (
                 SELECT
@@ -381,17 +373,15 @@ class ListBorehole(Action):
 
             LEFT JOIN (
                 SELECT
-                    id_bho_fk,
-                    array_agg(id_cli_fk) as borehole_identifier,
-                    array_agg(value_bco) as identifier_value
+                    borehole_id,
+                    array_agg(identifier_id) as borehole_identifier,
+                    array_agg(identifier_value) as identifier_value
                 FROM
-                    bdms.borehole_codelist
-                WHERE
-                    code_cli = 'borehole_identifier'
-                    GROUP BY id_bho_fk
+                    bdms.borehole_identifiers_codelist
+                GROUP BY borehole_id
             ) as ids
             ON
-                ids.id_bho_fk = id_bho
+                ids.borehole_id = id_bho
         """
 
         if len(layer_params) > 0:
