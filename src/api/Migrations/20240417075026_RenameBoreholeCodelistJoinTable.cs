@@ -13,17 +13,17 @@ public partial class RenameBoreholeCodelistJoinTable : Migration
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.DropForeignKey(
-            name: "FK_borehole_codelist_borehole_id_bho_fk",
+            name: "borehole_codelist_id_bho_fk_fkey",
             schema: "bdms",
             table: "borehole_codelist");
 
         migrationBuilder.DropForeignKey(
-            name: "FK_borehole_codelist_codelist_id_cli_fk",
+            name: "borehole_codelist_id_cli_fk_fkey",
             schema: "bdms",
             table: "borehole_codelist");
 
         migrationBuilder.DropPrimaryKey(
-            name: "PK_borehole_codelist",
+            name: "borehole_codelist_pkey",
             schema: "bdms",
             table: "borehole_codelist");
 
@@ -57,7 +57,7 @@ public partial class RenameBoreholeCodelistJoinTable : Migration
             newName: "borehole_id");
 
         migrationBuilder.RenameIndex(
-            name: "IX_borehole_codelist_id_cli_fk",
+            name: "IX_borehole_codelist_id_cli_fk_fkey",
             schema: "bdms",
             table: "borehole_identifiers_codelist",
             newName: "IX_borehole_identifiers_codelist_identifier_id");
