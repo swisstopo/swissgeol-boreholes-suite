@@ -341,6 +341,23 @@ class PointComponent extends React.Component {
     return [new Style(conf)];
   }
 
+  onZoomIn = () => {
+    const view = this.map.getView();
+    const zoom = view.getZoom();
+    view.setZoom(zoom + 1);
+  };
+
+  onZoomOut = () => {
+    const view = this.map.getView();
+    const zoom = view.getZoom();
+    view.setZoom(zoom - 1);
+  };
+
+  onFitToExtent = () => {
+    const view = this.map.getView();
+    view.fit(this.centerFeature.getGeometry(), { resolution: 1 });
+  };
+
   render() {
     const { satellite } = this.state;
     const { isEditable } = this.props;
@@ -458,15 +475,6 @@ class PointComponent extends React.Component {
                 }}
                 size="mini">
                 <Icon name="resize vertical" />
-              </Button>
-              <Button
-                disabled={false}
-                icon
-                onClick={() => {
-                  this.map.getView().fit(this.centerFeature.getGeometry(), { resolution: 1 });
-                }}
-                size="mini">
-                <Icon name="compress" />
               </Button>
             </Button.Group>
           </div>
