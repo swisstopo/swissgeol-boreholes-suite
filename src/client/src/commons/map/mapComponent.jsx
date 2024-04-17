@@ -253,7 +253,7 @@ class MapComponent extends React.Component {
       target: "map",
       view: new View({
         maxResolution: 611,
-        minResolution: 0.5,
+        minResolution: 0.1,
         resolution: 500,
         center: center,
         projection: projection,

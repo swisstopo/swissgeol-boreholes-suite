@@ -632,6 +632,8 @@ describe("completion crud tests", () => {
         });
         // Resets hash from #instrumentation to #casing when switching to another completion
         cy.contains("test hash 2").click();
+        cy.wait("@get-casings-by-completionId");
+        cy.wait("@workflow_edit_list");
         cy.get("@completion2_id").then(completion2Id => {
           cy.location().should(location => {
             expect(location.pathname).to.eq(`/${id}/completion/${completion2Id}`);
