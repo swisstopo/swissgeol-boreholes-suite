@@ -55,6 +55,9 @@ describe("Casing crud tests", () => {
     setInput("casingElements.0.innerDiameter", "3");
     setInput("casingElements.0.outerDiameter", "4");
 
+    // add casing element and verify fromDepth is set to previous toDepth
+    addItem("addCasingElement");
+
     saveForm();
     cy.wait("@casing_GET");
 
@@ -70,11 +73,7 @@ describe("Casing crud tests", () => {
     evaluateDisplayValue("casingElements.0.materialId", "steel");
     evaluateDisplayValue("casingElements.0.innerDiameter", "3");
     evaluateDisplayValue("casingElements.0.outerDiameter", "4");
-
-    // add casing element and verify fromDepth is set to previous toDepth
-    addItem("addCasingElement");
     evaluateDisplayValue("casingElements.1.fromDepth", "10");
-    cy.get('[data-cy="casingElements.1.delete"]').click();
 
     // update casing
     startEditing();
