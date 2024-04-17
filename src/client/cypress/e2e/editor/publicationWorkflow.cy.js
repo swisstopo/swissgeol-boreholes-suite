@@ -23,8 +23,9 @@ const verifyStatusTextsNotInHeader = status => {
   });
 };
 
+// Skip the test until deleting of boreholes is fixed (see github issue #1188)
 describe("Tests the publication workflow.", () => {
-  it("Publishes a borehole without rejections", () => {
+  it.skip("Publishes a borehole without rejections", () => {
     createBorehole({ "extended.original_name": "Borehole to publish" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
