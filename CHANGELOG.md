@@ -18,6 +18,7 @@
 - Remove fields from borehole that are now part of sections.
 - Renamed `spud_date` to `drilling_start_date`.
 - Adapted map icons to match common style of swissgeol applications.
+- New casing element's top depths is set to the previous casing element's bottom depth by default.
 - Set minimal resolution to 0.1 for open layer maps.
 - Renamed table `borehole_codelist ` to `borehole_identifiers_codelist`.
 - Changed order of menu items in borehole detail view.

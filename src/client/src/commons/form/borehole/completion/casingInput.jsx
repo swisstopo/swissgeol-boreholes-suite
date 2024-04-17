@@ -83,8 +83,16 @@ const CasingInput = props => {
   };
 
   const addCasingElement = () => {
+    const fieldArrayValues = formMethods.getValues()["casingElements"];
     append(
-      { fromDepth: null, toDepth: null, kindId: "", materialId: "", innerDiameter: null, outerDiameter: null },
+      {
+        fromDepth: fieldArrayValues[fieldArrayValues.length - 1].toDepth,
+        toDepth: null,
+        kindId: "",
+        materialId: "",
+        innerDiameter: null,
+        outerDiameter: null,
+      },
       { shouldFocus: false },
     );
   };

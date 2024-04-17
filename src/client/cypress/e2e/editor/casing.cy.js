@@ -55,6 +55,11 @@ describe("Casing crud tests", () => {
     setInput("casingElements.0.innerDiameter", "3");
     setInput("casingElements.0.outerDiameter", "4");
 
+    // add casing element and verify fromDepth is set to previous toDepth
+    addItem("addCasingElement");
+    cy.get('[name="casingElements.1.fromDepth"]').should("have.value", "10");
+    cy.get('[data-cy="casingElements.1.delete"]').click();
+
     saveForm();
     cy.wait("@casing_GET");
 
