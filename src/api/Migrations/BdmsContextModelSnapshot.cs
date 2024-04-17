@@ -368,27 +368,22 @@ namespace BDMS.Migrations
                 {
                     b.Property<int>("BoreholeId")
                         .HasColumnType("integer")
-                        .HasColumnName("id_bho_fk");
+                        .HasColumnName("borehole_id");
 
                     b.Property<int>("CodelistId")
                         .HasColumnType("integer")
-                        .HasColumnName("id_cli_fk");
-
-                    b.Property<string>("SchemaName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("code_cli");
+                        .HasColumnName("identifier_id");
 
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("value_bco");
+                        .HasColumnName("identifier_value");
 
                     b.HasKey("BoreholeId", "CodelistId");
 
                     b.HasIndex("CodelistId");
 
-                    b.ToTable("borehole_codelist", "bdms");
+                    b.ToTable("borehole_identifiers_codelist", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.BoreholeFile", b =>
@@ -2860,7 +2855,7 @@ namespace BDMS.Migrations
             modelBuilder.Entity("BDMS.Models.Observation", b =>
                 {
                     b.HasOne("BDMS.Models.Borehole", "Borehole")
-                        .WithMany()
+                        .WithMany("Observations")
                         .HasForeignKey("BoreholeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3095,6 +3090,8 @@ namespace BDMS.Migrations
                     b.Navigation("BoreholeFiles");
 
                     b.Navigation("Completions");
+
+                    b.Navigation("Observations");
 
                     b.Navigation("Sections");
 
