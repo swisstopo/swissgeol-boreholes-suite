@@ -56,6 +56,8 @@ export const interceptApiCalls = () => {
 
   cy.intercept("/api/v2/completion?boreholeId=**").as("get-completions-by-boreholeId");
 
+  cy.intercept("/api/v2/casing?completionId=**").as("get-casings-by-completionId");
+
   cy.intercept("/api/v2/casing*", req => {
     return (req.alias = `casing_${req.method}`);
   });
