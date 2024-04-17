@@ -118,17 +118,15 @@ class ListEditingBorehole(Action):
 
             LEFT JOIN (
                 SELECT
-                    id_bho_fk,
-                    array_agg(id_cli_fk) as borehole_identifier,
-                    array_agg(value_bco) as identifier_value
+                    borehole_id,
+                    array_agg(identifier_id) as borehole_identifier,
+                    array_agg(identifier_value) as identifier_value
                 FROM
-                    bdms.borehole_codelist
-                WHERE
-                    code_cli = 'borehole_identifier'
-                    GROUP BY id_bho_fk
+                    bdms.borehole_identifiers_codelist
+                GROUP BY borehole_id
             ) as ids
             ON
-                ids.id_bho_fk = borehole.id_bho
+                ids.borehole_id = borehole.id_bho
                 
             INNER JOIN bdms.workgroups
             ON id_wgp = id_wgp_fk
@@ -258,17 +256,15 @@ class ListEditingBorehole(Action):
 
             LEFT JOIN (
                 SELECT
-                    id_bho_fk,
-                    array_agg(id_cli_fk) as borehole_identifier,
-                    array_agg(value_bco) as identifier_value
+                    borehole_id,
+                    array_agg(identifier_id) as borehole_identifier,
+                    array_agg(identifier_value) as identifier_value
                 FROM
-                    bdms.borehole_codelist
-                WHERE
-                    code_cli = 'borehole_identifier'
-                    GROUP BY id_bho_fk
+                    bdms.borehole_identifiers_codelist
+                GROUP BY borehole_id
             ) as ids
             ON
-                ids.id_bho_fk = id_bho
+                ids.borehole_id = id_bho
 
             INNER JOIN
                 bdms.users as creator

@@ -24,6 +24,7 @@ import proj4 from "proj4";
 import { Segment, Button, Label, Icon } from "semantic-ui-react";
 import { getHeight } from "../../api-lib/index";
 import { fetchApiV2 } from "../../api/fetchApiV2";
+import ZoomControls from "./zoomControls";
 
 const projections = {
   "EPSG:21781":
@@ -85,6 +86,7 @@ class PointComponent extends React.Component {
     this.map = new Map({
       controls: defaultControls({
         attribution: true,
+        zoom: false,
         attributionOptions: {
           collapsed: false,
           collapsible: false,
@@ -339,6 +341,23 @@ class PointComponent extends React.Component {
     return [new Style(conf)];
   }
 
+  onZoomIn = () => {
+    const view = this.map.getView();
+    const zoom = view.getZoom();
+    view.setZoom(zoom + 1);
+  };
+
+  onZoomOut = () => {
+    const view = this.map.getView();
+    const zoom = view.getZoom();
+    view.setZoom(zoom - 1);
+  };
+
+  onFitToExtent = () => {
+    const view = this.map.getView();
+    view.fit(this.centerFeature.getGeometry(), { resolution: 1 });
+  };
+
   render() {
     const { satellite } = this.state;
     const { isEditable } = this.props;
@@ -352,7 +371,7 @@ class PointComponent extends React.Component {
           style={{
             position: "absolute",
             top: "6px",
-            right: "6px",
+            left: "6px",
             zIndex: "1",
           }}>
           <Button
@@ -384,6 +403,7 @@ class PointComponent extends React.Component {
             height: 450,
           }}
         />
+        <ZoomControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
         <div
           style={{
             bottom: "0px",
@@ -455,15 +475,6 @@ class PointComponent extends React.Component {
                 }}
                 size="mini">
                 <Icon name="resize vertical" />
-              </Button>
-              <Button
-                disabled={false}
-                icon
-                onClick={() => {
-                  this.map.getView().fit(this.centerFeature.getGeometry(), { resolution: 1 });
-                }}
-                size="mini">
-                <Icon name="compress" />
               </Button>
             </Button.Group>
           </div>

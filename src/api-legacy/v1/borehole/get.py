@@ -133,25 +133,23 @@ class GetBorehole(Action):
 
             LEFT JOIN (
                 SELECT
-                    id_bho_fk,
+                    borehole_id,
                     array_to_json(array_agg(j)) as identifiers
                 FROM (
                     SELECT
-                        id_bho_fk,
+                        borehole_id,
                         json_build_object(
-                            'id', id_cli_fk,
-                            'value', value_bco
+                            'id', identifier_id,
+                            'value', identifier_value
                         ) as j
                     FROM
-                        bdms.borehole_codelist
-                    WHERE
-                        code_cli = 'borehole_identifier'
+                        bdms.borehole_identifiers_codelist
                 ) t
                 GROUP BY
-                    id_bho_fk
+                    borehole_id
             ) as idf
             ON
-                idf.id_bho_fk = id_bho
+                idf.borehole_id = id_bho
 
             LEFT JOIN (
                 SELECT
