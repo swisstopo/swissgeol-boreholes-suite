@@ -569,7 +569,6 @@ public class UploadController : ControllerBase
                             boreholeCodeLists.Add(new BoreholeCodelist
                             {
                                 CodelistId = id.CodeListId,
-                                SchemaName = "borehole_identifier",
                                 Value = value,
                             });
                         }

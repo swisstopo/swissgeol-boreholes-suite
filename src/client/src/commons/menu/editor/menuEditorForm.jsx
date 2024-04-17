@@ -199,6 +199,22 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
           </>
         )}
         <ParentListItem
+          active={location.pathname.includes(`/${id}/completion`)}
+          onClick={() => {
+            history.push(`/${id}/completion`);
+          }}>
+          <StyledIcon
+            alt="Completion"
+            src={"/img/Completion.png"}
+            active={location.pathname.includes(`/${id}/completion`)}
+          />
+          <List.Content>
+            <List.Header as="h3" data-cy="completion-menu-item">
+              <TranslationText firstUpperCase id="completion" />
+            </List.Header>
+          </List.Content>
+        </ParentListItem>
+        <ParentListItem
           onClick={() => {
             setHydrogeologyIsVisible(!hydrogeologyIsVisible);
           }}>
@@ -289,22 +305,6 @@ const MenuEditorForm = ({ borehole, history, match, reload, t, user, unlock, loc
             </ChildListItem>
           </>
         )}
-        <ParentListItem
-          active={location.pathname.includes(`/${id}/completion`)}
-          onClick={() => {
-            history.push(`/${id}/completion`);
-          }}>
-          <StyledIcon
-            alt="Completion"
-            src={"/img/Completion.png"}
-            active={location.pathname.includes(`/${id}/completion`)}
-          />
-          <List.Content>
-            <List.Header as="h3" data-cy="completion-menu-item">
-              <TranslationText firstUpperCase id="completion" />
-            </List.Header>
-          </List.Content>
-        </ParentListItem>
         <ParentListItem
           active={location.pathname === `/${id}/attachments`}
           style={{ borderBottom: "1px solid lightgray" }}
