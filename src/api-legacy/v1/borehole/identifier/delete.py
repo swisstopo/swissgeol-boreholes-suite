@@ -28,11 +28,11 @@ class DeleteIdentifier(Action):
         check = await self.conn.fetchval("""
             SELECT EXISTS (
                 SELECT
-                    id_bho_fk
+                    borehole_id
                 FROM
-                    bdms.borehole_codelist
+                    bdms.borehole_identifiers_codelist
                 WHERE
-                    id_cli_fk = $1
+                    identifier_id = $1
                 LIMIT 1
             ) as has_bh
         """, id)

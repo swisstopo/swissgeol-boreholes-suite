@@ -378,13 +378,13 @@ class Action():
                 elif filter['borehole_identifier'] != None:
                     params.append(int(filter['borehole_identifier']))
                     where.append("""
-                        borehole.id_bho IN (SELECT id_bho_fk FROM bdms.borehole_codelist WHERE id_cli_fk = %s)
+                        borehole.id_bho IN (SELECT borehole_id FROM bdms.borehole_identifiers_codelist WHERE identifier_id = %s)
                     """ % self.getIdx())
 
                     if 'identifier_value' in keys and filter['identifier_value'] not in ['', None]:
                         params.append("%%%s%%" % filter['identifier_value'])
                         where.append("""
-                            borehole.id_bho IN (SELECT id_bho_fk FROM bdms.borehole_codelist WHERE value_bco ILIKE %s)
+                            borehole.id_bho IN (SELECT borehole_id FROM bdms.borehole_identifiers_codelist WHERE identifier_value ILIKE %s)
                         """ % self.getIdx())
 
             if 'identifier' in keys and filter['identifier'] not in ['', None]:
