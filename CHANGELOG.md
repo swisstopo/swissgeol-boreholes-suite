@@ -19,6 +19,7 @@
 - Renamed `spud_date` to `drilling_start_date`.
 - Adapted map icons to match common style of swissgeol applications.
 - Renamed table `borehole_codelist ` to `borehole_identifiers_codelist`.
+- Changed order of menu items in borehole detail view.
 
 ### Fixed
 
