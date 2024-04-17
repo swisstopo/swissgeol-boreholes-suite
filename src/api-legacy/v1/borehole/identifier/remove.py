@@ -13,13 +13,11 @@ class RemoveIdentifier(Action):
                 SELECT EXISTS(
                     SELECT 1
                     FROM
-                        bdms.borehole_codelist
+                        bdms.borehole_identifiers_codelist
                     WHERE 
-                        id_bho_fk = $1
+                        borehole_id = $1
                     AND
-                        id_cli_fk = $2
-                    AND
-                        code_cli = 'borehole_identifier'
+                        identifier_id = $2
                 ) AS exists
             """,
             id,
@@ -32,13 +30,11 @@ class RemoveIdentifier(Action):
         await self.conn.fetchval(
             """
                 DELETE FROM
-                    bdms.borehole_codelist
+                    bdms.borehole_identifiers_codelist
                 WHERE
-                    id_bho_fk = $1
+                    borehole_id = $1
                 AND
-                    id_cli_fk = $2
-                AND
-                    code_cli = 'borehole_identifier'
+                    identifier_id = $2
             """,
             id,
             cid

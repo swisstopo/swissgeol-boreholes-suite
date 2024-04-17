@@ -24,7 +24,7 @@ const ZoomControls = ({ onZoomIn, onZoomOut, onFitToExtent }) => {
         borderRadius: "8px",
         alignItems: "center",
       }}>
-      <NoMarginButton onClick={onZoomIn}>
+      <NoMarginButton data-cy="map-zoom-in" onClick={onZoomIn}>
         <Add sx={{ color: theme.palette.mapIcon.main }} />
       </NoMarginButton>
       <NoMarginButton onClick={onFitToExtent} sx={{ padding: "12px" }}>

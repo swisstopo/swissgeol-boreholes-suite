@@ -19,12 +19,15 @@
 - Renamed `spud_date` to `drilling_start_date`.
 - Adapted map icons to match common style of swissgeol applications.
 - Set minimal resolution to 0.1 for open layer maps.
+- Renamed table `borehole_codelist ` to `borehole_identifiers_codelist`.
+- Changed order of menu items in borehole detail view.
 
 ### Fixed
 
 - Fixed direct navigation to nested urls.
 - Fixed hash routing for completion tabs.
 - When copying a borehole `completions`, `hydrogeological observations` and `borehole sections` were not copied.
+- Updated favicon for help.
 
 ## v2.0.644 - 2024-03-22
 

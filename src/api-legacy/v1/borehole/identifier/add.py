@@ -25,16 +25,14 @@ class AddIdentifier(Action):
 
         await self.conn.fetchval(
             """
-                INSERT INTO bdms.borehole_codelist(
-                    id_bho_fk,
-                    id_cli_fk,
-                    code_cli,
-                    value_bco
+                INSERT INTO bdms.borehole_identifiers_codelist(
+                    borehole_id,
+                    identifier_id,
+                    identifier_value
                 )
                 VALUES (
                     $1,
                     $2,
-                    'borehole_identifier',
                     $3
                 )
             """,

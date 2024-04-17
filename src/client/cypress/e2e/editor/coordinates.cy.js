@@ -108,8 +108,8 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "");
 
     // zoom into map
-    cy.get('[class="ol-zoom-in"]').click({ force: true });
-    cy.get('[class="ol-zoom-in"]').click({ force: true });
+    cy.get('[data-cy="map-zoom-in"]').click({ force: true });
+    cy.get('[data-cy="map-zoom-in"]').click({ force: true });
 
     cy.wait(2000);
     // click on map
