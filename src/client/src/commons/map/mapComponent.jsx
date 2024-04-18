@@ -424,8 +424,8 @@ class MapComponent extends React.Component {
 
   componentDidUpdate(prevProps) {
     const { centerto, searchState, highlighted, hover, layers, zoomto } = this.props;
+    const view = this.map.getView();
     let refresh = false;
-
     // Check overlays apparence
     const keys = Object.keys(layers);
     for (const identifier of keys) {
@@ -493,7 +493,7 @@ class MapComponent extends React.Component {
               function (response) {
                 if (response.data.success) {
                   this.points.addFeatures(new GeoJSON().readFeatures(response.data.data));
-                  this.map.getView().fit(this.points.getExtent());
+                  view.fit(this.points.getExtent());
                   this.moveEnd();
                 }
               }.bind(this),
@@ -509,9 +509,9 @@ class MapComponent extends React.Component {
       if (feature !== null) {
         var point = feature.getGeometry();
         if (zoomto === true) {
-          this.map.getView().fit(point, { minResolution: 1 });
+          view.fit(point, { minResolution: 1 });
         } else {
-          this.map.getView().setCenter(point.getCoordinates());
+          view.setCenter(point.getCoordinates());
         }
       } else {
         console.error("Feature not found.");
@@ -523,6 +523,7 @@ class MapComponent extends React.Component {
     }
 
     this.map.updateSize();
+    view.getResolution() < 1 && view.setResolution(1);
   }
 
   componentWillUnmount() {
@@ -777,6 +778,7 @@ class MapComponent extends React.Component {
     const view = this.map.getView();
     const extent = this.points.getExtent();
     view.fit(extent, this.map.getSize());
+    view.getResolution() < 1 && view.setResolution(1);
   };
 
   onShowLayerSelection = () => {

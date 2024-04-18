@@ -15,7 +15,6 @@ import Circle from "ol/style/Circle";
 import Draw from "ol/interaction/Draw";
 import Modify from "ol/interaction/Modify";
 import Point from "ol/geom/Point";
-import Polygon from "ol/geom/Polygon";
 import Feature from "ol/Feature";
 import { defaults as defaultControls } from "ol/control";
 import { get as getProjection } from "ol/proj";
@@ -44,7 +43,6 @@ class PointComponent extends React.Component {
     this.changefeature = this.updatePointAndGetAddress.bind(this);
     this.styleFunction = this.styleFunction.bind(this);
     this.getAddress = this.getAddress.bind(this);
-    this.zoomtopoly = this.zoomtopoly.bind(this);
     this.srs = "EPSG:2056";
 
     _.forEach(projections, function (proj, srs) {
@@ -180,8 +178,9 @@ class PointComponent extends React.Component {
 
           this.position.un("addfeature", e => this.updatePointAndGetAddress(e.feature), this);
           this.drawOrUpdatePoint(point);
-          this.map.getView().fit(this.centerFeature.getGeometry(), { resolution: 1 });
-
+          const view = this.map.getView();
+          view.fit(this.centerFeature.getGeometry());
+          view.setResolution(1);
           this.position.on("addfeature", e => this.updatePointAndGetAddress(e.feature), this);
         }
       }
@@ -257,16 +256,6 @@ class PointComponent extends React.Component {
 
     this.map.addInteraction(this.modify);
     this.map.removeInteraction(this.draw);
-  }
-
-  zoomtopoly(coords) {
-    var feature = new Feature({
-      geometry: new Polygon(coords),
-    });
-    this.map.getView().fit(feature.getGeometry(), {
-      nearest: true,
-      duration: 500,
-    });
   }
 
   /**
@@ -355,7 +344,8 @@ class PointComponent extends React.Component {
 
   onFitToExtent = () => {
     const view = this.map.getView();
-    view.fit(this.centerFeature.getGeometry(), { resolution: 1 });
+    view.fit(this.centerFeature.getGeometry());
+    view.setResolution(1);
   };
 
   render() {
