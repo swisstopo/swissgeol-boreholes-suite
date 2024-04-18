@@ -20,17 +20,7 @@ import json
 class Producer(BaseHandler):
 
     def authorize(self):
-
-        if (
-            'VIEW' in self.user['roles'] or
-            'EDIT' in self.user['roles'] or
-            'CONTROL' in self.user['roles'] or
-            'VALID' in self.user['roles'] or
-            'PUBLIC' in self.user['roles']
-        ):
-            return
-
-        raise AuthorizationException()
+        pass
 
     async def check_edit(self, id, user, conn):
         id_wgp = await conn.fetchval("""
@@ -52,7 +42,7 @@ class Producer(BaseHandler):
                     )
                 )
             ):
-                raise WorkgroupFreezed() 
+                raise WorkgroupFreezed()
 
     async def check_lock(self, id, user, conn):
         rec = await conn.fetchrow("""
@@ -151,7 +141,7 @@ class Producer(BaseHandler):
             (now - locked_at) < (td)      # Timeout not finished
         ):
             raise Locked(
-                id, 
+                id,
                 {
                     "user": locked_by_name,
                     "datetime": locked_at.isoformat()

@@ -30,6 +30,7 @@
 - When copying a borehole `completions`, `hydrogeological observations` and `borehole sections` were not copied.
 - Updated favicon for help.
 - Fixed zoom level when loading detail map.
+- Fixed authorization exception for users who have not yet been assigned to a role or workgroup.
 
 ## v2.0.644 - 2024-03-22
 
