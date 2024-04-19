@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.0.687 - 2024-04-19
+
 ### Added
 
 - Added borehole sections panel.
