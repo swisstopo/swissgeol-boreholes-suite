@@ -7,6 +7,7 @@
 ### Added
 
 - Added borehole sections panel.
+- Added new basemap selector in maps.
 
 ### Changed
 
