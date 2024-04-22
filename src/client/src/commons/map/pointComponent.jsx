@@ -2,10 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import _ from "lodash";
 import { Map, View } from "ol";
-import TileLayer from "ol/layer/Tile";
-import WMTSTileGrid from "ol/tilegrid/WMTS";
-import LayerGroup from "ol/layer/Group";
-import WMTS from "ol/source/WMTS";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import Stroke from "ol/style/Stroke";
@@ -24,6 +20,9 @@ import { Segment, Button, Label, Icon } from "semantic-ui-react";
 import { getHeight } from "../../api-lib/index";
 import { fetchApiV2 } from "../../api/fetchApiV2";
 import ZoomControls from "./zoomControls";
+import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
+import { basemaps } from "../../components/basemapSelector/basemaps";
+import { BasemapContext } from "../../components/basemapSelector/basemapContext";
 
 const projections = {
   "EPSG:21781":
@@ -37,12 +36,14 @@ const projections = {
 };
 
 class PointComponent extends React.Component {
+  static contextType = BasemapContext;
   constructor(props) {
     super(props);
     this.lh = false; // loading location queue
     this.changefeature = this.updatePointAndGetAddress.bind(this);
     this.styleFunction = this.styleFunction.bind(this);
     this.getAddress = this.getAddress.bind(this);
+    this.setStateBound = this.setState.bind(this);
     this.srs = "EPSG:2056";
 
     _.forEach(projections, function (proj, srs) {
@@ -53,7 +54,6 @@ class PointComponent extends React.Component {
     this.state = {
       point: null,
       height: null,
-      satellite: false,
       country: null,
       canton: null,
       municipality: null,
@@ -62,25 +62,18 @@ class PointComponent extends React.Component {
   }
 
   componentDidMount() {
-    const resolutions = [
-      4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250, 1000, 750, 650, 500, 250, 100, 50, 20, 10,
-      5, 2.5, 2, 1.5, 1, 0.5,
-    ];
+    this.setState({ basemap: basemaps.find(bm => bm.shortName === this.context.currentBasemapName) }, () => {
+      basemaps.forEach(bm => {
+        const isVisible = bm.shortName === this.context.currentBasemapName;
+        bm.layer.setVisible(isVisible);
+      });
+    });
+
     const extent = [2420000, 1030000, 2900000, 1350000];
     const center = [(extent[2] - extent[0]) / 2 + extent[0], (extent[3] - extent[1]) / 2 + extent[1]];
     const projection = getProjection(this.srs);
     projection.setExtent(extent);
-    const matrixIds = [];
-    for (var i = 0; i < resolutions.length; i++) {
-      matrixIds.push(i);
-    }
-    var tileGrid = new WMTSTileGrid({
-      origin: [extent[0], extent[3]],
-      resolutions: resolutions,
-      matrixIds: matrixIds,
-    });
-    const attribution =
-      '&copy; Data: <a style="color: black; text-decoration: underline;" href="https://www.swisstopo.admin.ch">swisstopo</a>';
+
     this.map = new Map({
       controls: defaultControls({
         attribution: true,
@@ -90,49 +83,7 @@ class PointComponent extends React.Component {
           collapsible: false,
         },
       }),
-      layers: [
-        new LayerGroup({
-          visible: !this.state.satellite,
-          layers: [
-            new TileLayer({
-              minResolution: 2.5,
-              source: new WMTS({
-                crossOrigin: "anonymous",
-                attributions: attribution,
-                url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.jpeg",
-                tileGrid: tileGrid,
-                projection: getProjection(this.srs),
-                layer: "ch.swisstopo.pixelkarte-farbe",
-                requestEncoding: "REST",
-              }),
-            }),
-            new TileLayer({
-              maxResolution: 2.5,
-              source: new WMTS({
-                crossOrigin: "anonymous",
-                attributions: attribution,
-                url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
-                tileGrid: tileGrid,
-                projection: getProjection(this.srs),
-                layer: "ch.swisstopo.swisstlm3d-karte-farbe",
-                requestEncoding: "REST",
-              }),
-            }),
-          ],
-        }),
-        new TileLayer({
-          visible: this.state.satellite,
-          source: new WMTS({
-            crossOrigin: "anonymous",
-            attributions: attribution,
-            url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.jpeg",
-            tileGrid: tileGrid,
-            projection: getProjection(this.srs),
-            layer: "ch.swisstopo.swissimage",
-            requestEncoding: "REST",
-          }),
-        }),
-      ],
+      layers: basemaps.map(b => b.layer),
       target: "point",
       view: new View({
         resolution: this.state.point !== null ? 1 : 500,
@@ -149,6 +100,7 @@ class PointComponent extends React.Component {
       new VectorLayer({
         source: this.position,
         style: this.styleFunction,
+        zIndex: 100,
       }),
     );
 
@@ -349,7 +301,6 @@ class PointComponent extends React.Component {
   };
 
   render() {
-    const { satellite } = this.state;
     const { isEditable } = this.props;
     return (
       <Segment
@@ -357,33 +308,6 @@ class PointComponent extends React.Component {
           padding: "0px",
           flex: "1 1 100%",
         }}>
-        <div
-          style={{
-            position: "absolute",
-            top: "6px",
-            left: "6px",
-            zIndex: "1",
-          }}>
-          <Button
-            active={satellite}
-            color="black"
-            onClick={() => {
-              this.setState(
-                {
-                  satellite: !satellite,
-                },
-                () => {
-                  const layers = this.map.getLayers().getArray();
-                  layers[0].setVisible(!this.state.satellite);
-                  layers[1].setVisible(this.state.satellite);
-                },
-              );
-            }}
-            size="mini"
-            toggle>
-            Satellite
-          </Button>
-        </div>
         <div
           className="stbg"
           id="point"
@@ -393,6 +317,7 @@ class PointComponent extends React.Component {
             height: 450,
           }}
         />
+        <BasemapSelector setState={this.setStateBound} marginBottom={"70px"} />
         <ZoomControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
         <div
           style={{

@@ -13,6 +13,7 @@ import { AlertBanner } from "./components/alert/alertBanner";
 import { DataCardProvider } from "./components/dataCard/dataCardContext.jsx";
 import { PromptProvider } from "./components/prompt/promptContext.jsx";
 import { Prompt } from "./components/prompt/prompt";
+import { BasemapProvider } from "./components/basemapSelector/basemapContext.tsx";
 
 const queryClient = new QueryClient();
 
@@ -40,33 +41,35 @@ class App extends React.Component {
             <PromptProvider>
               <Prompt />
               <DataCardProvider>
-                <ThemeProvider theme={theme}>
-                  <QueryClientProvider client={queryClient}>
-                    <Router>
-                      <Switch>
-                        <Route render={props => <SettingCmp {...props} />} key={1} path={"/setting"} />
-                        <Route
-                          render={props => {
-                            return <EditorComponent {...props} />;
-                          }}
-                          exact={false}
-                          key={0}
-                          path={"/"}
-                        />
-                        <Route
-                          component={() => (
-                            <Redirect
-                              to={{
-                                pathname: "/",
-                              }}
-                            />
-                          )}
-                        />
-                      </Switch>
-                    </Router>
-                    <ReactQueryDevtools />
-                  </QueryClientProvider>
-                </ThemeProvider>
+                <BasemapProvider>
+                  <ThemeProvider theme={theme}>
+                    <QueryClientProvider client={queryClient}>
+                      <Router>
+                        <Switch>
+                          <Route render={props => <SettingCmp {...props} />} key={1} path={"/setting"} />
+                          <Route
+                            render={props => {
+                              return <EditorComponent {...props} />;
+                            }}
+                            exact={false}
+                            key={0}
+                            path={"/"}
+                          />
+                          <Route
+                            component={() => (
+                              <Redirect
+                                to={{
+                                  pathname: "/",
+                                }}
+                              />
+                            )}
+                          />
+                        </Switch>
+                      </Router>
+                      <ReactQueryDevtools />
+                    </QueryClientProvider>
+                  </ThemeProvider>
+                </BasemapProvider>
               </DataCardProvider>
             </PromptProvider>
           </AlertProvider>

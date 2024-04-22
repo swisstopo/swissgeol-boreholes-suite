@@ -5,7 +5,6 @@ import { Map, View } from "ol";
 import TileLayer from "ol/layer/Tile";
 import TileWMS from "ol/source/TileWMS";
 import WMTSTileGrid from "ol/tilegrid/WMTS";
-import LayerGroup from "ol/layer/Group";
 import WMTS from "ol/source/WMTS";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
@@ -27,6 +26,9 @@ import ZoomControls from "./zoomControls";
 import LayerSelectControl from "./layerSelectControl";
 import Sidebar from "./sidebar";
 import NamePopup from "./namePopup";
+import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
+import { basemaps } from "../../components/basemapSelector/basemaps";
+import { BasemapContext } from "../../components/basemapSelector/basemapContext";
 
 const projections = {
   "EPSG:21781":
@@ -74,6 +76,7 @@ const outerSelectedStyle = new Style({
 });
 
 class MapComponent extends React.Component {
+  static contextType = BasemapContext;
   constructor(props) {
     super(props);
     this.sidebarRef = React.createRef();
@@ -82,6 +85,7 @@ class MapComponent extends React.Component {
     this.hover = this.hover.bind(this);
     this.updateDimensions = this.updateDimensions.bind(this);
     this.updateWidth = this.updateWidth.bind(this);
+    this.setStateBound = this.setState.bind(this);
     this.timeoutFilter = null;
     this.cnt = null;
     this.parser = new WMTSCapabilities();
@@ -90,7 +94,6 @@ class MapComponent extends React.Component {
       proj4.defs(srs, proj);
     });
     register(proj4);
-    this.layers = [];
     this.overlays = [];
     this.state = {
       counter: 0,
@@ -149,95 +152,20 @@ class MapComponent extends React.Component {
   }
 
   componentDidMount() {
+    this.basemaps = basemaps.map(b => b.layer);
+    this.setState({ basemap: basemaps.find(bm => bm.shortName === this.context.currentBasemapName) }, () => {
+      basemaps.forEach(bm => {
+        const isVisible = bm.shortName === this.context.currentBasemapName;
+        bm.layer.setVisible(isVisible);
+      });
+    });
+
     this.updateWidth();
     window.addEventListener("resize", this.updateWidth);
-    var resolutions = [
-      4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250, 1000, 750, 650, 500, 250, 100, 50, 20, 10,
-      5, 2.5, 2, 1.5, 1, 0.5,
-    ];
     const extent = [2420000, 1030000, 2900000, 1350000];
     const center = [(extent[2] - extent[0]) / 2 + extent[0], (extent[3] - extent[1]) / 2 + extent[1]];
     const projection = getProjection(this.srs);
     projection.setExtent(extent);
-    const matrixIds = [];
-    for (var i = 0; i < resolutions.length; i++) {
-      matrixIds.push(i);
-    }
-    var tileGrid = new WMTSTileGrid({
-      origin: [extent[0], extent[3]],
-      resolutions: resolutions,
-      matrixIds: matrixIds,
-    });
-    const attribution =
-      '&copy; Data: <a style="color: black; text-decoration: underline;" href="https://www.swisstopo.admin.ch">swisstopo</a>';
-
-    this.layers = [
-      new LayerGroup({
-        visible: this.state.basemap === "colormap",
-        name: "colormap",
-        zIndex: 0,
-        layers: [
-          new TileLayer({
-            minResolution: 2.5,
-            source: new WMTS({
-              crossOrigin: "anonymous",
-              dimensions: {
-                Time: "current",
-              },
-              attributions: attribution,
-              url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/{Time}/2056/{TileMatrix}/{TileCol}/{TileRow}.jpeg",
-              tileGrid: tileGrid,
-              projection: getProjection(this.srs),
-              layer: "ch.swisstopo.pixelkarte-farbe",
-              requestEncoding: "REST",
-            }),
-          }),
-          new TileLayer({
-            maxResolution: 2.5,
-            source: new WMTS({
-              crossOrigin: "anonymous",
-              dimensions: {
-                Time: "current",
-              },
-              attributions: attribution,
-              url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/{Time}/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
-              tileGrid: tileGrid,
-              projection: getProjection(this.srs),
-              layer: "ch.swisstopo.swisstlm3d-karte-farbe",
-              requestEncoding: "REST",
-            }),
-          }),
-        ],
-      }),
-      new TileLayer({
-        visible: this.state.basemap === "greymap",
-        name: "greymap",
-        zIndex: 1,
-        source: new WMTS({
-          crossOrigin: "anonymous",
-          attributions: attribution,
-          url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.jpeg",
-          tileGrid: tileGrid,
-          projection: getProjection(this.srs),
-          layer: "ch.swisstopo.pixelkarte-grau",
-          requestEncoding: "REST",
-        }),
-      }),
-      new TileLayer({
-        visible: this.state.basemap === "satellite",
-        name: "satellite",
-        zIndex: 2,
-        source: new WMTS({
-          crossOrigin: "anonymous",
-          attributions: attribution,
-          url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.jpeg",
-          tileGrid: tileGrid,
-          projection: getProjection(this.srs),
-          layer: "ch.swisstopo.swissimage",
-          requestEncoding: "REST",
-        }),
-      }),
-    ];
 
     this.map = new Map({
       controls: defaultControls({
@@ -249,7 +177,7 @@ class MapComponent extends React.Component {
           collapseLabel: "",
         },
       }),
-      layers: this.layers,
+      layers: this.basemaps,
       target: "map",
       view: new View({
         maxResolution: 611,
@@ -284,7 +212,7 @@ class MapComponent extends React.Component {
                 // Countries have transparency, so do not fade tiles:
                 transition: 0,
               }),
-              zIndex: layer.position + this.layers.length + 1,
+              zIndex: layer.position + this.basemaps.length + 1,
             }),
           );
         } else if (layer.type === "WMTS") {
@@ -321,7 +249,7 @@ class MapComponent extends React.Component {
             const clusterLayer = new VectorLayer({
               source: clusterSource,
               name: "clusters",
-              zIndex: this.overlays.length + this.layers.length + 1,
+              zIndex: this.overlays.length + this.basemaps.length + 1,
               style: features => {
                 const size = features.get("features").length;
                 return this.clusterStyleFunction(size);
@@ -332,7 +260,7 @@ class MapComponent extends React.Component {
             // Display original point layer for resolutions <= 20.
             const pointLayer = new VectorLayer({
               name: "points",
-              zIndex: this.overlays.length + this.layers.length + 1,
+              zIndex: this.overlays.length + this.basemaps.length + 1,
               source: this.points,
               style: this.styleFunction.bind(this),
               maxResolution: 20,
@@ -434,7 +362,7 @@ class MapComponent extends React.Component {
         if ((layer.get("name") !== undefined) & (layer.get("name") === identifier)) {
           layer.setVisible(layers[identifier].visibility);
           layer.setOpacity(1 - layers[identifier].transparency / 100);
-          layer.setZIndex(layers[identifier].position + this.layers.length + 1);
+          layer.setZIndex(layers[identifier].position + this.basemaps.length + 1);
         }
       }
     }
@@ -806,12 +734,13 @@ class MapComponent extends React.Component {
           flexDirection: "row",
           backgroundColor: "#F2F2EF",
         }}>
-        <LayerSelectControl onShowLayerSelection={this.onShowLayerSelection} sidebarWidth={this.state.sidebarWidth} />
+        {Object.keys(this.props.layers).length !== 0 && (
+          <LayerSelectControl onShowLayerSelection={this.onShowLayerSelection} sidebarWidth={this.state.sidebarWidth} />
+        )}
         <Sidebar
           sidebarRef={this.sidebarRef}
           state={this.state}
           setState={this.setState.bind(this)}
-          layers={this.layers}
           additionalMapLayers={this.props.layers}
         />
         <Box
@@ -825,6 +754,7 @@ class MapComponent extends React.Component {
           }}
         />
         <NamePopup state={this.state}></NamePopup>
+        <BasemapSelector setState={this.setStateBound} marginBottom={"30px"} />
         <ZoomControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
       </Box>
     );
