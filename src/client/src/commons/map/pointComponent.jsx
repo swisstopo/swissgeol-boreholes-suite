@@ -4,10 +4,6 @@ import _ from "lodash";
 import { Map, View } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import Stroke from "ol/style/Stroke";
-import Fill from "ol/style/Fill";
-import Style from "ol/style/Style";
-import Circle from "ol/style/Circle";
 import Draw from "ol/interaction/Draw";
 import Modify from "ol/interaction/Modify";
 import Point from "ol/geom/Point";
@@ -23,17 +19,8 @@ import ZoomControls from "./zoomControls";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
 import { basemaps } from "../../components/basemapSelector/basemaps";
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
-
-const projections = {
-  "EPSG:21781":
-    "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs",
-  "EPSG:2056":
-    "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs",
-  "EPSG:21782":
-    "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=0 +y_0=0 +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +units=m +no_defs",
-  "EPSG:4149": "+proj=longlat +ellps=bessel +towgs84=674.4,15.1,405.3,0,0,0,0 +no_defs",
-  "EPSG:4150": "+proj=longlat +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +no_defs",
-};
+import { projections } from "../../commons/map/mapProjections";
+import { detailMapStyleFunction } from "../../commons/map/mapStyleFunctions";
 
 class PointComponent extends React.Component {
   static contextType = BasemapContext;
@@ -41,7 +28,7 @@ class PointComponent extends React.Component {
     super(props);
     this.lh = false; // loading location queue
     this.changefeature = this.updatePointAndGetAddress.bind(this);
-    this.styleFunction = this.styleFunction.bind(this);
+    this.detailMapStyleFunction = detailMapStyleFunction.bind(this);
     this.getAddress = this.getAddress.bind(this);
     this.setStateBound = this.setState.bind(this);
     this.srs = "EPSG:2056";
@@ -99,7 +86,9 @@ class PointComponent extends React.Component {
     this.map.addLayer(
       new VectorLayer({
         source: this.position,
-        style: this.styleFunction,
+        style: feature => {
+          return this.detailMapStyleFunction(feature, this.props.highlighted);
+        },
         zIndex: 100,
       }),
     );
@@ -264,22 +253,6 @@ class PointComponent extends React.Component {
       }.bind(this),
       500,
     );
-  }
-
-  styleFunction(feature) {
-    const { highlighted } = this.props;
-
-    let selected = highlighted !== undefined && highlighted.indexOf(feature.getId()) > -1;
-
-    let conf = {
-      image: new Circle({
-        radius: selected ? 10 : 6,
-        fill: selected ? new Fill({ color: "rgba(255, 0, 0, 0.8)" }) : new Fill({ color: "rgba(0, 255, 0, 1)" }),
-        stroke: new Stroke({ color: "black", width: 1 }),
-      }),
-    };
-
-    return [new Style(conf)];
   }
 
   onZoomIn = () => {
