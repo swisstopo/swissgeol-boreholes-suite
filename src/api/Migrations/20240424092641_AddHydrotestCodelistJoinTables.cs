@@ -4,6 +4,7 @@
 
 namespace BDMS.Migrations;
 
+#pragma warning disable CA1505S
 /// <inheritdoc />
 public partial class AddHydrotestCodelistJoinTables : Migration
 {
@@ -143,3 +144,4 @@ public partial class AddHydrotestCodelistJoinTables : Migration
             column: "codelist_id");
     }
 }
+#pragma warning restore CA1505
