@@ -241,23 +241,71 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Layer>().HasOne(l => l.UscsDetermination).WithMany().HasForeignKey(l => l.UscsDeterminationId);
 
         modelBuilder.Entity<Codelist>().Ignore(c => c.Layers);
+        modelBuilder.Entity<Codelist>().Ignore(c => c.Hydrotests);
 
         modelBuilder.Entity<WaterIngress>().ToTable("water_ingress").HasBaseType<Observation>();
 
         modelBuilder.Entity<Hydrotest>().ToTable("hydrotest").HasBaseType<Observation>();
+
+        // Join table for hydrotest and codelists with schema name 'hydrotest_kind'
         modelBuilder.Entity<Hydrotest>()
-            .HasMany(l => l.Codelists)
-            .WithMany(c => c.Hydrotests)
-            .UsingEntity<HydrotestCodelist>(
+            .HasMany(l => l.KindCodelists)
+            .WithMany()
+            .UsingEntity<HydrotestKindCode>(
                 j => j
-                    .HasOne(lc => lc.Codelist)
-                    .WithMany(c => c.HydrotestCodelists)
-                    .HasForeignKey(lc => lc.CodelistId),
+                    .HasOne(hc => hc.Codelist)
+                    .WithMany(c => c.HydrotestKindCodes)
+                    .HasForeignKey(hc => hc.CodelistId),
                 j => j
-                    .HasOne(lc => lc.Hydrotest)
-                    .WithMany(b => b.HydrotestCodelists)
-                    .HasForeignKey(l => l.HydrotestId),
-                j => j.HasKey(lc => new { lc.HydrotestId, lc.CodelistId }));
+                    .HasOne(hc => hc.Hydrotest)
+                    .WithMany(h => h.HydrotestKindCodes)
+                    .HasForeignKey(hc => hc.HydrotestId),
+                j => j.HasKey(hc => new { hc.HydrotestId, hc.CodelistId }));
+
+        // Join table for hydrotest and codelists with schema name 'hydrotest_flowdirection'
+        modelBuilder.Entity<Hydrotest>()
+            .HasMany(l => l.FlowDirectionCodelists)
+            .WithMany()
+            .UsingEntity<HydrotestFlowDirectionCode>(
+                j => j
+                    .HasOne(hc => hc.Codelist)
+                    .WithMany(c => c.HydrotestFlowDirectionCodes)
+                    .HasForeignKey(hc => hc.CodelistId),
+                j => j
+                    .HasOne(hc => hc.Hydrotest)
+                    .WithMany(h => h.HydrotestFlowDirectionCodes)
+                    .HasForeignKey(hc => hc.HydrotestId),
+                j => j.HasKey(hc => new { hc.HydrotestId, hc.CodelistId }));
+
+        // Join table for hydrotest and codelists with schema name 'hydrotest_result'
+        modelBuilder.Entity<Hydrotest>()
+            .HasMany(l => l.ResultParameterCodelists)
+            .WithMany()
+            .UsingEntity<HydrotestResultParameterCode>(
+                j => j
+                    .HasOne(hc => hc.Codelist)
+                    .WithMany(c => c.HydrotestResultParameterCodes)
+                    .HasForeignKey(hc => hc.CodelistId),
+                j => j
+                    .HasOne(hc => hc.Hydrotest)
+                    .WithMany(h => h.HydrotestResultParameterCodes)
+                    .HasForeignKey(hc => hc.HydrotestId),
+                j => j.HasKey(hc => new { hc.HydrotestId, hc.CodelistId }));
+
+        // Join table for hydrotest and codelists with schema name 'hydrotest_evaluationmethod'.
+        modelBuilder.Entity<Hydrotest>()
+            .HasMany(l => l.EvaluationMethodCodelists)
+            .WithMany()
+            .UsingEntity<HydrotestEvaluationMethodCode>(
+                j => j
+                    .HasOne(hc => hc.Codelist)
+                    .WithMany(c => c.HydrotestEvaluationMethodCodes)
+                    .HasForeignKey(hc => hc.CodelistId),
+                j => j
+                    .HasOne(hc => hc.Hydrotest)
+                    .WithMany(h => h.HydrotestEvaluationMethodCodes)
+                    .HasForeignKey(hc => hc.HydrotestId),
+                j => j.HasKey(hc => new { hc.HydrotestId, hc.CodelistId }));
 
         modelBuilder.Entity<GroundwaterLevelMeasurement>().ToTable("groundwater_level_measurement").HasBaseType<Observation>();
 
