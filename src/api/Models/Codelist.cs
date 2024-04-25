@@ -195,10 +195,4 @@ public class Codelist : IIdentifyable
     /// </summary>
     [JsonIgnore]
     public ICollection<HydrotestKindCode>? HydrotestKindCodes { get; set; }
-
-    /// <summary>
-    /// Gets the <see cref="HydrotestResultParameterCode"/> join table entities.
-    /// </summary>
-    [JsonIgnore]
-    public ICollection<HydrotestResultParameterCode>? HydrotestResultParameterCodes { get; set; }
 }

@@ -29,12 +29,6 @@ public partial class DatamigrationHydrotestCodelistJoinTable : Migration
             FROM bdms.hydrotest_codelist hc
             JOIN bdms.codelist cl ON hc.id_cli_fk = cl.id_cli
             WHERE cl.schema_cli = 'hydrotest_evaluationmethod';
-
-            INSERT INTO bdms.hydrotest_result_codelist (hydrotest_id, codelist_id)
-            SELECT hc.id_ht_fk, hc.id_cli_fk
-            FROM bdms.hydrotest_codelist hc
-            JOIN bdms.codelist cl ON hc.id_cli_fk = cl.id_cli
-            WHERE cl.schema_cli = 'hydrotest_result';
             ");
 
         migrationBuilder.DropTable(

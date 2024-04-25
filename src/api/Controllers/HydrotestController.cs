@@ -28,7 +28,6 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
             .Include(h => h.KindCodelists)
             .Include(h => h.FlowDirectionCodelists)
             .Include(h => h.EvaluationMethodCodelists)
-            .Include(h => h.ResultParameterCodelists)
             .Include(h => h.Reliability)
             .Include(h => h.Casing)
             .ThenInclude(c => c.Completion)
@@ -102,7 +101,6 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
             hydrotest.KindCodelists = await GetCodelists((List<int>)hydrotest.KindCodelistIds!).ConfigureAwait(false);
             hydrotest.FlowDirectionCodelists = await GetCodelists((List<int>)hydrotest.FlowDirectionCodelistIds!).ConfigureAwait(false);
             hydrotest.EvaluationMethodCodelists = await GetCodelists((List<int>)hydrotest.EvaluationMethodCodelistIds!).ConfigureAwait(false);
-            hydrotest.ResultParameterCodelists = await GetCodelists((List<int>)hydrotest.ResultParameterCodelistIds!).ConfigureAwait(false);
 
             if (!AreHydrotestCodelistsCompatible(hydrotest))
             {
@@ -136,7 +134,6 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
         .Include(h => h.KindCodelists)
         .Include(h => h.FlowDirectionCodelists)
         .Include(h => h.EvaluationMethodCodelists)
-        .Include(h => h.ResultParameterCodelists)
         .Include(h => h.HydrotestResults)
         .SingleOrDefaultAsync(w => w.Id == id).ConfigureAwait(false);
     }
@@ -147,7 +144,6 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
         target.KindCodelists = source.KindCodelists;
         target.FlowDirectionCodelists = source.FlowDirectionCodelists;
         target.EvaluationMethodCodelists = source.EvaluationMethodCodelists;
-        target.ResultParameterCodelists = source.ResultParameterCodelists;
         target.HydrotestResults = source.HydrotestResults;
     }
 
@@ -160,8 +156,7 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
 
     private bool AreCodelistIdsPresent(Hydrotest hydrotest)
     {
-        return hydrotest.KindCodelistIds?.Count > 0 || hydrotest.FlowDirectionCodelistIds?.Count > 0
-            || hydrotest.EvaluationMethodCodelistIds?.Count > 0 || hydrotest.ResultParameterCodelistIds?.Count > 0;
+        return hydrotest.KindCodelistIds?.Count > 0 || hydrotest.FlowDirectionCodelistIds?.Count > 0 || hydrotest.EvaluationMethodCodelistIds?.Count > 0;
     }
 
     private bool AreHydrotestCodelistsCompatible(Hydrotest hydrotest)

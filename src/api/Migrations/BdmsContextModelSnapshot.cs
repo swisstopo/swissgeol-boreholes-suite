@@ -1058,23 +1058,6 @@ namespace BDMS.Migrations
                     b.ToTable("hydrotest_result", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.HydrotestResultParameterCode", b =>
-                {
-                    b.Property<int>("HydrotestId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hydrotest_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("codelist_id");
-
-                    b.HasKey("HydrotestId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("hydrotest_result_codelist", "bdms");
-                });
-
             modelBuilder.Entity("BDMS.Models.Instrumentation", b =>
                 {
                     b.Property<int>("Id")
@@ -2609,25 +2592,6 @@ namespace BDMS.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
-            modelBuilder.Entity("BDMS.Models.HydrotestResultParameterCode", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("HydrotestResultParameterCodes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Hydrotest", "Hydrotest")
-                        .WithMany("HydrotestResultParameterCodes")
-                        .HasForeignKey("HydrotestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("Hydrotest");
-                });
-
             modelBuilder.Entity("BDMS.Models.Instrumentation", b =>
                 {
                     b.HasOne("BDMS.Models.Casing", "Casing")
@@ -3229,8 +3193,6 @@ namespace BDMS.Migrations
 
                     b.Navigation("HydrotestKindCodes");
 
-                    b.Navigation("HydrotestResultParameterCodes");
-
                     b.Navigation("LayerColorCodes");
 
                     b.Navigation("LayerDebrisCodes");
@@ -3315,8 +3277,6 @@ namespace BDMS.Migrations
                     b.Navigation("HydrotestFlowDirectionCodes");
 
                     b.Navigation("HydrotestKindCodes");
-
-                    b.Navigation("HydrotestResultParameterCodes");
 
                     b.Navigation("HydrotestResults");
                 });

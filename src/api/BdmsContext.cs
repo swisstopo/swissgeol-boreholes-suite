@@ -277,21 +277,6 @@ public class BdmsContext : DbContext
                     .HasForeignKey(hc => hc.HydrotestId),
                 j => j.HasKey(hc => new { hc.HydrotestId, hc.CodelistId }));
 
-        // Join table for hydrotest and codelists with schema name 'hydrotest_result'
-        modelBuilder.Entity<Hydrotest>()
-            .HasMany(l => l.ResultParameterCodelists)
-            .WithMany()
-            .UsingEntity<HydrotestResultParameterCode>(
-                j => j
-                    .HasOne(hc => hc.Codelist)
-                    .WithMany(c => c.HydrotestResultParameterCodes)
-                    .HasForeignKey(hc => hc.CodelistId),
-                j => j
-                    .HasOne(hc => hc.Hydrotest)
-                    .WithMany(h => h.HydrotestResultParameterCodes)
-                    .HasForeignKey(hc => hc.HydrotestId),
-                j => j.HasKey(hc => new { hc.HydrotestId, hc.CodelistId }));
-
         // Join table for hydrotest and codelists with schema name 'hydrotest_evaluationmethod'.
         modelBuilder.Entity<Hydrotest>()
             .HasMany(l => l.EvaluationMethodCodelists)

@@ -42,17 +42,6 @@ public class Hydrotest : Observation
     public ICollection<Codelist>? EvaluationMethodCodelists { get; set; }
 
     /// <summary>
-    /// Gets or sets the codelist ids with schema name 'hydrotest_result' of the <see cref="Hydrotest"/>'s many to many codelist relations.
-    /// </summary>
-    [NotMapped]
-    public ICollection<int>? ResultParameterCodelistIds { get; set; } = new List<int>();
-
-    /// <summary>
-    /// Gets the <see cref="Codelist"/>s with schema name 'hydrotest_result' used by the <see cref="Hydrotest"/>.
-    /// </summary>
-    public ICollection<Codelist>? ResultParameterCodelists { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="HydrotestKindCode"/> join table entities.
     /// </summary>
     [JsonIgnore]
@@ -69,12 +58,6 @@ public class Hydrotest : Observation
     /// </summary>
     [JsonIgnore]
     public IList<HydrotestFlowDirectionCode>? HydrotestFlowDirectionCodes { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="HydrotestResultParameterCode"/> join table entities.
-    /// </summary>
-    [JsonIgnore]
-    public IList<HydrotestResultParameterCode>? HydrotestResultParameterCodes { get; set; }
 
     /// <summary>
     /// Gets the <see cref="HydrotestResult"/>s associated with the <see cref="Hydrotest"/>.
