@@ -35,9 +35,7 @@ const HydrotestInput = props => {
   });
   const [units, setUnits] = useState({});
 
-  const [hydrotestKindIds, setHydrotestKindIds] = useState(
-    item?.codelists?.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestKind).map(c => c.id) || [],
-  );
+  const [hydrotestKindIds, setHydrotestKindIds] = useState(item?.kindCodelists?.map(c => c.id) || []);
   const filteredTestKindDomains = useHydrotestDomains(hydrotestKindIds);
 
   useEffect(() => {
@@ -157,15 +155,14 @@ const HydrotestInput = props => {
     data.type = ObservationType.fieldMeasurement;
     data.boreholeId = parentId;
 
-    data.codelistIds = [];
     if (Array.isArray(data.testKindId)) {
-      data.codelistIds = [...data.codelistIds, ...data.testKindId];
+      data.kindCodelistIds = data.testKindId;
     }
     if (Array.isArray(data.flowDirectionId)) {
-      data.codelistIds = [...data.codelistIds, ...data.flowDirectionId];
+      data.flowDirectionCodelistIds = data.flowDirectionId;
     }
     if (Array.isArray(data.evaluationMethodId)) {
-      data.codelistIds = [...data.codelistIds, ...data.evaluationMethodId];
+      data.evaluationMethodCodelistIds = data.evaluationMethodId;
     }
 
     if (data.hydrotestResults) {
@@ -218,10 +215,7 @@ const HydrotestInput = props => {
                 label="hydrotestKind"
                 tooltipLabel="hydrotestResultsWillBeDeleted"
                 required={true}
-                selected={
-                  item?.codelists?.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestKind).map(c => c.id) ||
-                  []
-                }
+                selected={item?.kindCodelists?.map(c => c.id) || []}
                 values={domains?.data
                   ?.filter(d => d.schema === hydrogeologySchemaConstants.hydrotestKind)
                   .sort((a, b) => a.order - b.order)
@@ -233,11 +227,7 @@ const HydrotestInput = props => {
               <FormMultiSelect
                 fieldName="flowDirectionId"
                 label="flowDirection"
-                selected={
-                  item?.codelists
-                    ?.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestFlowDirection)
-                    .map(c => c.id) || []
-                }
+                selected={item?.flowDirectionCodelists?.map(c => c.id) || []}
                 disabled={
                   !!formMethods.formState.errors?.testKindId ||
                   !filteredTestKindDomains?.data?.filter(
@@ -257,11 +247,7 @@ const HydrotestInput = props => {
               <FormMultiSelect
                 fieldName="evaluationMethodId"
                 label="evaluationMethod"
-                selected={
-                  item?.codelists
-                    ?.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestEvaluationMethod)
-                    .map(c => c.id) || []
-                }
+                selected={item?.evaluationMethodCodelists?.map(c => c.id) || []}
                 disabled={
                   !!formMethods.formState.errors?.testKindId ||
                   !filteredTestKindDomains?.data?.filter(
