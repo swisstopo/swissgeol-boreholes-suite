@@ -14,6 +14,8 @@ Folgende Komponenten müssen auf dem Entwicklungsrechner installiert sein:
 ✔️ Node.js 20 LTS  
 ✔️ Optional, um die Onlinehilfe zu erstellen: [MkDocs](https://www.mkdocs.org/)
 
+Damit die Launch Settings für _docker-compose_ korrekt geladen werden, mit Rechtsklick auf dem Projekt _Manage Docker Compose Launch Settings_ öffnen, warten bis alle Services geladen sind und dann speichern.
+
 ### Entwicklung mit Visual Studio 2022
 
 Es wird eine lokale Installation von Node.js benötigt. Diese kann mit Visual Studio 2022 oder mit [nvm](https://github.com/coreybutler/nvm-windows/releases) installiert werden, um mehrere Node Version zu verwalten. Anschliessend kann mit `nvm use` die im Projekt verwendete Node Version aktiviert werden.
@@ -26,8 +28,6 @@ In VS 2022 müssen mehrere Startup-Projects angewählt werden, um die komplette 
 | BDMS.Client    | Start                   |
 | BDMS.Test      | None                    |
 | docker-compose | Start without debugging |
-
-⚠️ Möglicherweise wird das LaunchProfile von Docker Compose beim ersten Start nicht angewendet und deshalb API sowie Client zusätzlich im Docker gestartet. Dann muss das Projekt _docker-compose_ einmalig als Startprojekt ausgewählt werden. Anschliessend kann wieder auf _Multiple startup projects_ umgestellt werden.
 
 ### Entwicklung mit Docker
 
@@ -59,13 +59,13 @@ Die Applikation nutzt das OpenID Connect (OIDC) Protokoll für die Authentifizie
 
 Die Applikation benötigt für die Authentifizierung und Autorisierung eine gültige OIDC-Konfiguration. Diese Konfiguration wird ausschliesslich in BDMS.Api benötigt. Sie wird über `/api/v2/settings/auth` dem Client zur Verfügung gestellt. Die Werte werden durch den OIDC Server vergeben. Die folgenden Konfigurationen müssen gesetzt werden:
 
-| Parameter | Beschreibung |
-| :-- | :-- |
-| Auth:Authority | Die URL des OpenID Connect Servers. Es ist vorausgesetzt, dass der Server ein gültiges [OpenID Connect Discovery Dokument](https://openid.net/specs/openid-connect-discovery-1_0.html) zur Verfügung stellt. |
-| Auth:Audience | Der Wert des `aud` Claims, welcher in den `identity_token` des [OIDC Servers](https://openid.net/specs/openid-connect-core-1_0.html#IDToken) enthalten ist. Die Audience wird als `client_id` verwendet beim Authentifizieren auf dem OIDC Endpunkt. |
-| Auth:Scopes | Die benötigten Scopes, welche beim Authentifizieren auf dem OIDC Endpunkt angefragt werden. Default: `openid profile` |
-| Auth:GroupClaimType | Der Name des Claims, welcher die Gruppenzugehörigkeit des Benutzers enthält. Default: `cognito:groups` |
-| Auth:AuthorizedGroupName | Der Name der Gruppe, welche autorisiert ist, um auf die API zuzugreifen. |
+| Parameter                | Beschreibung                                                                                                                                                                                                                                         |
+| :----------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Auth:Authority           | Die URL des OpenID Connect Servers. Es ist vorausgesetzt, dass der Server ein gültiges [OpenID Connect Discovery Dokument](https://openid.net/specs/openid-connect-discovery-1_0.html) zur Verfügung stellt.                                         |
+| Auth:Audience            | Der Wert des `aud` Claims, welcher in den `identity_token` des [OIDC Servers](https://openid.net/specs/openid-connect-core-1_0.html#IDToken) enthalten ist. Die Audience wird als `client_id` verwendet beim Authentifizieren auf dem OIDC Endpunkt. |
+| Auth:Scopes              | Die benötigten Scopes, welche beim Authentifizieren auf dem OIDC Endpunkt angefragt werden. Default: `openid profile`                                                                                                                                |
+| Auth:GroupClaimType      | Der Name des Claims, welcher die Gruppenzugehörigkeit des Benutzers enthält. Default: `cognito:groups`                                                                                                                                               |
+| Auth:AuthorizedGroupName | Der Name der Gruppe, welche autorisiert ist, um auf die API zuzugreifen.                                                                                                                                                                             |
 
 ### Legacy API Authentifizierung
 
