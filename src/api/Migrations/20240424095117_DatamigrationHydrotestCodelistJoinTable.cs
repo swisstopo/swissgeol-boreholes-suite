@@ -4,7 +4,7 @@
 
 namespace BDMS.Migrations;
 
-#pragma warning disable CA1505S
+#pragma warning disable CA1505
 /// <inheritdoc />
 public partial class DatamigrationHydrotestCodelistJoinTable : Migration
 {
@@ -40,4 +40,4 @@ public partial class DatamigrationHydrotestCodelistJoinTable : Migration
             schema: "bdms");
     }
 }
-#pragma warning restore CA1505S
+#pragma warning restore CA1505

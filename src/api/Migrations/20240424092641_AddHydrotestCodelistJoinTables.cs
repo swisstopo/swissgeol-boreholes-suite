@@ -4,7 +4,7 @@
 
 namespace BDMS.Migrations;
 
-#pragma warning disable CA1505S
+#pragma warning disable CA1505
 /// <inheritdoc />
 public partial class AddHydrotestCodelistJoinTables : Migration
 {
