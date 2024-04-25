@@ -393,6 +393,8 @@ class MapComponent extends React.Component {
           });
       }, 500);
       this.refreshPoints();
+      this.map.updateSize();
+      view.getResolution() < 1 && view.setResolution(1);
     }
   }
 
@@ -444,9 +446,6 @@ class MapComponent extends React.Component {
     if (!_.isEqual(searchState.filter, prevProps.searchState.filter)) {
       this.handleFilter(searchState, prevProps.searchState, view);
     }
-
-    this.map.updateSize();
-    view.getResolution() < 1 && view.setResolution(1);
   }
 
   componentWillUnmount() {
