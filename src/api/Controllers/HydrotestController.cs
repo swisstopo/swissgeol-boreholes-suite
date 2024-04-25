@@ -166,10 +166,9 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
 
     private bool AreHydrotestCodelistsCompatible(Hydrotest hydrotest)
     {
-
         var hydrotestCodelists = Context.Codelists
-        .Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema 
-                || c.Schema == HydrogeologySchemas.FlowdirectionSchema 
+        .Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema
+                || c.Schema == HydrogeologySchemas.FlowdirectionSchema
                 || c.Schema == HydrogeologySchemas.EvaluationMethodSchema).ToList();
 
         // Get the Geolcodes associated with the TestKindIds.
