@@ -339,7 +339,7 @@ class MapComponent extends React.Component {
 
   handleHighlights(currentHighlights, hoverCallback, previousHighlights) {
     if (!this.points || _.isEqual(currentHighlights, previousHighlights)) {
-      return false;
+      return;
     }
 
     // Clear any existing popups
@@ -356,48 +356,43 @@ class MapComponent extends React.Component {
     } else {
       this.clearFeatureHighlight(hoverCallback);
     }
+    this.points.changed(); // forces the layer to redraw and apply the hover style.
   }
 
   setFeatureHighlight(feature, hoverCallback) {
-    this.setState({ hover: feature }, () => {
-      if (hoverCallback) {
-        hoverCallback(feature.getId());
-      }
-    });
+    if (hoverCallback) {
+      hoverCallback(feature.getId());
+    }
   }
 
   clearFeatureHighlight(hoverCallback) {
-    this.setState({ hover: null }, () => {
-      if (hoverCallback) {
-        hoverCallback(null);
-      }
-    });
+    if (hoverCallback) {
+      hoverCallback(null);
+    }
   }
 
   handleFilter(searchState, previousSearchState, view) {
-    if (!_.isEqual(searchState.filter, previousSearchState.filter)) {
-      if (_.isEqual(searchState.filter.extent, previousSearchState.filter.extent)) {
-        if (this.timeoutFilter !== null) {
-          clearTimeout(this.timeoutFilter);
-        }
-        this.timeoutFilter = setTimeout(() => {
-          this.points.clear(true);
-          getGeojson(searchState.filter)
-            .then(
-              function (response) {
-                if (response.data.success) {
-                  this.points.addFeatures(new GeoJSON().readFeatures(response.data.data));
-                  view.fit(this.points.getExtent());
-                  this.moveEnd();
-                }
-              }.bind(this),
-            )
-            .catch(function (error) {
-              console.log(error);
-            });
-        }, 500);
-        return true;
+    if (_.isEqual(searchState.filter.extent, previousSearchState.filter.extent)) {
+      if (this.timeoutFilter !== null) {
+        clearTimeout(this.timeoutFilter);
       }
+      this.timeoutFilter = setTimeout(() => {
+        this.points.clear(true);
+        getGeojson(searchState.filter)
+          .then(
+            function (response) {
+              if (response.data.success) {
+                this.points.addFeatures(new GeoJSON().readFeatures(response.data.data));
+                view.fit(this.points.getExtent());
+                this.moveEnd();
+              }
+            }.bind(this),
+          )
+          .catch(function (error) {
+            console.log(error);
+          });
+      }, 500);
+      this.refreshPoints();
     }
   }
 
@@ -443,9 +438,12 @@ class MapComponent extends React.Component {
       this.updateLayerProperties(layers);
     }
 
-    let refresh = this.handleHighlights(highlighted, hoverCallback, prevProps.highlighted);
-    refresh = this.handleFilter(searchState, prevProps.searchState, view);
-    refresh && this.refreshPoints();
+    if (!_.isEqual(prevProps.highlighted, highlighted)) {
+      this.handleHighlights(highlighted, hoverCallback, prevProps.highlighted);
+    }
+    if (!_.isEqual(searchState.filter, prevProps.searchState.filter)) {
+      this.handleFilter(searchState, prevProps.searchState, view);
+    }
 
     this.map.updateSize();
     view.getResolution() < 1 && view.setResolution(1);
@@ -493,31 +491,42 @@ class MapComponent extends React.Component {
   }
 
   onHover(e) {
+    // Only display popover if hover selection contains one single feature and is not a cluster point.
+    if (e.selected?.length === 1 && !e.selected[0].values_.features) {
+      this.displayPopup(e.selected);
+    } else {
+      this.removePopup();
+    }
+  }
+
+  removePopup() {
     const { hover: hoverCallback } = this.props;
     if (hoverCallback !== undefined) {
-      // Only display popover if hover selection contains one single feature and is not a cluster point.
-      if (e.selected?.length === 1 && !e.selected[0].values_.features) {
-        const singleFeature = e.selected[0];
-        this.setState(
-          {
-            hover: singleFeature,
-          },
-          () => {
-            this.popup.setPosition(singleFeature.getGeometry().getCoordinates());
-            hoverCallback(singleFeature.getId());
-          },
-        );
-      } else {
-        this.setState(
-          {
-            hover: null,
-          },
-          () => {
-            this.popup.setPosition(undefined);
-            hoverCallback(null);
-          },
-        );
-      }
+      this.setState(
+        {
+          hover: null,
+        },
+        () => {
+          this.popup.setPosition(undefined);
+          hoverCallback(null);
+        },
+      );
+    }
+  }
+
+  displayPopup(selection) {
+    const { hover: hoverCallback } = this.props;
+    if (hoverCallback !== undefined) {
+      const singleFeature = selection[0];
+      this.setState(
+        {
+          hover: singleFeature,
+        },
+        () => {
+          this.popup.setPosition(singleFeature.getGeometry().getCoordinates());
+          hoverCallback(singleFeature.getId());
+        },
+      );
     }
   }
 
