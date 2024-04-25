@@ -54,7 +54,6 @@ class MapComponent extends React.Component {
     this.setFeatureHighlight = this.setFeatureHighlight.bind(this);
     this.clearFeatureHighlight = this.clearFeatureHighlight.bind(this);
     this.updateLayerProperties = this.updateLayerProperties.bind(this);
-    this.handleCenterto = this.handleCenterto.bind(this);
     this.onZoomIn = this.onZoomIn.bind(this);
     this.onZoomOut = this.onZoomOut.bind(this);
     this.onFitToExtent = this.onFitToExtent.bind(this);
@@ -421,22 +420,6 @@ class MapComponent extends React.Component {
     });
   }
 
-  handleCenterto(centerto, prevProps, zoomto, view) {
-    if (centerto !== null && centerto !== prevProps.centerto) {
-      let feature = this.points.getFeatureById(centerto);
-      if (feature !== null) {
-        var point = feature.getGeometry();
-        if (zoomto === true) {
-          view.fit(point, { minResolution: 1 });
-        } else {
-          view.setCenter(point.getCoordinates());
-        }
-      } else {
-        console.error("Feature not found.");
-      }
-    }
-  }
-
   //////  COMPONENT HOOKS //////
   componentDidMount() {
     this.loadBasemaps();
@@ -452,8 +435,9 @@ class MapComponent extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { centerto, searchState, highlighted, hover: hoverCallback, layers, zoomto } = this.props;
+    const { searchState, highlighted, hover: hoverCallback, layers } = this.props;
     const view = this.map.getView();
+
     if (Object.keys(layers).length !== 0) {
       this.addUserLayers(view.getProjection().getExtent());
       this.updateLayerProperties(layers);
@@ -463,7 +447,6 @@ class MapComponent extends React.Component {
     refresh = this.handleFilter(searchState, prevProps.searchState, view);
     refresh && this.refreshPoints();
 
-    this.handleCenterto(centerto, prevProps, zoomto, view);
     this.map.updateSize();
     view.getResolution() < 1 && view.setResolution(1);
   }
@@ -610,22 +593,18 @@ class MapComponent extends React.Component {
 }
 
 MapComponent.propTypes = {
-  centerto: PropTypes.number,
   searchState: PropTypes.object,
   highlighted: PropTypes.array,
   hover: PropTypes.func,
   layers: PropTypes.object,
   moveend: PropTypes.func,
   selected: PropTypes.func,
-  zoomto: PropTypes.bool,
 };
 
 MapComponent.defaultProps = {
   highlighted: [],
   searchState: {},
   layers: {},
-  zoomto: false,
-  centerto: null,
 };
 
 export default MapComponent;
