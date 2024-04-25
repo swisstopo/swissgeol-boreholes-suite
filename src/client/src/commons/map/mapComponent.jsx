@@ -14,7 +14,6 @@ import Select from "ol/interaction/Select";
 import Overlay from "ol/Overlay.js";
 import { defaults as defaultControls } from "ol/control";
 import { click, pointerMove } from "ol/events/condition";
-import WMTSCapabilities from "ol/format/WMTSCapabilities";
 import { createEmpty, extend } from "ol/extent";
 import { getGeojson } from "../../api-lib/index";
 import { get as getProjection } from "ol/proj";
@@ -71,8 +70,7 @@ class MapComponent extends React.Component {
     this.handleFilter = this.handleFilter.bind(this);
     this.refreshPoints = this.refreshPoints.bind(this);
     this.timeoutFilter = null;
-    this.cnt = null;
-    this.parser = new WMTSCapabilities();
+
     this.srs = "EPSG:2056";
     _.forEach(projections, function (proj, srs) {
       proj4.defs(srs, proj);
@@ -80,37 +78,11 @@ class MapComponent extends React.Component {
     register(proj4);
     this.overlays = [];
     this.state = {
-      counter: 0,
-      basemap: "colormap",
-      overlay: "nomap",
-      colormap: true,
-      greymap: false,
-      satellite: false,
-      geologie500: false,
       hover: null,
       featureExtent: [],
       sidebar: false,
-      selectedLayer: null,
       sidebarWidth: 0,
-      overlays: [
-        {
-          key: "nomap",
-          value: "nomap",
-          text: "Transparent overlay",
-        },
-      ],
     };
-
-    for (var identifier in this.props.layers) {
-      if (Object.prototype.hasOwnProperty.call(this.props.layers, identifier)) {
-        const layer = this.props.layers[identifier];
-        this.state.overlays.push({
-          key: identifier,
-          value: identifier,
-          text: layer.Title,
-        });
-      }
-    }
   }
 
   //////  INITIALIZE BOREHOLE FEATURE LAYERS //////
@@ -257,7 +229,7 @@ class MapComponent extends React.Component {
   //////  HANDLE CUSTOM USER LAYERS //////
   addWMTSLayer(identifier, layer) {
     const wmtsLayer = new TileLayer({
-      visible: this.state.basemap === identifier,
+      visible: layer.visibility,
       name: identifier,
       opacity: 1,
       source: new WMTS({
@@ -307,11 +279,9 @@ class MapComponent extends React.Component {
   //////  LOAD BASEMAPS //////
   loadBasemaps() {
     this.basemaps = basemaps.map(b => b.layer);
-    this.setState({ basemap: basemaps.find(bm => bm.shortName === this.context.currentBasemapName) }, () => {
-      basemaps.forEach(bm => {
-        const isVisible = bm.shortName === this.context.currentBasemapName;
-        bm.layer.setVisible(isVisible);
-      });
+    basemaps.forEach(bm => {
+      const isVisible = bm.shortName === this.context.currentBasemapName;
+      bm.layer.setVisible(isVisible);
     });
   }
 
@@ -470,11 +440,11 @@ class MapComponent extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { centerto, searchState, highlighted, hover, layers, zoomto } = this.props;
+    const { centerto, searchState, highlighted, hover: hoverCallback, layers, zoomto } = this.props;
     const view = this.map.getView();
     this.updateLayerProperties(layers);
 
-    let refresh = this.handleHighlights(highlighted, hover, prevProps.highlighted);
+    let refresh = this.handleHighlights(highlighted, hoverCallback, prevProps.highlighted);
     refresh = this.handleFilter(searchState, prevProps.searchState, view);
     refresh && this.refreshPoints();
 
@@ -525,9 +495,9 @@ class MapComponent extends React.Component {
   }
 
   onHover(e) {
-    const { hover } = this.props;
-    if (hover !== undefined) {
-      // Only display popover if hover contains one single feature and is not a cluster point.
+    const { hover: hoverCallback } = this.props;
+    if (hoverCallback !== undefined) {
+      // Only display popover if hover selection contains one single feature and is not a cluster point.
       if (e.selected?.length === 1 && !e.selected[0].values_.features) {
         const singleFeature = e.selected[0];
         this.setState(
@@ -536,7 +506,7 @@ class MapComponent extends React.Component {
           },
           () => {
             this.popup.setPosition(singleFeature.getGeometry().getCoordinates());
-            hover(singleFeature.getId());
+            hoverCallback(singleFeature.getId());
           },
         );
       } else {
@@ -546,7 +516,7 @@ class MapComponent extends React.Component {
           },
           () => {
             this.popup.setPosition(undefined);
-            hover(null);
+            hoverCallback(null);
           },
         );
       }
