@@ -121,7 +121,9 @@ public class HydrotestControllerTests
             Comment = "Updated test comment",
             BoreholeId = 1002431,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
-            KindCodelistIds = new List<int> { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 3).Id, 15203187, 15203189 },
+            KindCodelistIds = new List<int> { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 3).Id },
+            FlowDirectionCodelistIds = new List<int> { 15203187 },
+            EvaluationMethodCodelistIds = new List<int> { 15203189 },
         };
 
         context.Hydrotests.Add(originalHydrotest);
@@ -147,9 +149,9 @@ public class HydrotestControllerTests
         Assert.AreEqual(updatedHydrotest.BoreholeId, editedHydrotest.BoreholeId);
         Assert.AreEqual(updatedHydrotest.ReliabilityId, editedHydrotest.ReliabilityId);
 
-        // CollectionAssert.AreEqual(updatedHydrotest.CodelistIds!.ToList(), editedHydrotest.Codelists!.Select(c => c.Id).ToList());
-        Assert.AreEqual("Entnahme", editedHydrotest.FlowDirectionCodelists!.Single(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).De);
-        Assert.AreEqual("stationär", editedHydrotest.EvaluationMethodCodelists!.Single(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).De);
+        Assert.AreEqual("Pump-/Injektionsversuch, variable Rate", editedHydrotest.KindCodelists!.Single().De);
+        Assert.AreEqual("Entnahme", editedHydrotest.FlowDirectionCodelists!.Single().De);
+        Assert.AreEqual("stationär", editedHydrotest.EvaluationMethodCodelists!.Single().De);
     }
 
     [TestMethod]
