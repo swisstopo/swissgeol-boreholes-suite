@@ -166,12 +166,16 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
 
     private bool AreHydrotestCodelistsCompatible(Hydrotest hydrotest)
     {
-        // Get the Geolcodes associated with the TestKindIds.
-        var hydrotestKindCodelistIds = hydrotest.KindCodelists!.Select(hc => hc.Id)
-            .ToList();
 
-        var testKindGeolCodes = Context.Codelists
-            .Where(c => hydrotestKindCodelistIds.Contains(c.Id) && c.Geolcode.HasValue)
+        var hydrotestCodelists = Context.Codelists
+        .Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema 
+                || c.Schema == HydrogeologySchemas.FlowdirectionSchema 
+                || c.Schema == HydrogeologySchemas.EvaluationMethodSchema).ToList();
+
+        // Get the Geolcodes associated with the TestKindIds.
+        var testKindGeolCodes = hydrotestCodelists
+            .Where(c => hydrotest.KindCodelists!.Select(hc => hc.Id)
+            .Contains(c.Id) && c.Geolcode.HasValue)
             .Select(c => c.Geolcode!.Value)
             .ToList();
 
@@ -185,30 +189,37 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
             }
         }
 
-        var compatibleCodelistIds = new List<int>();
+        var kindCompatible = true;
+        var flowDirectionsCompatible = true;
+        var evaluationMethodsCompatible = true;
 
-        var hydrotestCodelists = Context.Codelists
-            .Where(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema || c.Schema == HydrogeologySchemas.EvaluationMethodSchema
-            || c.Schema == HydrogeologySchemas.HydrotestKindSchema || c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema)
-            .ToList();
+        var kindCodelistIds = hydrotestCodelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Select(c => c.Id).ToList();
+        kindCompatible = hydrotest.KindCodelistIds?.All(c => kindCodelistIds.Contains(c)) ?? true;
 
-        // If there are CodelistIds, find the compatible CodelistIds for the flow direction and evaluation method options.
-        if ((hydrotest.FlowDirectionCodelists.Count > 0
-                || hydrotest.EvaluationMethodCodelists.Count > 0
-                || hydrotest.KindCodelists.Count > 0)
-            && testKindGeolCodes.Count > 0)
+        if (testKindGeolCodes.Count > 0)
         {
-            compatibleCodelistIds.AddRange(hydrotestKindCodelistIds);
-            compatibleCodelistIds.AddRange(GetCompatibleCodelistIds(testKindGeolCodes, HydrogeologySchemas.FlowdirectionSchema, HydroCodeLookup.HydrotestFlowDirectionOptions));
-            compatibleCodelistIds.AddRange(GetCompatibleCodelistIds(testKindGeolCodes, HydrogeologySchemas.EvaluationMethodSchema, HydroCodeLookup.HydrotestEvaluationMethodOptions));
+            // If there are FlowDirectionCodelistIds, check their compatibility with the test kind.
+            if (hydrotest.FlowDirectionCodelistIds.Count > 0)
+            {
+            var compatibleFlowDirectionCodelistIds = GetCompatibleCodelistIds(testKindGeolCodes, HydrogeologySchemas.FlowdirectionSchema, HydroCodeLookup.HydrotestFlowDirectionOptions)
+                .Union(hydrotestCodelists.Where(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).Select(c => c.Id))
+                .ToList();
+
+            flowDirectionsCompatible = hydrotest.FlowDirectionCodelistIds?.All(c => compatibleFlowDirectionCodelistIds.Contains(c)) ?? true;
+            }
+
+            // If there are EvaluationMethodCodelistIds, check their compatibility with the test kind.
+            if (hydrotest.EvaluationMethodCodelistIds.Count > 0)
+            {
+            var compatibleEvaluationMethodCodelistIds = GetCompatibleCodelistIds(testKindGeolCodes, HydrogeologySchemas.EvaluationMethodSchema, HydroCodeLookup.HydrotestEvaluationMethodOptions)
+                .Union(hydrotestCodelists.Where(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).Select(c => c.Id))
+                .ToList();
+            evaluationMethodsCompatible = hydrotest.EvaluationMethodCodelistIds?.All(c => compatibleEvaluationMethodCodelistIds.Contains(c)) ?? true;
+            }
         }
 
-        // Return true if all CodelistIds are compatible, or there are no CodelistIds.
-        var testKindsCompatible = hydrotest.KindCodelistIds?.All(c => compatibleCodelistIds.Contains(c)) ?? true;
-        var flowDirectionsCompatible = hydrotest.FlowDirectionCodelistIds?.All(c => compatibleCodelistIds.Contains(c)) ?? true;
-        var evaluationMethodsCompatible = hydrotest.EvaluationMethodCodelistIds?.All(c => compatibleCodelistIds.Contains(c)) ?? true;
-
-        return testKindsCompatible && flowDirectionsCompatible && evaluationMethodsCompatible;
+        // Return true if all CodelistIds are compatible, or there are no FlowDirectionCodelists or EvaluationMethodCodelists.
+        return kindCompatible && flowDirectionsCompatible && evaluationMethodsCompatible;
     }
 
     private List<int> GetCompatibleCodelistIds(List<int> testKindGeolCodes, string schema, Dictionary<int, List<int>> optionsLookup)

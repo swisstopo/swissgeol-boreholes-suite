@@ -236,12 +236,27 @@ public class HydrotestControllerTests
     }
 
     [TestMethod]
-    public async Task CreateHydrotestWithIncompatibleCodelists()
+    public async Task CreateHydrotestWithIncompatibleFlowDirectionAndEvaluationMethod()
     {
         var newHydrotest = new Hydrotest
         {
             Type = ObservationType.Hydrotest,
-            KindCodelistIds = new List<int>() { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id, 23, 45 },
+            KindCodelistIds = new List<int>() { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id },
+            FlowDirectionCodelistIds = new List<int>() { 23, 24 },
+            EvaluationMethodCodelistIds = new List<int>() { 74 },
+        };
+
+        var createResponse = await controller.CreateAsync(newHydrotest);
+        ActionResultAssert.IsBadRequest(createResponse.Result);
+    }
+
+    [TestMethod]
+    public async Task CreateHydrotestWithIncompatibleTestKind()
+    {
+        var newHydrotest = new Hydrotest
+        {
+            Type = ObservationType.Hydrotest,
+            KindCodelistIds = new List<int>() { 52 },
         };
 
         var createResponse = await controller.CreateAsync(newHydrotest);
