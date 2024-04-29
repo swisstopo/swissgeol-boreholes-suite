@@ -199,7 +199,7 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
                     .Union(hydrotestCodelists.Where(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).Select(c => c.Id))
                     .ToList();
 
-                flowDirectionsCompatible = hydrotest.FlowDirectionCodelistIds?.All(compatibleFlowDirectionCodelistIds.Contains) ?? true
+                flowDirectionsCompatible = hydrotest.FlowDirectionCodelistIds?.All(compatibleFlowDirectionCodelistIds.Contains) ?? true;
             }
 
             // If there are EvaluationMethodCodelistIds, check their compatibility with the test kind.
