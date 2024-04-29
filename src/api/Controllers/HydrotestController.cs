@@ -195,20 +195,20 @@ public class HydrotestController : BdmsControllerBase<Hydrotest>
             // If there are FlowDirectionCodelistIds, check their compatibility with the test kind.
             if (hydrotest.FlowDirectionCodelistIds.Count > 0)
             {
-            var compatibleFlowDirectionCodelistIds = GetCompatibleCodelistIds(testKindGeolCodes, HydrogeologySchemas.FlowdirectionSchema, HydroCodeLookup.HydrotestFlowDirectionOptions)
-                .Union(hydrotestCodelists.Where(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).Select(c => c.Id))
-                .ToList();
+                var compatibleFlowDirectionCodelistIds = GetCompatibleCodelistIds(testKindGeolCodes, HydrogeologySchemas.FlowdirectionSchema, HydroCodeLookup.HydrotestFlowDirectionOptions)
+                    .Union(hydrotestCodelists.Where(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).Select(c => c.Id))
+                    .ToList();
 
-            flowDirectionsCompatible = hydrotest.FlowDirectionCodelistIds?.All(c => compatibleFlowDirectionCodelistIds.Contains(c)) ?? true;
+                flowDirectionsCompatible = hydrotest.FlowDirectionCodelistIds?.All(compatibleFlowDirectionCodelistIds.Contains) ?? true
             }
 
             // If there are EvaluationMethodCodelistIds, check their compatibility with the test kind.
             if (hydrotest.EvaluationMethodCodelistIds.Count > 0)
             {
-            var compatibleEvaluationMethodCodelistIds = GetCompatibleCodelistIds(testKindGeolCodes, HydrogeologySchemas.EvaluationMethodSchema, HydroCodeLookup.HydrotestEvaluationMethodOptions)
-                .Union(hydrotestCodelists.Where(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).Select(c => c.Id))
-                .ToList();
-            evaluationMethodsCompatible = hydrotest.EvaluationMethodCodelistIds?.All(c => compatibleEvaluationMethodCodelistIds.Contains(c)) ?? true;
+                var compatibleEvaluationMethodCodelistIds = GetCompatibleCodelistIds(testKindGeolCodes, HydrogeologySchemas.EvaluationMethodSchema, HydroCodeLookup.HydrotestEvaluationMethodOptions)
+                    .Union(hydrotestCodelists.Where(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).Select(c => c.Id))
+                    .ToList();
+                evaluationMethodsCompatible = hydrotest.EvaluationMethodCodelistIds?.All(compatibleEvaluationMethodCodelistIds.Contains) ?? true;
             }
         }
 
