@@ -179,8 +179,20 @@ public class Codelist : IIdentifyable
     public ICollection<Hydrotest>? Hydrotests { get; }
 
     /// <summary>
-    /// Gets the <see cref="HydrotestCodelist"/> join table entities.
+    /// Gets the <see cref="HydrotestFlowDirectionCode"/> join table entities.
     /// </summary>
     [JsonIgnore]
-    public ICollection<HydrotestCodelist>? HydrotestCodelists { get; }
+    public ICollection<HydrotestFlowDirectionCode>? HydrotestFlowDirectionCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="HydrotestEvaluationMethodCode"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<HydrotestEvaluationMethodCode>? HydrotestEvaluationMethodCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="HydrotestKindCode"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<HydrotestKindCode>? HydrotestKindCodes { get; set; }
 }

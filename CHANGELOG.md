@@ -25,6 +25,7 @@
 - Set minimal resolution to 0.1 for open layer maps.
 - Renamed table `borehole_codelist ` to `borehole_identifiers_codelist`.
 - Changed order of menu items in borehole detail view.
+- Split generic join table `hydrotest_codelists` into 3 separate join tables for each many to many relationship between hydrotest and codelist.
 
 ### Fixed
 

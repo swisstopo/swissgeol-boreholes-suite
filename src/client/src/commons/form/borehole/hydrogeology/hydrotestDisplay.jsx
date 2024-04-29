@@ -5,7 +5,6 @@ import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import ObservationDisplay from "./observationDisplay";
-import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { getHydrotestParameterUnits } from "./parameterUnits";
 import { useDomains, deleteHydrotest } from "../../../../api/fetchApiV2";
 
@@ -14,27 +13,17 @@ const HydrotestDisplay = props => {
   const { t, i18n } = useTranslation();
   const domains = useDomains();
 
+  console.log(item);
+
   return (
     <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteHydrotest}>
       <ObservationDisplay observation={item} />
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay
-          label="hydrotestKind"
-          value={item?.codelists.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestKind)}
-          type={FormDisplayType.Domain}
-        />
-        <FormDisplay
-          label="flowDirection"
-          value={item?.codelists.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestFlowDirection)}
-          type={FormDisplayType.Domain}
-        />
+        <FormDisplay label="hydrotestKind" value={item?.kindCodelists} type={FormDisplayType.Domain} />
+        <FormDisplay label="flowDirection" value={item?.flowDirectionCodelists} type={FormDisplayType.Domain} />
       </StackFullWidth>
       <StackFullWidth direction="row" spacing={1}>
-        <FormDisplay
-          label="evaluationMethod"
-          value={item?.codelists.filter(c => c.schema === hydrogeologySchemaConstants.hydrotestEvaluationMethod)}
-          type={FormDisplayType.Domain}
-        />
+        <FormDisplay label="evaluationMethod" value={item?.evaluationMethodCodelists} type={FormDisplayType.Domain} />
       </StackFullWidth>
       {item?.hydrotestResults?.length > 0 && (
         <FormResultTableDisplay
