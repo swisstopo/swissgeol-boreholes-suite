@@ -238,6 +238,9 @@ public class UploadControllerTest
         Assert.AreEqual("Bern", borehole.Canton);
         Assert.AreEqual("Schweiz", borehole.Country);
         Assert.AreEqual("Thun", borehole.Municipality);
+        Assert.AreEqual(20113004, borehole.LocationPrecisionId);
+        Assert.AreEqual(20114005, borehole.ElevationPrecisionId);
+
         Assert.AreEqual("POINT (2613116 1179127)", borehole.Geometry.ToString());
 
         // Assert workflow was created for borehole.
