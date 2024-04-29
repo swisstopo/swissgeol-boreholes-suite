@@ -23,14 +23,14 @@ public partial class AddHydrotestCodelistJoinTables : Migration
             {
                 table.PrimaryKey("PK_hydrotest_evaluationmethod_codelist", x => new { x.hydrotest_id, x.codelist_id });
                 table.ForeignKey(
-                    name: "FK_hydrotest_evaluationmethod_codelist_codelist_codelist_id",
+                    name: "FK_hydrotest_evaluationmethod_codelist_id",
                     column: x => x.codelist_id,
                     principalSchema: "bdms",
                     principalTable: "codelist",
                     principalColumn: "id_cli",
                     onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                    name: "FK_hydrotest_evaluationmethod_codelist_hydrotest_hydrotest_id",
+                    name: "FK_hydrotest_evaluationmethod_codelist_hydrotest_id",
                     column: x => x.hydrotest_id,
                     principalSchema: "bdms",
                     principalTable: "hydrotest",
@@ -50,14 +50,14 @@ public partial class AddHydrotestCodelistJoinTables : Migration
             {
                 table.PrimaryKey("PK_hydrotest_flowdirection_codelist", x => new { x.hydrotest_id, x.codelist_id });
                 table.ForeignKey(
-                    name: "FK_hydrotest_flowdirection_codelist_codelist_codelist_id",
+                    name: "FK_hydrotest_flowdirection_codelist_id",
                     column: x => x.codelist_id,
                     principalSchema: "bdms",
                     principalTable: "codelist",
                     principalColumn: "id_cli",
                     onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                    name: "FK_hydrotest_flowdirection_codelist_hydrotest_hydrotest_id",
+                    name: "FK_hydrotest_flowdirection_codelist_hydrotest_id",
                     column: x => x.hydrotest_id,
                     principalSchema: "bdms",
                     principalTable: "hydrotest",
@@ -77,14 +77,14 @@ public partial class AddHydrotestCodelistJoinTables : Migration
             {
                 table.PrimaryKey("PK_hydrotest_kind_codelist", x => new { x.hydrotest_id, x.codelist_id });
                 table.ForeignKey(
-                    name: "FK_hydrotest_kind_codelist_codelist_codelist_id",
+                    name: "FK_hydrotest_kind_codelist_id",
                     column: x => x.codelist_id,
                     principalSchema: "bdms",
                     principalTable: "codelist",
                     principalColumn: "id_cli",
                     onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                    name: "FK_hydrotest_kind_codelist_hydrotest_hydrotest_id",
+                    name: "FK_hydrotest_kind_codelist_hydrotest_id",
                     column: x => x.hydrotest_id,
                     principalSchema: "bdms",
                     principalTable: "hydrotest",
