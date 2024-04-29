@@ -13,6 +13,7 @@ import { get as getProjection } from "ol/proj";
 import { register } from "ol/proj/proj4";
 import proj4 from "proj4";
 import { Segment, Button, Label, Icon } from "semantic-ui-react";
+import { Box } from "@mui/material";
 import { getHeight } from "../../api-lib/index";
 import { fetchApiV2 } from "../../api/fetchApiV2";
 import ZoomControls from "./zoomControls";
@@ -290,9 +291,11 @@ class PointComponent extends React.Component {
             height: 450,
           }}
         />
-        <BasemapSelector setState={this.setStateBound} marginBottom={"70px"} />
         <ZoomControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
-        <div
+        <Box sx={{ position: "absolute", right: "0px", top: "425px" }}>
+          <BasemapSelector setState={this.setStateBound} marginBottom="0px" />
+        </Box>
+        <Box
           style={{
             bottom: "0px",
             display: "flex",
@@ -302,8 +305,8 @@ class PointComponent extends React.Component {
             color: "white",
             backgroundColor: "#3e3e3e",
           }}>
-          <div
-            style={{
+          <Box
+            sx={{
               flex: "1 1 100%",
             }}>
             <Label color="black">
@@ -324,49 +327,47 @@ class PointComponent extends React.Component {
                 <Icon name="resize vertical" /> {this.state.height} m
               </Label>
             ) : null}
-          </div>
-          <div>
-            <Button.Group size="mini">
-              <Button
-                data-cy="apply-button"
-                disabled={!_.isArray(this.state.point) || this.state.address || !isEditable}
-                loading={this.state.address}
-                onClick={() => {
-                  if (_.isFunction(this.props.applyChange)) {
-                    if (this.props.x !== this.state.point[0] || this.props.y !== this.state.point[1]) {
-                      this.props.setMapPointChange(true);
-                    }
-                    this.props.applyChange(
-                      _.round(this.state.point[0], 2),
-                      _.round(this.state.point[1], 2),
-                      this.state.height !== null ? parseFloat(this.state.height) : null,
-                      this.state.country,
-                      this.state.canton,
-                      this.state.municipality,
-                    );
+          </Box>
+          <Button.Group size="mini">
+            <Button
+              data-cy="apply-button"
+              disabled={!_.isArray(this.state.point) || this.state.address || !isEditable}
+              loading={this.state.address}
+              onClick={() => {
+                if (_.isFunction(this.props.applyChange)) {
+                  if (this.props.x !== this.state.point[0] || this.props.y !== this.state.point[1]) {
+                    this.props.setMapPointChange(true);
                   }
-                }}
-                size="mini">
-                Apply
-              </Button>
-              <Button
-                disabled={!_.isArray(this.state.point)}
-                icon
-                onClick={() => {
-                  if (_.isFunction(this.props.applyChange)) {
-                    getHeight(this.state.point[0], this.state.point[1]).then(response => {
-                      this.setState({
-                        height: response.status === 200 ? response.data.height : null,
-                      });
+                  this.props.applyChange(
+                    _.round(this.state.point[0], 2),
+                    _.round(this.state.point[1], 2),
+                    this.state.height !== null ? parseFloat(this.state.height) : null,
+                    this.state.country,
+                    this.state.canton,
+                    this.state.municipality,
+                  );
+                }
+              }}
+              size="mini">
+              Apply
+            </Button>
+            <Button
+              disabled={!_.isArray(this.state.point)}
+              icon
+              onClick={() => {
+                if (_.isFunction(this.props.applyChange)) {
+                  getHeight(this.state.point[0], this.state.point[1]).then(response => {
+                    this.setState({
+                      height: response.status === 200 ? response.data.height : null,
                     });
-                  }
-                }}
-                size="mini">
-                <Icon name="resize vertical" />
-              </Button>
-            </Button.Group>
-          </div>
-        </div>
+                  });
+                }
+              }}
+              size="mini">
+              <Icon name="resize vertical" />
+            </Button>
+          </Button.Group>
+        </Box>
       </Segment>
     );
   }

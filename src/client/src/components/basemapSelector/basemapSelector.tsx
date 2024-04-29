@@ -12,7 +12,7 @@ const BasemapSelectorBox = styled(Box)({
   right: "12px",
   backgroundColor: "#f1f3f5",
   boxShadow: "4px 4px 2px #00000029",
-  padding: "0.3em",
+  padding: "3px",
   borderRadius: "100px",
 });
 
@@ -33,14 +33,14 @@ const ImageBox = styled(Box)({
   display: "block",
   position: "relative",
   overflow: "hidden",
-  width: "50px",
-  height: "50px",
+  width: "40px",
+  height: "40px",
   margin: 0,
   padding: 0,
   backgroundColor: "white",
 });
 
-const LargerImageBox = styled(ImageBox)({ height: "60px", width: "60px" });
+const LargerImageBox = styled(ImageBox)({ height: "50px", width: "50px" });
 
 export const BasemapSelector = memo(({ setState, marginBottom }: { setState: any; marginBottom: string }) => {
   const [showSelector, setShowSelector] = useState<boolean>(false);
@@ -77,30 +77,29 @@ export const BasemapSelector = memo(({ setState, marginBottom }: { setState: any
   return (
     <BasemapSelectorBox sx={{ bottom: marginBottom }}>
       {showSelector ? (
-        <Stack sx={{ padding: "0.2em" }} direction="row">
+        <Stack direction="row">
           <Box>
-            <Stack direction="row">
+            <Stack sx={{ marginLeft: "6px" }} direction="row">
               {basemaps.map((layer: Basemap) => (
-                <BasemapButton
-                  key={layer.shortName}
-                  sx={{
-                    border: `${layer.shortName === currentBasemapName ? "2px solid #cb5d53" : "none"}`,
-                    marginRight: "1em",
-                    marginLeft: 0,
-                  }}
-                  onClick={() => onSelectBackground(layer.shortName)}>
-                  <ImageBox>{layer && <img src={imageUrlMap[layer.shortName]} />}</ImageBox>
+                <BasemapButton key={layer.shortName} onClick={() => onSelectBackground(layer.shortName)}>
+                  <ImageBox
+                    sx={{
+                      border: `${layer.shortName === currentBasemapName ? "2px solid #cb5d53" : "none"}`,
+                      marginRight: "1em",
+                      marginLeft: 0,
+                    }}>
+                    {layer && <img src={imageUrlMap[layer.shortName]} />}
+                  </ImageBox>
                 </BasemapButton>
               ))}
-              <BasemapButton
-                sx={{
-                  padding: "0.2em",
-                  border: `${"nomap" === currentBasemapName ? "2px solid #cb5d53" : "none"}`,
-                }}
-                onClick={() => onSelectBackground("nomap")}>
-                <ImageBox sx={{ backgroundColor: "white" }}></ImageBox>
+              <BasemapButton onClick={() => onSelectBackground("nomap")}>
+                <ImageBox
+                  sx={{
+                    backgroundColor: "white",
+                    border: `${"nomap" === currentBasemapName ? "2px solid #cb5d53" : "none"}`,
+                  }}></ImageBox>
               </BasemapButton>
-              <BasemapButton sx={{ padding: "0.2em" }} onClick={toggleShowSelector}>
+              <BasemapButton onClick={toggleShowSelector}>
                 <ClearIcon fontSize="large" sx={{ margin: "0.3em" }}></ClearIcon>
               </BasemapButton>
             </Stack>
