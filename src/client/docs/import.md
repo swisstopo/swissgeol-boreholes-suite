@@ -80,7 +80,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | reference_elevation_type_id | ID (Codeliste) | Nein        | Typ der Referenz Ansatzhöhe                                                           |
 | qt_reference_elevation_id   | ID (Codeliste) | Nein        | +/- Referenz Ansatzhöhe [m]                                                           |
 | hrs_id                      | ID (Codeliste) | Nein        | Höhenreferenzsystem                                                                   |
-| kind_id                     | ID (Codeliste) | Nein        | Bohrtyp                                                                               |
+| type_id                     | ID (Codeliste) | Nein        | Bohrtyp                                                                               |
 | drilling_date               | Datum          | Nein        | Datum Bohrende                                                                        |
 | drilling_diameter           | Dezimalzahl    | Nein        | Bohrdurchmesser [mm]                                                                  |
 | drilling_method_id          | ID (Codeliste) | Nein        | Bohrmethode                                                                           |

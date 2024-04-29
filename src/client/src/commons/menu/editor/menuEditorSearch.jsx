@@ -258,7 +258,7 @@ class MenuEditorSearch extends React.Component {
                       "restriction_id;restriction_until;national_interest;location_x;location_y;" +
                       "location_precision;elevation_z;elevation_precision_id;" +
                       "reference_elevation;reference_elevation_type_id;" +
-                      "qt_reference_elevation_id;hrs_id;kind_id;drilling_date;" +
+                      "qt_reference_elevation_id;hrs_id;type_id;drilling_date;" +
                       "drilling_diameter;drilling_method_id;purpose_id;spud_date;" +
                       "cuttings_id;status_id;inclination;inclination_direction;" +
                       "qt_inclination_direction_id;remarks;total_depth;qt_depth_id;" +
