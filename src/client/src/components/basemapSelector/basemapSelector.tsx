@@ -65,7 +65,7 @@ export const BasemapSelector = memo(({ setState, marginBottom }: { setState: any
     setState({ basemap: layerName }, () => {
       basemaps.forEach(bm => {
         const isVisible = layerName !== "nomap" && bm.shortName === layerName;
-        bm.layer.setVisible(isVisible);
+        bm.layer.setOpacity(isVisible ? 1 : 0);
       });
     });
   };
