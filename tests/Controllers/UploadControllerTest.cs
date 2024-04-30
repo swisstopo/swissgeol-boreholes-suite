@@ -293,6 +293,42 @@ public class UploadControllerTest
     }
 
     [TestMethod]
+    public async Task UploadShouldSavePrecisionDatasetAsync()
+    {
+        httpClientFactoryMock
+           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+           .Returns(() => new HttpClient())
+           .Verifiable();
+
+        var boreholeCsvFile = GetFormFileByExistingFile("precision_testdata.csv");
+
+        ActionResult<int> response = await controller.UploadFileAsync(workgroupId: 1, boreholeCsvFile, lithologyFile: null, attachments: null);
+
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(6, okResult.Value);
+
+        // Assert imported values
+        var boreholeLV95 = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_2");
+        Assert.AreEqual(ReferenceSystem.LV95, boreholeLV95.OriginalReferenceSystem);
+        Assert.AreEqual(2000010.12, boreholeLV95.LocationX);
+        Assert.AreEqual(1000010.1, boreholeLV95.LocationY);
+        Assert.AreEqual(2, boreholeLV95.PrecisionLocationX);
+        Assert.AreEqual(1, boreholeLV95.PrecisionLocationY);
+        Assert.AreEqual(2, boreholeLV95.PrecisionLocationXLV03);
+        Assert.AreEqual(2, boreholeLV95.PrecisionLocationYLV03);
+
+        var boreholeLV03 = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_6");
+        Assert.AreEqual(ReferenceSystem.LV03, boreholeLV03.OriginalReferenceSystem.Value);
+        Assert.AreEqual(20050.12, boreholeLV03.LocationXLV03);
+        Assert.AreEqual(10050.12345, boreholeLV03.LocationYLV03);
+        Assert.AreEqual(2, boreholeLV03.PrecisionLocationXLV03);
+        Assert.AreEqual(5, boreholeLV03.PrecisionLocationYLV03);
+        Assert.AreEqual(5, boreholeLV03.PrecisionLocationX);
+        Assert.AreEqual(5, boreholeLV03.PrecisionLocationY);
+    }
+
+    [TestMethod]
     public async Task UploadShouldSaveBoreholeWithAttachmentsAsync()
     {
         httpClientFactoryMock
