@@ -1,16 +1,19 @@
-import { useCallback } from "react";
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import React from "react";
+import { useContext, useCallback } from "react";
+import { useHistory } from "react-router-dom";
+import { t } from "i18next";
+import { Button, Header, Icon, Modal, Segment } from "semantic-ui-react";
+import { Stack, Box } from "@mui/material/";
 import TranslationText from "../../../form/translationText";
 import { FileDropzone } from "../../../files/fileDropzone";
-import { Stack, Box } from "@mui/material/";
-import { Button, Header, Icon, Modal, Segment } from "semantic-ui-react";
 import { StackHalfWidth } from "../../../../components/baseComponents";
-import { createBorehole } from "../../../../api-lib/index";
+import { createBorehole } from "../../../../api-lib/actions/borehole.js";
 import { downloadCodelistCsv, importBoreholes } from "../../../../api/fetchApiV2";
-import Downloadlink from "../../../files/downloadlink";
-import { t } from "i18next";
-import { useContext } from "react";
 import { AlertContext } from "../../../../components/alert/alertContext";
-import { useHistory } from "react-router-dom";
+import { ImportModalProps } from "./importerInterfaces";
+import Downloadlink from "../../../files/downloadlink";
 import WorkgroupSelect from "./workgroupSelect";
 
 const SeparatorLine = () => {
@@ -25,7 +28,7 @@ const SeparatorLine = () => {
   );
 };
 
-const ExampleHeadings = headings => {
+const ExampleHeadings = (headings: string) => {
   return (
     <Box
       style={{
@@ -40,26 +43,26 @@ const ExampleHeadings = headings => {
   );
 };
 
-const ImportModal = ({ setState, state, refresh }) => {
+const ImportModal = ({ setState, state, refresh }: ImportModalProps) => {
   const history = useHistory();
   const alertContext = useContext(AlertContext);
 
   const handleBoreholeAttachmentChange = useCallback(
-    attachmentsFromDropzone => {
+    (attachmentsFromDropzone: Blob) => {
       setState({ selectedBoreholeAttachments: attachmentsFromDropzone });
     },
     [setState],
   );
 
   const handleLithologyFileChange = useCallback(
-    lithologyFileFromDropzone => {
+    (lithologyFileFromDropzone: Blob) => {
       setState({ selectedLithologyFile: lithologyFileFromDropzone });
     },
     [setState],
   );
 
   const handleBoreholeFileChange = useCallback(
-    boreholeFileFromDropzone => {
+    (boreholeFileFromDropzone: Blob) => {
       setState({ selectedFile: boreholeFileFromDropzone });
     },
     [setState],
@@ -70,16 +73,20 @@ const ImportModal = ({ setState, state, refresh }) => {
     if (state.upload === true) {
       const combinedFormData = new FormData();
       if (state.selectedFile !== null) {
-        state.selectedFile.forEach(boreholeFile => {
+        state.selectedFile.forEach((boreholeFile: string | Blob) => {
           combinedFormData.append("boreholesFile", boreholeFile);
         });
 
-        state.selectedBoreholeAttachments.forEach(attachment => {
-          combinedFormData.append("attachments", attachment);
-        });
-        state.selectedLithologyFile.forEach(lithologyFile => {
-          combinedFormData.append("lithologyFile", lithologyFile);
-        });
+        if (state.selectedBoreholeAttachments !== null) {
+          state.selectedBoreholeAttachments.forEach((attachment: string | Blob) => {
+            combinedFormData.append("attachments", attachment);
+          });
+        }
+        if (state.selectedLithologyFile !== null) {
+          state.selectedLithologyFile.forEach((lithologyFile: string | Blob) => {
+            combinedFormData.append("lithologyFile", lithologyFile);
+          });
+        }
       }
       importBoreholes(state.workgroup, combinedFormData).then(response => {
         setState({ creating: false, modal: false, upload: false });
@@ -113,8 +120,10 @@ const ImportModal = ({ setState, state, refresh }) => {
         })();
       });
     } else {
-      createBorehole(state.workgroup)
-        .then(response => {
+      // @ts-expect-error
+      createBorehole(state.workgroup.id)
+        // @ts-expect-error
+        .then((response: { data: { success: boolean; id: string; message: string } }) => {
           if (response.data.success) {
             setState({ creating: true, modal: false });
             history.push("/" + response.data.id);
@@ -124,7 +133,7 @@ const ImportModal = ({ setState, state, refresh }) => {
             window.location.reload();
           }
         })
-        .catch(function (error) {
+        .catch(function (error: string) {
           console.log(error);
         });
     }
@@ -237,7 +246,7 @@ const ImportModal = ({ setState, state, refresh }) => {
       </Modal.Content>
       <Modal.Actions>
         <Button
-          disabled={state.enabledWorkgroups.length === 0 || (state.upload === true && !state.selectedFile?.length > 0)}
+          disabled={state.enabledWorkgroups.length === 0 || (state.upload === true && state.selectedFile?.length === 0)}
           loading={state.creating === true}
           onClick={handleFormSubmit}
           secondary>

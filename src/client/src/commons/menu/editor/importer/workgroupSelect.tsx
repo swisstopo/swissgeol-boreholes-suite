@@ -1,7 +1,8 @@
 import TranslationText from "../../../form/translationText";
 import { Box, MenuItem, Select, FormControl } from "@mui/material/";
+import { WorkgroupSelectProps } from "./importerInterfaces";
 
-const WorkgroupSelect = ({ setState, state }) => {
+const WorkgroupSelect = ({ setState, state }: WorkgroupSelectProps) => {
   return (
     <>
       <h3>
@@ -29,14 +30,14 @@ const WorkgroupSelect = ({ setState, state }) => {
             <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
               <Select
                 renderValue={selected => {
-                  return options.find(o => o.value === selected)?.text;
+                  return options.find(o => o.value === selected.workgroup)?.text;
                 }}
                 onChange={e => {
                   setState({ workgroup: e.target.value });
                 }}
                 value={state.workgroup}>
                 {options.map(o => (
-                  <MenuItem key={o.id} value={o.value}>
+                  <MenuItem key={o.key} value={o.value}>
                     {o.text}
                   </MenuItem>
                 ))}
