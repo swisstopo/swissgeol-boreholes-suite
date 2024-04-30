@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { Stack, Box } from "@mui/material/";
 import TranslationText from "../../../../form/translationText.jsx";
 import { FileDropzone } from "../../../../files/fileDropzone.jsx";

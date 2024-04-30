@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
 import TranslationText from "../../../form/translationText";
 import { Box, MenuItem, Select, FormControl } from "@mui/material/";
 import { WorkgroupSelectProps } from "./actionsInterfaces";

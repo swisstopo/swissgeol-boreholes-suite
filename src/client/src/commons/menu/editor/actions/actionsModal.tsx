@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
 import { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { t } from "i18next";
