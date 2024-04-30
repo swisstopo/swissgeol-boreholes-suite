@@ -73,14 +73,14 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | national_interest           | True/False     | Nein        | Nationales Interesse                                                                  |
 | location_x                  | Dezimalzahl    | Ja          | Koordinate Ost LV95                                                                   |
 | location_y                  | Dezimalzahl    | Ja          | Koordinate Nord LV95                                                                  |
-| qt_location_id              | ID (Codeliste) | Nein        | +/- Koordinaten [m]                                                                   |
+| location_precision_id       | ID (Codeliste) | Nein        | +/- Koordinaten [m]                                                                   |
 | elevation_z                 | Dezimalzahl    | Nein        | Terrainhöhe [m ü.M.]                                                                  |
-| qt_elevation_id             | ID (Codeliste) | Nein        | +/- Terrainhöhe [m]                                                                   |
+| elevation_precision_id      | ID (Codeliste) | Nein        | +/- Terrainhöhe [m]                                                                   |
 | reference_elevation         | Dezimalzahl    | Nein        | Referenz Ansatzhöhe [m ü.M.]                                                          |
 | reference_elevation_type_id | ID (Codeliste) | Nein        | Typ der Referenz Ansatzhöhe                                                           |
 | qt_reference_elevation_id   | ID (Codeliste) | Nein        | +/- Referenz Ansatzhöhe [m]                                                           |
 | hrs_id                      | ID (Codeliste) | Nein        | Höhenreferenzsystem                                                                   |
-| kind_id                     | ID (Codeliste) | Nein        | Bohrtyp                                                                               |
+| type_id                     | ID (Codeliste) | Nein        | Bohrtyp                                                                               |
 | drilling_date               | Datum          | Nein        | Datum Bohrende                                                                        |
 | drilling_diameter           | Dezimalzahl    | Nein        | Bohrdurchmesser [mm]                                                                  |
 | drilling_method_id          | ID (Codeliste) | Nein        | Bohrmethode                                                                           |
