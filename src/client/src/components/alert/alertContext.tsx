@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, createContext } from "react";
 import { AlertContextInterface, AlertProviderProps } from "./alertInterfaces";
 
@@ -29,6 +30,7 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
     setText(null);
     setSeverity(null);
   };
+
   return (
     <AlertContext.Provider
       value={{

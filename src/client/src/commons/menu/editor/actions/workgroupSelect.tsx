@@ -1,6 +1,8 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import React from "react";
 import TranslationText from "../../../form/translationText";
 import { Box, MenuItem, Select, FormControl } from "@mui/material/";
-import { WorkgroupSelectProps } from "./importerInterfaces";
+import { WorkgroupSelectProps } from "./actionsInterfaces";
 
 const WorkgroupSelect = ({ setState, state }: WorkgroupSelectProps) => {
   return (
@@ -30,7 +32,7 @@ const WorkgroupSelect = ({ setState, state }: WorkgroupSelectProps) => {
             <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
               <Select
                 renderValue={selected => {
-                  return options.find(o => o.value === selected.workgroup)?.text;
+                  return options.find(o => o.value === selected)?.text;
                 }}
                 onChange={e => {
                   setState({ workgroup: e.target.value });

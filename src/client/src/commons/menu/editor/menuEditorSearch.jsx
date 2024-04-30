@@ -8,7 +8,7 @@ import TranslationText from "../../form/translationText";
 import { Header, Icon, Menu, Modal } from "semantic-ui-react";
 import { AlertContext } from "../../../components/alert/alertContext";
 import SearchEditorComponent from "../../search/editor/searchEditorComponent";
-import ImportModal from "./importer/importModal";
+import ActionsModal from "./actions/actionsModal";
 
 let isMounted = true;
 
@@ -174,7 +174,7 @@ class MenuEditorSearch extends React.Component {
         }}
         open={this.state.modal === true}
         size="large">
-        <ImportModal setState={this.setState} state={this.state} refresh={this.refresh} />
+        <ActionsModal setState={this.setState} state={this.state} refresh={this.refresh} />
       </Modal>,
       <Modal
         closeIcon
