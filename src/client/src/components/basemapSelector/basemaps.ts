@@ -5,6 +5,7 @@ import WMTS from "ol/source/WMTS";
 import WMTSTileGrid from "ol/tilegrid/WMTS";
 import XYZ from "ol/source/XYZ";
 import { ProjectionLike, get as getProjection } from "ol/proj";
+import { Map } from "ol";
 
 export const swissExtent: number[] = [2420000, 1030000, 2900000, 1350000];
 
@@ -92,3 +93,30 @@ export const basemaps: Basemap[] = [
     layer: createLayer(baseLayerNames.greymap),
   },
 ];
+
+export function updateBasemap(map: Map, contextBasemapName: string) {
+  if (contextBasemapName === "nomap") {
+    map.getLayers().item(0).setOpacity(0);
+  } else {
+    const newBasemap = basemaps.find(bm => bm.shortName === contextBasemapName);
+    if (newBasemap !== undefined) {
+      newBasemap.layer.setOpacity(1);
+      map.getLayers().setAt(0, newBasemap.layer);
+      map.getLayers().item(0).changed();
+    }
+  }
+}
+
+export function getBasemap(contextBasemapName: string) {
+  let basemap;
+  if (contextBasemapName === "nomap") {
+    basemap = basemaps[0].layer;
+    basemap.setOpacity(0);
+  } else {
+    const foundBasemap = basemaps.find(bm => bm.shortName === contextBasemapName);
+    if (foundBasemap !== undefined) {
+      basemap = foundBasemap.layer;
+    }
+  }
+  return basemap;
+}

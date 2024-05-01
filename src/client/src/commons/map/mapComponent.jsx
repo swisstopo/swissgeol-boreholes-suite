@@ -25,7 +25,7 @@ import LayerSelectControl from "./layerSelectControl";
 import Sidebar from "./sidebar";
 import NamePopup from "./namePopup";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
-import { swissExtent, basemaps } from "../../components/basemapSelector/basemaps";
+import { swissExtent, updateBasemap, getBasemap } from "../../components/basemapSelector/basemaps";
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
 import { styleFunction, clusterStyleFunction } from "./mapStyleFunctions";
 import { projections } from "./mapProjections";
@@ -80,6 +80,7 @@ class MapComponent extends React.Component {
       featureExtent: [],
       sidebar: false,
       sidebarWidth: 0,
+      displayedBaseMap: null,
     };
   }
 
@@ -295,10 +296,7 @@ class MapComponent extends React.Component {
     const projection = getProjection(this.srs);
     projection.setExtent(initialExtent);
 
-    const initialLayers =
-      this.context.currentBasemapName === "nomap"
-        ? []
-        : [basemaps.find(bm => bm.shortName === this.context.currentBasemapName).layer];
+    this.setState({ displayedBaseMap: this.context.currentBasemapName });
 
     this.map = new Map({
       controls: defaultControls({
@@ -310,7 +308,7 @@ class MapComponent extends React.Component {
           collapseLabel: "",
         },
       }),
-      layers: initialLayers,
+      layers: [getBasemap(this.context.currentBasemapName)],
       target: "map",
       view: new View({
         maxResolution: 611,
@@ -426,19 +424,13 @@ class MapComponent extends React.Component {
     this.handleResize();
   }
 
-  componentDidUpdate(prevProps, prevState, prevContext) {
+  componentDidUpdate(prevProps) {
     const { searchState, highlighted, hover: hoverCallback, layers } = this.props;
     const view = this.map.getView();
 
-    // update base map if context has changed
-    if (this.context !== prevContext) {
-      if (this.context.currentBasemapName === "nomap") {
-        this.map.getLayers().item(0).setOpacity(0);
-      } else {
-        const newBasemap = basemaps.find(bm => bm.shortName === this.context.currentBasemapName).layer;
-        newBasemap.setOpacity(1);
-        this.map.getLayers().setAt(0, newBasemap);
-      }
+    if (this.context.currentBasemapName !== this.state.displayedBaseMap) {
+      this.setState({ displayedBaseMap: this.context.currentBasemapName });
+      updateBasemap(this.map, this.context.currentBasemapName);
     }
 
     if (Object.keys(layers).length !== 0) {

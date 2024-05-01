@@ -18,7 +18,7 @@ import { getHeight } from "../../api-lib/index";
 import { fetchApiV2 } from "../../api/fetchApiV2";
 import ZoomControls from "./zoomControls";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
-import { swissExtent, basemaps } from "../../components/basemapSelector/basemaps";
+import { swissExtent, updateBasemap, getBasemap } from "../../components/basemapSelector/basemaps";
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
 import { projections } from "../../commons/map/mapProjections";
 import { detailMapStyleFunction } from "../../commons/map/mapStyleFunctions";
@@ -46,6 +46,7 @@ class PointComponent extends React.Component {
       canton: null,
       municipality: null,
       address: false,
+      displayedBaseMap: null,
     };
   }
 
@@ -56,10 +57,9 @@ class PointComponent extends React.Component {
     ];
     const projection = getProjection(this.srs);
     projection.setExtent(swissExtent);
-    const initialLayers =
-      this.context.currentBasemapName === "nomap"
-        ? []
-        : [basemaps.find(bm => bm.shortName === this.context.currentBasemapName).layer];
+
+    this.setState({ displayedBaseMap: this.context.currentBasemapName });
+
     this.map = new Map({
       controls: defaultControls({
         attribution: true,
@@ -69,7 +69,7 @@ class PointComponent extends React.Component {
           collapsible: false,
         },
       }),
-      layers: initialLayers,
+      layers: [getBasemap(this.context.currentBasemapName)],
       target: "point",
       view: new View({
         resolution: this.state.point !== null ? 1 : 500,
@@ -100,18 +100,12 @@ class PointComponent extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState, prevContext) {
+  componentDidUpdate(prevProps) {
     const { x, y, isEditable } = this.props;
 
-    // update base map if context has changed
-    if (this.context !== prevContext) {
-      if (this.context.currentBasemapName === "nomap") {
-        this.map.getLayers().item(0).setOpacity(0);
-      } else {
-        const newBasemap = basemaps.find(bm => bm.shortName === this.context.currentBasemapName).layer;
-        newBasemap.setOpacity(1);
-        this.map.getLayers().setAt(0, newBasemap);
-      }
+    if (this.context.currentBasemapName !== this.state.displayedBaseMap) {
+      this.setState({ displayedBaseMap: this.context.currentBasemapName });
+      updateBasemap(this.map, this.context.currentBasemapName);
     }
 
     // update map if props have changed or no feature is present.
