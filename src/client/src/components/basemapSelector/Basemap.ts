@@ -1,9 +1,9 @@
 import LayerGroup from "ol/layer/Group";
 import TileLayer from "ol/layer/Tile";
-import WMTS from "ol/source/WMTS";
+import XYZ from "ol/source/XYZ";
 
 export interface Basemap {
   previewImg: string;
   shortName: string;
-  layer: TileLayer<WMTS> | LayerGroup;
+  layer: TileLayer<XYZ> | LayerGroup;
 }

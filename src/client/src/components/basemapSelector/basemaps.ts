@@ -1,8 +1,9 @@
 import TileLayer from "ol/layer/Tile";
-import WMTSTileGrid from "ol/tilegrid/WMTS";
 import LayerGroup from "ol/layer/Group";
-import WMTS from "ol/source/WMTS";
 import { Basemap } from "./Basemap";
+import WMTS from "ol/source/WMTS";
+import WMTSTileGrid from "ol/tilegrid/WMTS";
+import XYZ from "ol/source/XYZ";
 import { ProjectionLike, get as getProjection } from "ol/proj";
 
 export const swissExtent: number[] = [2420000, 1030000, 2900000, 1350000];
@@ -19,8 +20,6 @@ const style = "default";
 const crossOrigin = "anonymous";
 const attributions: string =
   '&copy; Data: <a style="color: black; text-decoration: underline;" href="https://www.swisstopo.admin.ch">swisstopo</a>';
-const wmtsBaseUrl =
-  "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.jpeg";
 const matrixIds: string[] = [];
 for (let i = 0; i < resolutions.length; i++) {
   matrixIds.push(i.toString());
@@ -42,16 +41,10 @@ const baseLayerNames = {
 const createLayer = (layerName: string) => {
   return new TileLayer({
     minResolution: 0.1,
-    source: new WMTS({
-      layer: layerName,
-      url: wmtsBaseUrl,
+    source: new XYZ({
+      url: `https://wmts.geo.admin.ch/1.0.0/${layerName}/default/current/3857/{z}/{x}/{y}.jpeg`,
       crossOrigin,
       attributions,
-      requestEncoding,
-      style,
-      matrixSet,
-      tileGrid,
-      projection,
     }),
   });
 };
@@ -64,16 +57,10 @@ export const basemaps: Basemap[] = [
       layers: [
         new TileLayer({
           minResolution: 2.5,
-          source: new WMTS({
-            layer: baseLayerNames.colormap,
-            url: wmtsBaseUrl,
+          source: new XYZ({
+            url: `https://wmts.geo.admin.ch/1.0.0/${baseLayerNames.colormap}/default/current/3857/{z}/{x}/{y}.jpeg`,
             crossOrigin,
             attributions,
-            tileGrid,
-            projection,
-            requestEncoding,
-            style,
-            matrixSet,
           }),
         }),
         new TileLayer({
