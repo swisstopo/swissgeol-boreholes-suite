@@ -55,6 +55,7 @@ class BoreholeForm extends React.Component {
     this.updateNumber = this.updateNumber.bind(this);
     this.updateChange = this.updateChange.bind(this);
     this.patch = this.patch.bind(this);
+    this.setStateBound = this.setState.bind(this);
   }
 
   componentDidMount() {
@@ -280,7 +281,7 @@ class BoreholeForm extends React.Component {
                   borehole={borehole}
                   identifier={this.state.identifier}
                   identifierValue={this.state.identifierValue}
-                  setState={this.setState.bind(this)}
+                  setState={this.setStateBound}
                   updateBorehole={this.props.updateBorehole}
                   user={user}></IdentifierSegment>
                 <NameSegment size={size} borehole={borehole} updateChange={this.updateChange} user={user}></NameSegment>

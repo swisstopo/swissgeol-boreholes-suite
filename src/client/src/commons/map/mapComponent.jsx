@@ -579,7 +579,7 @@ class MapComponent extends React.Component {
         <Sidebar
           sidebarRef={this.sidebarRef}
           state={this.state}
-          setState={this.setState.bind(this)}
+          setState={this.setStateBound}
           additionalMapLayers={this.props.layers}
         />
         <Box
