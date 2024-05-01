@@ -50,21 +50,16 @@ class PointComponent extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({ basemap: basemaps.find(bm => bm.shortName === this.context.currentBasemapName) }, () => {
-      basemaps.forEach(bm => {
-        const isSelected = bm.shortName === this.context.currentBasemapName;
-        bm.layer.setVisible(true);
-        bm.layer.setOpacity(isSelected ? 1 : 0);
-      });
-    });
-
     const center = [
       (swissExtent[2] - swissExtent[0]) / 2 + swissExtent[0],
       (swissExtent[3] - swissExtent[1]) / 2 + swissExtent[1],
     ];
     const projection = getProjection(this.srs);
     projection.setExtent(swissExtent);
-
+    const initialLayers =
+      this.context.currentBasemapName === "nomap"
+        ? []
+        : [basemaps.find(bm => bm.shortName === this.context.currentBasemapName).layer];
     this.map = new Map({
       controls: defaultControls({
         attribution: true,
@@ -74,11 +69,12 @@ class PointComponent extends React.Component {
           collapsible: false,
         },
       }),
-      layers: basemaps.map(b => b.layer),
+      layers: initialLayers,
       target: "point",
       view: new View({
         resolution: this.state.point !== null ? 1 : 500,
         minResolution: 0.075,
+        maxZoom: 27,
         center: this.state.point !== null ? this.state.point : center,
         projection: projection,
         extent: swissExtent,
@@ -104,10 +100,22 @@ class PointComponent extends React.Component {
     }
   }
 
-  componentDidUpdate(previousProps) {
+  componentDidUpdate(prevProps, prevState, prevContext) {
     const { x, y, isEditable } = this.props;
+
+    // update base map if context has changed
+    if (this.context !== prevContext) {
+      if (this.context.currentBasemapName === "nomap") {
+        this.map.getLayers().item(0).setOpacity(0);
+      } else {
+        const newBasemap = basemaps.find(bm => bm.shortName === this.context.currentBasemapName).layer;
+        newBasemap.setOpacity(1);
+        this.map.getLayers().setAt(0, newBasemap);
+      }
+    }
+
     // update map if props have changed or no feature is present.
-    if (x !== previousProps.x || y !== previousProps.y || this.position.getFeatures().length === 0) {
+    if (x !== prevProps.x || y !== prevProps.y || this.position.getFeatures().length === 0) {
       if (_.isNumber(x) && _.isNumber(y) && x + y !== 0) {
         const point = [x, y];
         if (!_.isEqual(point, this.state.point)) {
@@ -130,7 +138,7 @@ class PointComponent extends React.Component {
         }
       }
     }
-    if (isEditable !== previousProps.isEditable) {
+    if (isEditable !== prevProps.isEditable) {
       this.manageMapInteractions();
     }
   }
@@ -296,7 +304,7 @@ class PointComponent extends React.Component {
         />
         <ZoomControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
         <Box sx={{ position: "absolute", right: "0px", top: "425px" }}>
-          <BasemapSelector setState={this.setStateBound} marginBottom="0px" />
+          <BasemapSelector marginBottom="0px" />
         </Box>
         <Box
           style={{

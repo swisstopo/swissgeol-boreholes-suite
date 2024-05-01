@@ -42,7 +42,6 @@ class MapComponent extends React.Component {
     this.fetchAndDisplayGeojson = this.fetchAndDisplayGeojson.bind(this);
     this.styleFunction = styleFunction.bind(this);
     this.clusterStyleFunction = clusterStyleFunction.bind(this);
-    this.loadBasemaps = this.loadBasemaps.bind(this);
     this.initializeMapLayers = this.initializeMapLayers.bind(this);
     this.calculateLayerZIndex = this.calculateLayerZIndex.bind(this);
     this.initializeMap = this.initializeMap.bind(this);
@@ -104,7 +103,7 @@ class MapComponent extends React.Component {
   }
 
   calculateLayerZIndex() {
-    return this.overlays.length + this.basemaps.length + 1;
+    return this.overlays.length + 1;
   }
 
   initializeMapLayers() {
@@ -236,6 +235,7 @@ class MapComponent extends React.Component {
         projection: getProjection(layer.conf.projection),
         tileGrid: new WMTSTileGrid(layer.conf.tileGrid),
       }),
+      zIndex: layer.position + 1,
     });
     wmtsLayer.set("name", identifier);
     this.overlays.push(wmtsLayer);
@@ -257,7 +257,7 @@ class MapComponent extends React.Component {
           transition: 0,
         },
       }),
-      zIndex: layer.position + this.basemaps.length + 1,
+      zIndex: layer.position + 1,
     });
     wmsLayer.set("name", identifier);
     this.overlays.push(wmsLayer);
@@ -287,16 +287,6 @@ class MapComponent extends React.Component {
     }
   }
 
-  //////  LOAD BASEMAPS //////
-  loadBasemaps() {
-    this.basemaps = basemaps.map(b => b.layer);
-    basemaps.forEach(bm => {
-      const isSelected = bm.shortName === this.context.currentBasemapName;
-      bm.layer.setVisible(true);
-      bm.layer.setOpacity(isSelected ? 1 : 0);
-    });
-  }
-
   initializeMap(initialExtent) {
     const initialCenter = [
       (initialExtent[2] - initialExtent[0]) / 2 + initialExtent[0],
@@ -304,6 +294,11 @@ class MapComponent extends React.Component {
     ];
     const projection = getProjection(this.srs);
     projection.setExtent(initialExtent);
+
+    const initialLayers =
+      this.context.currentBasemapName === "nomap"
+        ? []
+        : [basemaps.find(bm => bm.shortName === this.context.currentBasemapName).layer];
 
     this.map = new Map({
       controls: defaultControls({
@@ -315,11 +310,12 @@ class MapComponent extends React.Component {
           collapseLabel: "",
         },
       }),
-      layers: this.basemaps,
+      layers: initialLayers,
       target: "map",
       view: new View({
         maxResolution: 611,
         minResolution: 0.075,
+        maxZoom: 12,
         resolution: 500,
         center: initialCenter,
         projection: projection,
@@ -413,14 +409,13 @@ class MapComponent extends React.Component {
       if (overlay) {
         overlay.setVisible(layers[identifier].visibility);
         overlay.setOpacity(1 - layers[identifier].transparency / 100);
-        overlay.setZIndex(layers[identifier].position + this.basemaps.length + 1);
+        overlay.setZIndex(layers[identifier].position + 1);
       }
     });
   }
 
   //////  COMPONENT HOOKS //////
   componentDidMount() {
-    this.loadBasemaps();
     this.initializeMap(swissExtent);
 
     // Load additional user layers
@@ -431,9 +426,20 @@ class MapComponent extends React.Component {
     this.handleResize();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState, prevContext) {
     const { searchState, highlighted, hover: hoverCallback, layers } = this.props;
     const view = this.map.getView();
+
+    // update base map if context has changed
+    if (this.context !== prevContext) {
+      if (this.context.currentBasemapName === "nomap") {
+        this.map.getLayers().item(0).setOpacity(0);
+      } else {
+        const newBasemap = basemaps.find(bm => bm.shortName === this.context.currentBasemapName).layer;
+        newBasemap.setOpacity(1);
+        this.map.getLayers().setAt(0, newBasemap);
+      }
+    }
 
     if (Object.keys(layers).length !== 0) {
       this.addUserLayers(view.getProjection().getExtent());
@@ -593,7 +599,7 @@ class MapComponent extends React.Component {
           }}
         />
         <NamePopup state={this.state}></NamePopup>
-        <BasemapSelector setState={this.setStateBound} marginBottom={"30px"} />
+        <BasemapSelector marginBottom={"30px"} />
         <ZoomControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
       </Box>
     );
