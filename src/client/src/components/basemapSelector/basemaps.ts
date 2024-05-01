@@ -81,7 +81,7 @@ export const basemaps: Basemap[] = [
           maxResolution: 2.5,
           source: new WMTS({
             layer: baseLayerNames.detailedColormap,
-            url: wmtsBaseUrl,
+            url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
             crossOrigin,
             attributions,
             tileGrid,
