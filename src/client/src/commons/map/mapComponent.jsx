@@ -25,7 +25,7 @@ import LayerSelectControl from "./layerSelectControl";
 import Sidebar from "./sidebar";
 import NamePopup from "./namePopup";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
-import { basemaps } from "../../components/basemapSelector/basemaps";
+import { swissExtent, basemaps } from "../../components/basemapSelector/basemaps";
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
 import { styleFunction, clusterStyleFunction } from "./mapStyleFunctions";
 import { projections } from "./mapProjections";
@@ -291,8 +291,9 @@ class MapComponent extends React.Component {
   loadBasemaps() {
     this.basemaps = basemaps.map(b => b.layer);
     basemaps.forEach(bm => {
-      const isVisible = bm.shortName === this.context.currentBasemapName;
-      bm.layer.setVisible(isVisible);
+      const isSelected = bm.shortName === this.context.currentBasemapName;
+      bm.layer.setVisible(true);
+      bm.layer.setOpacity(isSelected ? 1 : 0);
     });
   }
 
@@ -318,7 +319,7 @@ class MapComponent extends React.Component {
       target: "map",
       view: new View({
         maxResolution: 611,
-        minResolution: 0.1,
+        minResolution: 0.075,
         resolution: 500,
         center: initialCenter,
         projection: projection,
@@ -420,11 +421,10 @@ class MapComponent extends React.Component {
   //////  COMPONENT HOOKS //////
   componentDidMount() {
     this.loadBasemaps();
-    const initialExtent = [2420000, 1030000, 2900000, 1350000];
-    this.initializeMap(initialExtent);
+    this.initializeMap(swissExtent);
 
     // Load additional user layers
-    this.addUserLayers(initialExtent);
+    this.addUserLayers(swissExtent);
 
     // Load borehole points
     this.fetchAndDisplayGeojson();

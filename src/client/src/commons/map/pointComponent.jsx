@@ -18,7 +18,7 @@ import { getHeight } from "../../api-lib/index";
 import { fetchApiV2 } from "../../api/fetchApiV2";
 import ZoomControls from "./zoomControls";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
-import { basemaps } from "../../components/basemapSelector/basemaps";
+import { swissExtent, basemaps } from "../../components/basemapSelector/basemaps";
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
 import { projections } from "../../commons/map/mapProjections";
 import { detailMapStyleFunction } from "../../commons/map/mapStyleFunctions";
@@ -52,15 +52,18 @@ class PointComponent extends React.Component {
   componentDidMount() {
     this.setState({ basemap: basemaps.find(bm => bm.shortName === this.context.currentBasemapName) }, () => {
       basemaps.forEach(bm => {
-        const isVisible = bm.shortName === this.context.currentBasemapName;
-        bm.layer.setVisible(isVisible);
+        const isSelected = bm.shortName === this.context.currentBasemapName;
+        bm.layer.setVisible(true);
+        bm.layer.setOpacity(isSelected ? 1 : 0);
       });
     });
 
-    const extent = [2420000, 1030000, 2900000, 1350000];
-    const center = [(extent[2] - extent[0]) / 2 + extent[0], (extent[3] - extent[1]) / 2 + extent[1]];
+    const center = [
+      (swissExtent[2] - swissExtent[0]) / 2 + swissExtent[0],
+      (swissExtent[3] - swissExtent[1]) / 2 + swissExtent[1],
+    ];
     const projection = getProjection(this.srs);
-    projection.setExtent(extent);
+    projection.setExtent(swissExtent);
 
     this.map = new Map({
       controls: defaultControls({
@@ -75,10 +78,10 @@ class PointComponent extends React.Component {
       target: "point",
       view: new View({
         resolution: this.state.point !== null ? 1 : 500,
-        minResolution: 0.1,
+        minResolution: 0.075,
         center: this.state.point !== null ? this.state.point : center,
         projection: projection,
-        extent: extent,
+        extent: swissExtent,
         showFullExtent: true,
       }),
     });
