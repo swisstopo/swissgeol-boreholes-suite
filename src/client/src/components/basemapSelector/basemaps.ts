@@ -41,9 +41,8 @@ const baseLayerNames = {
 
 const createLayer = (layerName: string) => {
   return new TileLayer({
-    minResolution: 0.1,
     source: new XYZ({
-      url: `https://wmts.geo.admin.ch/1.0.0/${layerName}/default/current/3857/{z}/{x}/{y}.jpeg`,
+      url: `https://wmts10.geo.admin.ch/1.0.0/${layerName}/default/current/3857/{z}/{x}/{y}.jpeg`,
       crossOrigin,
       attributions,
     }),
@@ -59,7 +58,7 @@ export const basemaps: Basemap[] = [
         new TileLayer({
           minResolution: 2.5,
           source: new XYZ({
-            url: `https://wmts.geo.admin.ch/1.0.0/${baseLayerNames.colormap}/default/current/3857/{z}/{x}/{y}.jpeg`,
+            url: `https://wmts10.geo.admin.ch/1.0.0/${baseLayerNames.colormap}/default/current/3857/{z}/{x}/{y}.jpeg`,
             crossOrigin,
             attributions,
           }),

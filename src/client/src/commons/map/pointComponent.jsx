@@ -73,8 +73,7 @@ class PointComponent extends React.Component {
       target: "point",
       view: new View({
         resolution: this.state.point !== null ? 1 : 500,
-        minResolution: 0.075,
-        maxZoom: 27,
+        minResolution: 0.05,
         center: this.state.point !== null ? this.state.point : center,
         projection: projection,
         extent: swissExtent,
