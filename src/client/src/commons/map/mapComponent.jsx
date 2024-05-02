@@ -25,7 +25,7 @@ import LayerSelectControl from "./layerSelectControl";
 import Sidebar from "./sidebar";
 import NamePopup from "./namePopup";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
-import { swissExtent, basemaps } from "../../components/basemapSelector/basemaps";
+import { swissExtent, updateBasemap, getBasemap } from "../../components/basemapSelector/basemaps";
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
 import { styleFunction, clusterStyleFunction } from "./mapStyleFunctions";
 import { projections } from "./mapProjections";
@@ -42,7 +42,6 @@ class MapComponent extends React.Component {
     this.fetchAndDisplayGeojson = this.fetchAndDisplayGeojson.bind(this);
     this.styleFunction = styleFunction.bind(this);
     this.clusterStyleFunction = clusterStyleFunction.bind(this);
-    this.loadBasemaps = this.loadBasemaps.bind(this);
     this.initializeMapLayers = this.initializeMapLayers.bind(this);
     this.calculateLayerZIndex = this.calculateLayerZIndex.bind(this);
     this.initializeMap = this.initializeMap.bind(this);
@@ -81,6 +80,7 @@ class MapComponent extends React.Component {
       featureExtent: [],
       sidebar: false,
       sidebarWidth: 0,
+      displayedBaseMap: null,
     };
   }
 
@@ -104,7 +104,7 @@ class MapComponent extends React.Component {
   }
 
   calculateLayerZIndex() {
-    return this.overlays.length + this.basemaps.length + 1;
+    return this.overlays.length + 1;
   }
 
   initializeMapLayers() {
@@ -236,6 +236,7 @@ class MapComponent extends React.Component {
         projection: getProjection(layer.conf.projection),
         tileGrid: new WMTSTileGrid(layer.conf.tileGrid),
       }),
+      zIndex: layer.position + 1,
     });
     wmtsLayer.set("name", identifier);
     this.overlays.push(wmtsLayer);
@@ -257,7 +258,7 @@ class MapComponent extends React.Component {
           transition: 0,
         },
       }),
-      zIndex: layer.position + this.basemaps.length + 1,
+      zIndex: layer.position + 1,
     });
     wmsLayer.set("name", identifier);
     this.overlays.push(wmsLayer);
@@ -287,16 +288,6 @@ class MapComponent extends React.Component {
     }
   }
 
-  //////  LOAD BASEMAPS //////
-  loadBasemaps() {
-    this.basemaps = basemaps.map(b => b.layer);
-    basemaps.forEach(bm => {
-      const isSelected = bm.shortName === this.context.currentBasemapName;
-      bm.layer.setVisible(true);
-      bm.layer.setOpacity(isSelected ? 1 : 0);
-    });
-  }
-
   initializeMap(initialExtent) {
     const initialCenter = [
       (initialExtent[2] - initialExtent[0]) / 2 + initialExtent[0],
@@ -304,6 +295,8 @@ class MapComponent extends React.Component {
     ];
     const projection = getProjection(this.srs);
     projection.setExtent(initialExtent);
+
+    this.setState({ displayedBaseMap: this.context.currentBasemapName });
 
     this.map = new Map({
       controls: defaultControls({
@@ -315,11 +308,11 @@ class MapComponent extends React.Component {
           collapseLabel: "",
         },
       }),
-      layers: this.basemaps,
+      layers: [getBasemap(this.context.currentBasemapName)],
       target: "map",
       view: new View({
         maxResolution: 611,
-        minResolution: 0.075,
+        minResolution: 0.05,
         resolution: 500,
         center: initialCenter,
         projection: projection,
@@ -413,14 +406,13 @@ class MapComponent extends React.Component {
       if (overlay) {
         overlay.setVisible(layers[identifier].visibility);
         overlay.setOpacity(1 - layers[identifier].transparency / 100);
-        overlay.setZIndex(layers[identifier].position + this.basemaps.length + 1);
+        overlay.setZIndex(layers[identifier].position + 1);
       }
     });
   }
 
   //////  COMPONENT HOOKS //////
   componentDidMount() {
-    this.loadBasemaps();
     this.initializeMap(swissExtent);
 
     // Load additional user layers
@@ -434,6 +426,11 @@ class MapComponent extends React.Component {
   componentDidUpdate(prevProps) {
     const { searchState, highlighted, hover: hoverCallback, layers } = this.props;
     const view = this.map.getView();
+
+    if (this.context.currentBasemapName !== this.state.displayedBaseMap) {
+      this.setState({ displayedBaseMap: this.context.currentBasemapName });
+      updateBasemap(this.map, this.context.currentBasemapName);
+    }
 
     if (Object.keys(layers).length !== 0) {
       this.addUserLayers(view.getProjection().getExtent());
@@ -579,7 +576,7 @@ class MapComponent extends React.Component {
         <Sidebar
           sidebarRef={this.sidebarRef}
           state={this.state}
-          setState={this.setState.bind(this)}
+          setState={this.setStateBound}
           additionalMapLayers={this.props.layers}
         />
         <Box
@@ -593,7 +590,7 @@ class MapComponent extends React.Component {
           }}
         />
         <NamePopup state={this.state}></NamePopup>
-        <BasemapSelector setState={this.setStateBound} marginBottom={"30px"} />
+        <BasemapSelector marginBottom={"30px"} />
         <ZoomControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
       </Box>
     );

@@ -18,7 +18,7 @@ import { getHeight } from "../../api-lib/index";
 import { fetchApiV2 } from "../../api/fetchApiV2";
 import ZoomControls from "./zoomControls";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
-import { swissExtent, basemaps } from "../../components/basemapSelector/basemaps";
+import { swissExtent, updateBasemap, getBasemap } from "../../components/basemapSelector/basemaps";
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
 import { projections } from "../../commons/map/mapProjections";
 import { detailMapStyleFunction } from "../../commons/map/mapStyleFunctions";
@@ -46,24 +46,19 @@ class PointComponent extends React.Component {
       canton: null,
       municipality: null,
       address: false,
+      displayedBaseMap: null,
     };
   }
 
   componentDidMount() {
-    this.setState({ basemap: basemaps.find(bm => bm.shortName === this.context.currentBasemapName) }, () => {
-      basemaps.forEach(bm => {
-        const isSelected = bm.shortName === this.context.currentBasemapName;
-        bm.layer.setVisible(true);
-        bm.layer.setOpacity(isSelected ? 1 : 0);
-      });
-    });
-
     const center = [
       (swissExtent[2] - swissExtent[0]) / 2 + swissExtent[0],
       (swissExtent[3] - swissExtent[1]) / 2 + swissExtent[1],
     ];
     const projection = getProjection(this.srs);
     projection.setExtent(swissExtent);
+
+    this.setState({ displayedBaseMap: this.context.currentBasemapName });
 
     this.map = new Map({
       controls: defaultControls({
@@ -74,11 +69,11 @@ class PointComponent extends React.Component {
           collapsible: false,
         },
       }),
-      layers: basemaps.map(b => b.layer),
+      layers: [getBasemap(this.context.currentBasemapName)],
       target: "point",
       view: new View({
         resolution: this.state.point !== null ? 1 : 500,
-        minResolution: 0.075,
+        minResolution: 0.05,
         center: this.state.point !== null ? this.state.point : center,
         projection: projection,
         extent: swissExtent,
@@ -104,10 +99,16 @@ class PointComponent extends React.Component {
     }
   }
 
-  componentDidUpdate(previousProps) {
+  componentDidUpdate(prevProps) {
     const { x, y, isEditable } = this.props;
+
+    if (this.context.currentBasemapName !== this.state.displayedBaseMap) {
+      this.setState({ displayedBaseMap: this.context.currentBasemapName });
+      updateBasemap(this.map, this.context.currentBasemapName);
+    }
+
     // update map if props have changed or no feature is present.
-    if (x !== previousProps.x || y !== previousProps.y || this.position.getFeatures().length === 0) {
+    if (x !== prevProps.x || y !== prevProps.y || this.position.getFeatures().length === 0) {
       if (_.isNumber(x) && _.isNumber(y) && x + y !== 0) {
         const point = [x, y];
         if (!_.isEqual(point, this.state.point)) {
@@ -130,7 +131,7 @@ class PointComponent extends React.Component {
         }
       }
     }
-    if (isEditable !== previousProps.isEditable) {
+    if (isEditable !== prevProps.isEditable) {
       this.manageMapInteractions();
     }
   }
@@ -296,7 +297,7 @@ class PointComponent extends React.Component {
         />
         <ZoomControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
         <Box sx={{ position: "absolute", right: "0px", top: "425px" }}>
-          <BasemapSelector setState={this.setStateBound} marginBottom="0px" />
+          <BasemapSelector marginBottom="0px" />
         </Box>
         <Box
           style={{
