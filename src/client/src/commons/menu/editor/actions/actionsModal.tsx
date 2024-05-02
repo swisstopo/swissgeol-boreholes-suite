@@ -73,7 +73,7 @@ const ActionsModal = ({ setState, state, refresh }: ActionsModalProps) => {
 
               // If response is of type ProblemDetails, show error message.
               else {
-                alertContext.error(`${responseBody}`);
+                alertContext.error(`${responseBody.detail}`);
               }
             } else if (response.status === 504) {
               alertContext.error(`${t("boreholesImportLongRunning")}`);
@@ -96,7 +96,16 @@ const ActionsModal = ({ setState, state, refresh }: ActionsModalProps) => {
   };
 
   return (
-    <>
+    <Modal
+      closeIcon
+      key="sb-em-5"
+      onClose={() => {
+        setState({
+          modal: false,
+        });
+      }}
+      open={state.modal === true}
+      size="large">
       <Segment clearing>
         <Header
           floated="left"
@@ -125,7 +134,7 @@ const ActionsModal = ({ setState, state, refresh }: ActionsModalProps) => {
           {state.upload === true ? <TranslationText id="import" /> : <TranslationText id="create" />}
         </Button>
       </Modal.Actions>
-    </>
+    </Modal>
   );
 };
 
