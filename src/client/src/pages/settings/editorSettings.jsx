@@ -39,6 +39,7 @@ class EditorSettings extends React.Component {
       proj4.defs(srs, proj);
     });
     register(proj4);
+    this.setStateBound = this.setState.bind(this);
     this.state = {
       fields: false,
       identifiers: false,
@@ -175,7 +176,7 @@ class EditorSettings extends React.Component {
             );
           }}
           state={this.state}
-          setState={this.setState.bind(this)}></MapSettings>
+          setState={this.setStateBound}></MapSettings>
 
         {this.state?.searchList?.map((filter, idx) => (
           <div key={idx}>

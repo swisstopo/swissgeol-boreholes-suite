@@ -42,7 +42,7 @@ const ImageBox = styled(Box)({
 
 const LargerImageBox = styled(ImageBox)({ height: "50px", width: "50px" });
 
-export const BasemapSelector = memo(({ setState, marginBottom }: { setState: any; marginBottom: string }) => {
+export const BasemapSelector = memo(({ marginBottom }: { setState: any; marginBottom: string }) => {
   const [showSelector, setShowSelector] = useState<boolean>(false);
   const { currentBasemapName, setBasemapName } = useContext(BasemapContext);
 
@@ -61,13 +61,6 @@ export const BasemapSelector = memo(({ setState, marginBottom }: { setState: any
 
   const onSelectBackground = (layerName: string) => {
     setBasemapName(layerName);
-    // Sets basemap display in parent component
-    setState({ basemap: layerName }, () => {
-      basemaps.forEach(bm => {
-        const isVisible = layerName !== "nomap" && bm.shortName === layerName;
-        bm.layer.setOpacity(isVisible ? 1 : 0);
-      });
-    });
   };
 
   const toggleShowSelector = () => {
