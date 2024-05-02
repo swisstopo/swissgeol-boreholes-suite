@@ -22,6 +22,7 @@ export interface ImportModalProps {
 export interface ActionsModalProps {
   setState: React.Dispatch<React.SetStateAction<EditorSearchState>>;
   state: {
+    modal: boolean;
     creating: boolean;
     selectedLithologyFile: Blob[] | null;
     selectedBoreholeAttachments: Blob[] | null;
