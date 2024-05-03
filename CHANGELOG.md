@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added borehole geometry panel.
+
 ## v2.0.687 - 2024-04-19
 
 ### Added
