@@ -83,6 +83,10 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/section*", req => {
     return (req.alias = `section_${req.method}`);
   });
+
+  cy.intercept("/api/v2/boreholegeometry?boreholeId=**", req => {
+    return (req.alias = `boreholegeometry_${req.method}`);
+  });
 };
 
 /**
