@@ -41,6 +41,7 @@ public class BdmsContext : DbContext
     public DbSet<CasingElement> CasingElements { get; set; }
     public DbSet<Section> Sections { get; set; }
     public DbSet<SectionElement> SectionElements { get; set; }
+    public DbSet<BoreholeGeometry> BoreholeGeometry { get; set; }
 
     public BdmsContext(DbContextOptions options)
         : base(options)
