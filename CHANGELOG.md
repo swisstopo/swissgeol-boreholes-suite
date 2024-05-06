@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed precisions where not correctly displayed for imported coordinates.
+
 ## v2.0.687 - 2024-04-19
 
 ### Added
@@ -35,7 +39,6 @@
 - Updated favicon for help.
 - Fixed zoom level when loading detail map.
 - Fixed authorization exception for users who have not yet been assigned to a role or workgroup.
-- Fixed precisions where not correctly displayed for imported coordinates.
 
 ## v2.0.644 - 2024-03-22
 
