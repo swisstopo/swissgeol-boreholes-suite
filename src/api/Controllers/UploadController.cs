@@ -310,8 +310,8 @@ public class UploadController : ControllerBase
         else
         {
             var decimalValue = coordinate.Value.ToString(CultureInfo.InvariantCulture);
-            var index = decimalValue.IndexOf('.', StringComparison.Ordinal);
-            return index == -1 ? 0 : decimalValue.Length - index - 1;
+            var decimalSubstrings = decimalValue.Split(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+            return decimalSubstrings.Length > 1 ? decimalSubstrings[1].Length : 0;
         }
     }
 
