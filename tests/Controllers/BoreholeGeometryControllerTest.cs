@@ -26,7 +26,7 @@ public class BoreholeGeometryControllerTest
         boreholeLockServiceMock
             .Setup(x => x.IsBoreholeLockedAsync(It.IsAny<int?>(), It.IsAny<string?>()))
             .ReturnsAsync(false);
-        controller = new BoreholeGeometryController(context, new Mock<ILogger<BoreholeGeometry>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new BoreholeGeometryController(context, new Mock<ILogger<BoreholeGeometryElement>>().Object, boreholeLockServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
 
         boreholeIdWithoutGeometry = context.Boreholes
             .Include(b => b.BoreholeGeometry)

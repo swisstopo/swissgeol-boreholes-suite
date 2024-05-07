@@ -35,7 +35,7 @@ public class BoreholeGeometryController : ControllerBase
         new PitchRoll(),
     };
 
-    public BoreholeGeometryController(BdmsContext context, ILogger<BoreholeGeometry> logger, IBoreholeLockService boreholeLockService)
+    public BoreholeGeometryController(BdmsContext context, ILogger<BoreholeGeometryElement> logger, IBoreholeLockService boreholeLockService)
     {
         this.context = context;
         this.logger = logger;
@@ -44,7 +44,7 @@ public class BoreholeGeometryController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<BoreholeGeometry>> GetAsync([FromQuery] int boreholeId)
+    public async Task<IEnumerable<BoreholeGeometryElement>> GetAsync([FromQuery] int boreholeId)
     {
         return await context.BoreholeGeometry
             .AsNoTracking()
@@ -99,7 +99,7 @@ public class BoreholeGeometryController : ControllerBase
         }
 
         // convert geometry data to BoreholeGeometry
-        IList<BoreholeGeometry> boreholeGeometry;
+        IList<BoreholeGeometryElement> boreholeGeometry;
         try
         {
             boreholeGeometry = format.ReadCsv(geometryFile, boreholeId);
@@ -133,7 +133,7 @@ public class BoreholeGeometryController : ControllerBase
         string Key { get; }
         string Name { get; }
         string CsvHeader { get; }
-        IList<BoreholeGeometry> ReadCsv(IFormFile file, int boreholeId);
+        IList<BoreholeGeometryElement> ReadCsv(IFormFile file, int boreholeId);
     }
 
     private static string GetCSVHeader<T>()
@@ -155,7 +155,7 @@ public class BoreholeGeometryController : ControllerBase
         private Lazy<string> expectedCsvHeader = new(GetCSVHeader<Geometry>);
         public string CsvHeader => expectedCsvHeader.Value;
 
-        public IList<BoreholeGeometry> ReadCsv(IFormFile file, int boreholeId)
+        public IList<BoreholeGeometryElement> ReadCsv(IFormFile file, int boreholeId)
         {
             using var reader = new StreamReader(file.OpenReadStream());
             using var csv = new CsvReader(reader, csvConfig);
@@ -164,9 +164,9 @@ public class BoreholeGeometryController : ControllerBase
             return ToBoreholeGeometry(data, boreholeId);
         }
 
-        public static List<BoreholeGeometry> ToBoreholeGeometry(IEnumerable<Geometry> data, int boreholeId)
+        public static List<BoreholeGeometryElement> ToBoreholeGeometry(IEnumerable<Geometry> data, int boreholeId)
         {
-            return data.Select(g => new BoreholeGeometry
+            return data.Select(g => new BoreholeGeometryElement
             {
                 BoreholeId = boreholeId,
                 X = g.X,
@@ -190,7 +190,7 @@ public class BoreholeGeometryController : ControllerBase
         private Lazy<string> expectedCsvHeader = new(GetCSVHeader<Geometry>);
         public string CsvHeader => expectedCsvHeader.Value;
 
-        public IList<BoreholeGeometry> ReadCsv(IFormFile file, int boreholeId)
+        public IList<BoreholeGeometryElement> ReadCsv(IFormFile file, int boreholeId)
         {
             using var reader = new StreamReader(file.OpenReadStream());
             using var csv = new CsvReader(reader, csvConfig);
@@ -264,7 +264,7 @@ public class BoreholeGeometryController : ControllerBase
         private Lazy<string> expectedCsvHeader = new(GetCSVHeader<Geometry>);
         public string CsvHeader => expectedCsvHeader.Value;
 
-        public IList<BoreholeGeometry> ReadCsv(IFormFile file, int boreholeId)
+        public IList<BoreholeGeometryElement> ReadCsv(IFormFile file, int boreholeId)
         {
             using var reader = new StreamReader(file.OpenReadStream());
             using var csv = new CsvReader(reader, csvConfig);

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace BDMS.Models;
 
 [Table("borehole_geometry")]
-public class BoreholeGeometry : IIdentifyable
+public class BoreholeGeometryElement : IIdentifyable
 {
     /// <inheritdoc />
     [JsonIgnore]
@@ -19,7 +19,7 @@ public class BoreholeGeometry : IIdentifyable
     public int BoreholeId { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="BoreholeGeometry"/>'s borehole.
+    /// Gets or sets the <see cref="BoreholeGeometryElement"/>'s borehole.
     /// </summary>
     [JsonIgnore]
     public Borehole? Borehole { get; set; }

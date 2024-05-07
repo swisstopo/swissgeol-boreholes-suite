@@ -954,7 +954,7 @@ public static class BdmsContextExtensions
 
         // Seed borehole geometries
         var boreholeGeometry_ids = 21_000_000;
-        var geometriesToInsert = new List<BoreholeGeometry>(richBoreholeRange.Count * 100);
+        var geometryElementsToInsert = new List<BoreholeGeometryElement>(richBoreholeRange.Count * 100);
         var pointCountPerBorehole = 50;
         foreach (var boreholeId in richBoreholeRange)
         {
@@ -966,13 +966,13 @@ public static class BdmsContextExtensions
             var radius = (r.NextDouble() * 1000) + 2000;
 
             // first point is at the borehole location (0, 0, 0)
-            geometriesToInsert.Add(new BoreholeGeometry { Id = boreholeGeometry_ids++, BoreholeId = boreholeId, X = 0, Y = 0, Z = 0 });
+            geometryElementsToInsert.Add(new BoreholeGeometryElement { Id = boreholeGeometry_ids++, BoreholeId = boreholeId, X = 0, Y = 0, Z = 0 });
 
             for (int i = 1; i < pointCountPerBorehole; i++)
             {
                 var currentInc = inc * i / (pointCountPerBorehole - 1);
                 var currentAzi = azi + ((Math.PI / 4) * i / (pointCountPerBorehole - 1));
-                geometriesToInsert.Add(new BoreholeGeometry
+                geometryElementsToInsert.Add(new BoreholeGeometryElement
                 {
                     Id = boreholeGeometry_ids++,
                     BoreholeId = boreholeId,
@@ -984,7 +984,7 @@ public static class BdmsContextExtensions
 #pragma warning restore CA5394 // Do not use insecure randomness
         }
 
-        context.BulkInsert(geometriesToInsert, bulkConfig);
+        context.BulkInsert(geometryElementsToInsert, bulkConfig);
         context.SaveChanges();
 
         // Sync all database sequences
