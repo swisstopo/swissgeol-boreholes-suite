@@ -84,7 +84,7 @@ const DescriptionLayers = props => {
         tempDescriptions.push(description);
       });
     setDisplayDescriptions(tempDescriptions);
-  }, [descriptions, layers, t, theme]);
+  }, [descriptions, layers, t]);
 
   // updates description if layer is deleted
   useEffect(() => {
