@@ -32,3 +32,9 @@ export interface MenuItemsProps {
   boreholes: BoreholesData;
   user: User;
 }
+
+export interface BottomBarProps {
+  toggleBottomDrawer: (open: boolean) => void;
+  bottomDrawerOpen: boolean;
+  boreholes: BoreholesData;
+}

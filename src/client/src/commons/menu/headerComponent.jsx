@@ -5,8 +5,9 @@ import { List, Icon, Popup } from "semantic-ui-react";
 import { useHistory } from "react-router-dom";
 import TranslationText from "../form/translationText";
 import TranslationKeys from "../translationKeys";
+import { theme } from "../../AppTheme";
 
-const MenuComponent = ({ user, auth }) => {
+const HeaderComponent = ({ user, auth }) => {
   const baseUrl = window.location.host;
   const history = useHistory();
 
@@ -14,12 +15,12 @@ const MenuComponent = ({ user, auth }) => {
     <div
       style={{
         alignItems: "center",
-        boxShadow: "rgba(0, 0, 0, 0.17) 0px 4px 12px",
+        boxShadow: theme.palette.boxShadow + " 0px 4px 12px",
         display: "flex",
         flexDirection: "row",
         height: "5em",
         padding: "0px 1em",
-        zIndex: 10,
+        zIndex: "1500",
       }}>
       <img
         alt="Swiss Logo"
@@ -186,6 +187,6 @@ const mapDispatchToProps = dispatch => {
 const ConnectedMenuComponent = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withAuth(withTranslation(["common"])(MenuComponent)));
+)(withAuth(withTranslation(["common"])(HeaderComponent)));
 
 export default ConnectedMenuComponent;
