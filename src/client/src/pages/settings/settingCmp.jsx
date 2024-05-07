@@ -2,7 +2,7 @@ import { withTranslation } from "react-i18next";
 import { Route, Switch } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 import MenuSettings from "../../commons/menu/settings/menuSettings";
-import HeaderComponent from "../../commons/menu/headerComponent";
+import MenuContainer from "../../commons/menu/menuContainer";
 import EditorSettings from "./editorSettings";
 import AdminSettings from "./admin/adminSettings";
 import AboutSettings from "./aboutSettings";
@@ -17,7 +17,7 @@ const SettingCmp = () => {
         flexDirection: "column",
         height: "100%",
       }}>
-      <HeaderComponent />
+      <MenuContainer />
       <div
         style={{
           flex: "1 1 100%",
