@@ -23,6 +23,7 @@ import { FormSelect } from "../../../../components/form/form";
 import { DevTool } from "@hookform/devtools";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { AlertContext } from "../../../../components/alert/alertContext";
+import { StackHalfWidth } from "../../../../components/baseComponents.js";
 
 const GeometryImport = ({ boreholeId }) => {
   const { t } = useTranslation();
@@ -72,7 +73,7 @@ const GeometryImport = ({ boreholeId }) => {
           <FormProvider {...formMethods}>
             <form onSubmit={formMethods.handleSubmit(uploadGeometryCSV)}>
               <Stack direction="row" alignItems="flex-start">
-                <Stack sx={{ width: "50%" }} spacing={2} direction="column">
+                <StackHalfWidth spacing={2}>
                   <FormSelect
                     fieldName="geometryFormat"
                     label="boreholeGeometryFormat"
@@ -100,7 +101,7 @@ const GeometryImport = ({ boreholeId }) => {
                       />
                     </>
                   )}
-                </Stack>
+                </StackHalfWidth>
                 <Controller
                   name="geometryFile"
                   control={formMethods.control}
