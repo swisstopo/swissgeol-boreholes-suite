@@ -68,6 +68,7 @@ describe("Test the borehole bulk edit feature.", () => {
 
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="showTableButton"]').click();
     cy.wait("@borehole");
 
     // select the boreholes for bulk edit

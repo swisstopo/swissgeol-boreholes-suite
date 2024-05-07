@@ -28,7 +28,7 @@ const BottomBar = ({ toggleBottomDrawer, bottomDrawerOpen, boreholes }: BottomBa
       <BoreholeNumbersPreview boreholes={boreholes} />
       <Box sx={{ flex: 1 }}></Box>
       <Box>{bottomDrawerOpen ? t("hideTable") : t("showTable")} </Box>
-      <IconButton onClick={() => toggleBottomDrawer(!bottomDrawerOpen)}>
+      <IconButton onClick={() => toggleBottomDrawer(!bottomDrawerOpen)} data-cy="showTableButton">
         {bottomDrawerOpen ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
       </IconButton>
     </Box>

@@ -12,6 +12,7 @@ describe("Tests for 'Location' edit page.", () => {
     cy.contains("a", "Stop editing").click();
     cy.wait("@edit_unlock");
     cy.contains("h3", "Done").click();
+    cy.get('[data-cy="showTableButton"]').click();
     cy.wait(["@edit_list", "@borehole"]);
 
     // search the newly created borehole and delete it
