@@ -12,7 +12,7 @@ public class BoreholeGeometryElement : IIdentifyable
     public int Id { get; set; }
 
     /// <summary>
-    /// Gets or sets foreign key for the <see cref="Models.Borehole"/> of this <see cref="Completion"/>.
+    /// Gets or sets foreign key for the <see cref="Models.Borehole"/> of this <see cref="BoreholeGeometryElement"/>.
     /// </summary>
     [JsonIgnore]
     [Column("borehole_id")]
