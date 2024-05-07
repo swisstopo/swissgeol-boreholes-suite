@@ -6,6 +6,10 @@
 
 - Added borehole geometry panel.
 
+### Fixed
+
+- Fixed precisions where not correctly displayed for imported coordinates.
+
 ## v2.0.687 - 2024-04-19
 
 ### Added
