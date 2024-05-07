@@ -121,12 +121,20 @@ public class UploadController : ControllerBase
                         borehole.OriginalReferenceSystem = ReferenceSystem.LV95;
                         borehole.LocationX = boreholeImport.Location_x;
                         borehole.LocationY = boreholeImport.Location_y;
+                        borehole.PrecisionLocationX = GetPrecision(boreholeImport.Location_x);
+                        borehole.PrecisionLocationY = GetPrecision(boreholeImport.Location_y);
+                        borehole.PrecisionLocationXLV03 = Math.Max(borehole.PrecisionLocationX.Value, borehole.PrecisionLocationY.Value);
+                        borehole.PrecisionLocationYLV03 = borehole.PrecisionLocationXLV03;
                     }
                     else
                     {
                         borehole.OriginalReferenceSystem = ReferenceSystem.LV03;
                         borehole.LocationXLV03 = boreholeImport.Location_x;
                         borehole.LocationYLV03 = boreholeImport.Location_y;
+                        borehole.PrecisionLocationXLV03 = GetPrecision(boreholeImport.Location_x);
+                        borehole.PrecisionLocationYLV03 = GetPrecision(boreholeImport.Location_y);
+                        borehole.PrecisionLocationX = Math.Max(borehole.PrecisionLocationXLV03.Value, borehole.PrecisionLocationYLV03.Value);
+                        borehole.PrecisionLocationY = borehole.PrecisionLocationX;
                     }
                 }
 
@@ -291,6 +299,20 @@ public class UploadController : ControllerBase
         return new[] { lithologyImport.ColorIds, lithologyImport.OrganicComponentIds, lithologyImport.GrainShapeIds, lithologyImport.GrainGranularityIds, lithologyImport.Uscs3Ids, lithologyImport.DebrisIds }
             .SelectMany(str => str.Split(','))
             .Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
+    }
+
+    internal int GetPrecision(double? coordinate)
+    {
+        if (coordinate == null)
+        {
+            return 0;
+        }
+        else
+        {
+            var decimalValue = coordinate.Value.ToString(CultureInfo.InvariantCulture);
+            var decimalSubstrings = decimalValue.Split(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+            return decimalSubstrings.Length > 1 ? decimalSubstrings[1].Length : 0;
+        }
     }
 
     private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, IList<IFormFile>? attachments = null)
