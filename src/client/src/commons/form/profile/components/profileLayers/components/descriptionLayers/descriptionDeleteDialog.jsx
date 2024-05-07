@@ -1,13 +1,12 @@
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "@mui/material/styles";
 import { CancelButton, DeleteButton } from "../../../../../../../components/buttons/buttons";
+import { theme } from "../../../../../../../AppTheme";
 
 const DescriptionDeleteDialog = props => {
   const { item, setDescriptionIdSelectedForDelete, deleteMutation } = props;
   const { t } = useTranslation();
-  const theme = useTheme();
 
   return (
     <Stack

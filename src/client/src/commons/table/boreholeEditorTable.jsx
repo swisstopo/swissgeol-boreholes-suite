@@ -1,19 +1,16 @@
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-
 import DomainText from "../form/domain/domainText";
 import DateText from "../form/dateText";
 import TranslationText from "../form/translationText";
 import { NumericFormat } from "react-number-format";
 import { copyBorehole } from "../../api/fetchApiV2";
-
 import TTable from "./table";
-
 import { Button, Table, Icon, Checkbox, Segment, Modal, Header, Dropdown } from "semantic-ui-react";
-
 import { loadEditingBoreholes, getdBoreholeIds, deleteBoreholes } from "../../api-lib/index";
 import { AlertContext } from "../../components/alert/alertContext";
+import { theme } from "../../AppTheme";
 
 class BoreholeEditorTable extends TTable {
   static contextType = AlertContext;
@@ -319,7 +316,7 @@ class BoreholeEditorTable extends TTable {
         {all === true || selected.length > 0 ? (
           <div
             style={{
-              backgroundColor: "rgb(236, 236, 236)",
+              backgroundColor: theme.palette.background.lightgrey,
               color: "black",
               textAlign: "center",
               padding: "0.5em",

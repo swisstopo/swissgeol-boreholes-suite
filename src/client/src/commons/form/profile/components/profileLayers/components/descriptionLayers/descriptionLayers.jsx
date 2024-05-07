@@ -7,7 +7,7 @@ import DescriptionInput from "./descriptionInput";
 import DescriptionDisplay from "./descriptionDisplay";
 import DescriptionDeleteDialog from "./descriptionDeleteDialog";
 import ActionButtons from "./actionButtons";
-import { useTheme } from "@mui/material/styles";
+import { theme } from "../../../../../../../AppTheme";
 
 const DescriptionLayers = props => {
   const {
@@ -33,7 +33,6 @@ const DescriptionLayers = props => {
   const [previousLength, setPreviousLength] = useState(0);
 
   const { t } = useTranslation();
-  const theme = useTheme();
 
   const descriptionRefs = useMemo(
     () =>
@@ -189,7 +188,7 @@ const DescriptionLayers = props => {
   };
 
   return (
-    <Box sx={{ boxShadow: "-1px 0 0 lightgrey" }}>
+    <Box sx={{ boxShadow: "-1px 0 0 " + theme.palette.boxShadow }}>
       {displayDescriptions &&
         displayDescriptions
           ?.sort((a, b) => a.fromDepth - b.fromDepth)
@@ -202,7 +201,8 @@ const DescriptionLayers = props => {
                 direction="row"
                 data-cy={`description-${index}`}
                 sx={{
-                  boxShadow: "inset -1px 0 0 lightgrey, inset 0 -1px 0 lightgrey",
+                  boxShadow:
+                    "inset -1px 0 0 " + theme.palette.boxShadow + ", inset 0 -1px 0 " + theme.palette.boxShadow,
                   flex: "1 1 100%",
                   height: isItemSelected ? "auto" : calculatedHeight + "em",
                   overflowY: "auto",
@@ -210,7 +210,7 @@ const DescriptionLayers = props => {
                   backgroundColor:
                     item.id === null || isItemToDelete ? theme.palette.error.background : isItemSelected && "lightgrey",
                   "&:hover": {
-                    backgroundColor: "#ebebeb",
+                    backgroundColor: theme.palette.background.lightgrey,
                   },
                 }}
                 key={index}

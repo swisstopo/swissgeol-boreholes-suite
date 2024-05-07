@@ -2,14 +2,15 @@ import { useContext } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { styled } from "@mui/system";
 import { PromptContext } from "./promptContext";
+import { theme } from "../../AppTheme";
 
 export const PromptButton = styled(Button)({
   fontFamily: "Lato",
   fontSize: "16px",
   textTransform: "none",
-  color: "rgba(0, 0, 0, 0.8)",
+  color: theme.palette.neutral.contrastText,
   "&:hover": {
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
+    backgroundColor: theme.palette.background.dark,
   },
 });
 

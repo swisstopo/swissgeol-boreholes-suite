@@ -29,6 +29,7 @@ import { swissExtent, updateBasemap, getBasemap } from "../../components/basemap
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
 import { styleFunction, clusterStyleFunction } from "./mapStyleFunctions";
 import { projections } from "./mapProjections";
+import { theme } from "../../AppTheme";
 
 class MapComponent extends React.Component {
   static contextType = BasemapContext;
@@ -568,7 +569,7 @@ class MapComponent extends React.Component {
           position: "relative",
           display: "flex",
           flexDirection: "row",
-          backgroundColor: "#F2F2EF",
+          backgroundColor: theme.palette.background.lightgrey,
         }}>
         {Object.keys(this.props.layers).length !== 0 && (
           <LayerSelectControl onShowLayerSelection={this.onShowLayerSelection} sidebarWidth={this.state.sidebarWidth} />

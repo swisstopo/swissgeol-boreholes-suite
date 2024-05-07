@@ -2,11 +2,12 @@ import { withTranslation } from "react-i18next";
 import { Route, Switch } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 import MenuSettings from "../../commons/menu/settings/menuSettings";
-import MenuContainer from "../../commons/menu/menuContainer";
+import HeaderComponent from "../../commons/menu/headerComponent";
 import EditorSettings from "./editorSettings";
 import AdminSettings from "./admin/adminSettings";
 import AboutSettings from "./aboutSettings";
 import TermSettings from "./termSettings";
+import { theme } from "../../AppTheme";
 
 const SettingCmp = () => {
   return (
@@ -16,7 +17,7 @@ const SettingCmp = () => {
         flexDirection: "column",
         height: "100%",
       }}>
-      <MenuContainer />
+      <HeaderComponent />
       <div
         style={{
           flex: "1 1 100%",
@@ -26,7 +27,7 @@ const SettingCmp = () => {
         }}>
         <div
           style={{
-            boxShadow: "rgba(0, 0, 0, 0.17) 2px 6px 6px 0px",
+            boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
             display: "flex",
             flexDirection: "column",
             width: "250px",

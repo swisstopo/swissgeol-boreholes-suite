@@ -5,10 +5,8 @@ import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { Button, Divider, Segment } from "semantic-ui-react";
 import { patchCodeConfig, patchSettings } from "../../api-lib/index";
-
 import IdentifierSettings from "./editor/identifierSettings";
 import CodeListSettings from "./editor/codeListSettings";
-
 import TranslationText from "../../commons/form/translationText";
 import EditorSettingList from "./components/editorSettingList/editorSettingList";
 import { optionsFromCapabilities } from "ol/source/WMTS";
@@ -20,6 +18,7 @@ import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData";
 import MapSettings from "./components/editorSettingList/mapSettings";
 import { locationEditorData } from "./data/locationEditorData";
 import { registrationEditorData } from "./data/registrationEditorData";
+import { theme } from "../../AppTheme";
 
 const projections = {
   "EPSG:21781":
@@ -194,7 +193,9 @@ class EditorSettings extends React.Component {
                 flexDirection: "row",
                 display: "flex",
                 cursor: "pointer",
-                backgroundColor: filter.isSelected ? "#f5f5f5" : "#fff",
+                backgroundColor: filter.isSelected
+                  ? theme.palette.background.lightgrey
+                  : theme.palette.background.default,
                 padding: 10,
               }}>
               <div
@@ -248,7 +249,9 @@ class EditorSettings extends React.Component {
                   flexDirection: "row",
                   display: "flex",
                   cursor: "pointer",
-                  backgroundColor: this.state.identifiers ? "#f5f5f5" : "#fff",
+                  backgroundColor: this.state.identifiers
+                    ? theme.palette.background.lightgrey
+                    : theme.palette.background.default,
                   padding: 10,
                 }}>
                 <div
@@ -293,7 +296,9 @@ class EditorSettings extends React.Component {
                   flexDirection: "row",
                   display: "flex",
                   cursor: "pointer",
-                  backgroundColor: this.state.codeLists ? "#f5f5f5" : "#fff",
+                  backgroundColor: this.state.codeLists
+                    ? theme.palette.background.lightgrey
+                    : theme.palette.background.default,
                   padding: 10,
                 }}>
                 <div

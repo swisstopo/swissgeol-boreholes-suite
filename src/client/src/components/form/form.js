@@ -1,6 +1,6 @@
 import { TextField } from "@mui/material";
 import { styled } from "@mui/system";
-import { theme } from "../../AppTheme.js";
+import { theme } from "../../AppTheme";
 
 export const getFormFieldBackgroundColor = (fieldName, errors) => {
   if (typeof fieldName !== "string") {

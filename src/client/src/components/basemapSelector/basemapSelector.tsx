@@ -2,19 +2,20 @@
 import { useState, useContext, useMemo, memo } from "react";
 import { Stack, Button, Box } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import styled from "@mui/material/styles/styled";
 import { Basemap } from "./Basemap";
 import { basemaps } from "./basemaps";
 import { BasemapContext } from "./basemapContext";
+import { styled } from "@mui/material/styles";
+import { theme } from "../../AppTheme";
 
-const BasemapSelectorBox = styled(Box)({
+const BasemapSelectorBox = styled(Box)(() => ({
   position: "absolute",
   right: "12px",
-  backgroundColor: "#f1f3f5",
-  boxShadow: "4px 4px 2px #00000029",
+  backgroundColor: theme.palette.background.lightgrey,
+  boxShadow: "4px 4px 2px " + theme.palette.boxShadow,
   padding: "3px",
   borderRadius: "100px",
-});
+}));
 
 const BasemapButton = styled(Button)({
   borderRadius: "50%",
@@ -37,7 +38,7 @@ const ImageBox = styled(Box)({
   height: "40px",
   margin: 0,
   padding: 0,
-  backgroundColor: "white",
+  backgroundColor: theme.palette.background.default,
 });
 
 const LargerImageBox = styled(ImageBox)({ height: "50px", width: "50px" });
@@ -88,7 +89,7 @@ export const BasemapSelector = memo(({ marginBottom }: { setState: any; marginBo
               <BasemapButton onClick={() => onSelectBackground("nomap")}>
                 <ImageBox
                   sx={{
-                    backgroundColor: "white",
+                    backgroundColor: theme.palette.background.default,
                     border: `${"nomap" === currentBasemapName ? "2px solid #cb5d53" : "none"}`,
                   }}></ImageBox>
               </BasemapButton>
