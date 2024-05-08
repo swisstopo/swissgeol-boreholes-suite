@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Chip } from "@mui/material";
+import { theme } from "../../AppTheme";
 
 export const FileDropzone = props => {
   const {
@@ -117,7 +118,7 @@ export const FileDropzone = props => {
     borderRadius: "5px",
     borderColor: defaultDropzoneTextColor,
     borderStyle: "dashed",
-    backgroundColor: "#d1d6d991",
+    backgroundColor: theme.palette.background.lightgrey,
     color: defaultDropzoneTextColor,
     outline: "none",
     transition: "border 0.24s ease-in-out",
@@ -161,7 +162,7 @@ export const FileDropzone = props => {
                     fontSize: "12px",
                   }}>
                   <Chip
-                    sx={{ backgroundColor: "#ffffff", mr: 0.5, mb: 0.5 }}
+                    sx={{ backgroundColor: theme.palette.background.default, mr: 0.5, mb: 0.5 }}
                     label={file.name}
                     variant="outlined"
                     onDelete={() => removeFile(file)}

@@ -2,10 +2,9 @@ import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
-
 import { Button } from "semantic-ui-react";
-
 import { acceptTerms, getTerms } from "../../api-lib/index";
+import { theme } from "../../AppTheme";
 
 import Markdown from "markdown-to-jsx";
 import TranslationKeys from "../../commons/translationKeys";
@@ -45,7 +44,7 @@ class AcceptTerms extends React.Component {
       <div
         style={{
           alignItems: "center",
-          backgroundColor: "#787878",
+          backgroundColor: theme.palette.background.darkgrey,
           display: "flex",
           flex: "1 1 0%",
           // flexDirection: 'column',
@@ -54,9 +53,9 @@ class AcceptTerms extends React.Component {
         }}>
         <div
           style={{
-            backgroundColor: "#fff",
+            backgroundColor: theme.palette.background.default,
             borderRadius: "2px",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+            boxShadow: "0 1px 3px " + theme.palette.boxShadow + ", 0 1px 2px " + theme.palette.boxShadow,
             display: "flex",
             // flex: '1 1 100%',
             flexDirection: "column",

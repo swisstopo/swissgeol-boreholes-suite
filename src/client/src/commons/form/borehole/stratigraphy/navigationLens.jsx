@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Box, Button, ButtonGroup, useTheme } from "@mui/material";
+import { Box, Button, ButtonGroup } from "@mui/material";
 import { NavState } from "./navigationContainer";
 import { clamp } from "./clamp";
 import { KeyboardArrowUp, KeyboardArrowDown } from "@mui/icons-material";
@@ -7,6 +7,7 @@ import DraggableCore from "react-draggable";
 import { NumericFormat } from "react-number-format";
 import useResizeObserver from "@react-hook/resize-observer";
 import { styled } from "@mui/material/styles";
+import { theme } from "../../../../AppTheme";
 
 const BackgroundShade = styled(Box)(() => ({
   position: "absolute",
@@ -27,8 +28,6 @@ const LensDepthLabel = styled(NumericFormat)(() => ({
 const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
   const [backgroundNavState, setBackgroundNavState] = useState(navState);
   const [cursor, setCursor] = useState("grab");
-
-  const theme = useTheme();
 
   const contentRef = useRef(null);
   useResizeObserver(contentRef, entry => setBackgroundNavState(prev => prev.setHeight(entry.contentRect.height)));

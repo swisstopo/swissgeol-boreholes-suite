@@ -3,11 +3,10 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { AlertContext } from "../../../components/alert/alertContext";
-
 import { Button, Icon, Form, Modal, Header } from "semantic-ui-react";
-
 import { listIdentifier, createIdentifier, deleteIdentifier, updateIdentifier } from "../../../api-lib/index";
 import TranslationText from "../../../commons/form/translationText";
+import { theme } from "../../../AppTheme";
 
 class IdentifierSettings extends React.Component {
   static contextType = AlertContext;
@@ -185,7 +184,7 @@ class IdentifierSettings extends React.Component {
                     flex: 1,
                     flexDirection: "row",
                     paddingBottom: "0.5em",
-                    backgroundColor: this.state.id === val.id ? "#595959" : null,
+                    backgroundColor: this.state.id === val.id ? theme.palette.background.darkgrey : null,
                     color: this.state.id === val.id ? "white" : null,
                   }}>
                   <div

@@ -7,6 +7,7 @@ import EditorSettings from "./editorSettings";
 import AdminSettings from "./admin/adminSettings";
 import AboutSettings from "./aboutSettings";
 import TermSettings from "./termSettings";
+import { theme } from "../../AppTheme";
 
 const SettingCmp = () => {
   return (
@@ -26,7 +27,7 @@ const SettingCmp = () => {
         }}>
         <div
           style={{
-            boxShadow: "rgba(0, 0, 0, 0.17) 2px 6px 6px 0px",
+            boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
             display: "flex",
             flexDirection: "column",
             width: "250px",

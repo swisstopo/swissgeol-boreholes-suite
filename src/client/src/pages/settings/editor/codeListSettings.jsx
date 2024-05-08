@@ -8,6 +8,7 @@ import { loadDomains } from "../../../api-lib/index";
 import TranslationText from "../../../commons/form/translationText";
 import { produce } from "immer";
 import { updateCodeLists, useDomains } from "../../../api/fetchApiV2";
+import { theme } from "../../../AppTheme";
 
 const CodeListSettings = () => {
   const dispatch = useDispatch();
@@ -178,7 +179,7 @@ const CodeListSettings = () => {
                         }}
                         sx={{
                           pb: 0.5,
-                          backgroundColor: id === val.id ? "#595959" : null,
+                          backgroundColor: id === val.id ? theme.palette.background.darkgrey : null,
                           color: id === val.id ? "white" : null,
                         }}>
                         <Stack direction="row" justifyContent="space-evenly" alignItems="flex-start" spacing={2}>

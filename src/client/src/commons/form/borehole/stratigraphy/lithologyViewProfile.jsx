@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { NumericFormat } from "react-number-format";
 import { useLayers } from "../../../../api/fetchApiV2";
 import { LinearProgress, Box } from "@mui/material";
+import { theme } from "../../../../AppTheme";
 
 const handlePattern = layer => `url(/img/lit/${JSON.parse(layer?.lithology?.conf ?? null)?.image})`;
 
@@ -44,7 +45,7 @@ const LithologyViewProfile = ({ stratigraphyId, navState, setNavState, minPixelH
                       fontWeight: "bold",
                       textAlign: "center",
                       color: "white",
-                      backgroundColor: "rgba(0, 0, 0, 0.5)",
+                      backgroundColor: theme.palette.background.dark,
                       position: "absolute",
                       bottom: 0,
                       left: 0,
