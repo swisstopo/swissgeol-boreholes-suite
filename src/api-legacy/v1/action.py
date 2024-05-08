@@ -584,37 +584,6 @@ class Action():
                     qt_elevation_id_cli = %s
                 """ % self.getIdx())
 
-            if 'bore_inc_from' in keys and filter['bore_inc_from'] not in ['', None]:
-                params.append(float(filter['bore_inc_from']))
-                where.append("""
-                    inclination_bho >= %s
-                """ % self.getIdx())
-
-            if 'bore_inc_to' in keys and filter['bore_inc_to'] not in ['', None]:
-                params.append(float(filter['bore_inc_to']))
-                where.append("""
-                    inclination_bho <= %s
-                """ % self.getIdx())
-
-            if 'bore_inc_dir_from' in keys and filter['bore_inc_dir_from'] not in ['', None]:
-                params.append(float(filter['bore_inc_dir_from']))
-                where.append("""
-                    inclination_direction_bho >= %s
-                """ % self.getIdx())
-
-            if 'bore_inc_dir_to' in keys and filter['bore_inc_dir_to'] not in ['', None]:
-                params.append(float(filter['bore_inc_dir_to']))
-                where.append("""
-                    inclination_direction_bho <= %s
-                """ % self.getIdx())
-
-            if 'qt_inclination_direction' in keys and filter[
-                    'qt_inclination_direction'] not in ['', None]:
-                params.append(int(filter['qt_inclination_direction']))
-                where.append("""
-                    qt_inclination_direction_id_cli = %s
-                """ % self.getIdx())
-
             if 'length_from' in keys and filter['length_from'] not in ['', None]:
                 params.append(float(filter['length_from']))
                 where.append("""
