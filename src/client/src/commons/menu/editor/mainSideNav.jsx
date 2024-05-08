@@ -9,15 +9,17 @@ import { AlertContext } from "../../../components/alert/alertContext";
 import ActionsModal from "./actions/actionsModal";
 import { ImportErrorModal } from "./menuComponents/importErrorModal";
 import { IconButton } from "@mui/material";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import AddIcon from "@mui/icons-material/Add";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Filter from "../../../../public/icons/filter.svg?react";
+import AddIcon from "../../../../public/icons/add.svg?react";
+import UploadIcon from "../../../../public/icons/upload.svg?react";
 import { theme } from "../../../AppTheme";
+import { styled } from "@mui/system";
 
 let isMounted = true;
 
 class MainSideNav extends React.Component {
   static contextType = AlertContext;
+
   constructor(props) {
     super(props);
     this.updateDimensions = this.updateDimensions.bind(this);
@@ -38,7 +40,6 @@ class MainSideNav extends React.Component {
       workgroup: wgs !== null && wgs.length > 0 ? wgs[0].id : null,
       validationErrorModal: false,
       errosResponse: null,
-      buttonStyle: { color: "black", backgroundColor: "#f0f0f0", borderRadius: "10px" },
     };
   }
 
@@ -67,12 +68,24 @@ class MainSideNav extends React.Component {
       });
     }
   }
+
   handleToggleFilter = () => {
     this.props.toggleDrawer(!this.props.drawerOpen);
-    const buttonStyle = !this.props.drawerOpen
-      ? { color: "white", backgroundColor: theme.palette.buttonSelected + " !important", borderRadius: "10px" }
-      : { color: "black", backgroundColor: "#f0f0f0", borderRadius: "10px" };
-    this.setState({ buttonStyle });
+  };
+
+  styledIconButton = styled(IconButton)({
+    padding: "10px",
+    marginBottom: "25px",
+    color: theme.palette.primary.main,
+    "&:hover": {
+      backgroundColor: theme.palette.background.lightgrey,
+    },
+    borderRadius: "10px",
+  });
+
+  selectedButtonStyle = {
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.buttonSelected + " !important",
   };
 
   render() {
@@ -98,33 +111,31 @@ class MainSideNav extends React.Component {
             overflowY: "hidden",
             marginRight: this.state.scroller === true ? this.props.setting.scrollbar : "0px",
           }}>
-          <IconButton size="large" sx={this.state.buttonStyle}>
-            <FilterAltIcon onClick={this.handleToggleFilter} fontSize="inherit" />
-          </IconButton>
-          <IconButton size="large" color="primary">
-            <AddIcon
-              disabled={this.props.user.data.roles.indexOf("EDIT") === -1}
-              onClick={() => {
-                this.setState({
-                  modal: true,
-                  upload: false,
-                });
-              }}
-              fontSize="inherit"
-            />
-          </IconButton>
-          <IconButton size="large" color="primary">
-            <CloudUploadIcon
-              disabled={this.props.user.data.roles.indexOf("EDIT") === -1}
-              onClick={() => {
-                this.setState({
-                  modal: true,
-                  upload: true,
-                });
-              }}
-              fontSize="inherit"
-            />
-          </IconButton>
+          <this.styledIconButton
+            onClick={this.handleToggleFilter}
+            sx={this.props.drawerOpen && this.selectedButtonStyle}>
+            <Filter />
+          </this.styledIconButton>
+          <this.styledIconButton
+            onClick={() => {
+              this.setState({
+                modal: true,
+                upload: false,
+              });
+            }}
+            disabled={this.props.user.data.roles.indexOf("EDIT") === -1}>
+            <AddIcon />
+          </this.styledIconButton>
+          <this.styledIconButton
+            onClick={() => {
+              this.setState({
+                modal: true,
+                upload: true,
+              });
+            }}
+            disabled={this.props.user.data.roles.indexOf("EDIT") === -1}>
+            <UploadIcon />
+          </this.styledIconButton>
         </Box>
         <ActionsModal setState={this.setState} state={this.state} refresh={this.refresh} />
         <ImportErrorModal setState={this.setState} state={this.state} />

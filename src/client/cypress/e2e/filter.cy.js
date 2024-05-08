@@ -4,7 +4,7 @@ describe("Search filter tests", () => {
   it("has search filters", () => {
     loginAsAdmin();
     cy.visit("/");
-    cy.contains("Search filters:");
+    cy.contains("Filters");
   });
 
   it("shows the correct dropdowns", () => {

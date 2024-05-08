@@ -77,12 +77,14 @@ class SearchEditorComponent extends React.Component {
       ],
     };
   }
+
   componentDidUpdate(prevProps) {
     const { search, onChange } = this.props;
     if (onChange !== undefined && !_.isEqual(search.filter, prevProps.search.filter)) {
       onChange({ ...search.filter });
     }
   }
+
   isVisible(filter) {
     const { search, settings } = this.props;
     if (search.advanced === true) {
@@ -113,6 +115,7 @@ class SearchEditorComponent extends React.Component {
     }
     return selectedData;
   }
+
   render() {
     const { search, user, settings } = this.props;
     const filter = settings.data.filter;
@@ -120,7 +123,7 @@ class SearchEditorComponent extends React.Component {
       <Stack direction="column">
         <Styled.Container>
           <Styled.SearchFilterLabel>
-            <TranslationText id={"searchfilters"} />:
+            <TranslationText id={"searchfilters"} />
           </Styled.SearchFilterLabel>
           <div style={{ padding: 10 }}>
             <Form size="tiny">
