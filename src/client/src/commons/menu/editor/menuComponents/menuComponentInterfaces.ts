@@ -21,7 +21,6 @@ export interface ImportErrorModalProps {
     errorResponse: ErrorResponse;
     validationErrorModal: boolean;
   };
-  refresh: () => void;
 }
 
 export interface MenuItemsProps {
