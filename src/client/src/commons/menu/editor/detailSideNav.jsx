@@ -12,6 +12,22 @@ import moment from "moment";
 import { deleteBorehole, loadBorehole, lockBorehole, unlockBorehole } from "../../../api-lib/index";
 import { theme } from "../../../AppTheme";
 
+/**
+ * A component that renders the side navigation for a borehole detail. The component is used without explicitly passing props.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {Object} props.borehole - The borehole object containing data and fetching status, provided by react redux state.
+ * @param {Object} props.user - The user object containing information about the current user, provided by react redux state.
+ * @param {Object} props.match - The match object containing the URL parameters.
+ * @param {Function} props.reload - Function to trigger reloading of the borehole data, a react redux action that is being dispatched..
+ * @param {Function} props.unlock - Function to unlock the borehole, a react redux action that is being dispatched.
+ * @param {Function} props.lock - Function to lock the borehole, a react redux action that is being dispatched.
+ * @param {Function} props.t - Function for translation provided by `withTranslation`.
+ * @param {Object} props.history - The history object from `withRouter` to navigate between routes.
+ * @returns {JSX.Element | null} The rendered `DetailSideNav` component.
+ */
+
 const DetailSideNav = ({ borehole, history, match, reload, t, user, unlock, lock }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
