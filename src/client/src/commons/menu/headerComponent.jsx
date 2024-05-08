@@ -2,14 +2,12 @@ import { connect } from "react-redux";
 import { withAuth } from "react-oidc-context";
 import { withTranslation } from "react-i18next";
 import { List, Icon, Popup } from "semantic-ui-react";
-import { useHistory } from "react-router-dom";
 import TranslationText from "../form/translationText";
 import TranslationKeys from "../translationKeys";
 import { theme } from "../../AppTheme";
 
 const HeaderComponent = ({ user, auth }) => {
   const baseUrl = window.location.host;
-  const history = useHistory();
 
   return (
     <div
@@ -106,22 +104,6 @@ const HeaderComponent = ({ user, auth }) => {
             style={{
               marginTop: "0px",
             }}>
-            <List.Item
-              onClick={() => history.push(`/setting`)}
-              style={{
-                padding: "0.5em",
-              }}
-              data-cy="settings-list-item">
-              <List.Icon name="cog" verticalAlign="middle" />
-              <List.Content>
-                <List.Header as="h4">
-                  <TranslationText id="header_settings" />
-                </List.Header>
-                <List.Description>
-                  <TranslationText id="header_settingdesc" />
-                </List.Description>
-              </List.Content>
-            </List.Item>
             <List.Item
               onClick={() => window.open(`/help`)}
               style={{

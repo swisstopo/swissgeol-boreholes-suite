@@ -12,6 +12,7 @@ import { IconButton } from "@mui/material";
 import Filter from "../../../../public/icons/filter.svg?react";
 import AddIcon from "../../../../public/icons/add.svg?react";
 import UploadIcon from "../../../../public/icons/upload.svg?react";
+import SettingsIcon from "../../../../public/icons/settings.svg?react";
 import { theme } from "../../../AppTheme";
 import { styled } from "@mui/system";
 
@@ -100,16 +101,12 @@ class MainSideNav extends React.Component {
           position: "relative",
         }}>
         <Box
-          className={this.state.scroller === true ? "scroller" : null}
-          key="sb-em-2"
           ref={divElement => (this.menu = divElement)}
           sx={{
             padding: "1em",
             flex: "1 1 100%",
             display: "flex",
             flexDirection: "column",
-            overflowY: "hidden",
-            marginRight: this.state.scroller === true ? this.props.setting.scrollbar : "0px",
           }}>
           <this.styledIconButton
             data-cy="show-filter-button"
@@ -138,6 +135,16 @@ class MainSideNav extends React.Component {
             }}
             disabled={this.props.user.data.roles.indexOf("EDIT") === -1}>
             <UploadIcon />
+          </this.styledIconButton>
+        </Box>
+        <Box
+          sx={{
+            padding: "1em",
+            display: "flex",
+            flexDirection: "column",
+          }}>
+          <this.styledIconButton onClick={() => this.props.history.push(`/setting`)}>
+            <SettingsIcon />
           </this.styledIconButton>
         </Box>
         <ActionsModal setState={this.setState} state={this.state} refresh={this.refresh} />
