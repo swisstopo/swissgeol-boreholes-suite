@@ -24,9 +24,11 @@ import FieldMeasurement from "./hydrogeology/fieldMeasurement";
 import ChronostratigraphyPanel from "./stratigraphy/chronostratigraphyPanel";
 import LithostratigraphyPanel from "./stratigraphy/lithostratigraphyPanel";
 import Completion from "./completion/completion";
+import { Box } from "@mui/material";
 
 class BoreholeForm extends React.Component {
   static contextType = AlertContext;
+
   constructor(props) {
     super(props);
     this.checkattribute = false;
@@ -242,7 +244,7 @@ class BoreholeForm extends React.Component {
     const id = this.props?.match?.params?.id;
 
     return (
-      <div
+      <Box
         style={{
           overflow: "hidden",
           height: "100%",
@@ -406,7 +408,7 @@ class BoreholeForm extends React.Component {
             <Route path={"/:boreholeId/completion"} render={() => <Completion isEditable={isEditable} />} />
           </Switch>
         </Dimmer.Dimmable>
-      </div>
+      </Box>
     );
   }
 }
