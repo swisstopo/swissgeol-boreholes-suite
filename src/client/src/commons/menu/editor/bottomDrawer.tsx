@@ -1,14 +1,7 @@
 import { Box, Collapse, Paper } from "@mui/material";
 import { theme } from "../../../AppTheme";
 
-export const BottomDrawer = ({
-  drawerOpen,
-  children,
-}: {
-  drawerOpen: boolean;
-  toggleDrawer: (open: boolean) => () => void;
-  children?: React.ReactNode;
-}) => {
+export const BottomDrawer = ({ drawerOpen, children }: { drawerOpen: boolean; children?: React.ReactNode }) => {
   return (
     <Box
       sx={{
