@@ -24,9 +24,11 @@ import FieldMeasurement from "./hydrogeology/fieldMeasurement";
 import ChronostratigraphyPanel from "./stratigraphy/chronostratigraphyPanel";
 import LithostratigraphyPanel from "./stratigraphy/lithostratigraphyPanel";
 import Completion from "./completion/completion";
+import { Box } from "@mui/material";
 
 class BoreholeForm extends React.Component {
   static contextType = AlertContext;
+
   constructor(props) {
     super(props);
     this.checkattribute = false;
@@ -242,152 +244,171 @@ class BoreholeForm extends React.Component {
     const id = this.props?.match?.params?.id;
 
     return (
-      <Dimmer.Dimmable
-        as={"div"}
-        dimmed={borehole.isFetching === true || this.state.loadingFetch === true || this.state.creationFetch === true}
+      <Box
         style={{
-          flex: 1,
-          overflowY: "hidden",
+          overflow: "hidden",
+          height: "100%",
           display: "flex",
+          flex: "1 1 100%",
           flexDirection: "column",
+          padding: "1em",
         }}>
-        <Dimmer
-          active={borehole.isFetching === true || this.state.loadingFetch === true || this.state.creationFetch === true}
-          inverted>
-          <Loader>
-            {(() => {
-              if (borehole.isFetching || this.state.loadingFetch === true) {
-                return <TranslationText id="layer_loading_fetch" />;
-              } else if (this.state.creationFetch === true) {
-                return <TranslationText id="layer_creation_fetch" />;
-              }
-            })()}
-          </Loader>
-        </Dimmer>
-        <Switch>
-          <Route
-            exact
-            path={"/:id"}
-            render={() => (
-              <div
-                style={{
-                  flex: "1 1 0%",
-                  padding: "1em",
-                  overflowY: "auto",
-                  display: "flex",
-                  flexDirection: "column",
-                }}>
-                <IdentifierSegment
-                  borehole={borehole}
-                  identifier={this.state.identifier}
-                  identifierValue={this.state.identifierValue}
-                  setState={this.setStateBound}
-                  updateBorehole={this.props.updateBorehole}
-                  user={user}></IdentifierSegment>
-                <NameSegment size={size} borehole={borehole} updateChange={this.updateChange} user={user}></NameSegment>
-                <RestrictionSegment
+        <Dimmer.Dimmable
+          as={"div"}
+          dimmed={borehole.isFetching === true || this.state.loadingFetch === true || this.state.creationFetch === true}
+          style={{
+            flex: 1,
+            overflowY: "hidden",
+            display: "flex",
+            flexDirection: "column",
+          }}>
+          <Dimmer
+            active={
+              borehole.isFetching === true || this.state.loadingFetch === true || this.state.creationFetch === true
+            }
+            inverted>
+            <Loader>
+              {(() => {
+                if (borehole.isFetching || this.state.loadingFetch === true) {
+                  return <TranslationText id="layer_loading_fetch" />;
+                } else if (this.state.creationFetch === true) {
+                  return <TranslationText id="layer_creation_fetch" />;
+                }
+              })()}
+            </Loader>
+          </Dimmer>
+          <Switch>
+            <Route
+              exact
+              path={"/:id"}
+              render={() => (
+                <div
+                  style={{
+                    flex: "1 1 0%",
+                    padding: "1em",
+                    overflowY: "auto",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}>
+                  <IdentifierSegment
+                    borehole={borehole}
+                    identifier={this.state.identifier}
+                    identifierValue={this.state.identifierValue}
+                    setState={this.setStateBound}
+                    updateBorehole={this.props.updateBorehole}
+                    user={user}></IdentifierSegment>
+                  <NameSegment
+                    size={size}
+                    borehole={borehole}
+                    updateChange={this.updateChange}
+                    user={user}></NameSegment>
+                  <RestrictionSegment
+                    size={size}
+                    borehole={borehole}
+                    updateChange={this.updateChange}
+                    user={user}></RestrictionSegment>
+                  <LocationSegment
+                    size={size}
+                    borehole={borehole}
+                    user={user}
+                    updateChange={this.updateChange}
+                    updateNumber={this.updateNumber}
+                    checkLock={this.checkLock}
+                    domains={this.props.domains}></LocationSegment>
+                </div>
+              )}
+            />
+            <Route
+              exact
+              path={"/:id/borehole"}
+              render={() => (
+                <BoreholePanel
                   size={size}
+                  boreholeId={id}
                   borehole={borehole}
-                  updateChange={this.updateChange}
-                  user={user}></RestrictionSegment>
-                <LocationSegment
-                  size={size}
-                  borehole={borehole}
-                  user={user}
                   updateChange={this.updateChange}
                   updateNumber={this.updateNumber}
-                  checkLock={this.checkLock}
-                  domains={this.props.domains}></LocationSegment>
-              </div>
-            )}
-          />
-          <Route
-            exact
-            path={"/:id/borehole"}
-            render={() => (
-              <BoreholePanel
-                size={size}
-                boreholeId={id}
-                borehole={borehole}
-                updateChange={this.updateChange}
-                updateNumber={this.updateNumber}
-                isEditable={isEditable}
-              />
-            )}
-          />
-          <Route
-            exact
-            path={"/:id/stratigraphy/lithology"}
-            render={() => <Profile id={parseInt(id, 10)} unlocked={isEditable} />}
-          />
-          <Route
-            exact
-            path={"/:id/stratigraphy/chronostratigraphy"}
-            render={() => <ChronostratigraphyPanel id={parseInt(id, 10)} isEditable={isEditable} />}
-          />
-          <Route
-            exact
-            path={"/:id/stratigraphy/lithostratigraphy"}
-            render={() => <LithostratigraphyPanel id={parseInt(id, 10)} isEditable={isEditable} />}
-          />
-          <Route
-            path={"/:id/stratigraphy"}
-            render={() => {
-              return (
-                <Redirect
-                  to={{
-                    pathname: `/${id}/stratigraphy/lithology`,
-                  }}
+                  isEditable={isEditable}
                 />
-              );
-            }}
-          />
-          <Route
-            exact
-            path={"/:id/attachments"}
-            render={() => <EditorBoreholeFilesTable id={parseInt(id, 10)} unlocked={isEditable} />}
-          />
-          <Route
-            exact
-            path={"/:id/hydrogeology/wateringress"}
-            render={() => <WaterIngress isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
-          />
-          <Route
-            exact
-            path={"/:id/hydrogeology/groundwaterlevelmeasurement"}
-            render={() => <GroundwaterLevelMeasurement isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
-          />
-          <Route
-            exact
-            path={"/:id/hydrogeology/fieldmeasurement"}
-            render={() => <FieldMeasurement isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
-          />
-          <Route
-            exact
-            path={"/:id/hydrogeology/hydrotest"}
-            render={() => <Hydrotest isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
-          />
-          <Route
-            exact
-            path={"/:id/hydrogeology/groundwaterlevelmeasurement"}
-            render={() => <GroundwaterLevelMeasurement isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
-          />
-          <Route
-            path={"/:id/hydrogeology"}
-            render={() => {
-              return (
-                <Redirect
-                  to={{
-                    pathname: `/${id}/hydrogeology/wateringress`,
-                  }}
-                />
-              );
-            }}
-          />
-          <Route path={"/:boreholeId/completion/:completionId"} render={() => <Completion isEditable={isEditable} />} />
-          <Route path={"/:boreholeId/completion"} render={() => <Completion isEditable={isEditable} />} />
-        </Switch>
-      </Dimmer.Dimmable>
+              )}
+            />
+            <Route
+              exact
+              path={"/:id/stratigraphy/lithology"}
+              render={() => <Profile id={parseInt(id, 10)} unlocked={isEditable} />}
+            />
+            <Route
+              exact
+              path={"/:id/stratigraphy/chronostratigraphy"}
+              render={() => <ChronostratigraphyPanel id={parseInt(id, 10)} isEditable={isEditable} />}
+            />
+            <Route
+              exact
+              path={"/:id/stratigraphy/lithostratigraphy"}
+              render={() => <LithostratigraphyPanel id={parseInt(id, 10)} isEditable={isEditable} />}
+            />
+            <Route
+              path={"/:id/stratigraphy"}
+              render={() => {
+                return (
+                  <Redirect
+                    to={{
+                      pathname: `/${id}/stratigraphy/lithology`,
+                    }}
+                  />
+                );
+              }}
+            />
+            <Route
+              exact
+              path={"/:id/attachments"}
+              render={() => <EditorBoreholeFilesTable id={parseInt(id, 10)} unlocked={isEditable} />}
+            />
+            <Route
+              exact
+              path={"/:id/hydrogeology/wateringress"}
+              render={() => <WaterIngress isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
+            />
+            <Route
+              exact
+              path={"/:id/hydrogeology/groundwaterlevelmeasurement"}
+              render={() => <GroundwaterLevelMeasurement isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
+            />
+            <Route
+              exact
+              path={"/:id/hydrogeology/fieldmeasurement"}
+              render={() => <FieldMeasurement isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
+            />
+            <Route
+              exact
+              path={"/:id/hydrogeology/hydrotest"}
+              render={() => <Hydrotest isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
+            />
+            <Route
+              exact
+              path={"/:id/hydrogeology/groundwaterlevelmeasurement"}
+              render={() => <GroundwaterLevelMeasurement isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
+            />
+            <Route
+              path={"/:id/hydrogeology"}
+              render={() => {
+                return (
+                  <Redirect
+                    to={{
+                      pathname: `/${id}/hydrogeology/wateringress`,
+                    }}
+                  />
+                );
+              }}
+            />
+            <Route
+              path={"/:boreholeId/completion/:completionId"}
+              render={() => <Completion isEditable={isEditable} />}
+            />
+            <Route path={"/:boreholeId/completion"} render={() => <Completion isEditable={isEditable} />} />
+          </Switch>
+        </Dimmer.Dimmable>
+      </Box>
     );
   }
 }

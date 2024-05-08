@@ -7,13 +7,13 @@ import { Box } from "@mui/material";
 import { AlertContext } from "../../../components/alert/alertContext";
 import SearchEditorComponent from "../../search/editor/searchEditorComponent";
 import ActionsModal from "./actions/actionsModal";
-import { BoreholeNumbersPreview } from "./menuComponents/boreholeNumbersPreview";
 import { ImportErrorModal } from "./menuComponents/importErrorModal";
 import { MenuItems } from "./menuComponents/menuItems";
+import { theme } from "../../../AppTheme";
 
 let isMounted = true;
 
-class MenuEditorSearch extends React.Component {
+class MainSideNav extends React.Component {
   static contextType = AlertContext;
   constructor(props) {
     super(props);
@@ -67,8 +67,15 @@ class MenuEditorSearch extends React.Component {
   render() {
     const { boreholes } = this.props;
     return (
-      <>
-        <BoreholeNumbersPreview boreholes={boreholes} />,
+      <Box
+        style={{
+          boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
+          display: "flex",
+          flexDirection: "column",
+          width: "250px",
+          height: "100%",
+          position: "relative",
+        }}>
         <Box
           className={this.state.scroller === true ? "scroller" : null}
           key="sb-em-2"
@@ -81,7 +88,7 @@ class MenuEditorSearch extends React.Component {
             overflowY: "hidden",
             marginRight: this.state.scroller === true ? this.props.setting.scrollbar : "0px",
           }}>
-          <SearchEditorComponent onChange={() => {}} />
+          <SearchEditorComponent />
         </Box>
         <MenuItems
           boreholes={boreholes}
@@ -92,7 +99,7 @@ class MenuEditorSearch extends React.Component {
         />
         <ActionsModal setState={this.setState} state={this.state} refresh={this.refresh} />
         <ImportErrorModal setState={this.setState} state={this.state} />
-      </>
+      </Box>
     );
   }
 }
@@ -134,7 +141,7 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const ConnectedMenuEditorSearch = withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MenuEditorSearch)),
+const ConnectedMainSideNav = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MainSideNav)),
 );
-export default ConnectedMenuEditorSearch;
+export default ConnectedMainSideNav;
