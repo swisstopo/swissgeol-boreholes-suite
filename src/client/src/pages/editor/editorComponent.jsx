@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { Route, Switch, withRouter } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Route, Switch, withRouter, useLocation } from "react-router-dom";
 import BoreholeForm from "../../commons/form/borehole/boreholeForm";
 import MainSideNav from "../../commons/menu/editor/mainSideNav";
 import DetailSideNav from "../../commons/menu/editor/detailSideNav";
 import HeaderComponent from "../../commons/menu/headerComponent";
 import WorkflowForm from "../../commons/form/workflow/workflowForm";
 import MapView from "../../commons/menu/editor/mapView";
+import { SideDrawer } from "../../commons/menu/editor/sideDrawer.tsx";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { theme } from "../../AppTheme";
@@ -40,11 +41,22 @@ const MainContentBox = styled(Box)({
 
 const EditorComponent = props => {
   const [sort, setSort] = useState(null);
+  const [sideDrawerOpen, setSideDrawerOpen] = useState(false);
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
+  const location = useLocation();
+
+  const toggleSideDrawer = open => {
+    setSideDrawerOpen(open);
+  };
 
   const toggleBottomDrawer = open => {
     setBottomDrawerOpen(open);
   };
+
+  useEffect(() => {
+    // Close the side drawer when the route changes
+    setSideDrawerOpen(false);
+  }, [location.pathname]);
 
   return (
     <AppBox>
@@ -52,10 +64,15 @@ const EditorComponent = props => {
       <LayoutBox>
         <SidebarBox theme={theme}>
           <Switch>
-            <Route exact path={"/"} render={() => <MainSideNav />} />
+            <Route
+              exact
+              path={"/"}
+              render={() => <MainSideNav toggleDrawer={toggleSideDrawer} drawerOpen={sideDrawerOpen} />}
+            />
             <Route component={DetailSideNav} path="/:id" />
           </Switch>
         </SidebarBox>
+        <SideDrawer drawerOpen={sideDrawerOpen} drawerWidth={240} />
         <MainContentBox>
           <Switch>
             <Route

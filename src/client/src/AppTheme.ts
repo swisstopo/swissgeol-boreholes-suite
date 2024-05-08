@@ -30,6 +30,7 @@ export const theme = createTheme({
     },
     boxShadow: "rgba(0, 0, 0, 0.17)",
     background: { default: "#ffffff", lightgrey: "#f1f3f5", darkgrey: "#787878", dark: "rgba(0, 0, 0, 0.5)" },
+    buttonSelected: "#AA3526",
   },
   typography: {
     fontFamily: "Lato",
