@@ -39,6 +39,7 @@ const MainContentBox = styled(Box)({
 });
 
 const EditorComponent = props => {
+  const [sort, setSort] = useState(null);
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
 
   const toggleBottomDrawer = open => {
@@ -61,7 +62,13 @@ const EditorComponent = props => {
               exact
               path={"/"}
               render={() => (
-                <MapView {...props} toggleBottomDrawer={toggleBottomDrawer} bottomDrawerOpen={bottomDrawerOpen} />
+                <MapView
+                  {...props}
+                  sort={sort}
+                  setSort={setSort}
+                  toggleBottomDrawer={toggleBottomDrawer}
+                  bottomDrawerOpen={bottomDrawerOpen}
+                />
               )}
             />
             <Route exact={false} path={"/:id"} render={() => <BoreholeForm />} />

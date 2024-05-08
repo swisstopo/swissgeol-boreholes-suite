@@ -18,7 +18,6 @@ class MapView extends React.Component {
     this.state = {
       hover: null,
       maphover: null,
-      sort: null,
       tableScrollPosition: 0,
     };
   }
@@ -104,14 +103,12 @@ class MapView extends React.Component {
               }
             }}
             onReorder={(column, direction) => {
-              this.setState({
-                sort: {
-                  column: column,
-                  direction: direction,
-                },
+              this.props.setSort({
+                column: column,
+                direction: direction,
               });
             }}
-            sort={this.state.sort}
+            sort={this.props.sort}
             scrollPosition={this.state.tableScrollPosition}
             onScrollChange={position => {
               this.setState({
