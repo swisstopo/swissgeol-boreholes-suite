@@ -104,18 +104,6 @@ const HeaderComponent = ({ user, auth }) => {
             style={{
               marginTop: "0px",
             }}>
-            <List.Item
-              onClick={() => window.open(`/help`)}
-              style={{
-                padding: "0.5em",
-              }}>
-              <List.Icon name="question circle" verticalAlign="middle" />
-              <List.Content>
-                <List.Header as="h4">
-                  <TranslationText id="header_help" />
-                </List.Header>
-              </List.Content>
-            </List.Item>
             <List.Item>
               <List.Content
                 style={{

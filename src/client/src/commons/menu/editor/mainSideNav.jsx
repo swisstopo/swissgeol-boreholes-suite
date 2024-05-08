@@ -13,6 +13,7 @@ import Filter from "../../../../public/icons/filter.svg?react";
 import AddIcon from "../../../../public/icons/add.svg?react";
 import UploadIcon from "../../../../public/icons/upload.svg?react";
 import SettingsIcon from "../../../../public/icons/settings.svg?react";
+import HelpIcon from "../../../../public/icons/help.svg?react";
 import { theme } from "../../../AppTheme";
 import { styled } from "@mui/system";
 
@@ -145,6 +146,9 @@ class MainSideNav extends React.Component {
           }}>
           <this.styledIconButton onClick={() => this.props.history.push(`/setting`)}>
             <SettingsIcon />
+          </this.styledIconButton>
+          <this.styledIconButton>
+            <HelpIcon onClick={() => window.open(`/help`)} />
           </this.styledIconButton>
         </Box>
         <ActionsModal setState={this.setState} state={this.state} refresh={this.refresh} />
