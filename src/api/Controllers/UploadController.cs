@@ -530,9 +530,6 @@ public class UploadController : ControllerBase
             Map(m => m.ProjectName).Optional();
             Map(m => m.PurposeId).Optional();
             Map(m => m.StatusId).Optional();
-            Map(m => m.Inclination).Optional();
-            Map(m => m.InclinationDirection).Optional();
-            Map(m => m.QtInclinationDirectionId).Optional();
             Map(m => m.QtDepthId).Optional();
             Map(m => m.TopBedrock).Optional();
             Map(m => m.QtTopBedrock).Optional();
