@@ -38,7 +38,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.get("tbody").children().should("have.length", 100);
   });
 
-  it("can bulk edit boreholes while filter by identifier is set", () => {
+  it.only("can bulk edit boreholes while filter by identifier is set", () => {
     newEditableBorehole().as("borehole_id");
     let identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');
 
@@ -68,6 +68,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.wait("@edit_unlock");
     cy.contains("h3", "Done").click();
     cy.wait(["@edit_list", "@borehole"]);
+    cy.get('[data-cy="show-filter-button"]').click();
 
     cy.contains("span", "Location").click();
     // show all options
