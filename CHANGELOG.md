@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Added `outcrop` to codelist `borehole_type`.
+
 ### Fixed
 
 - Fixed precisions where not correctly displayed for imported coordinates.
