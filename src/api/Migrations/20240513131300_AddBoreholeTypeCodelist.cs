@@ -4,6 +4,8 @@
 
 namespace BDMS.Migrations;
 
+#pragma warning disable CA1505
+
 /// <inheritdoc />
 public partial class AddBoreholeTypeCodelist : Migration
 {
@@ -21,3 +23,4 @@ public partial class AddBoreholeTypeCodelist : Migration
                                 UPDATE bdms.codelist SET order_cli = 7 WHERE id_cli = 20101005;");
     }
 }
+#pragma warning restore CA1505
