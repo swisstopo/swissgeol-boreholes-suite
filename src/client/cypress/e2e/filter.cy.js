@@ -29,7 +29,7 @@ describe("Search filter tests", () => {
     boreholeTypeDropdown.click();
     boreholeTypeDropdown
       .find("div[role='option']")
-      .should("have.length", 7)
+      .should("have.length", 8)
       .should(options => {
         expect(options[0]).to.have.text("Reset");
         expect(options[1]).to.have.text("borehole");
