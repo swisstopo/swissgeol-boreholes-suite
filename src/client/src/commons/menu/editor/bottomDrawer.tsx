@@ -5,7 +5,7 @@ export const BottomDrawer = ({ drawerOpen, children }: { drawerOpen: boolean; ch
   return (
     <Box
       sx={{
-        maxHeight: "35vh",
+        maxHeight: "40vh",
         position: "relative",
         top: 0,
         transition: "left 0.3s ease-out",
@@ -14,7 +14,7 @@ export const BottomDrawer = ({ drawerOpen, children }: { drawerOpen: boolean; ch
         <Paper
           sx={{
             padding: 2,
-            height: "35vh",
+            height: "40vh",
             boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
             borderRight: "1px solid rgba(0, 0, 0, 0.12)",
           }}>
