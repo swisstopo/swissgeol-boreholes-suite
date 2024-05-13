@@ -3,9 +3,9 @@ import { connect } from "react-redux";
 import _ from "lodash";
 import { withTranslation } from "react-i18next";
 import { withRouter } from "react-router-dom";
-import { Box } from "@mui/material";
+import { withAuth } from "react-oidc-context";
+import { Stack } from "@mui/material";
 import { AlertContext } from "../../../components/alert/alertContext";
-
 import ActionsModal from "./actions/actionsModal";
 import { ImportErrorModal } from "./menuComponents/importErrorModal";
 import { IconButton } from "@mui/material";
@@ -16,6 +16,7 @@ import SettingsIcon from "../../../../public/icons/settings.svg?react";
 import HelpIcon from "../../../../public/icons/help.svg?react";
 import { theme } from "../../../AppTheme";
 import { styled } from "@mui/system";
+import { ProfilePopup } from "../profilePopup.tsx";
 
 let isMounted = true;
 
@@ -92,22 +93,20 @@ class MainSideNav extends React.Component {
 
   render() {
     return (
-      <Box
-        style={{
+      <Stack
+        direction="column"
+        sx={{
           boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
-          display: "flex",
-          flexDirection: "column",
           width: "80px",
           height: "100%",
           position: "relative",
         }}>
-        <Box
+        <Stack
+          direction="column"
           ref={divElement => (this.menu = divElement)}
           sx={{
             padding: "1em",
             flex: "1 1 100%",
-            display: "flex",
-            flexDirection: "column",
           }}>
           <this.styledIconButton
             data-cy="show-filter-button"
@@ -137,23 +136,25 @@ class MainSideNav extends React.Component {
             disabled={this.props.user.data.roles.indexOf("EDIT") === -1}>
             <UploadIcon />
           </this.styledIconButton>
-        </Box>
-        <Box
+        </Stack>
+        <Stack
+          direction="column"
           sx={{
             padding: "1em",
-            display: "flex",
-            flexDirection: "column",
           }}>
           <this.styledIconButton onClick={() => this.props.history.push(`/setting`)}>
             <SettingsIcon />
           </this.styledIconButton>
           <this.styledIconButton>
+            <ProfilePopup userData={this.props.user.data} />
+          </this.styledIconButton>
+          <this.styledIconButton>
             <HelpIcon onClick={() => window.open(`/help`)} />
           </this.styledIconButton>
-        </Box>
+        </Stack>
         <ActionsModal setState={this.setState} state={this.state} refresh={this.refresh} />
         <ImportErrorModal setState={this.setState} state={this.state} />
-      </Box>
+      </Stack>
     );
   }
 }
@@ -195,7 +196,7 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const ConnectedMainSideNav = withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MainSideNav)),
+const ConnectedMainSideNav = withAuth(
+  withRouter(connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MainSideNav))),
 );
 export default ConnectedMainSideNav;
