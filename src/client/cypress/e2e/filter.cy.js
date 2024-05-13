@@ -36,7 +36,7 @@ describe("Search filter tests", () => {
         expect(options[2]).to.have.text("virtual borehole");
         expect(options[3]).to.have.text("penetration test");
         expect(options[4]).to.have.text("trial pit");
-        expect(options[5]).to.have.text("other");
+        expect(options[5]).to.have.text("outcrop");
         expect(options[6]).to.have.text("not specified");
       });
   });
