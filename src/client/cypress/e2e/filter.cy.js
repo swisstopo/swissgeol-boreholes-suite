@@ -57,8 +57,7 @@ describe("Search filter tests", () => {
       });
 
     // turn on registration filters
-    cy.get('[data-cy="menu"]').click();
-    cy.contains("h4", "Settings").click();
+    cy.get('[data-cy="settings-button"]').click();
     cy.contains("Registration filters").click();
     cy.contains("Select all").click();
     cy.wait("@setting");
@@ -71,8 +70,7 @@ describe("Search filter tests", () => {
     cy.contains("Creation date");
 
     // reset setting
-    cy.get('[data-cy="menu"]').click();
-    cy.contains("h4", "Settings").click();
+    cy.get('[data-cy="settings-button"]').click();
     cy.contains("Registration filters").click();
     cy.contains("Unselect all").click();
     cy.wait("@setting");

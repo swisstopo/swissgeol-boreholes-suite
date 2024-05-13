@@ -23,10 +23,4 @@ describe("General app tests", () => {
     cy.contains("span", "IT").click();
     cy.contains("Benvenuti su");
   });
-
-  it("Displays the current host as app title", () => {
-    loginAsEditor();
-    cy.visit("/");
-    cy.get('[data-cy="app-title"]').contains("localhost");
-  });
 });

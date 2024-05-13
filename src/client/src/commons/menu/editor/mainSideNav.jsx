@@ -142,7 +142,7 @@ class MainSideNav extends React.Component {
           sx={{
             padding: "1em",
           }}>
-          <this.styledIconButton onClick={() => this.props.history.push(`/setting`)}>
+          <this.styledIconButton data-cy="settings-button" onClick={() => this.props.history.push(`/setting`)}>
             <SettingsIcon />
           </this.styledIconButton>
           <this.styledIconButton>

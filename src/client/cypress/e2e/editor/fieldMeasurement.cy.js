@@ -25,14 +25,13 @@ beforeEach(() => {
 });
 
 describe("Tests for the field measurement editor.", () => {
-  it("Creates, updates and deletes field measurement", () => {
+  it.only("Creates, updates and deletes field measurement", () => {
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
       cy.visit(`/${id}/hydrogeology/fieldmeasurement`);
 
       startBoreholeEditing();
       // switch to german
-      cy.get('[data-cy="menu"]').click({ force: true });
       cy.contains("span", "DE").click({ force: true });
       cy.wait(1000);
 

@@ -42,7 +42,6 @@ describe("Tests for the hydrotest editor.", () => {
     cy.get('[data-cy="hydrotest-menu-item"]').click({ force: true });
 
     // switch to german
-    cy.get('[data-cy="menu"]').click({ force: true });
     cy.contains("span", "DE").click({ force: true });
     cy.wait(1000);
 
