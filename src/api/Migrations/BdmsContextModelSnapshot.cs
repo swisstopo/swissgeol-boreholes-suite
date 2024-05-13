@@ -441,7 +441,7 @@ namespace BDMS.Migrations
                     b.ToTable("borehole_files", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.BoreholeGeometry", b =>
+            modelBuilder.Entity("BDMS.Models.BoreholeGeometryElement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2330,7 +2330,7 @@ namespace BDMS.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BDMS.Models.BoreholeGeometry", b =>
+            modelBuilder.Entity("BDMS.Models.BoreholeGeometryElement", b =>
                 {
                     b.HasOne("BDMS.Models.Borehole", "Borehole")
                         .WithMany("BoreholeGeometry")
