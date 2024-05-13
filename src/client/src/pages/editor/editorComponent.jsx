@@ -10,6 +10,7 @@ import { SideDrawer } from "../../commons/menu/editor/sideDrawer.tsx";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { theme } from "../../AppTheme";
+import SearchEditorComponent from "../../commons/search/editor/searchEditorComponent.jsx";
 
 const AppBox = styled(Box)({
   display: "flex",
@@ -72,7 +73,7 @@ const EditorComponent = props => {
             <Route component={DetailSideNav} path="/:id" />
           </Switch>
         </SidebarBox>
-        <SideDrawer drawerOpen={sideDrawerOpen} drawerWidth={240} />
+        <SideDrawer drawerOpen={sideDrawerOpen} drawerWidth={240} drawerContent={<SearchEditorComponent />} />
         <MainContentBox>
           <Switch>
             <Route

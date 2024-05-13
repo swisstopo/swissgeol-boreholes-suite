@@ -24,6 +24,7 @@ export interface MenuItemsProps {
 }
 
 export interface SideDrawerProps {
+  drawerContent: React.JSX.Element;
   drawerOpen: boolean;
   drawerWidth: number;
 }
