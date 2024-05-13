@@ -1,4 +1,4 @@
-import { Box, IconButton } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { BottomBarProps } from "./menuComponents/menuComponentInterfaces";
@@ -27,15 +27,26 @@ const BottomBar = ({ toggleBottomDrawer, bottomDrawerOpen, boreholes }: BottomBa
       }}>
       <BoreholeNumbersPreview boreholes={boreholes} />
       <Box sx={{ flex: 1 }}></Box>
-      <Box>{bottomDrawerOpen ? t("hideTable") : t("showTable")} </Box>
-      <IconButton onClick={() => toggleBottomDrawer(!bottomDrawerOpen)} data-cy="showTableButton">
-        {bottomDrawerOpen ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
-      </IconButton>
+      <Button
+        onClick={() => toggleBottomDrawer(!bottomDrawerOpen)}
+        data-cy="showTableButton"
+        sx={{ fontWeight: "normal", fontSize: "1em" }}>
+        {bottomDrawerOpen ? (
+          <>
+            {t("hideTable")} <KeyboardArrowDownIcon />
+          </>
+        ) : (
+          <>
+            {t("showTable")}
+            <KeyboardArrowUpIcon />{" "}
+          </>
+        )}
+      </Button>
     </Box>
   );
 };
 
-const mapStateToProps = (state: { core_borehole_editor_list: BoreholesData }) => {
+const mapStateToProps = (state: { core_borehole_editor_list: BoreholesData }): { boreholes: BoreholesData } => {
   return {
     boreholes: state.core_borehole_editor_list,
   };
