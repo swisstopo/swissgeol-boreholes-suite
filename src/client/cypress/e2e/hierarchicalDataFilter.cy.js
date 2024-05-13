@@ -93,7 +93,7 @@ describe("Hierachical data filter tests", () => {
       .each((el, i) => {
         expect(el).to.have.text(filterValues[i]);
       });
-    cy.contains("a", "Reset").click();
+    cy.contains("button", "Reset").click();
     cy.wait("@edit_list");
     cy.get('[data-cy="hierarchical-data-search"]').find("div.divider.text").should("have.length", 0);
   });
