@@ -38,7 +38,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.get("tbody").children().should("have.length", 100);
   });
 
-  it.only("can bulk edit boreholes while filter by identifier is set", () => {
+  it("can bulk edit boreholes while filter by identifier is set", () => {
     newEditableBorehole().as("borehole_id");
     let identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');
 
