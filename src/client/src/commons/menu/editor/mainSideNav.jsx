@@ -112,11 +112,13 @@ class MainSideNav extends React.Component {
             marginRight: this.state.scroller === true ? this.props.setting.scrollbar : "0px",
           }}>
           <this.styledIconButton
+            data-cy="show-filter-button"
             onClick={this.handleToggleFilter}
             sx={this.props.drawerOpen && this.selectedButtonStyle}>
             <Filter />
           </this.styledIconButton>
           <this.styledIconButton
+            data-cy="new-borehole-button"
             onClick={() => {
               this.setState({
                 modal: true,
@@ -127,6 +129,7 @@ class MainSideNav extends React.Component {
             <AddIcon />
           </this.styledIconButton>
           <this.styledIconButton
+            data-cy="import-borehole-button"
             onClick={() => {
               this.setState({
                 modal: true,

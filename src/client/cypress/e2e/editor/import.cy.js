@@ -4,7 +4,7 @@ describe("Test for importing boreholes.", () => {
   it("Successfully imports multiple boreholes.", () => {
     loginAsAdmin();
     cy.visit("/");
-    cy.contains("a", "Import").click();
+    cy.get('[data-cy="import-borehole-button"]').click();
 
     // Select borehole csv file
     let boreholeFile = new DataTransfer();
@@ -62,7 +62,7 @@ describe("Test for importing boreholes.", () => {
     cy.intercept("/api/v2/upload?workgroupId=1").as("borehole-upload");
 
     // Import boreholes and attachments
-    cy.contains("button", "Import").click();
+    cy.get('[data-cy="import-borehole-button"]').click();
     cy.wait("@borehole-upload");
 
     // Check if boreholes were imported
@@ -72,7 +72,7 @@ describe("Test for importing boreholes.", () => {
   it("Displays borehole validation errors.", () => {
     loginAsAdmin();
     cy.visit("/");
-    cy.contains("a", "Import").click();
+    cy.get('[data-cy="import-borehole-button"]').click();
 
     // Select borehole csv file
     getImportFileFromFixtures("boreholes-missing-fields-and-duplicates.csv", null)
@@ -95,7 +95,7 @@ describe("Test for importing boreholes.", () => {
 
     cy.intercept("/api/v2/upload?workgroupId=1").as("borehole-upload");
 
-    cy.contains("button", "Import").click();
+    cy.get('[data-cy="import-borehole-button"]').click();
 
     cy.wait("@borehole-upload");
 
@@ -112,7 +112,7 @@ describe("Test for importing boreholes.", () => {
   it("Displays lithology validation errors.", () => {
     loginAsAdmin();
     cy.visit("/");
-    cy.contains("a", "Import").click();
+    cy.get('[data-cy="import-borehole-button"]').click();
 
     // Select borehole csv file
     getImportFileFromFixtures("boreholes-multiple-valid.csv", null)
@@ -154,7 +154,7 @@ describe("Test for importing boreholes.", () => {
 
     cy.intercept("/api/v2/upload?workgroupId=1").as("borehole-upload");
 
-    cy.contains("button", "Import").click();
+    cy.get('[data-cy="import-borehole-button"]').click();
 
     cy.wait("@borehole-upload");
 
