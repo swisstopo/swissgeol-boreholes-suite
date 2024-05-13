@@ -62,7 +62,7 @@ describe("Test for importing boreholes.", () => {
     cy.intercept("/api/v2/upload?workgroupId=1").as("borehole-upload");
 
     // Import boreholes and attachments
-    cy.get('[data-cy="import-borehole-button"]').click();
+    cy.get('[data-cy="import-button"]').click();
     cy.wait("@borehole-upload");
 
     // Check if boreholes were imported
@@ -95,7 +95,7 @@ describe("Test for importing boreholes.", () => {
 
     cy.intercept("/api/v2/upload?workgroupId=1").as("borehole-upload");
 
-    cy.get('[data-cy="import-borehole-button"]').click();
+    cy.get('[data-cy="import-button"]').click();
 
     cy.wait("@borehole-upload");
 
@@ -154,7 +154,7 @@ describe("Test for importing boreholes.", () => {
 
     cy.intercept("/api/v2/upload?workgroupId=1").as("borehole-upload");
 
-    cy.get('[data-cy="import-borehole-button"]').click();
+    cy.get('[data-cy="import-button"]').click();
 
     cy.wait("@borehole-upload");
 

@@ -65,6 +65,7 @@ describe("Search filter tests", () => {
 
     // check visibility of filters
     cy.contains("h3", "Done").click();
+    cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Registration").click();
     cy.contains("Created by");
     cy.contains("Creation date");

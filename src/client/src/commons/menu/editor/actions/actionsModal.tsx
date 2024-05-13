@@ -126,6 +126,7 @@ const ActionsModal = ({ setState, state, refresh }: ActionsModalProps) => {
       </Modal.Content>
       <Modal.Actions>
         <Button
+          data-cy={state.upload === true ? "import-button" : "create-button"}
           disabled={state.enabledWorkgroups.length === 0 || (state.upload === true && state.selectedFile?.length === 0)}
           loading={state.creating === true}
           onClick={handleFormSubmit}
