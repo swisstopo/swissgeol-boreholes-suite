@@ -28,7 +28,7 @@ const selectedButtonStyle = {
   backgroundColor: theme.palette.buttonSelected + " !important",
 };
 
-const MainSideNav = props => {
+const MainSideNav = ({ user, toggleDrawer, drawerOpen, refresh }) => {
   const history = useHistory();
   const menuRef = useRef(null);
   const [creating, setCreating] = useState(false);
@@ -43,13 +43,13 @@ const MainSideNav = props => {
   const [errorsResponse, setErrorsResponse] = useState(null);
 
   useEffect(() => {
-    const wgs = props.user.data.workgroups.filter(w => w.disabled === null && w.supplier === false);
+    const wgs = user.data.workgroups.filter(w => w.disabled === null && w.supplier === false);
     setEnabledWorkgroups(wgs);
     setWorkgroup(wgs.length > 0 ? wgs[0].id : null);
-  }, [props.user.data.workgroups]);
+  }, [user.data.workgroups]);
 
   const handleToggleFilter = () => {
-    props.toggleDrawer(!props.drawerOpen);
+    toggleDrawer(!drawerOpen);
   };
 
   return (
@@ -71,7 +71,7 @@ const MainSideNav = props => {
         <StyledIconButton
           data-cy="show-filter-button"
           onClick={handleToggleFilter}
-          sx={props.drawerOpen && selectedButtonStyle}>
+          sx={drawerOpen && selectedButtonStyle}>
           <Filter />
         </StyledIconButton>
         <StyledIconButton
@@ -80,7 +80,7 @@ const MainSideNav = props => {
             setModal(true);
             setUpload(false);
           }}
-          disabled={props.user.data.roles.indexOf("EDIT") === -1}>
+          disabled={user.data.roles.indexOf("EDIT") === -1}>
           <AddIcon />
         </StyledIconButton>
         <StyledIconButton
@@ -89,7 +89,7 @@ const MainSideNav = props => {
             setModal(true);
             setUpload(true);
           }}
-          disabled={props.user.data.roles.indexOf("EDIT") === -1}>
+          disabled={user.data.roles.indexOf("EDIT") === -1}>
           <UploadIcon />
         </StyledIconButton>
       </Stack>
@@ -102,7 +102,7 @@ const MainSideNav = props => {
           <SettingsIcon />
         </StyledIconButton>
         <StyledIconButton>
-          <ProfilePopup user={props.user.data} />
+          <ProfilePopup user={user.data} />
         </StyledIconButton>
         <StyledIconButton>
           <HelpIcon onClick={() => window.open(`/help`)} />
@@ -115,7 +115,7 @@ const MainSideNav = props => {
         setUpload={setUpload}
         setErrorsResponse={setErrorsResponse}
         setValidationErrorModal={setValidationErrorModal}
-        refresh={props.refresh}
+        refresh={refresh}
         setSelectedFile={setSelectedFile}
         setSelectedLithologyFile={setSelectedLithologyFile}
         setWorkgroup={setWorkgroup}
