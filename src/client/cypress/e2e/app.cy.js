@@ -1,5 +1,3 @@
-import { loginAsEditor } from "./helpers/testHelpers";
-
 describe("General app tests", () => {
   it("Displays the login page in the correct language", () => {
     // default is english
