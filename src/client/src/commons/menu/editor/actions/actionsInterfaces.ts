@@ -1,5 +1,4 @@
 import React from "react";
-import { ImportErrorModalProps } from "../menuComponents/menuComponentInterfaces";
 
 export interface WorkgroupSelectProps {
   workgroup: number;
