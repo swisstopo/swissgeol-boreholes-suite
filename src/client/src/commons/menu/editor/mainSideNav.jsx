@@ -1,14 +1,9 @@
-import React from "react";
+import { useState, useEffect, useRef } from "react";
 import { connect } from "react-redux";
-import _ from "lodash";
-import { withTranslation } from "react-i18next";
-import { withRouter } from "react-router-dom";
-import { withAuth } from "react-oidc-context";
-import { Stack } from "@mui/material";
-import { AlertContext } from "../../../components/alert/alertContext";
+import { useHistory } from "react-router-dom";
+import { Stack, IconButton } from "@mui/material";
 import ActionsModal from "./actions/actionsModal";
 import { ImportErrorModal } from "./menuComponents/importErrorModal";
-import { IconButton } from "@mui/material";
 import Filter from "../../../../public/icons/filter.svg?react";
 import AddIcon from "../../../../public/icons/add.svg?react";
 import UploadIcon from "../../../../public/icons/upload.svg?react";
@@ -18,146 +13,129 @@ import { theme } from "../../../AppTheme";
 import { styled } from "@mui/system";
 import { ProfilePopup } from "../profilePopup.tsx";
 
-let isMounted = true;
+const StyledIconButton = styled(IconButton)({
+  padding: "10px",
+  marginBottom: "25px",
+  color: theme.palette.primary.main,
+  "&:hover": {
+    backgroundColor: theme.palette.background.lightgrey,
+  },
+  borderRadius: "10px",
+});
 
-class MainSideNav extends React.Component {
-  static contextType = AlertContext;
+const selectedButtonStyle = {
+  color: theme.palette.primary.contrastText,
+  backgroundColor: theme.palette.buttonSelected + " !important",
+};
 
-  constructor(props) {
-    super(props);
-    this.updateDimensions = this.updateDimensions.bind(this);
-    this.setState = this.setState.bind(this);
-    this.refresh = this.props.refresh.bind(this);
-    this.reset = this.props.reset.bind(this);
-    const wgs = this.props.user.data.workgroups.filter(w => w.disabled === null && w.supplier === false);
-    this.state = {
-      creating: false,
-      delete: false,
-      enabledWorkgroups: wgs,
-      modal: false,
-      upload: false,
-      selectedFile: null,
-      selectedBoreholeAttachments: null,
-      selectedLithologyFile: null,
-      scroller: false,
-      workgroup: wgs !== null && wgs.length > 0 ? wgs[0].id : null,
-      validationErrorModal: false,
-      errosResponse: null,
-    };
-  }
+const MainSideNav = props => {
+  const history = useHistory();
+  const menuRef = useRef(null);
+  const [creating, setCreating] = useState(false);
+  const [enabledWorkgroups, setEnabledWorkgroups] = useState([]);
+  const [modal, setModal] = useState(false);
+  const [upload, setUpload] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedBoreholeAttachments, setSelectedBoreholeAttachments] = useState(null);
+  const [selectedLithologyFile, setSelectedLithologyFile] = useState(null);
+  const [workgroup, setWorkgroup] = useState(null);
+  const [validationErrorModal, setValidationErrorModal] = useState(false);
+  const [errorsResponse, setErrorsResponse] = useState(null);
 
-  componentDidMount() {
-    if (isMounted) {
-      this.updateDimensions();
-      window.addEventListener("resize", this.updateDimensions.bind(this));
-    }
-  }
+  useEffect(() => {
+    const wgs = props.user.data.workgroups.filter(w => w.disabled === null && w.supplier === false);
+    setEnabledWorkgroups(wgs);
+    setWorkgroup(wgs.length > 0 ? wgs[0].id : null);
+  }, [props.user.data.workgroups]);
 
-  componentWillUnmount() {
-    isMounted = false;
-    window.removeEventListener("resize", this.updateDimensions.bind(this));
-  }
-
-  updateDimensions() {
-    if (!_.isNil(this.menu) && this.menu.children.length > 0) {
-      const height = this.menu.clientHeight;
-      const childrenHeight = this.menu.children[0].clientHeight;
-      this.setState({
-        scroller: childrenHeight > height,
-      });
-    } else {
-      this.setState({
-        scroller: true,
-      });
-    }
-  }
-
-  handleToggleFilter = () => {
-    this.props.toggleDrawer(!this.props.drawerOpen);
+  const handleToggleFilter = () => {
+    props.toggleDrawer(!props.drawerOpen);
   };
 
-  styledIconButton = styled(IconButton)({
-    padding: "10px",
-    marginBottom: "25px",
-    color: theme.palette.primary.main,
-    "&:hover": {
-      backgroundColor: theme.palette.background.lightgrey,
-    },
-    borderRadius: "10px",
-  });
-
-  selectedButtonStyle = {
-    color: theme.palette.primary.contrastText,
-    backgroundColor: theme.palette.buttonSelected + " !important",
-  };
-
-  render() {
-    return (
+  return (
+    <Stack
+      direction="column"
+      sx={{
+        boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
+        width: "80px",
+        height: "100%",
+        position: "relative",
+      }}>
+      <Stack
+        direction="column"
+        ref={menuRef}
+        sx={{
+          padding: "1em",
+          flex: "1 1 100%",
+        }}>
+        <StyledIconButton
+          data-cy="show-filter-button"
+          onClick={handleToggleFilter}
+          sx={props.drawerOpen && selectedButtonStyle}>
+          <Filter />
+        </StyledIconButton>
+        <StyledIconButton
+          data-cy="new-borehole-button"
+          onClick={() => {
+            setModal(true);
+            setUpload(false);
+          }}
+          disabled={props.user.data.roles.indexOf("EDIT") === -1}>
+          <AddIcon />
+        </StyledIconButton>
+        <StyledIconButton
+          data-cy="import-borehole-button"
+          onClick={() => {
+            setModal(true);
+            setUpload(true);
+          }}
+          disabled={props.user.data.roles.indexOf("EDIT") === -1}>
+          <UploadIcon />
+        </StyledIconButton>
+      </Stack>
       <Stack
         direction="column"
         sx={{
-          boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
-          width: "80px",
-          height: "100%",
-          position: "relative",
+          padding: "1em",
         }}>
-        <Stack
-          direction="column"
-          ref={divElement => (this.menu = divElement)}
-          sx={{
-            padding: "1em",
-            flex: "1 1 100%",
-          }}>
-          <this.styledIconButton
-            data-cy="show-filter-button"
-            onClick={this.handleToggleFilter}
-            sx={this.props.drawerOpen && this.selectedButtonStyle}>
-            <Filter />
-          </this.styledIconButton>
-          <this.styledIconButton
-            data-cy="new-borehole-button"
-            onClick={() => {
-              this.setState({
-                modal: true,
-                upload: false,
-              });
-            }}
-            disabled={this.props.user.data.roles.indexOf("EDIT") === -1}>
-            <AddIcon />
-          </this.styledIconButton>
-          <this.styledIconButton
-            data-cy="import-borehole-button"
-            onClick={() => {
-              this.setState({
-                modal: true,
-                upload: true,
-              });
-            }}
-            disabled={this.props.user.data.roles.indexOf("EDIT") === -1}>
-            <UploadIcon />
-          </this.styledIconButton>
-        </Stack>
-        <Stack
-          direction="column"
-          sx={{
-            padding: "1em",
-          }}>
-          <this.styledIconButton data-cy="settings-button" onClick={() => this.props.history.push(`/setting`)}>
-            <SettingsIcon />
-          </this.styledIconButton>
-          <this.styledIconButton>
-            <ProfilePopup user={this.props.user.data} />
-          </this.styledIconButton>
-          <this.styledIconButton>
-            <HelpIcon onClick={() => window.open(`/help`)} />
-          </this.styledIconButton>
-        </Stack>
-        <ActionsModal setState={this.setState} state={this.state} refresh={this.refresh} />
-        <ImportErrorModal setState={this.setState} state={this.state} />
+        <StyledIconButton data-cy="settings-button" onClick={() => history.push(`/setting`)}>
+          <SettingsIcon />
+        </StyledIconButton>
+        <StyledIconButton>
+          <ProfilePopup user={props.user.data} />
+        </StyledIconButton>
+        <StyledIconButton>
+          <HelpIcon onClick={() => window.open(`/help`)} />
+        </StyledIconButton>
       </Stack>
-    );
-  }
-}
+      <ActionsModal
+        creating={creating}
+        setCreating={setCreating}
+        setModal={setModal}
+        setUpload={setUpload}
+        setErrorsResponse={setErrorsResponse}
+        setValidationErrorModal={setValidationErrorModal}
+        refresh={props.refresh}
+        setSelectedFile={setSelectedFile}
+        setSelectedLithologyFile={setSelectedLithologyFile}
+        setWorkgroup={setWorkgroup}
+        enabledWorkgroups={enabledWorkgroups}
+        setSelectedBoreholeAttachments={setSelectedBoreholeAttachments}
+        workgroup={workgroup}
+        selectedFile={selectedFile}
+        selectedBoreholeAttachments={selectedBoreholeAttachments}
+        modal={modal}
+        upload={upload}
+        selectedLithologyFile={selectedLithologyFile}
+      />
+      <ImportErrorModal
+        setValidationErrorModal={setValidationErrorModal}
+        validationErrorModal={validationErrorModal}
+        errorResponse={errorsResponse}
+      />
+    </Stack>
+  );
+};
 
 const mapStateToProps = state => {
   return {
@@ -196,7 +174,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const ConnectedMainSideNav = withAuth(
-  withRouter(connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(MainSideNav))),
-);
-export default ConnectedMainSideNav;
+export default connect(mapStateToProps, mapDispatchToProps)(MainSideNav);

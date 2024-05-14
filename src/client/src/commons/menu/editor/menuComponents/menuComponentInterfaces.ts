@@ -1,4 +1,4 @@
-import { EditorSearchState } from "../actions/actionsInterfaces";
+import React from "react";
 
 export interface BoreholesData {
   isFetching: boolean;
@@ -16,11 +16,9 @@ interface ErrorResponse {
 }
 
 export interface ImportErrorModalProps {
-  setState: React.Dispatch<React.SetStateAction<EditorSearchState>>;
-  state: {
-    errorResponse: ErrorResponse;
-    validationErrorModal: boolean;
-  };
+  errorResponse: ErrorResponse;
+  setValidationErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
+  validationErrorModal: boolean;
 }
 
 export interface MenuItemsProps {

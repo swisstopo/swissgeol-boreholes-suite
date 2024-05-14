@@ -1,9 +1,10 @@
+import React from "react";
+import { ImportErrorModalProps } from "../menuComponents/menuComponentInterfaces";
+
 export interface WorkgroupSelectProps {
-  setState: React.Dispatch<React.SetStateAction<EditorSearchState>>;
-  state: {
-    workgroup: number;
-    enabledWorkgroups: Workgroup[];
-  };
+  workgroup: number;
+  enabledWorkgroups: Workgroup[];
+  setWorkgroup: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export interface Workgroup {
@@ -13,25 +14,28 @@ export interface Workgroup {
 }
 
 export interface ImportModalProps {
-  setState: React.Dispatch<React.SetStateAction<EditorSearchState>>;
-  state: {
-    selectedFile: Blob[] | null;
-  };
+  setSelectedBoreholeAttachments: React.Dispatch<React.SetStateAction<Blob>>;
+  selectedFile: Blob[] | null;
+  setSelectedFile: React.Dispatch<React.SetStateAction<Blob>>;
+  setSelectedLithologyFile: React.Dispatch<React.SetStateAction<Blob>>;
 }
 
-export interface ActionsModalProps {
-  setState: React.Dispatch<React.SetStateAction<EditorSearchState>>;
-  state: {
-    modal: boolean;
-    creating: boolean;
-    selectedLithologyFile: Blob[] | null;
-    selectedBoreholeAttachments: Blob[] | null;
-    selectedFile: Blob[] | null;
-    upload: boolean;
-    workgroup: number;
-    enabledWorkgroups: Workgroup[];
-  };
+export interface ActionsModalProps extends ImportModalProps {
+  modal: boolean;
+  creating: boolean;
+  selectedLithologyFile: Blob[] | null;
+  selectedBoreholeAttachments: Blob[] | null;
+  selectedFile: Blob[] | null;
+  upload: boolean;
+  workgroup: number;
+  enabledWorkgroups: Workgroup[];
+  setCreating: React.Dispatch<React.SetStateAction<boolean>>;
+  setModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setUpload: React.Dispatch<React.SetStateAction<boolean>>;
+  setErrorsResponse: React.Dispatch<React.SetStateAction<string>>;
+  setValidationErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedFile: React.Dispatch<React.SetStateAction<Blob>>;
+  setWorkgroup: React.Dispatch<React.SetStateAction<number>>;
+  setSelectedLithologyFile: React.Dispatch<React.SetStateAction<Blob>>;
   refresh: () => void;
 }
-
-export interface EditorSearchState {}

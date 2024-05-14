@@ -2,7 +2,7 @@ import TranslationText from "../../../form/translationText";
 import { Box, MenuItem, Select, FormControl } from "@mui/material/";
 import { WorkgroupSelectProps } from "./actionsInterfaces";
 
-const WorkgroupSelect = ({ setState, state }: WorkgroupSelectProps) => {
+const WorkgroupSelect = ({ workgroup, enabledWorkgroups, setWorkgroup }: WorkgroupSelectProps) => {
   return (
     <>
       <h3>
@@ -13,29 +13,33 @@ const WorkgroupSelect = ({ setState, state }: WorkgroupSelectProps) => {
           padding: "1em",
         }}>
         {(() => {
-          const wg = state.enabledWorkgroups;
+          const wg = enabledWorkgroups;
+          if (wg === undefined) {
+            return;
+          }
+          if (wg?.length === 0) {
+            return <TranslationText id="disabled" />;
+          } else if (wg?.length === 1) {
+            return wg[0].workgroup;
+          }
           const options = wg
-            .filter(w => w.roles.indexOf("EDIT") >= 0)
-            .map(wg => ({
+            ?.filter(w => w.roles.indexOf("EDIT") >= 0)
+            ?.map(wg => ({
               key: wg["id"],
               text: wg["workgroup"],
               value: wg["id"],
             }));
-          if (wg.length === 0) {
-            return <TranslationText id="disabled" />;
-          } else if (wg.length === 1) {
-            return wg[0].workgroup;
-          }
           return (
             <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
               <Select
+                type="number"
                 renderValue={selected => {
                   return options.find(o => o.value === selected)?.text;
                 }}
                 onChange={e => {
-                  setState({ workgroup: e.target.value });
+                  setWorkgroup(e.target.value as number);
                 }}
-                value={state.workgroup}>
+                value={workgroup}>
                 {options.map(o => (
                   <MenuItem key={o.key} value={o.value}>
                     {o.text}
