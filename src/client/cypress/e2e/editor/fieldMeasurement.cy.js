@@ -25,7 +25,7 @@ beforeEach(() => {
 });
 
 describe("Tests for the field measurement editor.", () => {
-  it.only("Creates, updates and deletes field measurement", () => {
+  it("Creates, updates and deletes field measurement", () => {
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
       cy.visit(`/${id}/hydrogeology/fieldmeasurement`);
@@ -48,7 +48,7 @@ describe("Tests for the field measurement editor.", () => {
       // close editing mask
       saveForm();
 
-      //assert field measurementis displayed
+      //assert field measurement is displayed
       cy.wait("@fieldmeasurement_GET");
       evaluateDisplayValue("casingName", "test fieldmeasurement - casing-1");
 
