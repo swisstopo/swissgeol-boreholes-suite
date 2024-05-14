@@ -36,6 +36,7 @@ declare module "@mui/material/styles" {
         darkgrey: string;
         dark: string;
       };
+      buttonSelected: string;
     };
     typography: {
       fontFamily: string;
@@ -91,6 +92,7 @@ declare module "@mui/material/styles" {
         darkgrey: string;
         dark: string;
       };
+      buttonSelected: string;
     };
     typography: {
       fontFamily: string;

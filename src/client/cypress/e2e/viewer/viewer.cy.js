@@ -11,8 +11,8 @@ describe("Viewer tests", () => {
     cy.get("tbody").children().should("have.length", 100);
 
     cy.get('[data-cy="app-title"]').contains("localhost");
-    cy.get('[data-cy="import-borehole-button"]').should("have.attr", "class", "disabled item");
-    cy.get('[data-cy="new-borehole-button"]').should("have.attr", "class", "disabled item");
+    cy.get('[data-cy="import-borehole-button"]').should("have.class", "Mui-disabled");
+    cy.get('[data-cy="new-borehole-button"]').should("have.class", "Mui-disabled");
 
     // click on borehole
     cy.contains("td", "Immanuel Christiansen").click();

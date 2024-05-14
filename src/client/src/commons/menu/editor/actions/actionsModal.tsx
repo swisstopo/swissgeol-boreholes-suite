@@ -88,7 +88,7 @@ const ActionsModal = ({ setState, state, refresh }: ActionsModalProps) => {
 
   const handleFormSubmit = async () => {
     setState({ creating: true });
-    if (state.upload === true) {
+    if (state.upload) {
       handleBoreholeImport();
     } else {
       handleBoreholeCreate();
@@ -104,13 +104,13 @@ const ActionsModal = ({ setState, state, refresh }: ActionsModalProps) => {
           modal: false,
         });
       }}
-      open={state.modal === true}
+      open={state.modal}
       size="large">
       <Segment clearing>
         <Header
           floated="left"
-          content={<TranslationText id={state.upload === true ? "import" : "newBorehole"} />}
-          icon={state.upload === true ? "upload" : "plus"}
+          content={<TranslationText id={state.upload ? "import" : "newBorehole"} />}
+          icon={state.upload ? "upload" : "plus"}
         />
         <Header as="h4" floated="right">
           <span>
@@ -121,17 +121,18 @@ const ActionsModal = ({ setState, state, refresh }: ActionsModalProps) => {
         </Header>
       </Segment>
       <Modal.Content>
-        {state.upload === true ? <ImportModalContent setState={setState} state={state} /> : null}
+        {state.upload ? <ImportModalContent setState={setState} state={state} /> : null}
         <WorkgroupSelect setState={setState} state={state} />
       </Modal.Content>
       <Modal.Actions>
         <Button
-          disabled={state.enabledWorkgroups.length === 0 || (state.upload === true && state.selectedFile?.length === 0)}
-          loading={state.creating === true}
+          data-cy={state.upload ? "import-button" : "create-button"}
+          disabled={state.enabledWorkgroups.length === 0 || (state.upload && state.selectedFile?.length === 0)}
+          loading={state.creating}
           onClick={handleFormSubmit}
           secondary>
-          <Icon name={state.upload === true ? "upload" : "plus"} />{" "}
-          {state.upload === true ? <TranslationText id="import" /> : <TranslationText id="create" />}
+          <Icon name={state.upload ? "upload" : "plus"} />{" "}
+          {state.upload ? <TranslationText id="import" /> : <TranslationText id="create" />}
         </Button>
       </Modal.Actions>
     </Modal>

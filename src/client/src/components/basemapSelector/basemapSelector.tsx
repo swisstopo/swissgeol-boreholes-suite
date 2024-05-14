@@ -8,14 +8,14 @@ import { BasemapContext } from "./basemapContext";
 import { styled } from "@mui/material/styles";
 import { theme } from "../../AppTheme";
 
-const BasemapSelectorBox = styled(Box)(() => ({
+const BasemapSelectorBox = styled(Box)({
   position: "absolute",
   right: "12px",
   backgroundColor: theme.palette.background.lightgrey,
   boxShadow: "4px 4px 2px " + theme.palette.boxShadow,
   padding: "3px",
   borderRadius: "100px",
-}));
+});
 
 const BasemapButton = styled(Button)({
   borderRadius: "50%",

@@ -20,7 +20,7 @@ const HeaderComponent = ({ user, auth }) => {
         flexDirection: "row",
         height: "5em",
         padding: "0px 1em",
-        zIndex: "1500",
+        zIndex: "10",
       }}>
       <img
         alt="Swiss Logo"

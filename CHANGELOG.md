@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Made boreholes table on the map page collapsible.
+- Changed sidebar layout and design.
+
 ### Fixed
 
 - Fixed precisions where not correctly displayed for imported coordinates.

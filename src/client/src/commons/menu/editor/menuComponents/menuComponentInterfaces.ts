@@ -1,4 +1,3 @@
-import { User } from "../../../form/borehole/segments/userInterface";
 import { EditorSearchState } from "../actions/actionsInterfaces";
 
 export interface BoreholesData {
@@ -22,15 +21,17 @@ export interface ImportErrorModalProps {
     errorResponse: ErrorResponse;
     validationErrorModal: boolean;
   };
-  refresh: () => void;
 }
 
 export interface MenuItemsProps {
-  setState: React.Dispatch<React.SetStateAction<EditorSearchState>>;
   refresh: () => void;
   reset: () => void;
   boreholes: BoreholesData;
-  user: User;
+}
+
+export interface SideDrawerProps {
+  drawerOpen: boolean;
+  drawerWidth: number;
 }
 
 export interface BottomBarProps {
