@@ -16,6 +16,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.wait("@edit_unlock");
     cy.contains("h3", "Done").click();
     cy.wait(["@edit_list", "@borehole"]);
+    cy.get('[data-cy="show-filter-button"]').click();
 
     cy.contains("span", "Location").click();
     // show all options
@@ -67,6 +68,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.wait("@edit_unlock");
     cy.contains("h3", "Done").click();
     cy.wait(["@edit_list", "@borehole"]);
+    cy.get('[data-cy="show-filter-button"]').click();
 
     cy.contains("span", "Location").click();
     // show all options

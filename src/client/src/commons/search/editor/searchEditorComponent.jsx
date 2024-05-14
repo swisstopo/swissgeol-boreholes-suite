@@ -15,6 +15,8 @@ import { lithologySearchData } from "../data/lithologySearchData";
 import { registrationSearchData } from "../data/registrationSearchData";
 import { chronostratigraphySearchData } from "../data/chronostratigraphySearchData";
 import { lithostratigraphySearchData } from "../data/lithostratigraphySearchData";
+import { MenuItems } from "../../menu/editor/menuComponents/menuItems";
+import { Stack } from "@mui/material";
 
 class SearchEditorComponent extends React.Component {
   constructor(props) {
@@ -75,12 +77,14 @@ class SearchEditorComponent extends React.Component {
       ],
     };
   }
+
   componentDidUpdate(prevProps) {
     const { search, onChange } = this.props;
     if (onChange !== undefined && !_.isEqual(search.filter, prevProps.search.filter)) {
       onChange({ ...search.filter });
     }
   }
+
   isVisible(filter) {
     const { search, settings } = this.props;
     if (search.advanced === true) {
@@ -111,97 +115,82 @@ class SearchEditorComponent extends React.Component {
     }
     return selectedData;
   }
+
   render() {
     const { search, user, settings } = this.props;
     const filter = settings.data.filter;
     return (
-      <Styled.Container>
-        <Styled.SearchFilterLabel>
-          <TranslationText id={"searchfilters"} />:
-        </Styled.SearchFilterLabel>
-        <div style={{ padding: 10 }}>
-          <Form size="tiny">
-            <Form.Field
-              key="msc-1"
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-              }}>
-              <label>
-                <TranslationText id="filterbymap" />
-              </label>
-              <Checkbox
-                checked={search.mapfilter}
-                onChange={(e, d) => {
-                  this.props.setmapfilter(d.checked);
-                }}
-                toggle
-              />
-            </Form.Field>
-            <Form.Group
-              key="msc-2"
-              style={{
-                display: search.advanced === true || filter.zoom2selected === true ? null : "none",
-              }}
-              widths="equal"></Form.Group>
-          </Form>
-        </div>
-        <div>
-          {this.state?.searchList?.map((filter, idx) => (
-            <Fragment key={idx}>
-              <Styled.FilterContainer>
-                <Styled.FilterButton
-                  isLast={idx === this.state?.searchList?.length - 1}
-                  isSelected={filter?.isSelected}
-                  onClick={() => {
-                    this.setState(prevState => ({
-                      ...prevState,
-                      // update an array of objects:
-                      searchList: prevState.searchList.map(obj =>
-                        obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj, isSelected: false },
-                      ),
-                    }));
-                  }}>
-                  <div>
-                    <Icon name={`caret ${filter?.isSelected ? "down" : "right"}`} />
-                    <span>
-                      <TranslationText id={filter?.translationId} />
-                    </span>
-                  </div>
-                </Styled.FilterButton>
-              </Styled.FilterContainer>
-              {filter?.name === "workgroup" && filter?.isSelected && (
-                <WorkgroupRadioGroup
-                  filter={search.filter.workgroup}
-                  onChange={workgroup => {
-                    this.props.setFilter("workgroup", workgroup);
+      <Stack direction="column">
+        <Styled.Container>
+          <Styled.SearchFilterLabel>
+            <TranslationText id={"searchfilters"} />
+          </Styled.SearchFilterLabel>
+          <div style={{ padding: 10 }}>
+            <Form size="tiny">
+              <Form.Field
+                key="msc-1"
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}>
+                <label>
+                  <TranslationText id="filterbymap" />
+                </label>
+                <Checkbox
+                  checked={search.mapfilter}
+                  onChange={(e, d) => {
+                    this.props.setmapfilter(d.checked);
                   }}
-                  workgroups={user.data.workgroups}
+                  toggle
                 />
-              )}
-              {filter?.name === "status" && filter?.isSelected && (
-                <StatusFilter
-                  onChange={this.props.onChange}
-                  resetBoreInc={this.props.resetBoreInc}
-                  resetBoreIncDir={this.props.resetBoreIncDir}
-                  resetDrillDiameter={this.props.resetDrillDiameter}
-                  resetDrilling={this.props.resetDrilling}
-                  resetElevation={this.props.resetElevation}
-                  resetRestriction={this.props.resetRestriction}
-                  resetTotBedrock={this.props.resetTotBedrock}
-                  search={this.props.search}
-                  setFilter={this.props.setFilter}
-                  settings={this.props.settings.data.efilter}
-                  resetCreatedDate={this.props.resetCreatedDate}
-                />
-              )}
-              {this.handleButtonSelected() !== null && filter?.isSelected && (
-                <Styled.FormFilterContainer>
-                  <ListFilter
-                    attribute={this.handleButtonSelected()}
+              </Form.Field>
+              <Form.Group
+                key="msc-2"
+                style={{
+                  display: search.advanced === true || filter.zoom2selected === true ? null : "none",
+                }}
+                widths="equal"></Form.Group>
+            </Form>
+          </div>
+
+          <div>
+            {this.state?.searchList?.map((filter, idx) => (
+              <Fragment key={idx}>
+                <Styled.FilterContainer>
+                  <Styled.FilterButton
+                    isLast={idx === this.state?.searchList?.length - 1}
+                    isSelected={filter?.isSelected}
+                    onClick={() => {
+                      this.setState(prevState => ({
+                        ...prevState,
+                        // update an array of objects:
+                        searchList: prevState.searchList.map(obj =>
+                          obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj, isSelected: false },
+                        ),
+                      }));
+                    }}>
+                    <div>
+                      <Icon name={`caret ${filter?.isSelected ? "down" : "right"}`} />
+                      <span>
+                        <TranslationText id={filter?.translationId} />
+                      </span>
+                    </div>
+                  </Styled.FilterButton>
+                </Styled.FilterContainer>
+                {filter?.name === "workgroup" && filter?.isSelected && (
+                  <WorkgroupRadioGroup
+                    filter={search.filter.workgroup}
+                    onChange={workgroup => {
+                      this.props.setFilter("workgroup", workgroup);
+                    }}
+                    workgroups={user.data.workgroups}
+                  />
+                )}
+                {filter?.name === "status" && filter?.isSelected && (
+                  <StatusFilter
+                    onChange={this.props.onChange}
                     resetBoreInc={this.props.resetBoreInc}
                     resetBoreIncDir={this.props.resetBoreIncDir}
-                    resetDepth={this.props.resetDepth}
                     resetDrillDiameter={this.props.resetDrillDiameter}
                     resetDrilling={this.props.resetDrilling}
                     resetElevation={this.props.resetElevation}
@@ -212,12 +201,32 @@ class SearchEditorComponent extends React.Component {
                     settings={this.props.settings.data.efilter}
                     resetCreatedDate={this.props.resetCreatedDate}
                   />
-                </Styled.FormFilterContainer>
-              )}
-            </Fragment>
-          ))}
-        </div>
-      </Styled.Container>
+                )}
+                {this.handleButtonSelected() !== null && filter?.isSelected && (
+                  <Styled.FormFilterContainer>
+                    <ListFilter
+                      attribute={this.handleButtonSelected()}
+                      resetBoreInc={this.props.resetBoreInc}
+                      resetBoreIncDir={this.props.resetBoreIncDir}
+                      resetDepth={this.props.resetDepth}
+                      resetDrillDiameter={this.props.resetDrillDiameter}
+                      resetDrilling={this.props.resetDrilling}
+                      resetElevation={this.props.resetElevation}
+                      resetRestriction={this.props.resetRestriction}
+                      resetTotBedrock={this.props.resetTotBedrock}
+                      search={this.props.search}
+                      setFilter={this.props.setFilter}
+                      settings={this.props.settings.data.efilter}
+                      resetCreatedDate={this.props.resetCreatedDate}
+                    />
+                  </Styled.FormFilterContainer>
+                )}
+              </Fragment>
+            ))}
+          </div>
+        </Styled.Container>
+        <MenuItems boreholes={this.props.boreholes} reset={this.props.reset} refresh={this.props.refresh} />
+      </Stack>
     );
   }
 }
@@ -241,6 +250,7 @@ const mapStateToProps = state => {
   return {
     search: state.searchEditor,
     settings: state.setting,
+    boreholes: state.core_borehole_editor_list,
     user: state.core_user,
   };
 };
@@ -327,6 +337,16 @@ const mapDispatchToProps = dispatch => {
     resetCreatedDate: () => {
       dispatch({
         type: "SEARCH_EDITOR_FILTER_RESET_CREATED_DATE",
+      });
+    },
+    refresh: () => {
+      dispatch({
+        type: "SEARCH_EDITOR_FILTER_REFRESH",
+      });
+    },
+    reset: () => {
+      dispatch({
+        type: "SEARCH_EDITOR_FILTER_RESET",
       });
     },
   };

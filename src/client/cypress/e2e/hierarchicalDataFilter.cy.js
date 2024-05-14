@@ -4,6 +4,7 @@ describe("Hierachical data filter tests", () => {
   it("check visible filters", () => {
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("span", "Chronostratigraphy").click();
     cy.get("Show all fields").should("not.exist");
     cy.get('[data-cy="hierarchical-data-search"]').should("have.length", 7);
@@ -15,6 +16,7 @@ describe("Hierachical data filter tests", () => {
   it("check sorting of filter values", () => {
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("span", "Chronostratigraphy").click();
     let periodsDropdown = cy.contains("label", "Period").next();
     periodsDropdown.click();
@@ -50,6 +52,7 @@ describe("Hierachical data filter tests", () => {
     ];
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("span", "Chronostratigraphy").click();
     cy.get('[data-cy="hierarchical-data-search"]')
       .eq(filterValues.length - 1)
@@ -90,7 +93,7 @@ describe("Hierachical data filter tests", () => {
       .each((el, i) => {
         expect(el).to.have.text(filterValues[i]);
       });
-    cy.contains("a", "Reset").click();
+    cy.contains("button", "Reset").click();
     cy.wait("@edit_list");
     cy.get('[data-cy="hierarchical-data-search"]').find("div.divider.text").should("have.length", 0);
   });

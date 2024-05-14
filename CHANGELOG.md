@@ -5,6 +5,8 @@
 ### Changed
 
 - Added `outcrop` to codelist `borehole_type`.
+- Made boreholes table on the map page collapsible.
+- Changed sidebar layout and design.
 
 ### Fixed
 

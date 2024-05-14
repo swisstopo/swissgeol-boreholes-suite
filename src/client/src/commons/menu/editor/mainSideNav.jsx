@@ -5,16 +5,21 @@ import { withTranslation } from "react-i18next";
 import { withRouter } from "react-router-dom";
 import { Box } from "@mui/material";
 import { AlertContext } from "../../../components/alert/alertContext";
-import SearchEditorComponent from "../../search/editor/searchEditorComponent";
+
 import ActionsModal from "./actions/actionsModal";
 import { ImportErrorModal } from "./menuComponents/importErrorModal";
-import { MenuItems } from "./menuComponents/menuItems";
+import { IconButton } from "@mui/material";
+import Filter from "../../../../public/icons/filter.svg?react";
+import AddIcon from "../../../../public/icons/add.svg?react";
+import UploadIcon from "../../../../public/icons/upload.svg?react";
 import { theme } from "../../../AppTheme";
+import { styled } from "@mui/system";
 
 let isMounted = true;
 
 class MainSideNav extends React.Component {
   static contextType = AlertContext;
+
   constructor(props) {
     super(props);
     this.updateDimensions = this.updateDimensions.bind(this);
@@ -64,15 +69,33 @@ class MainSideNav extends React.Component {
     }
   }
 
+  handleToggleFilter = () => {
+    this.props.toggleDrawer(!this.props.drawerOpen);
+  };
+
+  styledIconButton = styled(IconButton)({
+    padding: "10px",
+    marginBottom: "25px",
+    color: theme.palette.primary.main,
+    "&:hover": {
+      backgroundColor: theme.palette.background.lightgrey,
+    },
+    borderRadius: "10px",
+  });
+
+  selectedButtonStyle = {
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.buttonSelected + " !important",
+  };
+
   render() {
-    const { boreholes } = this.props;
     return (
       <Box
         style={{
           boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
           display: "flex",
           flexDirection: "column",
-          width: "250px",
+          width: "80px",
           height: "100%",
           position: "relative",
         }}>
@@ -88,15 +111,35 @@ class MainSideNav extends React.Component {
             overflowY: "hidden",
             marginRight: this.state.scroller === true ? this.props.setting.scrollbar : "0px",
           }}>
-          <SearchEditorComponent />
+          <this.styledIconButton
+            data-cy="show-filter-button"
+            onClick={this.handleToggleFilter}
+            sx={this.props.drawerOpen && this.selectedButtonStyle}>
+            <Filter />
+          </this.styledIconButton>
+          <this.styledIconButton
+            data-cy="new-borehole-button"
+            onClick={() => {
+              this.setState({
+                modal: true,
+                upload: false,
+              });
+            }}
+            disabled={this.props.user.data.roles.indexOf("EDIT") === -1}>
+            <AddIcon />
+          </this.styledIconButton>
+          <this.styledIconButton
+            data-cy="import-borehole-button"
+            onClick={() => {
+              this.setState({
+                modal: true,
+                upload: true,
+              });
+            }}
+            disabled={this.props.user.data.roles.indexOf("EDIT") === -1}>
+            <UploadIcon />
+          </this.styledIconButton>
         </Box>
-        <MenuItems
-          boreholes={boreholes}
-          refresh={this.refresh}
-          reset={this.reset}
-          user={this.props.user}
-          setState={this.setState}
-        />
         <ActionsModal setState={this.setState} state={this.state} refresh={this.refresh} />
         <ImportErrorModal setState={this.setState} state={this.state} />
       </Box>

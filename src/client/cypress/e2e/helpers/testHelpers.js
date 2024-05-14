@@ -167,7 +167,7 @@ export const newEditableBorehole = () => {
 export const newUneditableBorehole = () => {
   loginAsAdmin();
   cy.visit("/");
-  cy.contains("a", "New").click();
+  cy.get('[data-cy="new-borehole-button"]').click();
   cy.contains("button", "Create").click();
   const id = waitForCreation();
   cy.wait(["@borehole", "@edit_list"]);
