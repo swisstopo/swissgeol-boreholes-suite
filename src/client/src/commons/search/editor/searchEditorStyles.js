@@ -18,9 +18,9 @@ export const FilterContainer = styled.div`
   cursor: pointer;
 `;
 const ButtonSelected = keyframes`
-0%   {background-color:lightslategray; }
-50%  {background-color:lightgrey; }
-100% {background-color:#e0e0e0; }
+  0%   {background-color:lightslategray; }
+  50%  {background-color:lightgrey; }
+  100% {background-color:#e0e0e0; }
 `;
 
 export const FilterButton = styled.div`
