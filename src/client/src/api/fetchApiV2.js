@@ -354,10 +354,9 @@ export const useBoreholeGeometry = boreholeId =>
     enabled: !!boreholeId,
   });
 
-export const useBoreholeGeometryFormats = () =>
-  useQuery({
-    queryFn: async () => await fetchApiV2("boreholegeometry/geometryformats", "GET"),
-  });
+export const useBoreholeGeometryFormats = async () => {
+  return await fetchApiV2("boreholegeometry/geometryformats", "GET");
+};
 
 export const useBoreholeGeometryMutations = () => {
   const queryClient = useQueryClient();
