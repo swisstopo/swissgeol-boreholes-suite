@@ -38,6 +38,7 @@ describe("Search filter tests", () => {
         expect(options[4]).to.have.text("trial pit");
         expect(options[5]).to.have.text("outcrop");
         expect(options[6]).to.have.text("other");
+        expect(options[7]).to.have.text("not specified");
       });
   });
 
