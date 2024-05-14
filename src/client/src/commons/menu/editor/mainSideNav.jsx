@@ -146,7 +146,7 @@ class MainSideNav extends React.Component {
             <SettingsIcon />
           </this.styledIconButton>
           <this.styledIconButton>
-            <ProfilePopup userData={this.props.user.data} />
+            <ProfilePopup user={this.props.user.data} />
           </this.styledIconButton>
           <this.styledIconButton>
             <HelpIcon onClick={() => window.open(`/help`)} />

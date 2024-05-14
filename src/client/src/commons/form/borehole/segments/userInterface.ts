@@ -1,9 +1,11 @@
 export interface User {
+  data: UserData;
+}
+
+export interface UserData {
   // Incomplete type definition, add other properties as needed
-  username: React.ReactNode;
+  roles: string[];
+  id: number;
   name: string;
-  data: {
-    roles: string[];
-    id: number;
-  };
+  username: string;
 }
