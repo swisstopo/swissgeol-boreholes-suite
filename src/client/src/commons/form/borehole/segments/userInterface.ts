@@ -1,7 +1,11 @@
 export interface User {
+  data: UserData;
+}
+
+export interface UserData {
   // Incomplete type definition, add other properties as needed
-  data: {
-    roles: string[];
-    id: number;
-  };
+  roles: string[];
+  id: number;
+  name: string;
+  username: string;
 }

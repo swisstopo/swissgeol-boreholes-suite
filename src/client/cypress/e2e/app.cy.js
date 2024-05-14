@@ -1,5 +1,3 @@
-import { loginAsEditor } from "./helpers/testHelpers";
-
 describe("General app tests", () => {
   it("Displays the login page in the correct language", () => {
     // default is english
@@ -22,11 +20,5 @@ describe("General app tests", () => {
     // italian
     cy.contains("span", "IT").click();
     cy.contains("Benvenuti su");
-  });
-
-  it("Displays the current host as app title", () => {
-    loginAsEditor();
-    cy.visit("/");
-    cy.get('[data-cy="app-title"]').contains("localhost");
   });
 });

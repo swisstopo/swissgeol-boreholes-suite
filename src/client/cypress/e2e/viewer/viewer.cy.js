@@ -10,7 +10,6 @@ describe("Viewer tests", () => {
     cy.get("div[id=map]").should("be.visible");
     cy.get("tbody").children().should("have.length", 100);
 
-    cy.get('[data-cy="app-title"]').contains("localhost");
     cy.get('[data-cy="import-borehole-button"]').should("have.class", "Mui-disabled");
     cy.get('[data-cy="new-borehole-button"]').should("have.class", "Mui-disabled");
 

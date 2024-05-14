@@ -37,7 +37,6 @@ describe("Tests for the groundwater level measurement editor.", () => {
     });
 
     // switch to german
-    cy.get('[data-cy="menu"]').click({ force: true });
     cy.contains("span", "DE").click({ force: true });
     cy.wait(1000);
 

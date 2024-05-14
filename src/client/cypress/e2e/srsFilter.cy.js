@@ -2,8 +2,7 @@ import { newEditableBorehole, loginAsAdmin } from "./helpers/testHelpers";
 
 describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Settings").click();
+    cy.get('[data-cy="settings-button"]').click();
     cy.contains("div", "Location filters").click();
   }
 
