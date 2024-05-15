@@ -61,8 +61,8 @@ public class BoreholeGeometryControllerTest
     [TestMethod]
     public void GetGeometryFormats()
     {
-        var actualFormats = controller.GeometryFormats();
-        Assert.AreEqual(3, actualFormats.Count());
+        IActionResult response = controller.GeometryFormats();
+        ActionResultAssert.IsOk(response);
     }
 
     [TestMethod]

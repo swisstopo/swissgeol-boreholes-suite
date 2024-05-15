@@ -70,11 +70,11 @@ public class BoreholeGeometryController : ControllerBase
 
     [HttpGet("[action]")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public IList<object> GeometryFormats()
+    public IActionResult GeometryFormats()
     {
-        return geometryFormats
+        return Ok(geometryFormats
             .Select(f => (object)new { f.Name, f.Key, f.CsvHeader })
-            .ToList();
+            .ToList());
     }
 
     [HttpPost]
