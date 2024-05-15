@@ -72,12 +72,9 @@ public class BoreholeGeometryController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public IList<object> GeometryFormats()
     {
-        return geometryFormats.Select(f => (object)new
-        {
-            f.Name,
-            f.Key,
-            f.CsvHeader,
-        }).ToList();
+        return geometryFormats
+            .Select(f => (object)new { f.Name, f.Key, f.CsvHeader })
+            .ToList();
     }
 
     [HttpPost]
@@ -167,13 +164,15 @@ public class BoreholeGeometryController : ControllerBase
 
         public static List<BoreholeGeometryElement> ToBoreholeGeometry(IEnumerable<Geometry> data, int boreholeId)
         {
-            return data.Select(g => new BoreholeGeometryElement
-            {
-                BoreholeId = boreholeId,
-                X = g.X,
-                Y = g.Y,
-                Z = g.Z,
-            }).ToList();
+            return data
+                .Select(g => new BoreholeGeometryElement
+                {
+                    BoreholeId = boreholeId,
+                    X = g.X,
+                    Y = g.Y,
+                    Z = g.Z,
+                })
+                .ToList();
         }
 
         public sealed class Geometry
