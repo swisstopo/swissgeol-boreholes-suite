@@ -3,9 +3,9 @@ import { ErrorResponse } from "../menuComponents/menuComponentInterfaces";
 import { Workgroup } from "../../../../ReduxStateInterfaces";
 
 export interface WorkgroupSelectProps {
-  workgroup: number;
+  workgroup: number | null;
   enabledWorkgroups: Workgroup[];
-  setWorkgroup: React.Dispatch<React.SetStateAction<number>>;
+  setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 export interface ImportModalProps {
