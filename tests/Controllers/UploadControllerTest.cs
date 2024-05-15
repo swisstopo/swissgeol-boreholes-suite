@@ -306,7 +306,7 @@ public class UploadControllerTest
 
         ActionResultAssert.IsOk(response.Result);
         OkObjectResult okResult = (OkObjectResult)response.Result!;
-        Assert.AreEqual(6, okResult.Value);
+        Assert.AreEqual(7, okResult.Value);
 
         // Assert imported values
         var boreholeLV95 = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_2");
@@ -326,6 +326,15 @@ public class UploadControllerTest
         Assert.AreEqual(5, boreholeLV03.PrecisionLocationYLV03);
         Assert.AreEqual(5, boreholeLV03.PrecisionLocationX);
         Assert.AreEqual(5, boreholeLV03.PrecisionLocationY);
+
+        var boreholeWithZeros = GetBoreholesWithIncludes(context.Boreholes).ToList().Find(b => b.OriginalName == "Unit_Test_7");
+        Assert.AreEqual(ReferenceSystem.LV03, boreholeLV03.OriginalReferenceSystem.Value);
+        Assert.AreEqual(20050.000, boreholeLV03.LocationXLV03);
+        Assert.AreEqual(10050.0000, boreholeLV03.LocationYLV03);
+        Assert.AreEqual(3, boreholeLV03.PrecisionLocationXLV03);
+        Assert.AreEqual(4, boreholeLV03.PrecisionLocationYLV03);
+        Assert.AreEqual(4, boreholeLV03.PrecisionLocationX);
+        Assert.AreEqual(4, boreholeLV03.PrecisionLocationY);
     }
 
     [TestMethod]
