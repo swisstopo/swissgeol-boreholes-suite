@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Stack, Box } from "@mui/material/";
+import { Box, Stack } from "@mui/material/";
 import TranslationText from "../../../../form/translationText.jsx";
 import { FileDropzone } from "../../../../files/fileDropzone.jsx";
 import { StackHalfWidth } from "../../../../../components/baseComponents.js";
@@ -41,21 +41,21 @@ const ImportModalContent = ({
   selectedFile,
 }: ImportModalProps) => {
   const handleBoreholeAttachmentChange = useCallback(
-    (attachmentsFromDropzone: Blob) => {
+    (attachmentsFromDropzone: Blob[]) => {
       setSelectedBoreholeAttachments(attachmentsFromDropzone);
     },
     [setSelectedBoreholeAttachments],
   );
 
   const handleLithologyFileChange = useCallback(
-    (lithologyFileFromDropzone: Blob) => {
+    (lithologyFileFromDropzone: Blob[]) => {
       setSelectedLithologyFile(lithologyFileFromDropzone);
     },
     [setSelectedLithologyFile],
   );
 
   const handleBoreholeFileChange = useCallback(
-    (boreholeFileFromDropzone: Blob) => {
+    (boreholeFileFromDropzone: Blob[]) => {
       setSelectedFile(boreholeFileFromDropzone);
     },
     [setSelectedFile],
