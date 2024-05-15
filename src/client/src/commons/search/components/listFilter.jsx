@@ -14,8 +14,6 @@ import CantonDropdown from "../../form/cantons/dropdown/cantonDropdown";
 const ListFilter = props => {
   const {
     attribute,
-    resetBoreInc,
-    resetBoreIncDir,
     resetDrillDiameter,
     resetDrilling,
     resetElevation,
@@ -96,10 +94,6 @@ const ListFilter = props => {
       resetDrilling();
     } else if (item.value === "drill_diameter_to") {
       resetDrillDiameter();
-    } else if (item.value === "bore_inc_to") {
-      resetBoreInc();
-    } else if (item.value === "bore_inc_dir_to") {
-      resetBoreIncDir();
     } else if (item.value === "layer_depth_from_to") {
       updateChange("layer_depth_from_from", "", false);
       updateChange("layer_depth_from_to", "", false);

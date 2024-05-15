@@ -27,10 +27,6 @@ const initialState = {
     top_bedrock_to: "",
     status: null,
     purpose: null,
-    bore_inc_from: "",
-    bore_inc_to: "",
-    bore_inc_dir_from: "",
-    bore_inc_dir_to: "",
     lithology_top_bedrock: null,
     lithostratigraphy_top_bedrock: null,
     chronostratigraphy_top_bedrock: null,
@@ -89,7 +85,6 @@ const initialState = {
     original_lithology: "",
     layer_gradation: null,
 
-    qt_inclination_direction: null,
     total_depth_tvd_from: "",
     total_depth_tvd_to: "",
     top_bedrock_tvd_from: "",
@@ -218,28 +213,6 @@ const searchEditor = (
         },
       };
       copy.filter.refresh = copy.filter.refresh + 1;
-      return copy;
-    }
-    case "SEARCH_EDITOR_FILTER_RESET_BORE_INC": {
-      const copy = {
-        ...state,
-        filter: {
-          ...state.filter,
-        },
-      };
-      copy.filter.bore_inc_from = "";
-      copy.filter.bore_inc_to = "";
-      return copy;
-    }
-    case "SEARCH_EDITOR_FILTER_RESET_BORE_INC_DIR": {
-      const copy = {
-        ...state,
-        filter: {
-          ...state.filter,
-        },
-      };
-      copy.filter.bore_inc_dir_from = "";
-      copy.filter.bore_inc_dir_to = "";
       return copy;
     }
     case "SEARCH_EDITOR_FILTER_RESET_DEPTH": {

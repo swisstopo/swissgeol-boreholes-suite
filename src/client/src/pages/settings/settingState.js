@@ -52,8 +52,6 @@ const initialState = {
       spatial_reference_system: true,
       elevation_z: true,
       height_reference_system: true,
-      bore_inc: true,
-      bore_inc_dir: true,
       length: true,
       extended: {
         original_name: true,
@@ -112,8 +110,6 @@ const initialState = {
       national_interest: true,
       elevation_z: true,
       height_reference_system: true,
-      bore_inc: true,
-      bore_inc_dir: true,
       length: true,
       extended: {
         original_name: true,
