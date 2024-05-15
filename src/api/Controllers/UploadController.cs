@@ -121,7 +121,7 @@ public class UploadController : ControllerBase
                         borehole.OriginalReferenceSystem = ReferenceSystem.LV95;
                         borehole.LocationX = boreholeImport.Location_x;
                         borehole.LocationY = boreholeImport.Location_y;
-                        borehole.PrecisionLocationXLV03 = Math.Max((borehole.PrecisionLocationX ?? 0), borehole.PrecisionLocationY ?? 0);
+                        borehole.PrecisionLocationXLV03 = Math.Max(borehole.PrecisionLocationX ?? 0, borehole.PrecisionLocationY ?? 0);
                         borehole.PrecisionLocationYLV03 = borehole.PrecisionLocationXLV03;
                     }
                     else
@@ -296,16 +296,18 @@ public class UploadController : ControllerBase
             .SelectMany(str => str.Split(','))
             .Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
     }
+
     internal static int GetPrecision(IReaderRow row, string fieldName)
     {
         if (row.HeaderRecord != null && row.HeaderRecord.Any(h => h == fieldName))
         {
             var value = row.GetField<string?>(fieldName);
-            if (!string.IsNullOrEmpty(value) && value.Contains('.'))
+            if (!string.IsNullOrEmpty(value) && value.Contains('.', StringComparison.Ordinal))
             {
                 return value.Split('.')[1].Length;
             }
         }
+
         return 0;
     }
 
