@@ -214,7 +214,7 @@ public class BoreholeGeometryController : ControllerBase
     }
 
     /// <summary>
-    /// Accepts a CSV file where every data point has an Azimutz and Inclination.
+    /// Accepts a CSV file where every data point has an Azimuth and Inclination.
     /// </summary>
     internal sealed class AzInc : IBoreholeGeometryFormat
     {
@@ -325,7 +325,7 @@ public class BoreholeGeometryController : ControllerBase
 
         /// <summary>
         /// Convert the <see cref="Geometry"/> data to <see cref="AzInc.Geometry"/> data by
-        /// calculating the Azimutz and Inclination of a the vector tangential to the borehole.
+        /// calculating the Azimuth and Inclination of a the vector tangential to the borehole.
         /// </summary>
         /// <param name="data">The <see cref="Geometry"/> data.</param>
         public static IList<AzInc.Geometry> ConvertToAzInc(IEnumerable<Geometry> data)
@@ -334,7 +334,7 @@ public class BoreholeGeometryController : ControllerBase
             {
                 var result = new AzInc.Geometry() { MeasuredDepth = d.MeasuredDepth };
 
-                var alpha = d.MagneticRotation; // Rotation around z ayis (down)
+                var alpha = d.MagneticRotation; // Rotation around z axis (down)
                 var beta = d.Pitch; // Rotation around y axis (north)
                 var gamma = d.Roll; // Rotation around x axis (east)
 
