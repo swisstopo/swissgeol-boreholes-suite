@@ -11,7 +11,9 @@ import SettingsIcon from "../../../../public/icons/settings.svg?react";
 import HelpIcon from "../../../../public/icons/help.svg?react";
 import { theme } from "../../../AppTheme";
 import { styled } from "@mui/system";
-import { ProfilePopup } from "../profilePopup.tsx";
+import { ProfilePopup } from "../profilePopup";
+import { ErrorResponse, MainSideNavProps } from "./menuComponents/menuComponentInterfaces";
+import { ReduxRootState, User, Workgroup } from "../../../ReduxStateInterfaces";
 
 const StyledIconButton = styled(IconButton)({
   padding: "10px",
@@ -28,21 +30,21 @@ const selectedButtonStyle = {
   backgroundColor: theme.palette.buttonSelected + " !important",
 };
 
-const MainSideNav = ({ toggleDrawer, drawerOpen }) => {
+const MainSideNav = ({ toggleDrawer, drawerOpen }: MainSideNavProps) => {
   const history = useHistory();
   const menuRef = useRef(null);
-  const [creating, setCreating] = useState(false);
-  const [enabledWorkgroups, setEnabledWorkgroups] = useState([]);
-  const [modal, setModal] = useState(false);
-  const [upload, setUpload] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [selectedBoreholeAttachments, setSelectedBoreholeAttachments] = useState(null);
-  const [selectedLithologyFile, setSelectedLithologyFile] = useState(null);
-  const [workgroup, setWorkgroup] = useState(null);
-  const [validationErrorModal, setValidationErrorModal] = useState(false);
-  const [errorsResponse, setErrorsResponse] = useState(null);
+  const [creating, setCreating] = useState<boolean>(false);
+  const [enabledWorkgroups, setEnabledWorkgroups] = useState<Workgroup[]>([]);
+  const [modal, setModal] = useState<boolean>(false);
+  const [upload, setUpload] = useState<boolean>(false);
+  const [validationErrorModal, setValidationErrorModal] = useState<boolean>(false);
+  const [selectedFile, setSelectedFile] = useState<Blob[] | null>(null);
+  const [selectedBoreholeAttachments, setSelectedBoreholeAttachments] = useState<Blob[] | null>(null);
+  const [selectedLithologyFile, setSelectedLithologyFile] = useState<Blob[] | null>(null);
+  const [workgroup, setWorkgroup] = useState<number | null>(null);
+  const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
   // Redux state
-  const user = useSelector(state => state.core_user);
+  const user: User = useSelector((state: ReduxRootState) => state.core_user);
   // Redux actions
   const dispatch = useDispatch();
   const refresh = () => {
@@ -78,7 +80,7 @@ const MainSideNav = ({ toggleDrawer, drawerOpen }) => {
         <StyledIconButton
           data-cy="show-filter-button"
           onClick={handleToggleFilter}
-          sx={drawerOpen && selectedButtonStyle}>
+          sx={drawerOpen ? selectedButtonStyle : {}}>
           <Filter />
         </StyledIconButton>
         <StyledIconButton

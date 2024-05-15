@@ -1,22 +1,18 @@
 import React from "react";
-
-export interface BoreholesData {
-  isFetching: boolean;
-  dlen: number;
-}
+import { Boreholes } from "../../../../ReduxStateInterfaces";
 
 export interface BoreholeNumbersPreviewProps {
-  boreholes: BoreholesData;
+  boreholes: Boreholes;
 }
 
-interface ErrorResponse {
+export interface ErrorResponse {
   detail: string;
   errors: object;
   message: string;
 }
 
 export interface ImportErrorModalProps {
-  errorResponse: ErrorResponse;
+  errorResponse: ErrorResponse | null;
   setValidationErrorModal: React.Dispatch<React.SetStateAction<boolean>>;
   validationErrorModal: boolean;
 }
@@ -24,7 +20,7 @@ export interface ImportErrorModalProps {
 export interface MenuItemsProps {
   refresh: () => void;
   reset: () => void;
-  boreholes: BoreholesData;
+  boreholes: Boreholes;
 }
 
 export interface SideDrawerProps {
@@ -35,5 +31,10 @@ export interface SideDrawerProps {
 export interface BottomBarProps {
   toggleBottomDrawer: (open: boolean) => void;
   bottomDrawerOpen: boolean;
-  boreholes: BoreholesData;
+  boreholes: Boreholes;
+}
+
+export interface MainSideNavProps {
+  toggleDrawer: (open: boolean) => void;
+  drawerOpen: boolean;
 }

@@ -1,3 +1,29 @@
+export interface ReduxRootState {
+  core_user: User;
+  core_borehole_editor_list: Boreholes;
+}
+
+export interface User {
+  data: UserData;
+}
+
+export interface UserData {
+  // Incomplete type definition, add other properties as needed
+  workgroups: Workgroup[];
+  roles: string[];
+  id: number;
+  name: string;
+  username: string;
+}
+
+export interface Workgroup {
+  supplier: boolean;
+  disabled: null;
+  id: number;
+  workgroup: string;
+  roles: string[];
+}
+
 export interface Borehole {
   // Incomplete type definition, add other properties as needed
   data: {
@@ -23,4 +49,9 @@ export interface Borehole {
     precision_location_x_lv03: number;
     precision_location_y_lv03: number;
   };
+}
+
+export interface Boreholes {
+  isFetching: boolean;
+  dlen: number;
 }
