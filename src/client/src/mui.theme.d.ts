@@ -40,6 +40,13 @@ declare module "@mui/material/styles" {
     };
     typography: {
       fontFamily: string;
+      h5: {
+        fontSize: string;
+        color: string;
+        lineHeight: string;
+        fontWeight: number;
+        marginBottom: string;
+      };
       subtitle1: {
         fontSize: string;
         color: string;
@@ -96,6 +103,13 @@ declare module "@mui/material/styles" {
     };
     typography: {
       fontFamily: string;
+      h5: {
+        fontSize: string;
+        color: string;
+        lineHeight: string;
+        fontWeight: number;
+        marginBottom: string;
+      };
       subtitle1: {
         fontSize: string;
         color: string;

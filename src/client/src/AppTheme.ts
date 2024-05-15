@@ -33,7 +33,14 @@ export const theme = createTheme({
     buttonSelected: "#AA3526",
   },
   typography: {
-    fontFamily: "Lato",
+    fontFamily: "Inter",
+    h5: {
+      fontSize: "20px",
+      lineHeight: "28px",
+      fontWeight: 700,
+      color: "#000000",
+      marginBottom: "15px",
+    },
     subtitle1: {
       fontSize: "13px",
       color: "#000000",
@@ -67,7 +74,7 @@ export const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          fontFamily: "Lato",
+          fontFamily: "Inter",
           fontWeight: "bold",
           textTransform: "none",
           marginLeft: "5px",
@@ -93,7 +100,7 @@ export const theme = createTheme({
     MuiTab: {
       styleOverrides: {
         root: {
-          fontFamily: "Lato",
+          fontFamily: "Inter",
           fontWeight: "bold",
           textTransform: "none",
           fontSize: "16px",

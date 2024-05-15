@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { IconButton, Stack } from "@mui/material";
-import ActionsModal from "./actions/actionsModal";
 import { ImportErrorModal } from "./menuComponents/importErrorModal";
 import Filter from "../../../../public/icons/filter.svg?react";
 import AddIcon from "../../../../public/icons/add.svg?react";
@@ -12,8 +11,10 @@ import HelpIcon from "../../../../public/icons/help.svg?react";
 import { theme } from "../../../AppTheme";
 import { styled } from "@mui/system";
 import { ProfilePopup } from "../profilePopup";
+import ImportModal from "./actions/importModal";
+import { DrawerContentTypes } from "../../../pages/editor/editorComponentInterfaces";
 import { ErrorResponse, MainSideNavProps } from "./menuComponents/menuComponentInterfaces";
-import { ReduxRootState, User, Workgroup } from "../../../ReduxStateInterfaces";
+import { ReduxRootState, User } from "../../../ReduxStateInterfaces";
 
 const StyledIconButton = styled(IconButton)({
   padding: "10px",
@@ -30,18 +31,25 @@ const selectedButtonStyle = {
   backgroundColor: theme.palette.buttonSelected + " !important",
 };
 
-const MainSideNav = ({ toggleDrawer, drawerOpen }: MainSideNavProps) => {
+const MainSideNav = ({
+  toggleDrawer,
+  drawerOpen,
+  workgroup,
+  setWorkgroup,
+  enabledWorkgroups,
+  setEnabledWorkgroups,
+  setSideDrawerContent,
+  sideDrawerContent,
+}: MainSideNavProps) => {
   const history = useHistory();
   const menuRef = useRef(null);
   const [creating, setCreating] = useState<boolean>(false);
-  const [enabledWorkgroups, setEnabledWorkgroups] = useState<Workgroup[]>([]);
   const [modal, setModal] = useState<boolean>(false);
   const [upload, setUpload] = useState<boolean>(false);
   const [validationErrorModal, setValidationErrorModal] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<Blob[] | null>(null);
   const [selectedBoreholeAttachments, setSelectedBoreholeAttachments] = useState<Blob[] | null>(null);
   const [selectedLithologyFile, setSelectedLithologyFile] = useState<Blob[] | null>(null);
-  const [workgroup, setWorkgroup] = useState<number | null>(null);
   const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
   // Redux state
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
@@ -52,14 +60,31 @@ const MainSideNav = ({ toggleDrawer, drawerOpen }: MainSideNavProps) => {
   };
 
   useEffect(() => {
-    const wgs = user.data.workgroups.filter(w => w.disabled === null && w.supplier === false);
+    const wgs = user.data.workgroups.filter(w => w.disabled === null && !w.supplier);
     setEnabledWorkgroups(wgs);
     setWorkgroup(wgs.length > 0 ? wgs[0].id : null);
-  }, [user.data.workgroups]);
+  }, [setEnabledWorkgroups, setWorkgroup, user.data.workgroups]);
 
   const handleToggleFilter = () => {
-    toggleDrawer(!drawerOpen);
+    handleDrawer(DrawerContentTypes.Filters);
+    setSideDrawerContent(DrawerContentTypes.Filters);
   };
+
+  const handleToggleAdd = () => {
+    handleDrawer(DrawerContentTypes.NewBorehole);
+    setSideDrawerContent(DrawerContentTypes.NewBorehole);
+  };
+
+  const handleDrawer = (buttonName: DrawerContentTypes) => {
+    if (sideDrawerContent === buttonName) {
+      toggleDrawer(!drawerOpen);
+    } else {
+      toggleDrawer(true);
+    }
+  };
+
+  const isFilterPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Filters;
+  const isAddPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.NewBorehole;
 
   return (
     <Stack
@@ -80,16 +105,14 @@ const MainSideNav = ({ toggleDrawer, drawerOpen }: MainSideNavProps) => {
         <StyledIconButton
           data-cy="show-filter-button"
           onClick={handleToggleFilter}
-          sx={drawerOpen ? selectedButtonStyle : {}}>
+          sx={isFilterPanelVisible ? selectedButtonStyle : {}}>
           <Filter />
         </StyledIconButton>
         <StyledIconButton
           data-cy="new-borehole-button"
-          onClick={() => {
-            setModal(true);
-            setUpload(false);
-          }}
-          disabled={user.data.roles.indexOf("EDIT") === -1}>
+          onClick={handleToggleAdd}
+          disabled={user.data.roles.indexOf("EDIT") === -1}
+          sx={isAddPanelVisible ? selectedButtonStyle : {}}>
           <AddIcon />
         </StyledIconButton>
         <StyledIconButton
@@ -117,7 +140,7 @@ const MainSideNav = ({ toggleDrawer, drawerOpen }: MainSideNavProps) => {
           <HelpIcon onClick={() => window.open(`/help`)} />
         </StyledIconButton>
       </Stack>
-      <ActionsModal
+      <ImportModal
         creating={creating}
         setCreating={setCreating}
         setModal={setModal}

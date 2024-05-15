@@ -11,6 +11,7 @@ import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { theme } from "../../AppTheme";
 import SearchEditorComponent from "../../commons/search/editor/searchEditorComponent.jsx";
+import NewBoreholePanel from "../../commons/menu/editor/newBoreholePanel.tsx";
 
 const AppBox = styled(Box)({
   display: "flex",
@@ -20,13 +21,13 @@ const AppBox = styled(Box)({
 
 const LayoutBox = styled(Box)({ flex: "1 1 100%", display: "flex", flexDirection: "row", overflow: "hidden" });
 
-const SidebarBox = styled(Box)(({ theme }) => ({
+const SidebarBox = styled(Box)(() => ({
   flexShrink: 0,
   borderRight: "1px solid " + theme.palette.boxShadow,
   position: "relative",
 }));
 
-const WorkflowBox = styled(Box)(({ theme }) => ({
+const WorkflowBox = styled(Box)(() => ({
   width: "300px",
   boxShadow: theme.palette.boxShadow + " -2px 6px 6px 0px",
   padding: "1em",
@@ -45,6 +46,21 @@ const EditorComponent = props => {
   const [sideDrawerOpen, setSideDrawerOpen] = useState(false);
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
   const location = useLocation();
+  const [workgroup, setWorkgroup] = useState(0);
+  const [enabledWorkgroups, setEnabledWorkgroups] = useState([]);
+  const [sideDrawerContent, setSideDrawerContent] = useState("searchEditor");
+
+  const sideDrawerComponentMap = {
+    filters: <SearchEditorComponent />,
+    newBorehole: (
+      <NewBoreholePanel
+        workgroup={workgroup}
+        setWorkgroup={setWorkgroup}
+        enabledWorkgroups={enabledWorkgroups}
+        setEnabledWorkgroups={setEnabledWorkgroups}
+      />
+    ),
+  };
 
   const toggleSideDrawer = open => {
     setSideDrawerOpen(open);
@@ -63,17 +79,32 @@ const EditorComponent = props => {
     <AppBox>
       <HeaderComponent />
       <LayoutBox>
-        <SidebarBox theme={theme}>
+        <SidebarBox>
           <Switch>
             <Route
               exact
               path={"/"}
-              render={() => <MainSideNav toggleDrawer={toggleSideDrawer} drawerOpen={sideDrawerOpen} />}
+              render={() => (
+                <MainSideNav
+                  workgroup={workgroup}
+                  setWorkgroup={setWorkgroup}
+                  enabledWorkgroups={enabledWorkgroups}
+                  setEnabledWorkgroups={setEnabledWorkgroups}
+                  toggleDrawer={toggleSideDrawer}
+                  drawerOpen={sideDrawerOpen}
+                  setSideDrawerContent={setSideDrawerContent}
+                  sideDrawerContent={sideDrawerContent}
+                />
+              )}
             />
             <Route component={DetailSideNav} path="/:id" />
           </Switch>
         </SidebarBox>
-        <SideDrawer drawerOpen={sideDrawerOpen} drawerWidth={240} drawerContent={<SearchEditorComponent />} />
+        <SideDrawer
+          drawerOpen={sideDrawerOpen}
+          drawerWidth={240}
+          drawerContent={sideDrawerComponentMap[sideDrawerContent]}
+        />
         <MainContentBox>
           <Switch>
             <Route
@@ -95,7 +126,7 @@ const EditorComponent = props => {
         <Switch>
           <Route
             component={({ match }) => (
-              <WorkflowBox theme={theme}>
+              <WorkflowBox>
                 <WorkflowForm id={parseInt(match.params.id, 10)} />
               </WorkflowBox>
             )}

@@ -4,7 +4,7 @@ import TranslationText from "../../../../form/translationText.jsx";
 import { FileDropzone } from "../../../../files/fileDropzone.jsx";
 import { StackHalfWidth } from "../../../../../components/baseComponents.js";
 import { downloadCodelistCsv } from "../../../../../api/fetchApiV2.js";
-import { ImportModalProps } from "../actionsInterfaces.js";
+import { ImportContentProps } from "../actionsInterfaces.js";
 import Downloadlink from "../../../../files/downloadlink.jsx";
 
 const SeparatorLine = () => {
@@ -39,7 +39,7 @@ const ImportModalContent = ({
   setSelectedFile,
   setSelectedLithologyFile,
   selectedFile,
-}: ImportModalProps) => {
+}: ImportContentProps) => {
   const handleBoreholeAttachmentChange = useCallback(
     (attachmentsFromDropzone: Blob[]) => {
       setSelectedBoreholeAttachments(attachmentsFromDropzone);

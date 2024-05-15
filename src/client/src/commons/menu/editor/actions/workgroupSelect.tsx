@@ -1,13 +1,10 @@
 import TranslationText from "../../../form/translationText";
-import { Box, MenuItem, Select, FormControl } from "@mui/material/";
+import { Box, FormControl, MenuItem, Select } from "@mui/material/";
 import { WorkgroupSelectProps } from "./actionsInterfaces";
 
 const WorkgroupSelect = ({ workgroup, enabledWorkgroups, setWorkgroup }: WorkgroupSelectProps) => {
   return (
     <>
-      <h3>
-        <TranslationText firstUpperCase id="workgroup" />
-      </h3>
       <Box
         style={{
           padding: "1em",
