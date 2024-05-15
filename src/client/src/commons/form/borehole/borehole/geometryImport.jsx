@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FileDropzone } from "../../../../commons/files/fileDropzone";
 import { AddButton } from "../../../../components/buttons/buttons";
 import {
@@ -16,7 +16,7 @@ import {
 import {
   useBoreholeGeometry,
   useBoreholeGeometryMutations,
-  useBoreholeGeometryFormats,
+  getBoreholeGeometryFormats,
 } from "../../../../api/fetchApiV2";
 import { FormProvider, useForm, Controller, useWatch } from "react-hook-form";
 import { FormSelect } from "../../../../components/form/form";
@@ -33,7 +33,11 @@ const GeometryImport = ({ boreholeId }) => {
     set: { mutate: setBoreholeGeometry },
   } = useBoreholeGeometryMutations();
   const { data } = useBoreholeGeometry(boreholeId);
-  const { data: geometryFormats } = useBoreholeGeometryFormats();
+  const [geometryFormats, setGeometryFormats] = useState([]);
+
+  useEffect(() => {
+    getBoreholeGeometryFormats().then(setGeometryFormats);
+  }, []);
 
   const formMethods = useForm({
     defaultValues: { geometryFormat: "", geometryFile: [] },

@@ -354,7 +354,7 @@ export const useBoreholeGeometry = boreholeId =>
     enabled: !!boreholeId,
   });
 
-export const useBoreholeGeometryFormats = async () => {
+export const getBoreholeGeometryFormats = async () => {
   return await fetchApiV2("boreholegeometry/geometryformats", "GET");
 };
 
