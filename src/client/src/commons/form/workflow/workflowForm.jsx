@@ -20,6 +20,7 @@ import { AlertContext } from "../../../components/alert/alertContext";
 import CommentArea from "./commentArea";
 import DateText from "../dateText";
 import TranslationText from "../../form/translationText";
+import { theme } from "../../../AppTheme";
 
 class WorkflowForm extends React.Component {
   static contextType = AlertContext;
@@ -454,7 +455,7 @@ class WorkflowForm extends React.Component {
                           <Label
                             circular
                             style={{
-                              backgroundColor: "#909090 !important",
+                              backgroundColor: theme.palette.background.lightgrey + " !important",
                             }}
                           />
                         </div>

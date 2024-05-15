@@ -3,8 +3,9 @@ import styled, { keyframes } from "styled-components";
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  flex: 1 1 100%;
+  flex: 1 1 auto;
   overflow: auto;
+  max-height: 75vh;
 `;
 export const SearchFilterLabel = styled.div`
   font-size: 17px;

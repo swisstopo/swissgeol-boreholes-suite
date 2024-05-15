@@ -8,6 +8,7 @@ import { AlertContext } from "../../../../components/alert/alertContext";
 import TranslationText from "../../../../commons/form/translationText";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
 import WMSCapabilities from "ol/format/WMSCapabilities";
+import { theme } from "../../../../AppTheme";
 
 const MapSettings = props => {
   const alertContext = useContext(AlertContext);
@@ -36,7 +37,7 @@ const MapSettings = props => {
           flexDirection: "row",
           display: "flex",
           cursor: "pointer",
-          backgroundColor: state.map ? "#f5f5f5" : "#fff",
+          backgroundColor: state.map ? theme.palette.background.lightgrey : theme.palette.background.default,
           padding: 10,
         }}>
         <div

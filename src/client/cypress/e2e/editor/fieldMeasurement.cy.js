@@ -32,7 +32,6 @@ describe("Tests for the field measurement editor.", () => {
 
       startBoreholeEditing();
       // switch to german
-      cy.get('[data-cy="menu"]').click({ force: true });
       cy.contains("span", "DE").click({ force: true });
       cy.wait(1000);
 
@@ -49,7 +48,7 @@ describe("Tests for the field measurement editor.", () => {
       // close editing mask
       saveForm();
 
-      //assert field measurementis displayed
+      //assert field measurement is displayed
       cy.wait("@fieldmeasurement_GET");
       evaluateDisplayValue("casingName", "test fieldmeasurement - casing-1");
 

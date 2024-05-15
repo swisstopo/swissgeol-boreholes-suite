@@ -4,12 +4,14 @@ describe("Search filter tests", () => {
   it("has search filters", () => {
     loginAsAdmin();
     cy.visit("/");
-    cy.contains("Search filters:");
+    cy.get('[data-cy="show-filter-button"]').click();
+    cy.contains("Filters");
   });
 
   it("shows the correct dropdowns", () => {
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("span", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
     let indentifierDropdown = cy.contains("label", "ID type").next();
@@ -29,15 +31,16 @@ describe("Search filter tests", () => {
     boreholeTypeDropdown.click();
     boreholeTypeDropdown
       .find("div[role='option']")
-      .should("have.length", 7)
+      .should("have.length", 8)
       .should(options => {
         expect(options[0]).to.have.text("Reset");
         expect(options[1]).to.have.text("borehole");
         expect(options[2]).to.have.text("virtual borehole");
         expect(options[3]).to.have.text("penetration test");
         expect(options[4]).to.have.text("trial pit");
-        expect(options[5]).to.have.text("other");
-        expect(options[6]).to.have.text("not specified");
+        expect(options[5]).to.have.text("outcrop");
+        expect(options[6]).to.have.text("other");
+        expect(options[7]).to.have.text("not specified");
       });
   });
 
@@ -45,6 +48,7 @@ describe("Search filter tests", () => {
     // precondition filters not visible
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Registration").click();
     cy.contains("Show all fields")
       .next()
@@ -54,21 +58,20 @@ describe("Search filter tests", () => {
       });
 
     // turn on registration filters
-    cy.get('[data-cy="menu"]').click();
-    cy.contains("h4", "Settings").click();
+    cy.get('[data-cy="settings-button"]').click();
     cy.contains("Registration filters").click();
     cy.contains("Select all").click();
     cy.wait("@setting");
 
     // check visibility of filters
     cy.contains("h3", "Done").click();
+    cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Registration").click();
     cy.contains("Created by");
     cy.contains("Creation date");
 
     // reset setting
-    cy.get('[data-cy="menu"]').click();
-    cy.contains("h4", "Settings").click();
+    cy.get('[data-cy="settings-button"]').click();
     cy.contains("Registration filters").click();
     cy.contains("Unselect all").click();
     cy.wait("@setting");
@@ -77,6 +80,7 @@ describe("Search filter tests", () => {
   it("filters boreholes by creator name", () => {
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -96,6 +100,7 @@ describe("Search filter tests", () => {
   it("filters boreholes by color and uscs3", () => {
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Lithology").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -144,6 +149,7 @@ describe("Search filter tests", () => {
   it("filters boreholes by original lithology in editor mode", () => {
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="show-filter-button"]').click();
     filterByOriginalLithology();
     cy.wait("@edit_list");
     cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 21);
@@ -152,6 +158,7 @@ describe("Search filter tests", () => {
   it("filters boreholes by creation date", () => {
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Registration").click();
     cy.contains("Show all fields").children(".checkbox").click();
 
@@ -181,6 +188,7 @@ describe("Search filter tests", () => {
   it("filters boreholes by workgroup", () => {
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Workgroup").click();
     cy.contains("Default").click();
     cy.wait("@borehole");

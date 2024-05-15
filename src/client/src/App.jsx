@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-d
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "./AppTheme.js";
+import { theme } from "./AppTheme";
 import EditorComponent from "./pages/editor/editorComponent";
 import SettingCmp from "./pages/settings/settingCmp";
 import { DataLoader } from "./pages/settings/dataLoader";

@@ -10,8 +10,8 @@ const LayerSelectControl = ({ onShowLayerSelection, sidebarWidth }) => {
         top: "6px",
         left: sidebarWidth > 0 ? sidebarWidth - 48 + "px" : "12px",
         zIndex: "1",
-        backgroundColor: "#ffffff",
-        boxShadow: "4px 4px 2px #00000029",
+        backgroundColor: theme.palette.background.default,
+        boxShadow: "4px 4px 2px " + theme.palette.boxShadow,
         borderRadius: "8px",
         alignItems: "center",
       }}>

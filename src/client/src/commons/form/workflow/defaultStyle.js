@@ -1,6 +1,8 @@
+import { theme } from "../../../AppTheme";
+
 export const defaultStyle = {
   control: {
-    backgroundColor: "#fff",
+    backgroundColor: theme.palette.background.default,
     fontSize: "14px",
     fontWeight: "normal",
   },

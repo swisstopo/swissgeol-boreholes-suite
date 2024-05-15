@@ -2,14 +2,14 @@ import { newEditableBorehole, loginAsAdmin } from "./helpers/testHelpers";
 
 describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {
-    cy.get("i[class='th big icon']").click();
-    cy.contains("h4", "Settings").click();
+    cy.get('[data-cy="settings-button"]').click();
     cy.contains("div", "Location filters").click();
   }
 
   it("can set filters as editor", () => {
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="show-filter-button"]').click();
     goToEditorLocationFilter();
 
     cy.contains("div", "Spatial reference system").children().first().children().first().as("checkbox");
@@ -17,6 +17,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get("@checkbox").should("be.checked");
 
     cy.contains("h3", "Done").click();
+    cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("span", "Location").click();
     cy.get('[data-cy="spatial-reference-filter"]').should("exist");
 
@@ -25,6 +26,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get("@checkbox").should("not.be.checked");
 
     cy.contains("h3", "Done").click();
+    cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("span", "Location").click();
     cy.get('[data-cy="spatial-reference-filter"]').should("not.exist");
   });
@@ -45,6 +47,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.wait("@edit_unlock");
     cy.contains("h3", "Done").click();
     cy.wait(["@edit_list", "@borehole"]);
+    cy.get('[data-cy="show-filter-button"]').click();
 
     cy.contains("span", "Location").click();
     cy.get('[class="ui fitted toggle checkbox"]').eq(1).children().first().check({ force: true });

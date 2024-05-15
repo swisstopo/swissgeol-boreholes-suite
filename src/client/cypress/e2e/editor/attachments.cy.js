@@ -95,6 +95,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     cy.wait(["@edit_list", "@borehole"]);
 
     // reset test data
+    cy.get('[data-cy="showTableButton"]').click();
     cy.get('[data-cy="borehole-table"]').within(() => {
       cy.contains("JUNIORSOUFFLE").parent().find(".checkbox").click();
       cy.contains("button", "Delete").click();

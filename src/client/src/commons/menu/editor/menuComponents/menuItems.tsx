@@ -1,81 +1,29 @@
 import TranslationText from "../../../form/translationText";
-import { Icon, Menu } from "semantic-ui-react";
+import { Icon } from "semantic-ui-react";
 import { MenuItemsProps } from "./menuComponentInterfaces";
+import { Button, Stack } from "@mui/material";
 
-export const MenuItems = ({ boreholes, refresh, reset, user, setState }: MenuItemsProps) => {
+export const MenuItems = ({ boreholes, refresh, reset }: MenuItemsProps) => {
   return (
-    <>
-      <Menu
-        icon="labeled"
-        key="sb-em-3"
-        size="mini"
-        style={{
-          borderTop: "thin solid rgb(187, 187, 187)",
-          margin: "0px",
+    <Stack direction="row" justifyContent="space-around" sx={{ marginTop: 3, flex: "0 0 20px", bottom: "20px" }}>
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => {
+          refresh();
         }}>
-        <Menu.Item
-          onClick={() => {
-            refresh();
-          }}
-          style={{
-            flex: 1,
-            padding: "1.5em",
-          }}>
-          <Icon loading={boreholes.isFetching} name="refresh" size="tiny" />
-          <TranslationText firstUpperCase id="refresh" />
-        </Menu.Item>
-        <Menu.Item
-          onClick={() => {
-            reset();
-          }}
-          style={{
-            flex: 1,
-            padding: "1.5em",
-          }}>
-          <Icon name="undo" size="tiny" />
-          <TranslationText firstUpperCase id="reset" />
-        </Menu.Item>
-      </Menu>
-      <Menu
-        icon="labeled"
-        key="sb-em-4"
-        size="mini"
-        style={{
-          margin: "0px",
+        <Icon loading={boreholes.isFetching} name="refresh" />
+        <TranslationText firstUpperCase id="refresh" />
+      </Button>
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => {
+          reset();
         }}>
-        <Menu.Item
-          disabled={user.data.roles.indexOf("EDIT") === -1}
-          data-cy="import-borehole-button"
-          onClick={() => {
-            setState({
-              modal: true,
-              upload: true,
-            });
-          }}
-          style={{
-            flex: 1,
-            padding: "1.5em",
-          }}>
-          <Icon name="upload" size="tiny" />
-          <TranslationText firstUpperCase id="import" />
-        </Menu.Item>
-        <Menu.Item
-          disabled={user.data.roles.indexOf("EDIT") === -1}
-          data-cy="new-borehole-button"
-          onClick={() => {
-            setState({
-              modal: true,
-              upload: false,
-            });
-          }}
-          style={{
-            flex: 1,
-            padding: "1.5em",
-          }}>
-          <Icon name="add" size="tiny" />
-          <TranslationText firstUpperCase extra={{ what: "borehole" }} id="new" />
-        </Menu.Item>
-      </Menu>
-    </>
+        <Icon name="undo" />
+        <TranslationText firstUpperCase id="reset" />
+      </Button>
+    </Stack>
   );
 };

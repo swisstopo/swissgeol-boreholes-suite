@@ -19,8 +19,8 @@ const ZoomControls = ({ onZoomIn, onZoomOut, onFitToExtent }) => {
         top: "6px",
         right: "12px",
         position: "absolute",
-        backgroundColor: "#ffffff",
-        boxShadow: "4px 4px 2px #00000029",
+        backgroundColor: theme.palette.background.default,
+        boxShadow: "4px 4px 2px " + theme.palette.boxShadow,
         borderRadius: "8px",
         alignItems: "center",
       }}>

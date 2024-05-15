@@ -40,7 +40,6 @@ describe("Tests for the wateringress editor.", () => {
     cy.wait("@wateringress_GET");
 
     // switch to german
-    cy.get('[data-cy="menu"]').click({ force: true });
     cy.contains("span", "DE").click({ force: true });
     cy.wait(1000);
 

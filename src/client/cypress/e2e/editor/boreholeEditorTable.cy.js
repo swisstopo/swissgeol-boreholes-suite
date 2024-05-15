@@ -4,6 +4,7 @@ describe("Borehole editor table tests", () => {
   it("preserves column sorting and active page when navigating", () => {
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="showTableButton"]').click();
 
     // sort by name ascending
     cy.contains("th", "Original name").click();

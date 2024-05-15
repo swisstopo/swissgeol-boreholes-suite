@@ -2,6 +2,7 @@ import MapOverlay from "./overlay/mapOverlay";
 import { Box, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import styled from "@mui/material/styles/styled";
+import { theme } from "../../AppTheme";
 
 const Sidebar = ({ sidebarRef, state, setState, additionalMapLayers }) => {
   const { t } = useTranslation();
@@ -15,7 +16,7 @@ const Sidebar = ({ sidebarRef, state, setState, additionalMapLayers }) => {
     <Box
       ref={sidebarRef}
       style={{
-        backgroundColor: "#f3f3f3",
+        backgroundColor: theme.palette.background.lightgrey,
         display: state.sidebar ? "block" : "none",
         overflowY: "auto",
         width: "400px",

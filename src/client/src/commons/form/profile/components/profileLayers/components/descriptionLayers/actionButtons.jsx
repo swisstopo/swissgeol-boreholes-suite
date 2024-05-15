@@ -4,7 +4,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { useTheme } from "@mui/material/styles";
+import { theme } from "../../../../../../../AppTheme";
 
 const ActionButtons = props => {
   const {
@@ -16,7 +16,6 @@ const ActionButtons = props => {
     setDescriptionIdSelectedForDelete,
   } = props;
   const { t } = useTranslation();
-  const theme = useTheme();
 
   return (
     <Stack direction="row" sx={{ marginLeft: "auto", padding: "3px" }}>

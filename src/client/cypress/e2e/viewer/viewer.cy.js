@@ -5,13 +5,13 @@ describe("Viewer tests", () => {
     loginAsViewer();
     cy.visit("/");
 
+    cy.get('[data-cy="showTableButton"]').click();
     cy.wait("@edit_list");
     cy.get("div[id=map]").should("be.visible");
     cy.get("tbody").children().should("have.length", 100);
 
-    cy.get('[data-cy="app-title"]').contains("localhost");
-    cy.get('[data-cy="import-borehole-button"]').should("have.attr", "class", "disabled item");
-    cy.get('[data-cy="new-borehole-button"]').should("have.attr", "class", "disabled item");
+    cy.get('[data-cy="import-borehole-button"]').should("have.class", "Mui-disabled");
+    cy.get('[data-cy="new-borehole-button"]').should("have.class", "Mui-disabled");
 
     // click on borehole
     cy.contains("td", "Immanuel Christiansen").click();
@@ -33,6 +33,7 @@ describe("Viewer tests", () => {
   it("Assures viewer cannot multiselect boreholes", () => {
     loginAsAdmin();
     cy.visit("/");
+    cy.get('[data-cy="showTableButton"]').click();
     cy.wait("@edit_list");
     cy.get('[data-cy="select-all-checkbox"]').should("be.visible");
     cy.get('[data-cy="select-checkbox"]').should("have.length", 89);

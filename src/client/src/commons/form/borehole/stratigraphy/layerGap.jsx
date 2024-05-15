@@ -1,7 +1,7 @@
 import { Card, Stack, Typography, CardActionArea } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { ArrowDownward, ArrowUpward, AddCircle, Warning } from "@mui/icons-material";
-import { useTheme } from "@mui/material/styles";
+import { theme } from "../../../../AppTheme";
 
 const IconTypography = ({ icon, text }) => {
   return (
@@ -25,7 +25,6 @@ const IconTypography = ({ icon, text }) => {
  */
 const LayerGap = ({ addLayer, updateLayer, previousLayer, nextLayer, isEditable, height }) => {
   const { t } = useTranslation();
-  const theme = useTheme();
 
   return (
     <Card square variant="outlined">
