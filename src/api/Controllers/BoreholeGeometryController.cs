@@ -28,7 +28,7 @@ public class BoreholeGeometryController : ControllerBase
         PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
         MissingFieldFound = null,
     };
-    private static List<IBoreholeGeometryFormat> geometryFormats = new()
+    private static readonly List<IBoreholeGeometryFormat> geometryFormats = new()
     {
         new XYZ(),
         new AzInc(),
