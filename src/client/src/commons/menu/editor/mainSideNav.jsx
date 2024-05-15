@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { connect } from "react-redux";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { Stack, IconButton } from "@mui/material";
+import { IconButton, Stack } from "@mui/material";
 import ActionsModal from "./actions/actionsModal";
 import { ImportErrorModal } from "./menuComponents/importErrorModal";
 import Filter from "../../../../public/icons/filter.svg?react";
@@ -28,7 +28,7 @@ const selectedButtonStyle = {
   backgroundColor: theme.palette.buttonSelected + " !important",
 };
 
-const MainSideNav = ({ user, toggleDrawer, drawerOpen, refresh }) => {
+const MainSideNav = ({ toggleDrawer, drawerOpen }) => {
   const history = useHistory();
   const menuRef = useRef(null);
   const [creating, setCreating] = useState(false);
@@ -41,6 +41,13 @@ const MainSideNav = ({ user, toggleDrawer, drawerOpen, refresh }) => {
   const [workgroup, setWorkgroup] = useState(null);
   const [validationErrorModal, setValidationErrorModal] = useState(false);
   const [errorsResponse, setErrorsResponse] = useState(null);
+  // Redux state
+  const user = useSelector(state => state.core_user);
+  // Redux actions
+  const dispatch = useDispatch();
+  const refresh = () => {
+    dispatch({ type: "SEARCH_EDITOR_FILTER_REFRESH" });
+  };
 
   useEffect(() => {
     const wgs = user.data.workgroups.filter(w => w.disabled === null && w.supplier === false);
@@ -137,41 +144,4 @@ const MainSideNav = ({ user, toggleDrawer, drawerOpen, refresh }) => {
   );
 };
 
-const mapStateToProps = state => {
-  return {
-    search: state.search,
-    editor: state.editor,
-    borehole: state.core_borehole,
-    boreholes: state.core_borehole_editor_list,
-    setting: state.setting,
-    user: state.core_user,
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    dispatch: dispatch,
-    boreholeSelected: borehole => {
-      dispatch({
-        path: "/borehole",
-        type: "CLEAR",
-      });
-      dispatch({
-        type: "EDITOR_BOREHOLE_SELECTED",
-        selected: borehole,
-      });
-    },
-    refresh: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_REFRESH",
-      });
-    },
-    reset: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_RESET",
-      });
-    },
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(MainSideNav);
+export default MainSideNav;
