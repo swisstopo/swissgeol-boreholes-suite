@@ -73,7 +73,7 @@ public class BoreholeGeometryController : ControllerBase
     public IActionResult GeometryFormats()
     {
         return Ok(geometryFormats
-            .Select(f => (object)new { f.Name, f.Key, f.CsvHeader })
+            .Select(f => new { f.Name, f.Key, f.CsvHeader })
             .ToList());
     }
 
