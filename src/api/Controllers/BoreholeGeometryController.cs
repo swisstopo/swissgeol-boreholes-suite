@@ -126,11 +126,32 @@ public class BoreholeGeometryController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Geometry format with method to read and convert the input CSV file to <see cref="BoreholeGeometryElement"/>s.
+    /// </summary>
     private interface IBoreholeGeometryFormat
     {
+        /// <summary>
+        /// Key to identify this <see cref="IBoreholeGeometryFormat"/>.
+        /// </summary>
         string Key { get; }
+
+        /// <summary>
+        /// Human readable name of the <see cref="IBoreholeGeometryFormat"/>.
+        /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// The expected header of the input CSV file.
+        /// </summary>
         string CsvHeader { get; }
+
+        /// <summary>
+        /// Convert the provided CSV file into a List of <see cref="BoreholeGeometryElement"/>.
+        /// </summary>
+        /// <param name="file">The input CSV file.</param>
+        /// <param name="boreholeId">The id of the borehole this geometry belongs to.</param>
+        /// <returns></returns>
         IList<BoreholeGeometryElement> ReadCsv(IFormFile file, int boreholeId);
     }
 
@@ -146,6 +167,9 @@ public class BoreholeGeometryController : ControllerBase
         return degrees * Math.PI / 180;
     }
 
+    /// <summary>
+    /// Accepts a CSV file with XYZ values that can be used directly without conversion.
+    /// </summary>
     internal sealed class XYZ : IBoreholeGeometryFormat
     {
         public string Key => "XYZ";
@@ -162,6 +186,12 @@ public class BoreholeGeometryController : ControllerBase
             return ToBoreholeGeometry(data, boreholeId);
         }
 
+        /// <summary>
+        /// Convert <see cref="Geometry"/> data to <see cref="BoreholeGeometryElement"/> data that can be
+        /// written to the Database.
+        /// </summary>
+        /// <param name="data">The <see cref="Geometry"/> data.</param>
+        /// <param name="boreholeId">The borehole this geometry belongs to.</param>
         public static List<BoreholeGeometryElement> ToBoreholeGeometry(IEnumerable<Geometry> data, int boreholeId)
         {
             return data
@@ -183,6 +213,9 @@ public class BoreholeGeometryController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Accepts a CSV file where every data point has an Azimutz and Inclination.
+    /// </summary>
     internal sealed class AzInc : IBoreholeGeometryFormat
     {
         public string Key => "AzInc";
@@ -207,6 +240,11 @@ public class BoreholeGeometryController : ControllerBase
             return XYZ.ToBoreholeGeometry(ConvertToXYZ(data), boreholeId);
         }
 
+        /// <summary>
+        /// Convert <see cref="Geometry"/> data to <see cref="XYZ.Geometry"/> data using the
+        /// <see href="https://www.drillingformulas.com/minimum-curvature-method/">Minimum Curvature</see> algorithm.
+        /// </summary>
+        /// <param name="data">The <see cref="Geometry"/> data.</param>
         public static List<XYZ.Geometry> ConvertToXYZ(IList<Geometry> data)
         {
             List<XYZ.Geometry> result = new(data.Count);
@@ -257,6 +295,9 @@ public class BoreholeGeometryController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Accepts a CSV file where every data point has a Pitch, Roll and Yaw angle.
+    /// </summary>
     internal sealed class PitchRoll : IBoreholeGeometryFormat
     {
         public string Key => "PitchRoll";
@@ -282,6 +323,11 @@ public class BoreholeGeometryController : ControllerBase
             return XYZ.ToBoreholeGeometry(AzInc.ConvertToXYZ(ConvertToAzInc(data)), boreholeId);
         }
 
+        /// <summary>
+        /// Convert the <see cref="Geometry"/> data to <see cref="AzInc.Geometry"/> data by
+        /// calculating the Azimutz and Inclination of a the vector tangential to the borehole.
+        /// </summary>
+        /// <param name="data">The <see cref="Geometry"/> data.</param>
         public static IList<AzInc.Geometry> ConvertToAzInc(IEnumerable<Geometry> data)
         {
             return data.Select(d =>
