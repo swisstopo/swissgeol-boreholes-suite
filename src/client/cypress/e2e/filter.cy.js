@@ -31,15 +31,16 @@ describe("Search filter tests", () => {
     boreholeTypeDropdown.click();
     boreholeTypeDropdown
       .find("div[role='option']")
-      .should("have.length", 7)
+      .should("have.length", 8)
       .should(options => {
         expect(options[0]).to.have.text("Reset");
         expect(options[1]).to.have.text("borehole");
         expect(options[2]).to.have.text("virtual borehole");
         expect(options[3]).to.have.text("penetration test");
         expect(options[4]).to.have.text("trial pit");
-        expect(options[5]).to.have.text("other");
-        expect(options[6]).to.have.text("not specified");
+        expect(options[5]).to.have.text("outcrop");
+        expect(options[6]).to.have.text("other");
+        expect(options[7]).to.have.text("not specified");
       });
   });
 
