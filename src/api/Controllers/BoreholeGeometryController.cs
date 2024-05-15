@@ -95,7 +95,7 @@ public class BoreholeGeometryController : ControllerBase
             return Problem("Invalid geometry format.", statusCode: (int)HttpStatusCode.BadRequest);
         }
 
-        // convert geometry data to BoreholeGeometry
+        // Convert geometry data to BoreholeGeometry
         IList<BoreholeGeometryElement> boreholeGeometry;
         try
         {
@@ -107,10 +107,10 @@ public class BoreholeGeometryController : ControllerBase
             return Problem(ex.Message, statusCode: (int)HttpStatusCode.BadRequest);
         }
 
-        // delete existing geometry data of borehole
+        // Delete existing geometry data of borehole
         context.BoreholeGeometry.RemoveRange(context.BoreholeGeometry.Where(g => g.BoreholeId == boreholeId));
 
-        // add new geometry data to database
+        // Add new geometry data to database
         await context.BoreholeGeometry.AddRangeAsync(boreholeGeometry).ConfigureAwait(false);
 
         try
@@ -197,7 +197,7 @@ public class BoreholeGeometryController : ControllerBase
 
             var data = csv.GetRecords<Geometry>().ToList();
 
-            // convert degrees to radians
+            // Convert degrees to radians
             foreach (var entry in data)
             {
                 entry.Azimuth = ToRadians(entry.Azimuth);
@@ -217,19 +217,19 @@ public class BoreholeGeometryController : ControllerBase
                 var a = data[i - 1];
                 var b = data[i];
 
-                // change in measured depth
+                // Change in measured depth
                 double deltaMD = b.MeasuredDepth - a.MeasuredDepth;
 
                 // Dogleg Severity Angle
                 double beta = Math.Acos(Math.Cos(b.Inclination - a.Inclination) - (Math.Sin(a.Inclination) * Math.Sin(b.Inclination) * (1 - Math.Cos(b.Azimuth - a.Azimuth))));
 
-                // ratio factor
+                // Ratio factor
                 double ratioFactor = beta == 0 ? 1 : (2 / beta) * Math.Tan(beta / 2);
 
-                // half delta measured depth multiplied by ratio factor
+                // Half delta measured depth multiplied by ratio factor
                 double factor = (deltaMD / 2) * ratioFactor;
 
-                // change in easting, northing and elevation
+                // Change in easting, northing and elevation
                 double deltaN = factor * ((Math.Sin(a.Inclination) * Math.Cos(a.Azimuth)) + (Math.Sin(b.Inclination) * Math.Cos(b.Azimuth)));
                 double deltaE = factor * ((Math.Sin(a.Inclination) * Math.Sin(a.Azimuth)) + (Math.Sin(b.Inclination) * Math.Sin(b.Azimuth)));
                 double deltaTVD = factor * (Math.Cos(a.Inclination) + Math.Cos(b.Inclination));
@@ -271,7 +271,7 @@ public class BoreholeGeometryController : ControllerBase
 
             var data = csv.GetRecords<Geometry>().ToList();
 
-            // convert degrees to radians
+            // Convert degrees to radians
             foreach (var entry in data)
             {
                 entry.Pitch = ToRadians(entry.Pitch);
@@ -288,11 +288,11 @@ public class BoreholeGeometryController : ControllerBase
             {
                 var result = new AzInc.Geometry() { MeasuredDepth = d.MeasuredDepth };
 
-                var alpha = d.MagneticRotation; // rotation around z ayis (down)
-                var beta = d.Pitch; // rotation around y axis (north)
-                var gamma = d.Roll; // rotation around x axis (east)
+                var alpha = d.MagneticRotation; // Rotation around z ayis (down)
+                var beta = d.Pitch; // Rotation around y axis (north)
+                var gamma = d.Roll; // Rotation around x axis (east)
 
-                // unit vector tangential to the borehole path
+                // Unit vector tangential to the borehole path
                 var x = (Math.Cos(alpha) * Math.Sin(beta) * Math.Cos(gamma)) + (Math.Sin(alpha) * Math.Sin(gamma));
                 var y = (Math.Sin(alpha) * Math.Sin(beta) * Math.Cos(gamma)) - (Math.Cos(alpha) * Math.Sin(gamma));
                 var z = Math.Cos(beta) * Math.Cos(gamma);

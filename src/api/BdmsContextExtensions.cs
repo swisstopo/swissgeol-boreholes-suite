@@ -959,13 +959,13 @@ public static class BdmsContextExtensions
         foreach (var boreholeId in richBoreholeRange)
         {
 #pragma warning disable CA5394 // Do not use insecure randomness
-            // generate an arced geometry with random displacement
+            // Generate an arced geometry with random displacement
             Random r = new Random(boreholeId);
             var inc = (r.NextDouble() * Math.PI / 4) + (Math.PI / 4);
             var azi = r.NextDouble() * 2 * Math.PI;
             var radius = (r.NextDouble() * 1000) + 2000;
 
-            // first point is at the borehole location (0, 0, 0)
+            // First point is at the borehole location (0, 0, 0)
             geometryElementsToInsert.Add(new BoreholeGeometryElement { Id = boreholeGeometry_ids++, BoreholeId = boreholeId, X = 0, Y = 0, Z = 0 });
 
             for (int i = 1; i < pointCountPerBorehole; i++)
