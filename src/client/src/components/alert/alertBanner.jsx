@@ -15,6 +15,7 @@ export const AlertBanner = () => {
           alertContext.clear();
         }}>
         <Alert
+          sx={{ whiteSpace: "pre-line" }}
           severity={alertContext.severity}
           onClose={() => {
             alertContext.clear();

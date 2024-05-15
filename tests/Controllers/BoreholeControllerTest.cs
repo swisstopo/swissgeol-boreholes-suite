@@ -131,6 +131,12 @@ public class BoreholeControllerTest
         Assert.AreNotSame(originalSection.SectionElements, copiedSection.SectionElements);
         Assert.AreNotEqual(originalSection.SectionElements.First().Id, copiedSection.SectionElements.First().Id);
         Assert.AreEqual(originalSection.SectionElements.First().FromDepth, copiedSection.SectionElements.First().FromDepth);
+
+        var originalBoreholeGeometry = originalBorehole.BoreholeGeometry.Last();
+        var copiedBoreholeGeometry = copiedBorehole.BoreholeGeometry.Last();
+
+        Assert.AreNotEqual(originalBoreholeGeometry.Id, copiedBoreholeGeometry.Id);
+        Assert.AreEqual(originalBoreholeGeometry.X, copiedBoreholeGeometry.X);
     }
 
     private Borehole GetBorehole(int id)
@@ -173,6 +179,7 @@ public class BoreholeControllerTest
                 b.Observations.OfType<FieldMeasurement>().Any(fm => fm.FieldMeasurementResults.Count != 0) &&
                 b.Sections.First() != null &&
                 b.Sections.First().SectionElements.First() != null &&
+                b.BoreholeGeometry.Any() &&
                 b.BoreholeFiles.First().File != null &&
                 b.Canton != null &&
                 b.Stratigraphies.First().ChronostratigraphyLayers.First().ChronostratigraphyId != null)

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added borehole geometry panel.
+
 ### Changed
 
 - Added `outcrop` to codelist `borehole_type`.

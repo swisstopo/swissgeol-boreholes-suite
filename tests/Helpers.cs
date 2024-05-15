@@ -136,6 +136,7 @@ internal static class Helpers
             .Include(b => b.Completions).ThenInclude(c => c.Backfills)
             .Include(b => b.Observations)
             .Include(b => b.Sections).ThenInclude(s => s.SectionElements)
+            .Include(b => b.BoreholeGeometry)
             .Include(b => b.BoreholeCodelists)
             .Include(b => b.CreatedBy)
             .Include(b => b.UpdatedBy)
