@@ -1,5 +1,6 @@
 import React from "react";
-import { Boreholes } from "../../../../ReduxStateInterfaces";
+import { Boreholes, Workgroup } from "../../../../ReduxStateInterfaces";
+import { DrawerContentTypes } from "../../../../pages/editor/editorComponentInterfaces";
 
 export interface BoreholeNumbersPreviewProps {
   boreholes: Boreholes;
@@ -24,6 +25,7 @@ export interface MenuItemsProps {
 }
 
 export interface SideDrawerProps {
+  drawerContent: React.JSX.Element;
   drawerOpen: boolean;
   drawerWidth: number;
 }
@@ -37,4 +39,10 @@ export interface BottomBarProps {
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
   drawerOpen: boolean;
+  workgroup: number | null;
+  setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
+  enabledWorkgroups: Workgroup[];
+  setEnabledWorkgroups: React.Dispatch<React.SetStateAction<Workgroup[]>>;
+  setSideDrawerContent: React.Dispatch<React.SetStateAction<DrawerContentTypes>>;
+  sideDrawerContent: DrawerContentTypes;
 }

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-import { Icon, Form, Checkbox } from "semantic-ui-react";
+import { Checkbox, Form, Icon } from "semantic-ui-react";
 import TranslationText from "../../form/translationText";
 import WorkgroupRadioGroup from "../../form/workgroup/radio";
 import * as Styled from "./searchEditorStyles";
@@ -16,7 +16,7 @@ import { registrationSearchData } from "../data/registrationSearchData";
 import { chronostratigraphySearchData } from "../data/chronostratigraphySearchData";
 import { lithostratigraphySearchData } from "../data/lithostratigraphySearchData";
 import { MenuItems } from "../../menu/editor/menuComponents/menuItems";
-import { Stack } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 
 class SearchEditorComponent extends React.Component {
   constructor(props) {
@@ -122,9 +122,10 @@ class SearchEditorComponent extends React.Component {
     return (
       <Stack direction="column">
         <Styled.Container>
-          <Styled.SearchFilterLabel>
+          <Typography variant="h5">
             <TranslationText id={"searchfilters"} />
-          </Styled.SearchFilterLabel>
+          </Typography>
+
           <div style={{ padding: 10 }}>
             <Form size="tiny">
               <Form.Field

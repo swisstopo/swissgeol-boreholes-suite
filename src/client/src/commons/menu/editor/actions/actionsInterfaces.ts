@@ -8,14 +8,14 @@ export interface WorkgroupSelectProps {
   setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-export interface ImportModalProps {
+export interface ImportContentProps {
   setSelectedBoreholeAttachments: React.Dispatch<React.SetStateAction<Blob[] | null>>;
   selectedFile: Blob[] | null;
   setSelectedFile: React.Dispatch<React.SetStateAction<Blob[] | null>>;
   setSelectedLithologyFile: React.Dispatch<React.SetStateAction<Blob[] | null>>;
 }
 
-export interface ActionsModalProps extends ImportModalProps {
+export interface ImportModalProps extends ImportContentProps {
   modal: boolean;
   creating: boolean;
   selectedLithologyFile: Blob[] | null;
