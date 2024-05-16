@@ -11,7 +11,7 @@
 - Added `outcrop` to codelist `borehole_type`.
 - Made boreholes table on the map page collapsible.
 - Changed sidebar layout and design.
-- Remove fields `Inclination` `InclinationDirection` and `QtInclinationDirectionId` from borehole.
+- Removed fields `Inclination` `InclinationDirection` and `QtInclinationDirectionId` from borehole.
 
 ### Fixed
 
