@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useContext } from "react";
 import { t } from "i18next";
 import { Button, Header, Icon, Modal, Segment } from "semantic-ui-react";
