@@ -16,6 +16,7 @@
 ### Fixed
 
 - Fixed precisions where not correctly displayed for imported coordinates.
+- When editing lithology layers, the view would always scroll to the bottom of the layer stack when finished.
 
 ## v2.0.687 - 2024-04-19
 

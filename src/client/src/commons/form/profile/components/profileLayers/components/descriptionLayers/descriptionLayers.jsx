@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, createRef } from "react";
+import { createRef, useEffect, useMemo, useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import { produce } from "immer";
@@ -57,7 +57,9 @@ const DescriptionLayers = props => {
       });
     }
     // update the previous length
-    setPreviousLength(displayDescriptions?.length || 0);
+    if (displayDescriptions !== null) {
+      setPreviousLength(displayDescriptions?.length || 0);
+    }
   }, [displayDescriptions, selectedDescription, descriptionRefs, previousLength]);
 
   useEffect(() => {
