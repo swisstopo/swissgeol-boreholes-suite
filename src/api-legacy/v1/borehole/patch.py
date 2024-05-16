@@ -84,12 +84,6 @@ class PatchBorehole(Action):
         elif field == 'canton':
             column = 'canton_num'
 
-        elif field == 'inclination':
-            column = 'inclination_bho'
-
-        elif field == 'inclination_direction':
-            column = 'inclination_direction_bho'
-
         elif field == 'total_depth':
             column = 'total_depth_bho'
 
@@ -153,9 +147,6 @@ class PatchBorehole(Action):
         elif field == 'extended.status':
             column = 'status_id_cli'
 
-        elif field == 'custom.qt_bore_inc_dir':
-            column = 'qt_inclination_direction_id_cli'
-
         elif field == 'custom.qt_depth':
             column = 'qt_depth_id_cli'
 
@@ -213,8 +204,6 @@ class PatchBorehole(Action):
                 'depth_precision',
                 'drill_diameter',
                 'custom.drill_diameter',
-                'inclination',
-                'inclination_direction',
                 'total_depth',
                 'total_depth_tvd',
                 'extended.top_bedrock',
@@ -293,7 +282,6 @@ class PatchBorehole(Action):
                 'custom.cuttings',
                 'extended.purpose',
                 'extended.status',
-                'custom.qt_bore_inc_dir',
                 'custom.qt_depth',
                 'custom.processing_status',
                 'custom.lithology_top_bedrock',
