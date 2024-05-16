@@ -72,7 +72,6 @@ public static class BdmsContextExtensions
         List<int> purposeIds = codelists.Where(c => c.Schema == "extended.purpose").Select(s => s.Id).ToList();
         List<int> statusIds = codelists.Where(c => c.Schema == "extended.status").Select(s => s.Id).ToList();
         List<int> lithologyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithology_top_bedrock").Select(s => s.Id).ToList();
-        List<int> qtInclinationDirectionIds = codelists.Where(c => c.Schema == "custom.qt_bore_inc_dir").Select(s => s.Id).ToList();
         List<int> chronostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.chronostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> lithostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> instrumentKindIds = codelists.Where(c => c.Schema == CompletionSchemas.InstrumentationTypeSchema).Select(s => s.Id).ToList();
