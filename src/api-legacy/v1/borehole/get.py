@@ -66,8 +66,6 @@ class GetBorehole(Action):
                 qt_reference_elevation_id_cli as qt_reference_elevation,
                 reference_elevation_type_id_cli as reference_elevation_type,
 
-                inclination_bho as inclination,
-                inclination_direction_bho as inclination_direction,
                 total_depth_bho as total_depth,
                 total_depth_tvd_bho as total_depth_tvd,
                 qt_total_depth_tvd_id_cli as qt_total_depth_tvd,
@@ -99,7 +97,6 @@ class GetBorehole(Action):
                             country_bho as country,
                             canton_bho as canton,
                             municipality_bho as municipality,
-                            qt_inclination_direction_id_cli as qt_bore_inc_dir,
                             qt_depth_id_cli as qt_depth,
                             qt_top_bedrock,
                             qt_top_bedrock_tvd,

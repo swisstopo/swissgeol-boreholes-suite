@@ -11,7 +11,11 @@
 - Added `outcrop` to codelist `borehole_type`.
 - Made boreholes table on the map page collapsible.
 - Changed sidebar layout and design.
+<<<<<<< prepare-add-borehole-sidebar
 - Moved form to add a borehole from modal to sidepanel.
+=======
+- Removed fields `Inclination` `InclinationDirection` and `QtInclinationDirectionId` from borehole.
+>>>>>>> main
 
 ### Fixed
 

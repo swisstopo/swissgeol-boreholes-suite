@@ -72,7 +72,6 @@ public static class BdmsContextExtensions
         List<int> purposeIds = codelists.Where(c => c.Schema == "extended.purpose").Select(s => s.Id).ToList();
         List<int> statusIds = codelists.Where(c => c.Schema == "extended.status").Select(s => s.Id).ToList();
         List<int> lithologyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithology_top_bedrock").Select(s => s.Id).ToList();
-        List<int> qtInclinationDirectionIds = codelists.Where(c => c.Schema == "custom.qt_bore_inc_dir").Select(s => s.Id).ToList();
         List<int> chronostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.chronostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> lithostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> instrumentKindIds = codelists.Where(c => c.Schema == CompletionSchemas.InstrumentationTypeSchema).Select(s => s.Id).ToList();
@@ -158,8 +157,6 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Purpose, _ => default!)
            .RuleFor(o => o.StatusId, f => f.PickRandom(statusIds).OrNull(f, .05f))
            .RuleFor(o => o.Status, _ => default!)
-           .RuleFor(o => o.Inclination, f => f.Random.Double(0, 5).OrNull(f, .05f))
-           .RuleFor(o => o.InclinationDirection, f => f.Random.Double(0, 360).OrNull(f, .05f))
            .RuleFor(o => o.QtDepthId, f => f.PickRandom(qtDepthIds).OrNull(f, .05f))
            .RuleFor(o => o.QtDepth, _ => default!)
            .RuleFor(o => o.TopBedrock, f => f.Random.Double(0, 1000).OrNull(f, .05f))
@@ -177,8 +174,6 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.ReferenceElevation, f => f.Random.Double(0, 4500).OrNull(f, .05f))
            .RuleFor(o => o.QtReferenceElevationId, f => f.PickRandom(elevationPrecisionIds).OrNull(f, .05f))
            .RuleFor(o => o.QtReferenceElevation, _ => default!)
-           .RuleFor(o => o.QtInclinationDirectionId, f => f.PickRandom(qtInclinationDirectionIds).OrNull(f, .05f))
-           .RuleFor(o => o.QtInclinationDirection, _ => default!)
            .RuleFor(o => o.ReferenceElevationTypeId, f => f.PickRandom(referenceElevationTypeIds).OrNull(f, .05f))
            .RuleFor(o => o.ReferenceElevationType, _ => default!)
            .RuleFor(o => o.TotalDepthTvd, f => f.Random.Double(0, 4500).OrNull(f, .05f))

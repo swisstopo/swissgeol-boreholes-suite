@@ -302,16 +302,6 @@ const mapDispatchToProps = dispatch => {
         type: "SEARCH_EDITOR_FILTER_RESET_DRILL_DIAMETER",
       });
     },
-    resetBoreInc: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_RESET_BORE_INC",
-      });
-    },
-    resetBoreIncDir: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_RESET_BORE_INC_DIR",
-      });
-    },
     setProject: id => {
       dispatch({
         type: "SEARCH_EDITOR_PROJECT_CHANGED",
