@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef, useContext } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import * as Styled from "./styles";
 import TranslationText from "../../../translationText";
 import ProfileLayersValidation from "./components/profileLayersValidation";
@@ -8,27 +8,27 @@ import {
   Box,
   CircularProgress,
   Stack,
-  TableContainer,
-  TableHead,
   Table,
   TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
   TableRow,
   Tooltip,
   Typography,
-  TableCell,
 } from "@mui/material";
 import {
-  addLithologicalDescription,
-  useLithoDescription,
-  updateLithologicalDescription,
-  deleteLithologicalDescription,
-  useFaciesDescription,
   addFaciesDescription,
-  updateFaciesDescription,
+  addLithologicalDescription,
   deleteFaciesDescription,
-  lithologicalDescriptionQueryKey,
+  deleteLithologicalDescription,
   faciesDescriptionQueryKey,
+  lithologicalDescriptionQueryKey,
+  updateFaciesDescription,
+  updateLithologicalDescription,
+  useFaciesDescription,
   useLayers,
+  useLithoDescription,
 } from "../../../../../api/fetchApiV2";
 
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -196,8 +196,6 @@ const ProfileLayers = props => {
 
   const isLayerSelected = selectedLayer !== null;
   const hasLayers = layersWithValidation?.data?.length > 0;
-  const hasLithoDescriptions = lithoDescQuery?.data?.length > 0;
-  const hasFaciesDescriptions = faciesDescQuery?.data?.length > 0;
 
   if (!layersWithValidation?.data || !lithoDescQuery.isSuccess) {
     return (
@@ -264,7 +262,7 @@ const ProfileLayers = props => {
           </TableHead>
           <TableBody>
             <TableRow sx={{ borderLeft: "1px solid lightgrey" }}>
-              <td style={cellStyle}>
+              <TableCell style={cellStyle}>
                 {hasLayers && (
                   <ProfileLayersValidation
                     data={{
@@ -281,39 +279,35 @@ const ProfileLayers = props => {
                     setDeleteParams={setDeleteParams}
                   />
                 )}
-              </td>
-              {!isLayerSelected && hasLithoDescriptions && (
-                <td style={cellStyle}>
-                  <DescriptionLayers
-                    isEditable={isEditable}
-                    descriptions={lithoDescQuery?.data}
-                    setSelectedDescription={setSelectedDescription}
-                    selectedDescription={selecteDescription}
-                    layers={layersWithValidation}
-                    addMutation={addLithologicalDescriptionMutation}
-                    deleteMutation={deleteLithologicalDescriptionMutation}
-                    updateMutation={updateLithologicalDescriptionMutation}
-                    selectedStratigraphyID={selectedStratigraphyID}
-                    deleteParams={deleteParams}
-                  />
-                </td>
-              )}
-              {!isLayerSelected && hasFaciesDescriptions && (
-                <td style={cellStyle}>
-                  <DescriptionLayers
-                    isEditable={isEditable}
-                    descriptions={faciesDescQuery?.data}
-                    setSelectedDescription={setSelectedDescription}
-                    selectedDescription={selecteDescription}
-                    layers={layersWithValidation}
-                    addMutation={addFaciesDescriptionMutation}
-                    deleteMutation={deleteFaciesDescriptionMutation}
-                    updateMutation={updateFaciesDescriptionMutation}
-                    selectedStratigraphyID={selectedStratigraphyID}
-                    deleteParams={deleteParams}
-                  />
-                </td>
-              )}
+              </TableCell>
+              <TableCell style={{ ...cellStyle, display: isLayerSelected ? "none" : "" }}>
+                <DescriptionLayers
+                  isEditable={isEditable}
+                  descriptions={lithoDescQuery?.data}
+                  setSelectedDescription={setSelectedDescription}
+                  selectedDescription={selecteDescription}
+                  layers={layersWithValidation}
+                  addMutation={addLithologicalDescriptionMutation}
+                  deleteMutation={deleteLithologicalDescriptionMutation}
+                  updateMutation={updateLithologicalDescriptionMutation}
+                  selectedStratigraphyID={selectedStratigraphyID}
+                  deleteParams={deleteParams}
+                />
+              </TableCell>
+              <TableCell style={{ ...cellStyle, display: isLayerSelected ? "none" : "" }}>
+                <DescriptionLayers
+                  isEditable={isEditable}
+                  descriptions={faciesDescQuery?.data}
+                  setSelectedDescription={setSelectedDescription}
+                  selectedDescription={selecteDescription}
+                  layers={layersWithValidation}
+                  addMutation={addFaciesDescriptionMutation}
+                  deleteMutation={deleteFaciesDescriptionMutation}
+                  updateMutation={updateFaciesDescriptionMutation}
+                  selectedStratigraphyID={selectedStratigraphyID}
+                  deleteParams={deleteParams}
+                />
+              </TableCell>
             </TableRow>
           </TableBody>
         </Table>

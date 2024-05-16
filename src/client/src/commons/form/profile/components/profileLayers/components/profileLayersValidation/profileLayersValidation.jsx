@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, createRef } from "react";
+import { createRef, useEffect, useMemo, useState } from "react";
 import ProfileLayersError from "../profileLayersError";
 import ProfileLayersList from "../profileLayersList";
 import * as Styled from "./styles";
@@ -62,11 +62,7 @@ export const ProfileLayersValidation = props => {
       {/* layers list */}
       {layersWithValidation?.data &&
         layersWithValidation?.data.map((item, index) => (
-          <Styled.Layer
-            key={item.id}
-            ref={layerRefs[index]}
-            data-cy={"styled-layer-" + index}
-            isFirst={index === 0 ? true : false}>
+          <Styled.Layer key={item.id} ref={layerRefs[index]} data-cy={"styled-layer-" + index} isFirst={index === 0}>
             {/* validation before each layer */}
             {item.validation &&
               Object.keys(item.validation)
