@@ -4,6 +4,20 @@ import { useTranslation } from "react-i18next";
 import { Box, Chip } from "@mui/material";
 import { theme } from "../../AppTheme";
 
+/**
+ * A component that provides a file dropzone for selecting and uploading files.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {Function} props.onHandleFileChange - A callback function to handle file changes. The function receives the files array as an argument.
+ * @param {string} props.defaultText - The default text to display in the dropzone.
+ * @param {number} props.maxFilesToSelectAtOnce - The maximum number of files that can be selected at once.
+ * @param {number} props.maxFilesToUpload - The maximum number of files that can be uploaded.
+ * @param {boolean} props.restrictAcceptedFileTypeToCsv - Whether to restrict accepted file types to CSV.
+ * @param {boolean} props.isDisabled - Whether the dropzone is disabled.
+ * @param {string} props.dataCy - The data-cy attribute for testing.
+ * @returns {JSX.Element} The rendered FileDropzone component.
+ */
 export const FileDropzone = props => {
   const {
     onHandleFileChange,

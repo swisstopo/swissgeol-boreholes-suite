@@ -62,6 +62,7 @@ public class BoreholeController : ControllerBase
             .Include(b => b.BoreholeCodelists)
             .Include(b => b.Workflows)
             .Include(b => b.BoreholeFiles)
+            .Include(b => b.BoreholeGeometry)
             .AsNoTracking()
             .SingleOrDefaultAsync(b => b.Id == id)
             .ConfigureAwait(false);
@@ -192,6 +193,11 @@ public class BoreholeController : ControllerBase
         foreach (var boreholeFile in borehole.BoreholeFiles)
         {
             boreholeFile.BoreholeId = 0;
+        }
+
+        foreach (var boreholeGeometry in borehole.BoreholeGeometry)
+        {
+            boreholeGeometry.Id = 0;
         }
 
         borehole.WorkgroupId = workgroupId;
