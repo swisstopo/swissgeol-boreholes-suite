@@ -116,6 +116,8 @@ const ImportModalContent = ({
           restrictAcceptedFileTypeToCsv={false}
           isDisabled={selectedFile?.length === 0}
           dataCy={"import-boreholeFile-attachments-input"}
+          maxFilesToSelectAtOnce={Infinity}
+          maxFilesToUpload={Infinity}
         />
       </Stack>
       {SeparatorLine()}

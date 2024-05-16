@@ -952,6 +952,41 @@ public static class BdmsContextExtensions
         context.BulkInsert(sectionElementsToInsert, bulkConfig);
         context.SaveChanges();
 
+        // Seed borehole geometries
+        var boreholeGeometry_ids = 21_000_000;
+        var geometryElementsToInsert = new List<BoreholeGeometryElement>(richBoreholeRange.Count * 100);
+        var pointCountPerBorehole = 50;
+        foreach (var boreholeId in richBoreholeRange)
+        {
+#pragma warning disable CA5394 // Do not use insecure randomness
+            // Generate an arced geometry with random displacement
+            Random r = new Random(boreholeId);
+            var inc = (r.NextDouble() * Math.PI / 4) + (Math.PI / 4);
+            var azi = r.NextDouble() * 2 * Math.PI;
+            var radius = (r.NextDouble() * 1000) + 2000;
+
+            // First point is at the borehole location (0, 0, 0)
+            geometryElementsToInsert.Add(new BoreholeGeometryElement { Id = boreholeGeometry_ids++, BoreholeId = boreholeId, X = 0, Y = 0, Z = 0 });
+
+            for (int i = 1; i < pointCountPerBorehole; i++)
+            {
+                var currentInc = inc * i / (pointCountPerBorehole - 1);
+                var currentAzi = azi + ((Math.PI / 4) * i / (pointCountPerBorehole - 1));
+                geometryElementsToInsert.Add(new BoreholeGeometryElement
+                {
+                    Id = boreholeGeometry_ids++,
+                    BoreholeId = boreholeId,
+                    X = (r.NextDouble() * 10) - 5 + (radius * Math.Cos(currentAzi) * (1 - Math.Cos(currentInc))),
+                    Y = (r.NextDouble() * 10) - 5 + (radius * Math.Sin(currentAzi) * (Math.Cos(currentInc) - 1)),
+                    Z = (r.NextDouble() * 10) + (radius * Math.Sin(currentInc)),
+                });
+            }
+#pragma warning restore CA5394 // Do not use insecure randomness
+        }
+
+        context.BulkInsert(geometryElementsToInsert, bulkConfig);
+        context.SaveChanges();
+
         // Sync all database sequences
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workgroups', 'id_wgp'), {workgroup_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.borehole', 'id_bho'), {borehole_ids - 1})");
@@ -965,6 +1000,7 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.fieldmeasurement_result', 'id'), {fieldMeasurementResult_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.section', 'id'), {section_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.section_element', 'id'), {sectionElement_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.borehole_geometry', 'id'), {boreholeGeometry_ids - 1})");
     }
 }
 #pragma warning restore CA1505

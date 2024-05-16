@@ -343,6 +343,54 @@ export const useLithostratigraphyMutations = () => {
   };
 };
 
+export const geometryQueryKey = "boreholeGeometry";
+
+export const useBoreholeGeometry = boreholeId =>
+  useQuery({
+    queryKey: [geometryQueryKey, boreholeId],
+    queryFn: async () => {
+      return await fetchApiV2(`boreholegeometry?boreholeId=${boreholeId}`, "GET");
+    },
+    enabled: !!boreholeId,
+  });
+
+export const getBoreholeGeometryFormats = async () => {
+  return await fetchApiV2("boreholegeometry/geometryformats", "GET");
+};
+
+export const useBoreholeGeometryMutations = () => {
+  const queryClient = useQueryClient();
+  const useSetBoreholeGeometry = useMutation(
+    async ({ boreholeId, formData }) => {
+      return await fetchApiV2(`boreholegeometry?boreholeId=${boreholeId}`, "POST", formData, true);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [geometryQueryKey],
+        });
+      },
+    },
+  );
+  const useDeleteBoreholeGeometry = useMutation(
+    async boreholeId => {
+      return await fetchApiV2(`boreholegeometry?boreholeId=${boreholeId}`, "DELETE");
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [geometryQueryKey],
+        });
+      },
+    },
+  );
+
+  return {
+    set: useSetBoreholeGeometry,
+    delete: useDeleteBoreholeGeometry,
+  };
+};
+
 export const getWaterIngress = async boreholeId => {
   return await fetchApiV2(`wateringress?boreholeId=${boreholeId}`, "GET");
 };
