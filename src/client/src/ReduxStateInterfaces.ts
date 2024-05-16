@@ -53,5 +53,5 @@ export interface Borehole {
 
 export interface Boreholes {
   isFetching: boolean;
-  dlen: number;
+  length: number;
 }

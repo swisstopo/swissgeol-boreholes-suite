@@ -45,7 +45,7 @@ class WorkflowForm extends React.Component {
   componentDidUpdate(prevProps) {
     if (
       this.props.id !== null &&
-      (this.props.id !== prevProps.id || this.props.borehole.fcnt !== prevProps.borehole.fcnt)
+      (this.props.id !== prevProps.id || this.props.borehole.fetchCount !== prevProps.borehole.fetchCount)
     ) {
       this.setState(
         {

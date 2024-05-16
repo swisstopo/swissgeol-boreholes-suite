@@ -5,8 +5,8 @@ export function user() {
   const initialState = {
     isFetching: false,
     error: false,
-    fcnt: 0,
-    rtime: 0, // fetch time
+    fetchCount: 0,
+    fetchTime: 0,
     data: null,
     authentication: null,
   };
@@ -35,17 +35,17 @@ export function user() {
             ...state.authentication,
           },
           error: false,
-          rtime: new Date().getTime(),
+          fetchTime: new Date().getTime(),
           isFetching: true,
         };
       }
       case "GET_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
+          fetchCount: state.fetchCount + 1,
           isFetching: false,
           error: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           data: action.json.data,
         };
         return copy;
@@ -53,10 +53,10 @@ export function user() {
       case "GET_ERROR": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
+          fetchCount: state.fetchCount + 1,
           isFetching: false,
           error: true,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
         };
         return copy;
       }
@@ -64,9 +64,9 @@ export function user() {
         let copy = {
           ...state,
           error: action.error.response.status === 401 ? true : state.error,
-          fcnt: state.fcnt + 1,
+          fetchCount: state.fetchCount + 1,
           isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
         };
         return copy;
       }
@@ -87,8 +87,8 @@ export function user() {
 export function workgroups() {
   const initialState = {
     isFetching: false,
-    fcnt: 0,
-    rtime: 0, // fetch time
+    fetchCount: 0,
+    fetchTime: 0,
     id: null,
     data: [],
   };
@@ -102,16 +102,16 @@ export function workgroups() {
         return {
           ...initialState,
           id: action.id,
-          rtime: new Date().getTime(),
+          fetchTime: new Date().getTime(),
           isFetching: true,
         };
       }
       case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
+          fetchCount: state.fetchCount + 1,
           isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           data: action.json.data,
         };
         return copy;
@@ -128,8 +128,8 @@ export function workflows() {
     isFetching: false,
     isSubmitting: false,
     isRejecting: false,
-    fcnt: 0,
-    rtime: 0, // fetch time
+    fetchCount: 0,
+    fetchTime: 0,
     id: null,
     data: [],
   };
@@ -143,16 +143,16 @@ export function workflows() {
         return {
           ...initialState,
           id: action.id,
-          rtime: new Date().getTime(),
+          fetchTime: new Date().getTime(),
           isFetching: true,
         };
       }
       case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
+          fetchCount: state.fetchCount + 1,
           isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           data: action.json.data,
         };
         return copy;
@@ -160,16 +160,16 @@ export function workflows() {
       case "SUBMIT": {
         return {
           ...state,
-          rtime: new Date().getTime(),
+          fetchTime: new Date().getTime(),
           isSubmitting: true,
         };
       }
       case "SUBMIT_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
+          fetchCount: state.fetchCount + 1,
           isSubmitting: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           data: action.json.data.length > 1 ? action.json.data : [],
         };
         return copy;
@@ -177,16 +177,16 @@ export function workflows() {
       case "REJECT": {
         return {
           ...state,
-          rtime: new Date().getTime(),
+          fetchTime: new Date().getTime(),
           isRejecting: true,
         };
       }
       case "REJECT_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
+          fetchCount: state.fetchCount + 1,
           isRejecting: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           data: action.json.data.length > 1 ? action.json.data : [],
         };
         return copy;
@@ -203,8 +203,8 @@ export function workflow() {
     isFetching: false,
     isPatching: false,
     error: "",
-    fcnt: 0,
-    rtime: 0, // fetch time
+    fetchCount: 0,
+    fetchTime: 0,
     id: null,
     previous: null, // previous comment
     data: null,
@@ -219,16 +219,16 @@ export function workflow() {
         return {
           ...initialState,
           id: action.id,
-          rtime: new Date().getTime(),
+          fetchTime: new Date().getTime(),
           isFetching: true,
         };
       }
       case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
+          fetchCount: state.fetchCount + 1,
           isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           previous: action.json.data.length > 1 ? action.json.data[action.json.data.length - 2] : null,
           data: action.json.data.length > 0 ? action.json.data[action.json.data.length - 1] : null,
         };
@@ -237,9 +237,9 @@ export function workflow() {
       case "SUBMIT_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
+          fetchCount: state.fetchCount + 1,
           isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           previous: action.json.data.length > 1 ? action.json.data[action.json.data.length - 2] : null,
           data: action.json.data.length > 0 ? action.json.data[action.json.data.length - 1] : null,
         };
@@ -248,9 +248,9 @@ export function workflow() {
       case "REJECT_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
+          fetchCount: state.fetchCount + 1,
           isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           previous: action.json.data.length > 1 ? action.json.data[action.json.data.length - 2] : null,
           data: action.json.data.length > 0 ? action.json.data[action.json.data.length - 1] : null,
         };
@@ -297,8 +297,8 @@ export function borehole() {
   const initialState = {
     isFetching: false,
     isLocking: false,
-    fcnt: 0,
-    rtime: 0, // fetch time
+    fetchCount: 0,
+    fetchTime: 0,
     error: null,
     ...{
       data: {
@@ -398,23 +398,23 @@ export function borehole() {
         case "CLEAR": {
           return {
             ...initialState,
-            fcnt: state.fcnt,
+            fetchCount: state.fetchCount,
           };
         }
         case "GET": {
           return {
             ...initialState,
-            fcnt: state.fcnt,
-            rtime: new Date().getTime(),
+            fetchCount: state.fetchCount,
+            fetchTime: new Date().getTime(),
             isFetching: true,
           };
         }
         case "GET_OK": {
           let copy = {
             ...state,
-            fcnt: state.fcnt + 1,
+            fetchCount: state.fetchCount + 1,
             isFetching: false,
-            rtime: new Date().getTime() - state.rtime,
+            fetchTime: new Date().getTime() - state.fetchTime,
             data: {
               ...initialState.data,
               ...action.json.data,
@@ -433,17 +433,17 @@ export function borehole() {
         case "EDIT": {
           return {
             ...initialState,
-            fcnt: state.fcnt,
-            rtime: new Date().getTime(),
+            fetchCount: state.fetchCount,
+            fetchTime: new Date().getTime(),
             isFetching: true,
           };
         }
         case "EDIT_OK": {
           let copy = {
             ...state,
-            fcnt: state.fcnt + 1,
+            fetchCount: state.fetchCount + 1,
             isFetching: false,
-            rtime: new Date().getTime() - state.rtime,
+            fetchTime: new Date().getTime() - state.fetchTime,
             data: {
               ...initialState.data,
               ...action.json.data,
@@ -462,9 +462,9 @@ export function borehole() {
         case "EDIT_ERROR": {
           let copy = {
             ...state,
-            fcnt: state.fcnt + 1,
+            fetchCount: state.fetchCount + 1,
             isFetching: false,
-            rtime: new Date().getTime() - state.rtime,
+            fetchTime: new Date().getTime() - state.fetchTime,
             data: action.json.data,
             error: action.json.error,
           };
@@ -519,9 +519,9 @@ export function borehole() {
 export function boreholeList() {
   const initialState = {
     isFetching: false,
-    rtime: 0, // fetch time
-    fcnt: 0, // fetch counter
-    dlen: 0, // data counter
+    fetchTime: 0,
+    fetchCount: 0,
+    length: 0,
     data: [],
     direction: null,
     orderby: null,
@@ -537,7 +537,7 @@ export function boreholeList() {
       case "LIST": {
         return {
           ...initialState,
-          rtime: new Date().getTime(),
+          fetchTime: new Date().getTime(),
           page: state.page,
           pages: state.pages,
           direction: state.direction,
@@ -548,10 +548,10 @@ export function boreholeList() {
       case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
-          dlen: action.json.rows,
+          fetchCount: state.fetchCount + 1,
+          length: action.json.rows,
           isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           data: action.json.data,
           pages: Object.prototype.hasOwnProperty.call(action.json, "pages") ? action.json.pages : null,
           page: Object.prototype.hasOwnProperty.call(action.json, "page") ? action.json.page : null,
@@ -570,9 +570,9 @@ export function boreholeList() {
 export function boreholeEditorList() {
   const initialState = {
     isFetching: false,
-    rtime: 0, // fetch time
-    fcnt: 0, // fetch counter
-    dlen: 0, // data counter
+    fetchTime: 0,
+    fetchCount: 0,
+    length: 0,
     data: [],
     direction: null,
     orderby: null,
@@ -588,7 +588,7 @@ export function boreholeEditorList() {
       case "LIST": {
         return {
           ...initialState,
-          rtime: new Date().getTime(),
+          fetchTime: new Date().getTime(),
           page: state.page,
           pages: state.pages,
           direction: state.direction,
@@ -599,10 +599,10 @@ export function boreholeEditorList() {
       case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
-          dlen: action.json.rows,
+          fetchCount: state.fetchCount + 1,
+          length: action.json.rows,
           isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           data: action.json.data,
           // eslint-disable-next-line no-prototype-builtins
           pages: action.json.hasOwnProperty("pages") ? action.json.pages : null,
@@ -622,9 +622,9 @@ export function boreholeEditorList() {
 export function projectList() {
   const initialState = {
     isFetching: false,
-    rtime: 0, // fetch time
-    fcnt: 0, // fetch counter
-    dlen: 0, // data counter
+    fetchTime: 0,
+    fetchCount: 0,
+    length: 0,
     data: [],
     page: 1,
     pages: 0,
@@ -638,7 +638,7 @@ export function projectList() {
       case "LIST": {
         return {
           ...initialState,
-          rtime: new Date().getTime(),
+          fetchTime: new Date().getTime(),
           page: state.page,
           pages: state.pages,
           isFetching: true,
@@ -647,10 +647,10 @@ export function projectList() {
       case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
-          dlen: action.json.rows,
+          fetchCount: state.fetchCount + 1,
+          length: action.json.rows,
           isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           data: action.json.data,
           pages: Object.prototype.hasOwnProperty.call(action.json, "pages") ? action.json.pages : null,
           page: Object.prototype.hasOwnProperty.call(action.json, "page") ? action.json.page : null,
@@ -667,9 +667,9 @@ export function projectList() {
 export function stratigraphyList() {
   const initialState = {
     isFetching: false,
-    rtime: 0, // fetch time
-    fcnt: 0, // fetch counter
-    dlen: 0, // data counter
+    fetchTime: 0,
+    fetchCount: 0,
+    length: 0,
     data: [],
     page: 1,
     pages: 0,
@@ -683,7 +683,7 @@ export function stratigraphyList() {
       case "LIST": {
         return {
           ...initialState,
-          rtime: new Date().getTime(),
+          fetchTime: new Date().getTime(),
           page: state.page,
           pages: state.pages,
           isFetching: true,
@@ -692,10 +692,10 @@ export function stratigraphyList() {
       case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
-          dlen: action.json.rows,
+          fetchCount: state.fetchCount + 1,
+          length: action.json.rows,
           isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           data: action.json.data,
           pages: Object.prototype.hasOwnProperty.call(action.json, "pages") ? action.json.pages : null,
           page: Object.prototype.hasOwnProperty.call(action.json, "page") ? action.json.page : null,
@@ -712,8 +712,8 @@ export function stratigraphyList() {
 export function domainsList() {
   const initialState = {
     isFetching: false,
-    rtime: 0, // fetch time
-    fcnt: 0, // fetch counter
+    fetchTime: 0,
+    fetchCount: 0,
     data: {},
   };
   return function domains(state = initialState, action) {
@@ -723,7 +723,7 @@ export function domainsList() {
         case "LIST": {
           return {
             ...initialState,
-            rtime: new Date().getTime(),
+            fetchTime: new Date().getTime(),
             data: {},
             isFetching: true,
           };
@@ -731,9 +731,9 @@ export function domainsList() {
         case "LIST_OK": {
           let copy = {
             ...state,
-            fcnt: state.fcnt + 1,
+            fetchCount: state.fetchCount + 1,
             isFetching: false,
-            rtime: new Date().getTime() - state.rtime,
+            fetchTime: new Date().getTime() - state.fetchTime,
             data: action.json.data,
           };
           return copy;
@@ -763,16 +763,16 @@ export function domainsList() {
         case "LIST": {
           return {
             ...state,
-            rtime: new Date().getTime(),
+            fetchTime: new Date().getTime(),
             isFetching: true,
           };
         }
         case "LIST_OK": {
           let copy = {
             ...state,
-            fcnt: state.fcnt + 1,
+            fetchCount: state.fetchCount + 1,
             isFetching: false,
-            rtime: new Date().getTime() - state.rtime,
+            fetchTime: new Date().getTime() - state.fetchTime,
             data: {
               ...state.data,
               ...action.json.data,
@@ -792,8 +792,8 @@ export function domainsList() {
 export function layersList() {
   const initialState = {
     isFetching: false,
-    rtime: 0, // fetch time
-    fcnt: 0, // fetch counter
+    fetchTime: 0,
+    fetchCount: 0,
     data: [],
   };
   return function layers(state = initialState, action) {
@@ -805,7 +805,7 @@ export function layersList() {
       case "LIST": {
         return {
           ...initialState,
-          rtime: new Date().getTime(),
+          fetchTime: new Date().getTime(),
           data: [],
           isFetching: true,
         };
@@ -813,9 +813,9 @@ export function layersList() {
       case "LIST_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
+          fetchCount: state.fetchCount + 1,
           isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           data: action.json.data,
         };
         return copy;
