@@ -1,23 +1,23 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Box, FormControl, Stack, RadioGroup, FormControlLabel } from "@mui/material";
+import React, { useCallback, useEffect, useState } from "react";
+import { Box, FormControl, FormControlLabel, RadioGroup, Stack } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { Form, Segment } from "semantic-ui-react";
 import { NumericFormat } from "react-number-format";
 import { useTranslation } from "react-i18next";
 import DomainDropdown from "../../domain/dropdown/domainDropdown.jsx";
 import DomainText from "../../domain/domainText.jsx";
-import { parseFloatWithThousandsSeparator, getPrecisionFromString } from "../../formUtils.js";
+import { getPrecisionFromString, parseFloatWithThousandsSeparator } from "../../formUtils.js";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.js";
 import { DisabledRadio } from "./styledComponents.jsx";
 import {
-  CoordinatesSegmentProps,
-  ReferenceSystemKey,
-  ReferenceSystemCode,
-  Direction,
   CoordinatePrecisions,
   Coordinates,
+  CoordinatesSegmentProps,
+  Direction,
   FormValues,
   Location,
+  ReferenceSystemCode,
+  ReferenceSystemKey,
 } from "./coordinateSegmentInterfaces.js";
 import { boundingBox, referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.js";
 
@@ -66,7 +66,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     }
   }, []);
 
-  // get location information from coodinates.
+  // get location information from coordinates.
   const getLocationInfo = useCallback(async (coordinates: Coordinates): Promise<Location> => {
     return await fetchApiV2(`location/identify?east=${coordinates.LV95.x}&north=${coordinates.LV95.y}`, "GET");
   }, []);
@@ -275,7 +275,11 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // passed to the onChange handler of the location values. Checks bounding box before updating.
   const onCoordinateChange = (referenceSystem: ReferenceSystemKey, direction: Direction, value: string) => {
-    if (checkLock() === false) {
+    if (!checkLock()) {
+      return;
+    }
+    // prevent decimal point being removed when typing
+    if (value.endsWith(".")) {
       return;
     }
     if (isEditable) {
@@ -309,13 +313,13 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
           const X = sourceSystem === ReferenceSystemKey.LV95 ? coordinates?.LV95.x : coordinates?.LV03.x;
           const Y = sourceSystem === ReferenceSystemKey.LV95 ? coordinates?.LV95.y : coordinates?.LV03.y;
           const changedCoordinatePrecision = getPrecisionFromString(value);
-          const otherCoodrdinatePrecision = getPrecisionFromString(
+          const otherCoordinatePrecision = getPrecisionFromString(
             direction === Direction.X
               ? getValues(referenceSystems[referenceSystem].fieldName.Y)
               : getValues(referenceSystems[referenceSystem].fieldName.X),
           );
-          const X_precision = direction === Direction.X ? changedCoordinatePrecision : otherCoodrdinatePrecision;
-          const Y_precision = direction === Direction.Y ? changedCoordinatePrecision : otherCoodrdinatePrecision;
+          const X_precision = direction === Direction.X ? changedCoordinatePrecision : otherCoordinatePrecision;
+          const Y_precision = direction === Direction.Y ? changedCoordinatePrecision : otherCoordinatePrecision;
 
           if (X !== null && Y !== null) {
             handleCoordinateTransformation(sourceSystem, targetSystem, X, Y, X_precision, Y_precision);
@@ -327,7 +331,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // passed to the onChange handler of the reference system radio buttons. Resets the form and updates the reference system.
   const onReferenceSystemChange = (value: ReferenceSystemCode) => {
-    if (checkLock() === false) {
+    if (!checkLock()) {
       return;
     }
     reset(
