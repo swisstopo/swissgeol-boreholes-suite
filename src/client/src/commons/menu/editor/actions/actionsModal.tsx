@@ -11,20 +11,41 @@ import { ActionsModalProps } from "./actionsInterfaces.js";
 import WorkgroupSelect from "./workgroupSelect.js";
 import ImportModalContent from "./importer/importModalContent.js";
 
-const ActionsModal = ({ setState, state, refresh }: ActionsModalProps) => {
+const ActionsModal = ({
+  setCreating,
+  setModal,
+  setUpload,
+  setErrorsResponse,
+  setValidationErrorModal,
+  selectedFile,
+  selectedBoreholeAttachments,
+  setSelectedBoreholeAttachments,
+  setSelectedFile,
+  modal,
+  upload,
+  creating,
+  enabledWorkgroups,
+  workgroup,
+  setWorkgroup,
+  selectedLithologyFile,
+  setSelectedLithologyFile,
+  refresh,
+}: ActionsModalProps) => {
   const history = useHistory();
   const alertContext = useContext(AlertContext);
 
   const handleBoreholeCreate = () => {
     // @ts-expect-error
-    createBorehole(state.workgroup)
+    createBorehole(workgroup)
       // @ts-expect-error
       .then((response: { data: { success: boolean; id: string; message: string } }) => {
         if (response.data.success) {
-          setState({ creating: true, modal: false });
+          setCreating(true);
+          setModal(false);
           history.push("/" + response.data.id);
         } else {
-          setState({ creating: false, modal: false });
+          setCreating(false);
+          setModal(false);
           alertContext.error(response.data.message);
           window.location.reload();
         }
@@ -36,24 +57,26 @@ const ActionsModal = ({ setState, state, refresh }: ActionsModalProps) => {
 
   const handleBoreholeImport = () => {
     const combinedFormData = new FormData();
-    if (state.selectedFile !== null) {
-      state.selectedFile.forEach((boreholeFile: string | Blob) => {
+    if (selectedFile !== null) {
+      selectedFile.forEach((boreholeFile: string | Blob) => {
         combinedFormData.append("boreholesFile", boreholeFile);
       });
 
-      if (state.selectedBoreholeAttachments !== null) {
-        state.selectedBoreholeAttachments.forEach((attachment: string | Blob) => {
+      if (selectedBoreholeAttachments !== null) {
+        selectedBoreholeAttachments.forEach((attachment: string | Blob) => {
           combinedFormData.append("attachments", attachment);
         });
       }
-      if (state.selectedLithologyFile !== null) {
-        state.selectedLithologyFile.forEach((lithologyFile: string | Blob) => {
+      if (selectedLithologyFile !== null) {
+        selectedLithologyFile.forEach((lithologyFile: string | Blob) => {
           combinedFormData.append("lithologyFile", lithologyFile);
         });
       }
     }
-    importBoreholes(state.workgroup, combinedFormData).then(response => {
-      setState({ creating: false, modal: false, upload: false });
+    importBoreholes(workgroup, combinedFormData).then(response => {
+      setCreating(false);
+      setModal(false);
+      setUpload(false);
       (async () => {
         if (response.ok) {
           alertContext.success(`${await response.text()} ${t("boreholesImported")}.`);
@@ -67,7 +90,8 @@ const ActionsModal = ({ setState, state, refresh }: ActionsModalProps) => {
             if (response.status === 400) {
               // If response is of type ValidationProblemDetails, open validation error modal.
               if (responseBody.errors) {
-                setState({ errorResponse: responseBody, validationErrorModal: true });
+                setErrorsResponse(responseBody);
+                setValidationErrorModal(true);
                 refresh();
               }
 
@@ -87,8 +111,8 @@ const ActionsModal = ({ setState, state, refresh }: ActionsModalProps) => {
   };
 
   const handleFormSubmit = async () => {
-    setState({ creating: true });
-    if (state.upload) {
+    setCreating(true);
+    if (upload) {
       handleBoreholeImport();
     } else {
       handleBoreholeCreate();
@@ -100,17 +124,15 @@ const ActionsModal = ({ setState, state, refresh }: ActionsModalProps) => {
       closeIcon
       key="sb-em-5"
       onClose={() => {
-        setState({
-          modal: false,
-        });
+        setModal(false);
       }}
-      open={state.modal}
+      open={modal}
       size="large">
       <Segment clearing>
         <Header
           floated="left"
-          content={<TranslationText id={state.upload ? "import" : "newBorehole"} />}
-          icon={state.upload ? "upload" : "plus"}
+          content={<TranslationText id={upload ? "import" : "newBorehole"} />}
+          icon={upload ? "upload" : "plus"}
         />
         <Header as="h4" floated="right">
           <span>
@@ -121,18 +143,25 @@ const ActionsModal = ({ setState, state, refresh }: ActionsModalProps) => {
         </Header>
       </Segment>
       <Modal.Content>
-        {state.upload ? <ImportModalContent setState={setState} state={state} /> : null}
-        <WorkgroupSelect setState={setState} state={state} />
+        {upload ? (
+          <ImportModalContent
+            setSelectedBoreholeAttachments={setSelectedBoreholeAttachments}
+            setSelectedFile={setSelectedFile}
+            setSelectedLithologyFile={setSelectedLithologyFile}
+            selectedFile={selectedFile}
+          />
+        ) : null}
+        <WorkgroupSelect workgroup={workgroup} enabledWorkgroups={enabledWorkgroups} setWorkgroup={setWorkgroup} />
       </Modal.Content>
       <Modal.Actions>
         <Button
-          data-cy={state.upload ? "import-button" : "create-button"}
-          disabled={state.enabledWorkgroups.length === 0 || (state.upload && state.selectedFile?.length === 0)}
-          loading={state.creating}
+          data-cy={upload ? "import-button" : "create-button"}
+          disabled={enabledWorkgroups?.length === 0 || (upload && selectedFile?.length === 0)}
+          loading={creating}
           onClick={handleFormSubmit}
           secondary>
-          <Icon name={state.upload ? "upload" : "plus"} />{" "}
-          {state.upload ? <TranslationText id="import" /> : <TranslationText id="create" />}
+          <Icon name={upload ? "upload" : "plus"} />{" "}
+          {upload ? <TranslationText id="import" /> : <TranslationText id="create" />}
         </Button>
       </Modal.Actions>
     </Modal>
