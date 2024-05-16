@@ -262,7 +262,7 @@ const ProfileLayers = props => {
           </TableHead>
           <TableBody>
             <TableRow sx={{ borderLeft: "1px solid lightgrey" }}>
-              <TableCell style={cellStyle}>
+              <td style={cellStyle}>
                 {hasLayers && (
                   <ProfileLayersValidation
                     data={{
@@ -279,8 +279,8 @@ const ProfileLayers = props => {
                     setDeleteParams={setDeleteParams}
                   />
                 )}
-              </TableCell>
-              <TableCell style={{ ...cellStyle, display: isLayerSelected ? "none" : "" }}>
+              </td>
+              <td style={{ ...cellStyle, display: isLayerSelected ? "none" : "" }}>
                 <DescriptionLayers
                   isEditable={isEditable}
                   descriptions={lithoDescQuery?.data}
@@ -293,8 +293,8 @@ const ProfileLayers = props => {
                   selectedStratigraphyID={selectedStratigraphyID}
                   deleteParams={deleteParams}
                 />
-              </TableCell>
-              <TableCell style={{ ...cellStyle, display: isLayerSelected ? "none" : "" }}>
+              </td>
+              <td style={{ ...cellStyle, display: isLayerSelected ? "none" : "" }}>
                 <DescriptionLayers
                   isEditable={isEditable}
                   descriptions={faciesDescQuery?.data}
@@ -307,7 +307,7 @@ const ProfileLayers = props => {
                   selectedStratigraphyID={selectedStratigraphyID}
                   deleteParams={deleteParams}
                 />
-              </TableCell>
+              </td>
             </TableRow>
           </TableBody>
         </Table>
