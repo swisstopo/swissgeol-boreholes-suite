@@ -251,29 +251,6 @@ public class Borehole : IChangeTracking, IIdentifyable
     public Codelist? Status { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s inclination.
-    /// </summary>
-    [Column("inclination_bho")]
-    public double? Inclination { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s inclinationdirection.
-    /// </summary>
-    [Column("inclination_direction_bho")]
-    public double? InclinationDirection { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s QtInclinationDirection id.
-    /// </summary>
-    [Column("qt_inclination_direction_id_cli")]
-    public int? QtInclinationDirectionId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s QtInclinationDirection.
-    /// </summary>
-    public Codelist? QtInclinationDirection { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s QtDepth id.
     /// </summary>
     [Column("qt_depth_id_cli")]

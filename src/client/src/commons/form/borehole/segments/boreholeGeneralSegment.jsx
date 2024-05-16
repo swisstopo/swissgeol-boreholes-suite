@@ -1,11 +1,9 @@
-import _ from "lodash";
-
 import DomainDropdown from "../../domain/dropdown/domainDropdown";
 import TranslationText from "../../translationText";
-import { Form, Input, Segment, TextArea } from "semantic-ui-react";
+import { Form, Segment, TextArea } from "semantic-ui-react";
 
 const BoreholeGeneralSegment = props => {
-  const { size, borehole, updateChange, updateNumber, isEditable } = props;
+  const { size, borehole, updateChange, isEditable } = props;
   return (
     <Segment>
       <div
@@ -57,53 +55,6 @@ const BoreholeGeneralSegment = props => {
                   }}
                   schema="extended.status"
                   selected={borehole.data.extended.status}
-                  readOnly={!isEditable}
-                />
-              </Form.Field>
-            </Form.Group>
-            <Form.Group widths="equal">
-              <Form.Field required>
-                <label>
-                  <TranslationText firstUpperCase id="inclination" />
-                </label>
-                <Input
-                  autoCapitalize="off"
-                  autoComplete="off"
-                  autoCorrect="off"
-                  onChange={e => {
-                    updateNumber("inclination", e.target.value === "" ? null : e.target.value);
-                  }}
-                  spellCheck="false"
-                  value={_.isNil(borehole.data.inclination) ? "" : borehole.data.inclination}
-                  readOnly={!isEditable}
-                />
-              </Form.Field>
-              <Form.Field required>
-                <label>
-                  <TranslationText firstUpperCase id="inclination_direction" />
-                </label>
-                <Input
-                  autoCapitalize="off"
-                  autoComplete="off"
-                  autoCorrect="off"
-                  onChange={e => {
-                    updateNumber("inclination_direction", e.target.value === "" ? null : e.target.value);
-                  }}
-                  spellCheck="false"
-                  value={_.isNil(borehole.data.inclination_direction) ? "" : borehole.data.inclination_direction}
-                  readOnly={!isEditable}
-                />
-              </Form.Field>
-              <Form.Field required>
-                <label>
-                  <TranslationText firstUpperCase id="qt_bore_inc_dir" />
-                </label>
-                <DomainDropdown
-                  onSelected={selected => {
-                    updateChange("custom.qt_bore_inc_dir", selected.id, false);
-                  }}
-                  schema="custom.qt_bore_inc_dir"
-                  selected={borehole.data.custom.qt_bore_inc_dir}
                   readOnly={!isEditable}
                 />
               </Form.Field>

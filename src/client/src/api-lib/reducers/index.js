@@ -317,8 +317,6 @@ export function borehole() {
         height_reference_system: null,
         elevation_precision: null,
         drilling_date: null,
-        bore_inc: null,
-        bore_inc_dir: null,
         length: null,
         ...{
           extended: {
@@ -342,7 +340,6 @@ export function borehole() {
             landuse: null,
             cuttings: null,
             drill_diameter: "",
-            qt_bore_inc_dir: null,
             qt_depth: null,
             qt_top_bedrock: null,
             lithology_top_bedrock: null,

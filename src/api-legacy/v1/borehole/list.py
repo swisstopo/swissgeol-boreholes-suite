@@ -60,9 +60,6 @@ class ListBorehole(Action):
                 cut.geolcode as cuttings,
                 prp.geolcode as purpose,
                 sts.geolcode as status,
-                inclination_bho as inclination,
-                inclination_direction_bho as inclination_direction,
-                qt_inc_dir.geolcode as qt_bore_inc_dir,
 
                 total_depth_bho as total_depth,
                 qt_len.geolcode as qt_depth,
@@ -146,9 +143,6 @@ class ListBorehole(Action):
 
             LEFT JOIN bdms.codelist as qt_len
                 ON qt_len.id_cli = qt_depth_id_cli
-
-            LEFT JOIN bdms.codelist as qt_inc_dir
-                ON qt_inc_dir.id_cli = qt_inclination_direction_id_cli
 
             LEFT JOIN bdms.codelist as prp
                 ON prp.id_cli = purpose_id_cli

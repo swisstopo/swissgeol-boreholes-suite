@@ -15,21 +15,6 @@ export const boreholeEditorData = [
     value: "extended.status",
   },
   {
-    id: 8,
-    label: "inclination",
-    value: "bore_inc",
-  },
-  {
-    id: 9,
-    label: "inclination_direction",
-    value: "bore_inc_dir",
-  },
-  {
-    id: 10,
-    label: "qt_bore_inc_dir",
-    value: "qt_bore_inc_dir",
-  },
-  {
     id: 11,
     label: "totaldepth",
     value: "length",
