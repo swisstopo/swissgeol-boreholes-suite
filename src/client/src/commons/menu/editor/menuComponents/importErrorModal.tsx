@@ -2,32 +2,34 @@ import { Header, Modal } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
 import { ImportErrorModalProps } from "./menuComponentInterfaces";
 
-export const ImportErrorModal = ({ setState, state }: ImportErrorModalProps) => {
+export const ImportErrorModal = ({
+  setValidationErrorModal,
+  validationErrorModal,
+  errorResponse,
+}: ImportErrorModalProps) => {
   const { t } = useTranslation();
   return (
     <Modal
       closeIcon
       key="sb-em-5-2"
       onClose={() => {
-        setState({
-          validationErrorModal: false,
-        });
+        setValidationErrorModal(false);
       }}
-      open={state.validationErrorModal === true}
+      open={validationErrorModal}
       size="tiny">
       <Header content={t("validationErrorHeader")} />
       <Modal.Content style={{ maxHeight: "70vh", overflow: "auto" }} data-cy="borehole-import-error-modal-content">
-        {state.errorResponse && (
+        {errorResponse && (
           <div>
             {/* In case of API response type ProblemDetails */}
-            {state.errorResponse.detail &&
-              state.errorResponse.detail
+            {errorResponse.detail &&
+              errorResponse.detail
                 .split("\n")
                 .filter((subString: string) => subString.includes("was not found"))
                 .map((item: string, i: number) => <li key={item + i}>{item}</li>)}
             {/* In case of API response type ValidationProblemDetails */}
-            {state.errorResponse.errors &&
-              Object.entries(state.errorResponse.errors)
+            {errorResponse.errors &&
+              Object.entries(errorResponse.errors)
                 // Only display error messages for keys that are not empty
                 .filter(([key]) => key !== "")
                 .map(([key, value], index) => (

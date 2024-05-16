@@ -121,9 +121,7 @@ public class UploadController : ControllerBase
                         borehole.OriginalReferenceSystem = ReferenceSystem.LV95;
                         borehole.LocationX = boreholeImport.Location_x;
                         borehole.LocationY = boreholeImport.Location_y;
-                        borehole.PrecisionLocationX = GetPrecision(boreholeImport.Location_x);
-                        borehole.PrecisionLocationY = GetPrecision(boreholeImport.Location_y);
-                        borehole.PrecisionLocationXLV03 = Math.Max(borehole.PrecisionLocationX.Value, borehole.PrecisionLocationY.Value);
+                        borehole.PrecisionLocationXLV03 = Math.Max(borehole.PrecisionLocationX ?? 0, borehole.PrecisionLocationY ?? 0);
                         borehole.PrecisionLocationYLV03 = borehole.PrecisionLocationXLV03;
                     }
                     else
@@ -131,9 +129,7 @@ public class UploadController : ControllerBase
                         borehole.OriginalReferenceSystem = ReferenceSystem.LV03;
                         borehole.LocationXLV03 = boreholeImport.Location_x;
                         borehole.LocationYLV03 = boreholeImport.Location_y;
-                        borehole.PrecisionLocationXLV03 = GetPrecision(boreholeImport.Location_x);
-                        borehole.PrecisionLocationYLV03 = GetPrecision(boreholeImport.Location_y);
-                        borehole.PrecisionLocationX = Math.Max(borehole.PrecisionLocationXLV03.Value, borehole.PrecisionLocationYLV03.Value);
+                        borehole.PrecisionLocationX = Math.Max(borehole.PrecisionLocationXLV03 ?? 0, borehole.PrecisionLocationYLV03 ?? 0);
                         borehole.PrecisionLocationY = borehole.PrecisionLocationX;
                     }
                 }
@@ -301,18 +297,18 @@ public class UploadController : ControllerBase
             .Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList() ?? new List<int>();
     }
 
-    internal int GetPrecision(double? coordinate)
+    internal static int GetPrecision(IReaderRow row, string fieldName)
     {
-        if (coordinate == null)
+        if (row.HeaderRecord != null && row.HeaderRecord.Any(h => h == fieldName))
         {
-            return 0;
+            var value = row.GetField<string?>(fieldName);
+            if (!string.IsNullOrEmpty(value) && value.Contains('.', StringComparison.Ordinal))
+            {
+                return value.Split('.')[1].Length;
+            }
         }
-        else
-        {
-            var decimalValue = coordinate.Value.ToString(CultureInfo.InvariantCulture);
-            var decimalSubstrings = decimalValue.Split(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-            return decimalSubstrings.Length > 1 ? decimalSubstrings[1].Length : 0;
-        }
+
+        return 0;
     }
 
     private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, IList<IFormFile>? attachments = null)
@@ -551,10 +547,6 @@ public class UploadController : ControllerBase
             Map(m => m.LocationYLV03).Optional();
             Map(m => m.OriginalReferenceSystem).Optional();
             Map(m => m.Attachments).Optional();
-            Map(m => m.PrecisionLocationX).Optional();
-            Map(m => m.PrecisionLocationY).Optional();
-            Map(m => m.PrecisionLocationXLV03).Optional();
-            Map(m => m.PrecisionLocationYLV03).Optional();
 
             // Define properties to ignore
             Map(b => b.Municipality).Ignore();
@@ -596,6 +588,12 @@ public class UploadController : ControllerBase
 
                 return boreholeCodeLists;
             });
+
+            // Set precision to both reference systems
+            Map(m => m.PrecisionLocationX).Convert(args => GetPrecision(args.Row, "location_x"));
+            Map(m => m.PrecisionLocationXLV03).Convert(args => GetPrecision(args.Row, "location_x"));
+            Map(m => m.PrecisionLocationY).Convert(args => GetPrecision(args.Row, "location_y"));
+            Map(m => m.PrecisionLocationYLV03).Convert(args => GetPrecision(args.Row, "location_y"));
         }
     }
 
