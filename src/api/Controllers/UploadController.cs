@@ -592,7 +592,7 @@ public class UploadController : ControllerBase
                 return boreholeCodeLists;
             });
 
-            // set precision to both reference systems
+            // Set precision to both reference systems
             Map(m => m.PrecisionLocationX).Convert(args => GetPrecision(args.Row, "location_x"));
             Map(m => m.PrecisionLocationXLV03).Convert(args => GetPrecision(args.Row, "location_x"));
             Map(m => m.PrecisionLocationY).Convert(args => GetPrecision(args.Row, "location_y"));
