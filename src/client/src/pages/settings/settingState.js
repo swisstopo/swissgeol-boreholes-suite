@@ -3,8 +3,8 @@ import _ from "lodash";
 const initialState = {
   isFetching: false,
   pathching: [],
-  rtime: 0, // fetch time
-  fcnt: 0, // fetch counter
+  fetchTime: 0,
+  fetchCount: 0,
   page: 0,
   selectedWMS: "https://wms.geo.admin.ch?request=getCapabilities&service=WMS",
   WMS: [
@@ -176,16 +176,16 @@ const setting = (state = initialState, action) => {
       case "GET": {
         return {
           ...initialState,
-          rtime: new Date().getTime(),
+          fetchTime: new Date().getTime(),
           isFetching: true,
         };
       }
       case "GET_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
+          fetchCount: state.fetchCount + 1,
           isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           data: _.merge(state.data, action.json.data),
         };
         return copy;
@@ -237,9 +237,9 @@ const setting = (state = initialState, action) => {
       case "PATCH_OK": {
         let copy = {
           ...state,
-          fcnt: state.fcnt + 1,
+          fetchCount: state.fetchCount + 1,
           isFetching: false,
-          rtime: new Date().getTime() - state.rtime,
+          fetchTime: new Date().getTime() - state.fetchTime,
           data: _.merge(state.data, action.json.data),
         };
         return copy;

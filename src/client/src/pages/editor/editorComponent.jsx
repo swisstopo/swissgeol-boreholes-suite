@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { Route, Switch, withRouter, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Route, Switch, useLocation, withRouter } from "react-router-dom";
 import BoreholeForm from "../../commons/form/borehole/boreholeForm";
-import MainSideNav from "../../commons/menu/editor/mainSideNav";
+import MainSideNav from "../../commons/menu/editor/mainSideNav.tsx";
 import DetailSideNav from "../../commons/menu/editor/detailSideNav";
 import HeaderComponent from "../../commons/menu/headerComponent";
 import WorkflowForm from "../../commons/form/workflow/workflowForm";
