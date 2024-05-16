@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Stack, Box } from "@mui/material/";
+import { Box, Stack } from "@mui/material/";
 import TranslationText from "../../../../form/translationText.jsx";
 import { FileDropzone } from "../../../../files/fileDropzone.jsx";
 import { StackHalfWidth } from "../../../../../components/baseComponents.js";
@@ -34,26 +34,31 @@ const ExampleHeadings = (headings: string) => {
   );
 };
 
-const ImportModalContent = ({ setState, state }: ImportModalProps) => {
+const ImportModalContent = ({
+  setSelectedBoreholeAttachments,
+  setSelectedFile,
+  setSelectedLithologyFile,
+  selectedFile,
+}: ImportModalProps) => {
   const handleBoreholeAttachmentChange = useCallback(
-    (attachmentsFromDropzone: Blob) => {
-      setState({ selectedBoreholeAttachments: attachmentsFromDropzone });
+    (attachmentsFromDropzone: Blob[]) => {
+      setSelectedBoreholeAttachments(attachmentsFromDropzone);
     },
-    [setState],
+    [setSelectedBoreholeAttachments],
   );
 
   const handleLithologyFileChange = useCallback(
-    (lithologyFileFromDropzone: Blob) => {
-      setState({ selectedLithologyFile: lithologyFileFromDropzone });
+    (lithologyFileFromDropzone: Blob[]) => {
+      setSelectedLithologyFile(lithologyFileFromDropzone);
     },
-    [setState],
+    [setSelectedLithologyFile],
   );
 
   const handleBoreholeFileChange = useCallback(
-    (boreholeFileFromDropzone: Blob) => {
-      setState({ selectedFile: boreholeFileFromDropzone });
+    (boreholeFileFromDropzone: Blob[]) => {
+      setSelectedFile(boreholeFileFromDropzone);
     },
-    [setState],
+    [setSelectedFile],
   );
 
   return (
@@ -109,8 +114,10 @@ const ImportModalContent = ({ setState, state }: ImportModalProps) => {
           onHandleFileChange={handleBoreholeAttachmentChange}
           defaultText={"dropZoneAttachmentsText"}
           restrictAcceptedFileTypeToCsv={false}
-          isDisabled={state.selectedFile?.length === 0}
+          isDisabled={selectedFile?.length === 0}
           dataCy={"import-boreholeFile-attachments-input"}
+          maxFilesToSelectAtOnce={Infinity}
+          maxFilesToUpload={Infinity}
         />
       </Stack>
       {SeparatorLine()}
@@ -135,7 +142,7 @@ const ImportModalContent = ({ setState, state }: ImportModalProps) => {
           restrictAcceptedFileTypeToCsv={true}
           maxFilesToSelectAtOnce={1}
           maxFilesToUpload={1}
-          isDisabled={state.selectedFile?.length === 0}
+          isDisabled={selectedFile?.length === 0}
           dataCy={"import-lithologyFile-input"}
         />
       </Stack>

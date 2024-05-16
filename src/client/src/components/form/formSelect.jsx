@@ -26,9 +26,9 @@ export const FormSelect = props => {
     <Controller
       name={fieldName}
       control={control}
-      defaultValue={selected || ""}
+      defaultValue={selected ?? ""}
       rules={{
-        required: required || false,
+        required: required ?? false,
         onChange: e => {
           if (onUpdate) {
             onUpdate(e.target.value);
@@ -38,7 +38,7 @@ export const FormSelect = props => {
       render={({ field, formState }) => (
         <FormField
           select
-          required={required || false}
+          required={required ?? false}
           sx={{
             backgroundColor: getFormFieldBackgroundColor(fieldName, formState?.errors),
             ...sx,
@@ -50,8 +50,8 @@ export const FormSelect = props => {
           onChange={field.onChange}
           onBlur={field.onBlur}
           inputRef={field.ref}
-          value={field.value || ""}
-          disabled={disabled || false}
+          value={field.value ?? ""}
+          disabled={disabled ?? false}
           data-cy={fieldName + "-formSelect"}
           InputLabelProps={{ shrink: true }}>
           {menuItems.map(item => (

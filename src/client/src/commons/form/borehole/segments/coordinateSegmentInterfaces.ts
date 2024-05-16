@@ -1,5 +1,4 @@
-import { User } from "./userInterface";
-import { Borehole } from "../boreholeInterface";
+import { Borehole, User } from "../../../../ReduxStateInterfaces";
 
 export enum ReferenceSystemCode {
   LV95 = 20104001,
