@@ -1,13 +1,13 @@
 import {
-  loginAsAdmin,
   createBorehole,
-  createCompletion,
-  startBoreholeEditing,
-  handlePrompt,
   createCasing,
+  createCompletion,
+  handlePrompt,
+  loginAsAdmin,
+  startBoreholeEditing,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateInput, evaluateTextarea, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
+import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Casing crud tests", () => {
   beforeEach(() => {
@@ -50,7 +50,7 @@ describe("Casing crud tests", () => {
     evaluateInput("fromDepth", "0");
     setInput("casingElements.0.toDepth", "10");
     evaluateInput("toDepth", "10");
-    setSelect("casingElements.0.kindId", 2);
+    setSelect("casingElements.0.kindId", 3);
     setSelect("casingElements.0.materialId", 4);
     setInput("casingElements.0.innerDiameter", "3");
     setInput("casingElements.0.outerDiameter", "4");
@@ -101,8 +101,8 @@ describe("Casing crud tests", () => {
     setInput("name", "Inst-1");
     setInput("fromDepth", "123456");
     setInput("toDepth", "987654");
-    setSelect("kindId", 2);
-    setSelect("statusId", 1);
+    setSelect("kindId", 3);
+    setSelect("statusId", 2);
     setSelect("casingId", 2);
     saveForm();
     cy.wait("@instrumentation_GET");
@@ -174,7 +174,7 @@ describe("Casing crud tests", () => {
     setInput("name", "casing 1");
     setInput("casingElements.0.fromDepth", "5");
     setInput("casingElements.0.toDepth", "10");
-    setSelect("casingElements.0.kindId", 2);
+    setSelect("casingElements.0.kindId", 3);
     saveForm();
     cy.get('[data-cy="addCasing-button"]').should("be.enabled");
 
@@ -203,7 +203,7 @@ describe("Casing crud tests", () => {
     setInput("name", "casing 2");
     setInput("casingElements.0.fromDepth", "0");
     setInput("casingElements.0.toDepth", "5");
-    setSelect("casingElements.0.kindId", 2);
+    setSelect("casingElements.0.kindId", 3);
     startEditing();
     handlePrompt("Casing: Unsaved changes", "Reset");
     cy.get('[data-cy="casing-card.0.edit"]').should("be.visible");
@@ -214,7 +214,7 @@ describe("Casing crud tests", () => {
     setInput("name", "casing 2");
     setInput("casingElements.0.fromDepth", "0");
     setInput("casingElements.0.toDepth", "5");
-    setSelect("casingElements.0.kindId", 2);
+    setSelect("casingElements.0.kindId", 3);
     startEditing();
     handlePrompt("Casing: Unsaved changes", "Save");
     cy.get('[data-cy="casing-card.0.edit"]').should("exist");

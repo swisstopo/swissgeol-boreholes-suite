@@ -1,14 +1,14 @@
 import {
   createBorehole,
-  createCompletion,
-  startBoreholeEditing,
-  loginAsAdmin,
   createCasing,
-  handlePrompt,
+  createCompletion,
   createWateringress,
+  handlePrompt,
+  loginAsAdmin,
+  startBoreholeEditing,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
+import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Tests for the wateringress editor.", () => {
   it("Creates, updates and deletes wateringresses", () => {
@@ -47,8 +47,8 @@ describe("Tests for the wateringress editor.", () => {
     addItem("addWaterIngress");
     cy.wait("@casing_GET");
 
-    setSelect("quantityId", 2);
-    setSelect("reliabilityId", 1);
+    setSelect("quantityId", 3);
+    setSelect("reliabilityId", 3);
     setSelect("casingId", 2);
     setInput("startTime", "2012-11-14T12:06");
 

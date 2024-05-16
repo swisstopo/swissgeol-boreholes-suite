@@ -1,14 +1,14 @@
 import {
   createBorehole,
+  createCasing,
+  createCompletion,
+  createFieldMeasurement,
+  handlePrompt,
   loginAsAdmin,
   startBoreholeEditing,
-  createCompletion,
-  createCasing,
-  handlePrompt,
-  createFieldMeasurement,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
+import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 beforeEach(() => {
   createBorehole({ "extended.original_name": "INTEADAL" })
@@ -39,11 +39,11 @@ describe("Tests for the field measurement editor.", () => {
       addItem("addFieldMeasurement");
       cy.wait("@casing_GET");
 
-      setSelect("reliabilityId", 1);
+      setSelect("reliabilityId", 2);
       setInput("startTime", "2012-11-14T12:06");
       setSelect("casingId", 2);
-      setSelect("fieldMeasurementResults.0.sampleTypeId", 0);
-      setSelect("fieldMeasurementResults.0.parameterId", 0, 9);
+      setSelect("fieldMeasurementResults.0.sampleTypeId", 1);
+      setSelect("fieldMeasurementResults.0.parameterId", 2, 10);
       setInput("fieldMeasurementResults.0.value", "10");
       // close editing mask
       saveForm();
@@ -57,8 +57,8 @@ describe("Tests for the field measurement editor.", () => {
       cy.wait(500);
       addItem("addFieldMeasurementResult");
 
-      setSelect("fieldMeasurementResults.1.sampleTypeId", 1);
-      setSelect("fieldMeasurementResults.1.parameterId", 2, 9);
+      setSelect("fieldMeasurementResults.1.sampleTypeId", 2);
+      setSelect("fieldMeasurementResults.1.parameterId", 3, 10);
       setInput("fieldMeasurementResults.1.value", "8.9");
       saveForm();
       cy.wait("@fieldmeasurement_GET");
@@ -74,7 +74,7 @@ describe("Tests for the field measurement editor.", () => {
 
       // edit field measurement reliability
       startEditing();
-      setSelect("reliabilityId", 2);
+      setSelect("reliabilityId", 3);
       saveForm();
       cy.wait("@fieldmeasurement_GET");
       evaluateDisplayValue("reliability", "andere");
