@@ -115,4 +115,51 @@ public class BoreholeGeometryController : ControllerBase
             return Problem(errorMessage);
         }
     }
+
+    [HttpGet("[action]")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> GetDepthTVD([FromQuery] int boreholeId, [FromQuery] double depthMD)
+    {
+        if (depthMD < 0)
+        {
+            return BadRequest(nameof(depthMD) + " must be positive.");
+        }
+
+        var geometry = await context.BoreholeGeometry
+            .AsNoTracking()
+            .Where(g => g.BoreholeId == boreholeId)
+            .OrderBy(g => g.Id)
+            .ToListAsync().ConfigureAwait(false);
+
+        if (geometry.Count < 2)
+        {
+            // Return the depthMD unchanged as if the borehole is perfectly vertical.
+            return Ok(depthMD);
+        }
+        else
+        {
+            // Linear interpolation between points
+            double length = 0;
+            double lastSegmentLength = 0;
+            int i = 1;
+            while (length <= depthMD && i < geometry.Count)
+            {
+                var a = geometry[i - 1];
+                var b = geometry[i];
+                lastSegmentLength = Math.Sqrt(Math.Pow(b.X - a.X, 2) + Math.Pow(b.Y - a.Y, 2) + Math.Pow(b.Z - a.Z, 2));
+                length += lastSegmentLength;
+                i++;
+            }
+
+            if (depthMD > length)
+            {
+                return Ok(geometry.Last().Z);
+            }
+            else
+            {
+                var t = (length - depthMD) / lastSegmentLength;
+                return Ok(geometry[i - 1].Z - ((geometry[i - 1].Z - geometry[i - 2].Z) * t));
+            }
+        }
+    }
 }

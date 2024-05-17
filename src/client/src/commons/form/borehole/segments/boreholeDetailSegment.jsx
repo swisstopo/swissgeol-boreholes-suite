@@ -8,9 +8,23 @@ import { Form, Segment } from "semantic-ui-react";
 import { FormControl, RadioGroup, FormControlLabel } from "@mui/material";
 import { parseIfString } from "../../formUtils.ts";
 import { DisabledRadio } from "./styledComponents";
+import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2";
 
 const BoreholeDetailSegment = props => {
   const { size, borehole, updateChange, updateNumber, isEditable } = props;
+
+  const updateMDandTVDField = (fieldNameMD, fieldNameTVD, event) => {
+    const value = event.target.value === "" ? null : parseIfString(event.target.value);
+    updateNumber(fieldNameMD, value);
+    if (value !== null) {
+      getBoreholeGeometryDepthTVD(borehole.data.id, value).then(response => {
+        if (response != null) {
+          updateNumber(fieldNameTVD, response);
+        }
+      });
+    }
+  };
+
   return (
     <Segment>
       <Form autoComplete="off" error size={size}>
@@ -23,9 +37,7 @@ const BoreholeDetailSegment = props => {
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              onChange={e => {
-                updateNumber("total_depth", e.target.value === "" ? null : parseIfString(e.target.value));
-              }}
+              onChange={e => updateMDandTVDField("total_depth", "total_depth_tvd", e)}
               spellCheck="false"
               value={_.isNil(borehole.data.total_depth) ? "" : borehole.data.total_depth}
               thousandSeparator="'"
@@ -47,7 +59,11 @@ const BoreholeDetailSegment = props => {
           </Form.Field>
         </Form.Group>
         <Form.Group widths="equal">
-          <Form.Field required>
+          <Form.Field
+            style={{
+              opacity: 0.6,
+              pointerEvents: "none",
+            }}>
             <label>
               <TranslationText id="total_depth_tvd" />
             </label>
@@ -55,13 +71,10 @@ const BoreholeDetailSegment = props => {
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              onChange={e => {
-                updateNumber("total_depth_tvd", e.target.value === "" ? null : parseIfString(e.target.value));
-              }}
               spellCheck="false"
               value={_.isNil(borehole.data.total_depth_tvd) ? "" : borehole.data.total_depth_tvd}
               thousandSeparator="'"
-              readOnly={!isEditable}
+              readOnly={true}
             />
           </Form.Field>
 
@@ -88,9 +101,7 @@ const BoreholeDetailSegment = props => {
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              onChange={e => {
-                updateNumber("extended.top_bedrock", e.target.value === "" ? null : parseIfString(e.target.value));
-              }}
+              onChange={e => updateMDandTVDField("extended.top_bedrock", "extended.top_bedrock_tvd", e)}
               spellCheck="false"
               value={_.isNil(borehole.data.extended.top_bedrock) ? "" : borehole.data.extended.top_bedrock}
               thousandSeparator="'"
@@ -106,7 +117,7 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               onChange={e => {
-                updateNumber("custom.qt_top_bedrock", e.target.value === "" ? null : parseIfString(e.target.value));
+                updateMDandTVDField("custom.qt_top_bedrock", "custom.qt_top_bedrock_tvd", e);
               }}
               spellCheck="false"
               value={borehole.data.custom.qt_top_bedrock}
@@ -116,7 +127,11 @@ const BoreholeDetailSegment = props => {
           </Form.Field>
         </Form.Group>
         <Form.Group widths="equal">
-          <Form.Field required>
+          <Form.Field
+            style={{
+              opacity: 0.6,
+              pointerEvents: "none",
+            }}>
             <label>
               <TranslationText id="top_bedrock_tvd" />
             </label>
@@ -124,17 +139,18 @@ const BoreholeDetailSegment = props => {
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              onChange={e => {
-                updateNumber("extended.top_bedrock_tvd", e.target.value === "" ? null : parseIfString(e.target.value));
-              }}
               spellCheck="false"
               value={_.isNil(borehole.data.extended.top_bedrock_tvd) ? "" : borehole.data.extended.top_bedrock_tvd}
               thousandSeparator="'"
-              readOnly={!isEditable}
+              readOnly={true}
             />
           </Form.Field>
 
-          <Form.Field required>
+          <Form.Field
+            style={{
+              opacity: 0.6,
+              pointerEvents: "none",
+            }}>
             <label>
               <TranslationText id="top_bedrock_tvd_qt" />
             </label>
@@ -142,13 +158,10 @@ const BoreholeDetailSegment = props => {
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              onChange={e => {
-                updateNumber("custom.qt_top_bedrock_tvd", e.target.value === "" ? null : parseIfString(e.target.value));
-              }}
               spellCheck="false"
               value={borehole.data.custom.qt_top_bedrock_tvd}
               thousandSeparator="'"
-              readOnly={!isEditable}
+              readOnly={true}
             />
           </Form.Field>
         </Form.Group>

@@ -13,6 +13,7 @@
 - Changed sidebar layout and design.
 - Moved form to add a borehole from modal to sidepanel.
 - Removed fields `Inclination` `InclinationDirection` and `QtInclinationDirectionId` from borehole.
+- Calculate TVD values in General panel using the geometry of the borehole.
 
 ### Fixed
 

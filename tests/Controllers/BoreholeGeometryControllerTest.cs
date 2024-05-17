@@ -226,4 +226,50 @@ public class BoreholeGeometryControllerTest
         var geometries = context.BoreholeGeometry.Where(g => g.BoreholeId == boreholeIdWithGeometry).OrderBy(g => g.Id).ToList();
         Assert.AreEqual(0, geometries.Count());
     }
+
+    [TestMethod]
+    public async Task GetDepthTVDWithNegativeDepthMD()
+    {
+        IActionResult response = await controller.GetDepthTVD(boreholeIdWithGeometry, -42);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsBadRequest(result);
+
+        Assert.AreEqual("depthMD must be positive.", result.Value);
+    }
+
+    [TestMethod]
+    public async Task GetDepthTVDNoGeometry()
+    {
+        IActionResult response = await controller.GetDepthTVD(boreholeIdWithoutGeometry, 805.86);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+
+        Assert.AreEqual(805.86, result.Value);
+    }
+
+    [TestMethod]
+    public async Task GetDepthTVDWithDepthMDLargerThanBorehole()
+    {
+        IActionResult response = await controller.GetDepthTVD(boreholeIdWithGeometry, double.MaxValue);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+
+        var expected = context.BoreholeGeometry
+            .Where(g => g.BoreholeId == boreholeIdWithGeometry)
+            .OrderBy(g => g.Id)
+            .Last()
+            .Z;
+
+        Assert.AreEqual(expected, result.Value);
+    }
+
+    [TestMethod]
+    public async Task GetDepthTVDWithDepthMDOfZero()
+    {
+        IActionResult response = await controller.GetDepthTVD(boreholeIdWithGeometry, 0);
+        ObjectResult result = (ObjectResult)response;
+        ActionResultAssert.IsOk(result);
+
+        Assert.AreEqual(0.0, result.Value);
+    }
 }
