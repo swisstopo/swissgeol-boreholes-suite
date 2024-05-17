@@ -1,6 +1,38 @@
 import { useTranslation } from "react-i18next";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
+import { Box, Slider, Stack, Typography } from "@mui/material";
+
+/**
+ * A {@link GeometryChartZAzimuth} component with a slider to change the azimuth.
+ */
+export const GeometryChartZInteractive = ({ data }) => {
+  const [azimuth, setAzimuth] = useState(0);
+
+  useEffect(() => {
+    setAzimuth(data?.length > 0 ? Math.round((Math.atan2(data.at(-1).x, data.at(-1).y) * 180) / Math.PI + 180) : 0);
+  }, [data]);
+
+  return (
+    <Box sx={{ position: "relative" }}>
+      <GeometryChartZAzimuth data={data} azimuth={azimuth} />
+      <Stack sx={{ position: "absolute", left: 0, right: 0, bottom: 0 }} direction="row" spacing={2}>
+        <Slider size="small" value={azimuth} onChange={(e, value) => setAzimuth(value)} min={0} max={360} />
+        <Typography>{`${azimuth}°\u00a0[m]`}</Typography>
+      </Stack>
+    </Box>
+  );
+};
+
+export const GeometryChartZAzimuth = ({ data, azimuth = 0 }) => {
+  // project data
+  const azimuthRad = (azimuth * Math.PI) / 180;
+  const factorX = Math.sin(azimuthRad);
+  const factorY = Math.cos(azimuthRad);
+  data = data.map(d => ({ y: d.z, x: d.x * factorX + d.y * factorY }));
+
+  return GeometryChartZ({ data });
+};
 
 export const GeometryChartZN = ({ data }) => {
   data = data.map(d => ({ y: d.z, x: d.y }));
