@@ -3,7 +3,7 @@ import GeometryImport from "./geometryImport";
 import GeometryTable from "./geometryTable";
 import GeometryChartNE from "./geometryChartNE";
 import { GeometryChartZE, GeometryChartZN } from "./geometryChartZ";
-import { CircularProgress, Typography, Grid, Card, CardActions } from "@mui/material/";
+import { CircularProgress, Typography, Grid, Card, CardActions, CardContent } from "@mui/material/";
 import { FullPageCentered } from "../../../../components/baseComponents";
 import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../api/fetchApiV2";
 import { DeleteButton } from "../../../../components/buttons/buttons";
@@ -53,7 +53,9 @@ const Geometry = ({ boreholeId, isEditable }) => {
                 <GeometryTable key="" data={data} />,
               ].map((panel, i) => (
                 <Grid key={i} item xs={12} lg={6} xl={4}>
-                  {panel}
+                  <Card>
+                    <CardContent>{panel}</CardContent>
+                  </Card>
                 </Grid>
               ))}
             </>

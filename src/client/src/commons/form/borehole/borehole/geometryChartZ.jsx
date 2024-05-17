@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef } from "react";
-import { Card, CardContent } from "@mui/material/";
 import * as d3 from "d3";
 
 export const GeometryChartZN = ({ data }) => {
@@ -44,32 +43,28 @@ const GeometryChartZ = ({ data, xLabel }) => {
   }, [axisYRef, y]);
 
   return (
-    <Card>
-      <CardContent>
-        <svg viewBox={`0 0 ${width} ${height}`}>
-          <g transform={`translate(${padding.left + margin}, ${padding.top + margin})`}>
-            <g stroke="lightgray" fill="none" strokeLinecap="square">
-              {y.ticks().map((t, i) => (
-                <line key={"y" + i} y1={y(t)} y2={y(t)} x2={contentWidth} />
-              ))}
-              {x.ticks().map((t, i) => (
-                <line key={"x" + i} x1={x(t)} x2={x(t)} y2={contentHeight} strokeWidth={t === 0 ? 2.5 : null} />
-              ))}
-            </g>
-            <g ref={axisXRef} transform={`translate(0, ${contentHeight})`} />
-            <g ref={axisYRef} />
-            <g>
-              <text x={contentWidth} y={contentHeight} dy={padding.bottom} textAnchor="end" dominantBaseline="auto">
-                {xLabel}
-              </text>
-              <text textAnchor="end" dominantBaseline="hanging" transform={`rotate(-90) translate(0 ${-padding.left})`}>
-                {t("depthTVD")}
-              </text>
-            </g>
-            <path fill="none" stroke={d3.schemeCategory10[0]} strokeWidth={2} d={line(data)} strokeLinecap="round" />
-          </g>
-        </svg>
-      </CardContent>
-    </Card>
+    <svg viewBox={`0 0 ${width} ${height}`}>
+      <g transform={`translate(${padding.left + margin}, ${padding.top + margin})`}>
+        <g stroke="lightgray" fill="none" strokeLinecap="square">
+          {y.ticks().map((t, i) => (
+            <line key={"y" + i} y1={y(t)} y2={y(t)} x2={contentWidth} />
+          ))}
+          {x.ticks().map((t, i) => (
+            <line key={"x" + i} x1={x(t)} x2={x(t)} y2={contentHeight} strokeWidth={t === 0 ? 2.5 : null} />
+          ))}
+        </g>
+        <g ref={axisXRef} transform={`translate(0, ${contentHeight})`} />
+        <g ref={axisYRef} />
+        <g>
+          <text x={contentWidth} y={contentHeight} dy={padding.bottom} textAnchor="end" dominantBaseline="auto">
+            {xLabel}
+          </text>
+          <text textAnchor="end" dominantBaseline="hanging" transform={`rotate(-90) translate(0 ${-padding.left})`}>
+            {t("depthTVD")}
+          </text>
+        </g>
+        <path fill="none" stroke={d3.schemeCategory10[0]} strokeWidth={2} d={line(data)} strokeLinecap="round" />
+      </g>
+    </svg>
   );
 };
