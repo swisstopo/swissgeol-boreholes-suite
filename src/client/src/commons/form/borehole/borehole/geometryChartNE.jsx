@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef } from "react";
-import { Card, CardContent } from "@mui/material/";
 import * as d3 from "d3";
 
 const GeometryChartNE = ({ data }) => {
@@ -32,45 +31,41 @@ const GeometryChartNE = ({ data }) => {
   }, [axisYRef, y]);
 
   return (
-    <Card>
-      <CardContent>
-        <svg viewBox={`0 0 ${size} ${size}`}>
-          <g transform={`translate(${padding.left + margin}, ${padding.right + margin})`}>
-            <g stroke="lightgray" fill="none" strokeLinecap="square">
-              {x
-                .ticks()
-                .filter(t => t > 0)
-                .map((t, i) => (
-                  <circle key={"c" + i} cx={contentSize / 2} cy={contentSize / 2} r={x(t) - x(0)} />
-                ))}
-              {x.ticks().map((t, i) => (
-                <line key={"x" + i} x1={x(t)} x2={x(t)} y2={contentSize} strokeWidth={t === 0 ? 2.5 : null} />
-              ))}
-              {y.ticks().map((t, i) => (
-                <line key={"y" + i} y1={y(t)} y2={y(t)} x2={contentSize} strokeWidth={t === 0 ? 2.5 : null} />
-              ))}
-            </g>
-            <g ref={axisXRef} transform={`translate(0, ${contentSize})`} />
-            <g ref={axisYRef} />
-            <g>
-              <text x={contentSize / 2} dy={-padding.right} textAnchor="middle" dominantBaseline="hanging">
-                N
-              </text>
-              <text x={contentSize} y={contentSize / 2} dx={padding.right} textAnchor="end" dominantBaseline="middle">
-                {t("eastAbbr")}
-              </text>
-              <text x={contentSize / 2} y={contentSize} dy={padding.left} textAnchor="middle" dominantBaseline="auto">
-                S
-              </text>
-              <text y={contentSize / 2} dx={-padding.left} textAnchor="start" dominantBaseline="middle">
-                W
-              </text>
-            </g>
-            <path fill="none" stroke={d3.schemeCategory10[0]} strokeWidth={2} d={line(data)} strokeLinecap="round" />
-          </g>
-        </svg>
-      </CardContent>
-    </Card>
+    <svg viewBox={`0 0 ${size} ${size}`}>
+      <g transform={`translate(${padding.left + margin}, ${padding.right + margin})`}>
+        <g stroke="lightgray" fill="none" strokeLinecap="square">
+          {x
+            .ticks()
+            .filter(t => t > 0)
+            .map((t, i) => (
+              <circle key={"c" + i} cx={contentSize / 2} cy={contentSize / 2} r={x(t) - x(0)} />
+            ))}
+          {x.ticks().map((t, i) => (
+            <line key={"x" + i} x1={x(t)} x2={x(t)} y2={contentSize} strokeWidth={t === 0 ? 2.5 : null} />
+          ))}
+          {y.ticks().map((t, i) => (
+            <line key={"y" + i} y1={y(t)} y2={y(t)} x2={contentSize} strokeWidth={t === 0 ? 2.5 : null} />
+          ))}
+        </g>
+        <g ref={axisXRef} transform={`translate(0, ${contentSize})`} />
+        <g ref={axisYRef} />
+        <g>
+          <text x={contentSize / 2} dy={-padding.right} textAnchor="middle" dominantBaseline="hanging">
+            N
+          </text>
+          <text x={contentSize} y={contentSize / 2} dx={padding.right} textAnchor="end" dominantBaseline="middle">
+            {t("eastAbbr")}
+          </text>
+          <text x={contentSize / 2} y={contentSize} dy={padding.left} textAnchor="middle" dominantBaseline="auto">
+            S
+          </text>
+          <text y={contentSize / 2} dx={-padding.left} textAnchor="start" dominantBaseline="middle">
+            W
+          </text>
+        </g>
+        <path fill="none" stroke={d3.schemeCategory10[0]} strokeWidth={2} d={line(data)} strokeLinecap="round" />
+      </g>
+    </svg>
   );
 };
 
