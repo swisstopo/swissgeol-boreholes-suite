@@ -107,6 +107,9 @@
     <None Update="TestData\geometry_xyxz_missing_entry.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\geometry_xyz_hazi_devi.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\geometry_xyz.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

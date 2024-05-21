@@ -75,6 +75,20 @@ public class BoreholeGeometryControllerTest
         var geometries = context.BoreholeGeometry.Where(g => g.BoreholeId == boreholeIdWithoutGeometry).OrderBy(g => g.Id).ToList();
         Assert.AreEqual(20, geometries.Count());
         Assert.AreEqual(1000, geometries.Last().Z, 1e-6);
+        Assert.AreEqual(null, geometries.Last().DEVI);
+    }
+
+    [TestMethod]
+    public async Task UploadXYZWithAzimuthInclination()
+    {
+        var xyzData = GetFormFileByExistingFile("geometry_xyz_hazi_devi.csv");
+        IActionResult response = await controller.UploadBoreholeGeometry(boreholeIdWithoutGeometry, xyzData, "XYZ").ConfigureAwait(false);
+        ActionResultAssert.IsOk(response);
+
+        var geometries = context.BoreholeGeometry.Where(g => g.BoreholeId == boreholeIdWithoutGeometry).OrderBy(g => g.Id).ToList();
+        Assert.AreEqual(20, geometries.Count());
+        Assert.AreEqual(1000, geometries.Last().Z, 1e-6);
+        Assert.AreEqual(90, geometries.Last().DEVI.Value, 1e-6);
     }
 
     [TestMethod]
@@ -134,9 +148,10 @@ public class BoreholeGeometryControllerTest
         ProblemDetails problemDetails = (ProblemDetails)result.Value!;
         StringAssert.StartsWith(problemDetails.Detail, string.Join(Environment.NewLine,
             [
-                "Header with name 'X'[0] was not found.",
-                "Header with name 'Y'[0] was not found.",
-                "Header with name 'Z'[0] was not found.",
+                "Header with name 'MD_m'[0] was not found.",
+                "Header with name 'X_m'[0] was not found.",
+                "Header with name 'Y_m'[0] was not found.",
+                "Header with name 'Z_m'[0] was not found.",
             ]));
     }
 
