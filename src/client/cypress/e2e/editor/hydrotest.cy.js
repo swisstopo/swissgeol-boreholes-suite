@@ -49,9 +49,9 @@ describe("Tests for the hydrotest editor.", () => {
     addItem("addHydrotest");
     cy.wait("@casing_GET");
 
-    setSelect("reliabilityId", 3);
+    setSelect("reliabilityId", 2);
     setInput("startTime", "2012-11-14T12:06");
-    setSelect("casingId", 3);
+    setSelect("casingId", 2);
     toggleMultiSelect("testKindId", [2]);
 
     saveForm();
@@ -78,7 +78,7 @@ describe("Tests for the hydrotest editor.", () => {
     toggleMultiSelect("flowDirectionId", [1, 0], 3);
     toggleMultiSelect("evaluationMethodId", [1, 0], 4);
     addItem("addHydrotestResult");
-    setSelect("hydrotestResults.0.parameterId", 1, 6);
+    setSelect("hydrotestResults.0.parameterId", 1, 7);
     setInput("hydrotestResults.0.value", "10");
     setInput("hydrotestResults.0.minValue", "5");
     setInput("hydrotestResults.0.maxValue", "15");
@@ -188,7 +188,7 @@ describe("Tests for the hydrotest editor.", () => {
     // can save new card and switch to existing card
     addItem("addHydrotest");
     setInput("startTime", "2013-10-02T14:06");
-    setSelect("reliabilityId", 3);
+    setSelect("reliabilityId", 2);
     toggleMultiSelect("testKindId", [3]);
     startEditing();
     handlePrompt("Hydrotest: Unsaved changes", "Save");

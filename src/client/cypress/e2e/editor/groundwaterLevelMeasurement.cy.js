@@ -45,7 +45,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     cy.wait("@casing_GET");
 
     setSelect("kindId", 3);
-    setSelect("reliabilityId", 3);
+    setSelect("reliabilityId", 2);
     setSelect("casingId", 2);
     setInput("startTime", "2012-11-14T12:06");
     setInput("levelM", "789.12");
