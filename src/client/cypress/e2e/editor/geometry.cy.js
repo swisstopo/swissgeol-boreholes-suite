@@ -1,4 +1,4 @@
-import { loginAsAdmin, createBorehole, startBoreholeEditing, getImportFileFromFixtures } from "../helpers/testHelpers";
+import { createBorehole, getImportFileFromFixtures, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 import { setSelect } from "../helpers/formHelpers";
 
 describe("Geometry crud tests", () => {
@@ -39,14 +39,14 @@ describe("Geometry crud tests", () => {
     cy.get('[data-cy="boreholeGeometryImport-button"]').should("be.enabled");
 
     // the selected format is wrong expect an alert
-    setSelect("geometryFormat", 0);
+    setSelect("geometryFormat", 1);
     cy.get('[data-cy="boreholeGeometryImport-button"]').click();
     cy.wait("@boreholegeometry_POST");
     cy.get(".MuiAlert-message").contains("Header with name 'X'[0] was not found.");
     cy.get(".MuiAlert-action > .MuiButtonBase-root").click();
 
     // correct format for selected CSV
-    setSelect("geometryFormat", 1);
+    setSelect("geometryFormat", 2);
     cy.get('[data-cy="boreholeGeometryImport-button"]').click();
     cy.wait("@boreholegeometry_POST");
     cy.wait("@boreholegeometry_GET");

@@ -1,14 +1,14 @@
 import {
   createBorehole,
-  loginAsAdmin,
-  startBoreholeEditing,
-  createCompletion,
   createCasing,
+  createCompletion,
   createGroundwaterLevelMeasurement,
   handlePrompt,
+  loginAsAdmin,
+  startBoreholeEditing,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
+import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Tests for the groundwater level measurement editor.", () => {
   it("Creates, updates and deletes groundwater level measurement", () => {
@@ -44,8 +44,8 @@ describe("Tests for the groundwater level measurement editor.", () => {
     addItem("addGroundwaterLevelMeasurement");
     cy.wait("@casing_GET");
 
-    setSelect("kindId", 2);
-    setSelect("reliabilityId", 1);
+    setSelect("kindId", 3);
+    setSelect("reliabilityId", 2);
     setSelect("casingId", 2);
     setInput("startTime", "2012-11-14T12:06");
     setInput("levelM", "789.12");
@@ -61,7 +61,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
 
     // edit groundwater level measurement
     startEditing();
-    setSelect("kindId", 1);
+    setSelect("kindId", 2);
     saveForm();
     evaluateDisplayValue("gwlm_kind", "Drucksonde");
     evaluateDisplayValue("casingName", "test groundwaterlevel measurement - casing-1");
