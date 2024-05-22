@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240521161917_RemoveUnusedCodelist")]
+    partial class RemoveUnusedCodelist
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -439,15 +442,6 @@ namespace BDMS.Migrations
                     b.Property<int>("BoreholeId")
                         .HasColumnType("integer")
                         .HasColumnName("borehole_id");
-
-                    b.Property<double?>("DEVI")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("HAZI")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("MD")
-                        .HasColumnType("double precision");
 
                     b.Property<double>("X")
                         .HasColumnType("double precision");

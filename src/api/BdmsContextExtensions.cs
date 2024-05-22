@@ -954,11 +954,13 @@ public static class BdmsContextExtensions
         foreach (var boreholeId in richBoreholeRange)
         {
 #pragma warning disable CA5394 // Do not use insecure randomness
-            // Generate an arced geometry with random displacement
+            // Generate a random arced geometry
             Random r = new Random(boreholeId);
             var inc = (r.NextDouble() * Math.PI / 4) + (Math.PI / 4);
             var azi = r.NextDouble() * 2 * Math.PI;
             var radius = (r.NextDouble() * 1000) + 2000;
+            var makeAziIncNull = r.NextDouble() < 0.5;
+#pragma warning restore CA5394 // Do not use insecure randomness
 
             // First point is at the borehole location (0, 0, 0)
             geometryElementsToInsert.Add(new BoreholeGeometryElement { Id = boreholeGeometry_ids++, BoreholeId = boreholeId, X = 0, Y = 0, Z = 0 });
@@ -971,12 +973,14 @@ public static class BdmsContextExtensions
                 {
                     Id = boreholeGeometry_ids++,
                     BoreholeId = boreholeId,
-                    X = (r.NextDouble() * 10) - 5 + (radius * Math.Cos(currentAzi) * (1 - Math.Cos(currentInc))),
-                    Y = (r.NextDouble() * 10) - 5 + (radius * Math.Sin(currentAzi) * (Math.Cos(currentInc) - 1)),
-                    Z = (r.NextDouble() * 10) + (radius * Math.Sin(currentInc)),
+                    X = radius * Math.Cos(currentAzi) * (1 - Math.Cos(currentInc)),
+                    Y = radius * Math.Sin(currentAzi) * (Math.Cos(currentInc) - 1),
+                    Z = radius * Math.Sin(currentInc),
+                    MD = radius * Math.PI * currentInc,
+                    HAZI = makeAziIncNull ? null : currentAzi,
+                    DEVI = makeAziIncNull ? null : currentInc,
                 });
             }
-#pragma warning restore CA5394 // Do not use insecure randomness
         }
 
         context.BulkInsert(geometryElementsToInsert, bulkConfig);

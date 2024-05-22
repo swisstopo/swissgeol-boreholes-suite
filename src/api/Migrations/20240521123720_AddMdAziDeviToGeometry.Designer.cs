@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20240516102321_RemoveUnusedCodelist")]
-    partial class RemoveUnusedCodelist
+    [Migration("20240521123720_AddMdAziDeviToGeometry")]
+    partial class AddMdAziDeviToGeometry
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -442,6 +442,15 @@ namespace BDMS.Migrations
                     b.Property<int>("BoreholeId")
                         .HasColumnType("integer")
                         .HasColumnName("borehole_id");
+
+                    b.Property<double?>("DEVI")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("HAZI")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("MD")
+                        .HasColumnType("double precision");
 
                     b.Property<double>("X")
                         .HasColumnType("double precision");
