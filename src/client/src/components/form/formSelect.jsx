@@ -1,6 +1,6 @@
 import { MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useFormContext, Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { FormField, getFormFieldBackgroundColor } from "./form";
 
 export const FormSelect = props => {
@@ -9,9 +9,8 @@ export const FormSelect = props => {
   const { control } = useFormContext();
 
   var menuItems = [];
-  if (required !== true) {
-    menuItems.push({ key: "0", value: "", label: t("reset"), italic: true });
-  }
+  menuItems.push({ key: "0", value: "", label: t("reset"), italic: true });
+
   if (values) {
     values.forEach(value => {
       menuItems.push({
