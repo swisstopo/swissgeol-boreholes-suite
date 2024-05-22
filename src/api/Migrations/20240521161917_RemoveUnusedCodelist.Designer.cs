@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20240508101808_RemoveObsoleteGeometryFields")]
-    partial class RemoveObsoleteGeometryFields
+    [Migration("20240521161917_RemoveUnusedCodelist")]
+    partial class RemoveUnusedCodelist
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
