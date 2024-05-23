@@ -1,13 +1,23 @@
 import { Box, Chip, MenuItem } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
-import { useFormContext, Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { FormField, getFormFieldBackgroundColor } from "./form";
+import { useState } from "react";
 
 export const FormMultiSelect = props => {
   const { fieldName, label, tooltipLabel, required, disabled, selected, values, sx } = props;
   const { t } = useTranslation();
   const { formState, register, setValue, getValues, control } = useFormContext();
+  const [open, setOpen] = useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
   const ChipBox = selection => {
     return (
@@ -55,6 +65,9 @@ export const FormMultiSelect = props => {
               select
               SelectProps={{
                 multiple: true,
+                open: open,
+                onClose: handleClose,
+                onOpen: handleOpen,
                 renderValue: selection => ChipBox(selection),
               }}
               required={required || false}
@@ -68,13 +81,21 @@ export const FormMultiSelect = props => {
               {...register(fieldName, {
                 required: required || false,
                 onChange: e => {
-                  setValue(fieldName, e.target.value, { shouldValidate: true });
+                  if (e.target.value.includes("reset")) {
+                    setValue(fieldName, [], { shouldValidate: true });
+                    handleClose();
+                  } else {
+                    setValue(fieldName, e.target.value, { shouldValidate: true });
+                  }
                 },
               })}
               value={field.value || []}
               disabled={disabled || false}
               data-cy={fieldName + "-formMultiSelect"}
               InputLabelProps={{ shrink: true }}>
+              <MenuItem key="reset" value="reset">
+                <em>{t("reset")}</em>
+              </MenuItem>
               {values?.map(item => (
                 <MenuItem key={item.key} value={item.key}>
                   {item.name}
