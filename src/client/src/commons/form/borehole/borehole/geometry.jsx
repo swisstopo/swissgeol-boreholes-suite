@@ -30,13 +30,16 @@ const Geometry = ({ boreholeId, isEditable, measuredDepth }) => {
     { md: measuredDepth, x: 0, y: 0, z: measuredDepth },
   ];
 
+  const noDataLoaded = !data;
+  const anyDataPresent = data?.length > 0;
+
   return (
     <>
-      {!data ? (
+      {noDataLoaded ? (
         <FullPageCentered>
           <CircularProgress />
         </FullPageCentered>
-      ) : data?.length === 0 && !measuredDepth && !isEditable ? (
+      ) : !anyDataPresent && !measuredDepth && !isEditable ? (
         <FullPageCentered>
           <Typography variant="fullPageMessage">{t("msgBoreholeGeometryEmpty")}</Typography>
         </FullPageCentered>
@@ -49,7 +52,7 @@ const Geometry = ({ boreholeId, isEditable, measuredDepth }) => {
               </Grid>
             </>
           )}
-          {isEditable && data.length > 0 && (
+          {isEditable && anyDataPresent && (
             <Grid item xs={12}>
               <Card>
                 <CardActions>
@@ -64,7 +67,7 @@ const Geometry = ({ boreholeId, isEditable, measuredDepth }) => {
               </Card>
             </Grid>
           )}
-          {(data.length > 0 || !isEditable) &&
+          {(!isEditable || anyDataPresent) &&
             [
               <GeometryChartNE key="" data={data.length === 0 ? defaultData : data} />,
               <GeometryChartZN key="" data={data.length === 0 ? defaultData : data} />,
