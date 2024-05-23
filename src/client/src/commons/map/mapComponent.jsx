@@ -25,9 +25,9 @@ import LayerSelectControl from "./layerSelectControl";
 import Sidebar from "./sidebar";
 import NamePopup from "./namePopup";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
-import { swissExtent, updateBasemap, getBasemap } from "../../components/basemapSelector/basemaps";
+import { getBasemap, swissExtent, updateBasemap } from "../../components/basemapSelector/basemaps";
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
-import { styleFunction, clusterStyleFunction } from "./mapStyleFunctions";
+import { clusterStyleFunction, styleFunction } from "./mapStyleFunctions";
 import { projections } from "./mapProjections";
 import { theme } from "../../AppTheme";
 
@@ -313,7 +313,7 @@ class MapComponent extends React.Component {
       target: "map",
       view: new View({
         maxResolution: 611,
-        minResolution: 0.05,
+        minResolution: 0.1,
         resolution: 500,
         center: initialCenter,
         projection: projection,

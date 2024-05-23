@@ -12,13 +12,13 @@ import { defaults as defaultControls } from "ol/control";
 import { get as getProjection } from "ol/proj";
 import { register } from "ol/proj/proj4";
 import proj4 from "proj4";
-import { Segment, Button, Label, Icon } from "semantic-ui-react";
+import { Button, Icon, Label, Segment } from "semantic-ui-react";
 import { Box } from "@mui/material";
 import { getHeight } from "../../api-lib/index";
 import { fetchApiV2 } from "../../api/fetchApiV2";
 import ZoomControls from "./zoomControls";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
-import { swissExtent, updateBasemap, getBasemap } from "../../components/basemapSelector/basemaps";
+import { getBasemap, swissExtent, updateBasemap } from "../../components/basemapSelector/basemaps";
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
 import { projections } from "../../commons/map/mapProjections";
 import { detailMapStyleFunction } from "../../commons/map/mapStyleFunctions";
@@ -73,7 +73,7 @@ class PointComponent extends React.Component {
       target: "point",
       view: new View({
         resolution: this.state.point !== null ? 1 : 500,
-        minResolution: 0.05,
+        minResolution: 0.1,
         center: this.state.point !== null ? this.state.point : center,
         projection: projection,
         extent: swissExtent,
