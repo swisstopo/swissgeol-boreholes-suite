@@ -4,7 +4,7 @@ import { Basemap } from "./Basemap";
 import WMTS from "ol/source/WMTS";
 import WMTSTileGrid from "ol/tilegrid/WMTS";
 import XYZ from "ol/source/XYZ";
-import { ProjectionLike, get as getProjection } from "ol/proj";
+import { get as getProjection, ProjectionLike } from "ol/proj";
 import { Map } from "ol";
 
 export const swissExtent: number[] = [2420000, 1030000, 2900000, 1350000];
@@ -41,6 +41,7 @@ const baseLayerNames = {
 
 const createLayer = (layerName: string) => {
   return new TileLayer({
+    minResolution: 0.1,
     source: new XYZ({
       url: `https://wmts10.geo.admin.ch/1.0.0/${layerName}/default/current/3857/{z}/{x}/{y}.jpeg`,
       crossOrigin,
@@ -65,6 +66,7 @@ export const basemaps: Basemap[] = [
         }),
         new TileLayer({
           maxResolution: 2.5,
+          minResolution: 0.1,
           source: new WMTS({
             layer: baseLayerNames.detailedColormap,
             url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
