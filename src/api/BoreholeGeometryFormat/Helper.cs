@@ -25,11 +25,21 @@ public static class Helper
     {
         var context = new CsvContext(CsvConfig);
         var map = context.AutoMap<T>();
-        return string.Join("; ", map.MemberMaps.Select(m => m.Data.Names.FirstOrDefault(m.Data.Member.Name)));
+        return string.Join("; ", map.MemberMaps
+            .Select(m =>
+            {
+                var name = m.Data.Names.FirstOrDefault(m.Data.Member.Name);
+                return m.Data.IsOptional ? $"[{name}]" : name;
+            }));
     }
 
     internal static double ToRadians(double degrees)
     {
         return degrees * Math.PI / 180;
+    }
+
+    internal static double ToDegrees(double radians)
+    {
+        return radians * 180 / Math.PI;
     }
 }

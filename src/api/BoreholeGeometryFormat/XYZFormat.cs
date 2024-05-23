@@ -1,5 +1,6 @@
 ﻿using BDMS.Models;
 using CsvHelper;
+using CsvHelper.Configuration.Attributes;
 
 namespace BDMS.BoreholeGeometryFormat;
 
@@ -37,14 +38,33 @@ internal sealed class XYZFormat : IBoreholeGeometryFormat
                 X = g.X,
                 Y = g.Y,
                 Z = g.Z,
+                MD = g.MeasuredDepth,
+                HAZI = g.Azimuth,
+                DEVI = g.Inclination,
             })
             .ToList();
     }
 
     internal sealed class Geometry
     {
+        [Name("MD_m")]
+        public double MeasuredDepth { get; set; }
+
+        [Name("X_m")]
         public double X { get; set; }
+
+        [Name("Y_m")]
         public double Y { get; set; }
+
+        [Name("Z_m")]
         public double Z { get; set; }
+
+        [Optional]
+        [Name("HAZI_deg")]
+        public double? Azimuth { get; set; }
+
+        [Optional]
+        [Name("DEVI_deg")]
+        public double? Inclination { get; set; }
     }
 }

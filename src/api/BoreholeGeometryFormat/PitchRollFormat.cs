@@ -24,9 +24,9 @@ internal sealed class PitchRollFormat : IBoreholeGeometryFormat
         // Convert degrees to radians
         foreach (var entry in data)
         {
-            entry.Pitch = Helper.ToRadians(entry.Pitch);
-            entry.Roll = Helper.ToRadians(entry.Roll);
-            entry.MagneticRotation = Helper.ToRadians(entry.MagneticRotation);
+            entry.PitchRad = Helper.ToRadians(entry.PitchRad);
+            entry.RollRad = Helper.ToRadians(entry.RollRad);
+            entry.YawRad = Helper.ToRadians(entry.YawRad);
         }
 
         return XYZFormat.ToBoreholeGeometry(AzIncFormat.ConvertToXYZ(ConvertToAzInc(data)), boreholeId);
@@ -43,17 +43,19 @@ internal sealed class PitchRollFormat : IBoreholeGeometryFormat
         {
             var result = new AzIncFormat.Geometry() { MeasuredDepth = d.MeasuredDepth };
 
-            var alpha = d.MagneticRotation; // Rotation around z axis (down)
-            var beta = d.Pitch; // Rotation around y axis (north)
-            var gamma = d.Roll; // Rotation around x axis (east)
+            var alpha = d.YawRad; // Rotation around z axis (down)
+            var beta = d.PitchRad; // Rotation around y axis (north)
+            var gamma = d.RollRad; // Rotation around x axis (east)
 
             // Unit vector tangential to the borehole path
             var x = (Math.Cos(alpha) * Math.Sin(beta) * Math.Cos(gamma)) + (Math.Sin(alpha) * Math.Sin(gamma));
             var y = (Math.Sin(alpha) * Math.Sin(beta) * Math.Cos(gamma)) - (Math.Cos(alpha) * Math.Sin(gamma));
             var z = Math.Cos(beta) * Math.Cos(gamma);
 
-            result.Azimuth = Math.Atan2(y, x);
-            result.Inclination = Math.Acos(z);
+            result.AzimuthRad = Math.Atan2(y, x);
+            result.InclinationRad = Math.Acos(z);
+            result.Azimuth = Helper.ToDegrees(result.AzimuthRad);
+            result.Inclination = Helper.ToDegrees(result.InclinationRad);
 
             return result;
         }).ToList();
@@ -61,11 +63,13 @@ internal sealed class PitchRollFormat : IBoreholeGeometryFormat
 
     internal sealed class Geometry
     {
-        [Name("Kabellaenge")]
+        [Name("MD_m")]
         public double MeasuredDepth { get; set; }
-        public double Roll { get; set; }
-        public double Pitch { get; set; }
-        [Name("Magnetische Rotation")]
-        public double MagneticRotation { get; set; }
+        [Name("Roll_deg")]
+        public double RollRad { get; set; }
+        [Name("Pitch_deg")]
+        public double PitchRad { get; set; }
+        [Name("Yaw_deg")]
+        public double YawRad { get; set; }
     }
 }

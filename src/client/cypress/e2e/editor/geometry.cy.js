@@ -42,7 +42,7 @@ describe("Geometry crud tests", () => {
     setSelect("geometryFormat", 1);
     cy.get('[data-cy="boreholeGeometryImport-button"]').click();
     cy.wait("@boreholegeometry_POST");
-    cy.get(".MuiAlert-message").contains("Header with name 'X'[0] was not found.");
+    cy.get(".MuiAlert-message").contains("Header with name 'X_m'[0] was not found.");
     cy.get(".MuiAlert-action > .MuiButtonBase-root").click();
 
     // correct format for selected CSV

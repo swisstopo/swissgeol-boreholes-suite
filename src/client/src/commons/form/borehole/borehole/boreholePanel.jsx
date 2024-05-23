@@ -38,7 +38,9 @@ const BoreholePanel = ({ size, boreholeId, borehole, updateChange, updateNumber,
           </>
         )}
         {activeIndex === 1 && <Sections isEditable={isEditable} boreholeId={boreholeId} />}
-        {activeIndex === 2 && <Geometry isEditable={isEditable} boreholeId={boreholeId} />}
+        {activeIndex === 2 && (
+          <Geometry isEditable={isEditable} boreholeId={boreholeId} measuredDepth={borehole?.data?.total_depth} />
+        )}
       </BdmsTabContentBox>
     </>
   );
