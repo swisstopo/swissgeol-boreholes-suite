@@ -12,6 +12,7 @@ import {
   IconButton,
   InputAdornment,
   Tooltip,
+  CircularProgress,
 } from "@mui/material/";
 import {
   useBoreholeGeometry,
@@ -30,7 +31,7 @@ const GeometryImport = ({ boreholeId }) => {
   const { error } = useContext(AlertContext);
 
   const {
-    set: { mutate: setBoreholeGeometry },
+    set: { mutate: setBoreholeGeometry, isLoading: isUpdatingBoreholeGeometry },
   } = useBoreholeGeometryMutations();
   const { data } = useBoreholeGeometry(boreholeId);
   const [geometryFormats, setGeometryFormats] = useState([]);
@@ -130,7 +131,8 @@ const GeometryImport = ({ boreholeId }) => {
             sx={{ marginLeft: "auto" }}
             label={data?.length > 0 ? "boreholeGeometryReplace" : "boreholeGeometryImport"}
             onClick={formMethods.handleSubmit(uploadGeometryCSV)}
-            disabled={watch?.geometryFile?.length === 0}
+            disabled={watch?.geometryFile?.length === 0 || isUpdatingBoreholeGeometry}
+            endIcon={isUpdatingBoreholeGeometry && <CircularProgress size="1em" sx={{ color: "currentColor" }} />}
           />
         </CardActions>
       </Card>

@@ -22,7 +22,7 @@ const Geometry = ({ boreholeId, isEditable, measuredDepth }) => {
   const { t } = useTranslation();
   const { data } = useBoreholeGeometry(boreholeId);
   const {
-    delete: { mutate: deleteBoreholeGeometry },
+    delete: { mutate: deleteBoreholeGeometry, isLoading: isDeletingBoreholeGeometry },
   } = useBoreholeGeometryMutations();
 
   const defaultData = [
@@ -53,7 +53,13 @@ const Geometry = ({ boreholeId, isEditable, measuredDepth }) => {
             <Grid item xs={12}>
               <Card>
                 <CardActions>
-                  <DeleteButton sx={{ marginLeft: "auto" }} onClick={() => deleteBoreholeGeometry(boreholeId)} />
+                  <DeleteButton
+                    sx={{ marginLeft: "auto" }}
+                    onClick={() => deleteBoreholeGeometry(boreholeId)}
+                    endIcon={
+                      isDeletingBoreholeGeometry && <CircularProgress size="1em" sx={{ color: "currentColor" }} />
+                    }
+                  />
                 </CardActions>
               </Card>
             </Grid>
