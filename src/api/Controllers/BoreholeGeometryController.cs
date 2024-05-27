@@ -36,11 +36,7 @@ public class BoreholeGeometryController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<BoreholeGeometryElement>> GetAsync([FromQuery] int boreholeId)
     {
-        return await context.BoreholeGeometry
-            .AsNoTracking()
-            .Where(g => g.BoreholeId == boreholeId)
-            .OrderBy(g => g.Id)
-            .ToListAsync().ConfigureAwait(false);
+        return await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
     }
 
     [HttpDelete]
@@ -125,11 +121,7 @@ public class BoreholeGeometryController : ControllerBase
             return BadRequest(nameof(depthMD) + " must be positive.");
         }
 
-        var geometry = await context.BoreholeGeometry
-            .AsNoTracking()
-            .Where(g => g.BoreholeId == boreholeId)
-            .OrderBy(g => g.Id)
-            .ToListAsync().ConfigureAwait(false);
+        var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
 
         if (geometry.Count < 2)
         {
@@ -161,5 +153,14 @@ public class BoreholeGeometryController : ControllerBase
                 return Ok(geometry[i - 1].Z - ((geometry[i - 1].Z - geometry[i - 2].Z) * t));
             }
         }
+    }
+
+    private async Task<List<BoreholeGeometryElement>> GetBoreholeGeometry(int boreholeId)
+    {
+        return await context.BoreholeGeometry
+            .AsNoTracking()
+            .Where(g => g.BoreholeId == boreholeId)
+            .OrderBy(g => g.MD)
+            .ToListAsync().ConfigureAwait(false);
     }
 }
