@@ -325,18 +325,6 @@ public class Borehole : IChangeTracking, IIdentifyable
     public Codelist? Chronostratigraphy { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s top bedrock tvd.
-    /// </summary>
-    [Column("top_bedrock_tvd_bho")]
-    public double? TopBedrockTvd { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s Qt top bedrock tvd id.
-    /// </summary>
-    [Column("qt_top_bedrock_tvd")]
-    public double? QtTopBedrockTvd { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s reference elevation.
     /// </summary>
     [Column("reference_elevation_bho")]
@@ -363,12 +351,6 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s reference elevation type.
     /// </summary>
     public Codelist? ReferenceElevationType { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s total depth tvd.
-    /// </summary>
-    [Column("total_depth_tvd_bho")]
-    public double? TotalDepthTvd { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s stratigraphies.

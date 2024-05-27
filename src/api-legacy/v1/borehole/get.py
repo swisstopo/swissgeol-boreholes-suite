@@ -67,7 +67,6 @@ class GetBorehole(Action):
                 reference_elevation_type_id_cli as reference_elevation_type,
 
                 total_depth_bho as total_depth,
-                total_depth_tvd_bho as total_depth_tvd,
                 (
                     SELECT row_to_json(t)
                     FROM (
@@ -78,7 +77,6 @@ class GetBorehole(Action):
                             purpose_id_cli as purpose,
                             status_id_cli as status,
                             top_bedrock_bho as top_bedrock,
-                            top_bedrock_tvd_bho as top_bedrock_tvd,
                             groundwater_bho as groundwater
                     ) t
                 ) as extended,
@@ -98,7 +96,6 @@ class GetBorehole(Action):
                             municipality_bho as municipality,
                             qt_depth_id_cli as qt_depth,
                             qt_top_bedrock,
-                            qt_top_bedrock_tvd,
                             lithology_top_bedrock_id_cli as lithology_top_bedrock,
                             lithostrat_id_cli as lithostratigraphy_top_bedrock,
                             chronostrat_id_cli AS chronostratigraphy_top_bedrock,

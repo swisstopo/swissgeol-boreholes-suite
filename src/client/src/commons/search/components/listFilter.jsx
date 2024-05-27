@@ -103,12 +103,6 @@ const ListFilter = props => {
     } else if (item.value === "spud_date_to") {
       updateChange("spud_date_from", "", false);
       updateChange("spud_date_to", "", false);
-    } else if (item.value === "total_depth_tvd_to") {
-      updateChange("total_depth_tvd_from", "", false);
-      updateChange("total_depth_tvd_to", "", false);
-    } else if (item.value === "top_bedrock_tvd_to") {
-      updateChange("top_bedrock_tvd_from", "", false);
-      updateChange("top_bedrock_tvd_to", "", false);
     } else if (item.value === "reference_elevation_to") {
       updateChange("reference_elevation_from", "", false);
       updateChange("reference_elevation_to", "", false);
@@ -117,9 +111,6 @@ const ListFilter = props => {
     } else if (item.value === "qt_top_bedrock_to") {
       updateChange("qt_top_bedrock_from", "", false);
       updateChange("qt_top_bedrock_to", "", false);
-    } else if (item.value === "qt_top_bedrock_tvd_to") {
-      updateChange("qt_top_bedrock_tvd_from", "", false);
-      updateChange("qt_top_bedrock_tvd_to", "", false);
     }
   };
 
