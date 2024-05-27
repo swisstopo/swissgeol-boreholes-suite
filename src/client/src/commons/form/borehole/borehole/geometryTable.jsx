@@ -29,7 +29,7 @@ const GeometryTable = ({ data }) => {
               <TableRow>
                 {Object.keys(data[0]).map(key => (
                   <TableCell key={key} sx={{ fontWeight: 900 }}>
-                    {key}
+                    {key} {["x", "y", "z", "md"].includes(key) ? "[m]" : ["hazi", "devi"].includes(key) ? "[deg]" : ""}
                   </TableCell>
                 ))}
               </TableRow>
