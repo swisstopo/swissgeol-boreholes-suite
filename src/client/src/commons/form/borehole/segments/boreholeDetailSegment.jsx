@@ -9,20 +9,47 @@ import { FormControl, RadioGroup, FormControlLabel } from "@mui/material";
 import { parseIfString } from "../../formUtils.ts";
 import { DisabledRadio } from "./styledComponents";
 import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2";
+import { useCallback, useEffect, useState } from "react";
 
 const BoreholeDetailSegment = props => {
   const { size, borehole, updateChange, updateNumber, isEditable } = props;
 
-  const updateMDandTVDField = (fieldNameMD, fieldNameTVD, event) => {
+  const [depthTVD, setDepthTVD] = useState(null);
+
+  const updateTVD = useCallback(
+    (field, depthMD) => {
+      if (depthMD == null) {
+        setDepthTVD(value => ({ ...value, [field]: null }));
+      } else {
+        getBoreholeGeometryDepthTVD(borehole.data.id, depthMD).then(response => {
+          if (response != null) {
+            setDepthTVD(value => {
+              return { ...value, [field]: response };
+            });
+          } else {
+            setDepthTVD(value => ({ ...value, [field]: null }));
+          }
+        });
+      }
+    },
+    [borehole.data.id],
+  );
+
+  useEffect(() => {
+    updateTVD("total_depth", borehole.data.total_depth);
+  }, [borehole.data.total_depth, updateTVD]);
+
+  useEffect(() => {
+    updateTVD("extended.top_bedrock", borehole.data.extended.top_bedrock);
+  }, [borehole.data.extended.top_bedrock, updateTVD]);
+
+  useEffect(() => {
+    updateTVD("custom.qt_top_bedrock", borehole.data.custom.qt_top_bedrock);
+  }, [borehole.data.custom.qt_top_bedrock, updateTVD]);
+
+  const updateNumericField = (fieldNameMD, event) => {
     const value = event.target.value === "" ? null : parseIfString(event.target.value);
     updateNumber(fieldNameMD, value);
-    if (value !== null) {
-      getBoreholeGeometryDepthTVD(borehole.data.id, value).then(response => {
-        if (response != null) {
-          updateNumber(fieldNameTVD, response);
-        }
-      });
-    }
   };
 
   return (
@@ -37,7 +64,7 @@ const BoreholeDetailSegment = props => {
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              onChange={e => updateMDandTVDField("total_depth", "total_depth_tvd", e)}
+              onChange={e => updateNumericField("total_depth", e)}
               spellCheck="false"
               value={_.isNil(borehole.data.total_depth) ? "" : borehole.data.total_depth}
               thousandSeparator="'"
@@ -72,7 +99,7 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
-              value={_.isNil(borehole.data.total_depth_tvd) ? "" : borehole.data.total_depth_tvd}
+              value={depthTVD?.total_depth}
               thousandSeparator="'"
               readOnly={true}
             />
@@ -87,7 +114,7 @@ const BoreholeDetailSegment = props => {
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              onChange={e => updateMDandTVDField("extended.top_bedrock", "extended.top_bedrock_tvd", e)}
+              onChange={e => updateNumericField("extended.top_bedrock", e)}
               spellCheck="false"
               value={_.isNil(borehole.data.extended.top_bedrock) ? "" : borehole.data.extended.top_bedrock}
               thousandSeparator="'"
@@ -102,9 +129,7 @@ const BoreholeDetailSegment = props => {
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              onChange={e => {
-                updateMDandTVDField("custom.qt_top_bedrock", "custom.qt_top_bedrock_tvd", e);
-              }}
+              onChange={e => updateNumericField("custom.qt_top_bedrock", e)}
               spellCheck="false"
               value={borehole.data.custom.qt_top_bedrock}
               thousandSeparator="'"
@@ -126,7 +151,7 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
-              value={_.isNil(borehole.data.extended.top_bedrock_tvd) ? "" : borehole.data.extended.top_bedrock_tvd}
+              value={depthTVD?.["extended.top_bedrock"]}
               thousandSeparator="'"
               readOnly={true}
             />
@@ -145,7 +170,7 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
-              value={borehole.data.custom.qt_top_bedrock_tvd}
+              value={depthTVD?.["custom.qt_top_bedrock"]}
               thousandSeparator="'"
               readOnly={true}
             />
