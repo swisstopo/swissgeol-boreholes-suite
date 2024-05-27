@@ -65,17 +65,9 @@ class TTable extends React.Component {
     const { selected, all } = this.state;
     const index = selected.indexOf(id);
     if (all === true) {
-      if (index >= 0) {
-        return false;
-      } else {
-        return true;
-      }
+      return index < 0;
     } else {
-      if (index >= 0) {
-        return true;
-      } else {
-        return false;
-      }
+      return index >= 0;
     }
   }
 

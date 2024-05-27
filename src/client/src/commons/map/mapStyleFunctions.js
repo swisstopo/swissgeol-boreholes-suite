@@ -47,7 +47,7 @@ export const drawStyle = new Style({
 export function styleFunction(feature, highlighted) {
   let selected = highlighted !== undefined && highlighted.length > 0 && highlighted.indexOf(feature.getId()) > -1;
   let res = feature.get("restriction");
-  let fill = null;
+  let fill;
   if (res === "f") {
     fill = greenFill;
   } else if (["b", "g"].indexOf(res) >= 0) {
@@ -56,7 +56,7 @@ export function styleFunction(feature, highlighted) {
     fill = blackFill;
   }
 
-  let conf = null;
+  let conf;
   let kind = feature.get("kind");
   if (kind === "B") {
     // boreholes

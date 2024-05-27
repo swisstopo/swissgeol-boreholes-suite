@@ -21,10 +21,7 @@ const ListFilter = props => {
   }, [attribute]);
 
   const isVisibleFunction = filter => {
-    if (_.get(settings, filter) === true) {
-      return true;
-    }
-    return false;
+    return _.get(settings, filter) === true;
   };
 
   const showCheckbox = () => {
@@ -39,11 +36,7 @@ const ListFilter = props => {
       }
     }
 
-    if (isVisibleCounter === attribute?.length) {
-      return false;
-    } else {
-      return true;
-    }
+    return isVisibleCounter !== attribute?.length;
   };
 
   const updateChange = (attribute, value) => {
