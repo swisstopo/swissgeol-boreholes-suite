@@ -116,43 +116,29 @@ public class BoreholeGeometryController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> GetDepthTVD([FromQuery] int boreholeId, [FromQuery] double depthMD)
     {
-        if (depthMD < 0)
-        {
-            return BadRequest(nameof(depthMD) + " must be positive.");
-        }
-
         var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
 
         if (geometry.Count < 2)
         {
-            // Return the depthMD unchanged as if the borehole is perfectly vertical.
-            return Ok(depthMD);
+            if (depthMD >= 0)
+            {
+                // Return the depthMD unchanged as if the borehole is perfectly vertical and infinitely long.
+                return Ok(depthMD);
+            }
         }
         else
         {
-            // Linear interpolation between points
-            double length = 0;
-            double lastSegmentLength = 0;
-            int i = 1;
-            while (length <= depthMD && i < geometry.Count)
+            try
             {
-                var a = geometry[i - 1];
-                var b = geometry[i];
-                lastSegmentLength = Math.Sqrt(Math.Pow(b.X - a.X, 2) + Math.Pow(b.Y - a.Y, 2) + Math.Pow(b.Z - a.Z, 2));
-                length += lastSegmentLength;
-                i++;
+                return Ok(geometry.GetDepthTVD(depthMD));
             }
-
-            if (depthMD > length)
+            catch (ArgumentOutOfRangeException)
             {
-                return Ok(geometry.Last().Z);
-            }
-            else
-            {
-                var t = (length - depthMD) / lastSegmentLength;
-                return Ok(geometry[i - 1].Z - ((geometry[i - 1].Z - geometry[i - 2].Z) * t));
             }
         }
+
+        // Return an empty response in case the input was invalid
+        return Ok();
     }
 
     private async Task<List<BoreholeGeometryElement>> GetBoreholeGeometry(int boreholeId)
