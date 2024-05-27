@@ -1,5 +1,5 @@
 ﻿using BDMS.Authentication;
-using BDMS.BoreholeGeometryFormat;
+using BDMS.BoreholeGeometry;
 using BDMS.Models;
 using CsvHelper;
 using CsvHelper.TypeConversion;

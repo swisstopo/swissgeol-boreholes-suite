@@ -3,7 +3,7 @@ using CsvHelper.Configuration;
 using Humanizer;
 using System.Globalization;
 
-namespace BDMS.BoreholeGeometryFormat;
+namespace BDMS.BoreholeGeometry;
 
 public static class Helper
 {

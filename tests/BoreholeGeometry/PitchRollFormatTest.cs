@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BDMS.BoreholeGeometryFormat;
+namespace BDMS.BoreholeGeometry;
 
 [TestClass]
 public class PitchRollFormatTest

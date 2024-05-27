@@ -2,7 +2,7 @@
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
 
-namespace BDMS.BoreholeGeometryFormat;
+namespace BDMS.BoreholeGeometry;
 
 /// <summary>
 /// Accepts a CSV file where every data point has a Pitch, Roll and Yaw angle.
