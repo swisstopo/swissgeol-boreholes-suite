@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { memo, useContext, useMemo, useState } from "react";
 import { Box, Button, Stack } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
