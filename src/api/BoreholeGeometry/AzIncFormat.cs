@@ -1,6 +1,7 @@
 ﻿using BDMS.Models;
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
+using NetTopologySuite.Utilities;
 
 namespace BDMS.BoreholeGeometry;
 
@@ -24,8 +25,8 @@ internal sealed class AzIncFormat : IBoreholeGeometryFormat
         // Convert degrees to radians
         foreach (var entry in data)
         {
-            entry.AzimuthRad = Helper.ToRadians(entry.Azimuth);
-            entry.InclinationRad = Helper.ToRadians(entry.Inclination);
+            entry.AzimuthRad = Degrees.ToRadians(entry.Azimuth);
+            entry.InclinationRad = Degrees.ToRadians(entry.Inclination);
         }
 
         return XYZFormat.ToBoreholeGeometry(ConvertToXYZ(data), boreholeId);

@@ -32,14 +32,4 @@ public static class Helper
                 return m.Data.IsOptional ? $"[{name}]" : name;
             }));
     }
-
-    internal static double ToRadians(double degrees)
-    {
-        return degrees * Math.PI / 180;
-    }
-
-    internal static double ToDegrees(double radians)
-    {
-        return radians * 180 / Math.PI;
-    }
 }

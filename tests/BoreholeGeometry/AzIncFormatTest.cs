@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Degrees = NetTopologySuite.Utilities.Degrees;
 
 namespace BDMS.BoreholeGeometry;
 
@@ -13,16 +14,16 @@ public class AzIncFormatTest
             new AzIncFormat.Geometry
             {
                 MeasuredDepth = 3500,
-                AzimuthRad = Helper.ToRadians(20),
-                InclinationRad = Helper.ToRadians(15),
+                AzimuthRad = Degrees.ToRadians(20),
+                InclinationRad = Degrees.ToRadians(15),
                 Azimuth = 20,
                 Inclination = 15,
             },
             new AzIncFormat.Geometry
             {
                 MeasuredDepth = 3600,
-                AzimuthRad = Helper.ToRadians(45),
-                InclinationRad = Helper.ToRadians(25),
+                AzimuthRad = Degrees.ToRadians(45),
+                InclinationRad = Degrees.ToRadians(25),
                 Azimuth = 45,
                 Inclination = 25,
             },
@@ -54,16 +55,16 @@ public class AzIncFormatTest
             new AzIncFormat.Geometry
             {
                 MeasuredDepth = 3500,
-                AzimuthRad = Helper.ToRadians(20),
-                InclinationRad = Helper.ToRadians(15),
+                AzimuthRad = Degrees.ToRadians(20),
+                InclinationRad = Degrees.ToRadians(15),
                 Azimuth = 20,
                 Inclination = 15,
             },
             new AzIncFormat.Geometry
             {
                 MeasuredDepth = 3500,
-                AzimuthRad = Helper.ToRadians(20),
-                InclinationRad = Helper.ToRadians(15),
+                AzimuthRad = Degrees.ToRadians(20),
+                InclinationRad = Degrees.ToRadians(15),
                 Azimuth = 20,
                 Inclination = 15,
             },
@@ -88,8 +89,8 @@ public class AzIncFormatTest
             new AzIncFormat.Geometry
             {
                 MeasuredDepth = 420,
-                AzimuthRad = Helper.ToRadians(267.53),
-                InclinationRad = Helper.ToRadians(8.65),
+                AzimuthRad = Degrees.ToRadians(267.53),
+                InclinationRad = Degrees.ToRadians(8.65),
                 Azimuth = 267.53,
                 Inclination = 8.65,
             },
