@@ -75,6 +75,14 @@ const GeometryChartNE = ({ data }) => {
             </text>
           </g>
           <path fill="none" stroke={d3.schemeCategory10[0]} strokeWidth={2} d={line(data)} strokeLinecap="round" />
+          {data.length > 0 && (
+            <path
+              d={`${d3.symbol(d3.symbolTimes)()}`}
+              fill="none"
+              stroke={d3.schemeCategory10[0]}
+              transform={`translate(${x(data[0].x)},${y(data[0].y)})`}
+            />
+          )}
         </g>
       </svg>
     </Box>
