@@ -41,7 +41,6 @@ const initialState = {
       explorer: "mode-1",
     },
     filter: {
-      mapfilter: true,
       zoom2selected: true,
       borehole_type: true,
       restriction: true,
@@ -177,19 +176,18 @@ const setting = (state = initialState, action) => {
         };
       }
       case "GET_OK": {
-        let copy = {
+        return {
           ...state,
           fetchCount: state.fetchCount + 1,
           isFetching: false,
           fetchTime: new Date().getTime() - state.fetchTime,
           data: _.merge(state.data, action.json.data),
         };
-        return copy;
       }
       case "PATCH": {
         const copy = {
           ...state,
-          isFetching: action.disableFetching === true ? false : true,
+          isFetching: action.disableFetching !== true,
         };
         let path = null;
 
@@ -231,14 +229,13 @@ const setting = (state = initialState, action) => {
         return copy;
       }
       case "PATCH_OK": {
-        let copy = {
+        return {
           ...state,
           fetchCount: state.fetchCount + 1,
           isFetching: false,
           fetchTime: new Date().getTime() - state.fetchTime,
           data: _.merge(state.data, action.json.data),
         };
-        return copy;
       }
       default:
         return state;

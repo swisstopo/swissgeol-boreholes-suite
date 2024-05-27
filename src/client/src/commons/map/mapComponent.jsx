@@ -450,31 +450,6 @@ class MapComponent extends React.Component {
     window.removeEventListener("resize", this.updateWidth);
   }
 
-  /*
-      Calculate which features are visible in actual map extent
-      If moveend prop funtion is present then call it.
-  */
-  moveEnd() {
-    const { moveend } = this.props;
-    var extent = this.map.getView().calculateExtent(this.map.getSize());
-    if (moveend !== undefined) {
-      let features = [];
-      this.points.forEachFeatureInExtent(extent, function (feature) {
-        features.push(feature.getId());
-      });
-      if (!_.isEqual(this.state.featureExtent, features)) {
-        this.setState(
-          {
-            featureExtent: features,
-          },
-          () => {
-            moveend(extent, this.map.getView().getResolution());
-          },
-        );
-      }
-    }
-  }
-
   //////// Event handlers ////////
   onSelected(e) {
     const { selected } = this.props;
