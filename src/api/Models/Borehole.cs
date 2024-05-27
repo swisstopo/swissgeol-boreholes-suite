@@ -371,17 +371,6 @@ public class Borehole : IChangeTracking, IIdentifyable
     public double? TotalDepthTvd { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s Qt total depth tvd id.
-    /// </summary>
-    [Column("qt_total_depth_tvd_id_cli")]
-    public int? QtTotalDepthTvdId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Borehole"/>'s Qt total depth tvd.
-    /// </summary>
-    public Codelist? QtTotalDepthTvd { get; set; }
-
-    /// <summary>
     /// Gets the <see cref="Borehole"/>'s stratigraphies.
     /// </summary>
     public ICollection<Stratigraphy> Stratigraphies { get; }

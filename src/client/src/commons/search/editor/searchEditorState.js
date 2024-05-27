@@ -90,7 +90,6 @@ const initialState = {
     top_bedrock_tvd_from: "",
     top_bedrock_tvd_to: "",
     qt_depth: null,
-    qt_total_depth_tvd: null,
     qt_top_bedrock_from: "",
     qt_top_bedrock_to: "",
     qt_top_bedrock_tvd_from: "",

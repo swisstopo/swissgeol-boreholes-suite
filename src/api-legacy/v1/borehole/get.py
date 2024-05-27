@@ -68,7 +68,6 @@ class GetBorehole(Action):
 
                 total_depth_bho as total_depth,
                 total_depth_tvd_bho as total_depth_tvd,
-                qt_total_depth_tvd_id_cli as qt_total_depth_tvd,
                 (
                     SELECT row_to_json(t)
                     FROM (

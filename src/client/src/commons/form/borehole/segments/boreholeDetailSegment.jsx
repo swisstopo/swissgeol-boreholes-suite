@@ -77,20 +77,6 @@ const BoreholeDetailSegment = props => {
               readOnly={true}
             />
           </Form.Field>
-
-          <Form.Field required>
-            <label>
-              <TranslationText id="total_depth_tvd_qt" />
-            </label>
-            <DomainDropdown
-              onSelected={selected => {
-                updateChange("qt_total_depth_tvd", selected.id, false);
-              }}
-              schema="depth_precision"
-              selected={borehole.data.qt_total_depth_tvd}
-              readOnly={!isEditable}
-            />
-          </Form.Field>
         </Form.Group>
         <Form.Group widths="equal">
           <Form.Field required>

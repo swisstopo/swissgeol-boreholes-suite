@@ -608,13 +608,6 @@ class Action():
                     total_depth_tvd_bho <= %s
                 """ % self.getIdx())
 
-            if 'qt_total_depth_tvd' in keys and filter[
-                    'qt_total_depth_tvd'] not in ['', None]:
-                params.append(int(filter['qt_total_depth_tvd']))
-                where.append("""
-                    qt_total_depth_tvd_id_cli = %s
-                """ % self.getIdx())
-
             if 'top_bedrock_from' in keys and filter['top_bedrock_from'] not in ['', None]:
                 params.append(float(filter['top_bedrock_from']))
                 where.append("""

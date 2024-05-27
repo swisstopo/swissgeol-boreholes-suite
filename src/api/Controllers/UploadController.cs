@@ -540,7 +540,6 @@ public class UploadController : ControllerBase
             Map(m => m.QtReferenceElevationId).Optional();
             Map(m => m.ReferenceElevationTypeId).Optional();
             Map(m => m.TotalDepthTvd).Optional();
-            Map(m => m.QtTotalDepthTvdId).Optional();
             Map(m => m.LocationX).Optional();
             Map(m => m.LocationY).Optional();
             Map(m => m.LocationXLV03).Optional();

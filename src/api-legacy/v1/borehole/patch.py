@@ -90,9 +90,6 @@ class PatchBorehole(Action):
         elif field == 'total_depth_tvd':
             column = 'total_depth_tvd_bho'
 
-        elif field == 'qt_total_depth_tvd':
-            column = 'qt_total_depth_tvd_id_cli'
-
         elif field == 'extended.top_bedrock':
             column = 'top_bedrock_bho'
 
@@ -289,7 +286,6 @@ class PatchBorehole(Action):
                 'custom.chronostratigraphy_top_bedrock',
                 'qt_reference_elevation',
                 'reference_elevation_type',
-                'qt_total_depth_tvd'
             ]:
 
                 schema = field
@@ -311,9 +307,6 @@ class PatchBorehole(Action):
 
                 elif field == 'reference_elevation_type':
                     schema = 'reference_elevation_type'
-
-                elif field == 'qt_total_depth_tvd':
-                    schema = 'depth_precision'
                 
                 elif field == 'custom.qt_depth':
                     schema = 'depth_precision'

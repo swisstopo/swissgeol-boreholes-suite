@@ -55,7 +55,6 @@ class MultipleForm extends React.Component {
         totaldepth: { api: "total_depth", value: null },
         qt_depth: { api: "depth_precision", value: null },
         total_depth_tvd: { api: "total_depth_tvd", value: null },
-        total_depth_tvd_qt: { api: "qt_total_depth_tvd", value: null },
         top_bedrock: { api: "extended.top_bedrock", value: null },
         qt_top_bedrock: { api: "custom.qt_top_bedrock", value: null },
         top_bedrock_tvd: { api: "extended.top_bedrock_tvd", value: null },
@@ -382,10 +381,7 @@ class MultipleForm extends React.Component {
               this.getDomain("boreholestatus"),
             ])}
             {this.getGroup([this.getInput("totaldepth", "number"), this.getDomain("qt_depth")])}
-            {this.getGroup([
-              this.getInput("total_depth_tvd", "number"),
-              this.getDomain("total_depth_tvd_qt", "depth_precision"),
-            ])}
+            {this.getGroup([this.getInput("total_depth_tvd", "number")])}
             {this.getGroup([this.getInput("top_bedrock", "number"), this.getInput("qt_top_bedrock", "number")])}
             {this.getGroup([this.getInput("top_bedrock_tvd", "number"), this.getInput("top_bedrock_tvd_qt", "number")])}
             {this.getRadio("groundwater")}

@@ -177,8 +177,6 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.ReferenceElevationTypeId, f => f.PickRandom(referenceElevationTypeIds).OrNull(f, .05f))
            .RuleFor(o => o.ReferenceElevationType, _ => default!)
            .RuleFor(o => o.TotalDepthTvd, f => f.Random.Double(0, 4500).OrNull(f, .05f))
-           .RuleFor(o => o.QtTotalDepthTvdId, f => f.PickRandom(qtDepthIds).OrNull(f, .05f))
-           .RuleFor(o => o.QtTotalDepthTvd, _ => default!)
            .RuleFor(o => o.BoreholeCodelists, _ => new Collection<BoreholeCodelist>())
            .RuleFor(o => o.Codelists, _ => new Collection<Codelist>())
            .RuleFor(o => o.Geometry, f =>

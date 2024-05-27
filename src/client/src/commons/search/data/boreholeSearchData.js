@@ -130,16 +130,6 @@ export const boreholeSearchData = [
     isVisibleValue: "qt_depth",
   },
   {
-    id: 25,
-    type: "Dropdown",
-    label: "total_depth_tvd_qt",
-    value: "qt_total_depth_tvd",
-    schema: "depth_precision",
-    multiple: false,
-    search: false,
-    isVisibleValue: "total_depth_tvd_qt",
-  },
-  {
     id: 26,
     type: "Input",
     label: "qt_top_bedrock",

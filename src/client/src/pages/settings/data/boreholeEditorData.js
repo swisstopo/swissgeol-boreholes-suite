@@ -40,11 +40,6 @@ export const boreholeEditorData = [
     value: "qt_depth",
   },
   {
-    id: 16,
-    label: "total_depth_tvd_qt",
-    value: "total_depth_tvd_qt",
-  },
-  {
     id: 17,
     label: "qt_top_bedrock",
     value: "qt_top_bedrock",
