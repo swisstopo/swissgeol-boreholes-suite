@@ -76,6 +76,7 @@
   "csvCodeListReferenceExplanation": "La seguente lista può essere utilizzata come riferimento per i diversi codici:",
   "csvFormat": "Formato CSV-UTF8",
   "csvFormatExplanation": "Il file CSV-UTF8 deve contenere le seguenti intestazioni di colonna",
+  "csvOptionalExplanation": "Le intestazioni di colonna tra parentesi quadre sono facoltative",
   "cuttings": "Detriti di perforazione generati dallo scalpello (cuttings / carota)",
   "date": "Data",
   "dateAbandonmentCompletion": "Data di abbandono",

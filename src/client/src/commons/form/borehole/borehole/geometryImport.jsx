@@ -87,7 +87,7 @@ const GeometryImport = ({ boreholeId }) => {
                   />
                   {expectedCSVHeader !== "" && (
                     <>
-                      <Typography>{t("csvFormatExplanation")}</Typography>
+                      <Typography>{t("csvFormatExplanation") + ". " + t("csvOptionalExplanation") + "."}</Typography>
                       <TextField
                         value={expectedCSVHeader}
                         size="small"

@@ -76,6 +76,7 @@
   "csvCodeListReferenceExplanation": "Als Referenz für die verschiedenen Codes kann folgende Liste verwendet werden:",
   "csvFormat": "Dateiformat CSV-UTF8",
   "csvFormatExplanation": "Das CSV-UTF8 File sollte die folgenden Spaltenüberschriften enthalten",
+  "csvOptionalExplanation": "Spaltenüberschriften in eckigen Klammern sind optional",
   "cuttings": "Bohrgut (Bohrklein, Kern)",
   "date": "Datum",
   "dateAbandonmentCompletion": "Datum Stillegung",

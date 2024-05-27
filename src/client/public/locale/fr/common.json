@@ -76,6 +76,7 @@
   "csvCodeListReferenceExplanation": "La liste suivante peut être utilisée comme référence pour les différents codes:",
   "csvFormat": "Format CSV-UTF8",
   "csvFormatExplanation": "Le fichier CSV-UTF8 doit contenir les en-têtes de colonne suivants",
+  "csvOptionalExplanation": "Les titres de colonnes entre crochets sont facultatifs",
   "cuttings": "Déblais de forage (cuttings / carotte)",
   "date": "Date",
   "dateAbandonmentCompletion": "Date de l'abandon",
