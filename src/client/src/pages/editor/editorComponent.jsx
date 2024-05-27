@@ -100,11 +100,7 @@ const EditorComponent = props => {
             <Route component={DetailSideNav} path="/:id" />
           </Switch>
         </SidebarBox>
-        <SideDrawer
-          drawerOpen={sideDrawerOpen}
-          drawerWidth={240}
-          drawerContent={sideDrawerComponentMap[sideDrawerContent]}
-        />
+        <SideDrawer drawerOpen={sideDrawerOpen} drawerContent={sideDrawerComponentMap[sideDrawerContent]} />
         <MainContentBox>
           <Switch>
             <Route
