@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import _ from "lodash";
 
-import { Table, Pagination } from "semantic-ui-react";
+import { Pagination, Table } from "semantic-ui-react";
 
 class TTable extends React.Component {
   constructor(props) {
@@ -22,13 +22,13 @@ class TTable extends React.Component {
   componentDidMount() {
     const { filter } = this.props;
     // Load first page of data
-    this.props.loadData(1, filter);
+    this.props.loadData(1, filter, this.props.featureIds);
   }
 
   componentDidUpdate(prevProps) {
     const { filter, store, scrollPosition } = this.props;
     // Reload data if filters has changed
-    if (!_.isEqual(filter, prevProps.filter)) {
+    if (!_.isEqual(filter, prevProps.filter) || !_.isEqual(this.props.featureIds, prevProps.featureIds)) {
       if (this.delay) {
         clearTimeout(this.delay);
         this.delay = false;
@@ -41,7 +41,7 @@ class TTable extends React.Component {
         () => {
           this.delay = setTimeout(
             function () {
-              this.props.loadData(1, filter);
+              this.props.loadData(1, filter, this.props.featureIds);
             }.bind(this),
             10,
           );
@@ -120,11 +120,12 @@ class TTable extends React.Component {
   }
 
   render() {
-    const { store, filter } = this.props;
+    const { store, filter, featureIds } = this.props;
     const { activeItem, selected, all } = this.state;
     if (store === undefined) {
       return null;
     }
+    const tableData = featureIds?.length > 0 ? store.data.filter(item => featureIds.includes(item.id)) : store.data;
     return (
       <div
         style={{
@@ -151,7 +152,7 @@ class TTable extends React.Component {
           onScroll={() => this.onTableScroll()}>
           <Table basic="very" compact="very" fixed selectable>
             <Table.Body>
-              {store.data.map((item, idx) => (
+              {tableData.map((item, idx) => (
                 <Table.Row
                   active={activeItem === item.id || this.props.highlight === item.id}
                   key={this.uid + "_" + idx}
@@ -182,7 +183,7 @@ class TTable extends React.Component {
             <Pagination
               activePage={store.page}
               onPageChange={(ev, data) => {
-                this.props.loadData(data.activePage, filter);
+                this.props.loadData(data.activePage, filter, this.props.featureIds);
               }}
               pointing
               secondary

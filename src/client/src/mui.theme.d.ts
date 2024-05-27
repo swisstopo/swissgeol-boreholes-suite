@@ -35,17 +35,24 @@ declare module "@mui/material/styles" {
         lightgrey: string;
         darkgrey: string;
         dark: string;
+        menuItemActive: string;
+        filterItemActive: string;
       };
-      buttonSelected: string;
+      border: string;
     };
     typography: {
       fontFamily: string;
+      h6: {
+        fontSize: string;
+        color: string;
+        lineHeight: string;
+        fontWeight: number;
+      };
       h5: {
         fontSize: string;
         color: string;
         lineHeight: string;
         fontWeight: number;
-        marginBottom: string;
       };
       subtitle1: {
         fontSize: string;
@@ -98,17 +105,24 @@ declare module "@mui/material/styles" {
         lightgrey: string;
         darkgrey: string;
         dark: string;
+        menuItemActive: string;
+        filterItemActive: string;
       };
-      buttonSelected: string;
+      border: string;
     };
     typography: {
       fontFamily: string;
+      h6: {
+        fontSize: string;
+        color: string;
+        lineHeight: string;
+        fontWeight: number;
+      };
       h5: {
         fontSize: string;
         color: string;
         lineHeight: string;
         fontWeight: number;
-        marginBottom: string;
       };
       subtitle1: {
         fontSize: string;

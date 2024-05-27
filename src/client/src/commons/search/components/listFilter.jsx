@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import * as Styled from "./listFilterStyles";
-import { Checkbox, Input, TextArea, Form } from "semantic-ui-react";
+import { Checkbox, Form, Input, TextArea } from "semantic-ui-react";
 import TranslationText from "../../form/translationText";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
@@ -8,23 +8,10 @@ import HierarchicalDataSearch from "../../form/borehole/stratigraphy/hierarchica
 import DomainDropdown from "../../form/domain/dropdown/domainDropdown";
 import DomainTree from "../../form/domain/tree/domainTree";
 import DateField from "../../form/dateField";
-import LabelReset from "../../form/labelReset";
 import CantonDropdown from "../../form/cantons/dropdown/cantonDropdown";
 
 const ListFilter = props => {
-  const {
-    attribute,
-    resetDrillDiameter,
-    resetDrilling,
-    resetElevation,
-    resetRestriction,
-    resetTotBedrock,
-    search,
-    setFilter,
-    settings,
-    resetDepth,
-    resetCreatedDate,
-  } = props;
+  const { attribute, search, setFilter, settings } = props;
   const { t } = useTranslation();
 
   const [showAll, setShowAll] = useState(false);
@@ -61,66 +48,6 @@ const ListFilter = props => {
 
   const updateChange = (attribute, value) => {
     setFilter(attribute, value);
-  };
-
-  const resetChange = item => {
-    if (
-      item.type === "DomainTree" ||
-      item.type === "Dropdown" ||
-      item.type === "Canton" ||
-      item.type === "City" ||
-      item.type === "ReferenceSystem" ||
-      item.type === "HierarchicalData"
-    ) {
-      updateChange(item.value, null, false);
-    } else if (item.type === "Radio") {
-      updateChange(item.value, -1, false);
-    } else if (item.type === "Date" || item.type === "Input" || item.type === "TextArea") {
-      updateChange(item.value, "", false);
-    }
-  };
-
-  const resetTwoFieldsChange = item => {
-    // this is only available for second item of hasTwoFields
-    if (item.value === "restriction_until_to") {
-      resetRestriction();
-    } else if (item.value === "elevation_z_to") {
-      resetElevation();
-    } else if (item.value === "length_to") {
-      resetDepth();
-    } else if (item.value === "top_bedrock_to") {
-      resetTotBedrock();
-    } else if (item.value === "drilling_date_to") {
-      resetDrilling();
-    } else if (item.value === "drill_diameter_to") {
-      resetDrillDiameter();
-    } else if (item.value === "layer_depth_from_to") {
-      updateChange("layer_depth_from_from", "", false);
-      updateChange("layer_depth_from_to", "", false);
-    } else if (item.value === "layer_depth_to_to") {
-      updateChange("layer_depth_to_from", "", false);
-      updateChange("layer_depth_to_to", "", false);
-    } else if (item.value === "spud_date_to") {
-      updateChange("spud_date_from", "", false);
-      updateChange("spud_date_to", "", false);
-    } else if (item.value === "total_depth_tvd_to") {
-      updateChange("total_depth_tvd_from", "", false);
-      updateChange("total_depth_tvd_to", "", false);
-    } else if (item.value === "top_bedrock_tvd_to") {
-      updateChange("top_bedrock_tvd_from", "", false);
-      updateChange("top_bedrock_tvd_to", "", false);
-    } else if (item.value === "reference_elevation_to") {
-      updateChange("reference_elevation_from", "", false);
-      updateChange("reference_elevation_to", "", false);
-    } else if (item.value === "created_date_to") {
-      resetCreatedDate();
-    } else if (item.value === "qt_top_bedrock_to") {
-      updateChange("qt_top_bedrock_from", "", false);
-      updateChange("qt_top_bedrock_to", "", false);
-    } else if (item.value === "qt_top_bedrock_tvd_to") {
-      updateChange("qt_top_bedrock_tvd_from", "", false);
-      updateChange("qt_top_bedrock_tvd_to", "", false);
-    }
   };
 
   return (
@@ -303,31 +230,6 @@ const ListFilter = props => {
                     />
                   </Styled.AttributesItem>
                 )}
-
-                {(item.isVisible || isVisibleFunction(item.isVisibleValue) || showAll) &&
-                  item.type !== "HierarchicalData" &&
-                  !item.hasTwoFields && (
-                    <Styled.Reset>
-                      <LabelReset
-                        onClick={() => {
-                          resetChange(item);
-                        }}
-                      />
-                    </Styled.Reset>
-                  )}
-
-                {(item.isVisible || isVisibleFunction(item.isVisibleValue) || showAll) &&
-                  item.type !== "HierarchicalData" &&
-                  item.hasTwoFields &&
-                  item.label === "" && (
-                    <Styled.Reset>
-                      <LabelReset
-                        onClick={() => {
-                          resetTwoFieldsChange(item);
-                        }}
-                      />
-                    </Styled.Reset>
-                  )}
               </Styled.AttributesContainer>
             </Form>
           ))}

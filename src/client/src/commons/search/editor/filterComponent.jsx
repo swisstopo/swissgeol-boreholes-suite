@@ -1,13 +1,9 @@
-import React, { Fragment } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-import { Checkbox, Form, Icon } from "semantic-ui-react";
-import TranslationText from "../../form/translationText";
 import WorkgroupRadioGroup from "../../form/workgroup/radio";
-import * as Styled from "./searchEditorStyles";
-import ListFilter from "../components/listFilter";
 import StatusFilter from "../components/statusFilter";
 import { LocationSearchData } from "../data/LocationSearchData";
 import { boreholeSearchData } from "../data/boreholeSearchData";
@@ -16,15 +12,26 @@ import { registrationSearchData } from "../data/registrationSearchData";
 import { chronostratigraphySearchData } from "../data/chronostratigraphySearchData";
 import { lithostratigraphySearchData } from "../data/lithostratigraphySearchData";
 import { MenuItems } from "../../menu/editor/menuComponents/menuItems";
-import { Stack, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Button, Stack, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ListFilter from "../components/listFilter.jsx";
+import { SideDrawerHeader } from "../../menu/editor/sideDrawerHeader.tsx";
+import Polygon from "../../../../public/icons/polygon.svg?react";
+import { theme } from "../../../AppTheme.ts";
+import FilterChips from "./FilterChips.tsx";
+import { FilterContext } from "../../../components/filter/filterContext.tsx";
 
-class SearchEditorComponent extends React.Component {
+class FilterComponent extends React.Component {
+  static contextType = FilterContext;
   constructor(props) {
     super(props);
+    this.handleFilterReset = this.handleFilterReset.bind(this);
     this.state = {
       accordionIdx: 0,
       isBoreholeSelectorOpen: false,
       isStratigraphySelectorOpen: false,
+      activeFilters: [],
       searchList: [
         {
           id: 0,
@@ -90,14 +97,11 @@ class SearchEditorComponent extends React.Component {
     if (search.advanced === true) {
       return true;
     }
-    if (_.get(settings.data.efilter, filter) === true) {
-      return true;
-    }
-    return false;
+    return _.get(settings.data.efilter, filter) === true;
   }
 
   handleButtonSelected() {
-    let selectedData = null;
+    let selectedData;
     if (this.state?.searchList?.[2]?.name === "location" && this.state?.searchList?.[2]?.isSelected) {
       selectedData = LocationSearchData;
     } else if (this.state?.searchList?.[3]?.name === "borehole" && this.state?.searchList?.[3]?.isSelected) {
@@ -116,69 +120,106 @@ class SearchEditorComponent extends React.Component {
     return selectedData;
   }
 
+  handlePolygonFilterClick() {
+    this.context.setPolygonSelectionEnabled(!this.context.polygonSelectionEnabled);
+  }
+
+  handleFilterReset() {
+    this.context.setPolygonSelectionEnabled(false);
+    this.context.setFilterPolygon(null);
+    this.props.reset();
+  }
+
+  StyledAccordion = styled(Accordion)(() => ({
+    marginBottom: "6px",
+    borderRadius: "4px",
+    boxShadow: "none",
+    border: "none",
+    maxHeight: "100%",
+    padding: "12px, 16px, 12px, 16px",
+    "&.MuiAccordion-root:before": {
+      backgroundColor: theme.palette.background.default,
+    },
+  }));
+
+  StyledAccordionDetails = styled(AccordionDetails)(() => ({
+    overflow: "hidden",
+    flexGrow: 1,
+  }));
+
   render() {
-    const { search, user, settings } = this.props;
-    const filter = settings.data.filter;
+    const { toggleDrawer, search, user, t } = this.props;
+    const { filterPolygon, polygonSelectionEnabled, setPolygonSelectionEnabled } = this.context;
+    const activeFilters = Object.entries(this.props.search.filter)
+      .filter(
+        ([key, value]) =>
+          value != null && value !== "" && value !== -1 && !["refresh"].includes(key) && value !== "all",
+      )
+      .map(([key, value]) => ({ key: key, value: value }));
     return (
-      <Stack direction="column">
-        <Styled.Container>
-          <Typography variant="h5">
-            <TranslationText id={"searchfilters"} />
-          </Typography>
-
-          <div style={{ padding: 10 }}>
-            <Form size="tiny">
-              <Form.Field
-                key="msc-1"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
+      <Stack direction="column" sx={{ height: "100%" }}>
+        <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
+          <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
+          <FilterChips
+            setPolygonSelectionEnabled={setPolygonSelectionEnabled}
+            activeFilters={activeFilters}
+            setFilter={this.props.setFilter}
+          />
+          <Button
+            onClick={() => {
+              this.handlePolygonFilterClick();
+            }}
+            variant="text"
+            // color={polygonSelectionEnabled && !filterPolygon ? "primary" : "secondary"}
+            sx={{
+              backgroundColor:
+                polygonSelectionEnabled && !filterPolygon
+                  ? theme.palette.background.filterItemActive
+                  : theme.palette.background.default,
+              width: "100%",
+              marginLeft: 0,
+              height: "48px",
+              marginBottom: "24px",
+              display: "flex",
+              justifyContent: "flex-start",
+              padding: 0,
+            }}>
+            <Polygon
+              style={{
+                marginLeft: "18px",
+                marginRight: "14px",
+              }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                color:
+                  polygonSelectionEnabled && !filterPolygon
+                    ? theme.palette.primary.contrastText
+                    : theme.palette.primary.main,
+              }}>
+              Polygon Selection
+            </Typography>
+            {filterPolygon !== null && <Badge color="error" badgeContent={1} sx={{ marginLeft: "18px" }}></Badge>}
+          </Button>
+          {this.state?.searchList?.map((filter, idx) => (
+            <this.StyledAccordion key={idx} expanded={filter?.isSelected}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                onClick={() => {
+                  this.setState(prevState => ({
+                    ...prevState,
+                    // update an array of objects:
+                    searchList: prevState.searchList.map(obj =>
+                      obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj, isSelected: false },
+                    ),
+                  }));
                 }}>
-                <label>
-                  <TranslationText id="filterbymap" />
-                </label>
-                <Checkbox
-                  checked={search.mapfilter}
-                  onChange={(e, d) => {
-                    this.props.setmapfilter(d.checked);
-                  }}
-                  toggle
-                />
-              </Form.Field>
-              <Form.Group
-                key="msc-2"
-                style={{
-                  display: search.advanced === true || filter.zoom2selected === true ? null : "none",
-                }}
-                widths="equal"></Form.Group>
-            </Form>
-          </div>
+                <Typography variant="h6">{t(filter?.translationId)}</Typography>
+              </AccordionSummary>
 
-          <div>
-            {this.state?.searchList?.map((filter, idx) => (
-              <Fragment key={idx}>
-                <Styled.FilterContainer>
-                  <Styled.FilterButton
-                    isLast={idx === this.state?.searchList?.length - 1}
-                    isSelected={filter?.isSelected}
-                    onClick={() => {
-                      this.setState(prevState => ({
-                        ...prevState,
-                        // update an array of objects:
-                        searchList: prevState.searchList.map(obj =>
-                          obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj, isSelected: false },
-                        ),
-                      }));
-                    }}>
-                    <div>
-                      <Icon name={`caret ${filter?.isSelected ? "down" : "right"}`} />
-                      <span>
-                        <TranslationText id={filter?.translationId} />
-                      </span>
-                    </div>
-                  </Styled.FilterButton>
-                </Styled.FilterContainer>
-                {filter?.name === "workgroup" && filter?.isSelected && (
+              {filter?.name === "workgroup" && filter?.isSelected && (
+                <this.StyledAccordionDetails>
                   <WorkgroupRadioGroup
                     filter={search.filter.workgroup}
                     onChange={workgroup => {
@@ -186,8 +227,10 @@ class SearchEditorComponent extends React.Component {
                     }}
                     workgroups={user.data.workgroups}
                   />
-                )}
-                {filter?.name === "status" && filter?.isSelected && (
+                </this.StyledAccordionDetails>
+              )}
+              {filter?.name === "status" && filter?.isSelected && (
+                <this.StyledAccordionDetails>
                   <StatusFilter
                     onChange={this.props.onChange}
                     resetBoreInc={this.props.resetBoreInc}
@@ -202,37 +245,37 @@ class SearchEditorComponent extends React.Component {
                     settings={this.props.settings.data.efilter}
                     resetCreatedDate={this.props.resetCreatedDate}
                   />
-                )}
+                </this.StyledAccordionDetails>
+              )}
+              <this.StyledAccordionDetails>
                 {this.handleButtonSelected() !== null && filter?.isSelected && (
-                  <Styled.FormFilterContainer>
-                    <ListFilter
-                      attribute={this.handleButtonSelected()}
-                      resetBoreInc={this.props.resetBoreInc}
-                      resetBoreIncDir={this.props.resetBoreIncDir}
-                      resetDepth={this.props.resetDepth}
-                      resetDrillDiameter={this.props.resetDrillDiameter}
-                      resetDrilling={this.props.resetDrilling}
-                      resetElevation={this.props.resetElevation}
-                      resetRestriction={this.props.resetRestriction}
-                      resetTotBedrock={this.props.resetTotBedrock}
-                      search={this.props.search}
-                      setFilter={this.props.setFilter}
-                      settings={this.props.settings.data.efilter}
-                      resetCreatedDate={this.props.resetCreatedDate}
-                    />
-                  </Styled.FormFilterContainer>
+                  <ListFilter
+                    attribute={this.handleButtonSelected()}
+                    resetBoreInc={this.props.resetBoreInc}
+                    resetBoreIncDir={this.props.resetBoreIncDir}
+                    resetDepth={this.props.resetDepth}
+                    resetDrillDiameter={this.props.resetDrillDiameter}
+                    resetDrilling={this.props.resetDrilling}
+                    resetElevation={this.props.resetElevation}
+                    resetRestriction={this.props.resetRestriction}
+                    resetTotBedrock={this.props.resetTotBedrock}
+                    search={this.props.search}
+                    setFilter={this.props.setFilter}
+                    settings={this.props.settings.data.efilter}
+                    resetCreatedDate={this.props.resetCreatedDate}
+                  />
                 )}
-              </Fragment>
-            ))}
-          </div>
-        </Styled.Container>
-        <MenuItems boreholes={this.props.boreholes} reset={this.props.reset} refresh={this.props.refresh} />
+              </this.StyledAccordionDetails>
+            </this.StyledAccordion>
+          ))}
+        </Box>
+        <MenuItems reset={this.handleFilterReset} />
       </Stack>
     );
   }
 }
 
-SearchEditorComponent.propTypes = {
+FilterComponent.propTypes = {
   onChange: PropTypes.func,
   resetBoreInc: PropTypes.func,
   resetBoreIncDir: PropTypes.func,
@@ -249,7 +292,7 @@ SearchEditorComponent.propTypes = {
 
 const mapStateToProps = state => {
   return {
-    search: state.searchEditor,
+    search: state.filters,
     settings: state.setting,
     boreholes: state.core_borehole_editor_list,
     user: state.core_user,
@@ -264,12 +307,6 @@ const mapDispatchToProps = dispatch => {
         type: "SEARCH_EDITOR_FILTER_CHANGED",
         key: key,
         value: value,
-      });
-    },
-    setmapfilter: active => {
-      dispatch({
-        type: "SEARCH_EDITOR_MAPFILTER_CHANGED",
-        active: active,
       });
     },
     resetIdentifier: () => {
@@ -302,6 +339,16 @@ const mapDispatchToProps = dispatch => {
         type: "SEARCH_EDITOR_FILTER_RESET_DRILL_DIAMETER",
       });
     },
+    resetBoreInc: () => {
+      dispatch({
+        type: "SEARCH_EDITOR_FILTER_RESET_BORE_INC",
+      });
+    },
+    resetBoreIncDir: () => {
+      dispatch({
+        type: "SEARCH_EDITOR_FILTER_RESET_BORE_INC_DIR",
+      });
+    },
     setProject: id => {
       dispatch({
         type: "SEARCH_EDITOR_PROJECT_CHANGED",
@@ -330,11 +377,6 @@ const mapDispatchToProps = dispatch => {
         type: "SEARCH_EDITOR_FILTER_RESET_CREATED_DATE",
       });
     },
-    refresh: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_REFRESH",
-      });
-    },
     reset: () => {
       dispatch({
         type: "SEARCH_EDITOR_FILTER_RESET",
@@ -343,8 +385,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const ConnectedSearchEditorComponent = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation(["common"])(SearchEditorComponent));
-export default ConnectedSearchEditorComponent;
+const ConnectedFilter = connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(FilterComponent));
+export default ConnectedFilter;

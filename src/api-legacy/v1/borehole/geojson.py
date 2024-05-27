@@ -40,7 +40,7 @@ class ListGeojson(Action):
 
                     FROM
                         bdms.stratigraphy
-                    
+
                     INNER JOIN
                         bdms.layer
                     ON
@@ -51,7 +51,7 @@ class ListGeojson(Action):
                     {}
 
                 ) as strt
-                ON 
+                ON
                     borehole.id_bho = strt.id_bho_fk
             """.format(
                 joins_string, where_string
@@ -74,17 +74,17 @@ class ListGeojson(Action):
 
                     FROM
                         bdms.stratigraphy
-                    
+
                     INNER JOIN
                         bdms.chronostratigraphy
                     ON
                         id_sty_fk = id_sty
                     {}
 
-                    {}                    
+                    {}
 
                 ) as chronostratigraphy
-                ON 
+                ON
                     borehole.id_bho = chronostratigraphy.id_bho_fk
             """.format(
                 joins_string, where_string
@@ -107,17 +107,17 @@ class ListGeojson(Action):
 
                     FROM
                         bdms.stratigraphy
-                    
+
                     INNER JOIN
                         bdms.lithostratigraphy
                     ON
                         stratigraphy_id = id_sty
                     {}
 
-                    {}                    
+                    {}
 
                 ) as lithostratigraphy
-                ON 
+                ON
                     borehole.id_bho = lithostratigraphy.id_bho_fk
             """.format(
                 joins_string, where_string
@@ -176,7 +176,9 @@ class ListGeojson(Action):
                                                     rs.code_cli
                                                         as restriction,
                                                     original_name_bho
-                                                        as name
+                                                        as name,
+                                                    id_bho
+                                                        as id
                                             ) AS p
                                         ) AS properties
 
