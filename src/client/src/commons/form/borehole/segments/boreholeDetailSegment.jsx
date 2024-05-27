@@ -71,21 +71,6 @@ const BoreholeDetailSegment = props => {
               readOnly={!isEditable}
             />
           </Form.Field>
-          <Form.Field required>
-            <label>
-              <TranslationText id="qt_depth" />
-            </label>
-            <DomainDropdown
-              onSelected={selected => {
-                updateChange("custom.qt_depth", selected.id, false);
-              }}
-              schema="depth_precision"
-              selected={borehole.data.custom.qt_depth}
-              readOnly={!isEditable}
-            />
-          </Form.Field>
-        </Form.Group>
-        <Form.Group widths="equal">
           <Form.Field
             style={{
               opacity: 0.6,
@@ -102,6 +87,19 @@ const BoreholeDetailSegment = props => {
               value={depthTVD?.total_depth}
               thousandSeparator="'"
               readOnly={true}
+            />
+          </Form.Field>
+          <Form.Field required>
+            <label>
+              <TranslationText id="qt_depth" />
+            </label>
+            <DomainDropdown
+              onSelected={selected => {
+                updateChange("custom.qt_depth", selected.id, false);
+              }}
+              schema="depth_precision"
+              selected={borehole.data.custom.qt_depth}
+              readOnly={!isEditable}
             />
           </Form.Field>
         </Form.Group>
@@ -121,23 +119,6 @@ const BoreholeDetailSegment = props => {
               readOnly={!isEditable}
             />
           </Form.Field>
-          <Form.Field required>
-            <label>
-              <TranslationText id="qt_top_bedrock" />
-            </label>
-            <NumericFormat
-              autoCapitalize="off"
-              autoComplete="off"
-              autoCorrect="off"
-              onChange={e => updateNumericField("custom.qt_top_bedrock", e)}
-              spellCheck="false"
-              value={borehole.data.custom.qt_top_bedrock}
-              thousandSeparator="'"
-              readOnly={!isEditable}
-            />
-          </Form.Field>
-        </Form.Group>
-        <Form.Group widths="equal">
           <Form.Field
             style={{
               opacity: 0.6,
@@ -156,7 +137,23 @@ const BoreholeDetailSegment = props => {
               readOnly={true}
             />
           </Form.Field>
-
+        </Form.Group>
+        <Form.Group widths="equal">
+          <Form.Field required>
+            <label>
+              <TranslationText id="qt_top_bedrock" />
+            </label>
+            <NumericFormat
+              autoCapitalize="off"
+              autoComplete="off"
+              autoCorrect="off"
+              onChange={e => updateNumericField("custom.qt_top_bedrock", e)}
+              spellCheck="false"
+              value={borehole.data.custom.qt_top_bedrock}
+              thousandSeparator="'"
+              readOnly={!isEditable}
+            />
+          </Form.Field>
           <Form.Field
             style={{
               opacity: 0.6,
