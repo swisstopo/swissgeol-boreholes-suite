@@ -3,14 +3,11 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { BottomBarProps } from "./menuComponents/menuComponentInterfaces";
 import { BoreholeNumbersPreview } from "./menuComponents/boreholeNumbersPreview";
-import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../AppTheme";
-import { Boreholes } from "../../../ReduxStateInterfaces";
 
 const BottomBar = ({ toggleBottomDrawer, bottomDrawerOpen, boreholes }: BottomBarProps) => {
   const { t } = useTranslation();
-
   return (
     <Box
       sx={{
@@ -46,11 +43,4 @@ const BottomBar = ({ toggleBottomDrawer, bottomDrawerOpen, boreholes }: BottomBa
   );
 };
 
-const mapStateToProps = (state: { core_borehole_editor_list: Boreholes }): { boreholes: Boreholes } => {
-  return {
-    boreholes: state.core_borehole_editor_list,
-  };
-};
-
-const ConnectedBottomBar = connect(mapStateToProps)(BottomBar);
-export default ConnectedBottomBar;
+export default BottomBar;

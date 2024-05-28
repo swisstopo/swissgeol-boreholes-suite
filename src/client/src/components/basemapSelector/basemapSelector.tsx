@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useContext, useMemo, memo } from "react";
-import { Stack, Button, Box } from "@mui/material";
+import { memo, useContext, useMemo, useState } from "react";
+import { Box, Button, Stack } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Basemap } from "./Basemap";
 import { basemaps } from "./basemaps";
@@ -43,7 +42,7 @@ const ImageBox = styled(Box)({
 
 const LargerImageBox = styled(ImageBox)({ height: "50px", width: "50px" });
 
-export const BasemapSelector = memo(({ marginBottom }: { setState: any; marginBottom: string }) => {
+export const BasemapSelector = memo(({ marginBottom }: { marginBottom: string }) => {
   const [showSelector, setShowSelector] = useState<boolean>(false);
   const { currentBasemapName, setBasemapName } = useContext(BasemapContext);
 
@@ -82,7 +81,7 @@ export const BasemapSelector = memo(({ marginBottom }: { setState: any; marginBo
                       marginRight: "1em",
                       marginLeft: 0,
                     }}>
-                    {layer && <img src={imageUrlMap[layer.shortName]} />}
+                    {layer && <img alt={layer.shortName} src={imageUrlMap[layer.shortName]} />}
                   </ImageBox>
                 </BasemapButton>
               ))}
@@ -104,7 +103,9 @@ export const BasemapSelector = memo(({ marginBottom }: { setState: any; marginBo
           {currentBasemapName == "nomap" ? (
             <LargerImageBox></LargerImageBox>
           ) : (
-            <LargerImageBox>{currentBasemapName && <img src={imageUrlMap[currentBasemapName]} />}</LargerImageBox>
+            <LargerImageBox>
+              {currentBasemapName && <img alt={currentBasemapName} src={imageUrlMap[currentBasemapName]} />}
+            </LargerImageBox>
           )}
         </BasemapButton>
       )}

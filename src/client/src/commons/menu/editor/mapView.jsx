@@ -34,7 +34,7 @@ class MapView extends React.Component {
         }}>
         <Modal
           onUnmount={() => {
-            props.loadEditingBoreholes(props.editor.page, props.search.filter, props.editor.direction);
+            props.loadEditingBoreholes(props.boreholes.page, props.search.filter, props.boreholes.direction);
           }}
           open={Array.isArray(props.store.mselected)}>
           <Modal.Content>
@@ -70,7 +70,7 @@ class MapView extends React.Component {
         <BottomBar
           toggleBottomDrawer={this.props.toggleBottomDrawer}
           bottomDrawerOpen={this.props.bottomDrawerOpen}
-          boreholes={props.boreholes}
+          boreholes={this.props.boreholes}
         />
         <BottomDrawer drawerOpen={this.props.bottomDrawerOpen}>
           <BoreholeEditorTable
@@ -124,7 +124,7 @@ class MapView extends React.Component {
 
 MapView.propTypes = {
   delete: PropTypes.func,
-  editor: PropTypes.object,
+  boreholes: PropTypes.object,
   history: PropTypes.shape({
     push: PropTypes.func,
   }).isRequired,
@@ -137,7 +137,7 @@ MapView.propTypes = {
 
 const mapStateToProps = state => {
   return {
-    editor: state.core_borehole_editor_list,
+    boreholes: state.core_borehole_editor_list,
     search: state.searchEditor,
     setting: state.setting,
     store: state.editor,

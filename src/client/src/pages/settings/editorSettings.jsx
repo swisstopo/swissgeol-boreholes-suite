@@ -109,7 +109,7 @@ class EditorSettings extends React.Component {
     return false;
   }
   handleButtonSelected(name, isSelected) {
-    let selectedData = null;
+    let selectedData;
     if (name === "location" && isSelected) {
       selectedData = locationEditorData;
     } else if (name === "borehole" && isSelected) {
@@ -129,7 +129,6 @@ class EditorSettings extends React.Component {
     const {
       addExplorerMap,
       rmExplorerMap,
-      t,
       setting,
       i18n,
       toggleFilter,
@@ -148,8 +147,6 @@ class EditorSettings extends React.Component {
           i18n={i18n}
           rmExplorerMap={rmExplorerMap}
           addExplorerMap={addExplorerMap}
-          toggleFilter={toggleFilter}
-          t={t}
           handleAddItem={value => {
             this.setState(
               {
