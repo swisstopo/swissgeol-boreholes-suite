@@ -39,17 +39,6 @@ const baseLayerNames = {
   greymap: "ch.swisstopo.pixelkarte-grau",
 };
 
-const createLayer = (layerName: string) => {
-  return new TileLayer({
-    minResolution: 0.1,
-    source: new XYZ({
-      url: `https://wmts10.geo.admin.ch/1.0.0/${layerName}/default/current/3857/{z}/{x}/{y}.jpeg`,
-      crossOrigin,
-      attributions,
-    }),
-  });
-};
-
 export const basemaps: Basemap[] = [
   {
     shortName: "colormap",
@@ -58,6 +47,7 @@ export const basemaps: Basemap[] = [
       layers: [
         new TileLayer({
           minResolution: 2.5,
+          maxZoom: 27,
           source: new XYZ({
             url: `https://wmts10.geo.admin.ch/1.0.0/${baseLayerNames.colormap}/default/current/3857/{z}/{x}/{y}.jpeg`,
             crossOrigin,
@@ -85,13 +75,29 @@ export const basemaps: Basemap[] = [
   {
     shortName: "satellite",
     previewImg: baseLayerNames.satellite,
-    layer: createLayer(baseLayerNames.satellite),
+    layer: new TileLayer({
+      minResolution: 0.1,
+      maxZoom: 27,
+      source: new XYZ({
+        url: `https://wmts10.geo.admin.ch/1.0.0/${baseLayerNames.satellite}/default/current/3857/{z}/{x}/{y}.jpeg`,
+        crossOrigin,
+        attributions,
+      }),
+    }),
   },
 
   {
     shortName: "greymap",
     previewImg: baseLayerNames.greymap,
-    layer: createLayer(baseLayerNames.greymap),
+    layer: new TileLayer({
+      minResolution: 0.1,
+      maxZoom: 27,
+      source: new XYZ({
+        url: `https://wmts10.geo.admin.ch/1.0.0/${baseLayerNames.greymap}/default/current/3857/{z}/{x}/{y}.jpeg`,
+        crossOrigin,
+        attributions,
+      }),
+    }),
   },
 ];
 
@@ -104,6 +110,12 @@ export function updateBasemap(map: Map, contextBasemapName: string) {
       newBasemap.layer.setOpacity(1);
       map.getLayers().setAt(0, newBasemap.layer);
       map.getLayers().item(0).changed();
+      // Ugly workaround to ensure new map is always directly visible,
+      // not only on zoom. The zoom change is not visible to the user.
+      const view = map.getView();
+      const currentZoom = view.getZoom() || 0;
+      view.setZoom(currentZoom - 0.000001);
+      view.setZoom(currentZoom);
     }
   }
 }
