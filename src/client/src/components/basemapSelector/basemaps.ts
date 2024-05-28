@@ -110,6 +110,12 @@ export function updateBasemap(map: Map, contextBasemapName: string) {
       newBasemap.layer.setOpacity(1);
       map.getLayers().setAt(0, newBasemap.layer);
       map.getLayers().item(0).changed();
+      // Ugly workaround to ensure new map is always directly visible,
+      // not only on zoom. The zoom change is not visible to the user.
+      const view = map.getView();
+      const currentZoom = view.getZoom() || 0;
+      view.setZoom(currentZoom - 0.000001);
+      view.setZoom(currentZoom);
     }
   }
 }
