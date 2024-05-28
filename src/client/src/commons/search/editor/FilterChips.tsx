@@ -8,7 +8,7 @@ import { FilterContext } from "../../../components/filter/filterContext";
 
 const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
   const { t } = useTranslation();
-  const { filterPolygon, setFilterPolygon, setPolygonSelectionEnabled } = useContext(FilterContext);
+  const { filterPolygon, setFilterPolygon, setFeatureIds, setPolygonSelectionEnabled } = useContext(FilterContext);
 
   const onRemoveFilter = (filter: Filter) => {
     setFilter(filter.key, "");
@@ -22,6 +22,7 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
         return (
           <Chip
             sx={{ marginRight: "10px", marginBottom: "10px" }}
+            data-cy="filter-chip"
             color="secondary"
             key={index}
             label={filterLabel.length < 15 ? filterLabel : filterLabel.substring(0, 15) + "..."}
@@ -33,11 +34,13 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
       {filterPolygon !== null && (
         <Chip
           sx={{ marginRight: "10px", marginBottom: "10px" }}
+          data-cy="polygon-filter-chip"
           color="secondary"
           label={<PolygonIcon style={{ marginTop: "5px", width: "14px", height: "14px" }} />}
           onDelete={() => {
             setPolygonSelectionEnabled(false);
             setFilterPolygon(null);
+            setFeatureIds([]);
           }}
           deleteIcon={<DeleteIcon style={{ width: "16px", height: "16px" }} />}
         />

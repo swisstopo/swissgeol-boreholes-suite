@@ -127,6 +127,7 @@ class FilterComponent extends React.Component {
   handleFilterReset() {
     this.context.setPolygonSelectionEnabled(false);
     this.context.setFilterPolygon(null);
+    this.context.setFeatureIds([]);
     this.props.reset();
   }
 
@@ -200,7 +201,9 @@ class FilterComponent extends React.Component {
               }}>
               {t("polygon_selection")}
             </Typography>
-            {filterPolygon !== null && <Badge color="error" badgeContent={1} sx={{ marginLeft: "18px" }}></Badge>}
+            {filterPolygon !== null && (
+              <Badge data-cy="polygon-filter-badge" color="error" badgeContent={1} sx={{ marginLeft: "18px" }}></Badge>
+            )}
           </Button>
           {this.state?.searchList?.map((filter, idx) => (
             <this.StyledAccordion key={idx} expanded={filter?.isSelected}>
