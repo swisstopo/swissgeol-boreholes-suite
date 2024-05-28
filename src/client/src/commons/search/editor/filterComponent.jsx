@@ -198,7 +198,7 @@ class FilterComponent extends React.Component {
                     ? theme.palette.primary.contrastText
                     : theme.palette.primary.main,
               }}>
-              Polygon Selection
+              {t("polygon_selection")}
             </Typography>
             {filterPolygon !== null && <Badge color="error" badgeContent={1} sx={{ marginLeft: "18px" }}></Badge>}
           </Button>

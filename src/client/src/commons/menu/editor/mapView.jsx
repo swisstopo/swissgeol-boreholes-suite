@@ -37,6 +37,7 @@ class MapView extends React.Component {
       boreholes,
       bottomDrawerOpen,
       multipleSelected,
+      displayErrorMessage,
     } = this.props;
 
     const {
@@ -84,6 +85,7 @@ class MapView extends React.Component {
           filterPolygon={filterPolygon}
           setFilterPolygon={setFilterPolygon}
           setFeatureIds={setFeatureIds}
+          displayErrorMessage={displayErrorMessage}
         />
         <BottomBar toggleBottomDrawer={toggleBottomDrawer} bottomDrawerOpen={bottomDrawerOpen} boreholes={boreholes} />
         <BottomDrawer drawerOpen={bottomDrawerOpen}>

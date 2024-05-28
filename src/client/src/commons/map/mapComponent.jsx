@@ -31,6 +31,7 @@ import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFuncti
 import { projections } from "./mapProjections";
 import { theme } from "../../AppTheme";
 import Draw from "ol/interaction/Draw.js";
+import { withTranslation } from "react-i18next";
 
 class MapComponent extends React.Component {
   static contextType = BasemapContext;
@@ -391,14 +392,19 @@ class MapComponent extends React.Component {
                 intersectingFeatures.push(feature);
               }
             });
-            this.points.clear();
-            this.points.addFeatures(intersectingFeatures);
-            this.props.setFeatureIds(intersectingFeatures.map(f => f.getId()));
+            if (intersectingFeatures.length > 0) {
+              this.points.clear();
+              this.points.addFeatures(intersectingFeatures);
+              this.props.setFilterPolygon(drawnFeature);
+              // Zoom to the extent of the drawn feature
+              this.map.getView().fit(drawnFeature.getGeometry().getExtent(), { padding: [10, 10, 10, 10] });
+            } else {
+              this.props.displayErrorMessage(this.props.t("msgNoBoreholesInSelection"));
+              this.props.setFilterPolygon(null);
+              drawSource.clear();
+            }
             this.props.setPolygonSelectionEnabled(false);
-            this.props.setFilterPolygon(drawnFeature);
-
-            // Zoom to the extent of the drawn feature
-            this.map.getView().fit(drawnFeature.getGeometry().getExtent(), { padding: [10, 10, 10, 10] });
+            this.props.setFeatureIds(intersectingFeatures.map(f => f.getId()));
           });
         }
 
@@ -709,4 +715,5 @@ MapComponent.defaultProps = {
   layers: {},
 };
 
-export default MapComponent;
+const TranlatedMapComponent = withTranslation()(MapComponent);
+export default TranlatedMapComponent;

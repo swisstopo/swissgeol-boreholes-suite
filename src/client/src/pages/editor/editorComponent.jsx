@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Route, Switch, useLocation, withRouter } from "react-router-dom";
 import BoreholeForm from "../../commons/form/borehole/boreholeForm";
 import MainSideNav from "../../commons/menu/editor/mainSideNav.tsx";
@@ -13,6 +13,7 @@ import { theme } from "../../AppTheme";
 import FilterComponent from "../../commons/search/editor/filterComponent.jsx";
 import NewBoreholePanel from "../../commons/menu/editor/newBoreholePanel.tsx";
 import { DrawerContentTypes } from "./editorComponentInterfaces.ts";
+import { AlertContext } from "../../components/alert/alertContext.tsx";
 
 const AppBox = styled(Box)({
   display: "flex",
@@ -50,6 +51,7 @@ const EditorComponent = props => {
   const [workgroup, setWorkgroup] = useState(0);
   const [enabledWorkgroups, setEnabledWorkgroups] = useState([]);
   const [sideDrawerContent, setSideDrawerContent] = useState(DrawerContentTypes.Filters);
+  const alertContext = useContext(AlertContext);
 
   const toggleSideDrawer = open => {
     setSideDrawerOpen(open);
@@ -115,6 +117,7 @@ const EditorComponent = props => {
                   setSort={setSort}
                   toggleBottomDrawer={toggleBottomDrawer}
                   bottomDrawerOpen={bottomDrawerOpen}
+                  displayErrorMessage={alertContext.error}
                 />
               )}
             />
