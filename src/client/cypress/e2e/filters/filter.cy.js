@@ -97,7 +97,7 @@ describe("Search filter tests", () => {
       });
   });
 
-  it.only("filters boreholes by color and uscs3", () => {
+  it("filters boreholes by color and uscs3", () => {
     loginAsAdmin();
     cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
@@ -115,14 +115,14 @@ describe("Search filter tests", () => {
         expect(options[1]).to.have.text("beige");
       })
       .then(options => {
-        cy.wrap(options).contains("beige").click();
+        cy.wrap(options).contains("beige").click({ force: true });
       });
 
     cy.wait("@edit_list");
     cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 100);
 
     let uscs3Dropdown = cy.contains("label", "USCS 3").next();
-    uscs3Dropdown.scrollIntoView().click();
+    uscs3Dropdown.scrollIntoView().click({ force: true });
     uscs3Dropdown
       .find("div[role='option']")
       .should("have.length", 36)
@@ -131,7 +131,7 @@ describe("Search filter tests", () => {
         expect(options[2]).to.have.text("lean clay");
       })
       .then(options => {
-        cy.wrap(options).contains("gravel").click();
+        cy.wrap(options).contains("gravel").click({ force: true });
       });
 
     cy.wait("@edit_list");

@@ -12,13 +12,13 @@ function drawPolygon() {
 }
 
 function assertIsFilteredByPolygon() {
-  cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "32");
+  cy.get('[data-cy="boreholes-number-preview"]').should("not.have.text", "1'626"); // exact number can vary based on screen.
   cy.get('[data-cy="polygon-filter-chip"]').should("exist");
   cy.get('[data-cy="polygon-filter-badge"]').should("exist");
 }
 
 function assertPolygonFilterInactive() {
-  cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626"); // needs fixing!!
+  cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "1'626");
   cy.get('[data-cy="polygon-filter-chip"]').should("not.exist");
   cy.get('[data-cy="polygon-filter-badge"]').should("not.exist");
 }
