@@ -170,7 +170,7 @@ class FilterComponent extends React.Component {
               this.handlePolygonFilterClick();
             }}
             variant="text"
-            // color={polygonSelectionEnabled && !filterPolygon ? "primary" : "secondary"}
+            data-cy="polygon-filter-button"
             sx={{
               backgroundColor:
                 polygonSelectionEnabled && !filterPolygon

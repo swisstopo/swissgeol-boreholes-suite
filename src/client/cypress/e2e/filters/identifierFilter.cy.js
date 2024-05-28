@@ -34,7 +34,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.get("tbody").children().should("have.length", 1);
 
     // click reset label
-    cy.get('[data-cy="domain-dropdown').first().parent().parent().next().children().first().click();
+    cy.get('[data-cy="reset-filter-button"]').click();
     cy.get("tbody").children().should("have.length", 100);
   });
 
@@ -91,6 +91,6 @@ describe("Tests for filtering data by identifier.", () => {
     cy.contains("button", "Cancel").click();
 
     // click reset label
-    cy.get('[data-cy="domain-dropdown"]').first().parent().parent().next().children().first().click();
+    cy.get('[data-cy="reset-filter-button"]').click();
   });
 });

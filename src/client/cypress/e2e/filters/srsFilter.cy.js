@@ -63,7 +63,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get("tbody").children().should("have.length", 100);
 
     // click reset label
-    cy.get('[data-cy="spatial-reference-filter"]').next().children().first().click({ force: true });
+    cy.get('[data-cy="reset-filter-button"]').click();
     cy.get("tbody").children().should("have.length", 100);
   });
 });
