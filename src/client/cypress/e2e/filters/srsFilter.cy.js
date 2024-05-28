@@ -1,4 +1,4 @@
-import { newEditableBorehole, loginAsAdmin } from "./helpers/testHelpers";
+import { loginAsAdmin, newEditableBorehole } from "../helpers/testHelpers.js";
 
 describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {
@@ -18,7 +18,7 @@ describe("Tests for filtering data by reference system.", () => {
 
     cy.contains("h3", "Done").click();
     cy.get('[data-cy="show-filter-button"]').click();
-    cy.contains("span", "Location").click();
+    cy.contains("h6", "Location").click();
     cy.get('[data-cy="spatial-reference-filter"]').should("exist");
 
     goToEditorLocationFilter();
@@ -27,7 +27,7 @@ describe("Tests for filtering data by reference system.", () => {
 
     cy.contains("h3", "Done").click();
     cy.get('[data-cy="show-filter-button"]').click();
-    cy.contains("span", "Location").click();
+    cy.contains("h6", "Location").click();
     cy.get('[data-cy="spatial-reference-filter"]').should("not.exist");
   });
 
@@ -49,8 +49,8 @@ describe("Tests for filtering data by reference system.", () => {
     cy.wait(["@edit_list", "@borehole"]);
     cy.get('[data-cy="show-filter-button"]').click();
 
-    cy.contains("span", "Location").click();
-    cy.get('[class="ui fitted toggle checkbox"]').eq(1).children().first().check({ force: true });
+    cy.contains("h6", "Location").click();
+    cy.get('[class="ui fitted toggle checkbox"]').eq(0).children().first().check({ force: true });
     cy.get('[data-cy="radiobutton-all"]').click();
     cy.get("tbody").children().should("have.length", 100);
 

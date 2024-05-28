@@ -1,4 +1,4 @@
-import { newEditableBorehole } from "./helpers/testHelpers";
+import { newEditableBorehole } from "../helpers/testHelpers.js";
 
 describe("Tests for filtering data by identifier.", () => {
   it("can filter by identifier", () => {
@@ -18,9 +18,9 @@ describe("Tests for filtering data by identifier.", () => {
     cy.wait(["@edit_list", "@borehole"]);
     cy.get('[data-cy="show-filter-button"]').click();
 
-    cy.contains("span", "Location").click();
+    cy.contains("h6", "Location").click();
     // show all options
-    cy.get('[class="ui fitted toggle checkbox"]').eq(1).children().first().check({ force: true });
+    cy.get('[class="ui fitted toggle checkbox"]').eq(0).children().first().check({ force: true });
 
     cy.get("tbody").children().should("have.length", 100);
 
@@ -70,9 +70,9 @@ describe("Tests for filtering data by identifier.", () => {
     cy.wait(["@edit_list", "@borehole"]);
     cy.get('[data-cy="show-filter-button"]').click();
 
-    cy.contains("span", "Location").click();
+    cy.contains("h6", "Location").click();
     // show all options
-    cy.get('[class="ui fitted toggle checkbox"]').eq(1).children().first().check({ force: true });
+    cy.get('[class="ui fitted toggle checkbox"]').eq(0).children().first().check({ force: true });
 
     cy.get('[data-cy="domain-dropdown"]')
       .first()
