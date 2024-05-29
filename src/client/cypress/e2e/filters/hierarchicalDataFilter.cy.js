@@ -67,7 +67,13 @@ describe("Hierachical data filter tests", () => {
       });
     cy.get('[data-cy="hierarchical-data-search"]')
       .eq(filterValues.length - 2)
-      .contains("label", "Reset")
+      .find("div.dropdown")
+      .click();
+    cy.get('[data-cy="hierarchical-data-search"]')
+      .eq(filterValues.length - 2)
+      .find('[role="option"]')
+      .first()
+      .scrollIntoView()
       .click();
     cy.wait("@edit_list");
     cy.get('[data-cy="hierarchical-data-search"]')
