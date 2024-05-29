@@ -12,7 +12,7 @@ export const swissExtent: number[] = [2420000, 1030000, 2900000, 1350000];
 const projection: ProjectionLike = getProjection("EPSG:2056") as ProjectionLike;
 const resolutions: number[] = [
   4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250, 1000, 750, 650, 500, 250, 100, 50, 20, 10, 5,
-  2.5, 2, 1.5, 1, 0.5, 0.25, 0.1,
+  2.5, 2, 1.5, 1, 0.5, 0.25,
 ];
 
 const matrixSet = "2056";
@@ -130,12 +130,6 @@ export function updateBasemap(map: Map, contextBasemapName: string) {
       newBasemap.layer.setOpacity(1);
       map.getLayers().setAt(0, newBasemap.layer);
       map.getLayers().item(0).changed();
-      // Ugly workaround to ensure new map is always directly visible,
-      // not only on zoom. The zoom change is not visible to the user.
-      const view = map.getView();
-      const currentZoom = view.getZoom() || 0;
-      view.setZoom(currentZoom - 0.000001);
-      view.setZoom(currentZoom);
     }
   }
 }
