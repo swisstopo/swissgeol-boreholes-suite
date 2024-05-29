@@ -13,7 +13,6 @@ import CantonDropdown from "../../form/cantons/dropdown/cantonDropdown";
 const ListFilter = props => {
   const { attribute, search, setFilter, settings } = props;
   const { t } = useTranslation();
-
   const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {

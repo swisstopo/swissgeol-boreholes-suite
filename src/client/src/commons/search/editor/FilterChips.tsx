@@ -12,9 +12,9 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
 
   const onRemoveFilter = (filter: Filter) => {
     setFilter(filter.key, "");
-
     activeFilters = activeFilters.filter(f => f !== filter);
   };
+
   return (
     <Box sx={{ marginTop: "24px", marginBottom: "14px" }}>
       {activeFilters.map((filter, index) => {
