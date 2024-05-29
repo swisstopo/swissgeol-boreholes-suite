@@ -1,12 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import { useDomainSchema } from "../../../../api/fetchApiV2";
-
 import { Form, Header } from "semantic-ui-react";
 import * as Styled from "../../../search/components/listFilterStyles.js";
 import TranslationText from "../../translationText";
-import LabelReset from "../../labelReset";
 
 const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
   const { i18n } = useTranslation();
@@ -42,14 +39,12 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
     id => {
       const selection = getSelectedOption(id);
       if (selection === null) {
-        //setState({ selected: null });
         if (onSelected !== undefined) {
           onSelected({
             id: null,
           });
         }
       } else {
-        //setState({ selected: selection.id });
         if (onSelected !== undefined) {
           onSelected({ ...selection });
         }
@@ -151,15 +146,6 @@ const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
           <Styled.AttributesItem>
             <Form.Select fluid search={true} onChange={handleChange} options={level.options} value={level.selected} />
           </Styled.AttributesItem>
-          {reset && (
-            <Styled.Reset>
-              <LabelReset
-                onClick={() => {
-                  reset(level.level);
-                }}
-              />
-            </Styled.Reset>
-          )}
         </div>
       ))}
     </>

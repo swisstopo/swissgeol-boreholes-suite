@@ -143,7 +143,7 @@ class FilterComponent extends React.Component {
   }));
 
   StyledAccordionDetails = styled(AccordionDetails)(() => ({
-    overflow: "hidden",
+    overflow: "visible",
     flexGrow: 1,
   }));
 
