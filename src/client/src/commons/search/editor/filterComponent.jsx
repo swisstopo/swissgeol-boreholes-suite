@@ -149,9 +149,26 @@ class FilterComponent extends React.Component {
   }));
 
   render() {
-    const { toggleDrawer, search, user, t } = this.props;
+    const {
+      toggleDrawer,
+      search,
+      user,
+      t,
+      setFilter,
+      settings,
+      resetBoreInc,
+      resetBoreIncDir,
+      resetDrillDiameter,
+      resetDrilling,
+      resetElevation,
+      resetRestriction,
+      resetTotBedrock,
+      resetDepth,
+      onChange,
+      resetCreatedDate,
+    } = this.props;
     const { filterPolygon, polygonSelectionEnabled, setPolygonSelectionEnabled } = this.context;
-    const activeFilters = Object.entries(this.props.search.filter)
+    const activeFilters = Object.entries(search.filter)
       .filter(
         ([key, value]) =>
           value != null && value !== "" && value !== -1 && !["refresh"].includes(key) && value !== "all",
@@ -164,7 +181,7 @@ class FilterComponent extends React.Component {
           <FilterChips
             setPolygonSelectionEnabled={setPolygonSelectionEnabled}
             activeFilters={activeFilters}
-            setFilter={this.props.setFilter}
+            setFilter={setFilter}
           />
           <Button
             onClick={() => {
@@ -212,7 +229,6 @@ class FilterComponent extends React.Component {
                 onClick={() => {
                   this.setState(prevState => ({
                     ...prevState,
-                    // update an array of objects:
                     searchList: prevState.searchList.map(obj =>
                       obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj, isSelected: false },
                     ),
@@ -220,13 +236,12 @@ class FilterComponent extends React.Component {
                 }}>
                 <Typography variant="h6">{t(filter?.translationId)}</Typography>
               </AccordionSummary>
-
               {filter?.name === "workgroup" && filter?.isSelected && (
                 <this.StyledAccordionDetails>
                   <WorkgroupRadioGroup
                     filter={search.filter.workgroup}
                     onChange={workgroup => {
-                      this.props.setFilter("workgroup", workgroup);
+                      setFilter("workgroup", workgroup);
                     }}
                     workgroups={user.data.workgroups}
                   />
@@ -235,18 +250,18 @@ class FilterComponent extends React.Component {
               {filter?.name === "status" && filter?.isSelected && (
                 <this.StyledAccordionDetails>
                   <StatusFilter
-                    onChange={this.props.onChange}
-                    resetBoreInc={this.props.resetBoreInc}
-                    resetBoreIncDir={this.props.resetBoreIncDir}
-                    resetDrillDiameter={this.props.resetDrillDiameter}
-                    resetDrilling={this.props.resetDrilling}
-                    resetElevation={this.props.resetElevation}
-                    resetRestriction={this.props.resetRestriction}
-                    resetTotBedrock={this.props.resetTotBedrock}
-                    search={this.props.search}
-                    setFilter={this.props.setFilter}
-                    settings={this.props.settings.data.efilter}
-                    resetCreatedDate={this.props.resetCreatedDate}
+                    onChange={onChange}
+                    resetBoreInc={resetBoreInc}
+                    resetBoreIncDir={resetBoreIncDir}
+                    resetDrillDiameter={resetDrillDiameter}
+                    resetDrilling={resetDrilling}
+                    resetElevation={resetElevation}
+                    resetRestriction={resetRestriction}
+                    resetTotBedrock={resetTotBedrock}
+                    search={search}
+                    setFilter={setFilter}
+                    settings={settings.data.efilter}
+                    resetCreatedDate={resetCreatedDate}
                   />
                 </this.StyledAccordionDetails>
               )}
@@ -254,18 +269,18 @@ class FilterComponent extends React.Component {
                 {this.handleButtonSelected() !== null && filter?.isSelected && (
                   <ListFilter
                     attribute={this.handleButtonSelected()}
-                    resetBoreInc={this.props.resetBoreInc}
-                    resetBoreIncDir={this.props.resetBoreIncDir}
-                    resetDepth={this.props.resetDepth}
-                    resetDrillDiameter={this.props.resetDrillDiameter}
-                    resetDrilling={this.props.resetDrilling}
-                    resetElevation={this.props.resetElevation}
-                    resetRestriction={this.props.resetRestriction}
-                    resetTotBedrock={this.props.resetTotBedrock}
-                    search={this.props.search}
-                    setFilter={this.props.setFilter}
-                    settings={this.props.settings.data.efilter}
-                    resetCreatedDate={this.props.resetCreatedDate}
+                    resetBoreInc={resetBoreInc}
+                    resetBoreIncDir={resetBoreIncDir}
+                    resetDepth={resetDepth}
+                    resetDrillDiameter={resetDrillDiameter}
+                    resetDrilling={resetDrilling}
+                    resetElevation={resetElevation}
+                    resetRestriction={resetRestriction}
+                    resetTotBedrock={resetTotBedrock}
+                    search={search}
+                    setFilter={setFilter}
+                    settings={settings.data.efilter}
+                    resetCreatedDate={resetCreatedDate}
                   />
                 )}
               </this.StyledAccordionDetails>
@@ -312,11 +327,6 @@ const mapDispatchToProps = dispatch => {
         value: value,
       });
     },
-    resetIdentifier: () => {
-      dispatch({
-        type: "SEARCH_EDITOR_FILTER_RESET_IDENTIFIER",
-      });
-    },
     resetRestriction: () => {
       dispatch({
         type: "SEARCH_EDITOR_FILTER_RESET_RESTRICTION",
@@ -350,24 +360,6 @@ const mapDispatchToProps = dispatch => {
     resetBoreIncDir: () => {
       dispatch({
         type: "SEARCH_EDITOR_FILTER_RESET_BORE_INC_DIR",
-      });
-    },
-    setProject: id => {
-      dispatch({
-        type: "SEARCH_EDITOR_PROJECT_CHANGED",
-        id: id,
-      });
-    },
-    setLastUpdate: date => {
-      dispatch({
-        type: "SEARCH_EDITOR_LASTUPDATE_CHANGED",
-        date: date,
-      });
-    },
-    setCreation: date => {
-      dispatch({
-        type: "SEARCH_EDITOR_CREATION_CHANGED",
-        date: date,
       });
     },
     resetDepth: () => {
