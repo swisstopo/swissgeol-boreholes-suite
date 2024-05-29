@@ -11,7 +11,13 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
   const { filterPolygon, setFilterPolygon, setFeatureIds, setPolygonSelectionEnabled } = useContext(FilterContext);
 
   const onRemoveFilter = (filter: Filter) => {
-    setFilter(filter.key, "");
+    if (typeof filter.value === "boolean") {
+      setFilter(filter.key, -1);
+    } else if (typeof filter.value === "number") {
+      setFilter(filter.key, null);
+    } else {
+      setFilter(filter.key, "");
+    }
     activeFilters = activeFilters.filter(f => f !== filter);
   };
 
