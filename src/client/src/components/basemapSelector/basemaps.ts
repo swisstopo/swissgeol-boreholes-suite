@@ -37,6 +37,7 @@ const baseLayerNames = {
   detailedColormap: "ch.swisstopo.swisstlm3d-karte-farbe",
   satellite: "ch.swisstopo.swissimage",
   greymap: "ch.swisstopo.pixelkarte-grau",
+  detailedGreymap: "ch.swisstopo.swisstlm3d-karte-grau",
 };
 
 export const basemaps: Basemap[] = [
@@ -89,14 +90,33 @@ export const basemaps: Basemap[] = [
   {
     shortName: "greymap",
     previewImg: baseLayerNames.greymap,
-    layer: new TileLayer({
-      minResolution: 0.1,
-      maxZoom: 27,
-      source: new XYZ({
-        url: `https://wmts10.geo.admin.ch/1.0.0/${baseLayerNames.greymap}/default/current/3857/{z}/{x}/{y}.jpeg`,
-        crossOrigin,
-        attributions,
-      }),
+    layer: new LayerGroup({
+      layers: [
+        new TileLayer({
+          minResolution: 2.5,
+          maxZoom: 27,
+          source: new XYZ({
+            url: `https://wmts10.geo.admin.ch/1.0.0/${baseLayerNames.greymap}/default/current/3857/{z}/{x}/{y}.jpeg`,
+            crossOrigin,
+            attributions,
+          }),
+        }),
+        new TileLayer({
+          maxResolution: 2.5,
+          minResolution: 0.1,
+          source: new WMTS({
+            layer: baseLayerNames.detailedGreymap,
+            url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
+            crossOrigin,
+            attributions,
+            tileGrid,
+            projection,
+            requestEncoding,
+            style,
+            matrixSet,
+          }),
+        }),
+      ],
     }),
   },
 ];
