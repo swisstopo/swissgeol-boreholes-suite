@@ -11,7 +11,7 @@ import VectorSource from "ol/source/Vector";
 import { Cluster } from "ol/source";
 import GeoJSON from "ol/format/GeoJSON";
 import Select from "ol/interaction/Select";
-import Overlay from "ol/Overlay.js";
+import Overlay from "ol/Overlay";
 import { defaults as defaultControls } from "ol/control";
 import { click, pointerMove } from "ol/events/condition";
 import { createEmpty, extend } from "ol/extent";
@@ -27,16 +27,17 @@ import NamePopup from "./namePopup";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
 import { getBasemap, swissExtent, updateBasemap } from "../../components/basemapSelector/basemaps";
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
-import { clusterStyleFunction, styleFunction } from "./mapStyleFunctions";
+import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions";
 import { projections } from "./mapProjections";
 import { theme } from "../../AppTheme";
+import Draw from "ol/interaction/Draw.js";
+import { withTranslation } from "react-i18next";
 
 class MapComponent extends React.Component {
   static contextType = BasemapContext;
   constructor(props) {
     super(props);
     this.sidebarRef = React.createRef();
-    this.moveEnd = this.moveEnd.bind(this);
     this.onSelected = this.onSelected.bind(this);
     this.updateWidth = this.updateWidth.bind(this);
     this.setStateBound = this.setState.bind(this);
@@ -69,6 +70,7 @@ class MapComponent extends React.Component {
     this.handleFilter = this.handleFilter.bind(this);
     this.refreshPoints = this.refreshPoints.bind(this);
     this.timeoutFilter = null;
+    this.draw = null;
 
     this.srs = "EPSG:2056";
     _.forEach(projections, function (proj, srs) {
@@ -78,10 +80,10 @@ class MapComponent extends React.Component {
     this.overlays = [];
     this.state = {
       hover: null,
-      featureExtent: [],
       sidebar: false,
       sidebarWidth: 0,
       displayedBaseMap: null,
+      drawActive: false,
     };
   }
 
@@ -92,8 +94,8 @@ class MapComponent extends React.Component {
       if (response.data.success) {
         this.initializeMapLayers();
         this.handleMapInteractions();
-
-        const features = new GeoJSON().readFeatures(response.data.data);
+        let features = new GeoJSON().readFeatures(response.data.data);
+        features = this.filterByPolygon(features);
         this.points.clear();
         this.points.addFeatures(features);
 
@@ -136,8 +138,17 @@ class MapComponent extends React.Component {
         maxResolution: 20,
       });
 
+      // Layer to draw selection polygon
+      const drawingLayer = new VectorLayer({
+        name: "draw",
+        source: new VectorSource(),
+        style: drawStyle,
+      });
+
       this.map.addLayer(clusterLayer);
       this.map.addLayer(pointLayer);
+      this.map.addLayer(drawingLayer);
+      this.drawPolygon();
     }
   }
 
@@ -154,8 +165,6 @@ class MapComponent extends React.Component {
         duration: 500,
         padding: [50, 50, 50, 50],
       });
-      this.props.setmapfilter?.(true);
-      this.props.filterByExtent?.(extent);
     }
   };
 
@@ -207,7 +216,7 @@ class MapComponent extends React.Component {
 
     // Zoom to cluster extent if clicked on cluster.
     this.map.on("click", event => {
-      if (this.points) {
+      if (this.points && !this.props.polygonSelectionEnabled) {
         const features = this.getFeaturesAtPixel(event.pixel);
         if (features?.length > 0) {
           this.zoomToFeatures(features);
@@ -223,7 +232,6 @@ class MapComponent extends React.Component {
     if (this.props.searchState.resolution) {
       this.map.getView().setResolution(this.props.searchState.resolution);
     }
-    this.moveEnd();
   }
 
   //////  HANDLE CUSTOM USER LAYERS //////
@@ -354,6 +362,88 @@ class MapComponent extends React.Component {
     this.points.changed(); // forces the layer to redraw and apply the hover style.
   }
 
+  handlePolygonSelection() {
+    if (this.points) {
+      const drawLayer = this.map
+        .getLayers()
+        .getArray()
+        .find(layer => layer.get("name") === "draw");
+      if (drawLayer) {
+        const drawSource = drawLayer.getSource();
+
+        if (!this.draw) {
+          this.draw = new Draw({
+            source: drawSource,
+            type: "Polygon",
+          });
+
+          // clear other polygons when drawing a new one
+          this.draw.on("drawstart", () => {
+            drawSource.clear();
+          });
+
+          this.draw.on("drawend", event => {
+            const drawnFeature = event.feature;
+
+            // Get the features from the points layer that intersect with the drawn polygon
+            const intersectingFeatures = [];
+            this.points.forEachFeature(feature => {
+              if (drawnFeature.getGeometry().intersectsExtent(feature.getGeometry().getExtent())) {
+                intersectingFeatures.push(feature);
+              }
+            });
+            if (intersectingFeatures.length > 0) {
+              this.points.clear();
+              this.points.addFeatures(intersectingFeatures);
+              this.props.setFilterPolygon(drawnFeature);
+              // Zoom to the extent of the drawn feature
+              this.map.getView().fit(drawnFeature.getGeometry().getExtent(), { padding: [10, 10, 10, 10] });
+            } else {
+              this.props.displayErrorMessage(this.props.t("msgNoBoreholesInSelection"));
+              this.props.setFilterPolygon(null);
+              drawSource.clear();
+            }
+            this.props.setPolygonSelectionEnabled(false);
+            this.props.setFeatureIds(intersectingFeatures.map(f => f.getId()));
+          });
+        }
+
+        // Update map interactions
+        if (this.state.drawActive) {
+          if (!this.props.polygonSelectionEnabled) {
+            this.map.removeInteraction(this.draw);
+            this.setState({ drawActive: false });
+          }
+        } else {
+          if (this.props.polygonSelectionEnabled) {
+            this.map.addInteraction(this.draw);
+            this.setState({ drawActive: true });
+          }
+        }
+
+        // Remove polygon from map if filterpolygon prop no longer exists
+        if (!this.props.filterPolygon) {
+          drawSource.clear();
+        }
+      }
+    }
+  }
+
+  // draw
+  drawPolygon() {
+    if (this.props.filterPolygon === null) return;
+    const drawLayer = this.map
+      .getLayers()
+      .getArray()
+      .find(layer => layer.get("name") === "draw");
+    if (drawLayer) {
+      const drawSource = drawLayer.getSource();
+      if (drawSource.getFeatures().length === 0) {
+        drawSource.addFeature(this.props.filterPolygon);
+      }
+    }
+  }
+
   setFeatureHighlight(feature, hoverCallback) {
     if (hoverCallback) {
       hoverCallback(feature.getId());
@@ -366,31 +456,49 @@ class MapComponent extends React.Component {
     }
   }
 
-  handleFilter(searchState, previousSearchState, view) {
-    if (_.isEqual(searchState.filter.extent, previousSearchState.filter.extent)) {
-      if (this.timeoutFilter !== null) {
-        clearTimeout(this.timeoutFilter);
+  //// Filter geojson with polygon
+  filterByPolygon(features) {
+    if (this.props.filterPolygon === null) return features;
+
+    const originalVectorSources = new VectorSource({
+      features: features,
+    });
+    const intersectingVectorSource = new VectorSource();
+
+    originalVectorSources.forEachFeature(feature => {
+      if (this.props.filterPolygon.getGeometry().intersectsExtent(feature.getGeometry().getExtent())) {
+        intersectingVectorSource.addFeature(feature);
       }
-      this.timeoutFilter = setTimeout(() => {
-        this.points.clear(true);
-        getGeojson(searchState.filter)
-          .then(
-            function (response) {
-              if (response.data.success) {
-                this.points.addFeatures(new GeoJSON().readFeatures(response.data.data));
-                view.fit(this.points.getExtent());
-                this.moveEnd();
-              }
-            }.bind(this),
-          )
-          .catch(function (error) {
-            console.log(error);
-          });
-      }, 500);
-      this.refreshPoints();
-      this.map.updateSize();
-      view.getResolution() < 1 && view.setResolution(1);
+    });
+    const intersectingFeatures = intersectingVectorSource.getFeatures();
+    this.props.setFeatureIds(intersectingFeatures.map(f => f.getId()));
+    return intersectingFeatures;
+  }
+
+  handleFilter(searchState, previousSearchState, view) {
+    if (this.timeoutFilter !== null) {
+      clearTimeout(this.timeoutFilter);
     }
+    this.timeoutFilter = setTimeout(() => {
+      getGeojson(searchState.filter)
+        .then(
+          function (response) {
+            if (response.data.success) {
+              let features = new GeoJSON().readFeatures(response.data.data);
+              features = this.filterByPolygon(features);
+              this.points.clear();
+              this.points.addFeatures(features);
+              view.fit(this.points.getExtent());
+            }
+          }.bind(this),
+        )
+        .catch(function (error) {
+          console.log(error);
+        });
+    }, 500);
+    this.refreshPoints();
+    this.map.updateSize();
+    view.getResolution() < 1 && view.setResolution(1);
   }
 
   refreshPoints() {
@@ -444,35 +552,23 @@ class MapComponent extends React.Component {
     if (!_.isEqual(searchState.filter, prevProps.searchState.filter)) {
       this.handleFilter(searchState, prevProps.searchState, view);
     }
+
+    if (
+      !_.isEqual(prevProps.polygonSelectionEnabled, this.props.polygonSelectionEnabled) ||
+      !_.isEqual(prevProps.filterPolygon, this.props.filterPolygon)
+    ) {
+      this.handlePolygonSelection();
+    }
+
+    if (!_.isEqual(prevProps.filterPolygon, this.props.filterPolygon)) {
+      if (this.props.filterPolygon === null) {
+        this.handleFilter(searchState, prevProps.searchState, view);
+      }
+    }
   }
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateWidth);
-  }
-
-  /*
-      Calculate which features are visible in actual map extent
-      If moveend prop funtion is present then call it.
-  */
-  moveEnd() {
-    const { moveend } = this.props;
-    var extent = this.map.getView().calculateExtent(this.map.getSize());
-    if (moveend !== undefined) {
-      let features = [];
-      this.points.forEachFeatureInExtent(extent, function (feature) {
-        features.push(feature.getId());
-      });
-      if (!_.isEqual(this.state.featureExtent, features)) {
-        this.setState(
-          {
-            featureExtent: features,
-          },
-          () => {
-            moveend(extent, this.map.getView().getResolution());
-          },
-        );
-      }
-    }
   }
 
   //////// Event handlers ////////
@@ -488,40 +584,47 @@ class MapComponent extends React.Component {
   }
 
   onHover(e) {
-    // Only display popover if hover selection contains one single feature and is not a cluster point.
-    if (e.selected?.length === 1 && !e.selected[0].values_.features) {
-      this.displayPopup(e.selected);
-    } else {
-      this.removePopup();
+    this.removePopup();
+    // Remove any existing popover if no features are selected or drawing is active
+    if (e.selected.length === 0 || this.state.drawActive) return;
+
+    const feature = e.selected[0];
+    const isCluster = feature.values_.features?.length > 0;
+    if (isCluster) {
+      return;
+    }
+    if (feature?.getGeometry().getType() !== "Polygon") {
+      this.displayPopup(feature);
     }
   }
 
   removePopup() {
-    const { hover: hoverCallback } = this.props;
-    if (hoverCallback !== undefined) {
-      this.setState(
-        {
-          hover: null,
-        },
-        () => {
-          this.popup.setPosition(undefined);
-          hoverCallback(null);
-        },
-      );
+    if (this.popup.getPosition() !== undefined) {
+      const { hover: hoverCallback } = this.props;
+      if (hoverCallback !== undefined) {
+        this.setState(
+          {
+            hover: null,
+          },
+          () => {
+            this.popup.setPosition(undefined);
+            hoverCallback(null);
+          },
+        );
+      }
     }
   }
 
-  displayPopup(selection) {
+  displayPopup(feature) {
     const { hover: hoverCallback } = this.props;
     if (hoverCallback !== undefined) {
-      const singleFeature = selection[0];
       this.setState(
         {
-          hover: singleFeature,
+          hover: feature,
         },
         () => {
-          this.popup.setPosition(singleFeature.getGeometry().getCoordinates());
-          hoverCallback(singleFeature.getId());
+          this.popup.setPosition(feature.getGeometry().getCoordinates());
+          hoverCallback(feature.getId());
         },
       );
     }
@@ -603,7 +706,6 @@ MapComponent.propTypes = {
   highlighted: PropTypes.array,
   hover: PropTypes.func,
   layers: PropTypes.object,
-  moveend: PropTypes.func,
   selected: PropTypes.func,
 };
 
@@ -613,4 +715,5 @@ MapComponent.defaultProps = {
   layers: {},
 };
 
-export default MapComponent;
+const TranlatedMapComponent = withTranslation()(MapComponent);
+export default TranlatedMapComponent;

@@ -1,14 +1,14 @@
-import { loginAsAdmin } from "./helpers/testHelpers";
+import { loginAsAdmin } from "../helpers/testHelpers.js";
 
 describe("Hierachical data filter tests", () => {
   it("check visible filters", () => {
     loginAsAdmin();
     cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
-    cy.contains("span", "Chronostratigraphy").click();
+    cy.contains("h6", "Chronostratigraphy").click();
     cy.get("Show all fields").should("not.exist");
     cy.get('[data-cy="hierarchical-data-search"]').should("have.length", 7);
-    cy.contains("span", "Lithostratigraphy").click();
+    cy.contains("h6", "Lithostratigraphy").click();
     cy.get("Show all fields").should("not.exist");
     cy.get('[data-cy="hierarchical-data-search"]').should("have.length", 3);
   });
@@ -17,7 +17,7 @@ describe("Hierachical data filter tests", () => {
     loginAsAdmin();
     cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
-    cy.contains("span", "Chronostratigraphy").click();
+    cy.contains("h6", "Chronostratigraphy").click();
     let periodsDropdown = cy.contains("label", "Period").next();
     periodsDropdown.click();
     periodsDropdown
@@ -53,7 +53,7 @@ describe("Hierachical data filter tests", () => {
     loginAsAdmin();
     cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
-    cy.contains("span", "Chronostratigraphy").click();
+    cy.contains("h6", "Chronostratigraphy").click();
     cy.get('[data-cy="hierarchical-data-search"]')
       .eq(filterValues.length - 1)
       .find("input")

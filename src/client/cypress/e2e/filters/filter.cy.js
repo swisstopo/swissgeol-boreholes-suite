@@ -1,4 +1,4 @@
-import { loginAsAdmin } from "../e2e/helpers/testHelpers";
+import { loginAsAdmin } from "../helpers/testHelpers.js";
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
@@ -12,7 +12,7 @@ describe("Search filter tests", () => {
     loginAsAdmin();
     cy.visit("/");
     cy.get('[data-cy="show-filter-button"]').click();
-    cy.contains("span", "Location").click();
+    cy.contains("h6", "Location").click();
     cy.contains("Show all fields").children().eq(0).click();
     let indentifierDropdown = cy.contains("label", "ID type").next();
 
@@ -25,7 +25,7 @@ describe("Search filter tests", () => {
         expect(options[1]).to.have.text("ID Original");
       });
 
-    cy.contains("span", "Borehole").click();
+    cy.contains("h6", "Borehole").click();
     let boreholeTypeDropdown = cy.contains("label", "Borehole type").next();
 
     boreholeTypeDropdown.click();
@@ -115,14 +115,14 @@ describe("Search filter tests", () => {
         expect(options[1]).to.have.text("beige");
       })
       .then(options => {
-        cy.wrap(options).contains("beige").click();
+        cy.wrap(options).contains("beige").click({ force: true });
       });
 
     cy.wait("@edit_list");
     cy.get('[data-cy="borehole-table"] tbody').children().should("have.length", 100);
 
     let uscs3Dropdown = cy.contains("label", "USCS 3").next();
-    uscs3Dropdown.click();
+    uscs3Dropdown.scrollIntoView().click({ force: true });
     uscs3Dropdown
       .find("div[role='option']")
       .should("have.length", 36)
@@ -131,7 +131,7 @@ describe("Search filter tests", () => {
         expect(options[2]).to.have.text("lean clay");
       })
       .then(options => {
-        cy.wrap(options).contains("gravel").click();
+        cy.wrap(options).contains("gravel").click({ force: true });
       });
 
     cy.wait("@edit_list");

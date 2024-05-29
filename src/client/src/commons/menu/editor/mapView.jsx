@@ -10,8 +10,10 @@ import BoreholeEditorTable from "../../../commons/table/boreholeEditorTable";
 import MultipleForm from "../../../commons/form/multiple/multipleForm";
 import { BottomDrawer } from "./bottomDrawer";
 import BottomBar from "./bottomBar";
+import { FilterContext } from "../../../components/filter/filterContext.tsx";
 
 class MapView extends React.Component {
+  static contextType = FilterContext;
   constructor(props) {
     super(props);
     this.rowHover = null;
@@ -23,8 +25,29 @@ class MapView extends React.Component {
   }
 
   render() {
-    const props = this.props;
+    const {
+      loadEditingBoreholes,
+      search,
+      store,
+      setting,
+      lock,
+      sort,
+      setSort,
+      toggleBottomDrawer,
+      boreholes,
+      bottomDrawerOpen,
+      multipleSelected,
+      displayErrorMessage,
+    } = this.props;
 
+    const {
+      filterPolygon,
+      setFilterPolygon,
+      polygonSelectionEnabled,
+      setPolygonSelectionEnabled,
+      featureIds,
+      setFeatureIds,
+    } = this.context;
     return (
       <div
         style={{
@@ -34,16 +57,16 @@ class MapView extends React.Component {
         }}>
         <Modal
           onUnmount={() => {
-            props.loadEditingBoreholes(props.boreholes.page, props.search.filter, props.boreholes.direction);
+            loadEditingBoreholes(boreholes.page, search.filter, boreholes.direction);
           }}
-          open={Array.isArray(props.store.mselected)}>
+          open={Array.isArray(store.mselected)}>
           <Modal.Content>
-            <MultipleForm selected={props.store.mselected} />
+            <MultipleForm selected={store.mselected} />
           </Modal.Content>
         </Modal>
         <MapComponent
           searchState={{
-            ...props.search,
+            ...search,
           }}
           highlighted={this.state.hover !== null ? [this.state.hover.id] : []}
           hover={id => {
@@ -51,36 +74,29 @@ class MapView extends React.Component {
               maphover: id,
             });
           }}
-          layers={props.setting.data.map.explorer}
-          moveend={(extent, resolution) => {
-            this.props.filterByExtent(extent, resolution);
-          }}
+          layers={setting.data.map.explorer}
           selected={id => {
             if (id !== null) {
-              props.lock(id);
+              lock(id);
             }
           }}
-          filterByExtent={extent => {
-            this.props.filterByExtent(extent);
-          }}
-          setmapfilter={checked => {
-            this.props.setmapfilter(checked);
-          }}
+          polygonSelectionEnabled={polygonSelectionEnabled}
+          setPolygonSelectionEnabled={setPolygonSelectionEnabled}
+          filterPolygon={filterPolygon}
+          setFilterPolygon={setFilterPolygon}
+          setFeatureIds={setFeatureIds}
+          displayErrorMessage={displayErrorMessage}
         />
-        <BottomBar
-          toggleBottomDrawer={this.props.toggleBottomDrawer}
-          bottomDrawerOpen={this.props.bottomDrawerOpen}
-          boreholes={this.props.boreholes}
-        />
-        <BottomDrawer drawerOpen={this.props.bottomDrawerOpen}>
+        <BottomBar toggleBottomDrawer={toggleBottomDrawer} bottomDrawerOpen={bottomDrawerOpen} boreholes={boreholes} />
+        <BottomDrawer drawerOpen={bottomDrawerOpen}>
           <BoreholeEditorTable
-            activeItem={!_.isNil(props.store.bselected) ? props.store.bselected.id : null}
+            activeItem={!_.isNil(store.bselected) ? store.bselected.id : null}
             filter={{
-              ...props.search.filter,
+              ...search.filter,
             }}
             highlight={this.state.maphover}
             onDelete={selection => {
-              props.delete(selection, props.search.filter);
+              delete (selection, search.filter);
             }}
             onHover={item => {
               if (this.rowHover) {
@@ -94,21 +110,22 @@ class MapView extends React.Component {
               }, 250);
             }}
             onMultiple={selection => {
-              props.multipleSelected(selection, props.search.filter);
+              multipleSelected(selection, search.filter);
             }}
             onSelected={borehole => {
               // Lock borehole
               if (borehole !== null) {
-                props.lock(borehole.id);
+                lock(borehole.id);
               }
             }}
             onReorder={(column, direction) => {
-              this.props.setSort({
+              setSort({
                 column: column,
                 direction: direction,
               });
             }}
-            sort={this.props.sort}
+            featureIds={featureIds}
+            sort={sort}
             scrollPosition={this.state.tableScrollPosition}
             onScrollChange={position => {
               this.setState({
@@ -138,7 +155,7 @@ MapView.propTypes = {
 const mapStateToProps = state => {
   return {
     boreholes: state.core_borehole_editor_list,
-    search: state.searchEditor,
+    search: state.filters,
     setting: state.setting,
     store: state.editor,
     user: state.core_user,
@@ -154,19 +171,7 @@ const mapDispatchToProps = (dispatch, ownprops) => {
         selected: project,
       });
     },
-    filterByExtent: (extent, resolution) => {
-      dispatch({
-        type: "SEARCH_EXTENT_CHANGED",
-        extent: extent,
-        resolution: resolution,
-      });
-    },
-    setmapfilter: active => {
-      dispatch({
-        type: "SEARCH_EDITOR_MAPFILTER_CHANGED",
-        active: active,
-      });
-    },
+
     boreholeSelected: borehole => {
       dispatch({
         type: "EDITOR_BOREHOLE_SELECTED",

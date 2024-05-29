@@ -19,15 +19,12 @@ export interface ImportErrorModalProps {
 }
 
 export interface MenuItemsProps {
-  refresh: () => void;
   reset: () => void;
-  boreholes: Boreholes;
 }
 
 export interface SideDrawerProps {
   drawerContent: React.JSX.Element;
   drawerOpen: boolean;
-  drawerWidth: number;
 }
 
 export interface BottomBarProps {

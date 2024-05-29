@@ -9,10 +9,7 @@ import TranslationText from "../../form/translationText";
 class StatusFilter extends Component {
   isVisible(filter) {
     const { settings } = this.props;
-    if (_.get(settings, filter) === true) {
-      return true;
-    }
-    return false;
+    return _.get(settings, filter) === true;
   }
   render() {
     const { search } = this.props;
@@ -20,7 +17,6 @@ class StatusFilter extends Component {
       <Form
         size="tiny"
         style={{
-          border: "1px solid #e0e0e0",
           padding: "0.5em",
         }}>
         <Form.Field>

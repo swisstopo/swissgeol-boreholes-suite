@@ -30,6 +30,7 @@ export function loadEditingBoreholes(
   filter = undefined,
   orderby = null,
   direction = null,
+  feature_ids = null,
 ) {
   return fetch("/borehole/edit", {
     type: "LIST",
@@ -38,6 +39,7 @@ export function loadEditingBoreholes(
     filter: filter,
     orderby: orderby,
     direction: direction,
+    feature_ids: feature_ids,
   });
 }
 

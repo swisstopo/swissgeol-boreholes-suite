@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ThemeProvider } from "@mui/material/styles";
@@ -14,6 +14,7 @@ import { DataCardProvider } from "./components/dataCard/dataCardContext.jsx";
 import { PromptProvider } from "./components/prompt/promptContext.jsx";
 import { Prompt } from "./components/prompt/prompt";
 import { BasemapProvider } from "./components/basemapSelector/basemapContext.tsx";
+import { FilterProvider } from "./components/filter/filterContext.tsx";
 
 const queryClient = new QueryClient();
 
@@ -42,33 +43,35 @@ class App extends React.Component {
               <Prompt />
               <DataCardProvider>
                 <BasemapProvider>
-                  <ThemeProvider theme={theme}>
-                    <QueryClientProvider client={queryClient}>
-                      <Router>
-                        <Switch>
-                          <Route render={props => <SettingCmp {...props} />} key={1} path={"/setting"} />
-                          <Route
-                            render={props => {
-                              return <EditorComponent {...props} />;
-                            }}
-                            exact={false}
-                            key={0}
-                            path={"/"}
-                          />
-                          <Route
-                            component={() => (
-                              <Redirect
-                                to={{
-                                  pathname: "/",
-                                }}
-                              />
-                            )}
-                          />
-                        </Switch>
-                      </Router>
-                      <ReactQueryDevtools />
-                    </QueryClientProvider>
-                  </ThemeProvider>
+                  <FilterProvider>
+                    <ThemeProvider theme={theme}>
+                      <QueryClientProvider client={queryClient}>
+                        <Router>
+                          <Switch>
+                            <Route render={props => <SettingCmp {...props} />} key={1} path={"/setting"} />
+                            <Route
+                              render={props => {
+                                return <EditorComponent {...props} />;
+                              }}
+                              exact={false}
+                              key={0}
+                              path={"/"}
+                            />
+                            <Route
+                              component={() => (
+                                <Redirect
+                                  to={{
+                                    pathname: "/",
+                                  }}
+                                />
+                              )}
+                            />
+                          </Switch>
+                        </Router>
+                        <ReactQueryDevtools />
+                      </QueryClientProvider>
+                    </ThemeProvider>
+                  </FilterProvider>
                 </BasemapProvider>
               </DataCardProvider>
             </PromptProvider>

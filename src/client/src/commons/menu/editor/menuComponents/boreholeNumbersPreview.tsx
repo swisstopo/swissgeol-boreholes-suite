@@ -10,7 +10,12 @@ export const BoreholeNumbersPreview: React.FC<BoreholeNumbersPreviewProps> = ({ 
       {boreholes.isFetching ? (
         <Icon loading name="spinner" />
       ) : (
-        <NumericFormat value={boreholes.length} thousandSeparator="'" displayType="text" />
+        <NumericFormat
+          data-cy="boreholes-number-preview"
+          value={boreholes.length}
+          thousandSeparator="'"
+          displayType="text"
+        />
       )}
     </>
   );

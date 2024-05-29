@@ -19,7 +19,7 @@ import { ReduxRootState, User } from "../../../ReduxStateInterfaces";
 const StyledIconButton = styled(IconButton)({
   padding: "10px",
   marginBottom: "25px",
-  color: theme.palette.primary.main,
+  color: theme.palette.neutral.contrastText,
   "&:hover": {
     backgroundColor: theme.palette.background.lightgrey,
   },
@@ -28,7 +28,7 @@ const StyledIconButton = styled(IconButton)({
 
 const selectedButtonStyle = {
   color: theme.palette.primary.contrastText,
-  backgroundColor: theme.palette.buttonSelected + " !important",
+  backgroundColor: theme.palette.background.menuItemActive + " !important",
 };
 
 const MainSideNav = ({

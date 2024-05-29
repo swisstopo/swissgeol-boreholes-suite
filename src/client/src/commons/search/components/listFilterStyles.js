@@ -18,6 +18,7 @@ export const AttributesContainer = styled(Form.Field)``;
 export const Label = styled.label`
   font-weight: 700 !important;
   font-size: 12px !important;
+  margin-top: 10px !important;
 `;
 
 export const AttributesItem = styled.div`
