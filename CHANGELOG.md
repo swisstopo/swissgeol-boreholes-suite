@@ -5,6 +5,7 @@
 ### Added
 
 - Added borehole geometry panel.
+- Added polygon filter for boreholes.
 
 ### Changed
 
@@ -13,6 +14,7 @@
 - Changed sidebar layout and design.
 - Moved form to add a borehole from modal to sidepanel.
 - Removed fields `Inclination` `InclinationDirection` and `QtInclinationDirectionId` from borehole.
+- Removed filter by map functionality.
 
 ### Fixed
 
