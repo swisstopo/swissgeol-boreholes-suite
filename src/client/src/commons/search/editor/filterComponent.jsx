@@ -136,7 +136,6 @@ class FilterComponent extends React.Component {
     borderRadius: "4px",
     boxShadow: "none",
     border: "none",
-    maxHeight: "100%",
     padding: "12px, 16px, 12px, 16px",
     "&.MuiAccordion-root:before": {
       backgroundColor: theme.palette.background.default,
@@ -144,7 +143,7 @@ class FilterComponent extends React.Component {
   }));
 
   StyledAccordionDetails = styled(AccordionDetails)(() => ({
-    overflow: "hidden",
+    overflow: "visible",
     flexGrow: 1,
   }));
 
