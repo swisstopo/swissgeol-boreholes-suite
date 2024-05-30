@@ -1,4 +1,4 @@
-import { Box, Chip } from "@mui/material";
+import { Box, Chip, Tooltip } from "@mui/material";
 import { Filter, FilterChipsProps } from "./FilterInterfaces";
 import { useTranslation } from "react-i18next";
 import DeleteIcon from "../../../../public/icons/delete.svg?react";
@@ -24,17 +24,18 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
   return (
     <Box sx={{ marginTop: "24px", marginBottom: "14px" }}>
       {activeFilters.map((filter, index) => {
-        const filterLabel = t(filter.key);
+        const filterLabel = filter.key === "role" ? t("status") : t(filter.key);
         return (
-          <Chip
-            sx={{ marginRight: "10px", marginBottom: "10px" }}
-            data-cy="filter-chip"
-            color="secondary"
-            key={index}
-            label={filterLabel.length < 15 ? filterLabel : filterLabel.substring(0, 15) + "..."}
-            onDelete={() => onRemoveFilter(filter)}
-            deleteIcon={<DeleteIcon style={{ width: "16px", height: "16px" }} />}
-          />
+          <Tooltip key={index} title={filterLabel.length > 15 && filterLabel}>
+            <Chip
+              sx={{ marginRight: "10px", marginBottom: "10px" }}
+              data-cy="filter-chip"
+              color="secondary"
+              label={filterLabel.length < 15 ? filterLabel : filterLabel.substring(0, 15) + "..."}
+              onDelete={() => onRemoveFilter(filter)}
+              deleteIcon={<DeleteIcon style={{ width: "16px", height: "16px" }} />}
+            />
+          </Tooltip>
         );
       })}
       {filterPolygon !== null && (

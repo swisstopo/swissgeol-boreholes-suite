@@ -38,48 +38,56 @@ class FilterComponent extends React.Component {
           name: "workgroup",
           translationId: "workgroup",
           isSelected: false,
+          searchData: [{ value: "workgroup", hideShowAllFields: true }],
         },
         {
           id: 1,
           name: "status",
           translationId: "status",
           isSelected: false,
+          searchData: [{ value: "role", hideShowAllFields: true }],
         },
         {
           id: 2,
           name: "location",
           translationId: "location",
           isSelected: false,
+          searchData: LocationSearchData,
         },
         {
           id: 3,
           name: "borehole",
           translationId: "borehole",
           isSelected: false,
+          searchData: boreholeSearchData,
         },
         {
           id: 4,
           name: "lithology",
           translationId: "lithology",
           isSelected: false,
+          searchData: lithologySearchData,
         },
         {
           id: 5,
           name: "chronostratigraphy",
           translationId: "chronostratigraphy",
           isSelected: false,
+          searchData: chronostratigraphySearchData,
         },
         {
           id: 6,
           name: "lithostratigraphy",
           translationId: "lithostratigraphy",
           isSelected: false,
+          searchData: lithostratigraphySearchData,
         },
         {
           id: 7,
           name: "registration",
           translationId: "registration",
-          isSelectedd: false,
+          isSelected: false,
+          searchData: registrationSearchData,
         },
       ],
     };
@@ -101,23 +109,7 @@ class FilterComponent extends React.Component {
   }
 
   handleButtonSelected() {
-    let selectedData;
-    if (this.state?.searchList?.[2]?.name === "location" && this.state?.searchList?.[2]?.isSelected) {
-      selectedData = LocationSearchData;
-    } else if (this.state?.searchList?.[3]?.name === "borehole" && this.state?.searchList?.[3]?.isSelected) {
-      selectedData = boreholeSearchData;
-    } else if (this.state?.searchList?.[4]?.name === "lithology" && this.state?.searchList?.[4]?.isSelected) {
-      selectedData = lithologySearchData;
-    } else if (this.state?.searchList?.[5]?.name === "chronostratigraphy" && this.state?.searchList?.[5]?.isSelected) {
-      selectedData = chronostratigraphySearchData;
-    } else if (this.state?.searchList?.[6]?.name === "lithostratigraphy" && this.state?.searchList?.[6]?.isSelected) {
-      selectedData = lithostratigraphySearchData;
-    } else if (this.state?.searchList?.[7]?.name === "registration" && this.state?.searchList?.[7]?.isSelected) {
-      selectedData = registrationSearchData;
-    } else {
-      selectedData = null;
-    }
-    return selectedData;
+    return this.state.searchList.find(s => s.isSelected === true)?.searchData;
   }
 
   handlePolygonFilterClick() {
@@ -221,70 +213,79 @@ class FilterComponent extends React.Component {
               <Badge data-cy="polygon-filter-badge" color="error" badgeContent={1} sx={{ marginLeft: "18px" }}></Badge>
             )}
           </Button>
-          {this.state?.searchList?.map((filter, idx) => (
-            <this.StyledAccordion key={idx} expanded={filter?.isSelected}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                onClick={() => {
-                  this.setState(prevState => ({
-                    ...prevState,
-                    searchList: prevState.searchList.map(obj =>
-                      obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj, isSelected: false },
-                    ),
-                  }));
-                }}>
-                <Typography variant="h6">{t(filter?.translationId)}</Typography>
-              </AccordionSummary>
-              {filter?.name === "workgroup" && filter?.isSelected && (
-                <this.StyledAccordionDetails>
-                  <WorkgroupRadioGroup
-                    filter={search.filter.workgroup}
-                    onChange={workgroup => {
-                      setFilter("workgroup", workgroup);
-                    }}
-                    workgroups={user.data.workgroups}
-                  />
-                </this.StyledAccordionDetails>
-              )}
-              {filter?.name === "status" && filter?.isSelected && (
-                <this.StyledAccordionDetails>
-                  <StatusFilter
-                    onChange={onChange}
-                    resetBoreInc={resetBoreInc}
-                    resetBoreIncDir={resetBoreIncDir}
-                    resetDrillDiameter={resetDrillDiameter}
-                    resetDrilling={resetDrilling}
-                    resetElevation={resetElevation}
-                    resetRestriction={resetRestriction}
-                    resetTotBedrock={resetTotBedrock}
-                    search={search}
-                    setFilter={setFilter}
-                    settings={settings.data.efilter}
-                    resetCreatedDate={resetCreatedDate}
-                  />
-                </this.StyledAccordionDetails>
-              )}
-              <this.StyledAccordionDetails>
-                {this.handleButtonSelected() !== null && filter?.isSelected && (
-                  <ListFilter
-                    attribute={this.handleButtonSelected()}
-                    resetBoreInc={resetBoreInc}
-                    resetBoreIncDir={resetBoreIncDir}
-                    resetDepth={resetDepth}
-                    resetDrillDiameter={resetDrillDiameter}
-                    resetDrilling={resetDrilling}
-                    resetElevation={resetElevation}
-                    resetRestriction={resetRestriction}
-                    resetTotBedrock={resetTotBedrock}
-                    search={search}
-                    setFilter={setFilter}
-                    settings={settings.data.efilter}
-                    resetCreatedDate={resetCreatedDate}
-                  />
+          {this.state?.searchList?.map((filter, idx) => {
+            const currentSearchList = this.state.searchList.find(l => l.name === filter.name);
+            const activeFilterLength = activeFilters.filter(f =>
+              currentSearchList?.searchData.some(d => d.value === f.key),
+            ).length;
+            return (
+              <this.StyledAccordion key={idx} expanded={filter?.isSelected}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  onClick={() => {
+                    this.setState(prevState => ({
+                      ...prevState,
+                      searchList: prevState.searchList.map(obj =>
+                        obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj, isSelected: false },
+                      ),
+                    }));
+                  }}>
+                  <Typography variant="h6">
+                    {t(filter?.translationId)}{" "}
+                    <Badge color="error" badgeContent={activeFilterLength} sx={{ marginLeft: "12px" }}></Badge>
+                  </Typography>
+                </AccordionSummary>
+                {filter?.name === "workgroup" && filter?.isSelected && (
+                  <this.StyledAccordionDetails>
+                    <WorkgroupRadioGroup
+                      filter={search.filter.workgroup}
+                      onChange={workgroup => {
+                        setFilter("workgroup", workgroup);
+                      }}
+                      workgroups={user.data.workgroups}
+                    />
+                  </this.StyledAccordionDetails>
                 )}
-              </this.StyledAccordionDetails>
-            </this.StyledAccordion>
-          ))}
+                {filter?.name === "status" && filter?.isSelected && (
+                  <this.StyledAccordionDetails>
+                    <StatusFilter
+                      onChange={onChange}
+                      resetBoreInc={resetBoreInc}
+                      resetBoreIncDir={resetBoreIncDir}
+                      resetDrillDiameter={resetDrillDiameter}
+                      resetDrilling={resetDrilling}
+                      resetElevation={resetElevation}
+                      resetRestriction={resetRestriction}
+                      resetTotBedrock={resetTotBedrock}
+                      search={search}
+                      setFilter={setFilter}
+                      settings={settings.data.efilter}
+                      resetCreatedDate={resetCreatedDate}
+                    />
+                  </this.StyledAccordionDetails>
+                )}
+                <this.StyledAccordionDetails>
+                  {this.handleButtonSelected() !== null && filter?.isSelected && (
+                    <ListFilter
+                      attribute={this.handleButtonSelected()}
+                      resetBoreInc={resetBoreInc}
+                      resetBoreIncDir={resetBoreIncDir}
+                      resetDepth={resetDepth}
+                      resetDrillDiameter={resetDrillDiameter}
+                      resetDrilling={resetDrilling}
+                      resetElevation={resetElevation}
+                      resetRestriction={resetRestriction}
+                      resetTotBedrock={resetTotBedrock}
+                      search={search}
+                      setFilter={setFilter}
+                      settings={settings.data.efilter}
+                      resetCreatedDate={resetCreatedDate}
+                    />
+                  )}
+                </this.StyledAccordionDetails>
+              </this.StyledAccordion>
+            );
+          })}
         </Box>
         <MenuItems reset={this.handleFilterReset} />
       </Stack>
