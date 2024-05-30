@@ -15,6 +15,7 @@
 - Moved form to add a borehole from modal to sidepanel.
 - Removed fields `Inclination` `InclinationDirection` and `QtInclinationDirectionId` from borehole.
 - Removed filter by map functionality.
+- Moved icon to handle custom layers to sidebar.
 
 ### Fixed
 
