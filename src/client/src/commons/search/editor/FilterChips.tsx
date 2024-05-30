@@ -26,12 +26,11 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
       {activeFilters.map((filter, index) => {
         const filterLabel = filter.key === "role" ? t("status") : t(filter.key);
         return (
-          <Tooltip title={filterLabel.length > 15 && filterLabel}>
+          <Tooltip key={index} title={filterLabel.length > 15 && filterLabel}>
             <Chip
               sx={{ marginRight: "10px", marginBottom: "10px" }}
               data-cy="filter-chip"
               color="secondary"
-              key={index}
               label={filterLabel.length < 15 ? filterLabel : filterLabel.substring(0, 15) + "..."}
               onDelete={() => onRemoveFilter(filter)}
               deleteIcon={<DeleteIcon style={{ width: "16px", height: "16px" }} />}
