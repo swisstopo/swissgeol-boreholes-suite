@@ -21,8 +21,6 @@ import proj4 from "proj4";
 import { getGeojson } from "../../api-lib/index";
 import { Box } from "@mui/material";
 import ZoomControls from "./zoomControls";
-import LayerSelectControl from "./layerSelectControl";
-import Sidebar from "./sidebar";
 import NamePopup from "./namePopup";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
 import { getBasemap, swissExtent, updateBasemap } from "../../components/basemapSelector/basemaps";
@@ -37,9 +35,7 @@ class MapComponent extends React.Component {
   static contextType = BasemapContext;
   constructor(props) {
     super(props);
-    this.sidebarRef = React.createRef();
     this.onSelected = this.onSelected.bind(this);
-    this.updateWidth = this.updateWidth.bind(this);
     this.setStateBound = this.setState.bind(this);
     this.fetchAndDisplayGeojson = this.fetchAndDisplayGeojson.bind(this);
     this.styleFunction = styleFunction.bind(this);
@@ -50,7 +46,6 @@ class MapComponent extends React.Component {
     this.addWMTSLayer = this.addWMTSLayer.bind(this);
     this.addWMSLayer = this.addWMSLayer.bind(this);
     this.addUserLayers = this.addUserLayers.bind(this);
-    this.handleResize = this.handleResize.bind(this);
     this.handleHighlights = this.handleHighlights.bind(this);
     this.setFeatureHighlight = this.setFeatureHighlight.bind(this);
     this.clearFeatureHighlight = this.clearFeatureHighlight.bind(this);
@@ -58,7 +53,6 @@ class MapComponent extends React.Component {
     this.onZoomIn = this.onZoomIn.bind(this);
     this.onZoomOut = this.onZoomOut.bind(this);
     this.onFitToExtent = this.onFitToExtent.bind(this);
-    this.onShowLayerSelection = this.onShowLayerSelection.bind(this);
     this.onHover = this.onHover.bind(this);
     this.onSelected = this.onSelected.bind(this);
     this.handleMapInteractions = this.handleMapInteractions.bind(this);
@@ -80,8 +74,6 @@ class MapComponent extends React.Component {
     this.overlays = [];
     this.state = {
       hover: null,
-      sidebar: false,
-      sidebarWidth: 0,
       displayedBaseMap: null,
       drawActive: false,
     };
@@ -331,15 +323,6 @@ class MapComponent extends React.Component {
     });
   }
 
-  handleResize() {
-    this.updateWidth();
-    window.addEventListener("resize", this.updateWidth);
-  }
-
-  updateWidth() {
-    this.setState({ sidebarWidth: this.sidebarRef?.current?.offsetWidth });
-  }
-
   handleHighlights(currentHighlights, hoverCallback, previousHighlights) {
     if (!this.points || _.isEqual(currentHighlights, previousHighlights)) {
       return;
@@ -529,7 +512,6 @@ class MapComponent extends React.Component {
 
     // Load borehole points
     this.fetchAndDisplayGeojson();
-    this.handleResize();
   }
 
   componentDidUpdate(prevProps) {
@@ -565,10 +547,6 @@ class MapComponent extends React.Component {
         this.handleFilter(searchState, prevProps.searchState, view);
       }
     }
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.updateWidth);
   }
 
   //////// Event handlers ////////
@@ -649,18 +627,6 @@ class MapComponent extends React.Component {
     view.getResolution() < 1 && view.setResolution(1);
   };
 
-  onShowLayerSelection = () => {
-    this.setState(
-      {
-        sidebar: !this.state.sidebar,
-      },
-      () => {
-        this.map.updateSize();
-        this.setState({ sidebarWidth: this.sidebarRef?.current?.offsetWidth });
-      },
-    );
-  };
-
   render() {
     return (
       <Box
@@ -674,15 +640,6 @@ class MapComponent extends React.Component {
           flexDirection: "row",
           backgroundColor: theme.palette.background.lightgrey,
         }}>
-        {Object.keys(this.props.layers).length !== 0 && (
-          <LayerSelectControl onShowLayerSelection={this.onShowLayerSelection} sidebarWidth={this.state.sidebarWidth} />
-        )}
-        <Sidebar
-          sidebarRef={this.sidebarRef}
-          state={this.state}
-          setState={this.setStateBound}
-          additionalMapLayers={this.props.layers}
-        />
         <Box
           id="map"
           sx={{

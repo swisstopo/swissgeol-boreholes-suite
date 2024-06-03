@@ -14,6 +14,7 @@ import FilterComponent from "../../commons/search/editor/filterComponent.jsx";
 import NewBoreholePanel from "../../commons/menu/editor/newBoreholePanel.tsx";
 import { DrawerContentTypes } from "./editorComponentInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
+import CustomLayersPanel from "../../commons/menu/editor/customLayers/customLayersPanel.jsx";
 
 const AppBox = styled(Box)({
   display: "flex",
@@ -72,6 +73,7 @@ const EditorComponent = props => {
         setEnabledWorkgroups={setEnabledWorkgroups}
       />
     ),
+    customLayers: <CustomLayersPanel toggleDrawer={toggleSideDrawer} />,
   };
 
   useEffect(() => {
