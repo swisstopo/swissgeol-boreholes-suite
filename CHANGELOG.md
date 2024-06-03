@@ -16,6 +16,7 @@
 - Removed fields `Inclination` `InclinationDirection` and `QtInclinationDirectionId` from borehole.
 - Removed filter by map functionality.
 - Moved icon to handle custom layers to sidebar.
+- Show more entries on the boreholes table when screensize is smaller than 1200px.
 
 ### Fixed
 
