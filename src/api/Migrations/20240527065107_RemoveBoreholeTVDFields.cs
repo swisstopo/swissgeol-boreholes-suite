@@ -4,6 +4,8 @@
 
 namespace BDMS.Migrations;
 
+#pragma warning disable CA1505
+
 /// <inheritdoc />
 public partial class RemoveBoreholeTVDFields : Migration
 {
@@ -41,3 +43,4 @@ public partial class RemoveBoreholeTVDFields : Migration
             table: "borehole");
     }
 }
+#pragma warning restore CA1505
