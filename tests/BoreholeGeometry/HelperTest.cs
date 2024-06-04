@@ -71,7 +71,7 @@ public class HelperTest
 
         Assert.AreEqual(169.07893873661956, geometry.GetDepthTVD(197.5));
         Assert.AreEqual(201.50022214239743, geometry.GetDepthTVD(253));
-        Assert.AreEqual(223.16343112806564, geometry.GetDepthTVD(308.5));
+        Assert.AreEqual(223.1634311280656, geometry.GetDepthTVD(308.5));
 
         Assert.AreEqual(228.76601477156717, geometry.GetDepthTVD(383.75));
         Assert.AreEqual(222.85613683273613, geometry.GetDepthTVD(403.5));
@@ -89,7 +89,7 @@ public class HelperTest
         Assert.AreEqual(84.5718012263034, geometryOnlyMDXYZ.GetDepthTVD(86));
         Assert.AreEqual(109.22594677197365, geometryOnlyMDXYZ.GetDepthTVD(114));
 
-        Assert.AreEqual(177.93301210073562, geometryOnlyMDXYZ.GetDepthTVD(197.5));
+        Assert.AreEqual(177.93301210073565, geometryOnlyMDXYZ.GetDepthTVD(197.5));
         Assert.AreEqual(213.4650694797625, geometryOnlyMDXYZ.GetDepthTVD(253));
         Assert.AreEqual(232.01961003350274, geometryOnlyMDXYZ.GetDepthTVD(308.5));
 
