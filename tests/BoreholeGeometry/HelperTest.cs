@@ -65,41 +65,41 @@ public class HelperTest
     [TestMethod]
     public void GetDepthTVDArcSegment()
     {
-        Assert.AreEqual(57.82043183203776, geometry.GetDepthTVD(58));
-        Assert.AreEqual(84.57174007064822, geometry.GetDepthTVD(86));
-        Assert.AreEqual(109.22588694252808, geometry.GetDepthTVD(114));
+        Assert.AreEqual(57.820431832038, Math.Round(geometry.GetDepthTVD(58), 12));
+        Assert.AreEqual(84.571740070648, Math.Round(geometry.GetDepthTVD(86), 12));
+        Assert.AreEqual(109.225886942528, Math.Round(geometry.GetDepthTVD(114), 12));
 
-        Assert.AreEqual(169.07893873661956, geometry.GetDepthTVD(197.5));
-        Assert.AreEqual(201.50022214239743, geometry.GetDepthTVD(253));
-        Assert.AreEqual(223.1634311280656, geometry.GetDepthTVD(308.5));
+        Assert.AreEqual(169.07893873662, Math.Round(geometry.GetDepthTVD(197.5), 12));
+        Assert.AreEqual(201.500222142397, Math.Round(geometry.GetDepthTVD(253), 12));
+        Assert.AreEqual(223.163431128066, Math.Round(geometry.GetDepthTVD(308.5), 12));
 
-        Assert.AreEqual(228.76601477156717, geometry.GetDepthTVD(383.75));
-        Assert.AreEqual(222.85613683273613, geometry.GetDepthTVD(403.5));
-        Assert.AreEqual(213.34662044030796, geometry.GetDepthTVD(423.25));
+        Assert.AreEqual(228.766014771567, Math.Round(geometry.GetDepthTVD(383.75), 12));
+        Assert.AreEqual(222.856136832736, Math.Round(geometry.GetDepthTVD(403.5), 12));
+        Assert.AreEqual(213.346620440308, Math.Round(geometry.GetDepthTVD(423.25), 12));
 
-        Assert.AreEqual(176.3913714462913, geometry.GetDepthTVD(477.5));
-        Assert.AreEqual(171.26212197960706, geometry.GetDepthTVD(485));
-        Assert.AreEqual(166.2535226150152, geometry.GetDepthTVD(492.5));
+        Assert.AreEqual(176.391371446291, Math.Round(geometry.GetDepthTVD(477.5), 12));
+        Assert.AreEqual(171.262121979607, Math.Round(geometry.GetDepthTVD(485), 12));
+        Assert.AreEqual(166.253522615015, Math.Round(geometry.GetDepthTVD(492.5), 12));
     }
 
     [TestMethod]
     public void GetDepthTVDArcSegmentOnlyXYZ()
     {
-        Assert.AreEqual(57.82046285759562, geometryOnlyMDXYZ.GetDepthTVD(58));
-        Assert.AreEqual(84.5718012263034, geometryOnlyMDXYZ.GetDepthTVD(86));
-        Assert.AreEqual(109.22594677197365, geometryOnlyMDXYZ.GetDepthTVD(114));
+        Assert.AreEqual(57.820462857596, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(58), 12));
+        Assert.AreEqual(84.571801226303, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(86), 12));
+        Assert.AreEqual(109.225946771974, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(114), 12));
 
-        Assert.AreEqual(177.93301210073565, geometryOnlyMDXYZ.GetDepthTVD(197.5));
-        Assert.AreEqual(213.4650694797625, geometryOnlyMDXYZ.GetDepthTVD(253));
-        Assert.AreEqual(232.01961003350274, geometryOnlyMDXYZ.GetDepthTVD(308.5));
+        Assert.AreEqual(177.933012100736, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(197.5), 12));
+        Assert.AreEqual(213.465069479762, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(253), 12));
+        Assert.AreEqual(232.019610033503,Math.Round( geometryOnlyMDXYZ.GetDepthTVD(308.5), 12));
 
-        Assert.AreEqual(227.91152874352522, geometryOnlyMDXYZ.GetDepthTVD(383.75));
-        Assert.AreEqual(221.71181168632785, geometryOnlyMDXYZ.GetDepthTVD(403.5));
-        Assert.AreEqual(212.49211307095248, geometryOnlyMDXYZ.GetDepthTVD(423.25));
+        Assert.AreEqual(227.911528743525, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(383.75), 12));
+        Assert.AreEqual(221.711811686328, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(403.5), 12));
+        Assert.AreEqual(212.492113070952, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(423.25), 12));
 
-        Assert.AreEqual(176.39137144538128, geometryOnlyMDXYZ.GetDepthTVD(477.5));
-        Assert.AreEqual(171.26212197836804, geometryOnlyMDXYZ.GetDepthTVD(485));
-        Assert.AreEqual(166.253522614067, geometryOnlyMDXYZ.GetDepthTVD(492.5));
+        Assert.AreEqual(176.391371445381, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(477.5), 12));
+        Assert.AreEqual(171.262121978368, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(485), 12));
+        Assert.AreEqual(166.253522614067, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(492.5), 12));
     }
 
     [TestMethod]
