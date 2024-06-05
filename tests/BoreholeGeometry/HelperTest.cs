@@ -91,7 +91,7 @@ public class HelperTest
 
         Assert.AreEqual(177.933012100736, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(197.5), 12));
         Assert.AreEqual(213.465069479762, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(253), 12));
-        Assert.AreEqual(232.019610033503,Math.Round( geometryOnlyMDXYZ.GetDepthTVD(308.5), 12));
+        Assert.AreEqual(232.019610033503, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(308.5), 12));
 
         Assert.AreEqual(227.911528743525, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(383.75), 12));
         Assert.AreEqual(221.711811686328, Math.Round(geometryOnlyMDXYZ.GetDepthTVD(403.5), 12));
