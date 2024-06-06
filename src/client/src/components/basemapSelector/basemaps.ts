@@ -12,7 +12,7 @@ export const swissExtent: number[] = [2420000, 1030000, 2900000, 1350000];
 const projection: ProjectionLike = getProjection("EPSG:2056") as ProjectionLike;
 const resolutions: number[] = [
   4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250, 1000, 750, 650, 500, 250, 100, 50, 20, 10, 5,
-  2.5, 2, 1.5, 1, 0.5, 0.25, 0.1,
+  2.5, 2, 1.5, 1, 0.5, 0.25,
 ];
 
 const matrixSet = "2056";
@@ -37,17 +37,7 @@ const baseLayerNames = {
   detailedColormap: "ch.swisstopo.swisstlm3d-karte-farbe",
   satellite: "ch.swisstopo.swissimage",
   greymap: "ch.swisstopo.pixelkarte-grau",
-};
-
-const createLayer = (layerName: string) => {
-  return new TileLayer({
-    minResolution: 0.1,
-    source: new XYZ({
-      url: `https://wmts10.geo.admin.ch/1.0.0/${layerName}/default/current/3857/{z}/{x}/{y}.jpeg`,
-      crossOrigin,
-      attributions,
-    }),
-  });
+  detailedGreymap: "ch.swisstopo.swisstlm3d-karte-grau",
 };
 
 export const basemaps: Basemap[] = [
@@ -58,6 +48,7 @@ export const basemaps: Basemap[] = [
       layers: [
         new TileLayer({
           minResolution: 2.5,
+          maxZoom: 27,
           source: new XYZ({
             url: `https://wmts10.geo.admin.ch/1.0.0/${baseLayerNames.colormap}/default/current/3857/{z}/{x}/{y}.jpeg`,
             crossOrigin,
@@ -85,13 +76,48 @@ export const basemaps: Basemap[] = [
   {
     shortName: "satellite",
     previewImg: baseLayerNames.satellite,
-    layer: createLayer(baseLayerNames.satellite),
+    layer: new TileLayer({
+      minResolution: 0.1,
+      maxZoom: 27,
+      source: new XYZ({
+        url: `https://wmts10.geo.admin.ch/1.0.0/${baseLayerNames.satellite}/default/current/3857/{z}/{x}/{y}.jpeg`,
+        crossOrigin,
+        attributions,
+      }),
+    }),
   },
 
   {
     shortName: "greymap",
     previewImg: baseLayerNames.greymap,
-    layer: createLayer(baseLayerNames.greymap),
+    layer: new LayerGroup({
+      layers: [
+        new TileLayer({
+          minResolution: 2.5,
+          maxZoom: 27,
+          source: new XYZ({
+            url: `https://wmts10.geo.admin.ch/1.0.0/${baseLayerNames.greymap}/default/current/3857/{z}/{x}/{y}.jpeg`,
+            crossOrigin,
+            attributions,
+          }),
+        }),
+        new TileLayer({
+          maxResolution: 2.5,
+          minResolution: 0.1,
+          source: new WMTS({
+            layer: baseLayerNames.detailedGreymap,
+            url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
+            crossOrigin,
+            attributions,
+            tileGrid,
+            projection,
+            requestEncoding,
+            style,
+            matrixSet,
+          }),
+        }),
+      ],
+    }),
   },
 ];
 

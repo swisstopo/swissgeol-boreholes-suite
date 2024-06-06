@@ -8,6 +8,7 @@ import AddIcon from "../../../../public/icons/add.svg?react";
 import UploadIcon from "../../../../public/icons/upload.svg?react";
 import SettingsIcon from "../../../../public/icons/settings.svg?react";
 import HelpIcon from "../../../../public/icons/help.svg?react";
+import LayersIcon from "../../../../public/icons/layers.svg?react";
 import { theme } from "../../../AppTheme";
 import { styled } from "@mui/system";
 import { ProfilePopup } from "../profilePopup";
@@ -19,7 +20,7 @@ import { ReduxRootState, User } from "../../../ReduxStateInterfaces";
 const StyledIconButton = styled(IconButton)({
   padding: "10px",
   marginBottom: "25px",
-  color: theme.palette.primary.main,
+  color: theme.palette.neutral.contrastText,
   "&:hover": {
     backgroundColor: theme.palette.background.lightgrey,
   },
@@ -28,7 +29,7 @@ const StyledIconButton = styled(IconButton)({
 
 const selectedButtonStyle = {
   color: theme.palette.primary.contrastText,
-  backgroundColor: theme.palette.buttonSelected + " !important",
+  backgroundColor: theme.palette.background.menuItemActive + " !important",
 };
 
 const MainSideNav = ({
@@ -75,6 +76,11 @@ const MainSideNav = ({
     setSideDrawerContent(DrawerContentTypes.NewBorehole);
   };
 
+  const handleToggleLayers = () => {
+    handleDrawer(DrawerContentTypes.CustomLayers);
+    setSideDrawerContent(DrawerContentTypes.CustomLayers);
+  };
+
   const handleDrawer = (buttonName: DrawerContentTypes) => {
     if (sideDrawerContent === buttonName) {
       toggleDrawer(!drawerOpen);
@@ -85,6 +91,7 @@ const MainSideNav = ({
 
   const isFilterPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Filters;
   const isAddPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.NewBorehole;
+  const isLayersPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.CustomLayers;
 
   return (
     <Stack
@@ -123,6 +130,12 @@ const MainSideNav = ({
           }}
           disabled={user.data.roles.indexOf("EDIT") === -1}>
           <UploadIcon />
+        </StyledIconButton>
+        <StyledIconButton
+          data-cy="layers-button"
+          onClick={handleToggleLayers}
+          sx={isLayersPanelVisible ? selectedButtonStyle : {}}>
+          <LayersIcon />
         </StyledIconButton>
       </Stack>
       <Stack

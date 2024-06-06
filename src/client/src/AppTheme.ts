@@ -3,17 +3,17 @@ import { createTheme } from "@mui/material/styles";
 export const theme = createTheme({
   palette: {
     primary: {
-      main: "#1c2834",
+      main: "#337083",
       contrastText: "#ffffff",
     },
     secondary: {
-      main: "#424242",
+      main: "#1c2834",
       contrastText: "#ffffff",
       background: "#eeeeee",
     },
     error: {
-      main: "#f44336",
-      dark: "#d32f2f",
+      main: "#FF0000",
+      dark: "#AA3526",
       contrastText: "#ffffff",
       background: "#ffebee",
     },
@@ -25,21 +25,34 @@ export const theme = createTheme({
       main: "#f5f5f5",
     },
     mapIcon: {
-      main: "#0b7285",
+      main: "#337083",
       secondary: "#a65462",
     },
     boxShadow: "rgba(0, 0, 0, 0.17)",
-    background: { default: "#ffffff", lightgrey: "#f1f3f5", darkgrey: "#787878", dark: "rgba(0, 0, 0, 0.5)" },
-    buttonSelected: "#AA3526",
+    background: {
+      default: "#ffffff",
+      lightgrey: "#f1f3f5",
+      darkgrey: "#787878",
+      dark: "rgba(0, 0, 0, 0.5)",
+      menuItemActive: "#AA3526",
+      filterItemActive: "#1C2834",
+    },
+
+    border: "#E0E2E6",
   },
   typography: {
     fontFamily: "Inter",
+    h6: {
+      fontSize: "14px",
+      lineHeight: "20px",
+      fontWeight: 500,
+      color: "#337083",
+    },
     h5: {
       fontSize: "20px",
       lineHeight: "28px",
       fontWeight: 700,
       color: "#000000",
-      marginBottom: "15px",
     },
     subtitle1: {
       fontSize: "13px",

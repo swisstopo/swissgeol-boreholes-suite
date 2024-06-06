@@ -7,7 +7,7 @@ class ListEditingBorehole(Action):
 
     async def execute(
         self, limit=None, page=None,
-        filter={}, orderby=None, direction=None, user=None
+        filter={}, orderby=None, direction=None, user=None,feature_ids=None,
     ):
 
         permissions = None
@@ -19,7 +19,7 @@ class ListEditingBorehole(Action):
 
         layer_where, layer_params, layer_joins = self.filterProfileLayers(
             filter)
-        
+
         chronostratigraphy_where, chronostratigraphy_params, chronostratigraphy_joins = self.filterChronostratigraphy(filter)
 
         lithostratigraphy_where, lithostratigraphy_params, lithostratigraphy_joins = self.filterLithostratigraphy(filter)
@@ -127,7 +127,7 @@ class ListEditingBorehole(Action):
             ) as ids
             ON
                 ids.borehole_id = borehole.id_bho
-                
+
             INNER JOIN bdms.workgroups
             ON id_wgp = id_wgp_fk
 
@@ -289,7 +289,7 @@ class ListEditingBorehole(Action):
 
                     FROM
                         bdms.stratigraphy
-                    
+
                     INNER JOIN
                         bdms.layer
                     ON
@@ -300,7 +300,7 @@ class ListEditingBorehole(Action):
                     {}
 
                 ) as strt2
-                ON 
+                ON
                     borehole.id_bho = strt2.id_bho_fk
             """.format(
                 joins_string, where_string
@@ -324,7 +324,7 @@ class ListEditingBorehole(Action):
 
                     FROM
                         bdms.stratigraphy
-                    
+
                     INNER JOIN
                         bdms.chronostratigraphy
                     ON
@@ -335,7 +335,7 @@ class ListEditingBorehole(Action):
                     {}
 
                 ) as chronostratigraphy
-                ON 
+                ON
                     borehole.id_bho = chronostratigraphy.id_bho_fk
             """.format(
                 joins_string, where_string
@@ -359,7 +359,7 @@ class ListEditingBorehole(Action):
 
                     FROM
                         bdms.stratigraphy
-                    
+
                     INNER JOIN
                         bdms.lithostratigraphy
                     ON
@@ -370,7 +370,7 @@ class ListEditingBorehole(Action):
                     {}
 
                 ) as lithostratigraphy
-                ON 
+                ON
                     borehole.id_bho = lithostratigraphy.id_bho_fk
             """.format(
                 joins_string, where_string
@@ -402,6 +402,17 @@ class ListEditingBorehole(Action):
             """.format(
                 operator, permissions
             )
+
+        # Filtering by a list of IDs
+        if feature_ids:
+            ids_placeholder = ', '.join(map(str, feature_ids))
+            where_clause = f"borehole.id_bho IN ({ids_placeholder})"
+            if "WHERE" in rowsSql:
+                rowsSql += f" AND {where_clause}"
+                cntSql += f" AND {where_clause}"
+            else:
+                rowsSql += f" WHERE {where_clause}"
+                cntSql += f" WHERE {where_clause}"
 
         _orderby, direction = self.getordering(orderby, direction)
 

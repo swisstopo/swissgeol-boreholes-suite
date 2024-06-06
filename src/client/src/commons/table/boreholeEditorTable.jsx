@@ -7,8 +7,8 @@ import TranslationText from "../form/translationText";
 import { NumericFormat } from "react-number-format";
 import { copyBorehole } from "../../api/fetchApiV2";
 import TTable from "./table";
-import { Button, Table, Icon, Checkbox, Segment, Modal, Header, Dropdown } from "semantic-ui-react";
-import { loadEditingBoreholes, getdBoreholeIds, deleteBoreholes } from "../../api-lib/index";
+import { Button, Checkbox, Dropdown, Header, Icon, Modal, Segment, Table } from "semantic-ui-react";
+import { deleteBoreholes, getdBoreholeIds, loadEditingBoreholes } from "../../api-lib/index";
 import { AlertContext } from "../../components/alert/alertContext";
 import { theme } from "../../AppTheme";
 
@@ -46,13 +46,13 @@ class BoreholeEditorTable extends TTable {
   componentDidMount() {
     const { filter, store, sort } = this.props;
     this.props.clear();
-    this.props.loadData(store.page, filter, sort?.column ?? "creation", sort?.direction);
+    this.props.loadData(store.page, filter, this.props.featureIds, sort?.column ?? "creation", sort?.direction);
   }
 
   reorder(orderby) {
     const { filter, loadData, store, onReorder } = this.props;
     let dir = store.direction === "DESC" ? "ASC" : "DESC";
-    loadData(store.page, filter, orderby, dir);
+    loadData(store.page, filter, this.props.featureIds, orderby, dir);
     onReorder(orderby, dir);
   }
   add2selection(id) {
@@ -113,7 +113,7 @@ class BoreholeEditorTable extends TTable {
                     all: false,
                   },
                   () => {
-                    this.props.loadData(1, filter);
+                    this.props.loadData(1, filter, this.props.featureIds);
                   },
                 );
               });
@@ -132,7 +132,7 @@ class BoreholeEditorTable extends TTable {
               all: false,
             },
             () => {
-              this.props.loadData(1, filter);
+              this.props.loadData(1, filter, this.props.featureIds);
             },
           );
         });
@@ -504,8 +504,8 @@ const mapDispatchToProps = dispatch => {
         path: "/borehole",
       });
     },
-    loadData: (page, filter = {}, orderby = null, direction = null) => {
-      dispatch(loadEditingBoreholes(page, 100, filter, orderby, direction));
+    loadData: (page, filter = {}, feature_ids = null, orderby = null, direction = null) => {
+      dispatch(loadEditingBoreholes(page, 100, filter, orderby, direction, feature_ids));
     },
   };
 };

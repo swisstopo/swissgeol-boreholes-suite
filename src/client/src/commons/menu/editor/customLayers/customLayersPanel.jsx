@@ -1,31 +1,28 @@
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
-import MapOverlayComponent from "./mapOverlayCmp";
+import { CustomLayersComponent } from "./customLayersComponent.jsx";
+import { patchSettings } from "../../../../api-lib/index.js";
 
-import { patchSettings } from "../../../api-lib/index";
-
-const MapOverlay = props => {
+const CustomLayersPanel = props => {
   return (
-    <MapOverlayComponent
-      isFetching={props.setting.isFetching}
+    <CustomLayersComponent
+      toggleDrawer={props.toggleDrawer}
       layers={props.setting.data.map.explorer}
       moveDown={props.moveDown}
       moveUp={props.moveUp}
       saveTransparency={props.saveTransparency}
       setSelectedLayer={props.setSelectedLayer}
-      setTransparency={props.setTransparency}
       toggleVisibility={props.toggleVisibility}
     />
   );
 };
 
-MapOverlay.propTypes = {
+CustomLayersPanel.propTypes = {
   moveDown: PropTypes.func,
   moveUp: PropTypes.func,
   saveTransparency: PropTypes.func,
   setSelectedLayer: PropTypes.func,
-  setTransparency: PropTypes.func,
   setting: PropTypes.object,
   toggleVisibility: PropTypes.func,
 };
@@ -46,16 +43,6 @@ const mapDispatchToProps = dispatch => {
           "visibility",
         ]),
       );
-    },
-    setTransparency: (layer, value) => {
-      dispatch({
-        disableFetching: true,
-        path: "/setting",
-        type: "PATCH",
-        tree: "map.explorer",
-        value: value,
-        key: [layer.Identifier, "transparency"],
-      });
     },
     saveTransparency: layer => {
       dispatch(
@@ -84,5 +71,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const ConnectedMapOverlay = connect(mapStateToProps, mapDispatchToProps)(MapOverlay);
-export default ConnectedMapOverlay;
+const ConnectedCustomLayersPanel = connect(mapStateToProps, mapDispatchToProps)(CustomLayersPanel);
+export default ConnectedCustomLayersPanel;

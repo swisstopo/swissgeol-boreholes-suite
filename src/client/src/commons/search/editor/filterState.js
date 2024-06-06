@@ -2,7 +2,6 @@ import _ from "lodash";
 
 const initialState = {
   isFetching: false,
-  mapfilter: false,
   filter: {
     refresh: 1,
     borehole_identifier: null,
@@ -103,7 +102,7 @@ const initialState = {
   },
 };
 
-const searchEditor = (
+const filters = (
   state = {
     ...initialState,
     filter: {
@@ -113,26 +112,6 @@ const searchEditor = (
   action,
 ) => {
   switch (action.type) {
-    case "SEARCH_EDITOR_MAPFILTER_CHANGED": {
-      if (action.active === true) {
-        return {
-          ...state,
-          filter: {
-            ...state.filter,
-            extent: state.extent,
-          },
-          mapfilter: action.active,
-        };
-      }
-      return {
-        ...state,
-        filter: {
-          ...state.filter,
-          extent: null,
-        },
-        mapfilter: action.active,
-      };
-    }
     case "SEARCH_EDITOR_FILTER_CHANGED": {
       const copy = {
         ...state,
@@ -255,24 +234,7 @@ const searchEditor = (
         },
       };
     }
-    case "SEARCH_EXTENT_CHANGED": {
-      if (state.mapfilter === true) {
-        return {
-          ...state,
-          extent: action.extent,
-          resolution: action.resolution,
-          filter: {
-            ...state.filter,
-            extent: action.extent,
-          },
-        };
-      }
-      return {
-        ...state,
-        extent: action.extent,
-        resolution: action.resolution,
-      };
-    }
+
     case "SEARCH_EDITOR_FILTER_RESET_CREATED_DATE": {
       const copy = { ...state };
       copy.filter.created_date_from = null;
@@ -284,4 +246,4 @@ const searchEditor = (
   }
 };
 
-export default searchEditor;
+export default filters;

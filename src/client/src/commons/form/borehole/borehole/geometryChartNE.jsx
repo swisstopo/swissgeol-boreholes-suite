@@ -5,10 +5,9 @@ import { Box, Stack, Typography } from "@mui/material";
 
 const GeometryChartNE = ({ data }) => {
   const size = 500;
-  const padding = { leftBottom: 30, topRight: 50 };
-  const margin = { top: 30, right: 2, bottom: 2, left: 15 };
-  const contentSize =
-    size - padding.leftBottom - padding.topRight - Math.max(margin.right + margin.left, margin.top + margin.bottom);
+  const padding = { top: 35, right: 20, bottom: 40, left: 50 };
+  const margin = 2;
+  const contentSize = size - 2 * margin - Math.max(padding.right + padding.left, padding.top + padding.bottom);
 
   const { t } = useTranslation();
   const axisXRef = useRef(null);
@@ -38,7 +37,7 @@ const GeometryChartNE = ({ data }) => {
         <Typography variant="h6">{t("topView")}</Typography>
       </Stack>
       <svg viewBox={`0 0 ${size} ${size}`}>
-        <g transform={`translate(${padding.topRight + margin.left}, ${padding.leftBottom + margin.top})`}>
+        <g transform={`translate(${padding.left + margin}, ${padding.top + margin})`}>
           <g stroke="lightgray" fill="none" strokeLinecap="square">
             {x
               .ticks()
@@ -56,25 +55,22 @@ const GeometryChartNE = ({ data }) => {
           <g ref={axisXRef} transform={`translate(0, ${contentSize})`} />
           <g ref={axisYRef} />
           <g>
-            <text x={contentSize / 2} dy={-padding.leftBottom} textAnchor="middle" dominantBaseline="hanging">
-              N
+            <text x={contentSize} y={contentSize} dy={padding.bottom} textAnchor="end" dominantBaseline="auto">
+              {t("geometryChartNEScaleXLabel")} [m]
             </text>
-            <text
-              x={contentSize}
-              y={contentSize / 2}
-              dx={padding.leftBottom}
-              textAnchor="end"
-              dominantBaseline="middle">
-              {t("eastAbbr")}
-            </text>
-            <text x={contentSize / 2} y={contentSize} dy={padding.topRight} textAnchor="middle" dominantBaseline="auto">
-              S
-            </text>
-            <text y={contentSize / 2} dx={-padding.topRight} textAnchor="start" dominantBaseline="middle">
-              {t("westAbbr")}
+            <text textAnchor="end" dominantBaseline="hanging" transform={`rotate(-90) translate(0 ${-padding.left})`}>
+              {t("geometryChartNEScaleYLabel")} [m]
             </text>
           </g>
           <path fill="none" stroke={d3.schemeCategory10[0]} strokeWidth={2} d={line(data)} strokeLinecap="round" />
+          {data.length > 0 && (
+            <path
+              d={`${d3.symbol(d3.symbolTimes)()}`}
+              fill="none"
+              stroke={d3.schemeCategory10[0]}
+              transform={`translate(${x(data[0].x)},${y(data[0].y)})`}
+            />
+          )}
         </g>
       </svg>
     </Box>

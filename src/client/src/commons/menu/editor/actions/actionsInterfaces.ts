@@ -8,6 +8,10 @@ export interface WorkgroupSelectProps {
   setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
+export interface NewBoreholeProps extends WorkgroupSelectProps {
+  toggleDrawer: (open: boolean) => void;
+}
+
 export interface ImportContentProps {
   setSelectedBoreholeAttachments: React.Dispatch<React.SetStateAction<Blob[] | null>>;
   selectedFile: Blob[] | null;

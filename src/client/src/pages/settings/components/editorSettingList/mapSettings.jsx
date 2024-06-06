@@ -2,7 +2,7 @@ import { useContext } from "react";
 import _ from "lodash";
 import Highlighter from "react-highlight-words";
 
-import { Button, Checkbox, Divider, Dropdown, Input, Label, Popup, Segment } from "semantic-ui-react";
+import { Button, Divider, Dropdown, Input, Label, Popup, Segment } from "semantic-ui-react";
 import { getWms } from "../../../../api-lib/index";
 import { AlertContext } from "../../../../components/alert/alertContext";
 import TranslationText from "../../../../commons/form/translationText";
@@ -12,18 +12,7 @@ import { theme } from "../../../../AppTheme";
 
 const MapSettings = props => {
   const alertContext = useContext(AlertContext);
-  const {
-    setting,
-    i18n,
-    rmExplorerMap,
-    addExplorerMap,
-    toggleFilter,
-    t,
-    handleAddItem,
-    handleOnChange,
-    state,
-    setState,
-  } = props;
+  const { setting, i18n, rmExplorerMap, addExplorerMap, handleAddItem, handleOnChange, state, setState } = props;
 
   return (
     <>
@@ -446,15 +435,6 @@ const MapSettings = props => {
                 </div>
               </div>
             </div>
-          </Segment>
-          <Segment>
-            <Checkbox
-              checked={setting.data.filter.mapfilter}
-              label={t("filterbymap")}
-              onChange={(e, d) => {
-                toggleFilter("mapfilter", d.checked);
-              }}
-            />
           </Segment>
         </Segment.Group>
       ) : (
