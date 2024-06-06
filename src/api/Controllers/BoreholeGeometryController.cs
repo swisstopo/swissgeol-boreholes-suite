@@ -134,10 +134,11 @@ public class BoreholeGeometryController : ControllerBase
             }
             catch (ArgumentOutOfRangeException)
             {
+             // Exception is ignored so that the action returns an empty response in case the input was invalid.
             }
         }
 
-        // Return an empty response in case the input was invalid
+        logger?.LogInformation($"Invalid input, could not calculate true vertical depth from measured depth of {depthMD}");
         return Ok();
     }
 
@@ -147,6 +148,7 @@ public class BoreholeGeometryController : ControllerBase
             .AsNoTracking()
             .Where(g => g.BoreholeId == boreholeId)
             .OrderBy(g => g.MD)
-            .ToListAsync().ConfigureAwait(false);
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 }
