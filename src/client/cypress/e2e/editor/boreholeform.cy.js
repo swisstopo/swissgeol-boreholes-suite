@@ -40,7 +40,7 @@ describe("Test for the borehole form.", () => {
         boreholeDropdownValues.push(value);
       })
       .then(() => {
-        expect(boreholeDropdownValues).to.deep.eq(["borehole", "geotechnics", "open, no completion", "2", "2"]);
+        expect(boreholeDropdownValues).to.deep.eq(["borehole", "geotechnics", "open, no completion", "2"]);
       });
   });
 });
