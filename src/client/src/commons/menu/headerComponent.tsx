@@ -14,7 +14,7 @@ const HeaderComponent = () => {
       direction="row"
       alignItems="center"
       sx={{
-        boxShadow: theme.palette.boxShadow + " 0px 4px 12px",
+        borderBottom: "1px solid " + theme.palette.boxShadow,
         height: "88px",
         padding: "16px",
         zIndex: "10",

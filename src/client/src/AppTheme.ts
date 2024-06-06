@@ -31,7 +31,7 @@ export const theme = createTheme({
       main: "#337083",
       secondary: "#a65462",
     },
-    boxShadow: "rgba(0, 0, 0, 0.17)",
+    boxShadow: "#DFE4E9",
     background: {
       default: "#ffffff",
       lightgrey: "#f1f3f5",
