@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
 import { CustomLayersComponent } from "./customLayersComponent.jsx";
-import { patchSettings } from "../../../../api-lib/index.js";
+import { patchSettings } from "../../../../../api-lib/index.js";
 
 const CustomLayersPanel = props => {
   return (
