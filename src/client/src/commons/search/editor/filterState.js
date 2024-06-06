@@ -84,16 +84,9 @@ const initialState = {
     original_lithology: "",
     layer_gradation: null,
 
-    total_depth_tvd_from: "",
-    total_depth_tvd_to: "",
-    top_bedrock_tvd_from: "",
-    top_bedrock_tvd_to: "",
     qt_depth: null,
-    qt_total_depth_tvd: null,
     qt_top_bedrock_from: "",
     qt_top_bedrock_to: "",
-    qt_top_bedrock_tvd_from: "",
-    qt_top_bedrock_tvd_to: "",
 
     reference_elevation_type: null,
     qt_reference_elevation: null,

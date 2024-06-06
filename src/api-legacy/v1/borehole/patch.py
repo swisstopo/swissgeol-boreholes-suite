@@ -87,17 +87,8 @@ class PatchBorehole(Action):
         elif field == 'total_depth':
             column = 'total_depth_bho'
 
-        elif field == 'total_depth_tvd':
-            column = 'total_depth_tvd_bho'
-
-        elif field == 'qt_total_depth_tvd':
-            column = 'qt_total_depth_tvd_id_cli'
-
         elif field == 'extended.top_bedrock':
             column = 'top_bedrock_bho'
-
-        elif field == 'extended.top_bedrock_tvd':
-            column = 'top_bedrock_tvd_bho'
 
         elif field == 'extended.groundwater':
             column = 'groundwater_bho'
@@ -156,9 +147,6 @@ class PatchBorehole(Action):
         elif field == 'custom.qt_top_bedrock':
             column = 'qt_top_bedrock'
 
-        elif field == 'custom.qt_top_bedrock_tvd':
-            column = 'qt_top_bedrock_tvd'
-
         elif field == 'custom.lithology_top_bedrock':
             column = 'lithology_top_bedrock_id_cli'
 
@@ -205,11 +193,8 @@ class PatchBorehole(Action):
                 'drill_diameter',
                 'custom.drill_diameter',
                 'total_depth',
-                'total_depth_tvd',
                 'extended.top_bedrock',
-                'extended.top_bedrock_tvd',
                 'custom.qt_top_bedrock',
-                'custom.qt_top_bedrock_tvd',
                 'extended.groundwater',
                 'custom.mistakes',
                 'custom.remarks',
@@ -289,7 +274,6 @@ class PatchBorehole(Action):
                 'custom.chronostratigraphy_top_bedrock',
                 'qt_reference_elevation',
                 'reference_elevation_type',
-                'qt_total_depth_tvd'
             ]:
 
                 schema = field
@@ -303,17 +287,11 @@ class PatchBorehole(Action):
                 elif field == 'custom.chronostratigraphy_top_bedrock':
                     schema = 'custom.chronostratigraphy_top_bedrock'
 
-                elif field == 'custom.qt_top_bedrock_tvd':
-                    schema = 'depth_precision'
-
                 elif field == 'qt_reference_elevation':
                     schema = 'elevation_precision'
 
                 elif field == 'reference_elevation_type':
                     schema = 'reference_elevation_type'
-
-                elif field == 'qt_total_depth_tvd':
-                    schema = 'depth_precision'
                 
                 elif field == 'custom.qt_depth':
                     schema = 'depth_precision'

@@ -13,8 +13,7 @@ const BoreholeGeneralSegment = props => {
         }}>
         <div
           style={{
-            flex: "1 1 100%",
-            minWidth: "600px",
+            flex: "1 1 0",
           }}>
           <Form autoComplete="off" error size={size}>
             <Form.Group widths="equal">
@@ -32,6 +31,8 @@ const BoreholeGeneralSegment = props => {
                   readOnly={!isEditable}
                 />
               </Form.Field>
+            </Form.Group>
+            <Form.Group widths="equal">
               <Form.Field required>
                 <label>
                   <TranslationText id="purpose" />
@@ -45,6 +46,8 @@ const BoreholeGeneralSegment = props => {
                   readOnly={!isEditable}
                 />
               </Form.Field>
+            </Form.Group>
+            <Form.Group widths="equal">
               <Form.Field required>
                 <label>
                   <TranslationText firstUpperCase id="boreholestatus" />
@@ -63,8 +66,7 @@ const BoreholeGeneralSegment = props => {
         </div>
         <div
           style={{
-            flex: "1 1 100%",
-            minWidth: "200px",
+            flex: "1 1 0",
             paddingLeft: "1em",
           }}>
           <Form autoComplete="off" error size={size}>

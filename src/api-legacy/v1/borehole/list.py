@@ -67,9 +67,6 @@ class ListBorehole(Action):
                 top_bedrock_bho as top_bedrock,
                 qt_tbed.geolcode as qt_top_bedrock,
 
-                top_bedrock_tvd_bho as top_bedrock_tvd,
-                qt_tbed_tvd.geolcode as qt_top_bedrock_tvd,
-
                 groundwater_bho as groundwater,
                 
                 ids.identifiers,
@@ -198,8 +195,7 @@ class ListBorehole(Action):
                         SELECT
                             status_id_cli as status,
                             purpose_id_cli as purpose,
-                            top_bedrock_bho as top_bedrock,
-                            top_bedrock_tvd_bho as top_bedrock_tvd
+                            top_bedrock_bho as top_bedrock
                     ) t
                 ) as extended,
                 status[array_length(status, 1)] as workflow,

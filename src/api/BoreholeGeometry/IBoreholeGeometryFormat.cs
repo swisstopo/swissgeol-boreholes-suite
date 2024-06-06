@@ -1,6 +1,6 @@
 ﻿using BDMS.Models;
 
-namespace BDMS.BoreholeGeometryFormat;
+namespace BDMS.BoreholeGeometry;
 
 /// <summary>
 /// Geometry format with method to read and convert the input CSV file to <see cref="BoreholeGeometryElement"/>s.

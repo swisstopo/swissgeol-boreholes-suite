@@ -2,7 +2,7 @@
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
 
-namespace BDMS.BoreholeGeometryFormat;
+namespace BDMS.BoreholeGeometry;
 
 /// <summary>
 /// Accepts a CSV file with XYZ values that can be used directly without conversion.

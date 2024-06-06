@@ -596,25 +596,6 @@ class Action():
                     total_depth_bho <= %s
                 """ % self.getIdx())
 
-            if 'total_depth_tvd_from' in keys and filter['total_depth_tvd_from'] not in ['', None]:
-                params.append(float(filter['total_depth_tvd_from']))
-                where.append("""
-                    total_depth_tvd_bho >= %s
-                """ % self.getIdx())
-
-            if 'total_depth_tvd_to' in keys and filter['total_depth_tvd_to'] not in ['', None]:
-                params.append(float(filter['total_depth_tvd_to']))
-                where.append("""
-                    total_depth_tvd_bho <= %s
-                """ % self.getIdx())
-
-            if 'qt_total_depth_tvd' in keys and filter[
-                    'qt_total_depth_tvd'] not in ['', None]:
-                params.append(int(filter['qt_total_depth_tvd']))
-                where.append("""
-                    qt_total_depth_tvd_id_cli = %s
-                """ % self.getIdx())
-
             if 'top_bedrock_from' in keys and filter['top_bedrock_from'] not in ['', None]:
                 params.append(float(filter['top_bedrock_from']))
                 where.append("""
@@ -637,30 +618,6 @@ class Action():
                 params.append(float(filter['qt_top_bedrock_to']))
                 where.append("""
                     qt_top_bedrock <= %s
-                """ % self.getIdx())
-
-            if 'top_bedrock_tvd_from' in keys and filter['top_bedrock_tvd_from'] not in ['', None]:
-                params.append(float(filter['top_bedrock_tvd_from']))
-                where.append("""
-                    top_bedrock_tvd_bho >= %s
-                """ % self.getIdx())
-
-            if 'top_bedrock_tvd_to' in keys and filter['top_bedrock_tvd_to'] not in ['', None]:
-                params.append(float(filter['top_bedrock_tvd_to']))
-                where.append("""
-                    top_bedrock_tvd_bho <= %s
-                """ % self.getIdx())
-
-            if 'qt_top_bedrock_tvd_from' in keys and filter['qt_top_bedrock_tvd_from'] not in ['', None]:
-                params.append(float(filter['qt_top_bedrock_tvd_from']))
-                where.append("""
-                    qt_top_bedrock_tvd >= %s
-                """ % self.getIdx())
-
-            if 'qt_top_bedrock_tvd_to' in keys and filter['qt_top_bedrock_tvd_to'] not in ['', None]:
-                params.append(float(filter['qt_top_bedrock_tvd_to']))
-                where.append("""
-                    qt_top_bedrock_tvd <= %s
                 """ % self.getIdx())
 
             if 'lithology_top_bedrock' in keys and filter[

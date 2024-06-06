@@ -1,8 +1,9 @@
 ﻿using BDMS.Models;
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
+using NetTopologySuite.Utilities;
 
-namespace BDMS.BoreholeGeometryFormat;
+namespace BDMS.BoreholeGeometry;
 
 /// <summary>
 /// Accepts a CSV file where every data point has a Pitch, Roll and Yaw angle.
@@ -24,9 +25,9 @@ internal sealed class PitchRollFormat : IBoreholeGeometryFormat
         // Convert degrees to radians
         foreach (var entry in data)
         {
-            entry.PitchRad = Helper.ToRadians(entry.PitchRad);
-            entry.RollRad = Helper.ToRadians(entry.RollRad);
-            entry.YawRad = Helper.ToRadians(entry.YawRad);
+            entry.PitchRad = Degrees.ToRadians(entry.PitchRad);
+            entry.RollRad = Degrees.ToRadians(entry.RollRad);
+            entry.YawRad = Degrees.ToRadians(entry.YawRad);
         }
 
         return XYZFormat.ToBoreholeGeometry(AzIncFormat.ConvertToXYZ(ConvertToAzInc(data)), boreholeId);
@@ -54,8 +55,8 @@ internal sealed class PitchRollFormat : IBoreholeGeometryFormat
 
             result.AzimuthRad = Math.Atan2(y, x);
             result.InclinationRad = Math.Acos(z);
-            result.Azimuth = Helper.ToDegrees(result.AzimuthRad);
-            result.Inclination = Helper.ToDegrees(result.InclinationRad);
+            result.Azimuth = Radians.ToDegrees(result.AzimuthRad);
+            result.Inclination = Radians.ToDegrees(result.InclinationRad);
 
             return result;
         }).ToList();
