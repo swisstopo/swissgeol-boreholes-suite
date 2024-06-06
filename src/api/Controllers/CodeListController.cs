@@ -112,7 +112,7 @@ public class CodeListController : ControllerBase
         await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
         using var reader = await connection.BeginTextExportAsync(
             @"COPY (
-            SELECT id_cli, schema_cli, code_cli, text_cli_en, description_cli_en, text_cli_de, description_cli_de, text_cli_fr, description_cli_fr, text_cli_it, description_cli_it, text_cli_ro, description_cli_ro
+            SELECT id_cli, schema_cli, code_cli, text_cli_en, text_cli_de, text_cli_fr, text_cli_it, text_cli_ro
             FROM bdms.codelist) TO STDOUT WITH DELIMITER ',' CSV HEADER;",
             cancellationToken).ConfigureAwait(false);
 

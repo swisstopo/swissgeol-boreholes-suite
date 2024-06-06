@@ -15,7 +15,7 @@ class ListCodeList(Action):
                 FROM
                     bdms.codelist
             """)
-        
+
         else:
             recs = await self.conn.fetch("""
                 SELECT DISTINCT
@@ -50,8 +50,7 @@ class ListCodeList(Action):
                             select row_to_json(t)
                             FROM (
                                 SELECT
-                                    text_cli_en as text,
-                                    description_cli_en as descr
+                                    text_cli_en as text
                             ) t
                         ) as en,
                         (
@@ -61,11 +60,7 @@ class ListCodeList(Action):
                                     COALESCE(
                                         text_cli_de,
                                         text_cli_{dl}
-                                    ) as text,
-                                    COALESCE(
-                                        description_cli_de,
-                                        description_cli_{dl}
-                                    ) as descr
+                                    ) as text
                             ) t
                         ) as de,
                         (
@@ -75,11 +70,7 @@ class ListCodeList(Action):
                                     COALESCE(
                                         text_cli_fr,
                                         text_cli_{dl}
-                                    ) as text,
-                                    COALESCE(
-                                        description_cli_fr,
-                                        description_cli_{dl}
-                                    ) as descr
+                                    ) as text
                             ) t
                         ) as fr,
                         (
@@ -89,11 +80,7 @@ class ListCodeList(Action):
                                     COALESCE(
                                         text_cli_it,
                                         text_cli_{dl}
-                                    ) as text,
-                                    COALESCE(
-                                        description_cli_it,
-                                        description_cli_{dl}
-                                    ) as descr
+                                    ) as text
                             ) t
                         ) as it,
 					    conf_cli as conf,
