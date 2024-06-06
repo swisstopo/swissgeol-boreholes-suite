@@ -2,6 +2,9 @@ import { createTheme } from "@mui/material/styles";
 
 export const theme = createTheme({
   palette: {
+    action: {
+      disabled: "#828E9A",
+    },
     primary: {
       main: "#337083",
       contrastText: "#ffffff",
