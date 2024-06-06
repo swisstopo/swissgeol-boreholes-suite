@@ -20,19 +20,9 @@ export const boreholeEditorData = [
     value: "length",
   },
   {
-    id: 12,
-    label: "total_depth_tvd",
-    value: "total_depth_tvd",
-  },
-  {
     id: 13,
     label: "top_bedrock",
     value: "extended.top_bedrock",
-  },
-  {
-    id: 14,
-    label: "top_bedrock_tvd",
-    value: "extended.top_bedrock_tvd",
   },
   {
     id: 15,
@@ -40,19 +30,9 @@ export const boreholeEditorData = [
     value: "qt_depth",
   },
   {
-    id: 16,
-    label: "total_depth_tvd_qt",
-    value: "total_depth_tvd_qt",
-  },
-  {
     id: 17,
     label: "qt_top_bedrock",
     value: "qt_top_bedrock",
-  },
-  {
-    id: 18,
-    label: "top_bedrock_tvd_qt",
-    value: "top_bedrock_tvd_qt",
   },
   {
     id: 19,

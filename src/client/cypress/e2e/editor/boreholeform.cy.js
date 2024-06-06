@@ -30,7 +30,7 @@ describe("Test for the borehole form.", () => {
     // fill all dropdowns on borehole tab
     cy.get('[data-cy="borehole-menu-item"]').click();
     cy.get('[data-cy="domain-dropdown"]')
-      .should("have.length", 5)
+      .should("have.length", 4)
       .each(el => cy.wrap(el).click().find('[role="option"]').eq(1).click());
 
     const boreholeDropdownValues = [];
@@ -40,7 +40,7 @@ describe("Test for the borehole form.", () => {
         boreholeDropdownValues.push(value);
       })
       .then(() => {
-        expect(boreholeDropdownValues).to.deep.eq(["borehole", "geotechnics", "open, no completion", "2", "2"]);
+        expect(boreholeDropdownValues).to.deep.eq(["borehole", "geotechnics", "open, no completion", "2"]);
       });
   });
 });

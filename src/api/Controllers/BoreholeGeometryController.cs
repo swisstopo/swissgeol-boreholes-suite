@@ -1,5 +1,5 @@
 ﻿using BDMS.Authentication;
-using BDMS.BoreholeGeometryFormat;
+using BDMS.BoreholeGeometry;
 using BDMS.Models;
 using CsvHelper;
 using CsvHelper.TypeConversion;
@@ -36,11 +36,7 @@ public class BoreholeGeometryController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IEnumerable<BoreholeGeometryElement>> GetAsync([FromQuery] int boreholeId)
     {
-        return await context.BoreholeGeometry
-            .AsNoTracking()
-            .Where(g => g.BoreholeId == boreholeId)
-            .OrderBy(g => g.Id)
-            .ToListAsync().ConfigureAwait(false);
+        return await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
     }
 
     [HttpDelete]
@@ -114,5 +110,45 @@ public class BoreholeGeometryController : ControllerBase
             logger?.LogError(ex, errorMessage);
             return Problem(errorMessage);
         }
+    }
+
+    [HttpGet("[action]")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> GetDepthTVD([FromQuery] int boreholeId, [FromQuery] double depthMD)
+    {
+        var geometry = await GetBoreholeGeometry(boreholeId).ConfigureAwait(false);
+
+        if (geometry.Count < 2)
+        {
+            if (depthMD >= 0)
+            {
+                // Return the depthMD unchanged as if the borehole is perfectly vertical and infinitely long.
+                return Ok(depthMD);
+            }
+        }
+        else
+        {
+            try
+            {
+                return Ok(geometry.GetDepthTVD(depthMD));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+             // Exception is ignored so that the action returns an empty response in case the input was invalid.
+            }
+        }
+
+        logger?.LogInformation($"Invalid input, could not calculate true vertical depth from measured depth of {depthMD}");
+        return Ok();
+    }
+
+    private async Task<List<BoreholeGeometryElement>> GetBoreholeGeometry(int boreholeId)
+    {
+        return await context.BoreholeGeometry
+            .AsNoTracking()
+            .Where(g => g.BoreholeId == boreholeId)
+            .OrderBy(g => g.MD)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 }

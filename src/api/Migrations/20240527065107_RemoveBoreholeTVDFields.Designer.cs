@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240527065107_RemoveBoreholeTVDFields")]
+    partial class RemoveBoreholeTVDFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -647,6 +650,27 @@ namespace BDMS.Migrations
                     b.Property<string>("De")
                         .HasColumnType("text")
                         .HasColumnName("text_cli_de");
+
+                    b.Property<string>("DescriptionDe")
+                        .HasColumnType("text")
+                        .HasColumnName("description_cli_de");
+
+                    b.Property<string>("DescriptionEn")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description_cli_en");
+
+                    b.Property<string>("DescriptionFr")
+                        .HasColumnType("text")
+                        .HasColumnName("description_cli_fr");
+
+                    b.Property<string>("DescriptionIt")
+                        .HasColumnType("text")
+                        .HasColumnName("description_cli_it");
+
+                    b.Property<string>("DescriptionRo")
+                        .HasColumnType("text")
+                        .HasColumnName("description_cli_ro");
 
                     b.Property<string>("En")
                         .IsRequired()
