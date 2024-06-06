@@ -100,11 +100,6 @@ public class CodeListControllerTest
             En = "tufa",
             Fr = "tuf",
             It = "tufo",
-            DescriptionEn = "",
-            DescriptionDe = "",
-            DescriptionFr = "",
-            DescriptionIt = "",
-            DescriptionRo = "",
             Order = 5,
             Conf = null,
             IsDefault = false,
@@ -116,7 +111,6 @@ public class CodeListControllerTest
             De = "Neuer deutscher Text",
             Code = "elevation_z",
             En = "New english text",
-            DescriptionEn = "",
         };
 
         var codeListToEdit = context.Codelists.Single(c => c.Id == id);
@@ -124,7 +118,6 @@ public class CodeListControllerTest
         Assert.AreEqual("tufa", codeListToEdit.En);
         Assert.AreEqual("Tuf", codeListToEdit.Code);
         Assert.AreEqual("tuf", codeListToEdit.Fr);
-        Assert.AreEqual("", codeListToEdit.DescriptionEn);
 
         // Upate CodeList
         var response = await controller.EditAsync(codeList);
@@ -139,7 +132,6 @@ public class CodeListControllerTest
 
         // Emtpy values are deleted
         Assert.AreEqual(null, updatedCodelist.Fr);
-        Assert.AreEqual("", updatedCodelist.DescriptionEn);
     }
 
     [TestMethod]
@@ -151,11 +143,6 @@ public class CodeListControllerTest
             Id = id,
             Code = "5",
             Conf = null,
-            DescriptionDe = "",
-            DescriptionEn = "",
-            DescriptionFr = "",
-            DescriptionIt = "",
-            DescriptionRo = null,
             Geolcode = 9004,
             Order = 5,
             Schema = "description_quality",
@@ -171,11 +158,6 @@ public class CodeListControllerTest
             Id = id,
             Code = "5",
             Conf = null,
-            DescriptionDe = "",
-            DescriptionEn = "",
-            DescriptionFr = "",
-            DescriptionIt = "",
-            DescriptionRo = null,
             Geolcode = 9004,
             Order = 5,
             Schema = "new_schema_name",
@@ -189,11 +171,6 @@ public class CodeListControllerTest
         var codeListToEdit = context.Codelists.Single(c => c.Id == id);
         Assert.AreEqual("5", codeListToEdit.Code);
         Assert.AreEqual(null, codeListToEdit.Conf);
-        Assert.AreEqual("", codeListToEdit.DescriptionEn);
-        Assert.AreEqual("", codeListToEdit.DescriptionFr);
-        Assert.AreEqual("", codeListToEdit.DescriptionIt);
-        Assert.AreEqual("", codeListToEdit.DescriptionDe);
-        Assert.AreEqual(null, codeListToEdit.DescriptionRo);
         Assert.AreEqual(9004, codeListToEdit.Geolcode);
         Assert.AreEqual(5, codeListToEdit.Order);
         Assert.AreEqual("description_quality", codeListToEdit.Schema);
@@ -212,11 +189,6 @@ public class CodeListControllerTest
 
         Assert.AreEqual("5", updatedCodelist.Code);
         Assert.AreEqual(null, updatedCodelist.Conf);
-        Assert.AreEqual("", updatedCodelist.DescriptionEn);
-        Assert.AreEqual("", updatedCodelist.DescriptionFr);
-        Assert.AreEqual("", updatedCodelist.DescriptionIt);
-        Assert.AreEqual("", updatedCodelist.DescriptionDe);
-        Assert.AreEqual(null, updatedCodelist.DescriptionRo);
         Assert.AreEqual(9004, updatedCodelist.Geolcode);
         Assert.AreEqual(5, updatedCodelist.Order);
         Assert.AreEqual("new_schema_name", updatedCodelist.Schema);
@@ -237,7 +209,6 @@ public class CodeListControllerTest
             De = "",
             Code = "",
             En = "",
-            DescriptionEn = "",
         };
 
         // Upate CodeList
@@ -264,7 +235,7 @@ public class CodeListControllerTest
         Assert.AreEqual("text/csv; charset=utf-8", response.ContentType);
         Assert.AreEqual("attachment; filename=codelist_export.csv", httpContext.Response.Headers["Content-Disposition"].ToString());
 
-        var expectedHeader = "id_cli,schema_cli,code_cli,text_cli_en,description_cli_en,text_cli_de,description_cli_de,text_cli_fr,description_cli_fr,text_cli_it,description_cli_it,text_cli_ro,description_cli_ro";
+        var expectedHeader = "id_cli,schema_cli,code_cli,text_cli_en,text_cli_de,text_cli_fr,text_cli_it,text_cli_ro";
 
         Assert.AreEqual(expectedHeader, response.Content.Split('\n')[0]);
         Assert.AreEqual(2441, response.Content.Split('\n').Length);

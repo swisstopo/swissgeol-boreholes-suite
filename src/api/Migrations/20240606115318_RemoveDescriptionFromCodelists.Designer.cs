@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240606115318_RemoveDescriptionFromCodelists")]
+    partial class RemoveDescriptionFromCodelists
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -245,6 +248,14 @@ namespace BDMS.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("qt_top_bedrock");
 
+                    b.Property<double?>("QtTopBedrockTvd")
+                        .HasColumnType("double precision")
+                        .HasColumnName("qt_top_bedrock_tvd");
+
+                    b.Property<int?>("QtTotalDepthTvdId")
+                        .HasColumnType("integer")
+                        .HasColumnName("qt_total_depth_tvd_id_cli");
+
                     b.Property<double?>("ReferenceElevation")
                         .HasColumnType("double precision")
                         .HasColumnName("reference_elevation_bho");
@@ -273,9 +284,17 @@ namespace BDMS.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("top_bedrock_bho");
 
+                    b.Property<double?>("TopBedrockTvd")
+                        .HasColumnType("double precision")
+                        .HasColumnName("top_bedrock_tvd_bho");
+
                     b.Property<double?>("TotalDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("total_depth_bho");
+
+                    b.Property<double?>("TotalDepthTvd")
+                        .HasColumnType("double precision")
+                        .HasColumnName("total_depth_tvd_bho");
 
                     b.Property<int?>("TypeId")
                         .HasColumnType("integer")
@@ -316,6 +335,8 @@ namespace BDMS.Migrations
                     b.HasIndex("QtDepthId");
 
                     b.HasIndex("QtReferenceElevationId");
+
+                    b.HasIndex("QtTotalDepthTvdId");
 
                     b.HasIndex("ReferenceElevationTypeId");
 
@@ -2159,6 +2180,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("QtReferenceElevationId");
 
+                    b.HasOne("BDMS.Models.Codelist", "QtTotalDepthTvd")
+                        .WithMany()
+                        .HasForeignKey("QtTotalDepthTvdId");
+
                     b.HasOne("BDMS.Models.Codelist", "ReferenceElevationType")
                         .WithMany()
                         .HasForeignKey("ReferenceElevationTypeId");
@@ -2204,6 +2229,8 @@ namespace BDMS.Migrations
                     b.Navigation("QtDepth");
 
                     b.Navigation("QtReferenceElevation");
+
+                    b.Navigation("QtTotalDepthTvd");
 
                     b.Navigation("ReferenceElevationType");
 
