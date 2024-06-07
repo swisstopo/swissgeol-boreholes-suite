@@ -11,7 +11,6 @@ import HelpIcon from "../../../../public/icons/help.svg?react";
 import LayersIcon from "../../../../public/icons/layers.svg?react";
 import { theme } from "../../../AppTheme";
 import { styled } from "@mui/system";
-import { ProfilePopup } from "../profilePopup";
 import ImportModal from "./actions/importModal";
 import { DrawerContentTypes } from "../../../pages/editor/editorComponentInterfaces";
 import { ErrorResponse, MainSideNavProps } from "./menuComponents/menuComponentInterfaces";
@@ -145,9 +144,6 @@ const MainSideNav = ({
         }}>
         <StyledIconButton data-cy="settings-button" onClick={() => history.push(`/setting`)}>
           <SettingsIcon />
-        </StyledIconButton>
-        <StyledIconButton>
-          <ProfilePopup user={user.data} />
         </StyledIconButton>
         <StyledIconButton>
           <HelpIcon onClick={() => window.open(`/help`)} />
