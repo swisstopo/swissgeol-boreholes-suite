@@ -3,6 +3,9 @@ import { Theme, ThemeOptions } from "@mui/material/styles";
 declare module "@mui/material/styles" {
   interface CustomTheme extends Theme {
     palette: {
+      action: {
+        disabled: string;
+      };
       primary: {
         main: string;
         contrastText: string;
@@ -73,6 +76,9 @@ declare module "@mui/material/styles" {
   // allow configuration using `createTheme`
   interface CustomThemeOptions extends ThemeOptions {
     palette?: {
+      action: {
+        disabled: string;
+      };
       primary: {
         main: string;
         contrastText: string;
