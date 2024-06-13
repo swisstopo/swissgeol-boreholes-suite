@@ -98,7 +98,7 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
-              value={depthTVD?.total_depth.toFixed(2)}
+              value={Math.round(depthTVD?.total_depth * 100) / 100}
               thousandSeparator="'"
               readOnly={true}
             />
