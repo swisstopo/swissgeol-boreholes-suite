@@ -5,6 +5,8 @@
 ### Added
 
 - Added borehole geometry panel.
+- Added secondary header to borehole detail view.
+
 
 ### Changed
 
