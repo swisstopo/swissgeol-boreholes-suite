@@ -24,7 +24,7 @@ describe("Borehole editor table tests", () => {
 
     // open first borehole and return to list
     cy.get("tbody").children().eq(0).contains("td", "Andres Miller").click();
-    cy.get('[data-cy="done-menu-item"]').click();
+    cy.get('[data-cy="backButton"]').click();
     cy.wait("@edit_list");
 
     // verify current page is 2
