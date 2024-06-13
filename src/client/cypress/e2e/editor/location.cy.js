@@ -11,7 +11,7 @@ describe("Tests for 'Location' edit page.", () => {
     // stop editing
     cy.contains("a", "Stop editing").click();
     cy.wait("@edit_unlock");
-    cy.contains("h3", "Done").click();
+    cy.get('[data-cy="backButton"]').click();
     cy.get('[data-cy="showTableButton"]').click();
     cy.wait(["@edit_list", "@borehole"]);
 

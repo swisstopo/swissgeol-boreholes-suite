@@ -48,6 +48,9 @@ export interface Borehole {
     precision_location_y: number;
     precision_location_x_lv03: number;
     precision_location_y_lv03: number;
+    extended: {
+      original_name: string;
+    };
   };
 }
 

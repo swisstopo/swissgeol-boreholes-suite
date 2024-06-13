@@ -14,7 +14,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     cy.contains("a", "Stop editing").click();
     cy.wait("@edit_unlock");
-    cy.contains("h3", "Done").click();
+    cy.get('[data-cy="backButton"]').click();
     cy.wait(["@edit_list", "@borehole"]);
     cy.get('[data-cy="show-filter-button"]').click();
 
@@ -51,7 +51,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     cy.contains("a", "Stop editing").click();
     cy.wait("@edit_unlock");
-    cy.contains("h3", "Done").click();
+    cy.get('[data-cy="backButton"]').click();
     cy.wait(["@edit_list", "@borehole"]);
 
     newEditableBorehole().as("borehole_id_2");
@@ -66,7 +66,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     cy.contains("a", "Stop editing").click();
     cy.wait("@edit_unlock");
-    cy.contains("h3", "Done").click();
+    cy.get('[data-cy="backButton"]').click();
     cy.wait(["@edit_list", "@borehole"]);
     cy.get('[data-cy="show-filter-button"]').click();
 

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Route, Switch, useLocation, withRouter } from "react-router-dom";
 import BoreholeForm from "../../commons/form/borehole/boreholeForm";
 import MainSideNav from "../../commons/menu/mainView/mainSideNav.tsx";
@@ -15,6 +15,7 @@ import NewBoreholePanel from "../../commons/menu/mainView/sidePanelContent/newBo
 import { DrawerContentTypes } from "./editorComponentInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
 import CustomLayersPanel from "../../commons/menu/mainView/sidePanelContent/customLayers/customLayersPanel.jsx";
+import DetailHeader from "../../commons/menu/detailView/detailHeader.tsx";
 
 const AppBox = styled(Box)({
   display: "flex",
@@ -84,6 +85,7 @@ const EditorComponent = props => {
   return (
     <AppBox>
       <HeaderComponent />
+      <Route exact={false} path={"/:id"} render={() => <DetailHeader />} />
       <LayoutBox>
         <SidebarBox>
           <Switch>

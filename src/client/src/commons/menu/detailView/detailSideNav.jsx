@@ -85,7 +85,6 @@ const DetailSideNav = ({ borehole, history, match, reload, t, user, unlock, lock
   return (
     <Box
       style={{
-        boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
         display: "flex",
         flexDirection: "column",
         width: "250px",
@@ -101,17 +100,6 @@ const DetailSideNav = ({ borehole, history, match, reload, t, user, unlock, lock
           overflow: "auto",
         }}>
         <List divided relaxed selection>
-          <ParentListItem
-            onClick={() => {
-              history.push("/");
-            }}>
-            <List.Icon name="arrow left" size="large" verticalAlign="middle" style={{ opacity: 0.5 }} />
-            <List.Content>
-              <List.Header as="h3" data-cy="done-menu-item">
-                <TranslationText id="done" />
-              </List.Header>
-            </List.Content>
-          </ParentListItem>
           <ParentListItem
             active={location.pathname === "/" + id}
             onClick={() => {
