@@ -1,30 +1,30 @@
 import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useState } from "react";
-import { FileDropzone } from "../../../../commons/files/fileDropzone";
+import { FileDropzone } from "../../../files/fileDropzone.jsx";
 import { AddButton } from "../../../../components/buttons/buttons";
 import {
-  Stack,
-  Typography,
   Card,
-  CardContent,
   CardActions,
-  TextField,
+  CardContent,
+  CircularProgress,
   IconButton,
   InputAdornment,
+  Stack,
+  TextField,
   Tooltip,
-  CircularProgress,
+  Typography,
 } from "@mui/material/";
 import {
+  getBoreholeGeometryFormats,
   useBoreholeGeometry,
   useBoreholeGeometryMutations,
-  getBoreholeGeometryFormats,
 } from "../../../../api/fetchApiV2";
-import { FormProvider, useForm, Controller, useWatch } from "react-hook-form";
+import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { FormSelect } from "../../../../components/form/form";
-import { DevTool } from "@hookform/devtools";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { AlertContext } from "../../../../components/alert/alertContext";
 import { StackHalfWidth } from "../../../../components/baseComponents.js";
+import { DevTool } from "../../../../../hookformDevtools.ts";
 
 const GeometryImport = ({ boreholeId }) => {
   const { t } = useTranslation();
