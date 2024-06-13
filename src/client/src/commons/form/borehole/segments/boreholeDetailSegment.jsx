@@ -5,7 +5,7 @@ import DomainTree from "../../domain/tree/domainTree";
 import TranslationText from "../../translationText";
 import { NumericFormat } from "react-number-format";
 import { Form, Segment } from "semantic-ui-react";
-import { FormControl, RadioGroup, FormControlLabel } from "@mui/material";
+import { FormControl, FormControlLabel, RadioGroup } from "@mui/material";
 import { parseIfString } from "../../formUtils.ts";
 import { DisabledRadio } from "./styledComponents";
 import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2";
@@ -71,6 +71,20 @@ const BoreholeDetailSegment = props => {
               readOnly={!isEditable}
             />
           </Form.Field>
+
+          <Form.Field required>
+            <label>
+              <TranslationText id="qt_depth" />
+            </label>
+            <DomainDropdown
+              onSelected={selected => {
+                updateChange("custom.qt_depth", selected.id, false);
+              }}
+              schema="depth_precision"
+              selected={borehole.data.custom.qt_depth}
+              readOnly={!isEditable}
+            />
+          </Form.Field>
           <Form.Field
             style={{
               opacity: 0.6,
@@ -84,22 +98,9 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
-              value={depthTVD?.total_depth}
+              value={depthTVD?.total_depth ? Math.round(depthTVD?.total_depth * 100) / 100 : ""}
               thousandSeparator="'"
               readOnly={true}
-            />
-          </Form.Field>
-          <Form.Field required>
-            <label>
-              <TranslationText id="qt_depth" />
-            </label>
-            <DomainDropdown
-              onSelected={selected => {
-                updateChange("custom.qt_depth", selected.id, false);
-              }}
-              schema="depth_precision"
-              selected={borehole.data.custom.qt_depth}
-              readOnly={!isEditable}
             />
           </Form.Field>
         </Form.Group>

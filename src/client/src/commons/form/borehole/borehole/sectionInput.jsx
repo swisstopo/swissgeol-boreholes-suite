@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { IconButton, Checkbox, FormControlLabel, Divider } from "@mui/material";
+import { Checkbox, Divider, FormControlLabel, IconButton } from "@mui/material";
 import { StackFullWidth } from "../../../../components/baseComponents";
 import { FormDisplayType, FormInput, FormSelect } from "../../../../components/form/form";
 import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV2";
@@ -8,8 +8,8 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons";
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext";
-import { DevTool } from "@hookform/devtools";
 import Delete from "@mui/icons-material/Delete";
+import { DevTool } from "../../../../../hookformDevtools.ts";
 
 const SectionInput = ({ item, parentId }) => {
   const { triggerReload, selectCard } = useContext(DataCardContext);
