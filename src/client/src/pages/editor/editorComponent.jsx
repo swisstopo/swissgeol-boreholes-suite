@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Route, Switch, useLocation, withRouter } from "react-router-dom";
 import BoreholeForm from "../../commons/form/borehole/boreholeForm";
 import MainSideNav from "../../commons/menu/mainView/mainSideNav.tsx";
