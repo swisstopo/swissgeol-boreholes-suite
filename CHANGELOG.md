@@ -5,6 +5,7 @@
 ### Added
 
 - Added borehole geometry panel.
+- Added new codelist entries for `casing_type` and `backfill_material`.
 
 ### Changed
 
