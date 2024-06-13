@@ -238,6 +238,6 @@ public class CodeListControllerTest
         var expectedHeader = "id_cli,schema_cli,code_cli,text_cli_en,text_cli_de,text_cli_fr,text_cli_it,text_cli_ro";
 
         Assert.AreEqual(expectedHeader, response.Content.Split('\n')[0]);
-        Assert.AreEqual(2441, response.Content.Split('\n').Length);
+        Assert.AreEqual(2445, response.Content.Split('\n').Length);
     }
 }

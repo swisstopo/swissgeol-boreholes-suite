@@ -19,9 +19,11 @@ public partial class AddCasingTypeCodelist : Migration
                                 (25000118, 25000118, 'casing_type', '', 'temporäre Schutzverrohrung', 'tubage de protection temporaire',
                                 'tubo di rivestimento per protezione temporanea', 'temporary protective casing', 1, NULL, False, ''),
                                 (25000119, 25000119, 'casing_type', '', 'U-Sonde mit Strumpf', 'sonde en U avec chaussette',
-                                'sonda a U con calza', 'U-probe with geotextile sock', 9, NULL, False, ''),
+                                'sonda a U con calza', 'U-probe with geotextile sock', 10, NULL, False, ''),
                                 (25000120, 25000120, 'casing_type', '', 'Doppel-U-Sonde mit Strumpf', 'sonde double U avec chaussette',
-                                'sonda a doppia U con calza', 'double U-probe with geotextile sock', 10, NULL, False, '');
+                                'sonda a doppia U con calza', 'double U-probe with geotextile sock', 12, NULL, False, ''),
+                                (25000314, 25000314, 'backfill_material', '', 'Bentonit-Zementmörtel', 'coulis de bentonite-ciment',
+                                'miscela di cemento-bentonite', 'cement-bentonite grout', 5 , NULL, False, '');                               
 
                                 UPDATE bdms.codelist SET order_cli = 2 WHERE id_cli = 25000100;
                                 UPDATE bdms.codelist SET order_cli = 3 WHERE id_cli = 25000101;
@@ -30,10 +32,16 @@ public partial class AddCasingTypeCodelist : Migration
                                 UPDATE bdms.codelist SET order_cli = 6 WHERE id_cli = 25000104;
                                 UPDATE bdms.codelist SET order_cli = 7 WHERE id_cli = 25000105;
                                 UPDATE bdms.codelist SET order_cli = 8 WHERE id_cli = 25000114;
-                                UPDATE bdms.codelist SET order_cli = 11 WHERE id_cli = 25000116;
-                                UPDATE bdms.codelist SET order_cli = 12 WHERE id_cli = 25000117;
+                                UPDATE bdms.codelist SET order_cli = 9 WHERE id_cli = 25000116;
+                                UPDATE bdms.codelist SET order_cli = 11 WHERE id_cli = 25000117;
                                 UPDATE bdms.codelist SET order_cli = 13 WHERE id_cli = 25000106;
-                                UPDATE bdms.codelist SET order_cli = 14 WHERE id_cli = 25000107;");
+                                UPDATE bdms.codelist SET order_cli = 14 WHERE id_cli = 25000107;
+
+                                UPDATE bdms.codelist SET order_cli = 6 WHERE id_cli = 25000309;       
+                                UPDATE bdms.codelist SET order_cli = 7 WHERE id_cli = 25000313;                    
+                                UPDATE bdms.codelist SET order_cli = 8 WHERE id_cli = 25000310;                    
+                                UPDATE bdms.codelist SET order_cli = 9 WHERE id_cli = 25000311;
+                                UPDATE bdms.codelist SET order_cli = 10 WHERE id_cli = 25000312;");
     }
 }
 #pragma warning restore CA1505
