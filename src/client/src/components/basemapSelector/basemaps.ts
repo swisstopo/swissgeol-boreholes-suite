@@ -50,7 +50,7 @@ export const basemaps: Basemap[] = [
           minResolution: 2.5,
           maxZoom: 27,
           source: new XYZ({
-            url: `https://wmts10.geo.admin.ch/1.0.0/${baseLayerNames.colormap}/default/current/3857/{z}/{x}/{y}.jpeg`,
+            url: `https://wmts100.geo.admin.ch/1.0.0/${baseLayerNames.colormap}/default/current/3857/{z}/{x}/{y}.jpeg`,
             crossOrigin,
             attributions,
           }),
@@ -58,9 +58,10 @@ export const basemaps: Basemap[] = [
         new TileLayer({
           maxResolution: 2.5,
           minResolution: 0.1,
+          maxZoom: 27,
           source: new WMTS({
             layer: baseLayerNames.detailedColormap,
-            url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
+            url: "https://wmts100.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
             crossOrigin,
             attributions,
             tileGrid,
@@ -80,7 +81,8 @@ export const basemaps: Basemap[] = [
       minResolution: 0.1,
       maxZoom: 27,
       source: new XYZ({
-        url: `https://wmts10.geo.admin.ch/1.0.0/${baseLayerNames.satellite}/default/current/3857/{z}/{x}/{y}.jpeg`,
+        cacheSize: 2048 * 3, // increase initial cache size, as seen in map.geo.admin
+        url: `https://wmts100.geo.admin.ch/1.0.0/${baseLayerNames.satellite}/default/current/3857/{z}/{x}/{y}.jpeg`,
         crossOrigin,
         attributions,
       }),
@@ -96,7 +98,7 @@ export const basemaps: Basemap[] = [
           minResolution: 2.5,
           maxZoom: 27,
           source: new XYZ({
-            url: `https://wmts10.geo.admin.ch/1.0.0/${baseLayerNames.greymap}/default/current/3857/{z}/{x}/{y}.jpeg`,
+            url: `https://wmts100.geo.admin.ch/1.0.0/${baseLayerNames.greymap}/default/current/3857/{z}/{x}/{y}.jpeg`,
             crossOrigin,
             attributions,
           }),
@@ -104,9 +106,10 @@ export const basemaps: Basemap[] = [
         new TileLayer({
           maxResolution: 2.5,
           minResolution: 0.1,
+          maxZoom: 27,
           source: new WMTS({
             layer: baseLayerNames.detailedGreymap,
-            url: "https://wmts10.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
+            url: "https://wmts100.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
             crossOrigin,
             attributions,
             tileGrid,

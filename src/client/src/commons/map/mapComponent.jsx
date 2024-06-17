@@ -309,10 +309,11 @@ class MapComponent extends React.Component {
           collapseLabel: "",
         },
       }),
+      loadTilesWhileAnimating: true,
+      loadTilesWhileInteracting: true,
       layers: [getBasemap(this.context.currentBasemapName)],
       target: "map",
       view: new View({
-        maxResolution: 611,
         minResolution: 0.1,
         resolution: 500,
         center: initialCenter,
