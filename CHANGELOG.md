@@ -20,6 +20,8 @@
 - Show more entries on the boreholes table when screensize is smaller than 1200px.
 - Calculate TVD values in General panel using the geometry of the borehole.
 - Moved logout to header and improved header style.
+- Removed entries `drilling_date`,`drilling_diameter`,`drilling_method_id`,`spud_date` and `cuttings_id` from the borehole import.
+- Removed entries `inclination`,`inclination_direction` and `qt_inclination_direction_id` from the borehole import.
 - Removed settings for `codelist translations` and `identifiers` from admin settings.
 
 ### Fixed

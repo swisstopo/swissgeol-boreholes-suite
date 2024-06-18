@@ -81,16 +81,8 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | qt_reference_elevation_id   | ID (Codeliste) | Nein        | +/- Referenz Ansatzhöhe [m]                                                           |
 | hrs_id                      | ID (Codeliste) | Nein        | Höhenreferenzsystem                                                                   |
 | type_id                     | ID (Codeliste) | Nein        | Bohrtyp                                                                               |
-| drilling_date               | Datum          | Nein        | Datum Bohrende                                                                        |
-| drilling_diameter           | Dezimalzahl    | Nein        | Bohrdurchmesser [mm]                                                                  |
-| drilling_method_id          | ID (Codeliste) | Nein        | Bohrmethode                                                                           |
 | purpose_id                  | ID (Codeliste) | Nein        | Bohrzweck                                                                             |
-| spud_date                   | Datum          | Nein        | Datum Bohrbeginn                                                                      |
-| cuttings_id                 | ID (Codeliste) | Nein        | Bohrgut                                                                               |
 | status_id                   | ID (Codeliste) | Nein        | Bohrungsstatus                                                                        |
-| inclination                 | Dezimalzahl    | Nein        | Inklination beim Bohransatzpunkt [°]                                                  |
-| inclination_direction       | Dezimalzahl    | Nein        | Einfallsrichtung beim Bohransatzpunkt [°]                                             |
-| qt_inclination_direction_id | ID (Codeliste) | Nein        | Inc. / Richtung Genauigkeit                                                           |
 | remarks                     | Text           | Nein        | Bemerkungen                                                                           |
 | total_depth                 | Dezimalzahl    | Nein        | Bohrlochlänge [m MD]                                                                  |
 | qt_depth_id                 | ID (Codeliste) | Nein        | +/- Bohrlochlänge [m MD]                                                              |
