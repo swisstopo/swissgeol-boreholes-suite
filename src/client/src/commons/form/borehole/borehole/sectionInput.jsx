@@ -6,7 +6,7 @@ import { addSection, updateSection, useDomains } from "../../../../api/fetchApiV
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
-import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons";
+import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext";
 import Delete from "@mui/icons-material/Delete";
 import { DevTool } from "../../../../../hookformDevtools.ts";

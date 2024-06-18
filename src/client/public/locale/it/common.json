@@ -89,6 +89,7 @@
   "debris": "Detriti grossolani",
   "degree": "Gradi",
   "delete": "Elimina",
+  "deleteBorehole": "Elimina perforazione",
   "deleteCompletionMessage": "Questo installazione, compresi gli tubazione, gli strumenti e i riempimenti/rinterri, sarà cancellato definitivamente dal database.",
   "deleteCompletionTitle": "Volete davvero cancellare questo installazione?",
   "deleteForever": "Elimina definitivamente",

@@ -1,19 +1,19 @@
-import { useState, useEffect, useContext, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Stack, Typography } from "@mui/material";
-import { BdmsTabContentBox, BdmsTabs, BdmsTab } from "../../../../components/styledTabComponents";
+import { BdmsTab, BdmsTabContentBox, BdmsTabs } from "../../../../components/styledTabComponents";
 import {
-  getCompletions,
   addCompletion,
-  updateCompletion,
   copyCompletion,
   deleteCompletion,
+  getCompletions,
+  updateCompletion,
 } from "../../../../api/fetchApiV2";
 import CompletionContent from "./completionContent";
 import CompletionHeaderInput from "./completionHeaderInput";
 import CompletionHeaderDisplay from "./completionHeaderDisplay";
-import { AddButton } from "../../../../components/buttons/buttons";
+import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPage } from "../../../../components/baseComponents";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext";
 import { PromptContext } from "../../../../components/prompt/promptContext";
