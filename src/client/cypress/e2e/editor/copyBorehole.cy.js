@@ -20,7 +20,7 @@ describe("Test copying of boreholes", () => {
     cy.get('[data-cy="edit-button"]').click();
     cy.wait("@edit_lock");
 
-    cy.contains("a", "Delete").click();
+    cy.get('[data-cy="deleteBorehole-button"]').click();
     cy.contains("button", "Delete").click();
   });
 });
