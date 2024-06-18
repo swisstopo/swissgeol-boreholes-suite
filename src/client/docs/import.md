@@ -83,9 +83,6 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | type_id                     | ID (Codeliste) | Nein        | Bohrtyp                                                                               |
 | purpose_id                  | ID (Codeliste) | Nein        | Bohrzweck                                                                             |
 | status_id                   | ID (Codeliste) | Nein        | Bohrungsstatus                                                                        |
-| inclination                 | Dezimalzahl    | Nein        | Inklination beim Bohransatzpunkt [°]                                                  |
-| inclination_direction       | Dezimalzahl    | Nein        | Einfallsrichtung beim Bohransatzpunkt [°]                                             |
-| qt_inclination_direction_id | ID (Codeliste) | Nein        | Inc. / Richtung Genauigkeit                                                           |
 | remarks                     | Text           | Nein        | Bemerkungen                                                                           |
 | total_depth                 | Dezimalzahl    | Nein        | Bohrlochlänge [m MD]                                                                  |
 | qt_depth_id                 | ID (Codeliste) | Nein        | +/- Bohrlochlänge [m MD]                                                              |
