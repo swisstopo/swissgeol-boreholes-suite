@@ -18,8 +18,8 @@ const resolutions: number[] = [
 const matrixSet = "2056";
 const requestEncoding = "REST";
 const style = "default";
-const crossOrigin = "anonymous";
-const attributions: string =
+export const crossOrigin = "anonymous";
+export const attributions: string =
   '&copy; Data: <a style="color: black; text-decoration: underline;" href="https://www.swisstopo.admin.ch">swisstopo</a>';
 const matrixIds: string[] = [];
 for (let i = 0; i < resolutions.length; i++) {

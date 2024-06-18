@@ -23,7 +23,7 @@ import { Box } from "@mui/material";
 import ZoomControls from "./zoomControls";
 import NamePopup from "./namePopup";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
-import { swissExtent, updateBasemap } from "../../components/basemapSelector/basemaps";
+import { attributions, crossOrigin, swissExtent, updateBasemap } from "../../components/basemapSelector/basemaps";
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
 import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions";
 import { projections } from "./mapProjections";
@@ -315,11 +315,9 @@ class MapComponent extends React.Component {
       layers: [
         new TileLayer({
           source: new XYZ({
-            transition: 100,
-            cacheSize: 2048 * 10,
             url: `https://wmts100.geo.admin.ch/1.0.0/${this.context.currentBasemapName}/default/current/3857/{z}/{x}/{y}.jpeg`,
-            crossOrigin: "orig",
-            attributions: "attr",
+            crossOrigin: crossOrigin,
+            attributions: attributions,
           }),
         }),
       ],
