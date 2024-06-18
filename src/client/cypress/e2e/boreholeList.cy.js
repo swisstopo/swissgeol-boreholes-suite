@@ -136,7 +136,7 @@ describe("Borehole list tests", () => {
     cy.wait("@edit_list");
 
     // return to list
-    cy.contains("Done").click();
+    cy.get('[data-cy="backButton"]').click();
     cy.wait("@edit_list");
 
     // verify current page is still 4

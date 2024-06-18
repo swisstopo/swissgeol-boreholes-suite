@@ -77,7 +77,7 @@ describe("Tests for the layer form.", () => {
     // stop editing
     cy.contains("a", "Stop editing").click();
     cy.wait("@edit_unlock");
-    cy.contains("h3", "Done").click();
+    cy.get('[data-cy="backButton"]').click();
     cy.wait(["@edit_list", "@borehole"]);
   });
 });

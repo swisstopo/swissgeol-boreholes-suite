@@ -1,20 +1,21 @@
 import { useContext, useEffect, useState } from "react";
 import { Route, Switch, useLocation, withRouter } from "react-router-dom";
 import BoreholeForm from "../../commons/form/borehole/boreholeForm";
-import MainSideNav from "../../commons/menu/editor/mainSideNav.tsx";
-import DetailSideNav from "../../commons/menu/editor/detailSideNav";
+import MainSideNav from "../../commons/menu/mainView/mainSideNav.tsx";
+import DetailSideNav from "../../commons/menu/detailView/detailSideNav.jsx";
 import HeaderComponent from "../../commons/menu/headerComponent";
 import WorkflowForm from "../../commons/form/workflow/workflowForm";
-import MapView from "../../commons/menu/editor/mapView";
-import { SideDrawer } from "../../commons/menu/editor/sideDrawer.tsx";
+import MapView from "../../commons/menu/mainView/mapView.jsx";
+import { SideDrawer } from "../../commons/menu/mainView/sideDrawer.tsx";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { theme } from "../../AppTheme";
 import FilterComponent from "../../commons/search/editor/filterComponent.jsx";
-import NewBoreholePanel from "../../commons/menu/editor/newBoreholePanel.tsx";
+import NewBoreholePanel from "../../commons/menu/mainView/sidePanelContent/newBoreholePanel.tsx";
 import { DrawerContentTypes } from "./editorComponentInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
-import CustomLayersPanel from "../../commons/menu/editor/customLayers/customLayersPanel.jsx";
+import CustomLayersPanel from "../../commons/menu/mainView/sidePanelContent/customLayers/customLayersPanel.jsx";
+import DetailHeader from "../../commons/menu/detailView/detailHeader.tsx";
 
 const AppBox = styled(Box)({
   display: "flex",
@@ -84,6 +85,7 @@ const EditorComponent = props => {
   return (
     <AppBox>
       <HeaderComponent />
+      <Route exact={false} path={"/:id"} render={() => <DetailHeader />} />
       <LayoutBox>
         <SidebarBox>
           <Switch>

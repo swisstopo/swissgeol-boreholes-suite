@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
-import { withRouter, useLocation } from "react-router-dom";
+import { useLocation, withRouter } from "react-router-dom";
 import { Button, Header, Icon, List, Menu, Modal, Progress } from "semantic-ui-react";
 import ListItem from "@mui/material/ListItem";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/system";
-import DateText from "../../form/dateText";
-import TranslationText from "../../form/translationText";
+import DateText from "../../form/dateText.js";
+import TranslationText from "../../form/translationText.jsx";
 import moment from "moment";
-import { deleteBorehole, loadBorehole, lockBorehole, unlockBorehole } from "../../../api-lib/index";
-import { theme } from "../../../AppTheme";
+import { deleteBorehole, loadBorehole, lockBorehole, unlockBorehole } from "../../../api-lib/index.js";
+import { theme } from "../../../AppTheme.ts";
 
 /**
  * A component that renders the side navigation for a borehole detail. The component is used without explicitly passing props.
@@ -85,7 +85,6 @@ const DetailSideNav = ({ borehole, history, match, reload, t, user, unlock, lock
   return (
     <Box
       style={{
-        boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",
         display: "flex",
         flexDirection: "column",
         width: "250px",
@@ -101,17 +100,6 @@ const DetailSideNav = ({ borehole, history, match, reload, t, user, unlock, lock
           overflow: "auto",
         }}>
         <List divided relaxed selection>
-          <ParentListItem
-            onClick={() => {
-              history.push("/");
-            }}>
-            <List.Icon name="arrow left" size="large" verticalAlign="middle" style={{ opacity: 0.5 }} />
-            <List.Content>
-              <List.Header as="h3" data-cy="done-menu-item">
-                <TranslationText id="done" />
-              </List.Header>
-            </List.Content>
-          </ParentListItem>
           <ParentListItem
             active={location.pathname === "/" + id}
             onClick={() => {

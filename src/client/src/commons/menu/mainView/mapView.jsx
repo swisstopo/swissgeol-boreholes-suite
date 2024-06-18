@@ -3,13 +3,13 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { Modal } from "semantic-ui-react";
-import { loadEditingBoreholes } from "../../../api-lib/index";
+import { loadEditingBoreholes } from "../../../api-lib/index.js";
 import _ from "lodash";
-import MapComponent from "../../../commons/map/mapComponent";
-import BoreholeEditorTable from "../../../commons/table/boreholeEditorTable";
-import MultipleForm from "../../../commons/form/multiple/multipleForm";
-import { BottomDrawer } from "./bottomDrawer";
-import BottomBar from "./bottomBar";
+import MapComponent from "../../map/mapComponent.jsx";
+import BoreholeEditorTable from "../../table/boreholeEditorTable.jsx";
+import MultipleForm from "../../form/multiple/multipleForm.jsx";
+import { BottomDrawer } from "./bottomDrawer.tsx";
+import BottomBar from "./bottomBar.tsx";
 import { FilterContext } from "../../../components/filter/filterContext.tsx";
 
 class MapView extends React.Component {

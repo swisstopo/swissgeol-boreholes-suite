@@ -57,6 +57,12 @@ declare module "@mui/material/styles" {
         lineHeight: string;
         fontWeight: number;
       };
+      h2: {
+        fontSize: string;
+        color: string;
+        lineHeight: string;
+        fontWeight: number;
+      };
       subtitle1: {
         fontSize: string;
         color: string;
@@ -125,6 +131,12 @@ declare module "@mui/material/styles" {
         fontWeight: number;
       };
       h5: {
+        fontSize: string;
+        color: string;
+        lineHeight: string;
+        fontWeight: number;
+      };
+      h2: {
         fontSize: string;
         color: string;
         lineHeight: string;
