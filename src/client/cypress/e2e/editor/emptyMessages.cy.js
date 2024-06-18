@@ -9,7 +9,7 @@ describe("Messages for empty profiles", () => {
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="lithology-menu-item"]').click();
     cy.get('[data-cy="stratigraphy-message"]').should("contain", "No stratigraphy available");
-    cy.contains("a", "Start editing").click();
+    '[data-cy="edit-button"]'.click();
     cy.wait("@edit_lock");
     cy.get('[data-cy="stratigraphy-message"]').should(
       "contain",

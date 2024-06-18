@@ -130,7 +130,7 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="description-1"]').contains("Quality of the description: -");
 
     // stop editing
-    cy.contains("a", "Stop editing").click();
+    '[data-cy="editingStop-button"]'.click();
     cy.wait("@edit_unlock");
     cy.get('[data-cy="backButton"]').click();
     cy.wait(["@edit_list", "@borehole"]);
