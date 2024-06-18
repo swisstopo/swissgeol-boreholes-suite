@@ -21,6 +21,6 @@ describe("Test copying of boreholes", () => {
     cy.wait("@edit_lock");
 
     cy.get('[data-cy="deleteBorehole-button"]').click();
-    cy.contains("button", "Delete").click();
+    cy.get('[class="ui negative button"]').click();
   });
 });
