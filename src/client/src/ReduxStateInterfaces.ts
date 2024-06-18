@@ -1,6 +1,7 @@
 export interface ReduxRootState {
   core_user: User;
   core_borehole_editor_list: Boreholes;
+  core_borehole: Borehole;
 }
 
 export interface User {
@@ -27,6 +28,7 @@ export interface Workgroup {
 export interface Borehole {
   // Incomplete type definition, add other properties as needed
   data: {
+    workgroup: Workgroup;
     id: number;
     spatial_reference_system: number;
     role: string;

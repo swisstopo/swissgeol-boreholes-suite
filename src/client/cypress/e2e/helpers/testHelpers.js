@@ -166,7 +166,7 @@ export const loginAsViewer = () => {
 
 export const newEditableBorehole = () => {
   const id = newUneditableBorehole();
-  cy.contains("a", "Start editing").click();
+  cy.get('[data-cy="edit-button"]').click();
   cy.wait("@edit_lock");
   return id;
 };
@@ -230,7 +230,7 @@ export const createAndEditBoreholeAsAdmin = values => {
 };
 
 export const startBoreholeEditing = () => {
-  cy.contains("a", "Start editing").click();
+  cy.get('[data-cy="edit-button"]').click();
   cy.wait("@edit_lock");
 };
 

@@ -1,12 +1,12 @@
-import { useState, useEffect, useContext } from "react";
-import { useForm, FormProvider } from "react-hook-form";
+import { useContext, useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack } from "@mui/material";
 import { useDomains } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
-import { FormInput, FormSelect, FormCheckbox } from "../../../../components/form/form";
-import { CancelButton, SaveButton } from "../../../../components/buttons/buttons";
+import { FormCheckbox, FormInput, FormSelect } from "../../../../components/form/form";
+import { CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext";
 
 const CompletionHeaderInput = props => {

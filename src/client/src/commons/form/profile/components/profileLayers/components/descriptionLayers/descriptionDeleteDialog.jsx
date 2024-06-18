@@ -1,7 +1,7 @@
 import { Box, Stack, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import { useTranslation } from "react-i18next";
-import { CancelButton, DeleteButton } from "../../../../../../../components/buttons/buttons";
+import { CancelButton, DeleteButton } from "../../../../../../../components/buttons/buttons.tsx";
 import { theme } from "../../../../../../../AppTheme";
 
 const DescriptionDeleteDialog = props => {
@@ -30,6 +30,7 @@ const DescriptionDeleteDialog = props => {
           }}
         />
         <DeleteButton
+          label="delete"
           onClick={e => {
             e.stopPropagation();
             deleteMutation.mutate(item.id);

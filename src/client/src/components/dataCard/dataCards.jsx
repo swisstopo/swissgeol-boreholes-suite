@@ -1,9 +1,9 @@
-import React, { useContext, useState, useEffect, useRef, useCallback } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Typography } from "@mui/material";
-import { DataCard, DataCardItem, DataCardContainer, DataCardButtonContainer } from "./dataCard";
+import { DataCard, DataCardButtonContainer, DataCardContainer, DataCardItem } from "./dataCard";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext";
-import { AddButton } from "../buttons/buttons";
+import { AddButton } from "../buttons/buttons.tsx";
 import { FullPage, FullPageCentered } from "../baseComponents";
 
 const DataCardsContainer = props => {

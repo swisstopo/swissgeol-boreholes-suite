@@ -89,6 +89,7 @@
   "debris": "Débris grossiers",
   "degree": "Degrés",
   "delete": "Supprimer",
+  "deleteBorehole": "Supprimer forage",
   "deleteCompletionMessage": "Cet aménagement, y compris les tubage, les instruments et les remplissages/remblayages, sera définitivement supprimé de la base de données.",
   "deleteCompletionTitle": "Voulez-vous vraiment supprimer cet aménagement?",
   "deleteForever": "Supprimer définitivement",

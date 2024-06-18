@@ -4,7 +4,7 @@ import { DataCardButtonContainer } from "../dataCard/dataCard";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext";
 import { PromptContext } from "../prompt/promptContext";
 import { StackFullWidth } from "../baseComponents";
-import { EditButton, DeleteButton } from "../buttons/buttons";
+import { DeleteButton, EditButton } from "../buttons/buttons.tsx";
 
 export const DataDisplayCard = props => {
   const { item, deleteData, isEditable } = props;
@@ -19,6 +19,7 @@ export const DataDisplayCard = props => {
       {isEditable && (
         <DataCardButtonContainer>
           <EditButton
+            label="edit"
             onClick={() => {
               if (selectedCard) {
                 switchToCard(item);
@@ -28,6 +29,7 @@ export const DataDisplayCard = props => {
             }}
           />
           <DeleteButton
+            label="delete"
             onClick={() => {
               showPrompt(t("deleteTitle"), t("deleteMessage"), [
                 {

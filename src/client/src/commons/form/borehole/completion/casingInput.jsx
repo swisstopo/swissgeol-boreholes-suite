@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import { Box, IconButton, Stack, Typography, Divider } from "@mui/material";
+import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
 import { StackFullWidth } from "../../../../components/baseComponents";
 import Delete from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
@@ -8,7 +8,7 @@ import { addCasing, updateCasing, useDomains } from "../../../../api/fetchApiV2"
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
-import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons";
+import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { extractCasingDepth } from "./casingUtils";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
 import { PromptContext } from "../../../../components/prompt/promptContext";
