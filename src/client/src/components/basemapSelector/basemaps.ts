@@ -32,25 +32,17 @@ const tileGrid: WMTSTileGrid = new WMTSTileGrid({
   matrixIds,
 });
 
-const baseLayerNames = {
-  colormap: "ch.swisstopo.pixelkarte-farbe",
-  detailedColormap: "ch.swisstopo.swisstlm3d-karte-farbe",
-  satellite: "ch.swisstopo.swissimage",
-  greymap: "ch.swisstopo.pixelkarte-grau",
-  detailedGreymap: "ch.swisstopo.swisstlm3d-karte-grau",
-};
-
 export const basemaps: Basemap[] = [
   {
-    shortName: "colormap",
-    previewImg: baseLayerNames.colormap,
+    shortName: "ch.swisstopo.pixelkarte-farbe",
+    previewImg: "ch.swisstopo.pixelkarte-farbe",
     layer: new LayerGroup({
       layers: [
         new TileLayer({
           minResolution: 2.5,
           maxZoom: 27,
           source: new XYZ({
-            url: `https://wmts100.geo.admin.ch/1.0.0/${baseLayerNames.colormap}/default/current/3857/{z}/{x}/{y}.jpeg`,
+            url: `https://wmts100.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg`,
             crossOrigin,
             attributions,
           }),
@@ -60,7 +52,7 @@ export const basemaps: Basemap[] = [
           minResolution: 0.1,
           maxZoom: 27,
           source: new WMTS({
-            layer: baseLayerNames.detailedColormap,
+            layer: "ch.swisstopo.swisstlm3d-karte-farbe",
             url: "https://wmts100.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
             crossOrigin,
             attributions,
@@ -75,30 +67,29 @@ export const basemaps: Basemap[] = [
     }),
   },
   {
-    shortName: "satellite",
-    previewImg: baseLayerNames.satellite,
+    shortName: "ch.swisstopo.swissimage",
+    previewImg: "ch.swisstopo.swissimage",
     layer: new TileLayer({
       minResolution: 0.1,
       maxZoom: 27,
       source: new XYZ({
         cacheSize: 2048 * 3, // increase initial cache size, as seen in map.geo.admin
-        url: `https://wmts100.geo.admin.ch/1.0.0/${baseLayerNames.satellite}/default/current/3857/{z}/{x}/{y}.jpeg`,
+        url: `https://wmts100.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg`,
         crossOrigin,
         attributions,
       }),
     }),
   },
-
   {
-    shortName: "greymap",
-    previewImg: baseLayerNames.greymap,
+    shortName: "ch.swisstopo.pixelkarte-grau",
+    previewImg: "ch.swisstopo.pixelkarte-grau",
     layer: new LayerGroup({
       layers: [
         new TileLayer({
           minResolution: 2.5,
           maxZoom: 27,
           source: new XYZ({
-            url: `https://wmts100.geo.admin.ch/1.0.0/${baseLayerNames.greymap}/default/current/3857/{z}/{x}/{y}.jpeg`,
+            url: `https://wmts100.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg`,
             crossOrigin,
             attributions,
           }),
@@ -108,7 +99,7 @@ export const basemaps: Basemap[] = [
           minResolution: 0.1,
           maxZoom: 27,
           source: new WMTS({
-            layer: baseLayerNames.detailedGreymap,
+            layer: "ch.swisstopo.swisstlm3d-karte-grau",
             url: "https://wmts100.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png",
             crossOrigin,
             attributions,
@@ -135,18 +126,4 @@ export function updateBasemap(map: Map, contextBasemapName: string) {
       map.getLayers().item(0).changed();
     }
   }
-}
-
-export function getBasemap(contextBasemapName: string) {
-  let basemap;
-  if (contextBasemapName === "nomap") {
-    basemap = basemaps[0].layer;
-    basemap.setOpacity(0);
-  } else {
-    const foundBasemap = basemaps.find(bm => bm.shortName === contextBasemapName);
-    if (foundBasemap !== undefined) {
-      basemap = foundBasemap.layer;
-    }
-  }
-  return basemap;
 }
