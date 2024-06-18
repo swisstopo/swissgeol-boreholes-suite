@@ -43,7 +43,7 @@ describe("Tests for filtering data by reference system.", () => {
 
     cy.wait(["@edit_patch", "@edit_patch", "@edit_patch", "@edit_patch"]);
 
-    '[data-cy="editingStop-button"]'.click();
+    cy.get('[data-cy="editingStop-button"]').click();
     cy.wait("@edit_unlock");
     cy.get('[data-cy="backButton"]').click();
     cy.wait(["@edit_list", "@borehole"]);

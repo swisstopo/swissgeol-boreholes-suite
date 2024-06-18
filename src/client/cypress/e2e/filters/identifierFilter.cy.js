@@ -12,7 +12,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.get('[data-cy="identifier-value"] input').type(819544732);
     cy.get('[data-cy="identifier-add"]').click();
 
-    '[data-cy="editingStop-button"]'.click();
+    cy.get('[data-cy="editingStop-button"]').click();
     cy.wait("@edit_unlock");
     cy.get('[data-cy="backButton"]').click();
     cy.wait(["@edit_list", "@borehole"]);
@@ -49,7 +49,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.get('[data-cy="identifier-value"] input').type(64531274);
     cy.get('[data-cy="identifier-add"]').click();
 
-    '[data-cy="editingStop-button"]'.click();
+    cy.get('[data-cy="editingStop-button"]').click();
     cy.wait("@edit_unlock");
     cy.get('[data-cy="backButton"]').click();
     cy.wait(["@edit_list", "@borehole"]);
@@ -64,7 +64,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.get('[data-cy="identifier-value"] input').type(436584127);
     cy.get('[data-cy="identifier-add"]').click();
 
-    '[data-cy="editingStop-button"]'.click();
+    cy.get('[data-cy="editingStop-button"]').click();
     cy.wait("@edit_unlock");
     cy.get('[data-cy="backButton"]').click();
     cy.wait(["@edit_list", "@borehole"]);

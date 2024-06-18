@@ -17,7 +17,7 @@ describe("Test copying of boreholes", () => {
 
     cy.contains("label", "Original name").next().children("input").should("contain.value", " (Copy)");
 
-    '[data-cy="edit-button"]'.click();
+    cy.get('[data-cy="edit-button"]').click();
     cy.wait("@edit_lock");
 
     cy.contains("a", "Delete").click();

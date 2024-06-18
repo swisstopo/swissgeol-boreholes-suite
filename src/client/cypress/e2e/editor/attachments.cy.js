@@ -6,7 +6,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       "extended.original_name": "JUNIORSOUFFLE",
     });
 
-    '[data-cy="edit-button"]'.click();
+    cy.get('[data-cy="edit-button"]').click();
     cy.wait("@edit_lock");
 
     // navigate to attachments tab
@@ -89,7 +89,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     cy.get("tbody").children().should("have.length", 0);
 
     // stop editing
-    '[data-cy="editingStop-button"]'.click();
+    cy.get('[data-cy="editingStop-button"]').click();
     cy.wait("@edit_unlock");
     cy.get('[data-cy="backButton"]').click();
     cy.wait(["@edit_list", "@borehole"]);

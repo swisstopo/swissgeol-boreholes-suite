@@ -60,7 +60,7 @@ describe("Tests for the lithostratigraphy editor.", () => {
     cy.wait("@get-layers-by-profileId");
 
     // start editing session
-    '[data-cy="edit-button"]'.click();
+    cy.get('[data-cy="edit-button"]').click();
     cy.wait("@edit_lock");
     cy.wait("@lithostratigraphy_GET");
   });

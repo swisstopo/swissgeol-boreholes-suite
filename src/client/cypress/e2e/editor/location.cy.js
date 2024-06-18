@@ -9,7 +9,7 @@ describe("Tests for 'Location' edit page.", () => {
     cy.wait("@edit_patch");
 
     // stop editing
-    '[data-cy="editingStop-button"]'.click();
+    cy.get('[data-cy="editingStop-button"]').click();
     cy.wait("@edit_unlock");
     cy.get('[data-cy="backButton"]').click();
     cy.get('[data-cy="showTableButton"]').click();

@@ -75,7 +75,7 @@ describe("Tests for the layer form.", () => {
     cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
 
     // stop editing
-    '[data-cy="editingStop-button"]'.click();
+    cy.get('[data-cy="editingStop-button"]').click();
     cy.wait("@edit_unlock");
     cy.get('[data-cy="backButton"]').click();
     cy.wait(["@edit_list", "@borehole"]);
