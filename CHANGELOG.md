@@ -20,6 +20,7 @@
 - Show more entries on the boreholes table when screensize is smaller than 1200px.
 - Calculate TVD values in General panel using the geometry of the borehole.
 - Moved logout to header and improved header style.
+- Removed settings for `codelist translations` and `identifiers` from admin settings.
 
 ### Fixed
 
