@@ -314,6 +314,9 @@ class MapComponent extends React.Component {
       loadTilesWhileInteracting: true,
       layers: [
         new TileLayer({
+          properties: {
+            name: this.context.currentBasemapName,
+          },
           source: new XYZ({
             url: `https://wmts100.geo.admin.ch/1.0.0/${this.context.currentBasemapName}/default/current/3857/{z}/{x}/{y}.jpeg`,
             crossOrigin: crossOrigin,

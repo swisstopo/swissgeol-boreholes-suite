@@ -7,7 +7,7 @@ export const swissExtent: number[] = [2420000, 1030000, 2900000, 1350000];
 
 const resolutions: number[] = [
   4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250, 1000, 750, 650, 500, 250, 100, 50, 20, 10, 5,
-  2.5, 2, 1.5, 1, 0.5, 0.25, 0.1,
+  2.5, 2, 1.5, 1, 0.5, 0.25,
 ];
 
 export const crossOrigin = "anonymous";
@@ -24,7 +24,11 @@ export const basemaps: Basemap[] = [
     layer: new TileLayer({
       minResolution: 0.1,
       maxZoom: 27,
+      properties: {
+        name: "ch.swisstopo.pixelkarte-farbe",
+      },
       source: new XYZ({
+        cacheSize: 2048 * 3, // increase initial cache size, as seen in map.geo.admin
         url: `https://wmts100.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg`,
         crossOrigin,
         attributions,
@@ -36,6 +40,9 @@ export const basemaps: Basemap[] = [
     layer: new TileLayer({
       minResolution: 0.1,
       maxZoom: 27,
+      properties: {
+        name: "ch.swisstopo.swissimage",
+      },
       source: new XYZ({
         cacheSize: 2048 * 3, // increase initial cache size, as seen in map.geo.admin
         url: `https://wmts100.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg`,
@@ -49,7 +56,11 @@ export const basemaps: Basemap[] = [
     layer: new TileLayer({
       minResolution: 0.1,
       maxZoom: 27,
+      properties: {
+        name: "ch.swisstopo.pixelkarte-grau",
+      },
       source: new XYZ({
+        cacheSize: 2048 * 3, // increase initial cache size, as seen in map.geo.admin
         url: `https://wmts100.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg`,
         crossOrigin,
         attributions,
@@ -59,13 +70,18 @@ export const basemaps: Basemap[] = [
 ];
 
 export function updateBasemap(map: Map, contextBasemapName: string) {
-  if (contextBasemapName === "nomap") {
-    map.getLayers().item(0).setOpacity(0);
-  } else {
+  const layers = map.getLayers();
+  layers.forEach(function (layer) {
+    const name = layer?.get("name");
+    if (basemaps.map(b => b.name).includes(name)) {
+      layers.remove(layer);
+    }
+  });
+
+  if (contextBasemapName !== "nomap") {
     const newBasemap = basemaps.find(bm => bm.name === contextBasemapName);
     if (newBasemap !== undefined) {
-      newBasemap.layer.setOpacity(1);
-      map.getLayers().setAt(0, newBasemap.layer);
+      map.getLayers().insertAt(0, newBasemap.layer);
       map.getLayers().item(0).changed();
     }
   }
