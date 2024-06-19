@@ -18,10 +18,12 @@ import { getHeight } from "../../api-lib/index";
 import { fetchApiV2 } from "../../api/fetchApiV2";
 import ZoomControls from "./zoomControls";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
-import { getBasemap, swissExtent, updateBasemap } from "../../components/basemapSelector/basemaps";
+import { attributions, crossOrigin, swissExtent, updateBasemap } from "../../components/basemapSelector/basemaps";
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
 import { projections } from "../../commons/map/mapProjections";
 import { detailMapStyleFunction } from "../../commons/map/mapStyleFunctions";
+import TileLayer from "ol/layer/Tile.js";
+import XYZ from "ol/source/XYZ.js";
 
 class PointComponent extends React.Component {
   static contextType = BasemapContext;
@@ -69,7 +71,15 @@ class PointComponent extends React.Component {
           collapsible: false,
         },
       }),
-      layers: [getBasemap(this.context.currentBasemapName)],
+      layers: [
+        new TileLayer({
+          source: new XYZ({
+            url: `https://wmts100.geo.admin.ch/1.0.0/${this.context.currentBasemapName}/default/current/3857/{z}/{x}/{y}.jpeg`,
+            crossOrigin: crossOrigin,
+            attributions: attributions,
+          }),
+        }),
+      ],
       target: "point",
       view: new View({
         resolution: this.state.point !== null ? 1 : 500,
