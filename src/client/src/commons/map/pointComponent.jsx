@@ -61,6 +61,21 @@ class PointComponent extends React.Component {
     projection.setExtent(swissExtent);
 
     this.setState({ displayedBaseMap: this.context.currentBasemapName });
+    const mapLayers =
+      this.context.currentBasemapName === "nomap"
+        ? []
+        : [
+            new TileLayer({
+              properties: {
+                name: this.context.currentBasemapName,
+              },
+              source: new XYZ({
+                url: `https://wmts100.geo.admin.ch/1.0.0/${this.context.currentBasemapName}/default/current/3857/{z}/{x}/{y}.jpeg`,
+                crossOrigin: crossOrigin,
+                attributions: attributions,
+              }),
+            }),
+          ];
 
     this.map = new Map({
       controls: defaultControls({
@@ -71,15 +86,7 @@ class PointComponent extends React.Component {
           collapsible: false,
         },
       }),
-      layers: [
-        new TileLayer({
-          source: new XYZ({
-            url: `https://wmts100.geo.admin.ch/1.0.0/${this.context.currentBasemapName}/default/current/3857/{z}/{x}/{y}.jpeg`,
-            crossOrigin: crossOrigin,
-            attributions: attributions,
-          }),
-        }),
-      ],
+      layers: mapLayers,
       target: "point",
       view: new View({
         resolution: this.state.point !== null ? 1 : 500,

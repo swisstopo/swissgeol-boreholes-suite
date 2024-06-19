@@ -300,6 +300,22 @@ class MapComponent extends React.Component {
 
     this.setState({ displayedBaseMap: this.context.currentBasemapName });
 
+    const mapLayers =
+      this.context.currentBasemapName === "nomap"
+        ? []
+        : [
+            new TileLayer({
+              properties: {
+                name: this.context.currentBasemapName,
+              },
+              source: new XYZ({
+                url: `https://wmts100.geo.admin.ch/1.0.0/${this.context.currentBasemapName}/default/current/3857/{z}/{x}/{y}.jpeg`,
+                crossOrigin: crossOrigin,
+                attributions: attributions,
+              }),
+            }),
+          ];
+
     this.map = new Map({
       controls: defaultControls({
         attribution: true,
@@ -312,15 +328,7 @@ class MapComponent extends React.Component {
       }),
       loadTilesWhileAnimating: true,
       loadTilesWhileInteracting: true,
-      layers: [
-        new TileLayer({
-          source: new XYZ({
-            url: `https://wmts100.geo.admin.ch/1.0.0/${this.context.currentBasemapName}/default/current/3857/{z}/{x}/{y}.jpeg`,
-            crossOrigin: crossOrigin,
-            attributions: attributions,
-          }),
-        }),
-      ],
+      layers: mapLayers,
       target: "map",
       view: new View({
         minResolution: 0.1,
