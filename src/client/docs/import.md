@@ -86,8 +86,6 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | remarks                     | Text           | Nein        | Bemerkungen                                                                           |
 | total_depth                 | Dezimalzahl    | Nein        | Bohrlochlänge [m MD]                                                                  |
 | qt_depth_id                 | ID (Codeliste) | Nein        | +/- Bohrlochlänge [m MD]                                                              |
-| total_depth_tvd             | Dezimalzahl    | Nein        | Vertikale Bohrendteufe [m TVD]                                                        |
-| qt_total_depth_tvd_id       | ID (Codeliste) | Nein        | +/- Vertikale Bohrendteufe [m TVD]                                                    |
 | top_bedrock                 | Dezimalzahl    | Nein        | Top Fels [m MD]                                                                       |
 | qt_top_bedrock_id           | ID (Codeliste) | Nein        | +/- Top Fels [m MD]                                                                   |
 | top_bedrock_tvd             | Dezimalzahl    | Nein        | Top Fels [m TVD]                                                                      |
