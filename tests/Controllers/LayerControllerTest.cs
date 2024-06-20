@@ -84,7 +84,7 @@ public class LayerControllerTest
         var layer = okResult.Value as Layer;
         Assert.AreEqual(7_000_005, layer.Id);
         Assert.AreEqual("transform mesh Brand Fantastic", layer.Notes);
-        Assert.AreEqual(15104014, layer.LithologyId);
+        Assert.AreEqual(15104811, layer.LithologyId);
     }
 
     [TestMethod]
@@ -279,9 +279,9 @@ public class LayerControllerTest
             IsStriae = true,
             IsUndefined = false,
             Lithology = null,
-            LithologyId = 15101055,
+            LithologyId = 15104901,
             LithologyTopBedrock = null,
-            LithologyTopBedrockId = 15104417,
+            LithologyTopBedrockId = 15104902,
             Lithostratigraphy = null,
             LithostratigraphyId = null,
             Notes = "Baby grow strategic haptic",
