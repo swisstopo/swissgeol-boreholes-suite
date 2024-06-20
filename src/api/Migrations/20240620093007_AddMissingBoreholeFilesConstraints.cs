@@ -19,7 +19,7 @@ public partial class AddMissingBoreholeFilesConstraints : Migration
             principalSchema: "bdms",
             principalTable: "borehole",
             principalColumn: "id_bho",
-            onDelete: ReferentialAction.NoAction);
+            onDelete: ReferentialAction.Cascade);
 
         migrationBuilder.CreateIndex(
             name: "IX_borehole_files_id_bho_fk",
@@ -36,7 +36,7 @@ public partial class AddMissingBoreholeFilesConstraints : Migration
             principalSchema: "bdms",
             principalTable: "files",
             principalColumn: "id_fil",
-            onDelete: ReferentialAction.NoAction);
+            onDelete: ReferentialAction.Cascade);
 
         migrationBuilder.CreateIndex(
             name: "IX_borehole_files_id_fil_fk",
