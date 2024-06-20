@@ -37,7 +37,7 @@ export const theme = createTheme({
       lightgrey: "#f1f3f5",
       darkgrey: "#787878",
       dark: "rgba(0, 0, 0, 0.5)",
-      menuItemActive: "#AA3526",
+      menuItemActive: "#D92B04",
       filterItemActive: "#1C2834",
     },
 
