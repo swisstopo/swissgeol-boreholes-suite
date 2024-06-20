@@ -2,11 +2,11 @@ import { useTranslation } from "react-i18next";
 import GeometryImport from "./geometryImport";
 import GeometryTable from "./geometryTable";
 import GeometryChartNE from "./geometryChartNE";
-import { GeometryChartZInteractive, GeometryChartZE, GeometryChartZN } from "./geometryChartZ";
-import { CircularProgress, Typography, Grid, Card, CardActions, CardContent } from "@mui/material/";
+import { GeometryChartZE, GeometryChartZInteractive, GeometryChartZN } from "./geometryChartZ";
+import { Card, CardActions, CardContent, CircularProgress, Grid, Typography } from "@mui/material/";
 import { FullPageCentered } from "../../../../components/baseComponents";
 import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../api/fetchApiV2";
-import { DeleteButton } from "../../../../components/buttons/buttons";
+import { DeleteButton } from "../../../../components/buttons/buttons.tsx";
 
 /**
  * Renders the Geometry panel.
@@ -57,6 +57,7 @@ const Geometry = ({ boreholeId, isEditable, measuredDepth }) => {
               <Card>
                 <CardActions>
                   <DeleteButton
+                    label="delete"
                     sx={{ marginLeft: "auto" }}
                     onClick={() => deleteBoreholeGeometry(boreholeId)}
                     endIcon={

@@ -4,10 +4,10 @@ import { Box, IconButton, InputAdornment, Stack, Typography } from "@mui/materia
 import { FormInput, FormMultiSelect, FormSelect } from "../../../../components/form/form";
 import { StackHalfWidth } from "../../../../components/baseComponents";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
-import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons";
+import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import ObservationInput from "./observationInput";
 import { useTranslation } from "react-i18next";
-import { useHydrotestDomains, useDomains, addHydrotest, updateHydrotest } from "../../../../api/fetchApiV2";
+import { addHydrotest, updateHydrotest, useDomains, useHydrotestDomains } from "../../../../api/fetchApiV2";
 import { ObservationType } from "./observationType";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { getHydrotestParameterUnits } from "./parameterUnits";

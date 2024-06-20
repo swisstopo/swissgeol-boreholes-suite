@@ -49,10 +49,7 @@ export const BasemapSelector = memo(({ marginBottom }: { marginBottom: string })
   const imageUrlMap = useMemo(() => {
     return basemaps.reduce(
       (acc, layer) => {
-        acc[layer.shortName] = new URL(
-          `./img/${layer.previewImg || "ch.swisstopo.pixelkarte-farbe"}.png`,
-          import.meta.url,
-        ).href;
+        acc[layer.name] = new URL(`./img/${layer.name || "ch.swisstopo.pixelkarte-farbe"}.png`, import.meta.url).href;
         return acc;
       },
       {} as Record<string, string>,
@@ -74,14 +71,14 @@ export const BasemapSelector = memo(({ marginBottom }: { marginBottom: string })
           <Box>
             <Stack sx={{ marginLeft: "6px" }} direction="row">
               {basemaps.map((layer: Basemap) => (
-                <BasemapButton key={layer.shortName} onClick={() => onSelectBackground(layer.shortName)}>
+                <BasemapButton key={layer.name} onClick={() => onSelectBackground(layer.name)}>
                   <ImageBox
                     sx={{
-                      border: `${layer.shortName === currentBasemapName ? "2px solid #cb5d53" : "none"}`,
+                      border: `${layer.name === currentBasemapName ? "2px solid #cb5d53" : "none"}`,
                       marginRight: "1em",
                       marginLeft: 0,
                     }}>
-                    {layer && <img alt={layer.shortName} src={imageUrlMap[layer.shortName]} />}
+                    {layer && <img alt={layer.name} src={imageUrlMap[layer.name]} />}
                   </ImageBox>
                 </BasemapButton>
               ))}

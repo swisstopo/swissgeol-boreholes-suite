@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useState } from "react";
 import { FileDropzone } from "../../../files/fileDropzone.jsx";
-import { AddButton } from "../../../../components/buttons/buttons";
+import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import {
   Card,
   CardActions,

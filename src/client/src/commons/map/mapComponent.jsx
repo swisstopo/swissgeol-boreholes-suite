@@ -23,13 +23,14 @@ import { Box } from "@mui/material";
 import ZoomControls from "./zoomControls";
 import NamePopup from "./namePopup";
 import { BasemapSelector } from "../../components/basemapSelector/basemapSelector";
-import { getBasemap, swissExtent, updateBasemap } from "../../components/basemapSelector/basemaps";
+import { attributions, crossOrigin, swissExtent, updateBasemap } from "../../components/basemapSelector/basemaps";
 import { BasemapContext } from "../../components/basemapSelector/basemapContext";
 import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions";
 import { projections } from "./mapProjections";
 import { theme } from "../../AppTheme";
 import Draw from "ol/interaction/Draw.js";
 import { withTranslation } from "react-i18next";
+import XYZ from "ol/source/XYZ";
 
 class MapComponent extends React.Component {
   static contextType = BasemapContext;
@@ -299,6 +300,22 @@ class MapComponent extends React.Component {
 
     this.setState({ displayedBaseMap: this.context.currentBasemapName });
 
+    const mapLayers =
+      this.context.currentBasemapName === "nomap"
+        ? []
+        : [
+            new TileLayer({
+              properties: {
+                name: this.context.currentBasemapName,
+              },
+              source: new XYZ({
+                url: `https://wmts100.geo.admin.ch/1.0.0/${this.context.currentBasemapName}/default/current/3857/{z}/{x}/{y}.jpeg`,
+                crossOrigin: crossOrigin,
+                attributions: attributions,
+              }),
+            }),
+          ];
+
     this.map = new Map({
       controls: defaultControls({
         attribution: true,
@@ -311,7 +328,7 @@ class MapComponent extends React.Component {
       }),
       loadTilesWhileAnimating: true,
       loadTilesWhileInteracting: true,
-      layers: [getBasemap(this.context.currentBasemapName)],
+      layers: mapLayers,
       target: "map",
       view: new View({
         minResolution: 0.1,

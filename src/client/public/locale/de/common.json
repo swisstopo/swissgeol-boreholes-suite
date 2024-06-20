@@ -89,6 +89,7 @@
   "debris": "Grobbestandteile",
   "degree": "Grad",
   "delete": "Löschen",
+  "deleteBorehole": "Bohrloch löschen",
   "deleteCompletionMessage": "Der Ausbau wird zusammen mit seinen Verrohrungen, Instrumentierungen und Verfüllung/Hinterfüllungen dauerhaft gelöscht.",
   "deleteCompletionTitle": "Wollen Sie diesen Ausbau wirklich löschen?",
   "deleteForever": "Dauerhaft löschen",

@@ -27,7 +27,7 @@ describe("Viewer tests", () => {
       cy.wrap(i).should("have.attr", "readonly");
     });
 
-    cy.contains("a", "Start editing").should("not.exist");
+    cy.get('[data-cy="edit-button"]').should("not.exist");
   });
 
   it("Assures viewer cannot multiselect boreholes", () => {

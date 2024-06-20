@@ -31,7 +31,7 @@ describe("Tests the publication workflow.", () => {
       loginAsAdmin();
       cy.visit(`/${id}`);
     });
-    cy.contains("a", "Start editing").click();
+    cy.get('[data-cy="edit-button"]').click();
 
     verifyStatusTextsInHeader(["edit"]);
     verifyStatusTextsNotInHeader(["control", "valid", "public"]);
@@ -48,7 +48,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("control", "orange");
 
     // Submit for validation
-    cy.contains("a", "Start editing").click();
+    cy.get('[data-cy="edit-button"]').click();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
     cy.wait("@workflow_edit_list");
@@ -60,7 +60,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("valid", "orange");
 
     // Submit for publication
-    cy.contains("a", "Start editing").click();
+    cy.get('[data-cy="edit-button"]').click();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
     cy.wait("@workflow_edit_list");
@@ -73,7 +73,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("public", "orange");
 
     // Publish
-    cy.contains("a", "Start editing").click();
+    cy.get('[data-cy="edit-button"]').click();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
     cy.wait("@workflow_edit_list");
@@ -81,7 +81,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("public", "green");
 
     // Restart workflow
-    cy.contains("a", "Start editing").click();
+    cy.get('[data-cy="edit-button"]').click();
     cy.get('[data-cy="workflow_restart"]').click();
     cy.wait("@workflow_edit_list");
 

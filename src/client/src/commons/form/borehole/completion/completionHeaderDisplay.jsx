@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { IconButton, Stack } from "@mui/material";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
-import { EditButton, CopyButton, DeleteButton } from "../../../../components/buttons/buttons";
+import { CopyButton, DeleteButton, EditButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -37,6 +37,7 @@ const CompletionHeaderDisplay = props => {
             {isEditable && (
               <DataCardButtonContainer>
                 <EditButton
+                  label="edit"
                   onClick={e => {
                     e.stopPropagation();
                     setEditing(true);
@@ -49,6 +50,7 @@ const CompletionHeaderDisplay = props => {
                   }}
                 />
                 <DeleteButton
+                  label="delete"
                   onClick={e => {
                     e.stopPropagation();
                     deleteCompletion();
