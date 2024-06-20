@@ -271,7 +271,7 @@ class WorkflowForm extends React.Component {
                               <Label
                                 circular
                                 data-cy={`workflow_status_color_${role.toLowerCase()}`}
-                                color={status[role].finished === null ? "orange" : current === true ? "red" : "red"}
+                                color={status[role].finished === null ? "orange" : current === true ? "red" : "green"}
                               />
                             </div>
                             <div
