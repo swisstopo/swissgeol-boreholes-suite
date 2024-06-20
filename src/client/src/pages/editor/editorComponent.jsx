@@ -30,12 +30,6 @@ const SidebarBox = styled(Box)(() => ({
   position: "relative",
 }));
 
-const WorkflowBox = styled(Box)(() => ({
-  width: "300px",
-  boxShadow: theme.palette.boxShadow + " -2px 6px 6px 0px",
-  padding: "1em",
-}));
-
 const MainContentBox = styled(Box)({
   flex: "1 1 0%",
   display: "flex",
