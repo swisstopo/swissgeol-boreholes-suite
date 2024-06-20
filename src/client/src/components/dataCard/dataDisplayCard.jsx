@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { DataCardButtonContainer } from "../dataCard/dataCard";
+import { DataCardButtonContainer } from "./dataCard.jsx";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext";
 import { PromptContext } from "../prompt/promptContext";
 import { StackFullWidth } from "../baseComponents";

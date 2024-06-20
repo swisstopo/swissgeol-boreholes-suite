@@ -122,11 +122,6 @@ export const boreholeSearchData = [
     label: "lithology_top_bedrock",
     value: "lithology_top_bedrock",
     schema: "custom.lithology_top_bedrock",
-    levels: {
-      1: "rock",
-      2: "process",
-      3: "type",
-    },
     isVisibleValue: "custom.lit_pet_top_bedrock",
   },
   {

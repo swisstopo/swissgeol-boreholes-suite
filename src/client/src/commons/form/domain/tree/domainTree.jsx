@@ -3,11 +3,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-
 import { loadDomains } from "../../../../api-lib/index";
-
-import { Dropdown, Icon, Input, Header, List, Modal, Form } from "semantic-ui-react";
-
+import { Dropdown, Form, Header, Icon, Input, List, Modal } from "semantic-ui-react";
 import TranslationText from "../../translationText";
 import DomainText from "../domainText";
 
@@ -226,43 +223,10 @@ class DomainTree extends React.Component {
           }
           filters[this.props.levels[domain.level]].push({
             key: "dom-opt-lev-" + domain.level + "-" + domain.id,
-            // value: {
-            //   id: domain.id,
-            //   path: domain.path
-            // },
             path: domain.path,
             value: domain.id,
             text: domain[this.state.language].text,
-            // text: domain.code === '' ?
-            //   domain[this.state.language].text :
-            //   domain.code !== domain[this.state.language].text ?
-            //     domain.code +
-            //     ' (' + domain[this.state.language].text + ')':
-            //     domain.code,
-            // content: domain[this.state.language].text
-            content: (
-              <DomainText id={domain.id} schema={schema} />
-              // <span
-              //   style={{
-              //     color: 'red'
-              //   }}
-              // >
-              // <DomainText
-              //   id={identifier.id}
-              //   schema='borehole_identifier'
-              // />
-              // import DomainText from '../domain/domainText';
-              //   <TranslationText
-              //     id='reset'
-              //   />
-              // </span>
-            ),
-            // content: domain.code === '' ?
-            //   domain[this.state.language].text :
-            //   domain.code !== domain[this.state.language].text ?
-            //     domain.code + ' (' + domain[this.state.language].text +
-            //     ')':
-            //     domain.code
+            content: <DomainText id={domain.id} schema={schema} />,
           });
         }
       }
@@ -393,98 +357,100 @@ class DomainTree extends React.Component {
               display: "flex",
               flexDirection: "row",
             }}>
-            <div
-              style={{
-                minWidth: "300px",
-              }}>
-              <Form
+            {this.state.levels?.length > 0 && (
+              <div
                 style={{
-                  flex: "1 1 100%",
+                  minWidth: "300px",
                 }}>
-                <Form.Field>
-                  <label>
-                    <TranslationText id="filterByHierarchicalUnits" />
-                  </label>
-                </Form.Field>
-              </Form>
-              {this.state.levels.map((lev, idx) => {
-                return lev <= this.state.filter.length + 1 ? (
-                  <div
-                    key={"dt-lf-" + idx}
-                    style={{
-                      alignItems: "center",
-                      padding: "0px 0.5em 0.5em 0px",
-                      display: "flex",
-                      flexDirection: "row",
-                    }}>
-                    {idx > 0 ? (
-                      <Icon
-                        name="caret right"
-                        style={{
-                          marginLeft: 14 * (idx - 1) + "px",
-                        }}
-                      />
-                    ) : null}
-                    <Dropdown
-                      //inline
-                      color="grey"
-                      fluid
-                      onChange={(ev, data) => {
-                        // Remove childs if necessary
+                <Form
+                  style={{
+                    flex: "1 1 100%",
+                  }}>
+                  <Form.Field>
+                    <label>
+                      <TranslationText id="filterByHierarchicalUnits" />
+                    </label>
+                  </Form.Field>
+                </Form>
+                {this.state.levels.map((lev, idx) => {
+                  return lev <= this.state.filter.length + 1 ? (
+                    <div
+                      key={"dt-lf-" + idx}
+                      style={{
+                        alignItems: "center",
+                        padding: "0px 0.5em 0.5em 0px",
+                        display: "flex",
+                        flexDirection: "row",
+                      }}>
+                      {idx > 0 ? (
+                        <Icon
+                          name="caret right"
+                          style={{
+                            marginLeft: 14 * (idx - 1) + "px",
+                          }}
+                        />
+                      ) : null}
+                      <Dropdown
+                        //inline
+                        color="grey"
+                        fluid
+                        onChange={(ev, data) => {
+                          // Remove childs if necessary
 
-                        const selectedFilters = {
-                          ...this.state.selectedFilters,
-                        };
-                        const filter = [];
-                        for (let index2 = 0, l = this.state.levels.length; index2 < l; index2++) {
-                          const lev2 = this.state.levels[index2];
-                          if (lev2 >= lev && Object.prototype.hasOwnProperty.call(selectedFilters, lev)) {
-                            selectedFilters[lev2] = null;
-                          } else {
-                            filter.push(this.state.filter[index2]);
-                          }
-                        }
-
-                        const option = _.find(data.options, {
-                          value: data.value,
-                        });
-
-                        if (data.value === null) {
-                          this.setState({
-                            filter: filter,
-                            selectedFilters: {
-                              ...selectedFilters,
-                            },
-                          });
-                        } else {
-                          selectedFilters[lev] = {
-                            path: option.path,
-                            id: data.value,
+                          const selectedFilters = {
+                            ...this.state.selectedFilters,
                           };
+                          const filter = [];
+                          for (let index2 = 0, l = this.state.levels.length; index2 < l; index2++) {
+                            const lev2 = this.state.levels[index2];
+                            if (lev2 >= lev && Object.prototype.hasOwnProperty.call(selectedFilters, lev)) {
+                              selectedFilters[lev2] = null;
+                            } else {
+                              filter.push(this.state.filter[index2]);
+                            }
+                          }
 
-                          this.setState({
-                            filter: option.path.split("."),
-                            selectedFilters: {
-                              ...selectedFilters,
-                            },
+                          const option = _.find(data.options, {
+                            value: data.value,
                           });
+
+                          if (data.value === null) {
+                            this.setState({
+                              filter: filter,
+                              selectedFilters: {
+                                ...selectedFilters,
+                              },
+                            });
+                          } else {
+                            selectedFilters[lev] = {
+                              path: option.path,
+                              id: data.value,
+                            };
+
+                            this.setState({
+                              filter: option.path.split("."),
+                              selectedFilters: {
+                                ...selectedFilters,
+                              },
+                            });
+                          }
+                        }}
+                        options={filters[this.props.levels[lev]]}
+                        placeholder="Filter by units"
+                        selection
+                        value={
+                          Object.prototype.hasOwnProperty.call(this.state.selectedFilters, lev) &&
+                          this.state.selectedFilters[lev] !== null
+                            ? this.state.selectedFilters[lev].id
+                            : null
                         }
-                      }}
-                      options={filters[this.props.levels[lev]]}
-                      placeholder="Filter by units"
-                      selection
-                      value={
-                        Object.prototype.hasOwnProperty.call(this.state.selectedFilters, lev) &&
-                        this.state.selectedFilters[lev] !== null
-                          ? this.state.selectedFilters[lev].id
-                          : null
-                      }
-                      readOnly={!isEditable}
-                    />
-                  </div>
-                ) : null;
-              })}
-            </div>
+                        readOnly={!isEditable}
+                      />
+                    </div>
+                  ) : null;
+                })}
+              </div>
+            )}
             <div
               style={{
                 padding: "0px 0.5em 0px 0px",

@@ -65,11 +65,6 @@ export const stratigraphyData = {
       label: "lithology",
       value: "lithologyId",
       schema: "custom.lithology_top_bedrock",
-      levels: {
-        1: "rock",
-        2: "process",
-        3: "type",
-      },
 
       require: true,
       isVisibleValue: "lithology",

@@ -61,11 +61,6 @@ export const lithologySearchData = [
     label: "lithology",
     value: "lithology",
     schema: "custom.lithology_top_bedrock",
-    levels: {
-      1: "rock",
-      2: "process",
-      3: "type",
-    },
     isVisibleValue: "layer.lithology",
   },
 
