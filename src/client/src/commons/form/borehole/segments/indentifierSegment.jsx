@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import _ from "lodash";
 
 import DomainDropdown from "../../domain/dropdown/domainDropdown";
@@ -8,20 +8,14 @@ import { AlertContext } from "../../../../components/alert/alertContext";
 import { Form, Icon, Input, Segment } from "semantic-ui-react";
 import { addIdentifier, removeIdentifier } from "../../../../api-lib";
 import { useTranslation } from "react-i18next";
-import { BoreholeDetailContext } from "../../../../components/form/boreholeDetailContext.tsx";
 
 const IdentifierSegment = props => {
   const { borehole, identifier, identifierValue, updateBorehole, setState, user } = props;
   const { t } = useTranslation();
   const alertContext = useContext(AlertContext);
-  const boreholeDetailContext = useContext(BoreholeDetailContext);
 
   const isEditable =
     borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
-
-  useEffect(() => {
-    boreholeDetailContext.setCurrentBorehole(borehole);
-  }, [borehole, boreholeDetailContext]);
 
   return (
     <Segment>

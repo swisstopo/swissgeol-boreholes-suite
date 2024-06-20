@@ -242,7 +242,6 @@ const DetailSideNav = ({ borehole, history, match }) => {
           )}
           <ParentListItem
             active={location.pathname === `/${id}/attachments`}
-            style={{ borderBottom: `1px solid ${theme.palette.boxShadow}` }}
             onClick={() => {
               history.push(`/${id}/attachments`);
             }}>
@@ -250,6 +249,20 @@ const DetailSideNav = ({ borehole, history, match }) => {
               <List.Header as="h3" data-cy="attachments-menu-item">
                 <Typography>
                   <TranslationText firstUpperCase id="attachments" />
+                </Typography>
+              </List.Header>
+            </List.Content>
+          </ParentListItem>
+          <ParentListItem
+            active={location.pathname === `/${id}/status`}
+            style={{ borderBottom: `1px solid ${theme.palette.boxShadow}` }}
+            onClick={() => {
+              history.push(`/${id}/status`);
+            }}>
+            <List.Content>
+              <List.Header as="h3" data-cy="status-menu-item">
+                <Typography>
+                  <TranslationText firstUpperCase id="flowPublicationStatus" />
                 </Typography>
               </List.Header>
             </List.Content>

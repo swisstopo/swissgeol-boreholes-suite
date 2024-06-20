@@ -23,6 +23,7 @@ import ChronostratigraphyPanel from "./stratigraphy/chronostratigraphyPanel";
 import LithostratigraphyPanel from "./stratigraphy/lithostratigraphyPanel";
 import Completion from "./completion/completion";
 import { Box } from "@mui/material";
+import WorkflowForm from "../workflow/workflowForm.jsx";
 
 class BoreholeForm extends React.Component {
   static contextType = AlertContext;
@@ -407,6 +408,11 @@ class BoreholeForm extends React.Component {
                 render={() => <Completion isEditable={isEditable} />}
               />
               <Route path={"/:boreholeId/completion"} render={() => <Completion isEditable={isEditable} />} />
+              <Route
+                exact
+                path={"/:id/status"}
+                render={() => <WorkflowForm id={parseInt(this.props.match.params.id, 10)} />}
+              />
             </Switch>
           </Dimmer.Dimmable>
         </Box>

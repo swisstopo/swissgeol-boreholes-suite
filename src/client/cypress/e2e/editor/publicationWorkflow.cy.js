@@ -29,7 +29,7 @@ describe("Tests the publication workflow.", () => {
     createBorehole({ "extended.original_name": "Borehole to publish" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/${id}`);
+      cy.visit(`/${id}/status`);
     });
     cy.get('[data-cy="edit-button"]').click();
 

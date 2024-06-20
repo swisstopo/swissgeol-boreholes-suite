@@ -1,24 +1,25 @@
-import { IconButton, Stack, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Chip, IconButton, Stack, Typography } from "@mui/material";
 import { theme } from "../../../AppTheme";
 import ArrowLeftIcon from "../../../../public/icons/arrow_left.svg?react";
-import { useContext, useEffect, useState } from "react";
-import { BoreholeDetailContext } from "../../../components/form/boreholeDetailContext";
+import CheckmarkIcon from "../../../../public/icons/checkmark.svg?react";
 import { useHistory } from "react-router-dom";
 import { DeleteButton, EditButton, EndEditButton } from "../../../components/buttons/buttons";
 import { ConfirmDeleteModal } from "./confirmDeleteModal";
 import { useDispatch, useSelector } from "react-redux";
 import { Borehole, ReduxRootState } from "../../../ReduxStateInterfaces";
 import { lockBorehole, unlockBorehole } from "../../../api-lib";
+import { useTranslation } from "react-i18next";
 
 const DetailHeader = () => {
   const [editingEnabled, setEditingEnabled] = useState(false);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const boreholeDetailContext = useContext(BoreholeDetailContext);
   const borehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const history = useHistory();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const toggleEditing = (editingEnabled: boolean) => {
     setEditingEnabled(editingEnabled);
@@ -56,6 +57,10 @@ const DetailHeader = () => {
     }
   }, [editingEnabled, user, borehole]);
 
+  if (borehole.isFetching) {
+    return;
+  }
+
   return (
     <Stack
       direction="row"
@@ -85,7 +90,13 @@ const DetailHeader = () => {
           }}>
           <ArrowLeftIcon />
         </IconButton>
-        <Typography variant="h2"> {boreholeDetailContext.currentBorehole?.data.extended.original_name}</Typography>
+        <Typography variant="h2"> {borehole?.data.extended.original_name}</Typography>
+        <Chip
+          sx={{ marginLeft: "18px" }}
+          label={t(`status${borehole?.data.workflow?.role.toLowerCase()}`)}
+          color={borehole?.data.workflow?.finished != null ? "success" : "warning"}
+          icon={borehole?.data.workflow?.finished != null ? <CheckmarkIcon /> : <div />}
+        />
       </Stack>
       {editableByCurrentUser && (
         <>
