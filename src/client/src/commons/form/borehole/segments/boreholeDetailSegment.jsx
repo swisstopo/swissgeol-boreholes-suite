@@ -215,11 +215,6 @@ const BoreholeDetailSegment = props => {
             <TranslationText id="lithology_top_bedrock" />
           </label>
           <DomainTree
-            levels={{
-              1: "rock",
-              2: "process",
-              3: "type",
-            }}
             onSelected={selected => {
               updateChange("custom.lithology_top_bedrock", selected.id, false);
             }}
