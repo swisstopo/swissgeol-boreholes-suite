@@ -6,14 +6,12 @@ import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import ObservationDisplay from "./observationDisplay";
 import { getHydrotestParameterUnits } from "./parameterUnits";
-import { useDomains, deleteHydrotest } from "../../../../api/fetchApiV2";
+import { deleteHydrotest, useDomains } from "../../../../api/fetchApiV2";
 
 const HydrotestDisplay = props => {
   const { item, isEditable } = props;
   const { t, i18n } = useTranslation();
   const domains = useDomains();
-
-  console.log(item);
 
   return (
     <DataDisplayCard item={item} isEditable={isEditable} deleteData={deleteHydrotest}>
