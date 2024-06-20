@@ -18,16 +18,6 @@ export const DataDisplayCard = props => {
       <StackFullWidth spacing={1}>{props.children}</StackFullWidth>
       {isEditable && (
         <DataCardButtonContainer>
-          <EditButton
-            label="edit"
-            onClick={() => {
-              if (selectedCard) {
-                switchToCard(item);
-              } else {
-                selectCard(item);
-              }
-            }}
-          />
           <DeleteButton
             label="delete"
             onClick={() => {
@@ -45,6 +35,16 @@ export const DataDisplayCard = props => {
                   },
                 },
               ]);
+            }}
+          />
+          <EditButton
+            label="edit"
+            onClick={() => {
+              if (selectedCard) {
+                switchToCard(item);
+              } else {
+                selectCard(item);
+              }
             }}
           />
         </DataCardButtonContainer>

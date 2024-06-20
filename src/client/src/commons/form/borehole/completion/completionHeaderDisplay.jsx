@@ -36,13 +36,6 @@ const CompletionHeaderDisplay = props => {
             </Stack>
             {isEditable && (
               <DataCardButtonContainer>
-                <EditButton
-                  label="edit"
-                  onClick={e => {
-                    e.stopPropagation();
-                    setEditing(true);
-                  }}
-                />
                 <CopyButton
                   onClick={e => {
                     e.stopPropagation();
@@ -54,6 +47,13 @@ const CompletionHeaderDisplay = props => {
                   onClick={e => {
                     e.stopPropagation();
                     deleteCompletion();
+                  }}
+                />
+                <EditButton
+                  label="edit"
+                  onClick={e => {
+                    e.stopPropagation();
+                    setEditing(true);
                   }}
                 />
               </DataCardButtonContainer>
