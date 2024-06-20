@@ -4,7 +4,6 @@ import BoreholeForm from "../../commons/form/borehole/boreholeForm";
 import MainSideNav from "../../commons/menu/mainView/mainSideNav.tsx";
 import DetailSideNav from "../../commons/menu/detailView/detailSideNav.jsx";
 import HeaderComponent from "../../commons/menu/headerComponent";
-import WorkflowForm from "../../commons/form/workflow/workflowForm";
 import MapView from "../../commons/menu/mainView/mapView.jsx";
 import { SideDrawer } from "../../commons/menu/mainView/sideDrawer.tsx";
 import { Box } from "@mui/material";
@@ -29,12 +28,6 @@ const SidebarBox = styled(Box)(() => ({
   flexShrink: 0,
   borderRight: "1px solid " + theme.palette.boxShadow,
   position: "relative",
-}));
-
-const WorkflowBox = styled(Box)(() => ({
-  width: "300px",
-  boxShadow: theme.palette.boxShadow + " -2px 6px 6px 0px",
-  padding: "1em",
 }));
 
 const MainContentBox = styled(Box)({
@@ -128,16 +121,6 @@ const EditorComponent = props => {
             <Route exact={false} path={"/:id"} render={() => <BoreholeForm />} />
           </Switch>
         </MainContentBox>
-        <Switch>
-          <Route
-            component={({ match }) => (
-              <WorkflowBox>
-                <WorkflowForm id={parseInt(match.params.id, 10)} />
-              </WorkflowBox>
-            )}
-            path={"/:id"}
-          />
-        </Switch>
       </LayoutBox>
     </AppBox>
   );

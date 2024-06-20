@@ -25,6 +25,7 @@
 - Removed settings for `codelist translations` and `identifiers` from admin settings.
 - Removed entries `total_depth_tvd`, and `qt_total_depth_tvd_id` from the borehole import.
 - Renewed lithology codelists in schema `custom.lithology_top_bedrock`.
+- Moved publication status in detail view to separate tab.
 
 ### Fixed
 
