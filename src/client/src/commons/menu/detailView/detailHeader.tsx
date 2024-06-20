@@ -42,6 +42,14 @@ const DetailHeader = () => {
   };
 
   useEffect(() => {
+    setEditingEnabled(borehole.data.lock !== null);
+  }, [borehole.data.lock]);
+
+  useEffect(() => {
+    if (borehole.data.lock !== null && borehole.data.lock.id !== user.data.id) {
+      setEditableByCurrentUser(false);
+      return;
+    }
     const matchingWorkgroup = user.data.workgroups.find(workgroup => workgroup.id === borehole.data.workgroup?.id);
     if (matchingWorkgroup && Object.prototype.hasOwnProperty.call(matchingWorkgroup, "roles")) {
       setEditableByCurrentUser(matchingWorkgroup.roles.includes(borehole.data.role));
@@ -79,19 +87,22 @@ const DetailHeader = () => {
         </IconButton>
         <Typography variant="h2"> {boreholeDetailContext.currentBorehole?.data.extended.original_name}</Typography>
       </Stack>
-      {editingEnabled && (
-        <ConfirmDeleteModal
-          onClose={handleClose}
-          open={confirmDelete}
-          trigger={
-            <div style={{ marginRight: "13px" }}>
-              <DeleteButton label="deleteBorehole" onClick={() => setConfirmDelete(true)} />
-            </div>
-          }
-        />
+      {editableByCurrentUser && (
+        <>
+          {editingEnabled && (
+            <ConfirmDeleteModal
+              onClose={handleClose}
+              open={confirmDelete}
+              trigger={
+                <div style={{ marginRight: "13px" }}>
+                  <DeleteButton label="deleteBorehole" onClick={() => setConfirmDelete(true)} />
+                </div>
+              }
+            />
+          )}
+          {editingEnabled ? <EndEditButton onClick={stopEditing} /> : <EditButton onClick={startEditing} />}
+        </>
       )}
-      {editableByCurrentUser &&
-        (editingEnabled ? <EndEditButton onClick={stopEditing} /> : <EditButton onClick={startEditing} />)}
     </Stack>
   );
 };
