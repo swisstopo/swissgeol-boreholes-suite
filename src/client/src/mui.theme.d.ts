@@ -15,6 +15,12 @@ declare module "@mui/material/styles" {
         contrastText: string;
         background: string;
       };
+      success: {
+        main: string;
+      };
+      warning: {
+        main: string;
+      };
       error: {
         main: string;
         dark: string;
@@ -93,6 +99,12 @@ declare module "@mui/material/styles" {
         main: string;
         contrastText: string;
         background: string;
+      };
+      success: {
+        main: string;
+      };
+      warning: {
+        main: string;
       };
       error: {
         main: string;

@@ -25,10 +25,20 @@ export interface Workgroup {
   roles: string[];
 }
 
+interface Workflow {
+  started: string;
+  finished: string;
+  role: string;
+  username: string;
+  workflow: number;
+}
+
 export interface Borehole {
   // Incomplete type definition, add other properties as needed
+  isFetching: boolean;
   data: {
     workgroup: Workgroup;
+    workflow: Workflow;
     id: number;
     spatial_reference_system: number;
     role: string;
