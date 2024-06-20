@@ -180,12 +180,6 @@ class FilterComponent extends React.Component {
       resetCreatedDate,
     } = this.props;
     const { filterPolygon, polygonSelectionEnabled, setPolygonSelectionEnabled } = this.context;
-    // const activeFilters = Object.entries(search.filter)
-    //   .filter(
-    //     ([key, value]) =>
-    //       value != null && value !== "" && value !== -1 && !["refresh"].includes(key) && value !== "all",
-    //   )
-    //   .map(([key, value]) => ({ key: key, value: value }));
 
     return (
       <Stack direction="column" sx={{ height: "100%" }}>
