@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { IconButton, Stack } from "@mui/material";
+import { Badge, IconButton, Stack } from "@mui/material";
 import { ImportErrorModal } from "./menuComponents/importErrorModal";
-import Filter from "../../../../public/icons/filter.svg?react";
+import FilterIcon from "../../../../public/icons/filter.svg?react";
 import AddIcon from "../../../../public/icons/add.svg?react";
 import UploadIcon from "../../../../public/icons/upload.svg?react";
 import SettingsIcon from "../../../../public/icons/settings.svg?react";
@@ -15,6 +15,7 @@ import ImportModal from "./actions/importModal";
 import { DrawerContentTypes } from "../../../pages/editor/editorComponentInterfaces";
 import { ErrorResponse, MainSideNavProps } from "./menuComponents/menuComponentInterfaces";
 import { ReduxRootState, User } from "../../../ReduxStateInterfaces";
+import { FilterContext } from "../../../components/filter/filterContext";
 
 const StyledIconButton = styled(IconButton)({
   padding: "10px",
@@ -51,6 +52,8 @@ const MainSideNav = ({
   const [selectedBoreholeAttachments, setSelectedBoreholeAttachments] = useState<Blob[] | null>(null);
   const [selectedLithologyFile, setSelectedLithologyFile] = useState<Blob[] | null>(null);
   const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
+  const filterContext = useContext(FilterContext);
+
   // Redux state
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   // Redux actions
@@ -108,11 +111,14 @@ const MainSideNav = ({
           padding: "1em",
           flex: "1 1 100%",
         }}>
+        {filterContext.activeFilterLength > 0 && (
+          <Badge color="error" sx={{ margin: "1px" }} badgeContent={filterContext.activeFilterLength}></Badge>
+        )}
         <StyledIconButton
           data-cy="show-filter-button"
           onClick={handleToggleFilter}
           sx={isFilterPanelVisible ? selectedButtonStyle : {}}>
-          <Filter />
+          <FilterIcon />
         </StyledIconButton>
         <StyledIconButton
           data-cy="new-borehole-button"
