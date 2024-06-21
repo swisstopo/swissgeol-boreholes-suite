@@ -31,6 +31,7 @@
 
 - Fixed precisions where not correctly displayed for imported coordinates.
 - When editing lithology layers, the view would always scroll to the bottom of the layer stack when finished.
+- Added missing foreign key constraints on `borehole_files` composite primary keys.
 
 ## v2.0.687 - 2024-04-19
 
