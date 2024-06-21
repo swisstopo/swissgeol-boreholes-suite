@@ -111,7 +111,7 @@ public class UploadControllerTest
         Assert.AreEqual(100, lithology.ToDepth);
         Assert.AreEqual(false, lithology.IsLast);
         Assert.AreEqual(9001, lithology.DescriptionQualityId);
-        Assert.AreEqual(15104448, lithology.LithologyId);
+        Assert.AreEqual(15104915, lithology.LithologyId);
         Assert.AreEqual(15302034, lithology.LithostratigraphyId);
         Assert.AreEqual("Granite", lithology.OriginalUscs);
         Assert.AreEqual(23107001, lithology.UscsDeterminationId);
@@ -129,7 +129,7 @@ public class UploadControllerTest
         Assert.AreEqual("instruction set Dynamic backing up Lock", lithology.Notes);
         Assert.AreEqual("trace back Peso", lithology.OriginalLithology);
         Assert.AreEqual(30000018, lithology.GradationId);
-        Assert.AreEqual(15101001, lithology.LithologyTopBedrockId);
+        Assert.AreEqual(15104916, lithology.LithologyTopBedrockId);
         Assert.AreEqual(2, lithology.ColorCodelists.Count);
         Assert.AreEqual(2, lithology.DebrisCodelists.Count);
         Assert.AreEqual(2, lithology.GrainAngularityCodelists.Count);

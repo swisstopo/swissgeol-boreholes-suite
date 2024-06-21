@@ -83,9 +83,8 @@ const ImportModalContent = ({
               "restriction_id;restriction_until;national_interest;location_x;location_y;" +
               "location_precision;elevation_z;elevation_precision_id;" +
               "reference_elevation;reference_elevation_type_id;" +
-              "qt_reference_elevation_id;hrs_id;type_id;" +
-              "purpose_id;status_id;remarks;total_depth;qt_depth_id;" +
-              "total_depth_tvd;qt_total_depth_tvd_id;top_bedrock;" +
+              "qt_reference_elevation_id;hrs_id;type_id;purpose_id;" +
+              "status_id;remarks;total_depth;qt_depth_id;top_bedrock;" +
               "qt_top_bedrock_id;top_bedrock_tvd;qt_top_bedrock_tvd_id;" +
               "has_groundwater;lithology_top_bedrock_id;" +
               "chronostratigraphy_id;lithostratigraphy_id;attachments;",

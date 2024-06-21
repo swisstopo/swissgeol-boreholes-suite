@@ -11,12 +11,12 @@ describe("Tests for the lithostratigraphy editor.", () => {
 
         [
           {
-            lithologyId: 15101044,
+            lithologyId: 15104758,
             fromDepth: 0,
             toDepth: 25,
           },
           {
-            lithologyId: 15102027,
+            lithologyId: 15104759,
             fromDepth: 25,
             toDepth: 35,
           },

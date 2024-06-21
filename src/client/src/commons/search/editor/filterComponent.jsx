@@ -93,11 +93,32 @@ class FilterComponent extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.getActiveFilters(this.props.search);
+  }
+
   componentDidUpdate(prevProps) {
     const { search, onChange } = this.props;
-    if (onChange !== undefined && !_.isEqual(search.filter, prevProps.search.filter)) {
-      onChange({ ...search.filter });
+    {
+      if (!_.isEqual(search.filter, prevProps.search.filter)) {
+        this.getActiveFilters(search);
+
+        if (onChange !== undefined) {
+          onChange({ ...search.filter });
+        }
+      }
     }
+  }
+
+  getActiveFilters(search) {
+    const activeFilters = Object.entries(search.filter)
+      .filter(
+        ([key, value]) =>
+          value != null && value !== "" && value !== -1 && !["refresh"].includes(key) && value !== "all",
+      )
+      .map(([key, value]) => ({ key: key, value: value }));
+    this.context.setActiveFilterLength(activeFilters.length);
+    this.setState({ activeFilters: activeFilters });
   }
 
   isVisible(filter) {
@@ -159,19 +180,14 @@ class FilterComponent extends React.Component {
       resetCreatedDate,
     } = this.props;
     const { filterPolygon, polygonSelectionEnabled, setPolygonSelectionEnabled } = this.context;
-    const activeFilters = Object.entries(search.filter)
-      .filter(
-        ([key, value]) =>
-          value != null && value !== "" && value !== -1 && !["refresh"].includes(key) && value !== "all",
-      )
-      .map(([key, value]) => ({ key: key, value: value }));
+
     return (
       <Stack direction="column" sx={{ height: "100%" }}>
         <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
           <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
           <FilterChips
             setPolygonSelectionEnabled={setPolygonSelectionEnabled}
-            activeFilters={activeFilters}
+            activeFilters={this.state.activeFilters}
             setFilter={setFilter}
           />
           <Button
@@ -215,7 +231,7 @@ class FilterComponent extends React.Component {
           </Button>
           {this.state?.searchList?.map((filter, idx) => {
             const currentSearchList = this.state.searchList.find(l => l.name === filter.name);
-            const activeFilterLength = activeFilters.filter(f =>
+            const activeFilterLength = this.state.activeFilters.filter(f =>
               currentSearchList?.searchData.some(d => d.value === f.key),
             ).length;
             return (

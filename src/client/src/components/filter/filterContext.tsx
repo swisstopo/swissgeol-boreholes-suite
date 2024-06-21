@@ -8,6 +8,8 @@ interface FilterContextInterface {
   setPolygonSelectionEnabled: (polygonSelectionEnabled: boolean) => void;
   featureIds: number[];
   setFeatureIds: (featureIds: number[]) => void;
+  activeFilterLength: number;
+  setActiveFilterLength: (length: number) => void;
 }
 
 interface FilterProviderProps {
@@ -21,13 +23,15 @@ export const FilterContext = createContext<FilterContextInterface>({
   setPolygonSelectionEnabled: () => {},
   featureIds: [],
   setFeatureIds: () => {},
+  activeFilterLength: 0,
+  setActiveFilterLength: () => {},
 });
 
 export const FilterProvider: React.FC<FilterProviderProps> = ({ children }) => {
   const [filterPolygon, setFilterPolygon] = useState<Polygon | null>(null);
   const [polygonSelectionEnabled, setPolygonSelectionEnabled] = useState(false);
   const [featureIds, setFeatureIds] = useState<number[]>([]);
-
+  const [activeFilterLength, setActiveFilterLength] = useState(0);
   return (
     <FilterContext.Provider
       value={{
@@ -37,6 +41,8 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children }) => {
         setPolygonSelectionEnabled,
         featureIds,
         setFeatureIds,
+        activeFilterLength,
+        setActiveFilterLength,
       }}>
       {children}
     </FilterContext.Provider>

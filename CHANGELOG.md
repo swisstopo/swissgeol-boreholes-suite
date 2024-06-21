@@ -23,6 +23,9 @@
 - Removed entries `drilling_date`,`drilling_diameter`,`drilling_method_id`,`spud_date` and `cuttings_id` from the borehole import.
 - Removed entries `inclination`,`inclination_direction` and `qt_inclination_direction_id` from the borehole import.
 - Removed settings for `codelist translations` and `identifiers` from admin settings.
+- Removed entries `total_depth_tvd`, and `qt_total_depth_tvd_id` from the borehole import.
+- Renewed lithology codelists in schema `custom.lithology_top_bedrock`.
+- Moved publication status in detail view to separate tab.
 
 ### Fixed
 

@@ -14,9 +14,15 @@ export const theme = createTheme({
       contrastText: "#ffffff",
       background: "#eeeeee",
     },
+    success: {
+      main: "#059669",
+    },
+    warning: {
+      main: "#EA580C",
+    },
     error: {
-      main: "#FF0000",
-      dark: "#AA3526",
+      main: "#99191E",
+      dark: "#801519",
       contrastText: "#ffffff",
       background: "#ffebee",
     },
@@ -37,7 +43,7 @@ export const theme = createTheme({
       lightgrey: "#f1f3f5",
       darkgrey: "#787878",
       dark: "rgba(0, 0, 0, 0.5)",
-      menuItemActive: "#AA3526",
+      menuItemActive: "#D92B04",
       filterItemActive: "#1C2834",
     },
 

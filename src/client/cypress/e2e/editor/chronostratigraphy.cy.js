@@ -12,12 +12,12 @@ describe("Tests for the chronostratigraphy editor.", () => {
         const layers = {
           layer: [
             {
-              lithologyId: 15101044,
+              lithologyId: 15104751,
               fromDepth: 0,
               toDepth: 25,
             },
             {
-              lithologyId: 15102027,
+              lithologyId: 15104753,
               fromDepth: 25,
               toDepth: 35,
             },
