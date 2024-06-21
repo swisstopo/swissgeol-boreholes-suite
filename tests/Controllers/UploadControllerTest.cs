@@ -55,7 +55,7 @@ public class UploadControllerTest
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, context.Users.FirstOrDefault().SubjectId) }));
         var boreholeFileUploadService = new BoreholeFileUploadService(context, configuration, loggerBoreholeFileUploadService.Object, contextAccessorMock.Object, s3ClientMock);
 
-        controller = new UploadController(ContextFactory.CreateContext(), loggerMock.Object, locationService, coordinateService, boreholeFileUploadService) { ControllerContext = GetControllerContextAdmin() };
+        controller = new UploadController(context, loggerMock.Object, locationService, coordinateService, boreholeFileUploadService) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
