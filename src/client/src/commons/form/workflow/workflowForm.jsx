@@ -102,14 +102,13 @@ class WorkflowForm extends React.Component {
     }
 
     return (
-      <Stack direction="row">
+      <Stack direction="row" sx={{ overflow: "auto" }}>
         <div
           style={{
             display: "flex",
             padding: "50px",
             flex: "1 1 100%",
             flexDirection: "column",
-            overflow: "hidden",
             height: "100%",
             maxWidth: "800px",
           }}>
@@ -140,6 +139,7 @@ class WorkflowForm extends React.Component {
               display: "flex",
               flexDirection: "column",
               flex: "1 1 100%",
+              minHeight: "10em",
               overflowY: "auto",
             }}>
             <div
