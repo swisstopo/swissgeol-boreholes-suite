@@ -15,7 +15,7 @@ public partial class RemoveObsoleteGeometryFields : Migration
 WITH geometry AS (
     SELECT b.id_bho, b.inclination_bho devi, b.inclination_direction_bho hazi, b.total_depth_bho md, radians(b.inclination_bho) devi_rad, radians(b.inclination_direction_bho) hazi_rad
     FROM bdms.borehole b
-    WHERE b.inclination_bho IS NOT NULL AND b.inclination_direction_bho IS NOT NULL
+    WHERE b.inclination_bho IS NOT NULL AND b.inclination_direction_bho IS NOT NULL AND b.total_depth_bho IS NOT NULL
 )
 INSERT INTO bdms.borehole_geometry (borehole_id, ""X"", ""Y"", ""Z"", ""DEVI"", ""HAZI"", ""MD"")
 SELECT id_bho, 0 x, 0 y, 0 z, devi, hazi, 0 md
