@@ -52,6 +52,10 @@ const BoreholeDetailSegment = props => {
     updateNumber(fieldNameMD, value);
   };
 
+  const roundTvdValue = value => {
+    return value ? Math.round(value * 100) / 100 : "";
+  };
+
   return (
     <Segment>
       <Form autoComplete="off" error size={size}>
@@ -98,7 +102,7 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
-              value={depthTVD?.total_depth ? Math.round(depthTVD?.total_depth * 100) / 100 : ""}
+              value={roundTvdValue(depthTVD?.total_depth)}
               thousandSeparator="'"
               readOnly={true}
             />
@@ -133,7 +137,7 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
-              value={depthTVD?.["extended.top_bedrock"]}
+              value={roundTvdValue(depthTVD?.["extended.top_bedrock"])}
               thousandSeparator="'"
               readOnly={true}
             />
@@ -168,7 +172,7 @@ const BoreholeDetailSegment = props => {
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
-              value={depthTVD?.["custom.qt_top_bedrock"]}
+              value={roundTvdValue(depthTVD?.["custom.qt_top_bedrock"])}
               thousandSeparator="'"
               readOnly={true}
             />
