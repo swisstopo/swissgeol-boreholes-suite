@@ -47,7 +47,7 @@ const DetailHeader = () => {
   }, [borehole.data.lock]);
 
   useEffect(() => {
-    if (borehole.data.lock !== null && borehole.data.lock.id !== user.data.id) {
+    if ((borehole.data.lock !== null && borehole.data.lock.id !== user.data.id) || borehole?.data.workflow?.finished !== null) {
       setEditableByCurrentUser(false);
       return;
     }
