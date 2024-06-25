@@ -157,6 +157,7 @@ const ProfileLayersList = props => {
               ? 'url("' + "/img/lit/" + itemWithValidation?.pattern + '")'
               : "",
             borderRight: "1px solid lightgrey",
+            borderBottom: "1px solid lightgrey",
           }}
         />
         {showDelete !== itemWithValidation?.id && (
