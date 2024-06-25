@@ -15,6 +15,7 @@ export const BoreholeNumbersPreview: React.FC<BoreholeNumbersPreviewProps> = ({ 
           value={boreholes.length}
           thousandSeparator="'"
           displayType="text"
+          style={{ marginLeft: "0.5em" }}
         />
       )}
     </>
