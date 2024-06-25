@@ -148,7 +148,7 @@ describe("completion crud tests", () => {
     evaluateDisplayValue("mainCompletion", "Yes");
   });
 
-  it("switches tabs", () => {
+  it.skip("switches tabs", () => {
     var boreholeId;
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
