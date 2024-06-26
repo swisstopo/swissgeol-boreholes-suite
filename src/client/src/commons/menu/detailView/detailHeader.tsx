@@ -48,7 +48,7 @@ const DetailHeader = () => {
   }, [borehole.data.lock]);
 
   useEffect(() => {
-    const isStatusPage = location.pathname.endsWith("status");
+    const isStatusPage = location.pathname.endsWith("/status");
     const isBoreholeWorkflowFinished = borehole?.data.workflow?.finished !== null;
 
     if (
