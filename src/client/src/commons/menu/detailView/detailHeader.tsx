@@ -48,20 +48,21 @@ const DetailHeader = () => {
   }, [borehole.data.lock]);
 
   useEffect(() => {
-    const isStatusPage = location.pathname.endsWith("/status");
-    const isBoreholeWorkflowFinished = borehole?.data.workflow?.finished !== null;
-
-    if (
-      (borehole.data.lock !== null && borehole.data.lock.id !== user.data.id) ||
-      (isBoreholeWorkflowFinished && !isStatusPage)
-    ) {
+    if (borehole.data.lock !== null && borehole.data.lock.id !== user.data.id) {
       setEditableByCurrentUser(false);
       return;
     }
-    const matchingWorkgroup = user.data.workgroups.find(workgroup => workgroup.id === borehole.data.workgroup?.id);
-    if (matchingWorkgroup && Object.prototype.hasOwnProperty.call(matchingWorkgroup, "roles")) {
-      setEditableByCurrentUser(matchingWorkgroup.roles.includes(borehole.data.role));
-    }
+
+    const matchingWorkgroup =
+      user.data.workgroups.find(workgroup => workgroup.id === borehole.data.workgroup?.id) ?? false;
+    const userRoleMatches =
+      matchingWorkgroup &&
+      Object.prototype.hasOwnProperty.call(matchingWorkgroup, "roles") &&
+      matchingWorkgroup.roles.includes(borehole.data.role);
+    const isStatusPage = location.pathname.endsWith("/status");
+    const isBoreholeInEditWorkflow = borehole?.data.workflow?.role === "EDIT";
+
+    setEditableByCurrentUser(userRoleMatches && (isStatusPage || isBoreholeInEditWorkflow));
   }, [editingEnabled, user, borehole, location]);
 
   if (borehole.isFetching) {
