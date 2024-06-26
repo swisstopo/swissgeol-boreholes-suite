@@ -3,7 +3,7 @@ import { Chip, IconButton, Stack, Typography } from "@mui/material";
 import { theme } from "../../../AppTheme";
 import ArrowLeftIcon from "../../../../public/icons/arrow_left.svg?react";
 import CheckmarkIcon from "../../../../public/icons/checkmark.svg?react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { DeleteButton, EditButton, EndEditButton } from "../../../components/buttons/buttons";
 import { ConfirmDeleteModal } from "./confirmDeleteModal";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +18,7 @@ const DetailHeader = () => {
   const borehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const history = useHistory();
+  const location = useLocation();
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
@@ -47,9 +48,12 @@ const DetailHeader = () => {
   }, [borehole.data.lock]);
 
   useEffect(() => {
+    const isStatusPage = location.pathname.endsWith("/status");
+    const isBoreholeWorkflowFinished = borehole?.data.workflow?.finished !== null;
+
     if (
       (borehole.data.lock !== null && borehole.data.lock.id !== user.data.id) ||
-      borehole?.data.workflow?.finished !== null
+      (isBoreholeWorkflowFinished && !isStatusPage)
     ) {
       setEditableByCurrentUser(false);
       return;
@@ -58,7 +62,7 @@ const DetailHeader = () => {
     if (matchingWorkgroup && Object.prototype.hasOwnProperty.call(matchingWorkgroup, "roles")) {
       setEditableByCurrentUser(matchingWorkgroup.roles.includes(borehole.data.role));
     }
-  }, [editingEnabled, user, borehole]);
+  }, [editingEnabled, user, borehole, location]);
 
   if (borehole.isFetching) {
     return;
