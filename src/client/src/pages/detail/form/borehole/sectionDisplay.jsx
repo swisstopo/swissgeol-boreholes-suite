@@ -1,4 +1,4 @@
-import { StackFullWidth } from "../../../../components/styledComponents.js";
+import { StackFullWidth } from "../../../../components/styledComponents.ts";
 import { FormDisplay, FormValueType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { deleteSection, useDomains } from "../../../../api/fetchApiV2.js";

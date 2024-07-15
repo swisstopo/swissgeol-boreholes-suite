@@ -52,6 +52,10 @@ export const SaveButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref
   return <BdmsBaseButton ref={ref} {...props} label="save" variant="outlined" icon={<SaveIcon />} />;
 });
 
+export const AcceptButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  return <BdmsBaseButton ref={ref} {...props} label="accept" variant="contained" />;
+});
+
 export const DeleteButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return <BdmsBaseButton ref={ref} {...props} variant="outlined" icon={<TrashIcon />} />;
 });

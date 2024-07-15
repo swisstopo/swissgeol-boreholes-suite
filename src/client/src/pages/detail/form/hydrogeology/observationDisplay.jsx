@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { FormDisplay, FormValueType } from "../../../../components/form/form";
-import { StackFullWidth } from "../../../../components/styledComponents.js";
+import { StackFullWidth } from "../../../../components/styledComponents.ts";
 import { useGetCasingName } from "../completion/casingUtils.jsx";
 
 const ObservationDisplay = props => {

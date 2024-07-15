@@ -29,8 +29,7 @@ describe("Tests the publication workflow.", () => {
   it("Publishes a borehole without rejections", () => {
     createBorehole({ "extended.original_name": "Borehole to publish" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/status`);
+      loginAsAdmin(`/${id}/status`);
     });
 
     startEditing();

@@ -14,7 +14,7 @@ import CompletionContent from "./completionContent.jsx";
 import CompletionHeaderInput from "./completionHeaderInput.jsx";
 import CompletionHeaderDisplay from "./completionHeaderDisplay.jsx";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
-import { FullPage } from "../../../../components/styledComponents.js";
+import { FullPage } from "../../../../components/styledComponents.ts";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.jsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import TrashIcon from "../../../../assets/icons/trash.svg?react";

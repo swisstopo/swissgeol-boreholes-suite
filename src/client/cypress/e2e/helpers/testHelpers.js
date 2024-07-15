@@ -135,34 +135,42 @@ export const login = user => {
 /**
  * Login into the application as admin.
  */
-export const loginAsAdmin = () => {
+
+const goToRouteAndAccptTerms = route => {
+  cy.visit(route);
+  cy.get('[data-cy="accept-button"]').click();
+};
+export const loginAsAdmin = (route = "/") => {
   login("admin");
   cy.intercept("/api/v1/user", {
     statusCode: 200,
     body: JSON.stringify(adminUser),
   }).as("stubAdminUser");
+  goToRouteAndAccptTerms(route);
 };
 
 /**
  * Login into the application as editor.
  */
-export const loginAsEditor = () => {
+export const loginAsEditor = (route = "/") => {
   login("editor");
   cy.intercept("/api/v1/user", {
     statusCode: 200,
     body: JSON.stringify(editorUser),
   }).as("stubEditorUser");
+  goToRouteAndAccptTerms(route);
 };
 
 /**
  * Login into the application as viewer.
  */
-export const loginAsViewer = () => {
+export const loginAsViewer = (route = "/") => {
   login("viewer");
   cy.intercept("/api/v1/user", {
     statusCode: 200,
     body: JSON.stringify(viewerUser),
   }).as("stubViewerUser");
+  goToRouteAndAccptTerms(route);
 };
 
 export const newEditableBorehole = () => {
@@ -173,7 +181,6 @@ export const newEditableBorehole = () => {
 
 export const newUneditableBorehole = () => {
   loginAsAdmin();
-  cy.visit("/");
   cy.get('[data-cy="new-borehole-button"]').click();
   cy.contains("button", "Create").click();
   const id = waitForCreation();

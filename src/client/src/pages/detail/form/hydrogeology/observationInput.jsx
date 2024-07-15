@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { useGetCasingOptions } from "../completion/casingUtils.jsx";
 import { getCasingsByBoreholeId, useDomains } from "../../../../api/fetchApiV2.js";
-import { StackHalfWidth } from "../../../../components/styledComponents.js";
+import { StackHalfWidth } from "../../../../components/styledComponents.ts";
 
 const ObservationInput = props => {
   const { observation, boreholeId } = props;

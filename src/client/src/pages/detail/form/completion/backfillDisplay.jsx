@@ -1,4 +1,4 @@
-import { StackFullWidth, StackHalfWidth } from "../../../../components/styledComponents.js";
+import { StackFullWidth, StackHalfWidth } from "../../../../components/styledComponents.ts";
 import { FormDisplay, FormValueType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
 import { useGetCasingName } from "./casingUtils";

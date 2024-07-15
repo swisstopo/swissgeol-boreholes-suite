@@ -9,7 +9,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material/";
-import { FullPageCentered } from "../../../../components/styledComponents.js";
+import { FullPageCentered } from "../../../../components/styledComponents.ts";
 
 const GeometryTable = ({ data }) => {
   const { t } = useTranslation();

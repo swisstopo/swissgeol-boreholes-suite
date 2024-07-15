@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { Box, Stack } from "@mui/material/";
 import { FileDropzone } from "../../../detail/attachments/fileDropzone.jsx";
-import { StackHalfWidth } from "../../../../components/styledComponents.js";
+import { StackHalfWidth } from "../../../../components/styledComponents.ts";
 import { downloadCodelistCsv } from "../../../../api/fetchApiV2.js";
 import { ImportContentProps } from "../commons/actionsInterfaces.js";
 import Downloadlink from "../../../detail/attachments/downloadlink.jsx";

@@ -84,8 +84,7 @@ describe("completion crud tests", () => {
   it("adds, edits, copies and deletes completions", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/completion`);
+      loginAsAdmin(`/${id}/completion`);
     });
     cy.wait("@get-completions-by-boreholeId");
     cy.contains("No completion available");
@@ -157,8 +156,7 @@ describe("completion crud tests", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
-      loginAsAdmin();
-      cy.visit(`/${id}/completion`);
+      loginAsAdmin(`/${id}/completion`);
     });
     cy.wait("@get-completions-by-boreholeId");
     cy.contains("No completion available");
@@ -403,8 +401,7 @@ describe("completion crud tests", () => {
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/completion`);
+      loginAsAdmin(`/${id}/completion`);
     });
     cy.wait("@get-completions-by-boreholeId");
 

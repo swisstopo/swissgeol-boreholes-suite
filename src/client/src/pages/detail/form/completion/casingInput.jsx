@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
-import { StackFullWidth } from "../../../../components/styledComponents.js";
+import { StackFullWidth } from "../../../../components/styledComponents.ts";
 import Delete from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
 import { addCasing, updateCasing, useDomains } from "../../../../api/fetchApiV2";

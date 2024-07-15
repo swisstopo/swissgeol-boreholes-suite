@@ -27,8 +27,7 @@ describe("Instrumentation crud tests", () => {
 
     // open completion editor
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/completion`);
+      loginAsAdmin(`/${id}/completion`);
     });
 
     cy.wait("@get-completions-by-boreholeId");

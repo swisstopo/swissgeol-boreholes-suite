@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { FormProvider, useForm } from "react-hook-form";
 import { DataCardButtonContainer } from "./dataCard.jsx";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext.jsx";
-import { StackFullWidth } from "../styledComponents.js";
+import { StackFullWidth } from "../styledComponents.ts";
 import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
 import { PromptContext } from "../prompt/promptContext.tsx";
 
