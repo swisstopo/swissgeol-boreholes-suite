@@ -2,18 +2,16 @@ import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
-import { Button } from "semantic-ui-react";
 import { acceptTerms, getTerms } from "../../api-lib/index";
-import { theme } from "../../AppTheme";
-
-import Markdown from "markdown-to-jsx";
+import { BdmsDialog } from "../../components/dialog/bdmsDialog.tsx";
 import TranslationKeys from "../../commons/translationKeys";
+
 class AcceptTerms extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isAccepting: false,
       isFetching: true,
+      hasAccepted: false,
       id: null,
       en: "",
       de: "",
@@ -38,107 +36,25 @@ class AcceptTerms extends React.Component {
   }
 
   render() {
-    return this.props.loader.terms ? (
+    return this.state.hasAccepted ? (
       this.props.children
     ) : (
-      <div
-        style={{
-          alignItems: "center",
-          backgroundColor: theme.palette.background.darkgrey,
-          display: "flex",
-          flex: "1 1 0%",
-          // flexDirection: 'column',
-          justifyContent: "center",
-          height: "100%",
-        }}>
-        <div
-          style={{
-            backgroundColor: theme.palette.background.default,
-            borderRadius: "2px",
-            boxShadow: "0 1px 3px " + theme.palette.boxShadow + ", 0 1px 2px " + theme.palette.boxShadow,
-            display: "flex",
-            // flex: '1 1 100%',
-            flexDirection: "column",
-            margin: "1em 0px",
-            height: "60%",
-            overflowY: "hidden",
-            width: "600px",
-          }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              margin: "10px",
-            }}>
-            <TranslationKeys />
-          </div>
-
-          <div
-            style={{
-              flex: "1 1 100%",
-              overflowY: "auto",
-              paddingRight: "2em",
-              margin: "0px 0px 0px 2em",
-            }}>
-            <Markdown
-              style={{
-                marginBottom: "1em",
-              }}>
-              {this.state[this.props.i18n.language]}
-            </Markdown>
-          </div>
-          <div
-            style={{
-              alignItems: "center",
-              borderTop: "thin solid #787878",
-              padding: "1em",
-              display: "flex",
-              flexDirection: "row",
-            }}>
-            {/* <Button
-              secondary
-              style={{
-                whiteSpace: 'nowrap'
-              }}
-            >
-              I disagree
-            </Button> */}
-            <div
-              style={{
-                flex: "1 1 100%",
-              }}
-            />
-            <Button
-              loading={this.state.isAccepting}
-              onClick={() => {
-                this.setState(
-                  {
-                    isAccepting: true,
-                  },
-                  () => {
-                    this.props.acceptTerms(this.state.id);
-                  },
-                );
-              }}
-              primary
-              style={{
-                whiteSpace: "nowrap",
-              }}>
-              {this.props.t("iagree")}
-            </Button>
-          </div>
-        </div>
-      </div>
+      <BdmsDialog
+        headerContent={<TranslationKeys />}
+        title={this.props.t("terms")}
+        width={500}
+        height={450}
+        markdownContent={this.state[this.props.i18n.language]}
+        onCloseCallback={() => {
+          this.props.acceptTerms(this.state.id);
+          this.setState({ hasAccepted: true });
+        }}></BdmsDialog>
     );
   }
 }
 
 AcceptTerms.propTypes = {
   acceptTerms: PropTypes.func,
-  // i18n: PropTypes.shape({
-  //   changeLanguage: PropTypes.func,
-  //   language: PropTypes.text
-  // }),
   t: PropTypes.func,
 };
 

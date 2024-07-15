@@ -36,15 +36,15 @@ class App extends React.Component {
   render() {
     return (
       <DataLoader>
-        <AcceptTerms>
-          <AlertProvider>
-            <AlertBanner />
-            <PromptProvider>
-              <Prompt />
-              <DataCardProvider>
-                <BasemapProvider>
-                  <FilterProvider>
-                    <ThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
+          <AcceptTerms>
+            <AlertProvider>
+              <AlertBanner />
+              <PromptProvider>
+                <Prompt />
+                <DataCardProvider>
+                  <BasemapProvider>
+                    <FilterProvider>
                       <QueryClientProvider client={queryClient}>
                         <Router>
                           <Switch>
@@ -70,13 +70,13 @@ class App extends React.Component {
                         </Router>
                         <ReactQueryDevtools />
                       </QueryClientProvider>
-                    </ThemeProvider>
-                  </FilterProvider>
-                </BasemapProvider>
-              </DataCardProvider>
-            </PromptProvider>
-          </AlertProvider>
-        </AcceptTerms>
+                    </FilterProvider>
+                  </BasemapProvider>
+                </DataCardProvider>
+              </PromptProvider>
+            </AlertProvider>
+          </AcceptTerms>
+        </ThemeProvider>
       </DataLoader>
     );
   }
