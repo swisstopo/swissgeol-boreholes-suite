@@ -400,6 +400,12 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+# Webstorm
+/.idea
+
+# React Buddy Plugin
+/src/client/src/dev
+
 # Cypress test output
 src/client/cypress/screenshot
 src/client/cypress/downloads
