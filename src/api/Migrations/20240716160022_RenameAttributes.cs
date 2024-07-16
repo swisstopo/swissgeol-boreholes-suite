@@ -3,6 +3,7 @@
 #nullable disable
 
 namespace BDMS.Migrations;
+#pragma warning disable CA1505
 
 /// <inheritdoc />
 public partial class RenameAttributes : Migration
@@ -49,3 +50,5 @@ public partial class RenameAttributes : Migration
             principalColumn: "id_cli");
     }
 }
+
+#pragma warning restore CA1505
