@@ -1,4 +1,5 @@
-import * as React from "react";
+import { useState } from "react";
+import type { ModalProps } from "@mui/material";
 import { Box, Dialog, Stack } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Markdown from "markdown-to-jsx";
@@ -8,6 +9,7 @@ import { styled } from "@mui/material/styles";
 
 interface DialogProps {
   onCloseCallback?: () => void;
+  closeOnBackdropClick?: boolean;
   title?: string | null;
   headerContent?: JSX.Element | null;
   mainContent?: string | null;
@@ -35,20 +37,25 @@ const ModalFooterContainer = styled(Box)({
 });
 
 export const BdmsDialog = ({
-  onCloseCallback = () => {},
   title,
   headerContent = null,
   mainContent = null,
   markdownContent = null,
   width = 500,
   height = 400,
+  onCloseCallback = () => {},
+  closeOnBackdropClick = true,
 }: DialogProps) => {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(true);
 
-  const handleClose = (event: MouseEvent, reason: string) => {
-    if (reason && reason === "backdropClick") return;
+  const closeDialog = () => {
     setOpen(false);
     onCloseCallback();
+  };
+
+  const handleClose: ModalProps["onClose"] = (event: MouseEvent, reason: string) => {
+    if (!closeOnBackdropClick && reason === "backdropClick") return;
+    closeDialog();
   };
 
   const DialogWindowStyle = {
@@ -75,7 +82,7 @@ export const BdmsDialog = ({
           </ModalMainContent>
           <ModalFooterContainer>
             <Stack direction="row" justifyContent="flex-end" alignItems="center">
-              <AcceptButton onClick={handleClose} />
+              <AcceptButton onClick={closeDialog} />
             </Stack>
           </ModalFooterContainer>
         </Stack>

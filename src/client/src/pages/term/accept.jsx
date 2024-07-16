@@ -40,11 +40,12 @@ class AcceptTerms extends React.Component {
       this.props.children
     ) : (
       <BdmsDialog
-        headerContent={<TranslationKeys />}
         title={this.props.t("terms")}
+        headerContent={<TranslationKeys />}
         width={500}
         height={450}
         markdownContent={this.state[this.props.i18n.language]}
+        closeOnBackdropClick={false}
         onCloseCallback={() => {
           this.props.acceptTerms(this.state.id);
           this.setState({ hasAccepted: true });
