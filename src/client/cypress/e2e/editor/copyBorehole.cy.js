@@ -5,7 +5,6 @@ describe("Test copying of boreholes", () => {
     createBorehole({ "extended.original_name": "NINTIC" }).as("borehole_id_1");
 
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="showTableButton"]').click();
     cy.get('[data-cy="borehole-table"] tbody').children().eq(1).find(".checkbox").scrollIntoView().click();
 

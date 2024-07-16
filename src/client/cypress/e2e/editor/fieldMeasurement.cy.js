@@ -27,8 +27,7 @@ beforeEach(() => {
 describe("Tests for the field measurement editor.", () => {
   it("Creates, updates and deletes field measurement", () => {
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/hydrogeology/fieldmeasurement`);
+      loginAsAdmin(`/${id}/hydrogeology/fieldmeasurement`);
 
       startBoreholeEditing();
       // switch to german

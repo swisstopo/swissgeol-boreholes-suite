@@ -1,6 +1,6 @@
-import { loginAsAdmin, createBorehole, startBoreholeEditing, handlePrompt } from "../helpers/testHelpers";
+import { createBorehole, handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
+import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Section crud tests", () => {
   beforeEach(() => {
@@ -8,8 +8,7 @@ describe("Section crud tests", () => {
 
     // open section editor
     cy.get("@borehole_id").then(id => {
-      loginAsAdmin();
-      cy.visit(`/${id}/borehole`);
+      loginAsAdmin(`/${id}/borehole`);
     });
 
     // start editing session

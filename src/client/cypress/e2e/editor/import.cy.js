@@ -1,9 +1,8 @@
-import { loginAsAdmin, getImportFileFromFixtures } from "../../e2e/helpers/testHelpers";
+import { getImportFileFromFixtures, loginAsAdmin } from "../../e2e/helpers/testHelpers";
 
 describe("Test for importing boreholes.", () => {
   it("Successfully imports multiple boreholes.", () => {
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="import-borehole-button"]').click();
 
     // Select borehole csv file
@@ -71,7 +70,6 @@ describe("Test for importing boreholes.", () => {
 
   it("Displays borehole validation errors.", () => {
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="import-borehole-button"]').click();
 
     // Select borehole csv file
@@ -111,7 +109,6 @@ describe("Test for importing boreholes.", () => {
 
   it("Displays lithology validation errors.", () => {
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="import-borehole-button"]').click();
 
     // Select borehole csv file

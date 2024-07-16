@@ -3,7 +3,6 @@ import { loginAsAdmin, loginAsEditor } from "../e2e/helpers/testHelpers";
 describe("Borehole list tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {
     loginAsAdmin();
-    cy.visit("/");
     cy.get('[data-cy="showTableButton"]').click();
 
     cy.wait("@edit_list");
@@ -97,7 +96,6 @@ describe("Borehole list tests", () => {
 
   it("preserves column sorting and active page when navigating", () => {
     loginAsEditor();
-    cy.visit("/");
     cy.get('[data-cy="showTableButton"]').click();
 
     // sort by name ascending

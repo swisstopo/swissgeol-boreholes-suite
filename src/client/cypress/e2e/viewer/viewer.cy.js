@@ -3,7 +3,6 @@ import { loginAsAdmin, loginAsViewer } from "../helpers/testHelpers";
 describe("Viewer tests", () => {
   it("Assures viewer cannot add, edit or delete boreholes", () => {
     loginAsViewer();
-    cy.visit("/");
 
     cy.get('[data-cy="showTableButton"]').click();
     cy.wait("@edit_list");
