@@ -3,5 +3,6 @@
   "trailingComma": "all",
   "arrowParens": "avoid",
   "printWidth": 120,
-  "endOfLine": "auto"
+  "endOfLine": "auto",
+  "plugins": ["prettier-plugin-sort-json"]
 }
