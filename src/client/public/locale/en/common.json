@@ -133,7 +133,6 @@
   "editingEnabled": "Editing started",
   "editingStart": "Start editing",
   "editingStop": "Stop editing",
-  "endEditing":"Stop editing",
   "elevation_precision": "+/- Ground elevation [m]",
   "elevation_z": "Ground elevation [m a.s.l.]",
   "elevation_z_from": "Ground Elevation (from)",
