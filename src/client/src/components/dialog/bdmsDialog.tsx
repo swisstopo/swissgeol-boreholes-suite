@@ -1,6 +1,5 @@
-import { useState } from "react";
-import type { ModalProps } from "@mui/material";
-import { Box, Dialog, Stack } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, Dialog, ModalProps, Stack } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Markdown from "markdown-to-jsx";
 import { theme } from "../../AppTheme";
@@ -36,6 +35,27 @@ const ModalFooterContainer = styled(Box)({
   padding: theme.spacing(3),
 });
 
+const MarkdownWrapper = ({ markdownContent }: { markdownContent: string }) => {
+  const [isRendered, setIsRendered] = useState(false);
+
+  useEffect(() => {
+    const handleRender = () => {
+      setIsRendered(true);
+    };
+
+    const timer = setTimeout(handleRender, 0); // Run after current rendering cycle
+    return () => clearTimeout(timer);
+  }, [markdownContent]);
+
+  return (
+    <div>
+      <div style={{ display: isRendered ? "block" : "none" }}>
+        <Markdown>{markdownContent}</Markdown>
+      </div>
+    </div>
+  );
+};
+
 export const BdmsDialog = ({
   title,
   headerContent = null,
@@ -47,6 +67,16 @@ export const BdmsDialog = ({
   closeOnBackdropClick = true,
 }: DialogProps) => {
   const [open, setOpen] = useState(true);
+  const [isRendered, setIsRendered] = useState(false);
+
+  useEffect(() => {
+    const handleRender = () => {
+      setIsRendered(true);
+    };
+
+    const timer = setTimeout(handleRender, 0);
+    return () => clearTimeout(timer); // First rendering cycle completes once the markdown is rendered. Then "isRendered" will be set to true and then dialog is displayed. Avoids flickering of the markdown content.
+  }, [markdownContent]);
 
   const closeDialog = () => {
     setOpen(false);
@@ -65,7 +95,7 @@ export const BdmsDialog = ({
   };
 
   return (
-    <div>
+    isRendered && (
       <Dialog open={open} onClose={handleClose}>
         <Stack sx={DialogWindowStyle}>
           <DialogHeaderContainer>
@@ -78,7 +108,7 @@ export const BdmsDialog = ({
           </DialogHeaderContainer>
           <ModalMainContent>
             {mainContent && <Typography>{mainContent}</Typography>}
-            {markdownContent && <Markdown>{markdownContent}</Markdown>}
+            {markdownContent && <MarkdownWrapper markdownContent={markdownContent} />}
           </ModalMainContent>
           <ModalFooterContainer>
             <Stack direction="row" justifyContent="flex-end" alignItems="center">
@@ -87,6 +117,6 @@ export const BdmsDialog = ({
           </ModalFooterContainer>
         </Stack>
       </Dialog>
-    </div>
+    )
   );
 };
