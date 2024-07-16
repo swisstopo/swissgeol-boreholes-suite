@@ -217,9 +217,9 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
                 return Problem("The borehole is locked by another user or you are missing permissions.");
             }
 
-            // Check if associated borehole has a TopBedrock value
+            // Check if associated borehole has a TopBedrockFresh value
             var borehole = await Context.Boreholes.FindAsync(stratigraphy.BoreholeId).ConfigureAwait(false);
-            if (!borehole.TopBedrock.HasValue)
+            if (!borehole.TopBedrockFresh.HasValue)
             {
                 return Problem("Bedrock not yet defined.");
             }
@@ -228,7 +228,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             var bedrockLayer = new Layer
             {
                 StratigraphyId = stratigraphy.Id,
-                FromDepth = borehole.TopBedrock.Value,
+                FromDepth = borehole.TopBedrockFresh.Value,
                 LithologyTopBedrockId = borehole.LithologyTopBedrockId,
                 LithostratigraphyId = borehole.LithostratigraphyId,
                 IsLast = false,

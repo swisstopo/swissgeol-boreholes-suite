@@ -41,7 +41,7 @@ class GetBorehole(Action):
                     ) t2
                 ) as creator,
                 {sql_lock}
-                kind_id_cli as borehole_type,
+                borehole_type_id as borehole_type,
                 restriction_id_cli as restriction,
                 to_char(
                     restriction_until_bho,
@@ -76,7 +76,7 @@ class GetBorehole(Action):
                             ) as original_name,
                             purpose_id_cli as purpose,
                             status_id_cli as status,
-                            top_bedrock_bho as top_bedrock,
+                            top_bedrock_fresh_md as top_bedrock_fresh_md,
                             groundwater_bho as groundwater
                     ) t
                 ) as extended,
@@ -95,7 +95,7 @@ class GetBorehole(Action):
                             canton_bho as canton,
                             municipality_bho as municipality,
                             qt_depth_id_cli as qt_depth,
-                            qt_top_bedrock,
+                            top_bedrock_weathered_md,
                             lithology_top_bedrock_id_cli as lithology_top_bedrock,
                             lithostrat_id_cli as lithostratigraphy_top_bedrock,
                             chronostrat_id_cli AS chronostratigraphy_top_bedrock,
@@ -156,7 +156,7 @@ class GetBorehole(Action):
                     id_fil_fk = id_fil
 
                 {file_permission}
-                
+
                 GROUP BY
                     id_bho_fk
             ) AS atc
@@ -271,7 +271,7 @@ class GetBorehole(Action):
 
                     FROM
                         bdms.stratigraphy
-                    
+
                     LEFT JOIN bdms.layer
                         ON layer.id_sty_fk = id_sty
 
@@ -289,7 +289,7 @@ class GetBorehole(Action):
 
         permission = ''
         file_permission = ''
-        
+
 
         if user is not None:
             permission = """
@@ -297,7 +297,7 @@ class GetBorehole(Action):
             """.format(
                 self.filterPermission(user)
             )
-        
+
         if (
             user['workgroups'] is None or
             len(user['workgroups']) == 0

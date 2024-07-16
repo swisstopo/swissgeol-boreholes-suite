@@ -84,8 +84,8 @@ const ImportModalContent = ({
               "location_precision;elevation_z;elevation_precision_id;" +
               "reference_elevation;reference_elevation_type_id;" +
               "qt_reference_elevation_id;hrs_id;type_id;purpose_id;" +
-              "status_id;remarks;total_depth;qt_depth_id;top_bedrock;" +
-              "qt_top_bedrock_id;" +
+              "status_id;remarks;total_depth;qt_depth_id;top_bedrock_fresh_md;" +
+              "top_bedrock_weathered_md;" +
               "has_groundwater;lithology_top_bedrock_id;" +
               "chronostratigraphy_id;lithostratigraphy_id;attachments;",
           )}

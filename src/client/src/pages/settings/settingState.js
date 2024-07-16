@@ -56,7 +56,7 @@ const initialState = {
         original_name: true,
         purpose: true,
         status: true,
-        top_bedrock: true,
+        top_bedrock_fresh_md: true,
         groundwater: true,
       },
       custom: {
@@ -114,7 +114,7 @@ const initialState = {
         original_name: true,
         purpose: true,
         status: true,
-        top_bedrock: true,
+        top_bedrock_fresh_md: true,
         groundwater: true,
       },
       custom: {

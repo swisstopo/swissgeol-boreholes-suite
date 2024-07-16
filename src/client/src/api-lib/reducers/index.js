@@ -1,4 +1,4 @@
-import { combineReducers, createStore, applyMiddleware, compose } from "redux";
+import { applyMiddleware, combineReducers, compose, createStore } from "redux";
 import thunkMiddleware from "redux-thunk";
 
 export function user() {
@@ -324,7 +324,7 @@ export function borehole() {
             method: null,
             purpose: null,
             status: null,
-            top_bedrock: null,
+            top_bedrock_fresh_md: null,
             groundwater: null,
           },
         },
@@ -341,7 +341,7 @@ export function borehole() {
             cuttings: null,
             drill_diameter: "",
             qt_depth: null,
-            qt_top_bedrock: null,
+            top_bedrock_weathered_md: null,
             lithology_top_bedrock: null,
             lit_str_top_bedrock: null,
             chro_str_top_bedrock: null,

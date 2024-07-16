@@ -51,7 +51,7 @@ class Action():
             _orderby = 'total_depth'
 
         elif orderby == 'borehole_type':
-            _orderby = 'kind_id_cli'
+            _orderby = 'borehole_type_id'
 
         elif orderby == 'restriction_until':
             _orderby = 'restriction_until_bho'
@@ -75,7 +75,7 @@ class Action():
             _orderby = 'purpose_id_cli'
 
         elif orderby == 'elevation_z':
-            _orderby = 'elevation_z_bho' 
+            _orderby = 'elevation_z_bho'
 
         # there are inconsitencies in the client code, that sometimes the translation key is send to the api. Therefore some duplicate keys are mapped here.
         elif orderby == 'boreholestatus':
@@ -86,13 +86,13 @@ class Action():
 
         elif orderby == 'creationdate':
             _orderby = 'created_bho'
-        
+
         elif orderby == 'totaldepth':
             _orderby = 'total_depth'
-        
-        elif orderby == 'top_bedrock':
-            _orderby = 'top_bedrock_bho'
-        
+
+        elif orderby == 'top_bedrock_fresh_md':
+            _orderby = 'top_bedrock_fresh_md'
+
         else:
             orderby = 'original_name'
 
@@ -141,7 +141,7 @@ class Action():
 
         keys = filter.keys()
 
-        
+
         key_to_table_column = {
             'grain_shape': {'table': 'bdms.layer_grain_shape_codelist', 'column': 'grain_shape_id'},
             'grain_granularity': {'table': 'bdms.layer_grain_angularity_codelist', 'column': 'grain_angularity_id'},
@@ -368,7 +368,7 @@ class Action():
                 """ % self.getIdx())
 
             if 'borehole_identifier' in keys:
-                if filter['borehole_identifier'] == 0: 
+                if filter['borehole_identifier'] == 0:
                     if 'identifier_value' in keys and filter['identifier_value'] not in ['', None]:
                         params.append(int(filter['identifier_value']))
                         where.append("""
@@ -434,7 +434,7 @@ class Action():
             if 'borehole_type' in keys and filter['borehole_type'] not in ['', None]:
                 params.append(int(filter['borehole_type']))
                 where.append("""
-                    kind_id_cli = %s
+                    borehole_type_id = %s
                 """ % self.getIdx())
 
             if 'restriction' in keys and filter[
@@ -596,28 +596,28 @@ class Action():
                     total_depth_bho <= %s
                 """ % self.getIdx())
 
-            if 'top_bedrock_from' in keys and filter['top_bedrock_from'] not in ['', None]:
-                params.append(float(filter['top_bedrock_from']))
+            if 'top_bedrock_fresh_md_from' in keys and filter['top_bedrock_fresh_md_from'] not in ['', None]:
+                params.append(float(filter['top_bedrock_fresh_md_from']))
                 where.append("""
-                    top_bedrock_bho >= %s
+                    top_bedrock_fresh_md >= %s
                 """ % self.getIdx())
 
-            if 'top_bedrock_to' in keys and filter['top_bedrock_to'] not in ['', None]:
-                params.append(float(filter['top_bedrock_to']))
+            if 'top_bedrock_fresh_md_to' in keys and filter['top_bedrock_fresh_md_to'] not in ['', None]:
+                params.append(float(filter['top_bedrock_fresh_md_to']))
                 where.append("""
-                    top_bedrock_bho <= %s
+                    top_bedrock_fresh_md <= %s
                 """ % self.getIdx())
 
-            if 'qt_top_bedrock_from' in keys and filter['qt_top_bedrock_from'] not in ['', None]:
-                params.append(float(filter['qt_top_bedrock_from']))
+            if 'top_bedrock_weathered_md_from' in keys and filter['top_bedrock_weathered_md_from'] not in ['', None]:
+                params.append(float(filter['top_bedrock_weathered_md_from']))
                 where.append("""
-                    qt_top_bedrock >= %s
+                    top_bedrock_weathered_md >= %s
                 """ % self.getIdx())
 
-            if 'qt_top_bedrock_to' in keys and filter['qt_top_bedrock_to'] not in ['', None]:
-                params.append(float(filter['qt_top_bedrock_to']))
+            if 'top_bedrock_weathered_md_to' in keys and filter['top_bedrock_weathered_md_to'] not in ['', None]:
+                params.append(float(filter['top_bedrock_weathered_md_to']))
                 where.append("""
-                    qt_top_bedrock <= %s
+                    top_bedrock_weathered_md <= %s
                 """ % self.getIdx())
 
             if 'lithology_top_bedrock' in keys and filter[

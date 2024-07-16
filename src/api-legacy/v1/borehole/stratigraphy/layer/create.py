@@ -37,9 +37,9 @@ class CreateLayer(Action):
                 AND
                     s.id_bho_fk = b.id_bho
                 AND
-                    l.depth_from_lay = b.top_bedrock_bho
+                    l.depth_from_lay = b.top_bedrock_fresh_md
                 AND
-                    b.top_bedrock_bho IS NOT NULL
+                    b.top_bedrock_fresh_md IS NOT NULL
             """, id)
 
             # Bedrock is not inserted
@@ -57,7 +57,7 @@ class CreateLayer(Action):
                         depth_to_lay DESC NULLS LAST
                     LIMIT 1
                 """, id)
-            
+
             # Only Bedrock is inserted and start from the surface
             elif cnt == 1 and bedrock[0] == 0:
 
@@ -81,7 +81,7 @@ class CreateLayer(Action):
                     AND
                         s.id_bho_fk = b.id_bho
                     AND
-                        depth_to_lay <= top_bedrock_bho
+                        depth_to_lay <= top_bedrock_fresh_md
                     ORDER BY
                         depth_to_lay DESC NULLS LAST
                     LIMIT 1
@@ -113,7 +113,7 @@ class CreateLayer(Action):
                         AND
                             s.id_bho_fk = b.id_bho
                         AND
-                            depth_to_lay >= top_bedrock_bho
+                            depth_to_lay >= top_bedrock_fresh_md
                         ORDER BY
                             depth_to_lay DESC
                         LIMIT 1

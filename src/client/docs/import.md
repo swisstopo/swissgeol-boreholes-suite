@@ -86,8 +86,8 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | remarks                     | Text           | Nein        | Bemerkungen                                                                           |
 | total_depth                 | Dezimalzahl    | Nein        | Bohrlochlänge [m MD]                                                                  |
 | qt_depth_id                 | ID (Codeliste) | Nein        | +/- Bohrlochlänge [m MD]                                                              |
-| top_bedrock                 | Dezimalzahl    | Nein        | Top Fels (frisch) [m MD]                                                              |
-| qt_top_bedrock              | Dezimalzahl    | Nein        | Top Fels (verwittert) [m MD]                                                          |
+| top_bedrock_fresh_md        | Dezimalzahl    | Nein        | Top Fels (frisch) [m MD]                                                              |
+| top_bedrock_weathered_md    | Dezimalzahl    | Nein        | Top Fels (verwittert) [m MD]                                                          |
 | has_groundwater             | True/False     | Nein        | Grundwasser                                                                           |
 | lithology_top_bedrock_id    | ID (Codeliste) | Nein        | Lithologie Top Fels                                                                   |
 | chronostratigraphy_id       | ID (Codeliste) | Nein        | Chronostratigraphie Top Fels                                                          |

@@ -10,8 +10,8 @@ import DomainTree from "../domain/tree/domainTree";
 import DateField from "../dateField";
 import TranslationText from "../translationText";
 
-import { Header, Input, Button, Form } from "semantic-ui-react";
-import { FormControl, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { Button, Form, Header, Input } from "semantic-ui-react";
+import { FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
 
 import { patchBoreholes } from "../../../api-lib/index";
 
@@ -54,8 +54,8 @@ class MultipleForm extends React.Component {
         boreholestatus: { api: "extended.status", value: null },
         totaldepth: { api: "total_depth", value: null },
         qt_depth: { api: "depth_precision", value: null },
-        top_bedrock: { api: "extended.top_bedrock", value: null },
-        qt_top_bedrock: { api: "custom.qt_top_bedrock", value: null },
+        top_bedrock_fresh_md: { api: "extended.top_bedrock_fresh_md", value: null },
+        top_bedrock_weathered_md: { api: "custom.top_bedrock_weathered_md", value: null },
         groundwater: { api: "extended.groundwater", value: null },
         lithology_top_bedrock: {
           api: "custom.lithology_top_bedrock",
@@ -378,7 +378,10 @@ class MultipleForm extends React.Component {
               this.getDomain("boreholestatus"),
             ])}
             {this.getGroup([this.getInput("totaldepth", "number"), this.getDomain("qt_depth")])}
-            {this.getGroup([this.getInput("top_bedrock", "number"), this.getInput("qt_top_bedrock", "number")])}
+            {this.getGroup([
+              this.getInput("top_bedrock_fresh_md", "number"),
+              this.getInput("top_bedrock_weathered_md", "number"),
+            ])}
             {this.getRadio("groundwater")}
             {this.getDomain("lithology_top_bedrock", "custom.lithology_top_bedrock")}
             {this.getDomain("lithostratigraphy_top_bedrock", "custom.lithostratigraphy_top_bedrock")}

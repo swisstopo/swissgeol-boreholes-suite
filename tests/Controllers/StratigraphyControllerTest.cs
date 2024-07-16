@@ -322,7 +322,7 @@ public class StratigraphyControllerTest
     public async Task AddBedrockLayer()
     {
         // Prepare stratigraphy to add the bedrock layer for.
-        var boreholeWithBedrock = await context.Boreholes.FirstAsync(x => x.TopBedrock.HasValue);
+        var boreholeWithBedrock = await context.Boreholes.FirstAsync(x => x.TopBedrockFresh.HasValue);
         var stratigraphyWithoutBedrockLayer = new Stratigraphy
         {
             BoreholeId = boreholeWithBedrock.Id,
@@ -341,7 +341,7 @@ public class StratigraphyControllerTest
         var bedrockLayerId = (int)((OkObjectResult?)addBedrockResult.Result)?.Value!;
         var bedrockLayer = await context.Layers.FindAsync(bedrockLayerId);
         Assert.AreEqual(stratigraphyWithoutBedrockLayer.Id, bedrockLayer.StratigraphyId);
-        Assert.AreEqual(boreholeWithBedrock.TopBedrock.Value, bedrockLayer.FromDepth);
+        Assert.AreEqual(boreholeWithBedrock.TopBedrockFresh.Value, bedrockLayer.FromDepth);
         Assert.AreEqual(boreholeWithBedrock.LithologyTopBedrockId, bedrockLayer.LithologyTopBedrockId);
         Assert.AreEqual(boreholeWithBedrock.LithostratigraphyId, bedrockLayer.LithostratigraphyId);
         Assert.AreEqual(false, bedrockLayer.IsLast);
@@ -351,7 +351,7 @@ public class StratigraphyControllerTest
     public async Task AddBedrockLayerForBoreholeWithoutTopBedrockValue()
     {
         // Prepare stratigraphy to add the bedrock layer for.
-        var boreholeWithoutBedrock = await context.Boreholes.FirstAsync(x => !x.TopBedrock.HasValue);
+        var boreholeWithoutBedrock = await context.Boreholes.FirstAsync(x => !x.TopBedrockFresh.HasValue);
         var stratigraphyWithoutBedrockLayer = new Stratigraphy
         {
             BoreholeId = boreholeWithoutBedrock.Id,

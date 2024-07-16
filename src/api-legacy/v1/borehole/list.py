@@ -46,7 +46,7 @@ class ListBorehole(Action):
                 precision_location_x_lv03,
                 precision_location_y_lv03,
                 srd.geolcode as spatial_reference_system,
-                
+
                 qtloc.geolcode as location_precision,
                 elevation_z_bho as elevation_z,
                 height_reference_system.geolcode as height_reference_system,
@@ -64,11 +64,11 @@ class ListBorehole(Action):
                 total_depth_bho as total_depth,
                 qt_len.geolcode as qt_depth,
 
-                top_bedrock_bho as top_bedrock,
-                qt_tbed.geolcode as qt_top_bedrock,
+                top_bedrock_fresh_md as top_bedrock_fresh_md,
+                qt_tbed.geolcode as top_bedrock_weathered_md,
 
                 groundwater_bho as groundwater,
-                
+
                 ids.identifiers,
 				ids.identifiers_value,
 				remarks_bho as remarks,
@@ -93,7 +93,7 @@ class ListBorehole(Action):
             ) as ids
             ON
                 ids.borehole_id = id_bho
-            
+
             LEFT JOIN (
                 SELECT
                     borehole_id,
@@ -118,7 +118,7 @@ class ListBorehole(Action):
                 ON rest.id_cli = restriction_id_cli
 
             LEFT JOIN bdms.codelist as knd
-                ON knd.id_cli = kind_id_cli
+                ON knd.id_cli = borehole_type_id
 
             LEFT JOIN bdms.codelist as srd
                 ON srd.id_cli = srs_id_cli
@@ -170,7 +170,7 @@ class ListBorehole(Action):
                     ) t
                 ) as creator,
                 original_name_bho as original_name,
-                kind_id_cli as borehole_type,
+                borehole_type_id as borehole_type,
                 restriction_id_cli as restriction,
                 to_char(
                     restriction_until_bho,
@@ -195,7 +195,7 @@ class ListBorehole(Action):
                         SELECT
                             status_id_cli as status,
                             purpose_id_cli as purpose,
-                            top_bedrock_bho as top_bedrock
+                            top_bedrock_fresh_md as top_bedrock_fresh_md
                     ) t
                 ) as extended,
                 status[array_length(status, 1)] as workflow,
@@ -208,7 +208,7 @@ class ListBorehole(Action):
                     ) t
                 ) as custom
 
-                
+
             FROM
                 bdms.borehole
 
@@ -391,18 +391,18 @@ class ListBorehole(Action):
 
                     FROM
                         bdms.stratigraphy
-                    
+
                     INNER JOIN
                         bdms.layer
                     ON
                         id_sty_fk = id_sty
 
                     {}
-                    
+
                     {}
 
                 ) as strt2
-                ON 
+                ON
                     borehole.id_bho = strt2.id_bho_fk
             """.format(
                 joins_string, where_string

@@ -11,7 +11,7 @@ class ValidateProfile(Action):
         result = {}
 
         if (
-            borehole["extended"]["top_bedrock"] is not None
+            borehole["extended"]["top_bedrock_fresh_md"] is not None
         ):
             validators.append(ValidateGeologyLayer(borehole))
 
@@ -37,7 +37,7 @@ class ValidateProfile(Action):
 
                 if validator_result:
                     result.update(validator_result)
-            
+
             # Is the last layer
             if borehole["total_depth"] is not None and idx == len(layers) - 1:
                 if borehole["total_depth"] and layer["depth_to"] != borehole["total_depth"]:
@@ -112,8 +112,8 @@ class ValidateGeologyLayer(Action):
         #         result["wrongDepth"] = True
 
         is_bedrock = (layer["depth_from"] ==
-                      self.borehole["extended"]["top_bedrock"])
-                      
+                      self.borehole["extended"]["top_bedrock_fresh_md"])
+
         if is_bedrock is True:
 
             if "missingBedrock" in self.validation.keys():

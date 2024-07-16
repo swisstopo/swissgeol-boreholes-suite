@@ -21,8 +21,8 @@ export const boreholeEditorData = [
   },
   {
     id: 13,
-    label: "top_bedrock",
-    value: "extended.top_bedrock",
+    label: "top_bedrock_fresh_md",
+    value: "extended.top_bedrock_fresh_md",
   },
   {
     id: 15,
@@ -31,8 +31,8 @@ export const boreholeEditorData = [
   },
   {
     id: 17,
-    label: "qt_top_bedrock",
-    value: "qt_top_bedrock",
+    label: "top_bedrock_weathered_md",
+    value: "top_bedrock_weathered_md",
   },
   {
     id: 19,
