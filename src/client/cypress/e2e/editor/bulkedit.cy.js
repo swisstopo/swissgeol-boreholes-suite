@@ -4,7 +4,6 @@ import adminUser from "../../fixtures/adminUser.json";
 describe("Test the borehole bulk edit feature.", () => {
   it("opens the bulk edit dialog with all boreholes selected", () => {
     loginAsAdmin();
-    cy.get('[data-cy="accept-button"]').click();
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.wait("@edit_ids");
@@ -12,7 +11,6 @@ describe("Test the borehole bulk edit feature.", () => {
 
   it("checks if all toggle buttons do something", () => {
     loginAsAdmin();
-    cy.get('[data-cy="accept-button"]').click();
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 
@@ -28,7 +26,6 @@ describe("Test the borehole bulk edit feature.", () => {
 
   it("displays workgroup toggle only if user has permission for more than one workgroup", () => {
     loginAsAdmin();
-    cy.get('[data-cy="accept-button"]').click();
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
     cy.get(".modal .toggle").should("have.length", 18);
