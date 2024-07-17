@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Renamed technical attributes `kind_id_cli` to `borehole_type_id`, `top_bedrock` to `top_bedrock_fresh` and `qt_top_bedrock` to `top_bedrock_weathered`.
+
 ## v2.1.772 - 2024-06-27
 
 ### Added
@@ -29,7 +33,6 @@
 - Renewed lithology codelists in schema `custom.lithology_top_bedrock`.
 - Moved publication status in detail view to separate tab.
 - Published boreholes cannot be edited anymore.
-- Renamed technical attributes `kind_id_cli` to `borehole_type_id`, `top_bedrock` to `top_bedrock_fresh` and `qt_top_bedrock` to `top_bedrock_weathered`.
 
 ### Fixed
 
