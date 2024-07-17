@@ -224,7 +224,7 @@ class ListGeojson(Action):
                                     LEFT JOIN
                                         bdms.codelist kd
                                     ON
-                                        kind_id_cli = kd.id_cli
+                                        borehole_type_id = kd.id_cli
 
                                     LEFT JOIN
                                         bdms.codelist rs

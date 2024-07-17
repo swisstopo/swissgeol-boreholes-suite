@@ -12,7 +12,7 @@ class PatchBorehole(Action):
     @staticmethod
     def get_column(field):
         column = None
-        
+
         if field == 'extended.original_name':
             column = 'original_name_bho'
 
@@ -24,15 +24,15 @@ class PatchBorehole(Action):
 
         elif field == 'custom.project_name':
             column = 'project_name_bho'
-        
+
         elif field == 'workgroup':
             column = 'id_wgp_fk'
 
         elif field in [ 'location_x',
-                        'location_y', 
-                        'location_x_lv03', 
-                        'location_y_lv03', 
-                        'location', 
+                        'location_y',
+                        'location_x_lv03',
+                        'location_y_lv03',
+                        'location',
                         'precision_location_x',
                         'precision_location_y',
                         'precision_location_x_lv03',
@@ -43,7 +43,7 @@ class PatchBorehole(Action):
 
             elif field == 'location_y':
                 column = 'location_y_bho'
-            
+
             elif field == 'location_x_lv03':
                 column = 'location_x_lv03_bho'
 
@@ -51,16 +51,16 @@ class PatchBorehole(Action):
                 column = 'location_y_lv03_bho'
 
             elif field == 'precision_location_x':
-                column = 'precision_location_x'        
+                column = 'precision_location_x'
 
             elif field == 'precision_location_y':
-                column = 'precision_location_y'       
+                column = 'precision_location_y'
 
             elif field == 'precision_location_x_lv03':
-                column = 'precision_location_x_lv03'       
+                column = 'precision_location_x_lv03'
 
             elif field == 'precision_location_y_lv03':
-                column = 'precision_location_y_lv03'       
+                column = 'precision_location_y_lv03'
 
             elif field == 'location':
                 column = [
@@ -87,8 +87,8 @@ class PatchBorehole(Action):
         elif field == 'total_depth':
             column = 'total_depth_bho'
 
-        elif field == 'extended.top_bedrock':
-            column = 'top_bedrock_bho'
+        elif field == 'extended.top_bedrock_fresh_md':
+            column = 'top_bedrock_fresh_md'
 
         elif field == 'extended.groundwater':
             column = 'groundwater_bho'
@@ -109,7 +109,7 @@ class PatchBorehole(Action):
             column = 'national_interest'
 
         elif field == 'borehole_type':
-            column = 'kind_id_cli'
+            column = 'borehole_type_id'
 
         elif field == 'spatial_reference_system':
             column = 'srs_id_cli'
@@ -144,8 +144,8 @@ class PatchBorehole(Action):
         elif field == 'depth_precision':
             column = 'qt_depth_id_cli'
 
-        elif field == 'custom.qt_top_bedrock':
-            column = 'qt_top_bedrock'
+        elif field == 'custom.top_bedrock_weathered_md':
+            column = 'top_bedrock_weathered_md'
 
         elif field == 'custom.lithology_top_bedrock':
             column = 'lithology_top_bedrock_id_cli'
@@ -168,7 +168,7 @@ class PatchBorehole(Action):
         try:
 
             column = PatchBorehole.get_column(field)
-            
+
             # Updating character varing, numeric, boolean fields
             if field in [
                 'visible',
@@ -193,8 +193,8 @@ class PatchBorehole(Action):
                 'drill_diameter',
                 'custom.drill_diameter',
                 'total_depth',
-                'extended.top_bedrock',
-                'custom.qt_top_bedrock',
+                'extended.top_bedrock_fresh_md',
+                'custom.top_bedrock_weathered_md',
                 'extended.groundwater',
                 'custom.mistakes',
                 'custom.remarks',
@@ -230,7 +230,7 @@ class PatchBorehole(Action):
                             updated_by_bho = $2
                         WHERE id_bho = $3
                     """ % column, value, user['id'], id)
-                
+
                 if field in ['location_x', 'location_y', 'location']:
 
                     geom = PatchGeom(self.conn)
@@ -292,7 +292,7 @@ class PatchBorehole(Action):
 
                 elif field == 'reference_elevation_type':
                     schema = 'reference_elevation_type'
-                
+
                 elif field == 'custom.qt_depth':
                     schema = 'depth_precision'
 

@@ -22,8 +22,8 @@ const initialState = {
     length_from: "",
     length_to: "",
     groundwater: -1,
-    top_bedrock_from: "",
-    top_bedrock_to: "",
+    top_bedrock_fresh_md_from: "",
+    top_bedrock_fresh_md_to: "",
     status: null,
     purpose: null,
     lithology_top_bedrock: null,
@@ -85,8 +85,8 @@ const initialState = {
     layer_gradation: null,
 
     qt_depth: null,
-    qt_top_bedrock_from: "",
-    qt_top_bedrock_to: "",
+    top_bedrock_weathered_md_from: "",
+    top_bedrock_weathered_md_to: "",
 
     reference_elevation_type: null,
     qt_reference_elevation: null,
@@ -173,8 +173,8 @@ const filters = (
           ...state.filter,
         },
       };
-      copy.filter.top_bedrock_from = "";
-      copy.filter.top_bedrock_to = "";
+      copy.filter.top_bedrock_fresh_md_from = "";
+      copy.filter.top_bedrock_fresh_md_to = "";
       return copy;
     }
     case "SEARCH_EDITOR_FILTER_REFRESH": {

@@ -40,12 +40,12 @@ const BoreholeDetailSegment = props => {
   }, [borehole.data.total_depth, updateTVD]);
 
   useEffect(() => {
-    updateTVD("extended.top_bedrock", borehole.data.extended.top_bedrock);
-  }, [borehole.data.extended.top_bedrock, updateTVD]);
+    updateTVD("extended.top_bedrock_fresh_md", borehole.data.extended.top_bedrock_fresh_md);
+  }, [borehole.data.extended.top_bedrock_fresh_md, updateTVD]);
 
   useEffect(() => {
-    updateTVD("custom.qt_top_bedrock", borehole.data.custom.qt_top_bedrock);
-  }, [borehole.data.custom.qt_top_bedrock, updateTVD]);
+    updateTVD("custom.top_bedrock_weathered_md", borehole.data.custom.top_bedrock_weathered_md);
+  }, [borehole.data.custom.top_bedrock_weathered_md, updateTVD]);
 
   const updateNumericField = (fieldNameMD, event) => {
     const value = event.target.value === "" ? null : parseIfString(event.target.value);
@@ -111,15 +111,17 @@ const BoreholeDetailSegment = props => {
         <Form.Group widths="equal">
           <Form.Field required>
             <label>
-              <TranslationText id="top_bedrock" />
+              <TranslationText id="top_bedrock_fresh_md" />
             </label>
             <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              onChange={e => updateNumericField("extended.top_bedrock", e)}
+              onChange={e => updateNumericField("extended.top_bedrock_fresh_md", e)}
               spellCheck="false"
-              value={_.isNil(borehole.data.extended.top_bedrock) ? "" : borehole.data.extended.top_bedrock}
+              value={
+                _.isNil(borehole.data.extended.top_bedrock_fresh_md) ? "" : borehole.data.extended.top_bedrock_fresh_md
+              }
               thousandSeparator="'"
               readOnly={!isEditable}
             />
@@ -130,14 +132,14 @@ const BoreholeDetailSegment = props => {
               pointerEvents: "none",
             }}>
             <label>
-              <TranslationText id="top_bedrock_tvd" />
+              <TranslationText id="top_bedrock_fresh_tvd" />
             </label>
             <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
-              value={roundTvdValue(depthTVD?.["extended.top_bedrock"])}
+              value={roundTvdValue(depthTVD?.["extended.top_bedrock_fresh_md"])}
               thousandSeparator="'"
               readOnly={true}
             />
@@ -146,15 +148,15 @@ const BoreholeDetailSegment = props => {
         <Form.Group widths="equal">
           <Form.Field required>
             <label>
-              <TranslationText id="qt_top_bedrock" />
+              <TranslationText id="top_bedrock_weathered_md" />
             </label>
             <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
-              onChange={e => updateNumericField("custom.qt_top_bedrock", e)}
+              onChange={e => updateNumericField("custom.top_bedrock_weathered_md", e)}
               spellCheck="false"
-              value={borehole.data.custom.qt_top_bedrock}
+              value={borehole.data.custom.top_bedrock_weathered_md}
               thousandSeparator="'"
               readOnly={!isEditable}
             />
@@ -165,14 +167,14 @@ const BoreholeDetailSegment = props => {
               pointerEvents: "none",
             }}>
             <label>
-              <TranslationText id="top_bedrock_tvd_qt" />
+              <TranslationText id="top_bedrock_weathered_tvd" />
             </label>
             <NumericFormat
               autoCapitalize="off"
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
-              value={roundTvdValue(depthTVD?.["custom.qt_top_bedrock"])}
+              value={roundTvdValue(depthTVD?.["custom.top_bedrock_weathered_md"])}
               thousandSeparator="'"
               readOnly={true}
             />
