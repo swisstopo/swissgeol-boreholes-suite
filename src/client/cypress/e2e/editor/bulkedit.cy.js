@@ -44,6 +44,7 @@ describe("Test the borehole bulk edit feature.", () => {
       body: JSON.stringify(adminUser2Workgroups),
     }).as("adminUser2Workgroups");
     cy.visit("/");
+    cy.get('[data-cy="accept-button"]').click();
     cy.get('[data-cy="borehole-table"] thead .checkbox').click({ force: true });
     cy.contains("button", "Bulk editing").click({ force: true });
 
