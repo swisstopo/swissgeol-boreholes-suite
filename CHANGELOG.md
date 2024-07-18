@@ -6,6 +6,10 @@
 
 - Renamed technical attributes `kind_id_cli` to `borehole_type_id`, `top_bedrock` to `top_bedrock_fresh` and `qt_top_bedrock` to `top_bedrock_weathered`.
 
+### Fixed
+
+- Attribute `top_bedrock_weathered` could not be imported.
+
 ## v2.1.772 - 2024-06-27
 
 ### Added

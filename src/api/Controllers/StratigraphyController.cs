@@ -219,7 +219,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
 
             // Check if associated borehole has a TopBedrockFresh value
             var borehole = await Context.Boreholes.FindAsync(stratigraphy.BoreholeId).ConfigureAwait(false);
-            if (!borehole.TopBedrockFresh.HasValue)
+            if (!borehole.TopBedrockFreshMd.HasValue)
             {
                 return Problem("Bedrock not yet defined.");
             }
@@ -228,7 +228,7 @@ public class StratigraphyController : BdmsControllerBase<Stratigraphy>
             var bedrockLayer = new Layer
             {
                 StratigraphyId = stratigraphy.Id,
-                FromDepth = borehole.TopBedrockFresh.Value,
+                FromDepth = borehole.TopBedrockFreshMd.Value,
                 LithologyTopBedrockId = borehole.LithologyTopBedrockId,
                 LithostratigraphyId = borehole.LithostratigraphyId,
                 IsLast = false,

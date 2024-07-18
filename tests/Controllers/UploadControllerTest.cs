@@ -241,6 +241,8 @@ public class UploadControllerTest
         Assert.AreEqual(20113004, borehole.LocationPrecisionId);
         Assert.AreEqual(20114005, borehole.ElevationPrecisionId);
         Assert.AreEqual(20101001, borehole.TypeId);
+        Assert.AreEqual(827.8441205, borehole.TopBedrockFreshMd);
+        Assert.AreEqual(759.7574008, borehole.TopBedrockWeatheredMd);
 
         Assert.AreEqual("POINT (2613116 1179127)", borehole.Geometry.ToString());
 

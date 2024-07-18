@@ -265,13 +265,13 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s top bedrock.
     /// </summary>
     [Column("top_bedrock_fresh_md")]
-    public double? TopBedrockFresh { get; set; }
+    public double? TopBedrockFreshMd { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s weathered top bedrock.
     /// </summary>
     [Column("top_bedrock_weathered_md")]
-    public double? TopBedrockWeathered { get; set; }
+    public double? TopBedrockWeatheredMd { get; set; }
 
     /// <summary>
     /// Gets or sets whether the <see cref="Borehole"/> has groundwater.
