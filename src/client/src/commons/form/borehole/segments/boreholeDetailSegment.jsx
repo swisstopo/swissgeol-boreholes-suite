@@ -182,42 +182,6 @@ const BoreholeDetailSegment = props => {
         </Form.Group>
         <Form.Field required>
           <label>
-            <TranslationText id="groundwater" />
-          </label>
-          <FormControl className="radio-group">
-            <RadioGroup
-              row
-              value={
-                borehole.data.extended.groundwater === true
-                  ? "TRUE"
-                  : borehole.data.extended.groundwater === false
-                    ? "FALSE"
-                    : "NULL"
-              }
-              onChange={e => {
-                let value = e.target.value === "TRUE" ? true : e.target.value === "FALSE" ? false : null;
-                updateChange("extended.groundwater", value, false);
-              }}>
-              <FormControlLabel
-                value="TRUE"
-                control={<DisabledRadio isEditable={!isEditable} />}
-                label={<TranslationText id={"yes"} />}
-              />
-              <FormControlLabel
-                value="FALSE"
-                control={<DisabledRadio isEditable={!isEditable} />}
-                label={<TranslationText id={"no"} />}
-              />
-              <FormControlLabel
-                value="NULL"
-                control={<DisabledRadio isEditable={!isEditable} />}
-                label={<TranslationText id={"np"} />}
-              />
-            </RadioGroup>
-          </FormControl>
-        </Form.Field>
-        <Form.Field required>
-          <label>
             <TranslationText id="lithology_top_bedrock" />
           </label>
           <DomainTree
@@ -272,6 +236,42 @@ const BoreholeDetailSegment = props => {
             title={<TranslationText id="chronostratigraphy_top_bedrock" />}
             isEditable={isEditable}
           />
+        </Form.Field>
+        <Form.Field required>
+          <label>
+            <TranslationText id="groundwater" />
+          </label>
+          <FormControl className="radio-group">
+            <RadioGroup
+              row
+              value={
+                borehole.data.extended.groundwater === true
+                  ? "TRUE"
+                  : borehole.data.extended.groundwater === false
+                    ? "FALSE"
+                    : "NULL"
+              }
+              onChange={e => {
+                let value = e.target.value === "TRUE" ? true : e.target.value === "FALSE" ? false : null;
+                updateChange("extended.groundwater", value, false);
+              }}>
+              <FormControlLabel
+                value="TRUE"
+                control={<DisabledRadio isEditable={!isEditable} />}
+                label={<TranslationText id={"yes"} />}
+              />
+              <FormControlLabel
+                value="FALSE"
+                control={<DisabledRadio isEditable={!isEditable} />}
+                label={<TranslationText id={"no"} />}
+              />
+              <FormControlLabel
+                value="NULL"
+                control={<DisabledRadio isEditable={!isEditable} />}
+                label={<TranslationText id={"np"} />}
+              />
+            </RadioGroup>
+          </FormControl>
         </Form.Field>
       </Form>
     </Segment>
