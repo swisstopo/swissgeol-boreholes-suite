@@ -94,6 +94,7 @@ const MainSideNav = ({
   const isFilterPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Filters;
   const isAddPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.NewBorehole;
   const isLayersPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.CustomLayers;
+  const activeFilterCount = filterContext.activeFilterLength + (filterContext.filterPolygon === null ? 0 : 1);
 
   return (
     <Stack
@@ -111,9 +112,7 @@ const MainSideNav = ({
           padding: "1em",
           flex: "1 1 100%",
         }}>
-        {filterContext.activeFilterLength > 0 && (
-          <Badge color="error" sx={{ margin: "1px" }} badgeContent={filterContext.activeFilterLength}></Badge>
-        )}
+        {activeFilterCount > 0 && <Badge color="error" sx={{ margin: "1px" }} badgeContent={activeFilterCount}></Badge>}
         <StyledIconButton
           data-cy="show-filter-button"
           onClick={handleToggleFilter}
