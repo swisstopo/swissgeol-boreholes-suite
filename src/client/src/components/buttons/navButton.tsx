@@ -4,7 +4,8 @@ import { IconButton, Stack, Typography } from "@mui/material";
 import { theme } from "../../AppTheme";
 
 export interface NavButtonProps extends ButtonProps {
-  key: string;
+  label: string;
+  icon: JSX.Element;
   selected?: boolean;
 }
 
@@ -20,13 +21,10 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>((props, r
       {props.icon} <Typography>{props.label}</Typography>
     </>
   );
-
   return (
     <IconButton
       ref={ref}
       {...props}
-      key={props.key}
-      data-cy={props.key}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       sx={{

@@ -101,14 +101,14 @@ const MainSideNav = ({
         }}>
         {activeFilterCount > 0 && <Badge color="error" sx={{ margin: "1px" }} badgeContent={activeFilterCount}></Badge>}
         <NavButton
-          key="show-filter-button"
+          data-cy="show-filter-button"
           icon={<FilterIcon />}
           label={t("searchfilters")}
           selected={isFilterPanelVisible}
           onClick={handleToggleFilter}
         />
         <NavButton
-          key="new-borehole-button"
+          data-cy="new-borehole-button"
           icon={<AddIcon />}
           label={t("add")}
           selected={isAddPanelVisible}
@@ -116,7 +116,7 @@ const MainSideNav = ({
           onClick={handleToggleAdd}
         />
         <NavButton
-          key="import-borehole-button"
+          data-cy="import-borehole-button"
           icon={<UploadIcon />}
           label={t("upload")}
           disabled={user.data.roles.indexOf("EDIT") === -1}
@@ -127,7 +127,7 @@ const MainSideNav = ({
           }}
         />
         <NavButton
-          key="layers-button"
+          data-cy="layers-button"
           icon={<LayersIcon />}
           label={t("usersMap")}
           selected={isLayersPanelVisible}
@@ -140,13 +140,13 @@ const MainSideNav = ({
           padding: "1em",
         }}>
         <NavButton
-          key="settings-button"
+          data-cy="settings-button"
           icon={<SettingsIcon />}
           label={t("header_settings")}
           onClick={() => history.push(`/setting`)}
         />
         <NavButton
-          key="help-button"
+          data-cy="help-button"
           icon={<HelpIcon />}
           label={t("header_help")}
           onClick={() => window.open(`/help`)}
