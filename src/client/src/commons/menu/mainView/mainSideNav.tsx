@@ -150,8 +150,8 @@ const MainSideNav = ({
         <StyledIconButton data-cy="settings-button" onClick={() => history.push(`/setting`)}>
           <SettingsIcon />
         </StyledIconButton>
-        <StyledIconButton>
-          <HelpIcon onClick={() => window.open(`/help`)} />
+        <StyledIconButton onClick={() => window.open(`/help`)}>
+          <HelpIcon />
         </StyledIconButton>
       </Stack>
       <ImportModal
