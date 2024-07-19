@@ -39,7 +39,6 @@ const MainSideNav = ({
   const [selectedBoreholeAttachments, setSelectedBoreholeAttachments] = useState<Blob[] | null>(null);
   const [selectedLithologyFile, setSelectedLithologyFile] = useState<Blob[] | null>(null);
   const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
-  const [hoveredButtonId, setHoveredButtonId] = useState<string | null>(null);
   const filterContext = useContext(FilterContext);
 
   // Redux state
