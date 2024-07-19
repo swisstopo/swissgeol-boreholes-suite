@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { Badge, IconButton, Stack, Typography } from "@mui/material";
+import { Badge, Stack } from "@mui/material";
 import { ImportErrorModal } from "./menuComponents/importErrorModal";
 import FilterIcon from "../../../../public/icons/filter.svg?react";
 import AddIcon from "../../../../public/icons/add.svg?react";
@@ -10,34 +10,13 @@ import SettingsIcon from "../../../../public/icons/settings.svg?react";
 import HelpIcon from "../../../../public/icons/help.svg?react";
 import LayersIcon from "../../../../public/icons/layers.svg?react";
 import { theme } from "../../../AppTheme";
-import { styled } from "@mui/system";
 import ImportModal from "./actions/importModal";
 import { DrawerContentTypes } from "../../../pages/editor/editorComponentInterfaces";
 import { ErrorResponse, MainSideNavProps } from "./menuComponents/menuComponentInterfaces";
 import { ReduxRootState, User } from "../../../ReduxStateInterfaces";
 import { FilterContext } from "../../../components/filter/filterContext";
 import { useTranslation } from "react-i18next";
-
-const StyledIconButton = styled(IconButton)({
-  padding: "10px",
-  marginBottom: "25px",
-  color: theme.palette.neutral.contrastText,
-  "&:hover": {
-    backgroundColor: `${theme.palette.secondary.main} !important`,
-    color: `${theme.palette.secondary.contrastText} !important`,
-    width: "fit-content",
-    whiteSpace: "nowrap",
-    zIndex: 6000,
-    paddingLeft: "16px",
-    justifyContent: "flex-start",
-  },
-  borderRadius: "10px",
-});
-
-const selectedButtonStyle = {
-  color: theme.palette.primary.contrastText,
-  backgroundColor: theme.palette.background.menuItemActive + " !important",
-};
+import { NavButton } from "../../../components/buttons/navButton";
 
 const MainSideNav = ({
   toggleDrawer,
@@ -105,102 +84,6 @@ const MainSideNav = ({
   const isLayersPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.CustomLayers;
   const activeFilterCount = filterContext.activeFilterLength + (filterContext.filterPolygon === null ? 0 : 1);
 
-  function getTooltipWrapper(content: JSX.Element) {
-    return (
-      <Stack direction="row" justifyContent={"space-between"} spacing={1} sx={{ padding: 0, margin: 0 }}>
-        {content}
-      </Stack>
-    );
-  }
-
-  interface ButtonContentInterface {
-    id: string;
-    onClick: () => void;
-    sx: object;
-    defaultContent: JSX.Element;
-    hoverContent: JSX.Element;
-    disabled?: boolean;
-  }
-
-  const topButtonData: ButtonContentInterface[] = [
-    {
-      id: "show-filter-button",
-      onClick: handleToggleFilter,
-      sx: isFilterPanelVisible ? selectedButtonStyle : {},
-      defaultContent: <FilterIcon />,
-      hoverContent: getTooltipWrapper(
-        <>
-          <FilterIcon /> <Typography> {t("searchfilters")} </Typography>
-        </>,
-      ),
-    },
-    {
-      id: "new-borehole-button",
-      onClick: handleToggleAdd,
-      sx: isAddPanelVisible ? selectedButtonStyle : {},
-      defaultContent: <AddIcon />,
-      disabled: user.data.roles.indexOf("EDIT") === -1,
-      hoverContent: getTooltipWrapper(
-        <>
-          <AddIcon /> <Typography> {t("add")} </Typography>
-        </>,
-      ),
-    },
-    {
-      id: "import-borehole-button",
-      onClick: () => {
-        toggleDrawer(false);
-        setModal(true);
-        setUpload(true);
-      },
-      sx: {},
-      defaultContent: <UploadIcon />,
-      disabled: user.data.roles.indexOf("EDIT") === -1,
-      hoverContent: getTooltipWrapper(
-        <>
-          <UploadIcon /> <Typography> {t("upload")} </Typography>
-        </>,
-      ),
-    },
-    {
-      id: "layers-button",
-      onClick: handleToggleLayers,
-      sx: isLayersPanelVisible ? selectedButtonStyle : {},
-      defaultContent: <LayersIcon />,
-      hoverContent: getTooltipWrapper(
-        <>
-          <LayersIcon />
-          <Typography> {t("usersMap")} </Typography>
-        </>,
-      ),
-    },
-  ];
-
-  const bottomButtonData: ButtonContentInterface[] = [
-    {
-      id: "settings-button",
-      onClick: () => history.push(`/setting`),
-      sx: {},
-      defaultContent: <SettingsIcon />,
-      hoverContent: getTooltipWrapper(
-        <>
-          <SettingsIcon /> <Typography> {t("header_settings")} </Typography>
-        </>,
-      ),
-    },
-    {
-      id: "help-button",
-      onClick: () => window.open(`/help`),
-      sx: {},
-      defaultContent: <HelpIcon />,
-      hoverContent: getTooltipWrapper(
-        <>
-          <HelpIcon /> <Typography> {t("header_help")} </Typography>
-        </>,
-      ),
-    },
-  ];
-
   return (
     <Stack
       direction="column"
@@ -218,35 +101,57 @@ const MainSideNav = ({
           flex: "1 1 100%",
         }}>
         {activeFilterCount > 0 && <Badge color="error" sx={{ margin: "1px" }} badgeContent={activeFilterCount}></Badge>}
-        {topButtonData.map(button => (
-          <StyledIconButton
-            key={button.id}
-            data-cy={button.id}
-            onClick={button.onClick}
-            onMouseEnter={() => setHoveredButtonId(button.id)}
-            onMouseLeave={() => setHoveredButtonId(null)}
-            disabled={button.disabled}
-            sx={button.sx}>
-            {hoveredButtonId === button.id ? button.hoverContent : button.defaultContent}
-          </StyledIconButton>
-        ))}
+        <NavButton
+          key="show-filter-button"
+          icon={<FilterIcon />}
+          label={t("searchfilters")}
+          selected={isFilterPanelVisible}
+          onClick={handleToggleFilter}
+        />
+        <NavButton
+          key="new-borehole-button"
+          icon={<AddIcon />}
+          label={t("add")}
+          selected={isAddPanelVisible}
+          disabled={user.data.roles.indexOf("EDIT") === -1}
+          onClick={handleToggleAdd}
+        />
+        <NavButton
+          key="import-borehole-button"
+          icon={<UploadIcon />}
+          label={t("upload")}
+          disabled={user.data.roles.indexOf("EDIT") === -1}
+          onClick={() => {
+            toggleDrawer(false);
+            setModal(true);
+            setUpload(true);
+          }}
+        />
+        <NavButton
+          key="layers-button"
+          icon={<LayersIcon />}
+          label={t("usersMap")}
+          selected={isLayersPanelVisible}
+          onClick={handleToggleLayers}
+        />
       </Stack>
       <Stack
         direction="column"
         sx={{
           padding: "1em",
         }}>
-        {bottomButtonData.map(button => (
-          <StyledIconButton
-            key={button.id}
-            data-cy={button.id}
-            onClick={button.onClick}
-            onMouseEnter={() => setHoveredButtonId(button.id)}
-            onMouseLeave={() => setHoveredButtonId(null)}
-            sx={button.sx}>
-            {hoveredButtonId === button.id ? button.hoverContent : button.defaultContent}
-          </StyledIconButton>
-        ))}
+        <NavButton
+          key="settings-button"
+          icon={<SettingsIcon />}
+          label={t("header_settings")}
+          onClick={() => history.push(`/setting`)}
+        />
+        <NavButton
+          key="help-button"
+          icon={<HelpIcon />}
+          label={t("header_help")}
+          onClick={() => window.open(`/help`)}
+        />
       </Stack>
       <ImportModal
         creating={creating}
