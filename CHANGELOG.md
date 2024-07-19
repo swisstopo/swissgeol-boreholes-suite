@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Location hash for tabs in borehole detail view.
+
 ### Changed
 
 - Renamed technical attributes `kind_id_cli` to `borehole_type_id`, `top_bedrock` to `top_bedrock_fresh` and `qt_top_bedrock` to `top_bedrock_weathered`.
