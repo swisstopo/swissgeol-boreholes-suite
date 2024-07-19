@@ -44,7 +44,7 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="styled-layer-2"] [data-testid="ClearIcon"]').click();
 
     // workaround because close button of profile attributes is sometimes not clickable
-    cy.get('[data-cy="borehole-menu-item"]').click();
+    cy.get('[data-cy="location-menu-item"]').click();
     cy.get('[data-cy="stratigraphy-menu-item"]').click();
     cy.get('[data-cy="lithology-menu-item"]').click();
 
