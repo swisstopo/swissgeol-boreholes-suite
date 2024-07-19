@@ -119,6 +119,7 @@ const MainSideNav = ({
     sx: object;
     defaultContent: JSX.Element;
     hoverContent: JSX.Element;
+    disabled?: boolean;
   }
 
   const topButtonData: ButtonContentInterface[] = [
@@ -138,6 +139,7 @@ const MainSideNav = ({
       onClick: handleToggleAdd,
       sx: isAddPanelVisible ? selectedButtonStyle : {},
       defaultContent: <AddIcon />,
+      disabled: user.data.roles.indexOf("EDIT") === -1,
       hoverContent: getTooltipWrapper(
         <>
           <AddIcon /> <Typography> {t("add")} </Typography>
@@ -153,6 +155,7 @@ const MainSideNav = ({
       },
       sx: {},
       defaultContent: <UploadIcon />,
+      disabled: user.data.roles.indexOf("EDIT") === -1,
       hoverContent: getTooltipWrapper(
         <>
           <UploadIcon /> <Typography> {t("upload")} </Typography>
@@ -222,6 +225,7 @@ const MainSideNav = ({
             onClick={button.onClick}
             onMouseEnter={() => setHoveredButtonId(button.id)}
             onMouseLeave={() => setHoveredButtonId(null)}
+            disabled={button.disabled}
             sx={button.sx}>
             {hoveredButtonId === button.id ? button.hoverContent : button.defaultContent}
           </StyledIconButton>
