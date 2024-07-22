@@ -24,6 +24,7 @@ import { FilterContext } from "../../../components/filter/filterContext.tsx";
 
 class FilterComponent extends React.Component {
   static contextType = FilterContext;
+
   constructor(props) {
     super(props);
     this.handleFilterReset = this.handleFilterReset.bind(this);
@@ -183,13 +184,15 @@ class FilterComponent extends React.Component {
 
     return (
       <Stack direction="column" sx={{ height: "100%" }}>
-        <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
-          <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
+        <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
+        {this.state.activeFilters.length > 0 && (
           <FilterChips
             setPolygonSelectionEnabled={setPolygonSelectionEnabled}
             activeFilters={this.state.activeFilters}
             setFilter={setFilter}
           />
+        )}
+        <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
           <Button
             onClick={() => {
               this.handlePolygonFilterClick();

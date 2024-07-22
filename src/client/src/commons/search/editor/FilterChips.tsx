@@ -22,7 +22,7 @@ const FilterChips = ({ activeFilters, setFilter }: FilterChipsProps) => {
   };
 
   return (
-    <Box sx={{ marginTop: "24px", marginBottom: "14px" }}>
+    <Box sx={{ marginBottom: "14px" }}>
       {activeFilters.map((filter, index) => {
         const filterLabel = filter.key === "role" ? t("status") : t(filter.key);
         return (
