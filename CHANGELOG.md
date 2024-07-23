@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Language dropdown in the header.
+
 ### Changed
 
 - Renamed technical attributes `kind_id_cli` to `borehole_type_id`, `top_bedrock` to `top_bedrock_fresh` and `qt_top_bedrock` to `top_bedrock_weathered`.
