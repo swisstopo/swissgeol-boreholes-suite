@@ -22,12 +22,11 @@ export const basemaps: Basemap[] = [
   {
     name: "ch.swisstopo.pixelkarte-farbe",
     layer: new TileLayer({
-      minResolution: 0.1,
-      maxZoom: 27,
       properties: {
         name: "ch.swisstopo.pixelkarte-farbe",
       },
       source: new XYZ({
+        maxZoom: 19,
         cacheSize: 2048 * 3, // increase initial cache size, as seen in map.geo.admin
         url: `https://wmts100.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg`,
         crossOrigin,
@@ -38,12 +37,11 @@ export const basemaps: Basemap[] = [
   {
     name: "ch.swisstopo.swissimage",
     layer: new TileLayer({
-      minResolution: 0.1,
-      maxZoom: 27,
       properties: {
         name: "ch.swisstopo.swissimage",
       },
       source: new XYZ({
+        maxZoom: 20,
         cacheSize: 2048 * 3, // increase initial cache size, as seen in map.geo.admin
         url: `https://wmts100.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg`,
         crossOrigin,
@@ -54,12 +52,11 @@ export const basemaps: Basemap[] = [
   {
     name: "ch.swisstopo.pixelkarte-grau",
     layer: new TileLayer({
-      minResolution: 0.1,
-      maxZoom: 27,
       properties: {
         name: "ch.swisstopo.pixelkarte-grau",
       },
       source: new XYZ({
+        maxZoom: 19,
         cacheSize: 2048 * 3, // increase initial cache size, as seen in map.geo.admin
         url: `https://wmts100.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg`,
         crossOrigin,
