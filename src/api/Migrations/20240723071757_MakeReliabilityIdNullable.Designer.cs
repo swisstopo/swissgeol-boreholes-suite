@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20240723071757_MakeReliabilityIdNullable")]
+    partial class MakeReliabilityIdNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -265,11 +268,11 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("status_id_cli");
 
-                    b.Property<double?>("TopBedrockFresh")
+                    b.Property<double?>("TopBedrockFreshMd")
                         .HasColumnType("double precision")
                         .HasColumnName("top_bedrock_fresh_md");
 
-                    b.Property<double?>("TopBedrockWeathered")
+                    b.Property<double?>("TopBedrockWeatheredMd")
                         .HasColumnType("double precision")
                         .HasColumnName("top_bedrock_weathered_md");
 
