@@ -50,6 +50,7 @@ export function LanguagePopup() {
 
   const onLanguageChanged = (language: string) => {
     i18n.changeLanguage(language);
+    handleClose();
   };
 
   return (
@@ -64,7 +65,8 @@ export function LanguagePopup() {
           color: theme.palette.primary.main,
           fontWeight: "500",
           ...(isOpen && { backgroundColor: theme.palette.background.lightgrey }),
-        }}>
+        }}
+        data-cy="language-selector">
         {selectedLanguage.toUpperCase()}
       </Button>
       <Popover
@@ -84,6 +86,7 @@ export function LanguagePopup() {
           {languages.map(language => (
             <ListItem
               key={language}
+              data-cy={`language-${language}`}
               onClick={() => {
                 onLanguageChanged(language);
               }}
