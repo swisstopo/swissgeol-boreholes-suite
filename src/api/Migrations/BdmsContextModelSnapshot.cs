@@ -265,11 +265,11 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("status_id_cli");
 
-                    b.Property<double?>("TopBedrockFresh")
+                    b.Property<double?>("TopBedrockFreshMd")
                         .HasColumnType("double precision")
                         .HasColumnName("top_bedrock_fresh_md");
 
-                    b.Property<double?>("TopBedrockWeathered")
+                    b.Property<double?>("TopBedrockWeatheredMd")
                         .HasColumnType("double precision")
                         .HasColumnName("top_bedrock_weathered_md");
 
