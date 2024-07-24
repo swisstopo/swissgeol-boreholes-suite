@@ -11,6 +11,7 @@
 
 - Attribute `top_bedrock_weathered` could not be imported.
 - Badge with number of active filters on sidebar did not include polygon filter.
+- `layer_depth_to` was displayed in filter even though it was not selected in the filter settings.
 
 ## v2.1.772 - 2024-06-27
 
