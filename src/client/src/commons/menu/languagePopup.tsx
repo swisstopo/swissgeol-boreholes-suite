@@ -1,9 +1,9 @@
 import { Button, List, ListItem, ListItemIcon, ListItemText, Popover } from "@mui/material";
 import { theme } from "../../AppTheme.ts";
 import { MouseEvent, useEffect, useState } from "react";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CheckIcon from "@mui/icons-material/Check";
+import ArrowDownIcon from "../../../public/icons/arrow_down.svg?react";
+import ArrowUpIcon from "../../../public/icons/arrow_up.svg?react";
 import i18n from "../../i18n";
 
 const languages = ["de", "fr", "it", "en"];
@@ -57,11 +57,10 @@ export function LanguagePopup() {
     <>
       <Button
         onClick={handleClick}
-        endIcon={anchorEl ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+        endIcon={anchorEl ? <ArrowUpIcon /> : <ArrowDownIcon />}
         sx={{
           width: "67px",
           fontSize: "14px",
-          padding: "8px 12px",
           color: theme.palette.primary.main,
           fontWeight: "500",
           ...(isOpen && { backgroundColor: theme.palette.background.lightgrey }),
