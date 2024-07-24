@@ -409,7 +409,7 @@ describe("completion crud tests", () => {
 
     // cancel switching content tabs
     cy.wait(1000);
-    addItem("addCasing");
+    addItem("addcasing");
     cy.wait("@codelist_GET");
     setInput("name", "casing 1", "casing-card.0.edit");
     setInput("casingElements.0.fromDepth", "0");
@@ -429,7 +429,7 @@ describe("completion crud tests", () => {
 
     // save when switching content tabs
     cy.wait(1000);
-    addItem("addCasing");
+    addItem("addcasing");
     cy.wait("@codelist_GET");
     setInput("name", "casing 1", "casing-card.0.edit");
     setInput("casingElements.0.fromDepth", "0");

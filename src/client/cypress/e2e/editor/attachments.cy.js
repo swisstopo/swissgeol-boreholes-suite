@@ -3,6 +3,7 @@ import {
   deleteDownloadedFile,
   readDownloadedFile,
   returnToOverview,
+  startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 

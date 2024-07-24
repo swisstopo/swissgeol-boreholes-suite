@@ -37,7 +37,7 @@ describe("Casing crud tests", () => {
 
   it("adds, edits and deletes casings", () => {
     // create casing
-    addItem("addCasing");
+    addItem("addcasing");
     cy.wait("@codelist_GET");
     cy.get('[data-cy="casingElements.0.delete"]').should("be.disabled");
 
@@ -56,7 +56,7 @@ describe("Casing crud tests", () => {
     setInput("casingElements.0.outerDiameter", "4");
 
     // add casing element and verify fromDepth is set to previous toDepth
-    addItem("addCasingElement");
+    addItem("addcasingelement");
     cy.get('[name="casingElements.1.fromDepth"]').should("have.value", "10");
     cy.get('[data-cy="casingElements.1.delete"]').click();
 
@@ -168,34 +168,34 @@ describe("Casing crud tests", () => {
   });
 
   it("checks for unsaved changes when switching between cards", () => {
-    addItem("addCasing");
-    cy.get('[data-cy="addCasing-button"]').should("be.disabled");
+    addItem("addcasing");
+    cy.get('[data-cy="addcasing-button"]').should("be.disabled");
     cy.wait("@codelist_GET");
     setInput("name", "casing 1");
     setInput("casingElements.0.fromDepth", "5");
     setInput("casingElements.0.toDepth", "10");
     setSelect("casingElements.0.kindId", 4);
     saveForm();
-    cy.get('[data-cy="addCasing-button"]').should("be.enabled");
+    cy.get('[data-cy="addcasing-button"]').should("be.enabled");
 
     // can switch cards without prompt if no changes were made
     startEditing();
     setInput("notes", "Lorem.");
 
     // can cancel switching tabs without loosing data
-    addItem("addCasing");
+    addItem("addcasing");
     handlePrompt("Casing: Unsaved changes", "Cancel");
     evaluateTextarea("notes", "Lorem.");
 
     // can reset creating
-    addItem("addCasing");
+    addItem("addcasing");
     handlePrompt("Casing: Unsaved changes", "Reset");
     evaluateDisplayValue("notes", "-");
 
     // can save changes in existing card and switch to new card
     startEditing();
     setInput("notes", "Lorem.");
-    addItem("addCasing");
+    addItem("addcasing");
     handlePrompt("Casing: Unsaved changes", "Save");
     evaluateDisplayValue("notes", "Lorem.");
 
@@ -210,7 +210,7 @@ describe("Casing crud tests", () => {
     cy.get('[data-cy="casing-card.1"]').should("not.exist");
 
     // can save new card and switch to existing card
-    addItem("addCasing");
+    addItem("addcasing");
     setInput("name", "casing 2");
     setInput("casingElements.0.fromDepth", "0");
     setInput("casingElements.0.toDepth", "5");

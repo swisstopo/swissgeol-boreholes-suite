@@ -18,7 +18,7 @@ describe("Test copying of boreholes", () => {
 
     startBoreholeEditing();
 
-    cy.get('[data-cy="deleteBorehole-button"]').click();
+    cy.get('[data-cy="deleteborehole-button"]').click();
     cy.get('[class="ui negative button"]').click();
   });
 });
