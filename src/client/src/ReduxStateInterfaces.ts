@@ -8,10 +8,12 @@ export interface User {
   data: UserData;
 }
 
+export type Role = "PUBLIC" | "VIEW" | "VALID" | "EDIT" | "CONTROL";
+
 export interface UserData {
   // Incomplete type definition, add other properties as needed
   workgroups: Workgroup[];
-  roles: string[];
+  roles: Role[];
   id: number;
   name: string;
   username: string;
@@ -22,7 +24,7 @@ export interface Workgroup {
   disabled: null;
   id: number;
   workgroup: string;
-  roles: string[];
+  roles: Role[];
 }
 
 interface Workflow {
