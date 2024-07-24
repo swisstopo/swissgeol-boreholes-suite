@@ -13,7 +13,7 @@ import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { getHydrotestParameterUnits } from "./parameterUnits";
 import Delete from "@mui/icons-material/Delete";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
-import { PromptContext } from "../../../../components/prompt/promptContext";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils";
 
 const HydrotestInput = props => {

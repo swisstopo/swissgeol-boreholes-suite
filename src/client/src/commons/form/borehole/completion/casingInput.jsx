@@ -11,7 +11,7 @@ import { DataCardButtonContainer } from "../../../../components/dataCard/dataCar
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { extractCasingDepth } from "./casingUtils";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
-import { PromptContext } from "../../../../components/prompt/promptContext";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 
 const CasingInput = props => {
   const { item, parentId } = props;

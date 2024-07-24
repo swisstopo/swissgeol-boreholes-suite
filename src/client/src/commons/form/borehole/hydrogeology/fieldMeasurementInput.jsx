@@ -6,7 +6,7 @@ import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { addFieldMeasurement, updateFieldMeasurement, useDomains } from "../../../../api/fetchApiV2";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
-import { PromptContext } from "../../../../components/prompt/promptContext";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useTranslation } from "react-i18next";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";

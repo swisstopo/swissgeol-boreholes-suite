@@ -32,6 +32,10 @@ export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props,
   );
 });
 
+export const BdmsButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  return <BdmsBaseButton ref={ref} {...props} label={props.label} />;
+});
+
 export const AddButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return <BdmsBaseButton ref={ref} {...props} label={props.label} variant="outlined" icon={<AddIcon />} />;
 });

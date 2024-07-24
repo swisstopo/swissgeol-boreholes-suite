@@ -7,7 +7,7 @@ import { completionSchemaConstants } from "./completionSchemaConstants";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { FormCheckbox, FormInput, FormSelect } from "../../../../components/form/form";
 import { CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { PromptContext } from "../../../../components/prompt/promptContext";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 
 const CompletionHeaderInput = props => {
   const { completion, cancelChanges, saveCompletion, trySwitchTab, switchTabs } = props;
