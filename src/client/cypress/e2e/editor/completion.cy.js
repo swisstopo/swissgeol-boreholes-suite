@@ -81,7 +81,7 @@ export const isContentTabSelected = tabName => {
 };
 
 describe("completion crud tests", () => {
-  it.only("adds, edits, copies and deletes completions", () => {
+  it("adds, edits, copies and deletes completions", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
@@ -148,7 +148,7 @@ describe("completion crud tests", () => {
     evaluateDisplayValue("mainCompletion", "Yes");
   });
 
-  it.skip("switches tabs", () => {
+  it("switches tabs", () => {
     var boreholeId;
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
