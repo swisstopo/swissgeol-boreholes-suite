@@ -30,7 +30,7 @@ export interface Workgroup {
 interface Workflow {
   started: string;
   finished: string;
-  role: string;
+  role: Role;
   username: string;
   workflow: number;
 }
@@ -43,7 +43,7 @@ export interface Borehole {
     workflow: Workflow;
     id: number;
     spatial_reference_system: number;
-    role: string;
+    role: Role;
     lock: {
       id: number;
     };
