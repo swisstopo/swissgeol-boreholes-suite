@@ -19,6 +19,15 @@ export const startEditing = parent => {
 };
 
 /**
+ * Clicks on the stop editing button.
+ * @param {string} parent (optional) The parent of the button.
+ */
+export const stopEditing = parent => {
+  var selector = createBaseSelector(parent) + '[data-cy="editingstop-button"]';
+  cy.get(selector).click({ force: true });
+};
+
+/**
  * Clicks on the cancel button.
  * @param {string} parent (optional) The parent of the button.
  */
@@ -50,5 +59,5 @@ export const copyItem = parent => {
  * @param {string} itemLabel The label name of the button.
  */
 export const addItem = itemLabel => {
-  cy.get(`[data-cy="${itemLabel}-button"]`).click({ force: true });
+  cy.get(`[data-cy="${itemLabel.toLowerCase()}-button"]`).click({ force: true });
 };

@@ -108,9 +108,7 @@ describe("Instrumentation crud tests", () => {
     cy.get('[data-cy="instrumentation-card.0"] [data-cy="name-formDisplay"]').contains("Inst-1");
     cy.get('[data-cy="instrumentation-card.1"] [data-cy="name-formDisplay"]').contains("Inst-2");
 
-    cy.get('[data-cy="instrumentation-card.1"] [data-cy="edit-button"]').click({
-      force: true,
-    });
+    startEditing('[data-cy="instrumentation-card.1"]');
     setInput("toDepth", "8");
     saveForm();
     cy.wait("@instrumentation_GET");

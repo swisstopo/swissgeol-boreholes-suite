@@ -149,13 +149,13 @@ describe("Tests for the hydrotest editor.", () => {
     startBoreholeEditing();
 
     addItem("addHydrotest");
-    cy.get('[data-cy="addHydrotest-button"]').should("be.disabled");
+    cy.get('[data-cy="addhydrotest-button"]').should("be.disabled");
     cy.wait("@casing_GET");
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 2);
     toggleMultiSelect("testKindId", [3]);
     saveForm();
-    cy.get('[data-cy="addHydrotest-button"]').should("be.enabled");
+    cy.get('[data-cy="addhydrotest-button"]').should("be.enabled");
 
     startEditing();
     setInput("comment", "Lorem.");

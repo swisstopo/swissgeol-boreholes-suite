@@ -1,4 +1,10 @@
-import { createAndEditBoreholeAsAdmin, deleteDownloadedFile, readDownloadedFile } from "../helpers/testHelpers";
+import {
+  createAndEditBoreholeAsAdmin,
+  deleteDownloadedFile,
+  readDownloadedFile,
+  returnToOverview,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers";
 
 describe("Tests for 'Attachments' edit page.", () => {
   it("creates, downloads and deletes attachments.", () => {
@@ -6,8 +12,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       "extended.original_name": "JUNIORSOUFFLE",
     });
 
-    cy.get('[data-cy="edit-button"]').click();
-    cy.wait("@edit_lock");
+    startBoreholeEditing();
 
     // navigate to attachments tab
     cy.get('[data-cy="attachments-menu-item"]').click();
@@ -89,10 +94,8 @@ describe("Tests for 'Attachments' edit page.", () => {
     cy.get("tbody").children().should("have.length", 0);
 
     // stop editing
-    cy.get('[data-cy="editingStop-button"]').click();
-    cy.wait("@edit_unlock");
-    cy.get('[data-cy="backButton"]').click();
-    cy.wait(["@edit_list", "@borehole"]);
+    stopBoreholeEditing();
+    returnToOverview();
 
     // reset test data
     cy.get('[data-cy="showTableButton"]').click();

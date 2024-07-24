@@ -15,7 +15,7 @@ export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props,
     <Button
       ref={ref}
       {...props}
-      data-cy={props.label + "-button"}
+      data-cy={props.label?.toLowerCase() + "-button"}
       endIcon={props.icon}
       sx={{
         paddingLeft: "12px",

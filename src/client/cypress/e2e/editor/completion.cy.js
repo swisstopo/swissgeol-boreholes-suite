@@ -95,16 +95,16 @@ describe("completion crud tests", () => {
 
     // add completion
     addCompletion();
-    cy.get('[data-cy="addCompletion-button"]').should("be.disabled");
+    cy.get('[data-cy="addcompletion-button"]').should("be.disabled");
     cy.contains("Not specified");
     cy.get('[data-cy="save-button"]').should("be.disabled");
     cy.get('[data-cy="cancel-button"]').should("be.enabled");
     cancelEditing();
-    cy.get('[data-cy="addCompletion-button"]').should("be.enabled");
+    cy.get('[data-cy="addcompletion-button"]').should("be.enabled");
     cy.get('[data-cy="completion-header-tab-0"]').should("not.exist");
 
     addCompletion();
-    cy.get('[data-cy="addCompletion-button"]').should("be.disabled");
+    cy.get('[data-cy="addcompletion-button"]').should("be.disabled");
 
     setInput("name", "Compl-1");
     setSelect("kindId", 2);
@@ -114,7 +114,7 @@ describe("completion crud tests", () => {
     setInput("notes", "Lorem.");
     saveChanges();
     cy.contains("Compl-1");
-    cy.get('[data-cy="addCompletion-button"]').should("be.enabled");
+    cy.get('[data-cy="addcompletion-button"]').should("be.enabled");
 
     // copy completion
     copyCompletion();
@@ -276,7 +276,7 @@ describe("completion crud tests", () => {
     });
     setInput("name", "new completion");
     setHeaderTab(0);
-    cy.get('[data-cy="prompt-button-Save"]').should("be.disabled");
+    cy.get('[data-cy="prompt"]').find('[data-cy="save-button"]').should("be.disabled");
     handlePrompt("Completion: Unsaved changes", "Cancel");
 
     // new to existing: changes can be reverted in prompt

@@ -1,4 +1,4 @@
-import { newEditableBorehole } from "../helpers/testHelpers";
+import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Tests for the layer form.", () => {
   it("Creates a layer and fills all dropdowns with multiple selection.", () => {
@@ -75,9 +75,7 @@ describe("Tests for the layer form.", () => {
     cy.get('[data-cy="styled-layer-0"] [data-testid="ClearIcon"]').click();
 
     // stop editing
-    cy.get('[data-cy="editingStop-button"]').click();
-    cy.wait("@edit_unlock");
-    cy.get('[data-cy="backButton"]').click();
-    cy.wait(["@edit_list", "@borehole"]);
+    stopBoreholeEditing();
+    returnToOverview();
   });
 });
