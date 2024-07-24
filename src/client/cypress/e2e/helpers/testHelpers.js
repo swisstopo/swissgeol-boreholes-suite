@@ -591,9 +591,9 @@ export const createInstrument = (completionId, casingId, name, statusId, kindId,
   });
 };
 
-export const handlePrompt = (title, action) => {
+export const handlePrompt = (message, action) => {
   cy.get('[data-cy="prompt"]').should("be.visible");
-  cy.contains(title);
+  cy.contains(message);
   cy.get('[data-cy="prompt"]').find(`[data-cy="${action.toLowerCase()}-button"]`).click();
 };
 

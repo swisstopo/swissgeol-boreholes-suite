@@ -227,7 +227,7 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-1 updated");
     setHeaderTab(1);
-    handlePrompt("Completion: Unsaved changes", "Cancel");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Cancel");
     isHeaderTabSelected(0);
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
@@ -237,7 +237,7 @@ describe("completion crud tests", () => {
 
     // existing editing to other existing: changes can be reverted in prompt
     setHeaderTab(1);
-    handlePrompt("Completion: Unsaved changes", "Reset");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
     isHeaderTabSelected(1);
     cy.contains("Compl-1");
     cy.location().should(location => {
@@ -249,7 +249,7 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-2 updated");
     setHeaderTab(0);
-    handlePrompt("Completion: Unsaved changes", "Save");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
     cy.wait("@get-completions-by-boreholeId");
     isHeaderTabSelected(0);
     cy.contains("Compl-2 updated");
@@ -277,12 +277,12 @@ describe("completion crud tests", () => {
     setInput("name", "new completion");
     setHeaderTab(0);
     cy.get('[data-cy="prompt"]').find('[data-cy="save-button"]').should("be.disabled");
-    handlePrompt("Completion: Unsaved changes", "Cancel");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Cancel");
 
     // new to existing: changes can be reverted in prompt
     setSelect("kindId", 1);
     setHeaderTab(0);
-    handlePrompt("Completion: Unsaved changes", "Reset");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
     cy.wait("@casing_GET");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
@@ -299,7 +299,7 @@ describe("completion crud tests", () => {
     setInput("name", "new completion");
     setSelect("kindId", 1);
     setHeaderTab(0);
-    handlePrompt("Completion: Unsaved changes", "Save");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
     cy.wait("@casing_GET");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/completion/${completion1Id}`);
@@ -343,7 +343,7 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Reset compl-1");
     addCompletion();
-    handlePrompt("Completion: Unsaved changes", "Reset");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/completion/new`);
       expect(location.hash).to.eq("");
@@ -359,7 +359,7 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Reset compl-1");
     addCompletion();
-    handlePrompt("Completion: Unsaved changes", "Save");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/completion/new`);
       expect(location.hash).to.eq("");
@@ -416,12 +416,12 @@ describe("completion crud tests", () => {
     setInput("casingElements.0.toDepth", "10");
     setSelect("casingElements.0.kindId", 2);
     setContentTab("instrumentation");
-    handlePrompt("Casing: Unsaved changes", "Cancel");
+    handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Cancel");
     isContentTabSelected("casing");
 
     // reset when switching content tabs
     setContentTab("instrumentation");
-    handlePrompt("Casing: Unsaved changes", "Reset");
+    handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Reset");
     isContentTabSelected("instrumentation");
     setContentTab("casing");
     cy.wait("@casing_GET");
@@ -436,7 +436,7 @@ describe("completion crud tests", () => {
     setInput("casingElements.0.toDepth", "10");
     setSelect("casingElements.0.kindId", 2);
     setContentTab("backfill");
-    handlePrompt("Casing: Unsaved changes", "Save");
+    handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Save");
     isContentTabSelected("backfill");
     setContentTab("casing");
     cy.contains("casing 1").should("be.visible");
@@ -453,13 +453,13 @@ describe("completion crud tests", () => {
     setSelect("materialId", 1);
 
     addCompletion();
-    handlePrompt("Sealing/Backfilling: Unsaved changes", "Cancel");
+    handlePrompt("Sealing/Backfilling: You have unsaved changes. How would you like to proceed?", "Cancel");
     isHeaderTabSelected(0);
     isContentTabSelected("backfill");
 
     // reset content changes when switching header tabs
     addCompletion();
-    handlePrompt("Sealing/Backfilling: Unsaved changes", "Reset");
+    handlePrompt("Sealing/Backfilling: You have unsaved changes. How would you like to proceed?", "Reset");
     isHeaderTabSelected(1);
     cancelEditing();
     setContentTab("backfill");
@@ -475,7 +475,7 @@ describe("completion crud tests", () => {
     setSelect("kindId", 1);
     setSelect("materialId", 1);
     addCompletion();
-    handlePrompt("Sealing/Backfilling: Unsaved changes", "Save");
+    handlePrompt("Sealing/Backfilling: You have unsaved changes. How would you like to proceed?", "Save");
     isHeaderTabSelected(1);
     cancelEditing();
     setContentTab("backfill");
@@ -497,7 +497,7 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
-    handlePrompt("Completion: Unsaved changes", "Cancel");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Cancel");
     cy.get('[data-cy="prompt"]').should("not.exist");
     isHeaderTabSelected(0);
     isContentTabSelected("instrumentation");
@@ -507,9 +507,9 @@ describe("completion crud tests", () => {
 
     // reset header changes, cancel content changes
     addCompletion();
-    handlePrompt("Completion: Unsaved changes", "Reset");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
     cy.wait(1000);
-    handlePrompt("Instrumentation: Unsaved changes", "Cancel");
+    handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "Cancel");
     isHeaderTabSelected(0);
     isContentTabSelected("instrumentation");
     evaluateInput("fromDepth", "0");
@@ -520,9 +520,9 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
-    handlePrompt("Completion: Unsaved changes", "Reset");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
     cy.wait(1000);
-    handlePrompt("Instrumentation: Unsaved changes", "Reset");
+    handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "Reset");
     isHeaderTabSelected(1);
     setHeaderTab(0);
     evaluateDisplayValue("name", "Compl-1", "completion-header");
@@ -542,9 +542,9 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
-    handlePrompt("Completion: Unsaved changes", "Reset");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Reset");
     cy.wait(1000);
-    handlePrompt("Instrumentation: Unsaved changes", "Save");
+    handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "Save");
     isHeaderTabSelected(1);
     setHeaderTab(0);
     evaluateDisplayValue("name", "Compl-1", "completion-header");
@@ -558,9 +558,9 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
-    handlePrompt("Completion: Unsaved changes", "Save");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
     cy.wait(1000);
-    handlePrompt("Instrumentation: Unsaved changes", "Cancel");
+    handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "Cancel");
     isHeaderTabSelected(0);
     isContentTabSelected("instrumentation");
     evaluateTextarea("notes", "Lorem.");
@@ -570,9 +570,9 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-1 updated again", "completion-header");
     addCompletion();
-    handlePrompt("Completion: Unsaved changes", "Save");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
     cy.wait(1000);
-    handlePrompt("Instrumentation: Unsaved changes", "Reset");
+    handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "Reset");
     isHeaderTabSelected(1);
     setHeaderTab(0);
     evaluateDisplayValue("name", "Compl-1 updated again", "completion-header");
@@ -588,9 +588,9 @@ describe("completion crud tests", () => {
     startEditHeader();
     setInput("name", "Compl-1 updated again and again", "completion-header");
     addCompletion();
-    handlePrompt("Completion: Unsaved changes", "Save");
+    handlePrompt("Completion: You have unsaved changes. How would you like to proceed?", "Save");
     cy.wait(1000);
-    handlePrompt("Instrumentation: Unsaved changes", "Save");
+    handlePrompt("Instrumentation: You have unsaved changes. How would you like to proceed?", "Save");
     isHeaderTabSelected(1);
     setHeaderTab(0);
     evaluateDisplayValue("name", "Compl-1 updated again and again", "completion-header");

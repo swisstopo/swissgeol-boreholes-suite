@@ -184,19 +184,19 @@ describe("Casing crud tests", () => {
 
     // can cancel switching tabs without loosing data
     addItem("addcasing");
-    handlePrompt("Casing: Unsaved changes", "Cancel");
+    handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Cancel");
     evaluateTextarea("notes", "Lorem.");
 
     // can reset creating
     addItem("addcasing");
-    handlePrompt("Casing: Unsaved changes", "Reset");
+    handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Reset");
     evaluateDisplayValue("notes", "-");
 
     // can save changes in existing card and switch to new card
     startEditing();
     setInput("notes", "Lorem.");
     addItem("addcasing");
-    handlePrompt("Casing: Unsaved changes", "Save");
+    handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Save");
     evaluateDisplayValue("notes", "Lorem.");
 
     // can reset creating and switch to existing card
@@ -205,7 +205,7 @@ describe("Casing crud tests", () => {
     setInput("casingElements.0.toDepth", "5");
     setSelect("casingElements.0.kindId", 4);
     startEditing();
-    handlePrompt("Casing: Unsaved changes", "Reset");
+    handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Reset");
     cy.get('[data-cy="casing-card.0.edit"]').should("be.visible");
     cy.get('[data-cy="casing-card.1"]').should("not.exist");
 
@@ -216,7 +216,7 @@ describe("Casing crud tests", () => {
     setInput("casingElements.0.toDepth", "5");
     setSelect("casingElements.0.kindId", 4);
     startEditing();
-    handlePrompt("Casing: Unsaved changes", "Save");
+    handlePrompt("Casing: You have unsaved changes. How would you like to proceed?", "Save");
     cy.get('[data-cy="casing-card.0.edit"]').should("exist");
     cy.get('[data-cy="casing-card.1"]').should("exist");
   });
