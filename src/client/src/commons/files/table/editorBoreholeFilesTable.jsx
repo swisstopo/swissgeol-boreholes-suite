@@ -2,17 +2,30 @@ import { Component } from "react";
 import PropTypes from "prop-types";
 
 import {
-  uploadBoreholeAttachment,
   detachBoreholeAttachment,
   getBoreholeAttachments,
   updateBoreholeAttachment,
+  uploadBoreholeAttachment,
 } from "../../../api/fetchApiV2";
 
 import FilesTableComponent from "./filesTableComponent";
-import TranslationText from "../../form/translationText";
-import { Button } from "semantic-ui-react";
+import { Box, Button, Input } from "@mui/material";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { AlertContext } from "../../../components/alert/alertContext";
 import { withTranslation } from "react-i18next";
+import { styled } from "@mui/system";
+
+export const VisuallyHiddenInput = styled(Input)({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 class EditorBoreholeFilesTable extends Component {
   static propTypes = {
@@ -32,7 +45,6 @@ class EditorBoreholeFilesTable extends Component {
       patching: null,
       upload: false,
       files: [],
-      file: null,
     };
     this.loadFiles = this.loadFiles.bind(this);
     this.patch = this.patch.bind(this);
@@ -116,42 +128,45 @@ class EditorBoreholeFilesTable extends Component {
           overflowY: "hidden",
         }}>
         {this.props.unlocked === true ? (
-          <div className="bdms-padding-1">
-            <TranslationText id="uploadNewFile" />: &nbsp;
-            <input
-              onChange={e => {
-                const file = e.target.files[0];
-                const maxSizeInBytes = 210_000_000; // 1024 x 1024 x 200 = 209715200 bytes (as stated in the import docs)
-
-                // If file size is less than max allowed size, upload file. Otherwise, display error message.
-                if (file && file.size <= maxSizeInBytes) {
-                  const formData = new FormData();
-                  formData.append("file", file);
-                  this.setState({
-                    file: formData,
-                  });
-                } else {
-                  this.context.error(t("maxfileSizeExceeded") + " (200 MB)");
-                  this.input.value = null; // Reset the input to clear the selected file
-                }
-              }}
-              ref={e => (this.input = e)}
-              style={{
-                fontFamily: "inherit",
-              }}
-              type="file"
-            />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: "10px",
+            }}>
             <Button
-              disabled={this.state.creating === true || this.state.file === null}
-              loading={this.state.creating}
-              data-cy="attachments-upload-button"
-              onClick={() => {
-                this.setState(
-                  {
-                    creating: true,
-                  },
-                  () => {
-                    uploadBoreholeAttachment(this.props.id, this.state.file).then(r => {
+              component="label"
+              role={undefined}
+              variant="outlined"
+              tabIndex={-1}
+              endIcon={<UploadFileIcon />}
+              sx={{
+                paddingLeft: "12px",
+                paddingRight: "12px",
+                paddingBottom: "8px",
+                paddingTop: "8px",
+                whiteSpace: "nowrap",
+                borderRadius: "2px",
+                fontWeight: 500,
+                minWidth: "auto",
+              }}>
+              {t("upload")}
+              <VisuallyHiddenInput
+                type="file"
+                ref={e => (this.input = e)}
+                onChange={e => {
+                  console.log("file selected", e.target.files[0]);
+                  const file = e.target.files[0];
+                  const maxSizeInBytes = 210_000_000; // 1024 x 1024 x 200 = 209715200 bytes (as stated in the import docs)
+
+                  // If file size is less than max allowed size, upload file. Otherwise, display error message.
+                  if (file && file.size <= maxSizeInBytes) {
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    this.setState({
+                      creating: true,
+                    });
+                    uploadBoreholeAttachment(this.props.id, formData).then(r => {
                       if (r.ok === false) {
                         if (r.status === 400) {
                           this.context.error(t("errorDuplicatedUploadPerBorehole"));
@@ -166,18 +181,18 @@ class EditorBoreholeFilesTable extends Component {
                           fetching: false,
                           upload: false,
                           files: [],
-                          file: null,
                         },
                         this.loadFiles,
                       );
                     });
-                  },
-                );
-              }}
-              secondary={this.state.creating === false && this.state.file !== null}>
-              <TranslationText id="upload" />
+                  } else {
+                    this.context.error(t("maxfileSizeExceeded") + " (200 MB)");
+                    this.input.value = null; // Reset the input to clear the selected file
+                  }
+                }}
+              />
             </Button>
-          </div>
+          </Box>
         ) : null}
         <FilesTableComponent
           detachFile={(id, fid) => {

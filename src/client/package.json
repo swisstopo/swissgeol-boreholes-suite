@@ -27,6 +27,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.19",
     "@mui/material": "^5.14.20",
+    "@mui/system": "^5.16.4",
     "@react-hook/resize-observer": "^1.2.6",
     "@types/ol": "^7.0.0",
     "axios": "^1.6.2",
