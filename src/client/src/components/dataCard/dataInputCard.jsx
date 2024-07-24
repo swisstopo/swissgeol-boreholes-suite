@@ -18,7 +18,7 @@ export const DataInputCard = props => {
   useEffect(() => {
     if (checkIsDirty) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        showPrompt(t("unsavedChangesTitle", { where: t(promptLabel) }), t("unsavedChangesMessage"), [
+        showPrompt(t("unsavedChangesMessage", { where: t(promptLabel) }), [
           {
             label: t("cancel"),
             action: () => {

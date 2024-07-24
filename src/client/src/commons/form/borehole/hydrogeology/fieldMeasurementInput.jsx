@@ -39,7 +39,7 @@ const FieldMeasurementInput = props => {
   useEffect(() => {
     if (checkIsDirty) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        showPrompt(t("unsavedChangesTitle", { where: t("fieldMeasurement") }), t("unsavedChangesMessage"), [
+        showPrompt(t("unsavedChangesMessage", { where: t("fieldMeasurement") }), [
           {
             label: t("cancel"),
             action: () => {

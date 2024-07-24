@@ -41,7 +41,7 @@ const HydrotestInput = props => {
   useEffect(() => {
     if (checkIsDirty) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        showPrompt(t("unsavedChangesTitle", { where: t("hydrotest") }), t("unsavedChangesMessage"), [
+        showPrompt(t("unsavedChangesMessage", { where: t("hydrotest") }), [
           {
             label: t("cancel"),
             action: () => {
