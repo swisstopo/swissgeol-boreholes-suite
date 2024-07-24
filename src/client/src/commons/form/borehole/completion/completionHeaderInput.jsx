@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack } from "@mui/material";
-import { useDomains } from "../../../../api/fetchApiV2";
+import { fetchApiV2 } from "../../../../api/fetchApiV2";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { FormCheckbox, FormInput, FormSelect } from "../../../../components/form/form";
@@ -12,9 +12,30 @@ import { PromptContext } from "../../../../components/prompt/promptContext";
 const CompletionHeaderInput = props => {
   const { completion, cancelChanges, saveCompletion, trySwitchTab, switchTabs } = props;
   const { showPrompt } = useContext(PromptContext);
-  const domains = useDomains();
   const formMethods = useForm({ mode: "all" });
   const { t, i18n } = useTranslation();
+  const [kindOptions, setKindOptions] = useState();
+
+  const loadKindOptions = async () => {
+    const response = await fetchApiV2("codelist", "GET");
+    if (response) {
+      const kindOptions = response
+        ?.filter(d => d.schema === completionSchemaConstants.completionKind)
+        .sort((a, b) => a.order - b.order)
+        .map(d => ({
+          key: d.id,
+          name: d[i18n.language],
+        }));
+      setKindOptions(kindOptions);
+    }
+  };
+
+  useEffect(() => {
+    if (kindOptions === undefined) {
+      loadKindOptions();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [selectedCompletion, setSelectedCompletion] = useState({
     ...completion,
@@ -96,13 +117,7 @@ const CompletionHeaderInput = props => {
                   label="completionKind"
                   selected={selectedCompletion?.kindId}
                   required={true}
-                  values={domains?.data
-                    ?.filter(d => d.schema === completionSchemaConstants.completionKind)
-                    .sort((a, b) => a.order - b.order)
-                    .map(d => ({
-                      key: d.id,
-                      name: d[i18n.language],
-                    }))}
+                  values={kindOptions}
                 />
                 <FormCheckbox
                   fieldName="isPrimary"
