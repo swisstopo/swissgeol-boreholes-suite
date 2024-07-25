@@ -24,6 +24,7 @@ import { FilterContext } from "../../../components/filter/filterContext.tsx";
 
 class FilterComponent extends React.Component {
   static contextType = FilterContext;
+
   constructor(props) {
     super(props);
     this.handleFilterReset = this.handleFilterReset.bind(this);
@@ -226,7 +227,7 @@ class FilterComponent extends React.Component {
               {t("polygon_selection")}
             </Typography>
             {filterPolygon !== null && (
-              <Badge data-cy="polygon-filter-badge" badgeContent={1} sx={{ marginLeft: "18px" }}></Badge>
+              <Badge data-cy="polygon-filter-badge" badgeContent={1} sx={{ marginLeft: "18px" }} />
             )}
           </Button>
           {this.state?.searchList?.map((filter, idx) => {
@@ -246,10 +247,8 @@ class FilterComponent extends React.Component {
                       ),
                     }));
                   }}>
-                  <Typography variant="h6">
-                    {t(filter?.translationId)}{" "}
-                    <Badge badgeContent={activeFilterLength} sx={{ marginLeft: "12px" }}></Badge>
-                  </Typography>
+                  <Typography variant="h6">{t(filter?.translationId)} </Typography>
+                  <Badge badgeContent={activeFilterLength} sx={{ marginLeft: "18px", marginTop: "10px" }} />
                 </AccordionSummary>
                 {filter?.name === "workgroup" && filter?.isSelected && (
                   <this.StyledAccordionDetails>
