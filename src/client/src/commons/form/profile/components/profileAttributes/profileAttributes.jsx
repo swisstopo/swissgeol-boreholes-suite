@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useContext } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import * as Styled from "./styles";
 import { Checkbox } from "semantic-ui-react";
 import TranslationText from "../../../translationText";
@@ -57,7 +57,7 @@ const ProfileAttributes = props => {
   });
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const alertContext = useContext(AlertContext);
+  const { showAlert } = useContext(AlertContext);
 
   const mounted = useRef(false);
 
@@ -90,7 +90,7 @@ const ProfileAttributes = props => {
 
   const updateChange = (attribute, value, isNumber = false) => {
     if (!isEditable) {
-      alertContext.error(t("common:errorStartEditing"));
+      showAlert(t("common:errorStartEditing"), "error");
       return;
     }
 

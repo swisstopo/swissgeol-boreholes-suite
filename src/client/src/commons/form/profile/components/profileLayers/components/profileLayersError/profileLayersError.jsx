@@ -1,9 +1,9 @@
-import { useState, useEffect, useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as Styled from "./styles";
 import { Icon, Radio } from "semantic-ui-react";
 import TranslationText from "../../../../../translationText";
-import { gapLayer, deleteLayer } from "../../../../../../../api-lib/index";
-import { fetchLayerById, addBedrock } from "../../../../../../../api/fetchApiV2";
+import { deleteLayer, gapLayer } from "../../../../../../../api-lib/index";
+import { addBedrock, fetchLayerById } from "../../../../../../../api/fetchApiV2";
 import ErrorTypes from "./errorTypes";
 import { AlertContext } from "../../../../../../../components/alert/alertContext";
 
@@ -14,7 +14,7 @@ const ProfileLayersError = props => {
   const [error, setError] = useState();
   const [resolvingAction, setResolvingAction] = useState(null);
   const [isDelete, setIsDelete] = useState(false);
-  const alertContext = useContext(AlertContext);
+  const { showAlert } = useContext(AlertContext);
 
   useEffect(() => {
     let e;
@@ -79,7 +79,7 @@ const ProfileLayersError = props => {
           if (response.data.success) {
             onUpdated("fixErrors");
           } else {
-            alertContext.error(response.data.message);
+            showAlert(response.data.message, "error");
           }
         })
         .catch(error => {
@@ -107,7 +107,7 @@ const ProfileLayersError = props => {
             if (response.data.success) {
               onUpdated("deleteLayer");
             } else {
-              alertContext.error(response.data.message);
+              showAlert(response.data.message, "error");
             }
           })
           .catch(function (error) {

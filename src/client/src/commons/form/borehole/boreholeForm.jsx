@@ -108,15 +108,16 @@ class BoreholeForm extends React.Component {
   checkLock() {
     const { t } = this.props;
     if (this.props.borehole.data.role !== "EDIT") {
-      this.context.error(
+      this.context.showAlert(
         t("common:errorStartEditingWrongStatus", {
           status: this.props.borehole.data.role,
         }),
+        "error",
       );
       return false;
     }
     if (this.props.borehole.data.lock === null || this.props.borehole.data.lock.id !== this.props.user.data.id) {
-      this.context.error(t("common:errorStartEditing"));
+      this.context.showAlert(t("common:errorStartEditing"), "error");
       return false;
     }
     return true;
@@ -207,7 +208,7 @@ class BoreholeForm extends React.Component {
                 },
               );
             } else if (response.status === 200) {
-              this.context.error(response.data.message);
+              this.context.showAlert(response.data.message, "error");
               if (response.data.error === "errorLocked") {
                 this.setState(
                   {

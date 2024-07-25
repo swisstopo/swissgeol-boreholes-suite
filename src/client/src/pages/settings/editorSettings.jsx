@@ -106,6 +106,7 @@ class EditorSettings extends React.Component {
     }
     return false;
   }
+
   handleButtonSelected(name, isSelected) {
     let selectedData;
     if (name === "location" && isSelected) {
@@ -123,6 +124,7 @@ class EditorSettings extends React.Component {
     }
     return selectedData;
   }
+
   render() {
     const {
       addExplorerMap,
@@ -284,7 +286,7 @@ const mapDispatchToProps = dispatch => {
     addExplorerMap: (layer, type, result, position = 0) => {
       if (type === "WMS") {
         if (!layer.CRS.includes("EPSG:2056")) {
-          this.context.error("Only EPSG:2056 is supported");
+          this.context.showAlert("Only EPSG:2056 is supported", "error");
         } else {
           dispatch(
             patchSettings(
@@ -309,7 +311,7 @@ const mapDispatchToProps = dispatch => {
           layer: layer.Identifier,
         });
         if (Object.prototype.hasOwnProperty.call(conf, "matrixSet") && !conf.matrixSet.includes("2056")) {
-          this.context.error("Only EPSG:2056 is supported");
+          this.context.showAlert("Only EPSG:2056 is supported", "error");
         } else {
           dispatch(
             patchSettings(

@@ -46,7 +46,7 @@ const EditorComponent = props => {
   const [workgroup, setWorkgroup] = useState(0);
   const [enabledWorkgroups, setEnabledWorkgroups] = useState([]);
   const [sideDrawerContent, setSideDrawerContent] = useState(DrawerContentTypes.Filters);
-  const alertContext = useContext(AlertContext);
+  const { showAlert } = useContext(AlertContext);
 
   const toggleSideDrawer = open => {
     setSideDrawerOpen(open);
@@ -114,7 +114,9 @@ const EditorComponent = props => {
                   setSort={setSort}
                   toggleBottomDrawer={toggleBottomDrawer}
                   bottomDrawerOpen={bottomDrawerOpen}
-                  displayErrorMessage={alertContext.error}
+                  displayErrorMessage={message => {
+                    showAlert(message, "error");
+                  }}
                 />
               )}
             />
