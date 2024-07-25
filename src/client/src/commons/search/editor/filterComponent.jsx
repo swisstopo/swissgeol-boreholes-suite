@@ -226,7 +226,7 @@ class FilterComponent extends React.Component {
               {t("polygon_selection")}
             </Typography>
             {filterPolygon !== null && (
-              <Badge data-cy="polygon-filter-badge" color="error" badgeContent={1} sx={{ marginLeft: "18px" }}></Badge>
+              <Badge data-cy="polygon-filter-badge" badgeContent={1} sx={{ marginLeft: "18px" }}></Badge>
             )}
           </Button>
           {this.state?.searchList?.map((filter, idx) => {
@@ -248,7 +248,7 @@ class FilterComponent extends React.Component {
                   }}>
                   <Typography variant="h6">
                     {t(filter?.translationId)}{" "}
-                    <Badge color="error" badgeContent={activeFilterLength} sx={{ marginLeft: "12px" }}></Badge>
+                    <Badge badgeContent={activeFilterLength} sx={{ marginLeft: "12px" }}></Badge>
                   </Typography>
                 </AccordionSummary>
                 {filter?.name === "workgroup" && filter?.isSelected && (
