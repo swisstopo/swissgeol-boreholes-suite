@@ -5,7 +5,7 @@ import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { Redirect, Route, Switch, withRouter } from "react-router-dom";
 import { loadBorehole, patchBorehole, updateBorehole } from "../../../api-lib/index";
-import EditorBoreholeFilesTable from "../../files/table/editorBoreholeFilesTable";
+import EditorBoreholeFilesTable from "../../files/table/editorBoreholeFilesTable.tsx";
 import TranslationText from "../translationText";
 import { Dimmer, Loader } from "semantic-ui-react";
 import Profile from "../profile";
