@@ -8,11 +8,13 @@
 - Moved groundwater radio buttons in borehole form to the bottom.
 - Removed title from prompt dialog.
 - Use standard prompt dialog for deleting boreholes.
+- It is now possible to restart a workflow from every publication status.
 
 ### Fixed
 
 - Attribute `top_bedrock_weathered` could not be imported.
 - Badge with number of active filters on sidebar did not include polygon filter.
+- Boreholes could not be deleted in the detail view if the publication status was not `Change in progess`.
 
 ## v2.1.772 - 2024-06-27
 
