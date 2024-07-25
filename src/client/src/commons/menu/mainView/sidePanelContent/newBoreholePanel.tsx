@@ -10,7 +10,7 @@ import { NewBoreholeProps } from "../actions/actionsInterfaces";
 
 const NewBoreholePanel = ({ workgroup, enabledWorkgroups, setWorkgroup, toggleDrawer }: NewBoreholeProps) => {
   const history = useHistory();
-  const alertContext = useContext(AlertContext);
+  const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
   const handleBoreholeCreate = () => {
     // @ts-expect-error : The createBorehole function is not typed
@@ -20,7 +20,7 @@ const NewBoreholePanel = ({ workgroup, enabledWorkgroups, setWorkgroup, toggleDr
         if (response.data.success) {
           history.push("/" + response.data.id);
         } else {
-          alertContext.error(response.data.message);
+          showAlert(response.data.message, "error");
           window.location.reload();
         }
       })

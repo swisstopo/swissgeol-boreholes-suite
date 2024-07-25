@@ -8,6 +8,7 @@
 - Moved groundwater radio buttons in borehole form to the bottom.
 - Removed title from prompt dialog.
 - Use standard prompt dialog for deleting boreholes.
+- Updated standard alert.
 
 ### Fixed
 
