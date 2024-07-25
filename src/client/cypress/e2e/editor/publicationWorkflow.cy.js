@@ -1,4 +1,4 @@
-import { createBorehole, loginAsAdmin } from "../helpers/testHelpers";
+import { createBorehole, handlePrompt, loginAsAdmin } from "../helpers/testHelpers";
 import { startEditing } from "../helpers/buttonHelpers.js";
 
 const verifyColorForStatus = (status, color) => {
@@ -9,7 +9,7 @@ const statusTitles = {
   edit: "Change in progress",
   control: "In review",
   valid: "In validation",
-  public: "Publication",
+  public: "Published",
 };
 
 const verifyStatusTextsInHeader = status => {
@@ -26,7 +26,7 @@ const verifyStatusTextsNotInHeader = status => {
 
 // Skip the test until deleting of boreholes is fixed (see github issue #1188)
 describe("Tests the publication workflow.", () => {
-  it.skip("Publishes a borehole without rejections", () => {
+  it("Publishes a borehole without rejections", () => {
     createBorehole({ "extended.original_name": "Borehole to publish" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
@@ -40,6 +40,28 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("edit", "orange");
 
     // Submit for review
+    cy.get("[data-cy=workflow_submit]").click();
+    cy.get("[data-cy=workflow_dialog_submit]").click();
+    cy.wait("@workflow_edit_list");
+
+    verifyStatusTextsInHeader(["edit", "control"]);
+    verifyStatusTextsNotInHeader(["valid", "public"]);
+    verifyColorForStatus("edit", "green");
+    verifyColorForStatus("control", "orange");
+
+    // Restart workflow
+    startEditing();
+    cy.get('[data-cy="workflow_restart"]').click();
+    cy.get('[data-cy="workflow_dialog_confirm_restart"]').click();
+    cy.wait("@workflow_edit_list");
+
+    verifyStatusTextsInHeader(["edit", "control"]);
+    verifyStatusTextsNotInHeader(["valid", "public"]);
+    verifyColorForStatus("edit", "orange");
+    verifyColorForStatus("control", "red");
+
+    // Submit for review
+    startEditing();
     cy.get("[data-cy=workflow_submit]").click();
     cy.get("[data-cy=workflow_dialog_submit]").click();
     cy.wait("@workflow_edit_list");
@@ -85,8 +107,6 @@ describe("Tests the publication workflow.", () => {
     // Restart workflow
     startEditing();
     cy.get('[data-cy="workflow_restart"]').click();
-    cy.wait("@workflow_edit_list");
-
     cy.get('[data-cy="workflow_dialog_confirm_restart"]').click();
     cy.wait("@workflow_edit_list");
 
@@ -94,5 +114,25 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("control", "red");
     verifyColorForStatus("valid", "red");
     verifyColorForStatus("public", "red");
+  });
+
+  it("Deletes a borehole if its publication status is not Change in Progress", () => {
+    createBorehole({ "extended.original_name": "Borehole in review to delete" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      loginAsAdmin();
+      cy.visit(`/${id}/status`);
+    });
+
+    // Submit for review
+    startEditing();
+    cy.get("[data-cy=workflow_submit]").click();
+    cy.get("[data-cy=workflow_dialog_submit]").click();
+    cy.wait("@workflow_edit_list");
+
+    // Delete
+    startEditing();
+    cy.get("[data-cy=deleteborehole-button]").click();
+    handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "Delete");
+    cy.wait(["@edit_list", "@borehole"]);
   });
 });
