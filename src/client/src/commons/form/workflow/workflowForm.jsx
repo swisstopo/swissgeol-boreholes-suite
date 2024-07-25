@@ -25,6 +25,7 @@ import { Stack } from "@mui/material";
 
 class WorkflowForm extends React.Component {
   static contextType = AlertContext;
+
   constructor(props) {
     super(props);
     this.load = this.load.bind(this);
@@ -282,35 +283,6 @@ class WorkflowForm extends React.Component {
                               <div className="bdms-header" data-cy="workflow_status_header">
                                 <TranslationText id={`status${role.toLowerCase()}`} />
                               </div>
-                              {(this.props.user.data.admin === true ||
-                                this.props.user.data?.roles.indexOf("PUBLIC") >= 0) &&
-                              role === "EDIT" &&
-                              this.props.workflow.data.role === "PUBLIC"
-                                ? [
-                                    <Icon
-                                      key="bdms-workflow-form-push-back-1"
-                                      color={readOnly ? null : "blue"}
-                                      name="repeat"
-                                    />,
-                                    <a
-                                      key="bdms-workflow-form-push-back-2"
-                                      data-cy="workflow_restart"
-                                      className={!readOnly ? "linker" : null}
-                                      style={{
-                                        marginLeft: "0.2em",
-                                        color: readOnly ? "#787878" : null,
-                                      }}
-                                      onClick={() => {
-                                        if (!readOnly) {
-                                          this.setState({
-                                            modalRestart: true,
-                                          });
-                                        }
-                                      }}>
-                                      <TranslationText id={"flowRestart"} />
-                                    </a>,
-                                  ]
-                                : null}
                             </div>
                             <div
                               style={{
@@ -351,103 +323,127 @@ class WorkflowForm extends React.Component {
                               ) : null}
                             </div>
                           </div>
-                          {status[role].finished === null &&
-                          borehole.data.id !== null &&
-                          user.data.workgroups
-                            .find(workgroup => workgroup.id === borehole.data.workgroup.id)
-                            ?.roles.indexOf(borehole.data.role) > -1 ? (
-                            <div
-                              style={{
-                                flex: "1 1 100%",
-                                padding: "0.8em 0px",
-                                textAlign: "right",
-                              }}>
-                              <div>
-                                {role !== "EDIT" ? (
+                          <div
+                            style={{
+                              flex: "1 1 100%",
+                              padding: "0.8em 0px",
+                              textAlign: "right",
+                            }}>
+                            <>
+                              {role !== "EDIT" &&
+                                borehole.data.id !== null &&
+                                user.data.workgroups
+                                  .find(workgroup => workgroup.id === borehole.data.workgroup.id)
+                                  ?.roles.indexOf(borehole.data.role) > -1 &&
+                                (status[role].finished === null ||
+                                  (status[role].finished && role === "PUBLIC" && current === null)) && (
                                   <Button
-                                    disabled={readOnly || workflows.isSubmitting}
+                                    data-cy="workflow_restart"
+                                    disabled={readOnly}
                                     loading={workflows.isRejecting === true}
-                                    negative
+                                    primary
                                     onClick={() => {
                                       this.setState({
-                                        modal: 3,
+                                        modalRestart: true,
                                       });
                                     }}
                                     size="mini">
-                                    <TranslationText id="reject" />
+                                    <TranslationText id="flowRestart" />
                                   </Button>
-                                ) : null}
-                                <Button
-                                  disabled={readOnly || workflows.isRejecting}
-                                  data-cy="workflow_submit"
-                                  loading={workflows.isSubmitting === true}
-                                  onClick={() => {
-                                    this.setState({
-                                      modal: 1,
-                                    });
-                                  }}
-                                  secondary
-                                  size="mini">
-                                  <TranslationText id="submit" />
-                                </Button>
-                                <Modal
-                                  // basic
-                                  closeIcon
-                                  onClose={() => {
-                                    this.setState({
-                                      modal: 0,
-                                    });
-                                  }}
-                                  open={this.state.modal > 0}
-                                  size="mini">
-                                  <Header content={t(`status-submit-msg-${role.toLowerCase()}`)} />
-                                  <Modal.Content>
-                                    <p>
-                                      <TranslationText id="sure" />
-                                    </p>
-                                  </Modal.Content>
-                                  <Modal.Actions>
-                                    {this.state.modal < 3 ? (
-                                      <Button
-                                        data-cy="workflow_dialog_submit"
-                                        disabled={readOnly || workflows.isRejecting}
-                                        loading={workflows.isSubmitting === true}
-                                        onClick={() => {
-                                          this.props
-                                            .submitWorkflow(status[role].id, this.state.modal === 2)
-                                            .then(() => {
-                                              this.setState({
-                                                modal: 0,
-                                              });
-                                            });
-                                        }}
-                                        secondary>
-                                        <Icon name="checkmark" />
-                                        &nbsp;
-                                        <TranslationText id="submit" />
-                                      </Button>
-                                    ) : (
+                                )}
+                              {status[role].finished === null &&
+                                borehole.data.id !== null &&
+                                user.data.workgroups
+                                  .find(workgroup => workgroup.id === borehole.data.workgroup.id)
+                                  ?.roles.indexOf(borehole.data.role) > -1 && (
+                                  <>
+                                    {role !== "EDIT" && (
                                       <Button
                                         disabled={readOnly || workflows.isSubmitting}
                                         loading={workflows.isRejecting === true}
                                         negative
                                         onClick={() => {
-                                          this.props.rejectWorkflow(status[role].id).then(() => {
-                                            this.setState({
-                                              modal: 0,
-                                            });
+                                          this.setState({
+                                            modal: 3,
                                           });
-                                        }}>
-                                        <Icon name="checkmark" />
-                                        &nbsp;
+                                        }}
+                                        size="mini">
                                         <TranslationText id="reject" />
                                       </Button>
                                     )}
-                                  </Modal.Actions>
-                                </Modal>
-                              </div>
-                            </div>
-                          ) : null}
+
+                                    <Button
+                                      disabled={readOnly || workflows.isRejecting}
+                                      data-cy="workflow_submit"
+                                      loading={workflows.isSubmitting === true}
+                                      onClick={() => {
+                                        this.setState({
+                                          modal: 1,
+                                        });
+                                      }}
+                                      secondary
+                                      size="mini">
+                                      <TranslationText id="submit" />
+                                    </Button>
+                                    <Modal
+                                      // basic
+                                      closeIcon
+                                      onClose={() => {
+                                        this.setState({
+                                          modal: 0,
+                                        });
+                                      }}
+                                      open={this.state.modal > 0}
+                                      size="mini">
+                                      <Header content={t(`status-submit-msg-${role.toLowerCase()}`)} />
+                                      <Modal.Content>
+                                        <p>
+                                          <TranslationText id="sure" />
+                                        </p>
+                                      </Modal.Content>
+                                      <Modal.Actions>
+                                        {this.state.modal < 3 ? (
+                                          <Button
+                                            data-cy="workflow_dialog_submit"
+                                            disabled={readOnly || workflows.isRejecting}
+                                            loading={workflows.isSubmitting === true}
+                                            onClick={() => {
+                                              this.props
+                                                .submitWorkflow(status[role].id, this.state.modal === 2)
+                                                .then(() => {
+                                                  this.setState({
+                                                    modal: 0,
+                                                  });
+                                                });
+                                            }}
+                                            secondary>
+                                            <Icon name="checkmark" />
+                                            &nbsp;
+                                            <TranslationText id="submit" />
+                                          </Button>
+                                        ) : (
+                                          <Button
+                                            disabled={readOnly || workflows.isSubmitting}
+                                            loading={workflows.isRejecting === true}
+                                            negative
+                                            onClick={() => {
+                                              this.props.rejectWorkflow(status[role].id).then(() => {
+                                                this.setState({
+                                                  modal: 0,
+                                                });
+                                              });
+                                            }}>
+                                            <Icon name="checkmark" />
+                                            &nbsp;
+                                            <TranslationText id="reject" />
+                                          </Button>
+                                        )}
+                                      </Modal.Actions>
+                                    </Modal>
+                                  </>
+                                )}
+                            </>
+                          </div>
                         </div>
                       ) : (
                         <div
