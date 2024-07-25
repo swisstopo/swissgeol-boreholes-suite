@@ -23,6 +23,7 @@ const toggleHeaderOpen = () => {
     .then(expanded => {
       if (expanded === "false") {
         cy.get('[data-cy="completion-toggle-header"]').click();
+        cy.wait(1000);
       }
     });
 };
@@ -53,11 +54,7 @@ const deleteCompletion = () => {
 };
 
 const setHeaderTab = index => {
-  cy.get('[data-cy="completion-header-tab-' + index + '"]')
-    .focus()
-    .click({
-      force: true,
-    });
+  cy.get('[data-cy="completion-header-tab-' + index + '"]').trigger("click");
 };
 
 const isHeaderTabSelected = index => {
