@@ -31,6 +31,7 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
 
   useEffect(() => {
     loadFiles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const loadFiles = async () => {
