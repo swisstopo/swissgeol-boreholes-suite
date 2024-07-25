@@ -16,7 +16,7 @@ export const AlertProvider: FC<AlertProviderProps> = ({ children }) => {
   const [alerts, setAlerts] = useState<AlertOptions[]>([]);
 
   const showAlert = (text: string, severity: AlertColor | undefined, allowAutoHide: boolean | undefined) => {
-    const newAlert = { text, severity: severity ?? "info", allowAutoHide: allowAutoHide ?? false };
+    const newAlert = { text, severity: severity ?? "info", allowAutoHide: allowAutoHide ?? true };
     setAlerts(prevAlerts => [...prevAlerts, newAlert]);
   };
 
