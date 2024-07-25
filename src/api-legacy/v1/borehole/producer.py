@@ -106,7 +106,6 @@ class BoreholeProducerHandler(Producer):
                         action in [
                             'CHECK',
                             'PATCH',
-                            'DELETE'
                         ]
                     ):
                         # add supplier exception
