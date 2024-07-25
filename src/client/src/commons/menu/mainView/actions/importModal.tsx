@@ -27,7 +27,7 @@ const ImportModal = ({
   setSelectedLithologyFile,
   refresh,
 }: ImportModalProps) => {
-  const alertContext = useContext(AlertContext);
+  const { showAlert } = useContext(AlertContext);
 
   const handleBoreholeImport = () => {
     const combinedFormData = new FormData();
@@ -53,7 +53,7 @@ const ImportModal = ({
       setUpload(false);
       (async () => {
         if (response.ok) {
-          alertContext.success(`${await response.text()} ${t("boreholesImported")}.`);
+          showAlert(`${await response.text()} ${t("boreholesImported")}.`, "success");
           refresh();
         } else {
           let responseBody = await response.text();
@@ -71,12 +71,12 @@ const ImportModal = ({
 
               // If response is of type ProblemDetails, show error message.
               else {
-                alertContext.error(`${responseBody.detail}`);
+                showAlert(responseBody.detail, "error");
               }
             } else if (response.status === 504) {
-              alertContext.error(`${t("boreholesImportLongRunning")}`);
+              showAlert(t("boreholesImportLongRunning"), "error");
             } else {
-              alertContext.error(`${t("boreholesImportError")}`);
+              showAlert(t("boreholesImportError"), "error");
             }
           }
         }
