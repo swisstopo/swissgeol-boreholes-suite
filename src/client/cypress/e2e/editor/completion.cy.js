@@ -28,7 +28,7 @@ const toggleHeaderOpen = () => {
 };
 
 const addCompletion = () => {
-  addItem("addCompletion");
+  cy.get(`[data-cy="addCompletion-button"]`).trigger("click");
   cy.wait("@codelist_GET");
 };
 
