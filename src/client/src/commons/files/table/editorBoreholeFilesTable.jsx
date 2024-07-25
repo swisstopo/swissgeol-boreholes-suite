@@ -169,9 +169,9 @@ class EditorBoreholeFilesTable extends Component {
                     uploadBoreholeAttachment(this.props.id, formData).then(r => {
                       if (r.ok === false) {
                         if (r.status === 400) {
-                          this.context.error(t("errorDuplicatedUploadPerBorehole"));
+                          this.context.showAlert(t("errorDuplicatedUploadPerBorehole"), "error");
                         } else {
-                          this.context.error(t("errorDuringBoreholeFileUpload"));
+                          this.context.showAlert(t("errorDuringBoreholeFileUpload"), "error");
                         }
                       }
                       this.input.value = "";

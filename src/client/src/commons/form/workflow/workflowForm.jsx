@@ -25,6 +25,7 @@ import { Stack } from "@mui/material";
 
 class WorkflowForm extends React.Component {
   static contextType = AlertContext;
+
   constructor(props) {
     super(props);
     this.load = this.load.bind(this);
@@ -75,7 +76,7 @@ class WorkflowForm extends React.Component {
   handleChange(value) {
     const { t } = this.props;
     if (this.props.borehole.data.lock === null || this.props.borehole.data.lock.id !== this.props.user.data.id) {
-      this.context.error(t("common:errorStartEditing"));
+      this.context.showAlert(t("common:errorStartEditing"), "error");
     } else {
       this.props.updateWorkflow(value);
       if (this.updateAttributeDelay !== false) {

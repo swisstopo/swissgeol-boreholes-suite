@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 const IdentifierSegment = props => {
   const { borehole, identifier, identifierValue, updateBorehole, setState, user } = props;
   const { t } = useTranslation();
-  const alertContext = useContext(AlertContext);
+  const { showAlert } = useContext(AlertContext);
 
   const isEditable =
     borehole?.data.role === "EDIT" && borehole?.data.lock !== null && borehole?.data.lock?.id === user?.data.id;
@@ -147,7 +147,7 @@ const IdentifierSegment = props => {
                     : [];
 
                   if (alreadySet.includes(identifier)) {
-                    alertContext.error(t("msgIdentifierAlreadyUsed"));
+                    showAlert(t("msgIdentifierAlreadyUsed"), "error");
                   } else {
                     addIdentifier(borehole.data.id, identifier, identifierValue).then(response => {
                       if (response.data.success) {
