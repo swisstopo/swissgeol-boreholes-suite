@@ -6,7 +6,7 @@ import { FormInput, FormSelect } from "../../../../components/form/form";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { addFieldMeasurement, updateFieldMeasurement, useDomains } from "../../../../api/fetchApiV2";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
-import { PromptContext } from "../../../../components/prompt/promptContext";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useTranslation } from "react-i18next";
 import ObservationInput from "./observationInput";
 import { ObservationType } from "./observationType";
@@ -39,7 +39,7 @@ const FieldMeasurementInput = props => {
   useEffect(() => {
     if (checkIsDirty) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        showPrompt(t("unsavedChangesTitle", { where: t("fieldMeasurement") }), t("unsavedChangesMessage"), [
+        showPrompt(t("unsavedChangesMessage", { where: t("fieldMeasurement") }), [
           {
             label: t("cancel"),
             action: () => {

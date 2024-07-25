@@ -1,4 +1,4 @@
-import { newEditableBorehole } from "../helpers/testHelpers";
+import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Tests for 'Location' edit page.", () => {
   it("creates and deletes a borehole.", () => {
@@ -9,11 +9,9 @@ describe("Tests for 'Location' edit page.", () => {
     cy.wait("@edit_patch");
 
     // stop editing
-    cy.get('[data-cy="editingStop-button"]').click();
-    cy.wait("@edit_unlock");
-    cy.get('[data-cy="backButton"]').click();
+    stopBoreholeEditing();
+    returnToOverview();
     cy.get('[data-cy="showTableButton"]').click();
-    cy.wait(["@edit_list", "@borehole"]);
 
     // search the newly created borehole and delete it
     cy.get('[data-cy="borehole-table"]').within(() => {

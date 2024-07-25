@@ -1,4 +1,4 @@
-import { newEditableBorehole } from "../helpers/testHelpers";
+import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers";
 import { deleteItem } from "../helpers/buttonHelpers";
 
 describe("Tests for the lithological description column.", () => {
@@ -130,9 +130,7 @@ describe("Tests for the lithological description column.", () => {
     cy.get('[data-cy="description-1"]').contains("Quality of the description: -");
 
     // stop editing
-    cy.get('[data-cy="editingStop-button"]').click();
-    cy.wait("@edit_unlock");
-    cy.get('[data-cy="backButton"]').click();
-    cy.wait(["@edit_list", "@borehole"]);
+    stopBoreholeEditing();
+    returnToOverview();
   });
 });

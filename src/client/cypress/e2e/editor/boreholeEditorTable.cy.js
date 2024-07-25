@@ -1,4 +1,4 @@
-import { loginAsAdmin } from "../../e2e/helpers/testHelpers";
+import { loginAsAdmin, returnToOverview } from "../helpers/testHelpers.js";
 
 describe("Borehole editor table tests", () => {
   it("preserves column sorting and active page when navigating", () => {
@@ -24,8 +24,7 @@ describe("Borehole editor table tests", () => {
 
     // open first borehole and return to list
     cy.get("tbody").children().eq(0).contains("td", "Andres Miller").click();
-    cy.get('[data-cy="backButton"]').click();
-    cy.wait("@edit_list");
+    returnToOverview();
 
     // verify current page is 2
     cy.get("a").should("have.class", "active item").contains("2");

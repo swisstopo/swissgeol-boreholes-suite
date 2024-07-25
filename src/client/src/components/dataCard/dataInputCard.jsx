@@ -1,11 +1,11 @@
 import { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { FormProvider, useForm } from "react-hook-form";
-import { DataCardButtonContainer } from "../dataCard/dataCard";
-import { DataCardContext, DataCardSwitchContext } from "../dataCard/dataCardContext";
+import { DataCardButtonContainer } from "./dataCard.jsx";
+import { DataCardContext, DataCardSwitchContext } from "./dataCardContext.jsx";
 import { StackFullWidth } from "../baseComponents";
 import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
-import { PromptContext } from "../prompt/promptContext";
+import { PromptContext } from "../prompt/promptContext.tsx";
 
 export const DataInputCard = props => {
   const { item, addData, updateData, promptLabel, prepareFormDataForSubmit } = props;
@@ -18,7 +18,7 @@ export const DataInputCard = props => {
   useEffect(() => {
     if (checkIsDirty) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        showPrompt(t("unsavedChangesTitle", { where: t(promptLabel) }), t("unsavedChangesMessage"), [
+        showPrompt(t("unsavedChangesMessage", { where: t(promptLabel) }), [
           {
             label: t("cancel"),
             action: () => {

@@ -1,4 +1,4 @@
-import { createBorehole, loginAsAdmin } from "../helpers/testHelpers";
+import { createBorehole, handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Test copying of boreholes", () => {
   it("copies a borehole", () => {
@@ -16,10 +16,9 @@ describe("Test copying of boreholes", () => {
 
     cy.contains("label", "Original name").next().children("input").should("contain.value", " (Copy)");
 
-    cy.get('[data-cy="edit-button"]').click();
-    cy.wait("@edit_lock");
+    startBoreholeEditing();
 
-    cy.get('[data-cy="deleteBorehole-button"]').click();
-    cy.get('[class="ui negative button"]').click();
+    cy.get('[data-cy="deleteborehole-button"]').click();
+    handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "Delete");
   });
 });

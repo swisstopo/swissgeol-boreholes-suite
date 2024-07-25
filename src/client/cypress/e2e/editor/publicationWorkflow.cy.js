@@ -1,4 +1,5 @@
 import { createBorehole, loginAsAdmin } from "../helpers/testHelpers";
+import { startEditing } from "../helpers/buttonHelpers.js";
 
 const verifyColorForStatus = (status, color) => {
   cy.get(`[data-cy="workflow_status_color_${status}"]`).should("have.have.class", `ui ${color} circular label`);
@@ -31,7 +32,8 @@ describe("Tests the publication workflow.", () => {
       loginAsAdmin();
       cy.visit(`/${id}/status`);
     });
-    cy.get('[data-cy="edit-button"]').click();
+
+    startEditing();
 
     verifyStatusTextsInHeader(["edit"]);
     verifyStatusTextsNotInHeader(["control", "valid", "public"]);
@@ -48,7 +50,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("control", "orange");
 
     // Submit for validation
-    cy.get('[data-cy="edit-button"]').click();
+    startEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
     cy.wait("@workflow_edit_list");
@@ -60,7 +62,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("valid", "orange");
 
     // Submit for publication
-    cy.get('[data-cy="edit-button"]').click();
+    startEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
     cy.wait("@workflow_edit_list");
@@ -73,7 +75,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("public", "orange");
 
     // Publish
-    cy.get('[data-cy="edit-button"]').click();
+    startEditing();
     cy.get('[data-cy="workflow_submit"]').click();
     cy.get('[data-cy="workflow_dialog_submit"]').click();
     cy.wait("@workflow_edit_list");
@@ -81,7 +83,7 @@ describe("Tests the publication workflow.", () => {
     verifyColorForStatus("public", "green");
 
     // Restart workflow
-    cy.get('[data-cy="edit-button"]').click();
+    startEditing();
     cy.get('[data-cy="workflow_restart"]').click();
     cy.wait("@workflow_edit_list");
 
