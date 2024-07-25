@@ -50,5 +50,5 @@ export const copyItem = parent => {
  * @param {string} itemLabel The label name of the button.
  */
 export const addItem = itemLabel => {
-  cy.get(`[data-cy="${itemLabel}-button"]`).click({ force: true });
+  cy.get(`[data-cy="${itemLabel}-button"]`).trigger("click");
 };
