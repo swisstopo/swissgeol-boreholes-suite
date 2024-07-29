@@ -15,6 +15,7 @@
 - Attribute `top_bedrock_weathered` could not be imported.
 - Badge with number of active filters on sidebar did not include polygon filter.
 - Fixed label for water ingress menu item.
+- Location precision filter caused an internal error.
 
 ## v2.1.772 - 2024-06-27
 
