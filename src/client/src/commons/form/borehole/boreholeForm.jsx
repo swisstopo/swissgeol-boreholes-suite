@@ -387,11 +387,6 @@ class BoreholeForm extends React.Component {
                 render={() => <Hydrotest isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
               />
               <Route
-                exact
-                path={"/:id/hydrogeology/groundwaterlevelmeasurement"}
-                render={() => <GroundwaterLevelMeasurement isEditable={isEditable} boreholeId={parseInt(id, 10)} />}
-              />
-              <Route
                 path={"/:id/hydrogeology"}
                 render={() => {
                   return (

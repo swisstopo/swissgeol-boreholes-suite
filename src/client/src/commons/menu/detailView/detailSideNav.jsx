@@ -190,28 +190,11 @@ const DetailSideNav = ({ borehole, history, match }) => {
                 <List.Content>
                   <List.Header as="h3" data-cy="wateringress-menu-item">
                     <Typography>
-                      <TranslationText firstUpperCase id="wateringress" />
+                      <TranslationText firstUpperCase id="waterIngress" />
                     </Typography>
                   </List.Header>
                 </List.Content>
               </ChildListItem>
-              <ChildListItem
-                active={location.pathname === `/${id}/hydrogeology/hydrotest`}
-                onClick={() => {
-                  history.push(`/${id}/hydrogeology/hydrotest`);
-                }}>
-                <List.Content>
-                  <List.Header as="h3" data-cy="hydrotest-menu-item">
-                    <Typography>
-                      <TranslationText firstUpperCase id="hydrotest" />
-                    </Typography>
-                  </List.Header>
-                </List.Content>
-              </ChildListItem>
-            </>
-          )}
-          {hydrogeologyIsVisible && (
-            <>
               <ChildListItem
                 active={location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement`}
                 onClick={() => {
@@ -234,6 +217,19 @@ const DetailSideNav = ({ borehole, history, match }) => {
                   <List.Header as="h3" data-cy="fieldmeasurement-menu-item">
                     <Typography>
                       <TranslationText firstUpperCase id="fieldMeasurement" />
+                    </Typography>
+                  </List.Header>
+                </List.Content>
+              </ChildListItem>
+              <ChildListItem
+                active={location.pathname === `/${id}/hydrogeology/hydrotest`}
+                onClick={() => {
+                  history.push(`/${id}/hydrogeology/hydrotest`);
+                }}>
+                <List.Content>
+                  <List.Header as="h3" data-cy="hydrotest-menu-item">
+                    <Typography>
+                      <TranslationText firstUpperCase id="hydrotest" />
                     </Typography>
                   </List.Header>
                 </List.Content>

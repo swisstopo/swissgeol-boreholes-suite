@@ -217,7 +217,6 @@ public class HydrotestControllerTests
         {
             Type = ObservationType.Hydrotest,
             BoreholeId = 1002431,
-            ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
             KindCodelistIds = new List<int>()
             {
                 context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id,
