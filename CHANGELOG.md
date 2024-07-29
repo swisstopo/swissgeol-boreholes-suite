@@ -9,6 +9,7 @@
 - Made `startTime` and `reliability` optional for hydrogeology.
 
 ### Fixed
+
 - Attribute `top_bedrock_weathered` could not be imported.
 - Badge with number of active filters on sidebar did not include polygon filter.
 
