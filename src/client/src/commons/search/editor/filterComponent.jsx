@@ -184,13 +184,13 @@ class FilterComponent extends React.Component {
 
     return (
       <Stack direction="column" sx={{ height: "100%" }}>
+        <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
+        <FilterChips
+          setPolygonSelectionEnabled={setPolygonSelectionEnabled}
+          activeFilters={this.state.activeFilters}
+          setFilter={setFilter}
+        />
         <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
-          <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
-          <FilterChips
-            setPolygonSelectionEnabled={setPolygonSelectionEnabled}
-            activeFilters={this.state.activeFilters}
-            setFilter={setFilter}
-          />
           <Button
             onClick={() => {
               this.handlePolygonFilterClick();
