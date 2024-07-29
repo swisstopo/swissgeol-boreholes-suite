@@ -18,19 +18,22 @@ describe("Tests for 'Attachments' edit page.", () => {
     // navigate to attachments tab
     cy.get('[data-cy="attachments-menu-item"]').click();
 
-    // create file "LOUDSPATULA.pdf" for input
-    cy.get("input[type=file]").selectFile({
-      contents: Cypress.Buffer.from(Math.random().toString()),
-      fileName: "LOUDSPATULA.txt",
-      mimeType: "text/plain",
-    });
-
     // intercept get all Attachments for borehole request
     cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("getAllAttachments");
     // intercept upload file request
     cy.intercept("/api/v2/boreholefile/upload?boreholeId=**").as("upload-files");
 
-    // upload file
+    // create file "LOUDSPATULA.pdf" for input
+    cy.get("input[type=file]").selectFile(
+      {
+        contents: Cypress.Buffer.from(Math.random().toString()),
+        fileName: "LOUDSPATULA.txt",
+        mimeType: "text/plain",
+      },
+      { force: true },
+    );
+
+    // // upload file
     cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
     cy.wait(["@upload-files"]);
     cy.wait(["@getAllAttachments"]);
@@ -41,11 +44,14 @@ describe("Tests for 'Attachments' edit page.", () => {
 
     // create file "IRATETRINITY.pdf" for input
     let fileContent = Math.random().toString();
-    cy.get("input[type=file]").selectFile({
-      contents: Cypress.Buffer.from(fileContent),
-      fileName: "IRATETRINITY.pdf",
-      mimeType: "application/pdf",
-    });
+    cy.get("input[type=file]").selectFile(
+      {
+        contents: Cypress.Buffer.from(fileContent),
+        fileName: "IRATETRINITY.pdf",
+        mimeType: "application/pdf",
+      },
+      { force: true },
+    );
 
     // upload and verify file IRATETRINITY.pdf
     cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
@@ -56,11 +62,14 @@ describe("Tests for 'Attachments' edit page.", () => {
     cy.get("tbody").children().contains("td", "application/pdf");
 
     // Select "IRATETRINITY.pdf" second time.
-    cy.get("input[type=file]").selectFile({
-      contents: Cypress.Buffer.from(fileContent),
-      fileName: "IRATETRINITY.pdf",
-      mimeType: "application/pdf",
-    });
+    cy.get("input[type=file]").selectFile(
+      {
+        contents: Cypress.Buffer.from(fileContent),
+        fileName: "IRATETRINITY.pdf",
+        mimeType: "application/pdf",
+      },
+      { force: true },
+    );
 
     // Upload "IRATETRINITY.pdf" second time. Should not be uploaded.
     cy.get('[data-cy="attachments-upload-button"]').should("be.visible").click();
