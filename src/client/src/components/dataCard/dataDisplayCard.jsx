@@ -2,9 +2,10 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { DataCardButtonContainer } from "./dataCard.jsx";
 import { DataCardContext, DataCardSwitchContext } from "./dataCardContext";
-import { PromptContext } from "../prompt/promptContext";
+import { PromptContext } from "../prompt/promptContext.tsx";
 import { StackFullWidth } from "../baseComponents";
 import { DeleteButton, EditButton } from "../buttons/buttons.tsx";
+import TrashIcon from "../../../public/icons/trash.svg?react";
 
 export const DataDisplayCard = props => {
   const { item, deleteData, isEditable } = props;
@@ -21,13 +22,15 @@ export const DataDisplayCard = props => {
           <DeleteButton
             label="delete"
             onClick={() => {
-              showPrompt(t("deleteTitle"), t("deleteMessage"), [
+              showPrompt(t("deleteMessage"), [
                 {
                   label: t("cancel"),
                   action: null,
                 },
                 {
                   label: t("delete"),
+                  icon: <TrashIcon />,
+                  variant: "contained",
                   action: () => {
                     deleteData(item.id).then(() => {
                       triggerReload();

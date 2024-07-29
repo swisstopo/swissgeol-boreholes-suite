@@ -11,7 +11,7 @@ import { DataCardButtonContainer } from "../../../../components/dataCard/dataCar
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import { extractCasingDepth } from "./casingUtils";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
-import { PromptContext } from "../../../../components/prompt/promptContext";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 
 const CasingInput = props => {
   const { item, parentId } = props;
@@ -100,7 +100,7 @@ const CasingInput = props => {
   useEffect(() => {
     if (checkIsDirty) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        showPrompt(t("unsavedChangesTitle", { where: t("casing") }), t("unsavedChangesMessage"), [
+        showPrompt(t("unsavedChangesMessage", { where: t("casing") }), [
           {
             label: t("cancel"),
             action: () => {

@@ -143,5 +143,13 @@ export const theme = createTheme({
         },
       },
     },
+    MuiDialogContentText: {
+      styleOverrides: {
+        root: {
+          fontSize: "16px",
+          color: "#1c2834",
+        },
+      },
+    },
   },
 });

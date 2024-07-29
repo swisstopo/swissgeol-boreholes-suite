@@ -1,4 +1,4 @@
-import { loginAsAdmin, newEditableBorehole } from "../helpers/testHelpers.js";
+import { loginAsAdmin, newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
 
 describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {
@@ -43,10 +43,8 @@ describe("Tests for filtering data by reference system.", () => {
 
     cy.wait(["@edit_patch", "@edit_patch", "@edit_patch", "@edit_patch"]);
 
-    cy.get('[data-cy="editingStop-button"]').click();
-    cy.wait("@edit_unlock");
-    cy.get('[data-cy="backButton"]').click();
-    cy.wait(["@edit_list", "@borehole"]);
+    stopBoreholeEditing();
+    returnToOverview();
     cy.get('[data-cy="show-filter-button"]').click();
 
     cy.contains("h6", "Location").click();

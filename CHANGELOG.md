@@ -12,6 +12,8 @@
 - Renamed technical attributes `kind_id_cli` to `borehole_type_id`, `top_bedrock` to `top_bedrock_fresh` and `qt_top_bedrock` to `top_bedrock_weathered`.
 - Moved groundwater radio buttons in borehole form to the bottom.
 - Made `startTime` and `reliability` optional for hydrogeology.
+- Removed title from prompt dialog.
+- Use standard prompt dialog for deleting boreholes.
 
 ### Fixed
 
