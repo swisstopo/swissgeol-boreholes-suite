@@ -19,6 +19,7 @@
 - Badge with number of active filters on sidebar did not include polygon filter.
 - Fixed label for water ingress menu item.
 - Location precision filter caused an internal error.
+- Base maps were loaded beyond their maximum zoom level.
 
 ## v2.1.772 - 2024-06-27
 
