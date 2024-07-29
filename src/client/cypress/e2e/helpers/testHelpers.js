@@ -604,3 +604,9 @@ export const createBaseSelector = parent => {
     return "";
   }
 };
+
+export const selectLanguage = language => {
+  cy.get('[data-cy="language-selector"]').click({ force: true });
+  cy.get(`[data-cy="language-${language.toLowerCase()}"]`).click({ force: true });
+  cy.wait(1000);
+};

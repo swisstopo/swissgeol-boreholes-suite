@@ -8,14 +8,11 @@ describe("Geometry crud tests", () => {
     // open section editor
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/${id}/borehole`);
+      cy.visit(`/${id}/borehole#geometry`);
     });
 
     // start editing session
     startBoreholeEditing();
-
-    cy.get('[data-cy="geometry-tab"]').click();
-    cy.wait("@boreholegeometry_GET");
   });
 
   it("adds and deletes borehole geometry", () => {
