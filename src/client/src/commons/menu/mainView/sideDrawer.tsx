@@ -15,7 +15,7 @@ export const SideDrawer = ({ drawerOpen, drawerContent }: SideDrawerProps) => {
         <Paper
           sx={{
             width: "360px",
-            height: "calc(100vh - 70px)",
+            height: "calc(100vh - 84px)",
             padding: "16px",
             backgroundColor: theme.palette.background.lightgrey,
             boxShadow: theme.palette.boxShadow + " 2px 6px 6px 0px",

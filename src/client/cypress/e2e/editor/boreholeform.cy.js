@@ -1,4 +1,4 @@
-import { newEditableBorehole } from "../helpers/testHelpers";
+import { createBorehole, loginAsAdmin, newEditableBorehole } from "../helpers/testHelpers";
 
 describe("Test for the borehole form.", () => {
   it("Creates a borehole and fills dropdowns.", () => {
@@ -42,5 +42,33 @@ describe("Test for the borehole form.", () => {
       .then(() => {
         expect(boreholeDropdownValues).to.deep.eq(["borehole", "geotechnics", "open, no completion", "2"]);
       });
+  });
+
+  it("switches tabs", () => {
+    let boreholeId;
+    createBorehole({ "extended.original_name": "LSENALZE" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      boreholeId = id;
+      loginAsAdmin();
+      cy.visit(`/${id}/borehole`);
+    });
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
+      expect(location.hash).to.eq("#general");
+    });
+
+    cy.get('[data-cy="sections-tab"]').click();
+    cy.wait("@get-sections-by-boreholeId");
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
+      expect(location.hash).to.eq("#sections");
+    });
+
+    cy.get('[data-cy="geometry-tab"]').click();
+    cy.wait("@boreholegeometry_GET");
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
+      expect(location.hash).to.eq("#geometry");
+    });
   });
 });
