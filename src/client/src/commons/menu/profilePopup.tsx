@@ -1,29 +1,27 @@
 import { useAuth } from "react-oidc-context";
 import { Button, IconButton, Popover, Stack, Typography } from "@mui/material";
-import { theme } from "../../AppTheme.js";
+import { theme } from "../../AppTheme.ts";
 import ProfileIcon from "../../../public/icons/profile.svg?react";
 import { UserData } from "../../ReduxStateInterfaces";
-import { useState } from "react";
+import { MouseEvent, useState } from "react";
 
 export function ProfilePopup({ user }: { user: UserData }) {
   const auth = useAuth();
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setAnchorEl(undefined);
   };
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
-  const popoverTop = anchorEl?.getBoundingClientRect().bottom || 0;
-  const popoverLeft = anchorEl?.getBoundingClientRect().left || 0;
 
-  function ProfileButton() {
-    return (
+  return (
+    <>
       <IconButton
         onClick={handleClick}
         aria-describedby={id}
@@ -37,25 +35,19 @@ export function ProfilePopup({ user }: { user: UserData }) {
         }}>
         <ProfileIcon />
       </IconButton>
-    );
-  }
-
-  return (
-    <>
-      <ProfileButton />
       <Popover
-        anchorReference="anchorPosition"
-        anchorPosition={{ top: popoverTop, left: popoverLeft }}
+        anchorEl={anchorEl}
         id={id}
         open={open}
         onClose={handleClose}
+        sx={{ marginTop: "5px" }}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "left",
+          horizontal: "right",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "left",
+          horizontal: "right",
         }}>
         {user !== null && (
           <>

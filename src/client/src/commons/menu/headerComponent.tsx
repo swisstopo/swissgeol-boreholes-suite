@@ -1,10 +1,10 @@
 import { Box, Stack } from "@mui/material";
 import { theme } from "../../AppTheme";
-import TranslationKeys from "../translationKeys";
 import { VersionTag } from "./versionTag";
 import { ProfilePopup } from "./profilePopup";
 import { ReduxRootState, User } from "../../ReduxStateInterfaces";
 import { useSelector } from "react-redux";
+import { LanguagePopup } from "./languagePopup.tsx";
 
 const HeaderComponent = () => {
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
@@ -31,7 +31,7 @@ const HeaderComponent = () => {
       </Box>
       <Stack direction="row" alignItems="center" spacing={4}>
         <VersionTag />
-        <TranslationKeys />
+        <LanguagePopup />
         <ProfilePopup user={user.data} />
       </Stack>
     </Stack>
