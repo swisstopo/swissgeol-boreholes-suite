@@ -177,6 +177,10 @@ const HydrotestInput = props => {
       });
     }
 
+    if (data.reliabilityId === "") {
+      data.reliabilityId = null;
+    }
+
     delete data.testKindId;
     delete data.flowDirectionId;
     delete data.evaluationMethodId;

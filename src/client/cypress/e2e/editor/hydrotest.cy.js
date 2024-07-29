@@ -5,6 +5,7 @@ import {
   createHydrotest,
   handlePrompt,
   loginAsAdmin,
+  selectLanguage,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 import {
@@ -41,9 +42,7 @@ describe("Tests for the hydrotest editor.", () => {
     cy.get('[data-cy="hydrogeology-menu-item"]').click({ force: true });
     cy.get('[data-cy="hydrotest-menu-item"]').click({ force: true });
 
-    // switch to german
-    cy.contains("span", "DE").click({ force: true });
-    cy.wait(1000);
+    selectLanguage("de");
 
     // create hydrotest
     addItem("addHydrotest");

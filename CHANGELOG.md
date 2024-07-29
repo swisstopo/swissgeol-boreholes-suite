@@ -2,18 +2,33 @@
 
 ## [Unreleased]
 
+### Added
+
+- Tooltips to main side navigation.
+- Location hash for tabs in borehole detail view.
+- Language dropdown in the header.
+
 ### Changed
 
 - Renamed technical attributes `kind_id_cli` to `borehole_type_id`, `top_bedrock` to `top_bedrock_fresh` and `qt_top_bedrock` to `top_bedrock_weathered`.
 - Moved groundwater radio buttons in borehole form to the bottom.
+- Made `startTime` and `reliability` optional for hydrogeology.
 - Removed title from prompt dialog.
 - Use standard prompt dialog for deleting boreholes.
+- Updated standard alert.
+- Updated styling of attachment upload button.
 - It is now possible to restart a workflow from every publication status.
 
 ### Fixed
 
 - Attribute `top_bedrock_weathered` could not be imported.
 - Badge with number of active filters on sidebar did not include polygon filter.
+- Fixed label for water ingress menu item.
+- Location precision filter caused an internal error.
+- Base maps were loaded beyond their maximum zoom level.
+- `layer_depth_to` was displayed in filter even though it was not selected in the filter settings.
+- Users can now only import or add new boreholes to workgroups where they have an editor role.
+- Label for description quality was wrong in lithology filter and settings.
 - Boreholes could not be deleted in the detail view if the publication status was not `Change in progess`.
 
 ## v2.1.772 - 2024-06-27

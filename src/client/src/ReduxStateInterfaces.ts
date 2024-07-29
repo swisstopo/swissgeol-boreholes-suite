@@ -8,10 +8,12 @@ export interface User {
   data: UserData;
 }
 
+export type Role = "PUBLIC" | "VIEW" | "VALID" | "EDIT" | "CONTROL";
+
 export interface UserData {
   // Incomplete type definition, add other properties as needed
   workgroups: Workgroup[];
-  roles: string[];
+  roles: Role[];
   id: number;
   name: string;
   username: string;
@@ -22,13 +24,13 @@ export interface Workgroup {
   disabled: null;
   id: number;
   workgroup: string;
-  roles: string[];
+  roles: Role[];
 }
 
 interface Workflow {
   started: string;
   finished: string;
-  role: string;
+  role: Role;
   username: string;
   workflow: number;
 }
@@ -41,7 +43,7 @@ export interface Borehole {
     workflow: Workflow;
     id: number;
     spatial_reference_system: number;
-    role: string;
+    role: Role;
     lock: {
       id: number;
     };

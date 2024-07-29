@@ -14,7 +14,7 @@ import { lithostratigraphySearchData } from "../data/lithostratigraphySearchData
 import { MenuItems } from "../../menu/mainView/menuComponents/menuItems";
 import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Button, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ArrowDownIcon from "../../../../public/icons/arrow_down.svg?react";
 import ListFilter from "../components/listFilter.jsx";
 import { SideDrawerHeader } from "../../menu/mainView/sideDrawerHeader.tsx";
 import Polygon from "../../../../public/icons/polygon.svg?react";
@@ -24,6 +24,7 @@ import { FilterContext } from "../../../components/filter/filterContext.tsx";
 
 class FilterComponent extends React.Component {
   static contextType = FilterContext;
+
   constructor(props) {
     super(props);
     this.handleFilterReset = this.handleFilterReset.bind(this);
@@ -183,13 +184,13 @@ class FilterComponent extends React.Component {
 
     return (
       <Stack direction="column" sx={{ height: "100%" }}>
+        <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
+        <FilterChips
+          setPolygonSelectionEnabled={setPolygonSelectionEnabled}
+          activeFilters={this.state.activeFilters}
+          setFilter={setFilter}
+        />
         <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
-          <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
-          <FilterChips
-            setPolygonSelectionEnabled={setPolygonSelectionEnabled}
-            activeFilters={this.state.activeFilters}
-            setFilter={setFilter}
-          />
           <Button
             onClick={() => {
               this.handlePolygonFilterClick();
@@ -226,7 +227,7 @@ class FilterComponent extends React.Component {
               {t("polygon_selection")}
             </Typography>
             {filterPolygon !== null && (
-              <Badge data-cy="polygon-filter-badge" color="error" badgeContent={1} sx={{ marginLeft: "18px" }}></Badge>
+              <Badge data-cy="polygon-filter-badge" badgeContent={1} sx={{ marginLeft: "18px" }} />
             )}
           </Button>
           {this.state?.searchList?.map((filter, idx) => {
@@ -237,7 +238,7 @@ class FilterComponent extends React.Component {
             return (
               <this.StyledAccordion key={idx} expanded={filter?.isSelected}>
                 <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
+                  expandIcon={<ArrowDownIcon />}
                   onClick={() => {
                     this.setState(prevState => ({
                       ...prevState,
@@ -246,10 +247,8 @@ class FilterComponent extends React.Component {
                       ),
                     }));
                   }}>
-                  <Typography variant="h6">
-                    {t(filter?.translationId)}{" "}
-                    <Badge color="error" badgeContent={activeFilterLength} sx={{ marginLeft: "12px" }}></Badge>
-                  </Typography>
+                  <Typography variant="h6">{t(filter?.translationId)} </Typography>
+                  <Badge badgeContent={activeFilterLength} sx={{ marginLeft: "18px", marginTop: "10px" }} />
                 </AccordionSummary>
                 {filter?.name === "workgroup" && filter?.isSelected && (
                   <this.StyledAccordionDetails>

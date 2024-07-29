@@ -30,7 +30,6 @@ export const lithologySearchData = [
     inputType: "number",
     hasTwoFields: true,
     isVisibleValue: "layer.depth_to",
-    isVisible: true,
     placeholder: "from",
   },
   {
@@ -42,13 +41,12 @@ export const lithologySearchData = [
     inputType: "number",
     hasTwoFields: true,
     isVisibleValue: "layer.depth_to",
-    isVisible: true,
     placeholder: "to",
   },
   {
     id: 4,
     type: "Dropdown",
-    label: "description_quality",
+    label: "completeness",
     value: "description_quality",
     schema: "description_quality",
     multiple: false,
