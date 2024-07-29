@@ -14,10 +14,10 @@ import { lithostratigraphySearchData } from "../data/lithostratigraphySearchData
 import { MenuItems } from "../../menu/mainView/menuComponents/menuItems";
 import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Button, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import ArrowDownIcon from "../../../../public/icons/arrow_down.svg?react";
+import ArrowDownIcon from "../../../assets/icons/arrow_down.svg?react";
 import ListFilter from "../components/listFilter.jsx";
 import { SideDrawerHeader } from "../../menu/mainView/sideDrawerHeader.tsx";
-import Polygon from "../../../../public/icons/polygon.svg?react";
+import Polygon from "../../../assets/icons/polygon.svg?react";
 import { theme } from "../../../AppTheme.ts";
 import FilterChips from "./FilterChips.tsx";
 import { FilterContext } from "../../../components/filter/filterContext.tsx";

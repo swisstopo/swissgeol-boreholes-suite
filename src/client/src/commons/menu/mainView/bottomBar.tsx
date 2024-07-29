@@ -1,6 +1,6 @@
 import { Box, Button } from "@mui/material";
-import ArrowDownIcon from "../../../../public/icons/arrow_down.svg?react";
-import ArrowUpIcon from "../../../../public/icons/arrow_up.svg?react";
+import ArrowDownIcon from "../../../assets/icons/arrow_down.svg?react";
+import ArrowUpIcon from "../../../assets/icons/arrow_up.svg?react";
 import { BottomBarProps } from "./menuComponents/menuComponentInterfaces";
 import { BoreholeNumbersPreview } from "./menuComponents/boreholeNumbersPreview";
 import { useTranslation } from "react-i18next";

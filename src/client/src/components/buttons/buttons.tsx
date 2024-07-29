@@ -2,12 +2,12 @@ import { forwardRef } from "react";
 import TranslationText from "../../commons/form/translationText";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "../../../public/icons/edit.svg?react";
+import EditIcon from "../../assets/icons/edit.svg?react";
 import CopyIcon from "@mui/icons-material/ContentCopy";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
-import TrashIcon from "../../../public/icons/trash.svg?react";
-import CheckmarkIcon from "../../../public/icons/checkmark.svg?react";
+import TrashIcon from "../../assets/icons/trash.svg?react";
+import CheckmarkIcon from "../../assets/icons/checkmark.svg?react";
 import { ButtonProps } from "./buttonsInterface";
 
 export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {

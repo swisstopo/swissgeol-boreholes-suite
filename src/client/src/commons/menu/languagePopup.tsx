@@ -2,8 +2,8 @@ import { Button, List, ListItem, ListItemIcon, ListItemText, Popover } from "@mu
 import { theme } from "../../AppTheme.ts";
 import { MouseEvent, useEffect, useState } from "react";
 import CheckIcon from "@mui/icons-material/Check";
-import ArrowDownIcon from "../../../public/icons/arrow_down.svg?react";
-import ArrowUpIcon from "../../../public/icons/arrow_up.svg?react";
+import ArrowDownIcon from "../../assets/icons/arrow_down.svg?react";
+import ArrowUpIcon from "../../assets/icons/arrow_up.svg?react";
 import i18n from "../../i18n";
 
 const languages = ["de", "fr", "it", "en"];
