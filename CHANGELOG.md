@@ -17,6 +17,7 @@
 - Use standard prompt dialog for deleting boreholes.
 - Updated standard alert.
 - Updated styling of attachment upload button.
+- It is now possible to restart a workflow from every publication status.
 
 ### Fixed
 
@@ -28,6 +29,7 @@
 - `layer_depth_to` was displayed in filter even though it was not selected in the filter settings.
 - Users can now only import or add new boreholes to workgroups where they have an editor role.
 - Label for description quality was wrong in lithology filter and settings.
+- Boreholes could not be deleted in the detail view if the publication status was not `Change in progess`.
 
 ## v2.1.772 - 2024-06-27
 
