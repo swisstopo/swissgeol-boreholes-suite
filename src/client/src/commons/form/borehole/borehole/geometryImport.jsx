@@ -28,7 +28,7 @@ import { DevTool } from "../../../../../hookformDevtools.ts";
 
 const GeometryImport = ({ boreholeId }) => {
   const { t } = useTranslation();
-  const { error } = useContext(AlertContext);
+  const { showAlert } = useContext(AlertContext);
 
   const {
     set: { mutate: setBoreholeGeometry, isLoading: isUpdatingBoreholeGeometry },
@@ -59,7 +59,7 @@ const GeometryImport = ({ boreholeId }) => {
           // fetch does not fail promises on 4xx or 5xx responses
           // ¯\_(ツ)_/¯
           if (!data.ok) {
-            data.json().then(msg => error(msg.detail ?? t("errorDuringBoreholeFileUpload")));
+            data.json().then(msg => showAlert(msg.detail ?? t("errorDuringBoreholeFileUpload"), "error"));
           }
         },
       },

@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect, useContext } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import * as Styled from "./styles";
 import InfoList from "./components/infoList";
 import InfoCheckBox from "./components/infoCheckBox";
@@ -13,7 +13,7 @@ const ProfileInfo = props => {
 
   const mounted = useRef(false);
   const { t } = useTranslation();
-  const alertContext = useContext(AlertContext);
+  const { showAlert } = useContext(AlertContext);
   const [state, setState] = useState({
     isPatching: false,
     updateAttributeDelay: {},
@@ -46,7 +46,7 @@ const ProfileInfo = props => {
 
   const updateChange = (attribute, value, isNumber = false) => {
     if (!isEditable) {
-      alertContext.error(t("common:errorStartEditing"));
+      showAlert(t("common:errorStartEditing"), "error");
       return;
     }
     setState(prevState => ({ ...prevState, isPatching: true }));

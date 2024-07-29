@@ -43,7 +43,7 @@ export const theme = createTheme({
       lightgrey: "#f1f3f5",
       darkgrey: "#787878",
       dark: "rgba(0, 0, 0, 0.5)",
-      menuItemActive: "#D92B04",
+      menuItemActive: "#A65462",
       filterItemActive: "#1C2834",
     },
 
@@ -132,6 +132,22 @@ export const theme = createTheme({
           fontWeight: "bold",
           textTransform: "none",
           fontSize: "16px",
+        },
+      },
+    },
+    MuiBadge: {
+      styleOverrides: {
+        badge: {
+          backgroundColor: "#FF0000",
+          color: "#FFFFFF",
+        },
+      },
+    },
+    MuiDialogContentText: {
+      styleOverrides: {
+        root: {
+          fontSize: "16px",
+          color: "#1c2834",
         },
       },
     },

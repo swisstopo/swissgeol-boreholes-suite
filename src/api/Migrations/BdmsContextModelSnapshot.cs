@@ -265,11 +265,11 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("status_id_cli");
 
-                    b.Property<double?>("TopBedrockFresh")
+                    b.Property<double?>("TopBedrockFreshMd")
                         .HasColumnType("double precision")
                         .HasColumnName("top_bedrock_fresh_md");
 
-                    b.Property<double?>("TopBedrockWeathered")
+                    b.Property<double?>("TopBedrockWeatheredMd")
                         .HasColumnType("double precision")
                         .HasColumnName("top_bedrock_weathered_md");
 
@@ -1552,7 +1552,7 @@ namespace BDMS.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_open_borehole");
 
-                    b.Property<int>("ReliabilityId")
+                    b.Property<int?>("ReliabilityId")
                         .HasColumnType("integer")
                         .HasColumnName("reliability");
 
@@ -2927,8 +2927,7 @@ namespace BDMS.Migrations
                     b.HasOne("BDMS.Models.Codelist", "Reliability")
                         .WithMany()
                         .HasForeignKey("ReliabilityId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("BDMS.Models.User", "UpdatedBy")
                         .WithMany()

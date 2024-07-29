@@ -1,4 +1,10 @@
-import { bearerAuth, createBorehole, createStratigraphy, loginAsAdmin } from "../helpers/testHelpers";
+import {
+  bearerAuth,
+  createBorehole,
+  createStratigraphy,
+  loginAsAdmin,
+  startBoreholeEditing,
+} from "../helpers/testHelpers";
 
 describe("Tests for the chronostratigraphy editor.", () => {
   beforeEach(function () {
@@ -75,8 +81,7 @@ describe("Tests for the chronostratigraphy editor.", () => {
     cy.wait("@get-layers-by-profileId");
 
     // start editing session
-    cy.get('[data-cy="edit-button"]').click();
-    cy.wait("@edit_lock");
+    startBoreholeEditing();
     cy.wait("@chronostratigraphy_GET");
   });
 

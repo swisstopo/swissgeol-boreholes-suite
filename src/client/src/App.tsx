@@ -11,17 +11,19 @@ import AcceptTerms from "./pages/term/accept";
 import { AlertProvider } from "./components/alert/alertContext";
 import { AlertBanner } from "./components/alert/alertBanner";
 import { DataCardProvider } from "./components/dataCard/dataCardContext.jsx";
-import { PromptProvider } from "./components/prompt/promptContext.jsx";
-import { Prompt } from "./components/prompt/prompt";
+import { PromptProvider } from "./components/prompt/promptContext.tsx";
+import { Prompt } from "./components/prompt/prompt.tsx";
 import { BasemapProvider } from "./components/basemapSelector/basemapContext.tsx";
 import { FilterProvider } from "./components/filter/filterContext.tsx";
 
 const queryClient = new QueryClient();
 
 class App extends React.Component {
-  handleDragOver = e => {
+  handleDragOver = (e: DragEvent) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = "none";
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = "none";
+    }
   };
 
   componentDidMount() {
@@ -35,16 +37,16 @@ class App extends React.Component {
 
   render() {
     return (
-      <DataLoader>
-        <AcceptTerms>
-          <AlertProvider>
-            <AlertBanner />
-            <PromptProvider>
-              <Prompt />
-              <DataCardProvider>
-                <BasemapProvider>
-                  <FilterProvider>
-                    <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
+        <DataLoader>
+          <AcceptTerms>
+            <AlertProvider>
+              <AlertBanner />
+              <PromptProvider>
+                <Prompt />
+                <DataCardProvider>
+                  <BasemapProvider>
+                    <FilterProvider>
                       <QueryClientProvider client={queryClient}>
                         <Router>
                           <Switch>
@@ -70,14 +72,14 @@ class App extends React.Component {
                         </Router>
                         <ReactQueryDevtools />
                       </QueryClientProvider>
-                    </ThemeProvider>
-                  </FilterProvider>
-                </BasemapProvider>
-              </DataCardProvider>
-            </PromptProvider>
-          </AlertProvider>
-        </AcceptTerms>
-      </DataLoader>
+                    </FilterProvider>
+                  </BasemapProvider>
+                </DataCardProvider>
+              </PromptProvider>
+            </AlertProvider>
+          </AcceptTerms>
+        </DataLoader>
+      </ThemeProvider>
     );
   }
 }

@@ -42,7 +42,7 @@ const ProfileLayers = props => {
   const [layersWithValidation, setLayersWithValidation] = useState(null);
   const [selecteDescription, setSelectedDescription] = useState(null);
   const [showDelete, setShowDelete] = useState();
-  const alertContext = useContext(AlertContext);
+  const { showAlert } = useContext(AlertContext);
   const [deleteParams, setDeleteParams] = useState(null);
   const layers = useLayers(selectedStratigraphyID);
 
@@ -173,7 +173,7 @@ const ProfileLayers = props => {
 
   const addDescription = (query, mutation) => {
     if (query?.data && query?.data?.length && query?.data[query?.data?.length - 1]?.toDepth == null) {
-      alertContext.error(t("first_add_layer_to_depth"));
+      showAlert(t("first_add_layer_to_depth"), "error");
     } else {
       setSelectedDescription(null);
       const newFromDepth = query?.data?.at(-1)?.toDepth ?? 0;
@@ -183,7 +183,7 @@ const ProfileLayers = props => {
             fromDepth: newFromDepth,
             toDepth: layersWithValidation?.data.find(l => l.depth_from === newFromDepth)?.depth_to,
           })
-        : alertContext.error(t("first_add_lithology"));
+        : showAlert(t("first_add_lithology"), "error");
     }
   };
 

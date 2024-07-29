@@ -5,21 +5,21 @@ import { withTranslation } from "react-i18next";
 import { AlertContext } from "../../../components/alert/alertContext";
 import { fetchUsers } from "../../../api/fetchApiV2";
 
-import { Button, Checkbox, Icon, Input, Label, Modal, Table, Form, Loader } from "semantic-ui-react";
+import { Button, Checkbox, Form, Icon, Input, Label, Loader, Modal, Table } from "semantic-ui-react";
 
 import {
   createWorkgroup,
-  enableWorkgroup,
-  disableWorkgroup,
-  deleteWorkgroup,
-  updateWorkgroup,
   deleteUser,
+  deleteWorkgroup,
   disableUser,
+  disableWorkgroup,
   enableUser,
-  updateUser,
-  setRole,
+  enableWorkgroup,
   listWorkgroups,
   reloadUser,
+  setRole,
+  updateUser,
+  updateWorkgroup,
 } from "../../../api-lib/index";
 
 import DateText from "../../../commons/form/dateText";
@@ -28,6 +28,7 @@ import { WorkgroupRoleSettings } from "./workgroupRoleSettings";
 
 class AdminSettings extends React.Component {
   static contextType = AlertContext;
+
   constructor(props) {
     super(props);
     this.setRole = this.setRole.bind(this);
@@ -243,7 +244,7 @@ class AdminSettings extends React.Component {
                   onClick={() => {
                     updateUser(this.state.uId, this.state.uAdmin).then(response => {
                       if (response.data.success === false) {
-                        this.context.error(response.data.message);
+                        this.context.showAlert(response.data.message, "error");
                       } else {
                         this.listUsers();
                       }

@@ -7,7 +7,7 @@ import { completionSchemaConstants } from "./completionSchemaConstants";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { FormCheckbox, FormInput, FormSelect } from "../../../../components/form/form";
 import { CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { PromptContext } from "../../../../components/prompt/promptContext";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 
 const CompletionHeaderInput = props => {
   const { completion, cancelChanges, saveCompletion, trySwitchTab, switchTabs } = props;
@@ -33,7 +33,7 @@ const CompletionHeaderInput = props => {
   useEffect(() => {
     if (trySwitchTab) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        showPrompt(t("unsavedChangesTitle", { where: t("completion") }), t("unsavedChangesMessage"), [
+        showPrompt(t("unsavedChangesMessage", { where: t("completion") }), [
           {
             label: t("cancel"),
             action: () => {

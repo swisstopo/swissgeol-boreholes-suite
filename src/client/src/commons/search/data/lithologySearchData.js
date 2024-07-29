@@ -30,7 +30,6 @@ export const lithologySearchData = [
     inputType: "number",
     hasTwoFields: true,
     isVisibleValue: "layer.depth_to",
-    isVisible: true,
     placeholder: "from",
   },
   {
@@ -42,7 +41,6 @@ export const lithologySearchData = [
     inputType: "number",
     hasTwoFields: true,
     isVisibleValue: "layer.depth_to",
-    isVisible: true,
     placeholder: "to",
   },
   {

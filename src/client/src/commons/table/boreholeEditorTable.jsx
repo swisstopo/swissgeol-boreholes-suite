@@ -9,11 +9,9 @@ import { copyBorehole } from "../../api/fetchApiV2";
 import TTable from "./table";
 import { Button, Checkbox, Dropdown, Header, Icon, Modal, Segment, Table } from "semantic-ui-react";
 import { deleteBoreholes, getdBoreholeIds, loadEditingBoreholes } from "../../api-lib/index";
-import { AlertContext } from "../../components/alert/alertContext";
 import { theme } from "../../AppTheme";
 
 class BoreholeEditorTable extends TTable {
-  static contextType = AlertContext;
   constructor(props) {
     super(props);
 
