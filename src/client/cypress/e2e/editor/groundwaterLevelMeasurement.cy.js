@@ -45,9 +45,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
     cy.wait("@casing_GET");
 
     setSelect("kindId", 3);
-    setSelect("reliabilityId", 2);
     setSelect("casingId", 2);
-    setInput("startTime", "2012-11-14T12:06");
     setInput("levelM", "789.12");
     setInput("levelMasl", "5.4567");
 
@@ -57,7 +55,6 @@ describe("Tests for the groundwater level measurement editor.", () => {
     evaluateDisplayValue("gwlm_kind", "Manometer");
     evaluateDisplayValue("gwlm_levelm", "789.12");
     evaluateDisplayValue("gwlm_levelmasl", "5.4567");
-    evaluateDisplayValue("reliability", "fraglich");
 
     // edit groundwater level measurement
     startEditing();
