@@ -27,6 +27,9 @@ const GroundwaterLevelMeasurementInput = props => {
     if (data.casingId == null) {
       data.casingId = item.casingId;
     }
+    if (data.reliabilityId === "") {
+      data.reliabilityId = null;
+    }
     delete data.reliability;
 
     return data;
