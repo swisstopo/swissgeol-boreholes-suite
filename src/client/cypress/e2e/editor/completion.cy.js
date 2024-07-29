@@ -23,7 +23,6 @@ const toggleHeaderOpen = () => {
     .then(expanded => {
       if (expanded === "false") {
         cy.get('[data-cy="completion-toggle-header"]').click();
-        cy.wait(1000);
       }
     });
 };
