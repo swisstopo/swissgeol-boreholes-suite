@@ -9,14 +9,11 @@ describe("Section crud tests", () => {
     // open section editor
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/${id}/borehole`);
+      cy.visit(`/${id}/borehole#sections`);
     });
 
     // start editing session
     startBoreholeEditing();
-
-    cy.get('[data-cy="sections-tab"]').click();
-    cy.wait("@get-sections-by-boreholeId");
   });
 
   it("adds, edits and deletes sections", () => {
