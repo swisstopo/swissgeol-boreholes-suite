@@ -27,6 +27,7 @@
 - Base maps were loaded beyond their maximum zoom level.
 - `layer_depth_to` was displayed in filter even though it was not selected in the filter settings.
 - Users can now only import or add new boreholes to workgroups where they have an editor role.
+- Label for description quality was wrong in lithology filter and settings.
 
 ## v2.1.772 - 2024-06-27
 
