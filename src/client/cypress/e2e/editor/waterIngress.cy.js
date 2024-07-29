@@ -5,6 +5,7 @@ import {
   createWateringress,
   handlePrompt,
   loginAsAdmin,
+  selectLanguage,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
@@ -39,9 +40,7 @@ describe("Tests for the wateringress editor.", () => {
 
     cy.wait("@wateringress_GET");
 
-    // switch to german
-    cy.contains("span", "DE").click({ force: true });
-    cy.wait(1000);
+    selectLanguage("de");
 
     // create wateringress
     addItem("addWaterIngress");

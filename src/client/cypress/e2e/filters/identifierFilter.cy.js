@@ -1,4 +1,4 @@
-import { newEditableBorehole } from "../helpers/testHelpers.js";
+import { newEditableBorehole, returnToOverview, stopBoreholeEditing } from "../helpers/testHelpers.js";
 
 describe("Tests for filtering data by identifier.", () => {
   it("can filter by identifier", () => {
@@ -12,10 +12,8 @@ describe("Tests for filtering data by identifier.", () => {
     cy.get('[data-cy="identifier-value"] input').type(819544732);
     cy.get('[data-cy="identifier-add"]').click();
 
-    cy.get('[data-cy="editingStop-button"]').click();
-    cy.wait("@edit_unlock");
-    cy.get('[data-cy="backButton"]').click();
-    cy.wait(["@edit_list", "@borehole"]);
+    stopBoreholeEditing();
+    returnToOverview();
     cy.get('[data-cy="show-filter-button"]').click();
 
     cy.contains("h6", "Location").click();
@@ -49,10 +47,8 @@ describe("Tests for filtering data by identifier.", () => {
     cy.get('[data-cy="identifier-value"] input').type(64531274);
     cy.get('[data-cy="identifier-add"]').click();
 
-    cy.get('[data-cy="editingStop-button"]').click();
-    cy.wait("@edit_unlock");
-    cy.get('[data-cy="backButton"]').click();
-    cy.wait(["@edit_list", "@borehole"]);
+    stopBoreholeEditing();
+    returnToOverview();
 
     newEditableBorehole().as("borehole_id_2");
     identifierDropdown = cy.get('[data-cy="identifier-dropdown"]');
@@ -64,10 +60,8 @@ describe("Tests for filtering data by identifier.", () => {
     cy.get('[data-cy="identifier-value"] input').type(436584127);
     cy.get('[data-cy="identifier-add"]').click();
 
-    cy.get('[data-cy="editingStop-button"]').click();
-    cy.wait("@edit_unlock");
-    cy.get('[data-cy="backButton"]').click();
-    cy.wait(["@edit_list", "@borehole"]);
+    stopBoreholeEditing();
+    returnToOverview();
     cy.get('[data-cy="show-filter-button"]').click();
 
     cy.contains("h6", "Location").click();

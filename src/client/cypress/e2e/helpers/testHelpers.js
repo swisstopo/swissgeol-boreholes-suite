@@ -1,6 +1,7 @@
 import adminUser from "../../fixtures/adminUser.json";
 import editorUser from "../../fixtures/editorUser.json";
 import viewerUser from "../../fixtures/viewerUser.json";
+import { startEditing, stopEditing } from "./buttonHelpers.js";
 
 export const bearerAuth = token => ({ bearer: token });
 
@@ -166,8 +167,7 @@ export const loginAsViewer = () => {
 
 export const newEditableBorehole = () => {
   const id = newUneditableBorehole();
-  cy.get('[data-cy="edit-button"]').click();
-  cy.wait("@edit_lock");
+  startBoreholeEditing();
   return id;
 };
 
@@ -230,8 +230,18 @@ export const createAndEditBoreholeAsAdmin = values => {
 };
 
 export const startBoreholeEditing = () => {
-  cy.get('[data-cy="edit-button"]').click();
+  startEditing();
   cy.wait("@edit_lock");
+};
+
+export const stopBoreholeEditing = () => {
+  stopEditing();
+  cy.wait("@edit_unlock");
+};
+
+export const returnToOverview = () => {
+  cy.get('[data-cy="backButton"]').click();
+  cy.wait(["@edit_list", "@borehole"]);
 };
 
 export const deleteBorehole = id => {
@@ -581,10 +591,10 @@ export const createInstrument = (completionId, casingId, name, statusId, kindId,
   });
 };
 
-export const handlePrompt = (title, action) => {
+export const handlePrompt = (message, action) => {
   cy.get('[data-cy="prompt"]').should("be.visible");
-  cy.contains(title);
-  cy.get('[data-cy="prompt-button-' + action + '"]').click();
+  cy.contains(message);
+  cy.get('[data-cy="prompt"]').find(`[data-cy="${action.toLowerCase()}-button"]`).click();
 };
 
 export const createBaseSelector = parent => {
@@ -593,4 +603,10 @@ export const createBaseSelector = parent => {
   } else {
     return "";
   }
+};
+
+export const selectLanguage = language => {
+  cy.get('[data-cy="language-selector"]').click({ force: true });
+  cy.get(`[data-cy="language-${language.toLowerCase()}"]`).click({ force: true });
+  cy.wait(1000);
 };

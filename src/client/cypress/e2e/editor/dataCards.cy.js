@@ -1,6 +1,6 @@
 import { createBorehole, handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateTextarea, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, saveForm, startEditing } from "../helpers/buttonHelpers";
+import { addItem, saveForm, startEditing, stopEditing } from "../helpers/buttonHelpers";
 
 describe("Tests for the data cards in the editor.", () => {
   it("resets datacards when stop editing", () => {
@@ -12,14 +12,14 @@ describe("Tests for the data cards in the editor.", () => {
 
     startBoreholeEditing();
     cy.wait(500);
-    addItem("addWaterIngress");
+    addItem("addwateringress");
     cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
-    cy.get('[data-cy="editingStop-button"]').click();
+    stopEditing();
     cy.get('[data-cy="waterIngress-card.0.edit"]').should("not.exist");
 
     startBoreholeEditing();
     cy.wait(500);
-    addItem("addWaterIngress");
+    addItem("addwateringress");
     cy.wait("@casing_GET");
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 2);
@@ -28,7 +28,7 @@ describe("Tests for the data cards in the editor.", () => {
     cy.wait("@wateringress_GET");
     startEditing();
     setInput("comment", "Lorem.");
-    cy.get('[data-cy="editingStop-button"]').click();
+    stopEditing();
     evaluateDisplayValue("comment", "-");
   });
 
@@ -40,50 +40,50 @@ describe("Tests for the data cards in the editor.", () => {
     });
     startBoreholeEditing();
 
-    addItem("addWaterIngress");
-    cy.get('[data-cy="addWaterIngress-button"]').should("be.disabled");
+    addItem("addwateringress");
+    cy.get('[data-cy="addwateringress-button"]').should("be.disabled");
     cy.wait("@casing_GET");
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 2);
     setSelect("quantityId", 3);
     saveForm();
-    cy.get('[data-cy="addWaterIngress-button"]').should("be.enabled");
+    cy.get('[data-cy="addwateringress-button"]').should("be.enabled");
 
     startEditing();
     setInput("comment", "Lorem.");
 
     // can cancel switching tabs without loosing data
-    addItem("addWaterIngress");
-    handlePrompt("Water ingress: Unsaved changes", "Cancel");
+    addItem("addwateringress");
+    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Cancel");
     evaluateTextarea("comment", "Lorem.");
 
     // can reset creating
-    addItem("addWaterIngress");
-    handlePrompt("Water ingress: Unsaved changes", "Reset");
+    addItem("addwateringress");
+    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Reset");
     evaluateDisplayValue("comment", "-");
 
     // can save changes in existing card and switch to new card
     startEditing();
     setInput("comment", "Lorem.");
-    addItem("addWaterIngress");
-    handlePrompt("Water ingress: Unsaved changes", "Save");
+    addItem("addwateringress");
+    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Save");
     evaluateDisplayValue("comment", "Lorem.");
 
     // can reset creating and switch to existing card
     setInput("startTime", "2012-11-14T12:06");
     setSelect("reliabilityId", 2);
     startEditing();
-    handlePrompt("Water ingress: Unsaved changes", "Reset");
+    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Reset");
     cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
     cy.get('[data-cy="waterIngress-card.1"]').should("not.exist");
 
     // can save new card and switch to existing card
-    addItem("addWaterIngress");
+    addItem("addwateringress");
     setInput("startTime", "2013-10-02T14:06");
     setSelect("reliabilityId", 3);
     setSelect("quantityId", 3);
     startEditing();
-    handlePrompt("Water ingress: Unsaved changes", "Save");
+    handlePrompt("Water ingress: You have unsaved changes. How would you like to proceed?", "Save");
     cy.get('[data-cy="waterIngress-card.0.edit"]').should("exist");
     cy.get('[data-cy="waterIngress-card.1"]').should("exist");
   });

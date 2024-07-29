@@ -536,7 +536,7 @@ class Action():
                     'location_precision'] not in ['', None]:
                 params.append(int(filter['location_precision']))
                 where.append("""
-                    location_precision_id_cli = %s
+                    qt_location_id_cli = %s
                 """ % self.getIdx())
 
             if 'reference_elevation_from' in keys and filter['reference_elevation_from'] not in ['', None]:

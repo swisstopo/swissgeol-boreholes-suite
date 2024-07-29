@@ -8,18 +8,15 @@ describe("Geometry crud tests", () => {
     // open section editor
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/${id}/borehole`);
+      cy.visit(`/${id}/borehole#geometry`);
     });
 
     // start editing session
     startBoreholeEditing();
-
-    cy.get('[data-cy="geometry-tab"]').click();
-    cy.wait("@boreholegeometry_GET");
   });
 
   it("adds and deletes borehole geometry", () => {
-    cy.get('[data-cy="boreholeGeometryImport-button"]').should("be.disabled");
+    cy.get('[data-cy="boreholegeometryimport-button"]').should("be.disabled");
 
     // Select geometry csv file
     let geometryFile = new DataTransfer();
@@ -36,18 +33,18 @@ describe("Geometry crud tests", () => {
       });
     });
 
-    cy.get('[data-cy="boreholeGeometryImport-button"]').should("be.enabled");
+    cy.get('[data-cy="boreholegeometryimport-button"]').should("be.enabled");
 
     // the selected format is wrong expect an alert
     setSelect("geometryFormat", 1);
-    cy.get('[data-cy="boreholeGeometryImport-button"]').click();
+    cy.get('[data-cy="boreholegeometryimport-button"]').click();
     cy.wait("@boreholegeometry_POST");
     cy.get(".MuiAlert-message").contains("Header with name 'X_m'[0] was not found.");
     cy.get(".MuiAlert-action > .MuiButtonBase-root").click();
 
     // correct format for selected CSV
     setSelect("geometryFormat", 2);
-    cy.get('[data-cy="boreholeGeometryImport-button"]').click();
+    cy.get('[data-cy="boreholegeometryimport-button"]').click();
     cy.wait("@boreholegeometry_POST");
     cy.wait("@boreholegeometry_GET");
     cy.get(".MuiTableBody-root").should("exist");

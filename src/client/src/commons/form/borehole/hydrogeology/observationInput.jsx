@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Stack } from "@mui/material";
 import { FormInput, FormSelect } from "../../../../components/form/form";
-import { useDomains, getCasingsByBoreholeId } from "../../../../api/fetchApiV2";
+import { getCasingsByBoreholeId, useDomains } from "../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { StackHalfWidth } from "../../../../components/baseComponents";
@@ -33,13 +33,7 @@ const ObservationInput = props => {
         <FormInput fieldName="toDepthMasl" label="toDepthMasl" value={observation.toDepthMasl} type="number" />
       </Stack>
       <Stack direction="row">
-        <FormInput
-          fieldName="startTime"
-          label="startTime"
-          value={observation.startTime}
-          type="datetime-local"
-          required={true}
-        />
+        <FormInput fieldName="startTime" label="startTime" value={observation.startTime} type="datetime-local" />
         <FormInput fieldName="endTime" label="endTime" value={observation.endTime} type="datetime-local" />
       </Stack>
       <Stack direction="row">
@@ -48,7 +42,6 @@ const ObservationInput = props => {
             fieldName="reliabilityId"
             label="reliability"
             selected={observation.reliabilityId}
-            required={true}
             values={domains?.data
               ?.filter(d => d.schema === hydrogeologySchemaConstants.observationReliability)
               .sort((a, b) => a.order - b.order)

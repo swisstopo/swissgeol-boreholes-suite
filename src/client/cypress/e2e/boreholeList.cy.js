@@ -1,4 +1,4 @@
-import { loginAsAdmin, loginAsEditor } from "../e2e/helpers/testHelpers";
+import { loginAsAdmin, loginAsEditor, returnToOverview } from "./helpers/testHelpers.js";
 
 describe("Borehole list tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {
@@ -136,8 +136,7 @@ describe("Borehole list tests", () => {
     cy.wait("@edit_list");
 
     // return to list
-    cy.get('[data-cy="backButton"]').click();
-    cy.wait("@edit_list");
+    returnToOverview();
 
     // verify current page is still 4
     cy.get("a").should("have.class", "active item").contains("4");

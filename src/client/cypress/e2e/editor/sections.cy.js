@@ -1,6 +1,6 @@
-import { loginAsAdmin, createBorehole, startBoreholeEditing, handlePrompt } from "../helpers/testHelpers";
+import { createBorehole, handlePrompt, loginAsAdmin, startBoreholeEditing } from "../helpers/testHelpers";
 import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
-import { addItem, startEditing, saveForm, deleteItem } from "../helpers/buttonHelpers";
+import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHelpers";
 
 describe("Section crud tests", () => {
   beforeEach(() => {
@@ -9,14 +9,11 @@ describe("Section crud tests", () => {
     // open section editor
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
-      cy.visit(`/${id}/borehole`);
+      cy.visit(`/${id}/borehole#sections`);
     });
 
     // start editing session
     startBoreholeEditing();
-
-    cy.get('[data-cy="sections-tab"]').click();
-    cy.wait("@get-sections-by-boreholeId");
   });
 
   it("adds, edits and deletes sections", () => {
@@ -25,7 +22,7 @@ describe("Section crud tests", () => {
     addItem("addSection");
     cy.wait("@codelist_GET");
     cy.get('[data-cy="sectionElements.0.delete"]').should("be.disabled");
-    cy.get('[data-cy="addSection-button"]').should("be.disabled");
+    cy.get('[data-cy="addsection-button"]').should("be.disabled");
     cy.get('[data-cy="save-button"]').should("be.disabled");
 
     setInput("name", "section-1");

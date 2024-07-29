@@ -15,7 +15,7 @@ export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props,
     <Button
       ref={ref}
       {...props}
-      data-cy={props.label + "-button"}
+      data-cy={props.label?.toLowerCase() + "-button"}
       endIcon={props.icon}
       sx={{
         paddingLeft: "12px",
@@ -30,6 +30,10 @@ export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props,
       <TranslationText firstUpperCase id={props.label} />
     </Button>
   );
+});
+
+export const BdmsButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  return <BdmsBaseButton ref={ref} {...props} label={props.label} />;
 });
 
 export const AddButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
