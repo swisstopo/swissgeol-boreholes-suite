@@ -190,7 +190,7 @@ const DetailSideNav = ({ borehole, history, match }) => {
                 <List.Content>
                   <List.Header as="h3" data-cy="wateringress-menu-item">
                     <Typography>
-                      <TranslationText firstUpperCase id="wateringress" />
+                      <TranslationText firstUpperCase id="waterIngress" />
                     </Typography>
                   </List.Header>
                 </List.Content>
