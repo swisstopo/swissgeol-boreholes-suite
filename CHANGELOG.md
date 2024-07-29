@@ -9,6 +9,7 @@
 - Removed title from prompt dialog.
 - Use standard prompt dialog for deleting boreholes.
 - Updated standard alert.
+- Updated styling of attachment upload button.
 
 ### Fixed
 
