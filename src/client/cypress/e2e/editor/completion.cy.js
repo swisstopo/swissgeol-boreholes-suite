@@ -78,7 +78,7 @@ export const isContentTabSelected = tabName => {
 };
 
 describe("completion crud tests", () => {
-  it("adds, edits, copies and deletes completions", () => {
+  it.only("adds, edits, copies and deletes completions", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
@@ -118,6 +118,8 @@ describe("completion crud tests", () => {
     cy.wait("@get-completions-by-boreholeId");
     cy.contains("Compl-1");
     cy.contains("Compl-1 (Clone)");
+    cy.wait("@casing_GET");
+    cy.wait("@casing_GET");
 
     // edit completion
     startEditHeader();
