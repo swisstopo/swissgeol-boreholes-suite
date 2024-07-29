@@ -17,11 +17,10 @@ const CompletionHeaderInput = props => {
   const [kindOptions, setKindOptions] = useState();
 
   const loadKindOptions = async () => {
-    const response = await fetchApiV2("codelist", "GET");
+    const response = await fetchApiV2(`codelist?schema=${completionSchemaConstants.completionKind}`, "GET");
     if (response) {
       const kindOptions = response
-        ?.filter(d => d.schema === completionSchemaConstants.completionKind)
-        .sort((a, b) => a.order - b.order)
+        ?.sort((a, b) => a.order - b.order)
         .map(d => ({
           key: d.id,
           name: d[i18n.language],
