@@ -53,7 +53,6 @@ const EditorBoreholeFilesTable: FC<EditorBoreholeFilesTable2Props> = ({
         formData.append("file", file);
 
         const uploadResponse = await uploadBoreholeAttachment(id, formData);
-        // console.log("uploadBoreholeAttachment response:", uploadResponse);
         if (!uploadResponse.ok) {
           if (uploadResponse.status === 400) {
             showAlert(t("errorDuplicatedUploadPerBorehole"), "error");
