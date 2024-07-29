@@ -4,6 +4,7 @@
 
 ### Added
 
+- Tooltips to main side navigation.
 - Location hash for tabs in borehole detail view.
 - Language dropdown in the header.
 
@@ -31,7 +32,6 @@
 - Added borehole geometry panel.
 - Added secondary header to borehole detail view.
 - Added new codelist entries for `casing_type` and `backfill_material`.
-- Added tooltips to main side navigation.
 
 ### Changed
 
