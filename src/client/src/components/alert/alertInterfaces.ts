@@ -1,11 +1,19 @@
 import { ReactNode } from "react";
+import { AlertColor } from "@mui/material";
 
 export interface AlertContextInterface {
-  success: (text: string) => void;
-  error: (text: string) => void;
-  clear: () => void;
-  text: string | null;
-  severity: "success" | "error" | null;
+  alertIsOpen: boolean;
+  text: string | undefined;
+  severity: AlertColor | undefined;
+  autoHideDuration: number | null;
+  showAlert: (text: string, severity?: AlertColor, allowAutoHide?: boolean) => void;
+  closeAlert: () => void;
+}
+
+export interface AlertOptions {
+  text: string;
+  severity?: AlertColor;
+  allowAutoHide?: boolean;
 }
 
 export interface AlertProviderProps {

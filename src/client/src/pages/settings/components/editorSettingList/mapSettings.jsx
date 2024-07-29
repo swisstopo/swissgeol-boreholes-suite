@@ -11,7 +11,7 @@ import WMSCapabilities from "ol/format/WMSCapabilities";
 import { theme } from "../../../../AppTheme";
 
 const MapSettings = props => {
-  const alertContext = useContext(AlertContext);
+  const { showAlert } = useContext(AlertContext);
   const { setting, i18n, rmExplorerMap, addExplorerMap, handleAddItem, handleOnChange, state, setState } = props;
 
   return (
@@ -122,8 +122,9 @@ const MapSettings = props => {
                                 wms: null,
                                 wmts: null,
                               });
-                              alertContext.error(
+                              showAlert(
                                 "Sorry, only Web Map Services (WMS) and " + "Web Map Tile Service (WMTS) are supported",
+                                "error",
                               );
                             }
                           });

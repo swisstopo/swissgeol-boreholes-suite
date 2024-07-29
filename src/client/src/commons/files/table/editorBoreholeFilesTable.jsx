@@ -2,10 +2,10 @@ import { Component } from "react";
 import PropTypes from "prop-types";
 
 import {
-  uploadBoreholeAttachment,
   detachBoreholeAttachment,
   getBoreholeAttachments,
   updateBoreholeAttachment,
+  uploadBoreholeAttachment,
 } from "../../../api/fetchApiV2";
 
 import FilesTableComponent from "./filesTableComponent";
@@ -131,7 +131,7 @@ class EditorBoreholeFilesTable extends Component {
                     file: formData,
                   });
                 } else {
-                  this.context.error(t("maxfileSizeExceeded") + " (200 MB)");
+                  this.context.showAlert(t("maxfileSizeExceeded") + " (200 MB)", "error");
                   this.input.value = null; // Reset the input to clear the selected file
                 }
               }}
@@ -154,9 +154,9 @@ class EditorBoreholeFilesTable extends Component {
                     uploadBoreholeAttachment(this.props.id, this.state.file).then(r => {
                       if (r.ok === false) {
                         if (r.status === 400) {
-                          this.context.error(t("errorDuplicatedUploadPerBorehole"));
+                          this.context.showAlert(t("errorDuplicatedUploadPerBorehole"), "error");
                         } else {
-                          this.context.error(t("errorDuringBoreholeFileUpload"));
+                          this.context.showAlert(t("errorDuringBoreholeFileUpload"), "error");
                         }
                       }
                       this.input.value = "";
