@@ -1,5 +1,6 @@
-import { Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/system";
+import { theme } from "../AppTheme";
 
 export const FullPage = styled(Stack)({
   flex: "1 0 0",
@@ -22,3 +23,19 @@ export const StackHalfWidth = styled(Stack)(() => ({
 export const TypographyWithBottomMargin = styled(Typography)(() => ({
   marginBottom: "1em",
 }));
+
+export const LayoutBox = styled(Box)({ flex: "1 1 100%", display: "flex", flexDirection: "row", overflow: "hidden" });
+
+export const SidebarBox = styled(Box)(() => ({
+  flexShrink: 0,
+  borderRight: "1px solid " + theme.palette.boxShadow,
+  position: "relative",
+}));
+
+export const MainContentBox = styled(Box)({
+  flex: "1 1 0%",
+  display: "flex",
+  flexDirection: "column",
+  overflow: "hidden",
+  position: "relative",
+});
