@@ -1,26 +1,27 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Chip, IconButton, Stack, Typography } from "@mui/material";
 import { theme } from "../../../AppTheme";
 import ArrowLeftIcon from "../../../../public/icons/arrow_left.svg?react";
 import CheckmarkIcon from "../../../../public/icons/checkmark.svg?react";
+import TrashIcon from "../../../../public/icons/trash.svg?react";
 import { useHistory, useLocation } from "react-router-dom";
 import { DeleteButton, EditButton, EndEditButton } from "../../../components/buttons/buttons";
-import { ConfirmDeleteModal } from "./confirmDeleteModal";
 import { useDispatch, useSelector } from "react-redux";
 import { Borehole, ReduxRootState } from "../../../ReduxStateInterfaces";
-import { lockBorehole, unlockBorehole } from "../../../api-lib";
+import { deleteBorehole, lockBorehole, unlockBorehole } from "../../../api-lib";
 import { useTranslation } from "react-i18next";
+import { PromptContext } from "../../../components/prompt/promptContext";
 
 const DetailHeader = () => {
   const [editingEnabled, setEditingEnabled] = useState(false);
   const [editableByCurrentUser, setEditableByCurrentUser] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const borehole: Borehole = useSelector((state: ReduxRootState) => state.core_borehole);
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const { showPrompt } = useContext(PromptContext);
 
   const toggleEditing = (editingEnabled: boolean) => {
     setEditingEnabled(editingEnabled);
@@ -39,8 +40,9 @@ const DetailHeader = () => {
     toggleEditing(false);
   };
 
-  const handleClose = () => {
-    setConfirmDelete(false);
+  const handleDelete = async () => {
+    await deleteBorehole(borehole.data.id);
+    history.push("/");
   };
 
   useEffect(() => {
@@ -109,13 +111,22 @@ const DetailHeader = () => {
       {editableByCurrentUser && (
         <>
           {editingEnabled && (
-            <ConfirmDeleteModal
-              onClose={handleClose}
-              open={confirmDelete}
-              trigger={
-                <div style={{ marginRight: "13px" }}>
-                  <DeleteButton label="deleteBorehole" onClick={() => setConfirmDelete(true)} />
-                </div>
+            <DeleteButton
+              label="deleteBorehole"
+              onClick={() =>
+                showPrompt(t("deleteBoreholeMessage"), [
+                  {
+                    label: t("cancel"),
+                  },
+                  {
+                    label: t("delete"),
+                    icon: <TrashIcon />,
+                    variant: "contained",
+                    action: () => {
+                      handleDelete();
+                    },
+                  },
+                ])
               }
             />
           )}

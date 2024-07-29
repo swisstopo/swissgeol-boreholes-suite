@@ -16,7 +16,8 @@ import CompletionHeaderDisplay from "./completionHeaderDisplay";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPage } from "../../../../components/baseComponents";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext";
-import { PromptContext } from "../../../../components/prompt/promptContext";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
+import TrashIcon from "../../../../../public/icons/trash.svg?react";
 
 const Completion = props => {
   const { isEditable } = props;
@@ -214,13 +215,15 @@ const Completion = props => {
   };
 
   const deleteSelectedCompletion = () => {
-    showPrompt(t("deleteCompletionTitle"), t("deleteCompletionMessage"), [
+    showPrompt(t("deleteCompletionMessage"), [
       {
         label: t("cancel"),
         action: null,
       },
       {
         label: t("delete"),
+        icon: <TrashIcon />,
+        variant: "contained",
         action: onDeleteConfirmed,
       },
     ]);

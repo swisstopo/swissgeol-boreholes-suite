@@ -4,13 +4,17 @@
 
 ### Added
 
-- Added tooltips to main side navigation.
+- Tooltips to main side navigation.
 - Location hash for tabs in borehole detail view.
+- Language dropdown in the header.
 
 ### Changed
 
 - Renamed technical attributes `kind_id_cli` to `borehole_type_id`, `top_bedrock` to `top_bedrock_fresh` and `qt_top_bedrock` to `top_bedrock_weathered`.
 - Moved groundwater radio buttons in borehole form to the bottom.
+- Made `startTime` and `reliability` optional for hydrogeology.
+- Removed title from prompt dialog.
+- Use standard prompt dialog for deleting boreholes.
 
 ### Fixed
 
@@ -18,6 +22,7 @@
 - Badge with number of active filters on sidebar did not include polygon filter.
 - Fixed label for water ingress menu item.
 - Location precision filter caused an internal error.
+- Base maps were loaded beyond their maximum zoom level.
 
 ## v2.1.772 - 2024-06-27
 

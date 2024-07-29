@@ -22,6 +22,9 @@ const WaterIngressInput = props => {
     if (data.conditionsId === "") {
       data.conditionsId = null;
     }
+    if (data.reliabilityId === "") {
+      data.reliabilityId = null;
+    }
     delete data.reliability;
     return data;
   };

@@ -91,7 +91,7 @@ public class Observation : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Observation"/>'s reliability id.
     /// </summary>
     [Column("reliability")]
-    public int ReliabilityId { get; set; }
+    public int? ReliabilityId { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s reliability.

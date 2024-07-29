@@ -13,7 +13,7 @@ import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
 import { getHydrotestParameterUnits } from "./parameterUnits";
 import Delete from "@mui/icons-material/Delete";
 import { DataCardContext, DataCardSwitchContext } from "../../../../components/dataCard/dataCardContext";
-import { PromptContext } from "../../../../components/prompt/promptContext";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { prepareCasingDataForSubmit } from "../completion/casingUtils";
 
 const HydrotestInput = props => {
@@ -41,7 +41,7 @@ const HydrotestInput = props => {
   useEffect(() => {
     if (checkIsDirty) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        showPrompt(t("unsavedChangesTitle", { where: t("hydrotest") }), t("unsavedChangesMessage"), [
+        showPrompt(t("unsavedChangesMessage", { where: t("hydrotest") }), [
           {
             label: t("cancel"),
             action: () => {
@@ -175,6 +175,10 @@ const HydrotestInput = props => {
           maxValue: r.maxValue,
         };
       });
+    }
+
+    if (data.reliabilityId === "") {
+      data.reliabilityId = null;
     }
 
     delete data.testKindId;
