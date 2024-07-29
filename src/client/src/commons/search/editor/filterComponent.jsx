@@ -14,7 +14,7 @@ import { lithostratigraphySearchData } from "../data/lithostratigraphySearchData
 import { MenuItems } from "../../menu/mainView/menuComponents/menuItems";
 import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Button, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ArrowDownIcon from "../../../../public/icons/arrow_down.svg?react";
 import ListFilter from "../components/listFilter.jsx";
 import { SideDrawerHeader } from "../../menu/mainView/sideDrawerHeader.tsx";
 import Polygon from "../../../../public/icons/polygon.svg?react";
@@ -238,7 +238,7 @@ class FilterComponent extends React.Component {
             return (
               <this.StyledAccordion key={idx} expanded={filter?.isSelected}>
                 <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
+                  expandIcon={<ArrowDownIcon />}
                   onClick={() => {
                     this.setState(prevState => ({
                       ...prevState,

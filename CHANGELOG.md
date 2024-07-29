@@ -3,7 +3,9 @@
 ## [Unreleased]
 
 ### Added
+
 - Location hash for tabs in borehole detail view.
+- Language dropdown in the header.
 
 ### Changed
 

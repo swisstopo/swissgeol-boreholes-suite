@@ -1,6 +1,6 @@
 import { Box, Button } from "@mui/material";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import ArrowDownIcon from "../../../../public/icons/arrow_down.svg?react";
+import ArrowUpIcon from "../../../../public/icons/arrow_up.svg?react";
 import { BottomBarProps } from "./menuComponents/menuComponentInterfaces";
 import { BoreholeNumbersPreview } from "./menuComponents/boreholeNumbersPreview";
 import { useTranslation } from "react-i18next";
@@ -27,17 +27,9 @@ const BottomBar = ({ toggleBottomDrawer, bottomDrawerOpen, boreholes }: BottomBa
       <Button
         onClick={() => toggleBottomDrawer(!bottomDrawerOpen)}
         data-cy="showTableButton"
-        sx={{ fontWeight: "normal", fontSize: "1em" }}>
-        {bottomDrawerOpen ? (
-          <>
-            {t("hideTable")} <KeyboardArrowDownIcon />
-          </>
-        ) : (
-          <>
-            {t("showTable")}
-            <KeyboardArrowUpIcon />{" "}
-          </>
-        )}
+        sx={{ fontWeight: "normal", fontSize: "14px" }}
+        endIcon={bottomDrawerOpen ? <ArrowDownIcon /> : <ArrowUpIcon />}>
+        {bottomDrawerOpen ? t("hideTable") : t("showTable")}
       </Button>
     </Box>
   );

@@ -5,6 +5,7 @@ import {
   createGroundwaterLevelMeasurement,
   handlePrompt,
   loginAsAdmin,
+  selectLanguage,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
@@ -36,9 +37,7 @@ describe("Tests for the groundwater level measurement editor.", () => {
       force: true,
     });
 
-    // switch to german
-    cy.contains("span", "DE").click({ force: true });
-    cy.wait(1000);
+    selectLanguage("de");
 
     // create groundwater level measurement
     addItem("addGroundwaterLevelMeasurement");

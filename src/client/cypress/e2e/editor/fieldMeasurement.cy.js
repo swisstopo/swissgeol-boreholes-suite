@@ -5,6 +5,7 @@ import {
   createFieldMeasurement,
   handlePrompt,
   loginAsAdmin,
+  selectLanguage,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
@@ -31,9 +32,7 @@ describe("Tests for the field measurement editor.", () => {
       cy.visit(`/${id}/hydrogeology/fieldmeasurement`);
 
       startBoreholeEditing();
-      // switch to german
-      cy.contains("span", "DE").click({ force: true });
-      cy.wait(1000);
+      selectLanguage("de");
 
       // create field measurement
       addItem("addFieldMeasurement");
