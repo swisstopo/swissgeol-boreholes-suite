@@ -22,6 +22,7 @@
 - Fixed label for water ingress menu item.
 - Location precision filter caused an internal error.
 - Base maps were loaded beyond their maximum zoom level.
+- `layer_depth_to` was displayed in filter even though it was not selected in the filter settings.
 
 ## v2.1.772 - 2024-06-27
 
