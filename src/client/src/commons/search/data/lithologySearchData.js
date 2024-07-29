@@ -48,7 +48,7 @@ export const lithologySearchData = [
   {
     id: 4,
     type: "Dropdown",
-    label: "description_quality",
+    label: "completeness",
     value: "description_quality",
     schema: "description_quality",
     multiple: false,
