@@ -25,15 +25,17 @@ class AcceptTerms extends React.Component {
 
   componentDidMount() {
     getTerms().then(r => {
-      this.setState({
-        isFetching: false,
-        id: r.data.data.id,
-        en: r.data.data.en,
-        fr: r.data.data.fr,
-        de: r.data.data.de,
-        it: r.data.data.it,
-        ro: r.data.data.ro,
-      });
+      if (r.data.data) {
+        this.setState({
+          isFetching: false,
+          id: r.data.data.id,
+          en: r.data.data.en,
+          fr: r.data.data.fr,
+          de: r.data.data.de,
+          it: r.data.data.it,
+          ro: r.data.data.ro,
+        });
+      }
     });
   }
 
