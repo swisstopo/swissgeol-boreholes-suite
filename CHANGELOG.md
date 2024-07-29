@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Location hash for tabs in borehole detail view.
+
 ### Changed
 
 - Renamed technical attributes `kind_id_cli` to `borehole_type_id`, `top_bedrock` to `top_bedrock_fresh` and `qt_top_bedrock` to `top_bedrock_weathered`.
@@ -11,6 +14,8 @@
 
 - Attribute `top_bedrock_weathered` could not be imported.
 - Badge with number of active filters on sidebar did not include polygon filter.
+- Fixed label for water ingress menu item.
+- Location precision filter caused an internal error.
 - Base maps were loaded beyond their maximum zoom level.
 
 ## v2.1.772 - 2024-06-27
@@ -20,6 +25,7 @@
 - Added borehole geometry panel.
 - Added secondary header to borehole detail view.
 - Added new codelist entries for `casing_type` and `backfill_material`.
+- Added tooltips to main side navigation.
 
 ### Changed
 
