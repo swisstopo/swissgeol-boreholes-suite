@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { Badge, IconButton, Stack } from "@mui/material";
+import { Badge, Stack } from "@mui/material";
 import { ImportErrorModal } from "./menuComponents/importErrorModal";
 import FilterIcon from "../../../../public/icons/filter.svg?react";
 import AddIcon from "../../../../public/icons/add.svg?react";
@@ -10,27 +10,13 @@ import SettingsIcon from "../../../../public/icons/settings.svg?react";
 import HelpIcon from "../../../../public/icons/help.svg?react";
 import LayersIcon from "../../../../public/icons/layers.svg?react";
 import { theme } from "../../../AppTheme";
-import { styled } from "@mui/system";
 import ImportModal from "./actions/importModal";
 import { DrawerContentTypes } from "../../../pages/editor/editorComponentInterfaces";
 import { ErrorResponse, MainSideNavProps } from "./menuComponents/menuComponentInterfaces";
 import { ReduxRootState, User } from "../../../ReduxStateInterfaces";
 import { FilterContext } from "../../../components/filter/filterContext";
-
-const StyledIconButton = styled(IconButton)({
-  padding: "10px",
-  marginBottom: "25px",
-  color: theme.palette.neutral.contrastText,
-  "&:hover": {
-    backgroundColor: theme.palette.background.lightgrey,
-  },
-  borderRadius: "10px",
-});
-
-const selectedButtonStyle = {
-  color: theme.palette.primary.contrastText,
-  backgroundColor: theme.palette.background.menuItemActive + " !important",
-};
+import { useTranslation } from "react-i18next";
+import { NavButton } from "../../../components/buttons/navButton";
 
 const MainSideNav = ({
   toggleDrawer,
@@ -44,6 +30,7 @@ const MainSideNav = ({
 }: MainSideNavProps) => {
   const history = useHistory();
   const menuRef = useRef(null);
+  const { t } = useTranslation();
   const [creating, setCreating] = useState<boolean>(false);
   const [modal, setModal] = useState<boolean>(false);
   const [upload, setUpload] = useState<boolean>(false);
@@ -112,47 +99,58 @@ const MainSideNav = ({
           padding: "1em",
           flex: "1 1 100%",
         }}>
-        {activeFilterCount > 0 && <Badge color="error" sx={{ margin: "1px" }} badgeContent={activeFilterCount}></Badge>}
-        <StyledIconButton
+        {activeFilterCount > 0 && <Badge sx={{ margin: "1px" }} badgeContent={activeFilterCount}></Badge>}
+        <NavButton
           data-cy="show-filter-button"
+          icon={<FilterIcon />}
+          label={t("searchfilters")}
+          selected={isFilterPanelVisible}
           onClick={handleToggleFilter}
-          sx={isFilterPanelVisible ? selectedButtonStyle : {}}>
-          <FilterIcon />
-        </StyledIconButton>
-        <StyledIconButton
+        />
+        <NavButton
           data-cy="new-borehole-button"
-          onClick={handleToggleAdd}
+          icon={<AddIcon />}
+          label={t("add")}
+          selected={isAddPanelVisible}
           disabled={user.data.roles.indexOf("EDIT") === -1}
-          sx={isAddPanelVisible ? selectedButtonStyle : {}}>
-          <AddIcon />
-        </StyledIconButton>
-        <StyledIconButton
+          onClick={handleToggleAdd}
+        />
+        <NavButton
           data-cy="import-borehole-button"
+          icon={<UploadIcon />}
+          label={t("upload")}
+          disabled={user.data.roles.indexOf("EDIT") === -1}
           onClick={() => {
+            toggleDrawer(false);
             setModal(true);
             setUpload(true);
           }}
-          disabled={user.data.roles.indexOf("EDIT") === -1}>
-          <UploadIcon />
-        </StyledIconButton>
-        <StyledIconButton
+        />
+        <NavButton
           data-cy="layers-button"
+          icon={<LayersIcon />}
+          label={t("usersMap")}
+          selected={isLayersPanelVisible}
           onClick={handleToggleLayers}
-          sx={isLayersPanelVisible ? selectedButtonStyle : {}}>
-          <LayersIcon />
-        </StyledIconButton>
+        />
       </Stack>
       <Stack
         direction="column"
         sx={{
           padding: "1em",
         }}>
-        <StyledIconButton data-cy="settings-button" onClick={() => history.push(`/setting`)}>
-          <SettingsIcon />
-        </StyledIconButton>
-        <StyledIconButton>
-          <HelpIcon onClick={() => window.open(`/help`)} />
-        </StyledIconButton>
+        <NavButton
+          data-cy="settings-button"
+          icon={<SettingsIcon />}
+          label={t("header_settings")}
+          onClick={() => history.push(`/setting`)}
+        />
+        <NavButton
+          data-cy="help-button"
+          icon={<HelpIcon />}
+          label={t("header_help")}
+          onClick={() => window.open(`/help`)}
+        />
       </Stack>
       <ImportModal
         creating={creating}

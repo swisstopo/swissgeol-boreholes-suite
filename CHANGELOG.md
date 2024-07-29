@@ -19,6 +19,7 @@
 - Added borehole geometry panel.
 - Added secondary header to borehole detail view.
 - Added new codelist entries for `casing_type` and `backfill_material`.
+- Added tooltips to main side navigation.
 
 ### Changed
 
