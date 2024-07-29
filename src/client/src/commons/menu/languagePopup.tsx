@@ -23,21 +23,11 @@ export function LanguagePopup() {
 
   useEffect(() => {
     const handleLanguageChange = () => {
-      switch (i18n.language) {
-        case "de":
-          setSelectedLanguage(languages[0]);
-          break;
-        case "fr":
-          setSelectedLanguage(languages[1]);
-          break;
-        case "it":
-          setSelectedLanguage(languages[2]);
-          break;
-        case "en":
-          setSelectedLanguage(languages[3]);
-          break;
-        default:
-          setSelectedLanguage(languages[0]);
+      const languageIndex = languages.indexOf(i18n.language);
+      if (languageIndex !== -1) {
+        setSelectedLanguage(languages[languageIndex]);
+      } else {
+        setSelectedLanguage(languages[0]);
       }
     };
 
