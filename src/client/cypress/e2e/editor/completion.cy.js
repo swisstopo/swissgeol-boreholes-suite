@@ -81,7 +81,7 @@ export const isContentTabSelected = tabName => {
 };
 
 describe("completion crud tests", () => {
-  it.skip("adds, edits, copies and deletes completions", () => {
+  it("adds, edits, copies and deletes completions", () => {
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       loginAsAdmin();
@@ -121,6 +121,10 @@ describe("completion crud tests", () => {
     cy.wait("@get-completions-by-boreholeId");
     cy.contains("Compl-1");
     cy.contains("Compl-1 (Clone)");
+    // The casing request is triggered twice; once for the original completion and once for the copied. We have to await
+    // both to make sure that the UI has completed loading. Otherwise, the header cannot yet be toggled open.
+    cy.wait("@casing_GET");
+    cy.wait("@casing_GET");
 
     // edit completion
     startEditHeader();
@@ -148,7 +152,7 @@ describe("completion crud tests", () => {
     evaluateDisplayValue("mainCompletion", "Yes");
   });
 
-  it.skip("switches tabs", () => {
+  it("switches tabs", () => {
     var boreholeId;
     createBorehole({ "extended.original_name": "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
