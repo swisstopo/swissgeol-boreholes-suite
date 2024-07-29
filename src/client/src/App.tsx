@@ -15,6 +15,9 @@ import { PromptProvider } from "./components/prompt/promptContext.tsx";
 import { Prompt } from "./components/prompt/prompt.tsx";
 import { BasemapProvider } from "./components/basemapSelector/basemapContext.tsx";
 import { FilterProvider } from "./components/filter/filterContext.tsx";
+import HeaderComponent from "./commons/menu/headerComponent.tsx";
+import { Box } from "@mui/material";
+import { DetailPage } from "./pages/detailPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -48,28 +51,37 @@ class App extends React.Component {
                   <BasemapProvider>
                     <FilterProvider>
                       <QueryClientProvider client={queryClient}>
-                        <Router>
-                          <Switch>
-                            <Route render={props => <SettingCmp {...props} />} key={1} path={"/setting"} />
-                            <Route
-                              render={props => {
-                                return <EditorComponent {...props} />;
-                              }}
-                              exact={false}
-                              key={0}
-                              path={"/"}
-                            />
-                            <Route
-                              component={() => (
-                                <Redirect
-                                  to={{
-                                    pathname: "/",
-                                  }}
-                                />
-                              )}
-                            />
-                          </Switch>
-                        </Router>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            height: "100%",
+                          }}>
+                          <HeaderComponent />
+                          <Router>
+                            <Switch>
+                              <Route render={props => <SettingCmp {...props} />} key={1} path={"/setting"} />
+                              <Route exact={false} path={"/:id"} render={() => <DetailPage />} />
+                              <Route
+                                render={props => {
+                                  return <EditorComponent {...props} />;
+                                }}
+                                exact={false}
+                                key={0}
+                                path={"/"}
+                              />
+                              <Route
+                                component={() => (
+                                  <Redirect
+                                    to={{
+                                      pathname: "/",
+                                    }}
+                                  />
+                                )}
+                              />
+                            </Switch>
+                          </Router>
+                        </Box>
                         <ReactQueryDevtools />
                       </QueryClientProvider>
                     </FilterProvider>
