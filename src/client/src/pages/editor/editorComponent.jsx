@@ -64,7 +64,6 @@ const EditorComponent = props => {
         workgroup={workgroup}
         setWorkgroup={setWorkgroup}
         enabledWorkgroups={enabledWorkgroups}
-        setEnabledWorkgroups={setEnabledWorkgroups}
       />
     ),
     customLayers: <CustomLayersPanel toggleDrawer={toggleSideDrawer} />,

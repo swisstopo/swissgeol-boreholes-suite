@@ -50,7 +50,7 @@ const MainSideNav = ({
   };
 
   useEffect(() => {
-    const wgs = user.data.workgroups.filter(w => w.disabled === null && !w.supplier);
+    const wgs = user.data.workgroups.filter(w => w.disabled === null && !w.supplier && w.roles.includes("EDIT"));
     setEnabledWorkgroups(wgs);
     setWorkgroup(wgs.length > 0 ? wgs[0].id : null);
   }, [setEnabledWorkgroups, setWorkgroup, user.data.workgroups]);
