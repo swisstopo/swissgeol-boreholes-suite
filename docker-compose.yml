@@ -12,7 +12,7 @@ services:
     ports:
       - 9000:9000
   db:
-    image: postgis/postgis:14-3.3-alpine
+    image: postgis/postgis:15-3.4-alpine
     restart: unless-stopped
     volumes:
       - ./db:/docker-entrypoint-initdb.d
