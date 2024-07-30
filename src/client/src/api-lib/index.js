@@ -110,7 +110,6 @@ export {
   createLayer,
   deleteLayer,
   gapLayer,
-  getLayers,
   getProfileLayers,
   loadDomains,
   patchCodeConfig,
