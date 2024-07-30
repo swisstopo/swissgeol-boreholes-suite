@@ -24,6 +24,5 @@ WHERE id_cli = 25000110;
     /// <inheritdoc />
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-
     }
 }
