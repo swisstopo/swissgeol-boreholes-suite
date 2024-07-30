@@ -18,6 +18,7 @@
 - Updated standard alert.
 - Updated styling of attachment upload button.
 - It is now possible to restart a workflow from every publication status.
+- Renamed codelist entries for casing type and casing material.
 
 ### Fixed
 
