@@ -41,14 +41,7 @@ import {
   getGeojson,
 } from "./actions/borehole";
 
-import {
-  listIdentifier,
-  createIdentifier,
-  deleteIdentifier,
-  updateIdentifier,
-  addIdentifier,
-  removeIdentifier,
-} from "./actions/identifier";
+import { addIdentifier, removeIdentifier } from "./actions/identifier";
 
 import {
   loadWorkflows,
@@ -59,7 +52,7 @@ import {
   resetWorkflow,
 } from "./actions/workflow";
 
-import { createLayer, deleteLayer, gapLayer, getLayers } from "./actions/stratigraphy";
+import { createLayer, deleteLayer, gapLayer } from "./actions/stratigraphy";
 
 import { getProfileLayers } from "./actions/profile";
 
@@ -106,10 +99,6 @@ export {
   patchBorehole,
   patchBoreholes,
   getGeojson,
-  listIdentifier,
-  createIdentifier,
-  deleteIdentifier,
-  updateIdentifier,
   addIdentifier,
   removeIdentifier,
   loadWorkflows,
