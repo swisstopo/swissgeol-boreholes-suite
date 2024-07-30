@@ -102,6 +102,13 @@ export function deleteBoreholes(ids) {
   });
 }
 
+export function getBorehole(id) {
+  return fetch("/borehole", {
+    action: "GET",
+    id: id,
+  });
+}
+
 export function loadBorehole(id) {
   return fetch("/borehole", {
     type: "GET",
