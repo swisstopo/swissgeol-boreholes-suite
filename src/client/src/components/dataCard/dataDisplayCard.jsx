@@ -5,7 +5,7 @@ import { DataCardContext, DataCardSwitchContext } from "./dataCardContext";
 import { PromptContext } from "../prompt/promptContext.tsx";
 import { StackFullWidth } from "../baseComponents";
 import { DeleteButton, EditButton } from "../buttons/buttons.tsx";
-import TrashIcon from "../../../public/icons/trash.svg?react";
+import TrashIcon from "../../assets/icons/trash.svg?react";
 
 export const DataDisplayCard = props => {
   const { item, deleteData, isEditable } = props;

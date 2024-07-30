@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { Chip, IconButton, Stack, Typography } from "@mui/material";
 import { theme } from "../../../AppTheme";
-import ArrowLeftIcon from "../../../../public/icons/arrow_left.svg?react";
-import CheckmarkIcon from "../../../../public/icons/checkmark.svg?react";
-import TrashIcon from "../../../../public/icons/trash.svg?react";
+import ArrowLeftIcon from "../../../assets/icons/arrow_left.svg?react";
+import CheckmarkIcon from "../../../assets/icons/checkmark.svg?react";
+import TrashIcon from "../../../assets/icons/trash.svg?react";
 import { useHistory, useLocation } from "react-router-dom";
 import { DeleteButton, EditButton, EndEditButton } from "../../../components/buttons/buttons";
 import { useDispatch, useSelector } from "react-redux";

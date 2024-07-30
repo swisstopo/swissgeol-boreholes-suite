@@ -17,7 +17,7 @@ import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPage } from "../../../../components/baseComponents";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
-import TrashIcon from "../../../../../public/icons/trash.svg?react";
+import TrashIcon from "../../../../assets/icons/trash.svg?react";
 
 const Completion = props => {
   const { isEditable } = props;

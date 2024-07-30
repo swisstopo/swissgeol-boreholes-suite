@@ -1,8 +1,8 @@
 import { Box, Chip, Tooltip } from "@mui/material";
 import { Filter, FilterChipsProps } from "./FilterInterfaces";
 import { useTranslation } from "react-i18next";
-import DeleteIcon from "../../../../public/icons/delete.svg?react";
-import PolygonIcon from "../../../../public/icons/polygon.svg?react";
+import DeleteIcon from "../../../assets/icons/delete.svg?react";
+import PolygonIcon from "../../../assets/icons/polygon.svg?react";
 import { useContext } from "react";
 import { FilterContext } from "../../../components/filter/filterContext";
 
