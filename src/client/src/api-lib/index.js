@@ -26,7 +26,6 @@ import {
 } from "./actions/workgroups";
 
 import {
-  getBorehole,
   updateBorehole,
   loadBorehole,
   loadBoreholes,
@@ -95,7 +94,6 @@ export {
   listWorkgroups,
   setRole,
   updateWorkgroup,
-  getBorehole,
   loadBorehole,
   updateBorehole,
   loadBoreholes,
