@@ -30,6 +30,7 @@ export function LanguagePopup() {
         setSelectedLanguage(languages[0]);
       }
     };
+    handleLanguageChange();
 
     i18n.on("languageChanged", handleLanguageChange);
 
