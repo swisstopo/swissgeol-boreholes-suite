@@ -64,13 +64,6 @@ export function unlockBorehole(id) {
   });
 }
 
-export function editBorehole(id) {
-  return fetch("/borehole/edit", {
-    type: "EDIT",
-    id: id, // project id
-  });
-}
-
 export function patchBorehole(id, field, value) {
   return fetch("/borehole/edit", {
     action: "PATCH",
