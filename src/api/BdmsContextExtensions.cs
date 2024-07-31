@@ -191,21 +191,6 @@ public static class BdmsContextExtensions
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
         context.BulkInsert(boreholeRange.Select(SeededBoreholes).ToList(), bulkConfig);
 
-        // Seed BoringEvents
-        var event_ids = 3_000_000;
-        var eventRange = Enumerable.Range(event_ids, 200);
-        var fakeEvents = new Faker<UserEvent>()
-               .StrictMode(true)
-               .RuleFor(o => o.Id, f => event_ids++)
-               .RuleFor(o => o.UserId, f => f.PickRandom(userRange))
-               .RuleFor(o => o.User, _ => default!)
-               .RuleFor(o => o.Topic, f => f.Company.CompanyName())
-               .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
-               .RuleFor(o => o.Payload, f => null);
-
-        UserEvent SeededEvents(int seed) => fakeEvents.UseSeed(seed).Generate();
-        context.BulkInsert(eventRange.Select(SeededEvents).ToList(), bulkConfig);
-
         // Seed file
         var filesUserRange = Enumerable.Range(1, 6); // Include dedicated user that only has file
         var file_ids = 5_000_000;
@@ -984,7 +969,6 @@ public static class BdmsContextExtensions
         // Sync all database sequences
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workgroups', 'id_wgp'), {workgroup_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.borehole', 'id_bho'), {borehole_ids - 1})");
-        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.events', 'id_evs'), {event_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.files', 'id_fil'), {file_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.stratigraphy', 'id_sty'), {stratigraphy_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.layer', 'id_lay'), {layer_ids - 1})");

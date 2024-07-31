@@ -61,11 +61,6 @@ public class User : IIdentifyable
     public IEnumerable<UserWorkgroupRole> WorkgroupRoles { get; }
 
     /// <summary>
-    /// Gets the events.
-    /// </summary>
-    public IEnumerable<UserEvent> BoringEvents { get; }
-
-    /// <summary>
     /// Gets or sets whether this user can be deleted.
     /// </summary>
     [NotMapped]

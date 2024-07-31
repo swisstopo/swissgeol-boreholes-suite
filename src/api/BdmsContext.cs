@@ -11,7 +11,6 @@ namespace BDMS;
 public class BdmsContext : DbContext
 {
     public DbSet<Borehole> Boreholes { get; set; }
-    public DbSet<UserEvent> BoringEvents { get; set; }
     public DbSet<Codelist> Codelists { get; set; }
     public DbSet<Config> Configs { get; set; }
     public DbSet<Models.File> Files { get; set; }
