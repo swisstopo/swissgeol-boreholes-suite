@@ -61,13 +61,33 @@ public class BoreholeControllerTest
         Assert.AreNotSame(originalStratigraphy.Layers, copiedstratigraphy.Layers);
         Assert.AreNotEqual(originalStratigraphy.Layers.First().Id, copiedstratigraphy.Layers.First().Id);
 
-        Assert.AreNotSame(originalStratigraphy.LithologicalDescriptions, copiedstratigraphy.LithologicalDescriptions);
-        Assert.AreNotEqual(originalStratigraphy.LithologicalDescriptions.First().Id, copiedstratigraphy.LithologicalDescriptions.First().Id);
-        Assert.AreEqual(originalStratigraphy.LithologicalDescriptions.First().Description, copiedstratigraphy.LithologicalDescriptions.First().Description);
+        Assert.AreEqual(originalStratigraphy.LithologicalDescriptions.Count, copiedstratigraphy.LithologicalDescriptions.Count);
+        for (int i = 0; i < originalStratigraphy.LithologicalDescriptions.Count; i++)
+        {
+            var originalDescription = originalStratigraphy.LithologicalDescriptions.ElementAt(i);
+            var copiedDescription = copiedstratigraphy.LithologicalDescriptions.Single(d => d.Description == originalDescription.Description);
 
-        Assert.AreNotSame(originalStratigraphy.FaciesDescriptions, copiedstratigraphy.FaciesDescriptions);
-        Assert.AreNotEqual(originalStratigraphy.FaciesDescriptions.First().Id, copiedstratigraphy.FaciesDescriptions.First().Id);
-        Assert.AreEqual(originalStratigraphy.FaciesDescriptions.First().Description, copiedstratigraphy.FaciesDescriptions.First().Description);
+            Assert.AreNotEqual(originalDescription.Id, copiedDescription.Id);
+            Assert.AreEqual(originalDescription.Description, copiedDescription.Description);
+            Assert.AreEqual(originalDescription.CreatedBy.SubjectId, copiedDescription.CreatedBy.SubjectId);
+            Assert.AreEqual(originalDescription.UpdatedBy.SubjectId, copiedDescription.UpdatedBy.SubjectId);
+            Assert.AreEqual(originalDescription.Created, copiedDescription.Created);
+            Assert.AreEqual(originalDescription.Updated, copiedDescription.Updated);
+        }
+
+        Assert.AreEqual(originalStratigraphy.FaciesDescriptions.Count, copiedstratigraphy.FaciesDescriptions.Count);
+        for (int i = 0; i < originalStratigraphy.FaciesDescriptions.Count; i++)
+        {
+            var originalDescription = originalStratigraphy.FaciesDescriptions.ElementAt(i);
+            var copiedDescription = copiedstratigraphy.FaciesDescriptions.Single(d => d.Description == originalDescription.Description);
+
+            Assert.AreNotEqual(originalDescription.Id, copiedDescription.Id);
+            Assert.AreEqual(originalDescription.Description, copiedDescription.Description);
+            Assert.AreEqual(originalDescription.CreatedBy.SubjectId, copiedDescription.CreatedBy.SubjectId);
+            Assert.AreEqual(originalDescription.UpdatedBy.SubjectId, copiedDescription.UpdatedBy.SubjectId);
+            Assert.AreEqual(originalDescription.Created, copiedDescription.Created);
+            Assert.AreEqual(originalDescription.Updated, copiedDescription.Updated);
+        }
 
         Assert.AreNotSame(originalStratigraphy.ChronostratigraphyLayers, copiedstratigraphy.ChronostratigraphyLayers);
         Assert.AreNotEqual(originalStratigraphy.ChronostratigraphyLayers.First().Id, copiedstratigraphy.ChronostratigraphyLayers.First().Id);
