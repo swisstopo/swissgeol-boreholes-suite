@@ -30,7 +30,6 @@ public class BdmsContextTest
         Assert.AreEqual("sub_admin", admin.SubjectId);
         Assert.AreEqual(1, admin.Id);
         Assert.AreEqual(true, admin.IsAdmin);
-        Assert.AreEqual(true, admin.IsViewer);
         Assert.AreEqual(false, admin.IsDisabled);
         Assert.AreEqual(5, admin.WorkgroupRoles.Count());
         AssertWorkgroupRole(DefaultWorkgroupId, Role.View, admin);
@@ -43,7 +42,6 @@ public class BdmsContextTest
         Assert.AreEqual("sub_editor", editor.SubjectId);
         Assert.AreEqual(2, editor.Id);
         Assert.AreEqual(false, editor.IsAdmin);
-        Assert.AreEqual(true, editor.IsViewer);
         Assert.AreEqual(false, editor.IsDisabled);
         Assert.AreEqual(1, editor.WorkgroupRoles.Count());
         AssertWorkgroupRole(DefaultWorkgroupId, Role.Editor, editor);
@@ -52,7 +50,6 @@ public class BdmsContextTest
         Assert.AreEqual("sub_controller", controller.SubjectId);
         Assert.AreEqual(3, controller.Id);
         Assert.AreEqual(false, controller.IsAdmin);
-        Assert.AreEqual(true, controller.IsViewer);
         Assert.AreEqual(false, controller.IsDisabled);
         Assert.AreEqual(1, controller.WorkgroupRoles.Count());
         AssertWorkgroupRole(DefaultWorkgroupId, Role.Controller, controller);
@@ -61,7 +58,6 @@ public class BdmsContextTest
         Assert.AreEqual("sub_validator", validator.SubjectId);
         Assert.AreEqual(4, validator.Id);
         Assert.AreEqual(false, validator.IsAdmin);
-        Assert.AreEqual(true, validator.IsViewer);
         Assert.AreEqual(false, validator.IsDisabled);
         Assert.AreEqual(1, validator.WorkgroupRoles.Count());
         AssertWorkgroupRole(DefaultWorkgroupId, Role.Validator, validator);
@@ -70,7 +66,6 @@ public class BdmsContextTest
         Assert.AreEqual("sub_publisher", publisher.SubjectId);
         Assert.AreEqual(5, publisher.Id);
         Assert.AreEqual(false, publisher.IsAdmin);
-        Assert.AreEqual(true, publisher.IsViewer);
         Assert.AreEqual(false, publisher.IsDisabled);
         Assert.AreEqual(1, publisher.WorkgroupRoles.Count());
         AssertWorkgroupRole(DefaultWorkgroupId, Role.Publisher, publisher);

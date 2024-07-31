@@ -20,6 +20,7 @@
 - It is now possible to restart a workflow from every publication status.
 - Renamed codelist entries for casing type and casing material.
 - Upgraded to PostgreSQL 15 and PostGIS 3.4.
+- Removed unused `IsViewer` flag from user.
 
 ### Fixed
 

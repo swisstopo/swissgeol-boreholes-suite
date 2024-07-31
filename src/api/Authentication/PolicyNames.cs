@@ -13,7 +13,7 @@ public static class PolicyNames
     public const string Admin = "Admin";
 
     /// <summary>
-    /// Users with <see cref="User.IsViewer"/> set to <c>true</c>.
+    /// Users with <see cref="User.IsAdmin"/> set to <c>false</c>.
     /// </summary>
     public const string Viewer = "Viewer";
 }
