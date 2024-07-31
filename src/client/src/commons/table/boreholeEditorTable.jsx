@@ -503,7 +503,9 @@ const mapDispatchToProps = dispatch => {
       });
     },
     loadData: (page, filter = {}, feature_ids = null, orderby = null, direction = null) => {
-      dispatch(loadEditingBoreholes(page, 100, filter, orderby, direction, feature_ids));
+      if (!(feature_ids?.length === 0)) {
+        dispatch(loadEditingBoreholes(page, 100, filter, orderby, direction, feature_ids));
+      }
     },
   };
 };
