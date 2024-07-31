@@ -21,6 +21,7 @@
 - Renamed codelist entries for casing type and casing material.
 - Upgraded to PostgreSQL 15 and PostGIS 3.4.
 - Removed unused `IsViewer` flag from user.
+- Removed unused `UserEvent` from user.
 
 ### Fixed
 
