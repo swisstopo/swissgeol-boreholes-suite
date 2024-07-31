@@ -28,7 +28,7 @@ const toggleHeaderOpen = () => {
 };
 
 const addCompletion = () => {
-  addItem("addCompletion");
+  cy.get(`[data-cy="addcompletion-button"]`).trigger("click");
   cy.wait("@codelist_GET");
 };
 
@@ -53,11 +53,7 @@ const deleteCompletion = () => {
 };
 
 const setHeaderTab = index => {
-  cy.get('[data-cy="completion-header-tab-' + index + '"]')
-    .focus()
-    .click({
-      force: true,
-    });
+  cy.get('[data-cy="completion-header-tab-' + index + '"]').trigger("click");
 };
 
 const isHeaderTabSelected = index => {
