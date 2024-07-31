@@ -56,9 +56,26 @@ public class User : IIdentifyable
     public DateTime? DisabledAt { get; set; }
 
     /// <summary>
+    /// Gets or sets the timestamp from the moment a <see cref="User"/> got disabled.
+    /// </summary>
+    [Column("created_usr")]
+    public DateTime? CreatedAt { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="User"/>s settings.
+    /// </summary>
+    [Column("settings_usr")]
+    public string? Settings { get; set; }
+
+    /// <summary>
     /// Gets the WorkgroupRoles.
     /// </summary>
     public IEnumerable<UserWorkgroupRole> WorkgroupRoles { get; }
+
+    /// <summary>
+    /// Gets the TermsAccepted.
+    /// </summary>
+    public IEnumerable<TermsAccepted> TermsAccepted { get; }
 
     /// <summary>
     /// Gets or sets whether this user can be deleted.

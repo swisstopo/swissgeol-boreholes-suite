@@ -3,6 +3,7 @@ using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace BDMS.Controllers;
 
@@ -11,33 +12,60 @@ namespace BDMS.Controllers;
 public class UserController : ControllerBase
 {
     private readonly BdmsContext context;
+    private ILogger<UserController> logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UserController"/> class.
     /// </summary>
     /// <param name="context">The EF database context containing data for the BDMS application.</param>
-    public UserController(BdmsContext context)
+    /// <param name="logger">The logger used by the controller.</param>
+    public UserController(BdmsContext context, ILogger<UserController> logger)
     {
         this.context = context;
+        this.logger = logger;
     }
 
     /// <summary>
-    /// Gets the current authenticated and authorized bdms user.
+    /// Gets the currently authenticated and authorized bdms user.
     /// </summary>
     [HttpGet("self")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<User?>> GetUserInformationAsync() =>
-        await context.Users.SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId()).ConfigureAwait(false);
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns the currently logged in user.", typeof(IEnumerable<User>), new[] { "application/json" })]
+    public async Task<User?> GetSelf()
+    {
+        var user = await context.UsersWithIncludes.SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId()).ConfigureAwait(false);
+        user.Deletable = IsDeletable(user);
+        return user;
+    }
 
     /// <summary>
-    /// Gets the user list.
+    /// Gets the user with the specified <paramref name="id"/>.
+    /// </summary>
+    [HttpGet("{id}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns the user with the specified id.", typeof(IEnumerable<User>), new[] { "application/json" })]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "The user could not be found.")]
+    public async Task<ActionResult> GetUserById(int id)
+    {
+        var user = await context.UsersWithIncludes.SingleOrDefaultAsync(u => u.Id == id).ConfigureAwait(false);
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        user.Deletable = IsDeletable(user);
+        return Ok(user);
+    }
+
+    /// <summary>
+    /// Gets a list of users.
     /// </summary>
     [HttpGet]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns a list of users.", typeof(IEnumerable<User>), new[] { "application/json" })]
     public async Task<IEnumerable<User>> GetAll()
     {
         var users = await context
-            .Users
-            .Include(x => x.WorkgroupRoles)
+            .UsersWithIncludes
             .AsNoTracking()
             .OrderBy(x => x.Name)
             .ToListAsync()
@@ -45,22 +73,17 @@ public class UserController : ControllerBase
 
         foreach (var user in users)
         {
-            user.Deletable = !(context.Workflows.Any(x => x.UserId == user.Id)
-                || context.Layers.Any(x => x.CreatedById == user.Id)
-                || context.Layers.Any(x => x.UpdatedById == user.Id)
-                || context.Boreholes.Any(x => x.UpdatedById == user.Id)
-                || context.Boreholes.Any(x => x.CreatedById == user.Id)
-                || context.Boreholes.Any(x => x.LockedById == user.Id)
-                || context.Stratigraphies.Any(x => x.CreatedById == user.Id)
-                || context.Stratigraphies.Any(x => x.UpdatedById == user.Id)
-                || context.Files.Any(x => x.CreatedById == user.Id)
-                || context.BoreholeFiles.Any(x => x.UserId == user.Id));
+            user.Deletable = IsDeletable(user);
         }
 
         return users;
     }
 
+    /// <summary>
+    /// Resets all settings to initial state.
+    /// </summary>
     [HttpPost("resetAllSettings")]
+    [SwaggerResponse(StatusCodes.Status200OK, "All settings were reset successfully.")]
     public ActionResult ResetAllSettings()
     {
         // Reset admin settings to initial state
@@ -71,5 +94,94 @@ public class UserController : ControllerBase
         context.Database.ExecuteSqlRaw("UPDATE bdms.codelist SET conf_cli = '{{\"text\": \"lithology_id_cli\", \"color\": \"lithostratigraphy\", \"title\": \"lithostratigraphy_id_cli\", \"fields\": {{\"color\": true, \"notes\": true, \"debris\": true, \"striae\": true, \"uscs_1\": true, \"uscs_2\": true, \"uscs_3\": true, \"geology\": true, \"cohesion\": true, \"humidity\": true, \"jointing\": true, \"lithology\": true, \"alteration\": true, \"plasticity\": true, \"soil_state\": true, \"compactness\": true, \"consistance\": true, \"description\": true, \"grain_shape\": true, \"lit_pet_deb\": true, \"grain_size_1\": true, \"grain_size_2\": true, \"tectonic_unit\": true, \"uscs_original\": true, \"description_quality\": true, \"grain_granularity\": true, \"lithostratigraphy\": true, \"organic_component\": true, \"chronostratigraphy\": true, \"further_properties\": true, \"uscs_determination\": true}}, \"textNS\": \"custom.lithology_top_bedrock\", \"colorNS\": \"custom.lithostratigraphy_top_bedrock\", \"pattern\": \"lithology\", \"titleNS\": \"custom.chro_str_top_bedrock\", \"patternNS\": \"custom.lithology_top_bedrock\"}}' WHERE conf_cli IS NOT NULL and schema_cli = 'layer_kind';");
 
         return Ok();
+    }
+
+
+    /// <summary>
+    /// Updates the <paramref name="user"/>.
+    /// </summary>
+    [HttpPut]
+    [SwaggerResponse(StatusCodes.Status200OK, "The user was updated successfully.")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "The user could not be updated due to invalid input.")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "The user could not be found.")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "The current user is not authorized to update users.")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request. ", typeof(ProblemDetails), new[] { "application/json" })]
+    public async Task<IActionResult> Edit(User user)
+    {
+        try
+        {
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var userToEdit = await context.Users.SingleOrDefaultAsync(u => u.Id == user.Id).ConfigureAwait(false);
+            if (userToEdit == null)
+            {
+                return NotFound();
+            }
+
+            userToEdit.IsAdmin = user.IsAdmin;
+            userToEdit.DisabledAt = user.DisabledAt;
+
+            await context.SaveChangesAsync().ConfigureAwait(false);
+            var result = await context.UsersWithIncludes.AsNoTracking().SingleOrDefaultAsync(u => u.Id == user.Id).ConfigureAwait(false);
+            result.Deletable = IsDeletable(result);
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error while updating user.");
+            return Problem(e.Message);
+        }
+    }
+
+    /// <summary>
+    /// Deletes the user with the specified <paramref name="id"/>.
+    /// </summary>
+    [HttpDelete("{id}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "The user was deleted successfully.")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "The user could not be updated due to invalid input.")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "The user could not be found.")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "The current user is not authorized to delete users.")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request. ", typeof(ProblemDetails), new[] { "application/json" })]
+    public async Task<IActionResult> Delete(int id)
+    {
+        try
+        {
+            var user = await context.Users.SingleOrDefaultAsync(u => u.Id == id).ConfigureAwait(false);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (!IsDeletable(user))
+            {
+                return Problem("The user is associated with boreholes, layers, stratigraphies, workflows, files or borehole files and cannot be deleted.");
+            }
+
+            context.Users.Remove(user);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error while deleting user.");
+            return Problem(e.Message);
+        }
+    }
+
+    private bool IsDeletable(User user)
+    {
+        return !(context.Workflows.Any(x => x.UserId == user.Id)
+                || context.Layers.Any(x => x.CreatedById == user.Id)
+                || context.Layers.Any(x => x.UpdatedById == user.Id)
+                || context.Boreholes.Any(x => x.UpdatedById == user.Id)
+                || context.Boreholes.Any(x => x.CreatedById == user.Id)
+                || context.Boreholes.Any(x => x.LockedById == user.Id)
+                || context.Stratigraphies.Any(x => x.CreatedById == user.Id)
+                || context.Stratigraphies.Any(x => x.UpdatedById == user.Id)
+                || context.Files.Any(x => x.CreatedById == user.Id)
+                || context.BoreholeFiles.Any(x => x.UserId == user.Id));
     }
 }
