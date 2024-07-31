@@ -45,12 +45,6 @@ public class User : IIdentifyable
     public bool IsAdmin { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the <see cref="User"/> has viewer privileges.
-    /// </summary>
-    [Column("viewer_usr")]
-    public bool IsViewer { get; set; }
-
-    /// <summary>
     /// Gets the value whether the <see cref="User"/> is disabled or not.
     /// </summary>
     public bool IsDisabled => DisabledAt.HasValue;

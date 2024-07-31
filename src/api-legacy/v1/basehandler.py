@@ -66,9 +66,7 @@ class BaseHandler(web.RequestHandler):
                             ELSE
                                 TRUE
                         END AS terms,
-                        COALESCE(
-                            viewer_usr, FALSE
-                        ) as viewer,
+                        TRUE as viewer,
                         COALESCE(
                             admin_usr, FALSE
                         ) as admin,
