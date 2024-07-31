@@ -1,12 +1,5 @@
 import { fetch } from "./index";
 
-export function getLayers(id) {
-  return fetch("/borehole/stratigraphy/layer", {
-    action: "LIST",
-    id: id, // stratigrafy id
-  });
-}
-
 // Create a new layer for the given stratigraphy id
 export function createLayer(id) {
   return fetch("/borehole/stratigraphy/layer/edit", {
