@@ -124,7 +124,7 @@ class MapView extends React.Component {
                 direction: direction,
               });
             }}
-            featureIds={featureIds}
+            featureIds={filterPolygon ? featureIds : null}
             sort={sort}
             scrollPosition={this.state.tableScrollPosition}
             onScrollChange={position => {

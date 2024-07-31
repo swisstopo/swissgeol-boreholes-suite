@@ -33,6 +33,7 @@
 - Users can now only import or add new boreholes to workgroups where they have an editor role.
 - Label for description quality was wrong in lithology filter and settings.
 - Boreholes could not be deleted in the detail view if the publication status was not `Change in progess`.
+- Boreholes table loaded all boreholes instead of none when a filter combination with polygon was used that did not return any boreholes.
 
 ## v2.1.772 - 2024-06-27
 
