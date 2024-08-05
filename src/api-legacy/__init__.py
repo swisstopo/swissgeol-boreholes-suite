@@ -62,7 +62,6 @@ from bms.v1.geoapi import Wms
 
 # User actions
 from bms.v1.user.handler import UserHandler
-from bms.v1.user.admin import AdminHandler
 
 # Workgroup actions
 from bms.v1.user.workgrpup.admin import WorkgroupAdminHandler
