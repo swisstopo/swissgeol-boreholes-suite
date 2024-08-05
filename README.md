@@ -83,7 +83,7 @@ Requests and das Legacy API werden mit dem [YARP Reverse Proxy](https://microsof
 
 - Neue Komponenten werden in Typescript geschrieben.
 - Es werden bevorzugt Interfaces statt Types verwendet.
-- Interfaces die Api Calls abbilden werden unter [apiInterfaces.ts](./src/client/api/apiInterfaces.ts) definiert ([ReduxStateInterfaces.ts](./src/client/src/api-lib/ReduxStateInterfaces.ts) für das Legacy API).
+- Interfaces, die API Calls abbilden, werden unter [apiInterfaces.ts](./src/client/api/apiInterfaces.ts) definiert ([ReduxStateInterfaces.ts](./src/client/src/api-lib/ReduxStateInterfaces.ts) für das Legacy API).
 - Existieren mehrere Interfaces für eine Komponente, werden sie in einem separaten File neben der Komponente abgelegt. 
 - Das Interface für die React props der Komponente kann im selben File mit der Komponente definiert werden.
 
@@ -94,5 +94,5 @@ Requests and das Legacy API werden mit dem [YARP Reverse Proxy](https://microsof
 #### API
 
 - Neue Endpoints werden immer im .NET API erstellt. Das Python Legacy API wird nicht erweitert.
-- Redux wird nicht mehr erweitert. Datenabfragen werden mit dem Javascript fetch api oder wo sinnvoll mit `useQuery` von `react-query` gemacht.
+- Redux wird nicht mehr erweitert. Datenabfragen werden mit dem Javascript [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) (siehe [fetchApiV2.js](src/client/src/api/fetchApiV2.js)) oder wo sinnvoll mit `useQuery` von `react-query` gemacht.
 - Wenn Abfragen aus dem Redux Store in neuen Komponenten gebraucht werden, sollten die React hooks `useSelector` und `useDispatch` verwendet werden.
