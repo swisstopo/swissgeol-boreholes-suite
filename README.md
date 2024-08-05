@@ -93,6 +93,6 @@ Requests and das Legacy API werden mit dem [YARP Reverse Proxy](https://microsof
 
 #### Api
 
-- Neue Endpoints werden immer im .net api erstellt. Das python legacy api wird nicht erweitert.
+- Neue Endpoints werden immer im .NET API erstellt. Das Python Legacy-API wird nicht erweitert.
 - Redux wird nicht mehr erweitert. Datenabfragen werden mit dem Javascript fetch api oder wo sinnvoll mit `useQuery` von `react-query` gemacht.
 - Wenn Abfragen aus dem Redux Store in neuen Komponenten gebraucht werden, sollten die React hooks `useSelector` und `useDispatch` verwendet werden.
