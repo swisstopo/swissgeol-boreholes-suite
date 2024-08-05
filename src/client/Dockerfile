@@ -17,7 +17,7 @@ COPY ./docs ./docs
 COPY ./mkdocs.yml ./
 RUN mkdocs build -d ./public/help
 
-ENTRYPOINT npm run start -- --host
+ENTRYPOINT ["npm", "run", "start", "--", "--host"]
 
 FROM node:20-buster-slim AS deploy
 ARG VERSION
