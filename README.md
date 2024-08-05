@@ -89,7 +89,7 @@ Requests and das Legacy API werden mit dem [YARP Reverse Proxy](https://microsof
 
 #### Translation
 - Texte werden mit dem `useTranslation` hook von `react-i18next` übersetzt. Das `withTranslation HOC` wird nicht mehr verwendet.
-- Neue Übersetzungskeys alphabetisch sortiert in den `common.json` Files unter `public/locale` erfassen.
+- Neue Übersetzungskeys alphabetisch sortiert und in camel case in den `common.json` Files unter `public/locale` erfassen.
 
 #### Api
 
