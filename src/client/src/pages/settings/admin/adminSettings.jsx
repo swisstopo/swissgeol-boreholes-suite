@@ -239,12 +239,8 @@ class AdminSettings extends React.Component {
                   onClick={() => {
                     const user = this.state.user;
                     user.isAdmin = this.state.uAdmin;
-                    updateUser(user).then(response => {
-                      if (response.data.success === false) {
-                        this.context.showAlert(response.data.message, "error");
-                      } else {
-                        this.listUsers();
-                      }
+                    updateUser(user).then(() => {
+                      this.listUsers();
                     });
                   }}>
                   <Icon name="save" />
