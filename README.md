@@ -76,7 +76,7 @@ Requests and das Legacy API werden mit dem [YARP Reverse Proxy](https://microsof
 #### UI/UX
 
 - Das UI Design ist im [Figma File](https://www.figma.com/design/cEiOoOazAQZqpRY92ZhBeO/SwissGeol?node-id=7390-40928&t=DemUCUzYlysJ5lB4-0) definiert. Unter Pages/Screens sind die definitiven Designs zu finden.
-- Als Defaulticons können [Lucid Icons](https://lucide.dev/icons/) verwendet werden. Custom Icons können aus dem [Figma file](https://www.figma.com/design/cEiOoOazAQZqpRY92ZhBeO/SwissGeol?node-id=7390-40928&t=DemUCUzYlysJ5lB4-0) kopiert werden. Stand jetzt werden die Icons als SVG eingebunden, um die Icons farblich stylen zu können müssen fill und stroke wie folgt angepasst werden `fill="currentColor" stroke="currentColor"`.
+- Standardmässig werden die [Lucid Icons](https://lucide.dev/icons/) verwendet. Custom-Icons können aus dem [Figma file](https://www.figma.com/design/cEiOoOazAQZqpRY92ZhBeO/SwissGeol?node-id=7390-40928&t=DemUCUzYlysJ5lB4-0) kopiert werden. Stand jetzt werden die Icons als SVG eingebunden, um die Icons farblich stylen zu können müssen `fill` und `stroke` wie folgt angepasst werden `fill="currentColor" stroke="currentColor"`.
 - [MUI](https://mui.com/) wird als UI-Component library verwendet. Allgemeine Styles werden im AppTheme.ts definiert und diese Styles wo immer möglich verwendet. [MUI Styled Components](https://mui.com/system/styled/) im gleichen File mit der Komponente definieren, sobald die Styles mehrfach gebraucht werden. Übergreifende Styled Components werden in components/styledComponents.js definiert. 
 
 #### Typescript
