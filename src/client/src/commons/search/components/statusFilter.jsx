@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { Form, Radio } from "semantic-ui-react";
-import TranslationText from "../../form/translationText";
+import TranslationText from "../../../pages/detail/form/translationText.jsx";
 
 class StatusFilter extends Component {
   isVisible(filter) {

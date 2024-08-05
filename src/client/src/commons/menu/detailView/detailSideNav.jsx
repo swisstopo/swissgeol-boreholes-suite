@@ -6,7 +6,7 @@ import { List } from "semantic-ui-react";
 import ListItem from "@mui/material/ListItem";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
-import TranslationText from "../../form/translationText.jsx";
+import TranslationText from "../../../pages/detail/form/translationText.jsx";
 import { theme } from "../../../AppTheme.ts";
 import { Typography } from "@mui/material";
 

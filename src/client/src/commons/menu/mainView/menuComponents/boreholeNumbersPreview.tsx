@@ -1,5 +1,5 @@
 import { NumericFormat } from "react-number-format";
-import TranslationText from "../../../form/translationText";
+import TranslationText from "../../../../pages/detail/form/translationText";
 import { Icon } from "semantic-ui-react";
 import { BoreholeNumbersPreviewProps } from "./menuComponentInterfaces";
 

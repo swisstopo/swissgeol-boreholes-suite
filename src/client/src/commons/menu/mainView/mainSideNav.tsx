@@ -11,7 +11,7 @@ import HelpIcon from "../../../assets/icons/help.svg?react";
 import LayersIcon from "../../../assets/icons/layers.svg?react";
 import { theme } from "../../../AppTheme";
 import ImportModal from "./actions/importModal";
-import { DrawerContentTypes } from "../../../pages/editor/editorComponentInterfaces";
+import { DrawerContentTypes } from "../../../pages/overview/overviewPageInterfaces.ts";
 import { ErrorResponse, MainSideNavProps } from "./menuComponents/menuComponentInterfaces";
 import { ReduxRootState, User } from "../../../ReduxStateInterfaces";
 import { FilterContext } from "../../../components/filter/filterContext";

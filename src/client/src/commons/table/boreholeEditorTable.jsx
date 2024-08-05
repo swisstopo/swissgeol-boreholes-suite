@@ -1,9 +1,9 @@
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-import DomainText from "../form/domain/domainText";
-import DateText from "../form/dateText";
-import TranslationText from "../form/translationText";
+import DomainText from "../../components/legacyComponents/domain/domainText.jsx";
+import DateText from "../../pages/detail/form/dateText.js";
+import TranslationText from "../../pages/detail/form/translationText.jsx";
 import { NumericFormat } from "react-number-format";
 import { copyBorehole } from "../../api/fetchApiV2";
 import TTable from "./table";

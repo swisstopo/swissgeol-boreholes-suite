@@ -1,5 +1,5 @@
 import * as Styled from "./styles";
-import DateText from "../../../../../dateText";
+import DateText from "../../../../../../../pages/detail/form/dateText.js";
 import { Icon } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
 

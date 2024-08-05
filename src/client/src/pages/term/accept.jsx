@@ -7,7 +7,7 @@ import { acceptTerms, getTerms } from "../../api-lib/index";
 import { theme } from "../../AppTheme";
 
 import Markdown from "markdown-to-jsx";
-import TranslationKeys from "../../commons/translationKeys";
+import TranslationKeys from "../../commons/auth/translationKeys";
 class AcceptTerms extends React.Component {
   constructor(props) {
     super(props);

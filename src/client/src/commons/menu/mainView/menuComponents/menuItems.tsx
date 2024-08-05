@@ -1,4 +1,4 @@
-import TranslationText from "../../../form/translationText";
+import TranslationText from "../../../../pages/detail/form/translationText";
 import { MenuItemsProps } from "./menuComponentInterfaces";
 import { Button, Stack } from "@mui/material";
 

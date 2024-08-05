@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import * as Styled from "./styles";
 import { Button } from "semantic-ui-react";
-import TranslationText from "./../../../translationText";
+import TranslationText from "../../../../../pages/detail/form/translationText.jsx";
 import { createNewStratigraphy } from "./api";
 import { fetchStratigraphyByBoreholeId } from "../../../../../api/fetchApiV2";
 import ProfileHeaderList from "./components/profileHeaderList";

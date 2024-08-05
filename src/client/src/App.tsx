@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./AppTheme";
-import EditorComponent from "./pages/editor/editorComponent";
+import EditorComponent from "./pages/overview/overviewPage";
 import SettingCmp from "./pages/settings/settingCmp";
 import { DataLoader } from "./pages/settings/dataLoader";
 import AcceptTerms from "./pages/term/accept";
@@ -17,7 +17,7 @@ import { BasemapProvider } from "./components/basemapSelector/basemapContext.tsx
 import { FilterProvider } from "./components/filter/filterContext.tsx";
 import HeaderComponent from "./commons/menu/headerComponent.tsx";
 import { Box } from "@mui/material";
-import { DetailPage } from "./pages/detailPage.tsx";
+import { DetailPage } from "./pages/detail/detailPage.tsx";
 
 const queryClient = new QueryClient();
 

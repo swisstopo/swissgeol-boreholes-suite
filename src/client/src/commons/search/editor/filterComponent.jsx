@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
-import WorkgroupRadioGroup from "../../form/workgroup/radio";
+import WorkgroupRadioGroup from "../../../pages/detail/form/workgroup/radio";
 import StatusFilter from "../components/statusFilter";
 import { LocationSearchData } from "../data/LocationSearchData";
 import { boreholeSearchData } from "../data/boreholeSearchData";

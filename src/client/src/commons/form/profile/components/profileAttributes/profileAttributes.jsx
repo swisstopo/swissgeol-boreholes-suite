@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import * as Styled from "./styles";
 import { Checkbox } from "semantic-ui-react";
-import TranslationText from "../../../translationText";
+import TranslationText from "../../../../../pages/detail/form/translationText.jsx";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import ProfileAttributeList from "./components/profileAttributeList/profileAttributeList";

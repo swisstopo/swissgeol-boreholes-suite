@@ -1,6 +1,6 @@
 import React from "react";
 import { Boreholes, Workgroup } from "../../../../ReduxStateInterfaces";
-import { DrawerContentTypes } from "../../../../pages/editor/editorComponentInterfaces";
+import { DrawerContentTypes } from "../../../../pages/overview/overviewPageInterfaces.ts";
 
 export interface BoreholeNumbersPreviewProps {
   boreholes: Boreholes;

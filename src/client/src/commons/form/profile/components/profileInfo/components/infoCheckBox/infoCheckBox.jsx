@@ -1,6 +1,6 @@
 import * as Styled from "./styles";
 import { Checkbox, Popup, Button, Icon } from "semantic-ui-react";
-import TranslationText from "../../../../../translationText";
+import TranslationText from "../../../../../../../pages/detail/form/translationText.jsx";
 import { copyStratigraphy, deleteStratigraphy } from "../../../../../../../api/fetchApiV2";
 
 const InfoCheckBox = props => {

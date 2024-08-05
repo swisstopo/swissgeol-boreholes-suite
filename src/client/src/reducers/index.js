@@ -1,5 +1,5 @@
 import dataLoaderState from "../pages/settings/dataLoaderState";
-import editor from "../pages/editor/editorState";
+import editor from "../pages/overview/overviewPageState.js";
 import filters from "../commons/search/editor/filterState.js";
 import setting from "../pages/settings/settingState";
 import wmts from "../commons/map/mapState";

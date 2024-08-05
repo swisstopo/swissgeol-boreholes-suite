@@ -4,7 +4,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Stack, Tooltip } from "@mui/material";
-import TranslationText from "../../../../../translationText";
+import TranslationText from "../../../../../../../pages/detail/form/translationText.jsx";
 import { NumericFormat } from "react-number-format";
 import { withTranslation } from "react-i18next";
 import * as Styled from "./styles";

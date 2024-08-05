@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import * as Styled from "./styles";
-import TranslationText from "../../../translationText";
+import TranslationText from "../../../../../pages/detail/form/translationText.jsx";
 import ProfileLayersValidation from "./components/profileLayersValidation";
 import DescriptionLayers from "./components/descriptionLayers/descriptionLayers";
 import { createLayerApi, getData } from "./api";

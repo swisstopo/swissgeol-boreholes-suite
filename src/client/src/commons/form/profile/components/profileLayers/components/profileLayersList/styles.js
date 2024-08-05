@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import DomainText from "../../../../../domain/domainText";
+import DomainText from "../../../../../../../components/legacyComponents/domain/domainText.jsx";
 import { Button } from "semantic-ui-react";
 
 export const Layer = styled.div`

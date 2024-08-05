@@ -1,6 +1,6 @@
 import * as Styled from "./styles";
 import { Button, Segment } from "semantic-ui-react";
-import TranslationText from "../../../../commons/form/translationText";
+import TranslationText from "../../../detail/form/translationText.jsx";
 import _ from "lodash";
 
 const EditorSettingList = props => {

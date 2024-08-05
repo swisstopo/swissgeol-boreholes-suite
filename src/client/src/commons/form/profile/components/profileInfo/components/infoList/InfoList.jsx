@@ -1,8 +1,8 @@
 import * as Styled from "./styles";
 import { Input, Form } from "semantic-ui-react";
-import TranslationText from "../../../../../translationText";
-import DomainDropdown from "../../../../../domain/dropdown/domainDropdown";
-import DateField from "../../../../../dateField";
+import TranslationText from "../../../../../../../pages/detail/form/translationText.jsx";
+import DomainDropdown from "../../../../../../../components/legacyComponents/domain/dropdown/domainDropdown";
+import DateField from "../../../../../../../pages/detail/form/dateField.jsx";
 import _ from "lodash";
 import { useCallback, useMemo, useState } from "react";
 

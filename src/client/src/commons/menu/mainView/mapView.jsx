@@ -7,7 +7,7 @@ import { loadEditingBoreholes } from "../../../api-lib/index.js";
 import _ from "lodash";
 import MapComponent from "../../map/mapComponent.jsx";
 import BoreholeEditorTable from "../../table/boreholeEditorTable.jsx";
-import MultipleForm from "../../form/multiple/multipleForm.jsx";
+import MultipleForm from "../../../components/legacyComponents/multiple/multipleForm.jsx";
 import { BottomDrawer } from "./bottomDrawer.tsx";
 import BottomBar from "./bottomBar.tsx";
 import { FilterContext } from "../../../components/filter/filterContext.tsx";

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import * as Styled from "./styles";
 import { Icon, Radio } from "semantic-ui-react";
-import TranslationText from "../../../../../translationText";
+import TranslationText from "../../../../../../../pages/detail/form/translationText.jsx";
 import { deleteLayer, gapLayer } from "../../../../../../../api-lib/index";
 import { addBedrock, fetchLayerById } from "../../../../../../../api/fetchApiV2";
 import ErrorTypes from "./errorTypes";
