@@ -4,7 +4,7 @@ import GeometryTable from "./geometryTable";
 import GeometryChartNE from "./geometryChartNE";
 import { GeometryChartZE, GeometryChartZInteractive, GeometryChartZN } from "./geometryChartZ";
 import { Card, CardActions, CardContent, CircularProgress, Grid, Typography } from "@mui/material/";
-import { FullPageCentered } from "../../../../components/baseComponents";
+import { FullPageCentered } from "../../../../components/styledComponents";
 import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../api/fetchApiV2";
 import { DeleteButton } from "../../../../components/buttons/buttons.tsx";
 

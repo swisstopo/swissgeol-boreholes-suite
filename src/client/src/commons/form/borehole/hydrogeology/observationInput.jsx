@@ -4,7 +4,7 @@ import { FormInput, FormSelect } from "../../../../components/form/form";
 import { getCasingsByBoreholeId, useDomains } from "../../../../api/fetchApiV2";
 import { useTranslation } from "react-i18next";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants";
-import { StackHalfWidth } from "../../../../components/baseComponents";
+import { StackHalfWidth } from "../../../../components/styledComponents";
 import { useGetCasingOptions } from "../completion/casingUtils";
 
 const ObservationInput = props => {
