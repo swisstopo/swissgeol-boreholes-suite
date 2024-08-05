@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { StackFullWidth } from "../../../../components/baseComponents";
+import { StackFullWidth } from "../../../../components/styledComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import { useGetCasingName } from "../completion/casingUtils";
 

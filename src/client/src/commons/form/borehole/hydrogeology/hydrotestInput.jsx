@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { Box, IconButton, InputAdornment, Stack, Typography } from "@mui/material";
 import { FormInput, FormMultiSelect, FormSelect } from "../../../../components/form/form";
-import { StackHalfWidth } from "../../../../components/baseComponents";
+import { StackHalfWidth } from "../../../../components/styledComponents";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard";
 import { AddButton, CancelButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
 import ObservationInput from "./observationInput";

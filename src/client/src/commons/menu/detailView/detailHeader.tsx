@@ -7,7 +7,7 @@ import TrashIcon from "../../../assets/icons/trash.svg?react";
 import { useHistory, useLocation } from "react-router-dom";
 import { DeleteButton, EditButton, EndEditButton } from "../../../components/buttons/buttons";
 import { useDispatch, useSelector } from "react-redux";
-import { Borehole, ReduxRootState } from "../../../ReduxStateInterfaces";
+import { Borehole, ReduxRootState } from "../../../api-lib/ReduxStateInterfaces";
 import { deleteBorehole, lockBorehole, unlockBorehole } from "../../../api-lib";
 import { useTranslation } from "react-i18next";
 import { PromptContext } from "../../../components/prompt/promptContext";

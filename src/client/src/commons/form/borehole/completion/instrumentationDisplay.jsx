@@ -1,4 +1,4 @@
-import { StackFullWidth } from "../../../../components/baseComponents";
+import { StackFullWidth } from "../../../../components/styledComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import { useGetCasingName } from "./casingUtils";

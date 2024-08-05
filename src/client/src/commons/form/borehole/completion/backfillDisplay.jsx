@@ -1,7 +1,6 @@
-import { StackFullWidth } from "../../../../components/baseComponents";
+import { StackFullWidth, StackHalfWidth } from "../../../../components/styledComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
-import { StackHalfWidth } from "../../../../components/baseComponents.js";
 import { useGetCasingName } from "./casingUtils";
 import { deleteBackfill } from "../../../../api/fetchApiV2";
 

@@ -2,7 +2,7 @@ import { Box, Stack } from "@mui/material";
 import { theme } from "../../AppTheme";
 import { VersionTag } from "./versionTag";
 import { ProfilePopup } from "./profilePopup";
-import { ReduxRootState, User } from "../../ReduxStateInterfaces";
+import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces";
 import { useSelector } from "react-redux";
 import { LanguagePopup } from "./languagePopup.tsx";
 

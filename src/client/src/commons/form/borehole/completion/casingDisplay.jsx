@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { Table, TableHead, TableBody, TableContainer, TableRow, TableCell, Typography } from "@mui/material";
-import { StackFullWidth } from "../../../../components/baseComponents";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { StackFullWidth } from "../../../../components/styledComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import { deleteCasing, useDomains } from "../../../../api/fetchApiV2";
