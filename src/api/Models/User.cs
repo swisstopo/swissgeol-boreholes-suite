@@ -70,12 +70,12 @@ public class User : IIdentifyable
     /// <summary>
     /// Gets the WorkgroupRoles.
     /// </summary>
-    public IEnumerable<UserWorkgroupRole> WorkgroupRoles { get; }
+    public IEnumerable<UserWorkgroupRole>? WorkgroupRoles { get; }
 
     /// <summary>
     /// Gets the TermsAccepted.
     /// </summary>
-    public IEnumerable<TermsAccepted> TermsAccepted { get; }
+    public IEnumerable<TermsAccepted>? TermsAccepted { get; }
 
     /// <summary>
     /// Gets or sets whether this user can be deleted.

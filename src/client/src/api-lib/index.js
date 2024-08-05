@@ -8,11 +8,6 @@ import {
   setAuthentication,
   unsetAuthentication,
   loadUser,
-  reloadUser,
-  updateUser,
-  disableUser,
-  deleteUser,
-  enableUser,
 } from "./actions/user";
 
 import {
@@ -74,11 +69,6 @@ export {
   setAuthentication,
   unsetAuthentication,
   loadUser,
-  reloadUser,
-  updateUser,
-  disableUser,
-  deleteUser,
-  enableUser,
   createWorkgroup,
   enableWorkgroup,
   disableWorkgroup,
