@@ -76,14 +76,14 @@ Requests and das Legacy API werden mit dem [YARP Reverse Proxy](https://microsof
 #### UI/UX
 
 - Das UI Design ist im [Figma File](https://www.figma.com/design/cEiOoOazAQZqpRY92ZhBeO/SwissGeol?node-id=7390-40928&t=DemUCUzYlysJ5lB4-0) definiert. Unter Pages/Screens sind die definitiven Designs zu finden.
-- Standardmässig werden die [Lucid Icons](https://lucide.dev/icons/) verwendet. Custom-Icons können aus dem [Figma file](https://www.figma.com/design/cEiOoOazAQZqpRY92ZhBeO/SwissGeol?node-id=7390-40928&t=DemUCUzYlysJ5lB4-0) kopiert werden. Stand jetzt werden die Icons als SVG eingebunden, um die Icons farblich stylen zu können müssen `fill` und `stroke` wie folgt angepasst werden `fill="currentColor" stroke="currentColor"`.
+- Standardmässig werden die [Lucid Icons](https://lucide.dev/icons/) verwendet. Custom-Icons können aus dem [Figma File](https://www.figma.com/design/cEiOoOazAQZqpRY92ZhBeO/SwissGeol?node-id=7390-40928&t=DemUCUzYlysJ5lB4-0) kopiert werden. Stand jetzt werden die Icons als SVG eingebunden, um die Icons farblich stylen zu können müssen `fill` und `stroke` wie folgt angepasst werden `fill="currentColor" stroke="currentColor"`.
 - [MUI](https://mui.com/) wird als UI-Component library verwendet. Allgemeine Styles werden im [AppTheme.ts](./src/client/src/AppTheme.ts) definiert und diese Styles wo immer möglich verwendet. [MUI Styled Components](https://mui.com/system/styled/) im gleichen File mit der Komponente definieren, sobald die Styles mehrfach gebraucht werden. Übergreifende Styled Components werden in [styledComponents.js](./src/client/src/components/styledComponents.js) definiert. 
 
 #### Typescript
 
 - Neue Komponenten werden in Typescript geschrieben.
 - Es werden bevorzugt Interfaces statt Types verwendet.
-- Interfaces die Api Calls abbilden werden unter [apiInterfaces.ts](./src/client/api/apiInterfaces.ts) definiert ([ReduxStateInterfaces.ts](./src/client/src/api-lib/ReduxStateInterfaces.ts) für das legacy api).
+- Interfaces die Api Calls abbilden werden unter [apiInterfaces.ts](./src/client/api/apiInterfaces.ts) definiert ([ReduxStateInterfaces.ts](./src/client/src/api-lib/ReduxStateInterfaces.ts) für das Legacy API).
 - Existieren mehrere Interfaces für eine Komponente werden sie in einem separaten File neben der Komponente abgelegt. 
 - Das Interface für die React props der Komponente kann im selben File mit der Komponente definiert werden.
 
@@ -93,6 +93,6 @@ Requests and das Legacy API werden mit dem [YARP Reverse Proxy](https://microsof
 
 #### API
 
-- Neue Endpoints werden immer im .NET API erstellt. Das Python Legacy-API wird nicht erweitert.
+- Neue Endpoints werden immer im .NET API erstellt. Das Python Legacy API wird nicht erweitert.
 - Redux wird nicht mehr erweitert. Datenabfragen werden mit dem Javascript fetch api oder wo sinnvoll mit `useQuery` von `react-query` gemacht.
 - Wenn Abfragen aus dem Redux Store in neuen Komponenten gebraucht werden, sollten die React hooks `useSelector` und `useDispatch` verwendet werden.
