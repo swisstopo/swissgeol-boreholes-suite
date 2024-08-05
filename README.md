@@ -82,7 +82,7 @@ Requests and das Legacy API werden mit dem [YARP Reverse Proxy](https://microsof
 #### Typescript
 
 - Neue Komponenten werden in Typescript geschrieben.
-- Es werden bevorzugt interfaces statt types verwendet.
+- Es werden bevorzugt Interfaces statt Types verwendet.
 - Interfaces die Api Calls abbilden werden unter `api/apiInterfaces.ts` definiert (`api-lib/ReduxStateInterfaces.ts` für das legacy api).
 - Existieren mehrere Interfaces für eine Komponente werden sie in einem separaten File neben der Komponente abgelegt. 
 - Das Interface für die React props der Komponente kann im selben File mit der Komponente definiert werden.
