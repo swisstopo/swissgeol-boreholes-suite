@@ -1,4 +1,4 @@
-import { Borehole } from "../../ReduxStateInterfaces.ts";
+import { Borehole } from "../../api-lib/ReduxStateInterfaces.ts";
 
 export interface File {
   id: number;

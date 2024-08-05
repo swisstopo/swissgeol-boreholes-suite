@@ -1,6 +1,6 @@
 import React from "react";
 import { ErrorResponse } from "../menuComponents/menuComponentInterfaces";
-import { Workgroup } from "../../../../ReduxStateInterfaces";
+import { Workgroup } from "../../../../api-lib/ReduxStateInterfaces";
 
 export interface WorkgroupSelectProps {
   workgroup: number | null;

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
 import { FormResultTableDisplay } from "../../../../components/form/formResultTableDisplay";
-import { StackFullWidth } from "../../../../components/baseComponents";
+import { StackFullWidth } from "../../../../components/styledComponents";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
 import ObservationDisplay from "./observationDisplay";

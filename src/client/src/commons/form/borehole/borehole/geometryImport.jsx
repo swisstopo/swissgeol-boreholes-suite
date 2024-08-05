@@ -23,7 +23,7 @@ import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { FormSelect } from "../../../../components/form/form";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { AlertContext } from "../../../../components/alert/alertContext";
-import { StackHalfWidth } from "../../../../components/baseComponents.js";
+import { StackHalfWidth } from "../../../../components/styledComponents.js";
 import { DevTool } from "../../../../../hookformDevtools.ts";
 
 const GeometryImport = ({ boreholeId }) => {

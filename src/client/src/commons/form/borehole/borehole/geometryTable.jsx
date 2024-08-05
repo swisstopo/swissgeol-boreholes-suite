@@ -1,15 +1,15 @@
 import { useTranslation } from "react-i18next";
 import {
-  Typography,
-  Table,
-  TableHead,
-  TableBody,
-  TableContainer,
-  TableRow,
-  TableCell,
   CircularProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
 } from "@mui/material/";
-import { FullPageCentered } from "../../../../components/baseComponents";
+import { FullPageCentered } from "../../../../components/styledComponents";
 
 const GeometryTable = ({ data }) => {
   const { t } = useTranslation();

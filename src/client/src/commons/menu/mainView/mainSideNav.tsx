@@ -13,7 +13,7 @@ import { theme } from "../../../AppTheme";
 import ImportModal from "./actions/importModal";
 import { DrawerContentTypes } from "../../../pages/editor/editorComponentInterfaces";
 import { ErrorResponse, MainSideNavProps } from "./menuComponents/menuComponentInterfaces";
-import { ReduxRootState, User } from "../../../ReduxStateInterfaces";
+import { ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces";
 import { FilterContext } from "../../../components/filter/filterContext";
 import { useTranslation } from "react-i18next";
 import { NavButton } from "../../../components/buttons/navButton";
