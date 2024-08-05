@@ -134,8 +134,9 @@ public class UserController : ControllerBase
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error while updating user.");
-            return Problem(e.Message);
+            var message = "Error while updating user.";
+            logger.LogError(e, message);
+            return Problem(message);
         }
     }
 
@@ -169,8 +170,9 @@ public class UserController : ControllerBase
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error while deleting user.");
-            return Problem(e.Message);
+            var message = "Error while deleting user.";
+            logger.LogError(e, message);
+            return Problem(message);
         }
     }
 
