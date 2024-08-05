@@ -30,7 +30,7 @@ public class UserController : ControllerBase
     /// </summary>
     [HttpGet("self")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    [SwaggerResponse(StatusCodes.Status200OK, "Returns the currently logged in user.", typeof(IEnumerable<User>), new[] { "application/json" })]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns the currently logged in user.")]
     public async Task<User?> GetSelf()
     {
         var user = await context.UsersWithIncludes.SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId()).ConfigureAwait(false);
@@ -42,7 +42,7 @@ public class UserController : ControllerBase
     /// Gets the user with the specified <paramref name="id"/>.
     /// </summary>
     [HttpGet("{id}")]
-    [SwaggerResponse(StatusCodes.Status200OK, "Returns the user with the specified id.", typeof(IEnumerable<User>), new[] { "application/json" })]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns the user with the specified id.")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "The user could not be found.")]
     public async Task<ActionResult> GetUserById(int id)
     {
@@ -61,7 +61,7 @@ public class UserController : ControllerBase
     /// Gets a list of users.
     /// </summary>
     [HttpGet]
-    [SwaggerResponse(StatusCodes.Status200OK, "Returns a list of users.", typeof(IEnumerable<User>), new[] { "application/json" })]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns a list of users.")]
     public async Task<IEnumerable<User>> GetAll()
     {
         var users = await context
@@ -96,7 +96,6 @@ public class UserController : ControllerBase
         return Ok();
     }
 
-
     /// <summary>
     /// Updates the <paramref name="user"/>.
     /// </summary>
@@ -105,7 +104,7 @@ public class UserController : ControllerBase
     [SwaggerResponse(StatusCodes.Status400BadRequest, "The user could not be updated due to invalid input.")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "The user could not be found.")]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "The current user is not authorized to update users.")]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request. ", typeof(ProblemDetails), new[] { "application/json" })]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request. ")]
     public async Task<IActionResult> Edit(User user)
     {
         try
@@ -144,7 +143,7 @@ public class UserController : ControllerBase
     [SwaggerResponse(StatusCodes.Status400BadRequest, "The user could not be updated due to invalid input.")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "The user could not be found.")]
     [SwaggerResponse(StatusCodes.Status401Unauthorized, "The current user is not authorized to delete users.")]
-    [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request. ", typeof(ProblemDetails), new[] { "application/json" })]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request. ")]
     public async Task<IActionResult> Delete(int id)
     {
         try
