@@ -8,8 +8,8 @@ COPY . ./bms
 
 ARG VERSION
 ARG REVISION
-ENV APP_VERSION ${VERSION}
-ENV APP_REVISION ${REVISION}
+ENV APP_VERSION=${VERSION}
+ENV APP_REVISION=${REVISION}
 
 CMD ["/bin/sh", "-c", "python -u bms/main.py \
     --pg-host=${DB_HOST} \

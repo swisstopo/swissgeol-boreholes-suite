@@ -6,7 +6,7 @@ WORKDIR /src
 RUN apt-get -y update
 RUN apt-get -y install git vim curl htop
 RUN dotnet tool install --global dotnet-ef --version 8.0.0
-ENV PATH $PATH:/root/.dotnet/tools
+ENV PATH=$PATH:/root/.dotnet/tools
 
 # Restore dependencies and tools
 COPY BDMS.csproj .
