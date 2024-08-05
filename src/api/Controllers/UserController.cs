@@ -120,7 +120,11 @@ public class UserController : ControllerBase
                 return NotFound();
             }
 
-            userToEdit.IsAdmin = user.IsAdmin;
+            if (userToEdit.SubjectId != HttpContext.GetUserSubjectId())
+            {
+                userToEdit.IsAdmin = user.IsAdmin;
+            }
+
             userToEdit.DisabledAt = user.DisabledAt;
 
             await context.SaveChangesAsync().ConfigureAwait(false);
