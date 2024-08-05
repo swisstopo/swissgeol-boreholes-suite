@@ -128,9 +128,7 @@ public class UserController : ControllerBase
             userToEdit.DisabledAt = user.DisabledAt;
 
             await context.SaveChangesAsync().ConfigureAwait(false);
-            var result = await context.UsersWithIncludes.AsNoTracking().SingleOrDefaultAsync(u => u.Id == user.Id).ConfigureAwait(false);
-            result.Deletable = IsDeletable(result);
-            return Ok(result);
+            return await GetUserById(userToEdit.Id).ConfigureAwait(false);
         }
         catch (Exception e)
         {
