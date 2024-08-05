@@ -1,10 +1,10 @@
 import { TextField } from "@mui/material";
-import { styled } from "@mui/system";
 import { theme } from "../../AppTheme";
+import { forwardRef } from "react";
 
-export const getFormFieldBackgroundColor = (fieldName, errors) => {
+export const getFormFieldError = (fieldName, errors) => {
   if (typeof fieldName !== "string") {
-    return "transparent";
+    return undefined;
   }
 
   const fieldNameElements = fieldName ? fieldName.split(".") : [];
@@ -15,18 +15,12 @@ export const getFormFieldBackgroundColor = (fieldName, errors) => {
       break;
     }
   }
-  return currentElement ? theme.palette.error.background : "transparent";
+  return currentElement ? theme.palette.error.background : undefined;
 };
 
-export const FormField = styled(TextField)(() => ({
-  borderRadius: "4px",
-  flex: "1",
-  marginTop: "10px !important",
-  marginRight: "10px !important",
-  "& .MuiInputBase-input": {
-    minHeight: "26px !important",
-  },
-}));
+export const FormField = forwardRef((props, ref) => {
+  return <TextField ref={ref} {...props} size="small" variant="filled" />;
+});
 
 export { FormInput } from "./formInput";
 export { FormSelect } from "./formSelect";

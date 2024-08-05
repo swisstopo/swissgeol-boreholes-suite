@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useFormContext } from "react-hook-form";
-import { FormField, getFormFieldBackgroundColor } from "./form";
+import { FormField, getFormFieldError } from "./form";
 
 export const FormInput = props => {
   const { fieldName, label, required, disabled, type, multiline, rows, value, sx, inputProps, onUpdate } = props;
@@ -24,19 +24,15 @@ export const FormInput = props => {
     <FormField
       name={fieldName}
       required={required || false}
-      sx={{
-        backgroundColor: getFormFieldBackgroundColor(fieldName, formState?.errors),
-        ...sx,
-      }}
+      error={getFormFieldError(fieldName, formState.errors)}
+      sx={{ ...sx }}
       type={type || "text"}
       multiline={multiline || false}
       rows={rows}
-      size="small"
       label={t(label)}
-      variant="outlined"
       {...register(fieldName, {
         required: required || false,
-        valueAsNumber: type === "number" ? true : false,
+        valueAsNumber: type === "number",
         validate: value => {
           if (value === "") {
             return true;

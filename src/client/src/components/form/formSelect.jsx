@@ -1,7 +1,7 @@
 import { MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Controller, useFormContext } from "react-hook-form";
-import { FormField, getFormFieldBackgroundColor } from "./form";
+import { FormField, getFormFieldError } from "./form";
 
 export const FormSelect = props => {
   const { fieldName, label, required, disabled, selected, values, sx, onUpdate } = props;
@@ -38,13 +38,9 @@ export const FormSelect = props => {
         <FormField
           select
           required={required ?? false}
-          sx={{
-            backgroundColor: getFormFieldBackgroundColor(fieldName, formState?.errors),
-            ...sx,
-          }}
-          size="small"
+          error={getFormFieldError(fieldName, formState.errors)}
+          sx={{ ...sx }}
           label={t(label)}
-          variant="outlined"
           name={field.name}
           onChange={field.onChange}
           onBlur={field.onBlur}

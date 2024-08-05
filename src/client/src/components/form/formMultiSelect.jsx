@@ -2,7 +2,7 @@ import { Box, Chip, MenuItem } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
 import { Controller, useFormContext } from "react-hook-form";
-import { FormField, getFormFieldBackgroundColor } from "./form";
+import { FormField, getFormFieldError } from "./form";
 import { useState } from "react";
 
 export const FormMultiSelect = props => {
@@ -71,13 +71,8 @@ export const FormMultiSelect = props => {
                 renderValue: selection => ChipBox(selection),
               }}
               required={required || false}
-              sx={{
-                backgroundColor: getFormFieldBackgroundColor(fieldName, formState?.errors),
-                ...sx,
-              }}
-              size="small"
+              sx={{ ...sx }}
               label={t(label)}
-              variant="outlined"
               {...register(fieldName, {
                 required: required || false,
                 onChange: e => {
@@ -90,6 +85,7 @@ export const FormMultiSelect = props => {
                 },
               })}
               value={field.value || []}
+              error={getFormFieldError(fieldName, formState.errors)}
               disabled={disabled || false}
               data-cy={fieldName + "-formMultiSelect"}
               InputLabelProps={{ shrink: true }}>
@@ -106,13 +102,9 @@ export const FormMultiSelect = props => {
             <FormField
               {...field}
               required={required || false}
-              sx={{
-                backgroundColor: getFormFieldBackgroundColor(formState.errors[fieldName]),
-                ...sx,
-              }}
-              size="small"
+              error={getFormFieldError(fieldName, formState.errors)}
+              sx={{ ...sx }}
               label={t(label)}
-              variant="outlined"
               {...register(fieldName, {
                 required: required || false,
               })}

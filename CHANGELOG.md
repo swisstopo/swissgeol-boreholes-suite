@@ -22,6 +22,7 @@
 - Upgraded to PostgreSQL 15 and PostGIS 3.4.
 - Removed unused `IsViewer` flag from user.
 - Removed unused `UserEvent` from user.
+- Use `filled` style for form components.
 
 ### Fixed
 

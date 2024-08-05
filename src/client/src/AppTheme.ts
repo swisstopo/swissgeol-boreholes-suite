@@ -125,6 +125,31 @@ export const theme = createTheme({
         },
       },
     },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          borderRadius: "4px",
+          flex: "1",
+          marginTop: "10px !important",
+          marginRight: "10px !important",
+          "& .MuiInputBase-input": {
+            minHeight: "26px !important",
+          },
+          "& .MuiFilledInput-root": {
+            backgroundColor: "#F8F9FA",
+          },
+          "& .MuiFilledInput-root:hover:not(.Mui-disabled, .Mui-error):before": {
+            borderColor: "#4FA7BC",
+          },
+          "& .MuiFilledInput-root:before": {
+            borderColor: "#4FA7BC",
+          },
+          "& .MuiFilledInput-root:after": {
+            borderColor: "#4FA7BC",
+          },
+        },
+      },
+    },
     MuiTab: {
       styleOverrides: {
         root: {
