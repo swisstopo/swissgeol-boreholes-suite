@@ -1,6 +1,6 @@
 import { Header, Modal } from "semantic-ui-react";
 import { useTranslation } from "react-i18next";
-import { ImportErrorModalProps } from "./menuComponentInterfaces";
+import { ImportErrorModalProps } from "../../../search/menuItemsInterfaces.ts";
 
 export const ImportErrorModal = ({
   setValidationErrorModal,

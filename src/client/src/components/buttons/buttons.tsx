@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import TranslationText from "../../pages/detail/form/translationText";
+import TranslationText from "../legacyComponents/translationText";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "../../assets/icons/edit.svg?react";

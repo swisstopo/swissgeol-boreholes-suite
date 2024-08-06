@@ -5,7 +5,7 @@ import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { loadDomains } from "../../../../api-lib/index.js";
 import { Dropdown, Form, Header, Icon, Input, List, Modal } from "semantic-ui-react";
-import TranslationText from "../../../../pages/detail/form/translationText.jsx";
+import TranslationText from "../../translationText.jsx";
 import DomainText from "../domainText.jsx";
 
 class DomainTree extends React.Component {

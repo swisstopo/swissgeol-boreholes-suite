@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { t } from "i18next";
 import { Button, Header, Icon, Modal, Segment } from "semantic-ui-react";
-import TranslationText from "../../../../pages/detail/form/translationText.jsx";
+import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { importBoreholes } from "../../../../api/fetchApiV2.js";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import WorkgroupSelect from "./workgroupSelect.js";

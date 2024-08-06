@@ -1,5 +1,5 @@
 import { Button, Checkbox, Icon } from "semantic-ui-react";
-import { SideDrawerHeader } from "../../sideDrawerHeader.tsx";
+import { SideDrawerHeader } from "../../../../../pages/overview/layout/sideDrawerHeader.tsx";
 import { useTranslation } from "react-i18next";
 import { Box, Stack } from "@mui/material";
 

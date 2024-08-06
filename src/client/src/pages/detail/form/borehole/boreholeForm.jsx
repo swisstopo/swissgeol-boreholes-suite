@@ -6,21 +6,21 @@ import _ from "lodash";
 import { Redirect, Route, Switch, withRouter } from "react-router-dom";
 import { loadBorehole, patchBorehole, updateBorehole } from "../../../../api-lib/index.js";
 import EditorBoreholeFilesTable from "../../../../commons/files/table/editorBoreholeFilesTable.tsx";
-import TranslationText from "../translationText.jsx";
+import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { Dimmer, Loader } from "semantic-ui-react";
-import Profile from "../profile/index.js";
-import IdentifierSegment from "./segments/indentifierSegment.jsx";
-import NameSegment from "./segments/nameSegment.jsx";
-import RestrictionSegment from "./segments/restrictionSegment.jsx";
-import BoreholePanel from "./borehole/boreholePanel.jsx";
-import LocationSegment from "./segments/locationSegment.jsx";
-import WaterIngress from "./hydrogeology/waterIngress.jsx";
-import GroundwaterLevelMeasurement from "./hydrogeology/groundwaterLevelMeasurement.jsx";
-import Hydrotest from "./hydrogeology/hydrotest.jsx";
-import FieldMeasurement from "./hydrogeology/fieldMeasurement.jsx";
-import ChronostratigraphyPanel from "./stratigraphy/chronostratigraphyPanel.jsx";
-import LithostratigraphyPanel from "./stratigraphy/lithostratigraphyPanel.jsx";
-import Completion from "./completion/completion.jsx";
+import Lithology from "./stratigraphy/lithology/index.js";
+import IdentifierSegment from "./boreholeFormSegments/indentifierSegment.jsx";
+import NameSegment from "./boreholeFormSegments/nameSegment.jsx";
+import RestrictionSegment from "./boreholeFormSegments/restrictionSegment.jsx";
+import BoreholePanel from "./boreholePanel.jsx";
+import LocationSegment from "./boreholeFormSegments/locationSegment.jsx";
+import WaterIngress from "../hydrogeology/waterIngress.jsx";
+import GroundwaterLevelMeasurement from "../hydrogeology/groundwaterLevelMeasurement.jsx";
+import Hydrotest from "../hydrogeology/hydrotest.jsx";
+import FieldMeasurement from "../hydrogeology/fieldMeasurement.jsx";
+import ChronostratigraphyPanel from "./stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
+import LithostratigraphyPanel from "./stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
+import Completion from "../completion/completion.jsx";
 import { Box } from "@mui/material";
 import WorkflowForm from "../../workflow/workflowForm.jsx";
 import { AlertContext } from "../../../../components/alert/alertContext";
@@ -338,7 +338,7 @@ class BoreholeForm extends React.Component {
               <Route
                 exact
                 path={"/:id/stratigraphy/lithology"}
-                render={() => <Profile id={parseInt(id, 10)} unlocked={isEditable} />}
+                render={() => <Lithology id={parseInt(id, 10)} unlocked={isEditable} />}
               />
               <Route
                 exact

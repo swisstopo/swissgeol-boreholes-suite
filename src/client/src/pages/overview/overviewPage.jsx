@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { useLocation, withRouter } from "react-router-dom";
-import MainSideNav from "../../commons/menu/mainView/mainSideNav.tsx";
-import MapView from "../../commons/menu/mainView/mapView.jsx";
-import { SideDrawer } from "../../commons/menu/mainView/sideDrawer.tsx";
-import FilterComponent from "../../commons/search/editor/filterComponent.jsx";
+import MainSideNav from "./layout/mainSideNav.tsx";
+import MapView from "./layout/mapView.jsx";
+import { SideDrawer } from "./layout/sideDrawer.tsx";
+import FilterComponent from "../../commons/search/filterComponent.jsx";
 import NewBoreholePanel from "../../commons/menu/mainView/sidePanelContent/newBoreholePanel.tsx";
 import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";

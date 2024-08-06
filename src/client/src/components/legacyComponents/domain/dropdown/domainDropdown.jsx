@@ -7,7 +7,7 @@ import _ from "lodash";
 import { loadDomains } from "../../../../api-lib/index.js";
 
 import { Form, Header } from "semantic-ui-react";
-import TranslationText from "../../../../pages/detail/form/translationText.jsx";
+import TranslationText from "../../translationText.jsx";
 
 class DomainDropdown extends React.Component {
   constructor(props) {

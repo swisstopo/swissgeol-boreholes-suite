@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useDomainSchema } from "../../../../../api/fetchApiV2.js";
 import { Form, Header } from "semantic-ui-react";
 import * as Styled from "../../../../../commons/search/components/listFilterStyles.js";
-import TranslationText from "../../translationText.jsx";
+import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
 
 const HierarchicalDataSearch = ({ schema, labels, selected, onSelected }) => {
   const { i18n } = useTranslation();

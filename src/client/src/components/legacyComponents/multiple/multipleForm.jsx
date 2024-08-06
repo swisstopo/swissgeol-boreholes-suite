@@ -7,8 +7,8 @@ import { produce } from "immer";
 
 import DomainDropdown from "../domain/dropdown/domainDropdown.jsx";
 import DomainTree from "../domain/tree/domainTree.jsx";
-import DateField from "../../../pages/detail/form/dateField.jsx";
-import TranslationText from "../../../pages/detail/form/translationText.jsx";
+import DateField from "../dateField.jsx";
+import TranslationText from "../translationText.jsx";
 
 import { Button, Form, Header, Input } from "semantic-ui-react";
 import { FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";

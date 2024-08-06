@@ -1,4 +1,4 @@
-import TranslationText from "../../../../pages/detail/form/translationText";
+import TranslationText from "../../../../components/legacyComponents/translationText";
 import { Box, FormControl, MenuItem, Select } from "@mui/material/";
 import { WorkgroupSelectProps } from "./actionsInterfaces";
 

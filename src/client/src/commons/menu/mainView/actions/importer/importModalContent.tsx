@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { Box, Stack } from "@mui/material/";
-import TranslationText from "../../../../../pages/detail/form/translationText.jsx";
+import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
 import { FileDropzone } from "../../../../files/fileDropzone.jsx";
 import { StackHalfWidth } from "../../../../../components/styledComponents.js";
 import { downloadCodelistCsv } from "../../../../../api/fetchApiV2.js";

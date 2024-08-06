@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { Stack, CircularProgress, TextField, MenuItem } from "@mui/material";
+import { useEffect, useState } from "react";
+import { CircularProgress, MenuItem, Stack, TextField } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useLithologyStratigraphies } from "../../../../../api/fetchApiV2.js";
-import TranslationText from "../../translationText.jsx";
-import * as Styled from "../../profile/styles.js";
+import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
+import * as Styled from "./lithology/styles.js";
 
 /**
  * Provides a stratigraphy selection. The selected stratigraphy is available through the `renderItem` render prop.

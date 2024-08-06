@@ -22,8 +22,8 @@ import {
   updateWorkgroup,
 } from "../../../api-lib/index";
 
-import DateText from "../../detail/form/dateText.js";
-import TranslationText from "../../detail/form/translationText.jsx";
+import DateText from "../../../components/legacyComponents/dateText.js";
+import TranslationText from "../../../components/legacyComponents/translationText.jsx";
 import { WorkgroupRoleSettings } from "./workgroupRoleSettings";
 
 class AdminSettings extends React.Component {

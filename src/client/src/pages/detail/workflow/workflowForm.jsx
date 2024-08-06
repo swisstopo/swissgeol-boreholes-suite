@@ -18,8 +18,8 @@ import {
 } from "../../../api-lib/index.js";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import CommentArea from "./commentArea.jsx";
-import DateText from "../form/dateText.js";
-import TranslationText from "../form/translationText.jsx";
+import DateText from "../../../components/legacyComponents/dateText.js";
+import TranslationText from "../../../components/legacyComponents/translationText.jsx";
 import { theme } from "../../../AppTheme.ts";
 import { Stack } from "@mui/material";
 
