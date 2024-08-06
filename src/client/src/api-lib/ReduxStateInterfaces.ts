@@ -1,4 +1,5 @@
 export interface ReduxRootState {
+  filters: any;
   core_user: User;
   core_borehole_editor_list: Boreholes;
   core_borehole: Borehole;
