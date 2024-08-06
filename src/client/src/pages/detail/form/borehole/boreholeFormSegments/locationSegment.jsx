@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CantonMunicipalitySegment from "./cantonMunicipalitySegment.jsx";
-import PointComponent from "../../../../../commons/map/pointComponent.jsx";
+import PointComponent from "../../../../../components/map/pointComponent.jsx";
 import _ from "lodash";
 import CoordinatesSegment from "./coordinatesSegment.tsx";
 

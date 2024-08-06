@@ -1,4 +1,4 @@
-import { Codelist } from "../../../../../components/legacyComponents/domain/domainInterface.ts";
+import { Codelist } from "../../../../components/legacyComponents/domain/domainInterface.ts";
 
 export interface Hydrotest {
   hydrotestResults: HydrotestResult[];

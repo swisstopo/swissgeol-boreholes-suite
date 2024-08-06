@@ -5,7 +5,7 @@ import { withRouter } from "react-router-dom";
 import { Modal } from "semantic-ui-react";
 import { loadEditingBoreholes } from "../../../api-lib/index.js";
 import _ from "lodash";
-import MapComponent from "../../../commons/map/mapComponent.jsx";
+import MapComponent from "../../../components/map/mapComponent.jsx";
 import BoreholeEditorTable from "../../../commons/table/boreholeEditorTable.jsx";
 import MultipleForm from "../../../components/legacyComponents/multiple/multipleForm.jsx";
 import { BottomDrawer } from "./bottomDrawer.tsx";

@@ -1,10 +1,10 @@
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { Button, Checkbox, Icon, Table, TextArea } from "semantic-ui-react";
-import DateText from "../../../components/legacyComponents/dateText.js";
-import DownloadLink from "../downloadlink";
-import TranslationText from "../../../components/legacyComponents/translationText.jsx";
-import { downloadBoreholeAttachment } from "../../../api/fetchApiV2";
+import DateText from "../../../../components/legacyComponents/dateText.js";
+import DownloadLink from "../downloadlink.jsx";
+import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
+import { downloadBoreholeAttachment } from "../../../../api/fetchApiV2.js";
 
 const FilesTableComponent = props => {
   return (

@@ -5,12 +5,12 @@ import {
   getBoreholeAttachments,
   updateBoreholeAttachment,
   uploadBoreholeAttachment,
-} from "../../../api/fetchApiV2";
+} from "../../../../api/fetchApiV2";
 
 import FilesTableComponent from "./filesTableComponent";
 import { Box, Button, Input } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import { AlertContext } from "../../../components/alert/alertContext";
+import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { FileResponse } from "../fileInterfaces.ts";
 import { useTranslation } from "react-i18next";
 

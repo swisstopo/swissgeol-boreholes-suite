@@ -1,9 +1,9 @@
-import { Button, Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import Remove from "@mui/icons-material/Remove";
 import TripOriginIcon from "@mui/icons-material/TripOrigin";
 import styled from "@mui/material/styles/styled";
-import { theme } from "../../AppTheme";
+import { theme } from "../../AppTheme.ts";
 
 const ZoomControls = ({ onZoomIn, onZoomOut, onFitToExtent }) => {
   const NoMarginButton = styled(Button)({

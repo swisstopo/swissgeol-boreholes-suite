@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import { Box, Stack } from "@mui/material/";
 import TranslationText from "../../../../../components/legacyComponents/translationText.jsx";
-import { FileDropzone } from "../../../../files/fileDropzone.jsx";
+import { FileDropzone } from "../../../../../pages/detail/attachments/fileDropzone.jsx";
 import { StackHalfWidth } from "../../../../../components/styledComponents.js";
 import { downloadCodelistCsv } from "../../../../../api/fetchApiV2.js";
 import { ImportContentProps } from "../actionsInterfaces.js";
-import Downloadlink from "../../../../files/downloadlink.jsx";
+import Downloadlink from "../../../../../pages/detail/attachments/downloadlink.jsx";
 
 const SeparatorLine = () => {
   return (
