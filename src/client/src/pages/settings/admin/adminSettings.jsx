@@ -3,22 +3,17 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { AlertContext } from "../../../components/alert/alertContext";
-import { fetchUsers } from "../../../api/fetchApiV2";
+import { deleteUser, fetchUser, fetchUsers, updateUser } from "../../../api/user";
 
 import { Button, Checkbox, Form, Icon, Input, Label, Loader, Modal, Table } from "semantic-ui-react";
 
 import {
   createWorkgroup,
-  deleteUser,
   deleteWorkgroup,
-  disableUser,
   disableWorkgroup,
-  enableUser,
   enableWorkgroup,
   listWorkgroups,
-  reloadUser,
   setRole,
-  updateUser,
   updateWorkgroup,
 } from "../../../api-lib/index";
 
@@ -242,12 +237,10 @@ class AdminSettings extends React.Component {
                   label="&nbsp;"
                   disabled={this.state.uId == null}
                   onClick={() => {
-                    updateUser(this.state.uId, this.state.uAdmin).then(response => {
-                      if (response.data.success === false) {
-                        this.context.showAlert(response.data.message, "error");
-                      } else {
-                        this.listUsers();
-                      }
+                    const user = this.state.user;
+                    user.isAdmin = this.state.uAdmin;
+                    updateUser(user).then(() => {
+                      this.listUsers();
                     });
                   }}>
                   <Icon name="save" />
@@ -425,11 +418,13 @@ class AdminSettings extends React.Component {
                     </span>
                   </Button>
                   <div style={{ flex: "1 1 100%" }} />
-                  {this.state.deleteUser === null ? null : this.state.deleteUser.disabledAt !== null ? (
+                  {this.state.deleteUser === null ? null : this.state.deleteUser.isDisabled ? (
                     <Button
                       data-cy="enable-user-button"
                       onClick={() => {
-                        enableUser(this.state.deleteUser.id).then(() => {
+                        const user = this.state.deleteUser;
+                        user.disabledAt = null;
+                        updateUser(user).then(() => {
                           this.setState(
                             {
                               deleteUser: null,
@@ -453,7 +448,9 @@ class AdminSettings extends React.Component {
                     <Button
                       data-cy="disable-user-button"
                       onClick={() => {
-                        disableUser(this.state.deleteUser.id).then(() => {
+                        const user = this.state.deleteUser;
+                        user.disabledAt = Date.now();
+                        updateUser(user).then(() => {
                           this.reset(
                             {
                               deleteUser: null,
@@ -1043,7 +1040,6 @@ class AdminSettings extends React.Component {
 
 AdminSettings.propTypes = {
   listWorkgroups: PropTypes.func,
-  reloadUser: PropTypes.func,
   t: PropTypes.func,
   user: PropTypes.object,
   users: PropTypes.object,
@@ -1061,12 +1057,9 @@ const mapDispatchToProps = dispatch => {
     dispatch: dispatch,
     listWorkgroups: (ru = false) => {
       if (ru === true) {
-        dispatch(reloadUser());
+        fetchUser();
       }
       return dispatch(listWorkgroups());
-    },
-    reloadUser: () => {
-      dispatch(reloadUser());
     },
   };
 };

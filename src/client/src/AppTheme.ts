@@ -103,9 +103,13 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           fontFamily: "Inter",
-          fontWeight: "bold",
+          fontWeight: "500",
           textTransform: "none",
+          whiteSpace: "nowrap",
+          minWidth: "auto",
           marginLeft: "5px",
+          padding: "8px 12px",
+          borderRadius: "2px",
           boxShadow: "none",
           "&:hover": {
             boxShadow: "none",

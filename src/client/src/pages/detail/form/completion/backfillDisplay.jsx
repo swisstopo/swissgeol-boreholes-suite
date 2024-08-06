@@ -1,8 +1,8 @@
 import { StackFullWidth, StackHalfWidth } from "../../../../components/styledComponents.js";
 import { FormDisplay, FormDisplayType } from "../../../../components/form/form.js";
 import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
-import { useGetCasingName } from "./casingUtils.jsx";
-import { deleteBackfill } from "../../../../api/fetchApiV2.js";
+import { useGetCasingName } from "./casingUtils";
+import { deleteBackfill } from "../../../../api/fetchApiV2";
 
 const BackfillDisplay = props => {
   const { item, isEditable } = props;

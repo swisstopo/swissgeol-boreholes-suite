@@ -33,7 +33,7 @@ public class BoreholeLockService(BdmsContext context, ILogger<BoreholeLockServic
             .Select(w => w.Role)
             .ToHashSet();
 
-        if (!user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId && boreholeWorkflowRoles.Contains(x.Role)))
+        if (user.WorkgroupRoles == null || !user.WorkgroupRoles.Any(x => x.WorkgroupId == borehole.WorkgroupId && boreholeWorkflowRoles.Contains(x.Role)))
         {
             logger.LogWarning("Current user with subject_id <{SubjectId}> does not have the required role to edit the borehole with id <{BoreholeId}>.", subjectId, boreholeId);
             return true;

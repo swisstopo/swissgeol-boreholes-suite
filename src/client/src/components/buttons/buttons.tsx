@@ -12,21 +12,7 @@ import { ButtonProps } from "./buttonsInterface";
 
 export const BdmsBaseButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   return (
-    <Button
-      ref={ref}
-      {...props}
-      data-cy={props.label?.toLowerCase() + "-button"}
-      endIcon={props.icon}
-      sx={{
-        paddingLeft: "12px",
-        paddingRight: "12px",
-        paddingBottom: "8px",
-        paddingTop: "8px",
-        whiteSpace: "nowrap",
-        borderRadius: "2px",
-        fontWeight: 500,
-        minWidth: "auto",
-      }}>
+    <Button ref={ref} {...props} data-cy={props.label?.toLowerCase() + "-button"} startIcon={props.icon}>
       <TranslationText firstUpperCase id={props.label} />
     </Button>
   );

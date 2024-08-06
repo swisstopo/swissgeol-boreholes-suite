@@ -38,7 +38,7 @@ public class BoreholeController : ControllerBase
             .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
             .ConfigureAwait(false);
 
-        if (user == null || !user.WorkgroupRoles.Any(w => w.WorkgroupId == workgroupId && w.Role == Role.Editor))
+        if (user == null || user.WorkgroupRoles == null || !user.WorkgroupRoles.Any(w => w.WorkgroupId == workgroupId && w.Role == Role.Editor))
         {
             return Unauthorized();
         }

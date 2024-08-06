@@ -15,10 +15,20 @@ public class UserWorkgroupRole
     public int UserId { get; set; }
 
     /// <summary>
+    /// Gets or sets the <see cref="User"/>.
+    /// </summary>
+    public User? User { get; set; }
+
+    /// <summary>
     /// Gets or sets the foreign key to the <see cref="Workgroup"/> entity.
     /// </summary>
     [Column("id_wgp_fk")]
     public int WorkgroupId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="Workgroup"/>.
+    /// </summary>
+    public Workgroup? Workgroup { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Role"/>.

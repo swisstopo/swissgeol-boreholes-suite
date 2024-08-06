@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import { StackFullWidth } from "../../../../components/styledComponents.js";
-import { FormDisplay, FormDisplayType } from "../../../../components/form/form.js";
-import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.jsx";
-import { deleteCasing, useDomains } from "../../../../api/fetchApiV2.js";
-import { extractCasingDepth } from "./casingUtils.jsx";
+import { StackFullWidth } from "../../../../components/styledComponents";
+import { FormDisplay, FormDisplayType } from "../../../../components/form/form";
+import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard";
+import { deleteCasing, useDomains } from "../../../../api/fetchApiV2";
+import { extractCasingDepth } from "./casingUtils";
 
 const CasingDisplay = props => {
   const { item, isEditable } = props;
