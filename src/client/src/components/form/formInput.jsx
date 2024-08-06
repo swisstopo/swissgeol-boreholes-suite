@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useFormContext } from "react-hook-form";
-import { FormField, getFormFieldError } from "./form";
+import { getFormFieldError } from "./form";
+import { FormField } from "./formField";
 
 export const FormInput = props => {
   const { fieldName, label, required, disabled, type, multiline, rows, value, sx, inputProps, onUpdate } = props;

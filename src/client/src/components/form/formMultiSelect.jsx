@@ -2,7 +2,8 @@ import { Box, Chip, MenuItem } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
 import { Controller, useFormContext } from "react-hook-form";
-import { FormField, getFormFieldError } from "./form";
+import { getFormFieldError } from "./form";
+import { FormField } from "./formField";
 import { useState } from "react";
 
 export const FormMultiSelect = props => {

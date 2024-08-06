@@ -1,7 +1,8 @@
 import { MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Controller, useFormContext } from "react-hook-form";
-import { FormField, getFormFieldError } from "./form";
+import { getFormFieldError } from "./form";
+import { FormField } from "./formField";
 
 export const FormSelect = props => {
   const { fieldName, label, required, disabled, selected, values, sx, onUpdate } = props;
