@@ -1,8 +1,8 @@
 import dataLoaderState from "../pages/settings/dataLoaderState";
-import editor from "../pages/editor/editorState";
-import filters from "../commons/search/editor/filterState.js";
+import editor from "../pages/overview/overviewPageState.js";
+import filters from "../pages/overview/sidePanelContent/filter/filterState.js";
 import setting from "../pages/settings/settingState";
-import wmts from "../commons/map/mapState";
+import wmts from "../components/map/mapState";
 
 import { injectReducer, store } from "../api-lib/index";
 
