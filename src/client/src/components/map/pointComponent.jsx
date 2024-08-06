@@ -14,7 +14,7 @@ import { register } from "ol/proj/proj4";
 import proj4 from "proj4";
 import { Button, Icon, Label, Segment } from "semantic-ui-react";
 import { Box } from "@mui/material";
-import { getHeight } from "../../api-lib/index.js";
+import { getHeight } from "../../api-lib";
 import { fetchApiV2 } from "../../api/fetchApiV2.js";
 import ZoomControls from "./zoomControls.jsx";
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";

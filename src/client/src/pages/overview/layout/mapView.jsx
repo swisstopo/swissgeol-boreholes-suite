@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { Modal } from "semantic-ui-react";
-import { loadEditingBoreholes } from "../../../api-lib/index.js";
+import { loadEditingBoreholes } from "../../../api-lib";
 import _ from "lodash";
 import MapComponent from "../../../components/map/mapComponent.jsx";
 import BoreholeEditorTable from "../../../commons/table/boreholeEditorTable.jsx";

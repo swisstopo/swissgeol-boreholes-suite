@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import _ from "lodash";
 import { Redirect, Route, Switch, withRouter } from "react-router-dom";
-import { loadBorehole, patchBorehole, updateBorehole } from "../../../../api-lib/index.js";
+import { loadBorehole, patchBorehole, updateBorehole } from "../../../../api-lib";
 import EditorBoreholeFilesTable from "../../attachments/table/editorBoreholeFilesTable.tsx";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { Dimmer, Loader } from "semantic-ui-react";

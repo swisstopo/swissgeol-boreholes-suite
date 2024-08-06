@@ -18,7 +18,7 @@ import { createEmpty, extend } from "ol/extent";
 import { get as getProjection } from "ol/proj";
 import { register } from "ol/proj/proj4";
 import proj4 from "proj4";
-import { getGeojson } from "../../api-lib/index.js";
+import { getGeojson } from "../../api-lib";
 import { Box } from "@mui/material";
 import ZoomControls from "./zoomControls.jsx";
 import NamePopup from "./namePopup.jsx";
