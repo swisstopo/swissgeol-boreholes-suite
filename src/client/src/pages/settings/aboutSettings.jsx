@@ -1,6 +1,6 @@
 import React from "react";
 import { withTranslation } from "react-i18next";
-import TranslationText from "../../commons/form/translationText";
+import TranslationText from "../../components/legacyComponents/translationText.jsx";
 import { Header } from "semantic-ui-react";
 
 class AboutSettings extends React.Component {

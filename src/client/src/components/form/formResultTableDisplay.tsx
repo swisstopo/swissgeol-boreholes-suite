@@ -1,8 +1,8 @@
 import React, { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Table, TableHead, TableBody, TableContainer, TableRow, Typography } from "@mui/material";
-import { FieldMeasurementResult } from "../../commons/form/borehole/hydrogeology/FieldMeasurementInterface";
-import { HydrotestResult } from "../../commons/form/borehole/hydrogeology/HydrotestInterface";
+import { Table, TableBody, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { FieldMeasurementResult } from "../../pages/detail/form/hydrogeology/FieldMeasurementInterface.ts";
+import { HydrotestResult } from "../../pages/detail/form/hydrogeology/HydrotestInterface.ts";
 
 interface FormResultTableDisplayProps {
   title: string;

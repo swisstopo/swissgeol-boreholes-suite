@@ -7,8 +7,8 @@ import { deleteUser, fetchUser, fetchUsers, updateUser } from "../../../api/user
 
 import { Button, Checkbox, Form, Icon, Input, Label, Loader, Modal, Table } from "semantic-ui-react";
 
-import DateText from "../../../commons/form/dateText";
-import TranslationText from "../../../commons/form/translationText";
+import DateText from "../../../components/legacyComponents/dateText.js";
+import TranslationText from "../../../components/legacyComponents/translationText.jsx";
 import { WorkgroupRoleSettings } from "./workgroupRoleSettings";
 import { createWorkgroup, deleteWorkgroup, fetchWorkgroups, setRole, updateWorkgroup } from "../../../api/workgroup";
 

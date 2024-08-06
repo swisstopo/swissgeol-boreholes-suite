@@ -151,7 +151,7 @@ if __name__ == "__main__":
         (r'/api/v1/borehole/stratigraphy/layer', LayerViewerHandler),
         (r'/api/v1/borehole/stratigraphy/layer/edit', LayerProducerHandler),
 
-        # Profile Layer handlers
+        # Lithology Layer handlers
         (r'/api/v1/borehole/profile/layer', ProfileLayerViewerHandler),
 
         # Other handlers
