@@ -7,6 +7,7 @@
 - Tooltips to main side navigation.
 - Location hash for tabs in borehole detail view.
 - Language dropdown in the header.
+- Added health check endpoint for the .NET API.
 
 ### Changed
 
