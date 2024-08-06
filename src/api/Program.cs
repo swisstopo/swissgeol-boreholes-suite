@@ -141,7 +141,8 @@ builder.Services.AddSingleton(TimeProvider.System);
 
 builder.Services
     .AddHealthChecks()
-    .AddDbContextCheck<BdmsContext>("Database");
+    .AddDbContextCheck<BdmsContext>("Database")
+    .AddCheck<S3HealthCheck>("S3");
 
 var app = builder.Build();
 
@@ -170,6 +171,6 @@ app.UseMiddleware<LegacyApiAuthenticationMiddleware>();
 
 app.MapControllers();
 app.MapReverseProxy();
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health").AllowAnonymous();
 
 app.Run();
