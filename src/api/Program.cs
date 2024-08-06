@@ -54,7 +54,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 
-var connectionString = builder.Configuration.GetConnectionString("BdmsContext");
+var connectionString = builder.Configuration.GetConnectionString(nameof(BdmsContext));
 builder.Services.AddNpgsql<BdmsContext>(connectionString, options =>
 {
     options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
