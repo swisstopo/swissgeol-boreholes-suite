@@ -1,6 +1,5 @@
 import { withTranslation } from "react-i18next";
-import { Route, Switch } from "react-router-dom";
-import { withRouter } from "react-router-dom";
+import { Route, Switch, withRouter } from "react-router-dom";
 import MenuSettings from "../../commons/menu/settings/menuSettings";
 import HeaderComponent from "../../commons/menu/headerComponent.tsx";
 import EditorSettings from "./editorSettings";
@@ -9,7 +8,7 @@ import AboutSettings from "./aboutSettings";
 import TermSettings from "./termSettings";
 import { theme } from "../../AppTheme";
 
-const SettingCmp = () => {
+const SettingsPage = () => {
   return (
     <div
       style={{
@@ -51,5 +50,5 @@ const SettingCmp = () => {
   );
 };
 
-const SettingCmpWithTranslation = withRouter(withTranslation("common")(SettingCmp));
-export default SettingCmpWithTranslation;
+const SettingsPageWithTranslation = withRouter(withTranslation("common")(SettingsPage));
+export default SettingsPageWithTranslation;

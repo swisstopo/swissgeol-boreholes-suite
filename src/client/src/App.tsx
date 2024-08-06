@@ -5,7 +5,7 @@ import { ReactQueryDevtools } from "react-query/devtools";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./AppTheme";
 import OverviewPage from "./pages/overview/overviewPage";
-import SettingCmp from "./pages/settings/settingCmp";
+import SettingCmp from "./pages/settings/settingsPage";
 import { DataLoader } from "./pages/settings/dataLoader";
 import AcceptTerms from "./pages/term/accept";
 import { AlertProvider } from "./components/alert/alertContext";
