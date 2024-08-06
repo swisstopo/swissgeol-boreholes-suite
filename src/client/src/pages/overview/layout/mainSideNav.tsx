@@ -1,8 +1,8 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Badge, Stack } from "@mui/material";
-import { ImportErrorModal } from "../../../commons/menu/mainView/menuComponents/importErrorModal.tsx";
+import { ImportErrorModal } from "../sidePanelContent/importer/importErrorModal.tsx";
 import FilterIcon from "../../../assets/icons/filter.svg?react";
 import AddIcon from "../../../assets/icons/add.svg?react";
 import UploadIcon from "../../../assets/icons/upload.svg?react";
@@ -10,13 +10,24 @@ import SettingsIcon from "../../../assets/icons/settings.svg?react";
 import HelpIcon from "../../../assets/icons/help.svg?react";
 import LayersIcon from "../../../assets/icons/layers.svg?react";
 import { theme } from "../../../AppTheme.ts";
-import ImportModal from "../../../commons/menu/mainView/actions/importModal.tsx";
+import ImportModal from "../sidePanelContent/importer/importModal.tsx";
 import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
-import { ErrorResponse, MainSideNavProps } from "../../../commons/filter/menuItemsInterfaces.ts";
-import { ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { FilterContext } from "../../../components/filter/filterContext.tsx";
+import { ErrorResponse } from "../../../commons/errorResponseInterface.ts";
+import { ReduxRootState, User, Workgroup } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { useTranslation } from "react-i18next";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
+
+export interface MainSideNavProps {
+  toggleDrawer: (open: boolean) => void;
+  drawerOpen: boolean;
+  workgroup: number | null;
+  setWorkgroup: React.Dispatch<React.SetStateAction<number | null>>;
+  enabledWorkgroups: Workgroup[];
+  setEnabledWorkgroups: React.Dispatch<React.SetStateAction<Workgroup[]>>;
+  setSideDrawerContent: React.Dispatch<React.SetStateAction<DrawerContentTypes>>;
+  sideDrawerContent: DrawerContentTypes;
+}
 
 const MainSideNav = ({
   toggleDrawer,

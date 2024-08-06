@@ -3,11 +3,11 @@ import { useLocation, withRouter } from "react-router-dom";
 import MainSideNav from "./layout/mainSideNav.tsx";
 import MapView from "./layout/mapView.jsx";
 import { SideDrawer } from "./layout/sideDrawer.tsx";
-import FilterComponent from "../../commons/filter/filterComponent.jsx";
-import NewBoreholePanel from "../../commons/menu/mainView/sidePanelContent/newBoreholePanel.tsx";
+import FilterComponent from "./sidePanelContent/filter/filterComponent.jsx";
+import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
 import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
-import CustomLayersPanel from "../../commons/menu/mainView/sidePanelContent/customLayers/customLayersPanel.jsx";
+import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel.jsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.js";
 
 const OverviewPage = props => {

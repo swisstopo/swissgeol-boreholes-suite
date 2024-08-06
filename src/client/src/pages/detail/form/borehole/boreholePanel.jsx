@@ -1,5 +1,5 @@
-import BoreholeGeneralSegment from "./boreholeFormSegments/boreholeGeneralSegment.jsx";
-import BoreholeDetailSegment from "./boreholeFormSegments/boreholeDetailSegment.jsx";
+import BoreholeGeneralSegment from "./boreholeGeneralSegment.jsx";
+import BoreholeDetailSegment from "./boreholeDetailSegment.jsx";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import Sections from "./sections.jsx";

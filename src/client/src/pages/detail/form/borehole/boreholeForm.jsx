@@ -8,21 +8,21 @@ import { loadBorehole, patchBorehole, updateBorehole } from "../../../../api-lib
 import EditorBoreholeFilesTable from "../../attachments/table/editorBoreholeFilesTable.tsx";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { Dimmer, Loader } from "semantic-ui-react";
-import Lithology from "./stratigraphy/lithology/index.js";
-import IdentifierSegment from "./boreholeFormSegments/indentifierSegment.jsx";
-import NameSegment from "./boreholeFormSegments/nameSegment.jsx";
-import RestrictionSegment from "./boreholeFormSegments/restrictionSegment.jsx";
+import Lithology from "../stratigraphy/lithology";
+import IdentifierSegment from "../location/indentifierSegment.jsx";
+import NameSegment from "../location/nameSegment.jsx";
+import RestrictionSegment from "../location/restrictionSegment.jsx";
 import BoreholePanel from "./boreholePanel.jsx";
-import LocationSegment from "./boreholeFormSegments/locationSegment.jsx";
+import LocationSegment from "../location/locationSegment.jsx";
 import WaterIngress from "../hydrogeology/waterIngress.jsx";
 import GroundwaterLevelMeasurement from "../hydrogeology/groundwaterLevelMeasurement.jsx";
 import Hydrotest from "../hydrogeology/hydrotest.jsx";
 import FieldMeasurement from "../hydrogeology/fieldMeasurement.jsx";
-import ChronostratigraphyPanel from "./stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
-import LithostratigraphyPanel from "./stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
+import ChronostratigraphyPanel from "../stratigraphy/chronostratigraphy/chronostratigraphyPanel.jsx";
+import LithostratigraphyPanel from "../stratigraphy/lithostratigraphy/lithostratigraphyPanel.jsx";
 import Completion from "../completion/completion.jsx";
 import { Box } from "@mui/material";
-import WorkflowForm from "../../workflow/workflowForm.jsx";
+import WorkflowForm from "../workflow/workflowForm.jsx";
 import { AlertContext } from "../../../../components/alert/alertContext";
 
 class BoreholeForm extends React.Component {

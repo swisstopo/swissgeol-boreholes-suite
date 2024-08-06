@@ -7,15 +7,15 @@ import { theme } from "./AppTheme";
 import OverviewPage from "./pages/overview/overviewPage";
 import SettingCmp from "./pages/settings/settingsPage";
 import { DataLoader } from "./pages/settings/dataLoader";
-import AcceptTerms from "./pages/term/accept";
+import AcceptTerms from "./commons/term/accept";
 import { AlertProvider } from "./components/alert/alertContext";
 import { AlertBanner } from "./components/alert/alertBanner";
 import { DataCardProvider } from "./components/dataCard/dataCardContext.jsx";
 import { PromptProvider } from "./components/prompt/promptContext.tsx";
 import { Prompt } from "./components/prompt/prompt.tsx";
 import { BasemapProvider } from "./components/basemapSelector/basemapContext.tsx";
-import { FilterProvider } from "./components/filter/filterContext.tsx";
-import HeaderComponent from "./commons/menu/headerComponent.tsx";
+import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterContext.tsx";
+import HeaderComponent from "./components/header/headerComponent.tsx";
 import { Box } from "@mui/material";
 import { DetailPage } from "./pages/detail/detailPage.tsx";
 

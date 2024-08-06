@@ -1,10 +1,16 @@
 import { Box, Button } from "@mui/material";
 import ArrowDownIcon from "../../../assets/icons/arrow_down.svg?react";
 import ArrowUpIcon from "../../../assets/icons/arrow_up.svg?react";
-import { BottomBarProps } from "../../../commons/filter/menuItemsInterfaces.ts";
-import { BoreholeNumbersPreview } from "../../../commons/menu/mainView/menuComponents/boreholeNumbersPreview.tsx";
+import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../AppTheme.ts";
+import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
+
+interface BottomBarProps {
+  toggleBottomDrawer: (open: boolean) => void;
+  bottomDrawerOpen: boolean;
+  boreholes: Boreholes;
+}
 
 const BottomBar = ({ toggleBottomDrawer, bottomDrawerOpen, boreholes }: BottomBarProps) => {
   const { t } = useTranslation();

@@ -6,11 +6,11 @@ import { Modal } from "semantic-ui-react";
 import { loadEditingBoreholes } from "../../../api-lib";
 import _ from "lodash";
 import MapComponent from "../../../components/map/mapComponent.jsx";
-import BoreholeEditorTable from "../../../commons/table/boreholeEditorTable.jsx";
+import BoreholeEditorTable from "../table/boreholeEditorTable.jsx";
 import MultipleForm from "../../../components/legacyComponents/multiple/multipleForm.jsx";
 import { BottomDrawer } from "./bottomDrawer.tsx";
 import BottomBar from "./bottomBar.tsx";
-import { FilterContext } from "../../../components/filter/filterContext.tsx";
+import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 
 class MapView extends React.Component {
   static contextType = FilterContext;

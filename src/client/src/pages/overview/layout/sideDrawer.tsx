@@ -1,6 +1,11 @@
 import { Box, Collapse, Paper } from "@mui/material";
-import { SideDrawerProps } from "../../../commons/filter/menuItemsInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
+import React from "react";
+
+interface SideDrawerProps {
+  drawerContent: React.JSX.Element;
+  drawerOpen: boolean;
+}
 
 export const SideDrawer = ({ drawerOpen, drawerContent }: SideDrawerProps) => {
   return (
