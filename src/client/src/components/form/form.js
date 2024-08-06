@@ -1,8 +1,6 @@
-import { theme } from "../../AppTheme";
-
 export const getFormFieldError = (fieldName, errors) => {
   if (typeof fieldName !== "string") {
-    return undefined;
+    return false;
   }
 
   const fieldNameElements = fieldName ? fieldName.split(".") : [];
@@ -13,7 +11,7 @@ export const getFormFieldError = (fieldName, errors) => {
       break;
     }
   }
-  return currentElement ? theme.palette.error.background : undefined;
+  return !!currentElement;
 };
 
 export { FormInput } from "./formInput";
