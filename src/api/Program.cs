@@ -139,6 +139,10 @@ builder.Services
 builder.Services.AddScoped<IBoreholeLockService, BoreholeLockService>();
 builder.Services.AddSingleton(TimeProvider.System);
 
+builder.Services
+    .AddHealthChecks()
+    .AddDbContextCheck<BdmsContext>("Database");
+
 var app = builder.Build();
 
 // Migrate db changes on startup
@@ -166,5 +170,6 @@ app.UseMiddleware<LegacyApiAuthenticationMiddleware>();
 
 app.MapControllers();
 app.MapReverseProxy();
+app.MapHealthChecks("/health");
 
 app.Run();
