@@ -77,5 +77,5 @@ const OverviewPage = props => {
   );
 };
 
-const EditorComponentWithRouter = withRouter(OverviewPage);
-export default EditorComponentWithRouter;
+const OverviewPageWithRouter = withRouter(OverviewPage);
+export default OverviewPageWithRouter;

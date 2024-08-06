@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./AppTheme";
-import EditorComponent from "./pages/overview/overviewPage";
+import OverviewPage from "./pages/overview/overviewPage";
 import SettingCmp from "./pages/settings/settingCmp";
 import { DataLoader } from "./pages/settings/dataLoader";
 import AcceptTerms from "./pages/term/accept";
@@ -64,7 +64,7 @@ class App extends React.Component {
                               <Route exact={false} path={"/:id"} render={() => <DetailPage />} />
                               <Route
                                 render={props => {
-                                  return <EditorComponent {...props} />;
+                                  return <OverviewPage {...props} />;
                                 }}
                                 exact={false}
                                 key={0}
