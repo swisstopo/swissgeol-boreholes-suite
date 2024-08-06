@@ -1,5 +1,5 @@
 import React from "react";
-import { ErrorResponse } from "../../../search/menuItemsInterfaces.ts";
+import { ErrorResponse } from "../../../filter/menuItemsInterfaces.ts";
 import { Workgroup } from "../../../../api-lib/ReduxStateInterfaces.ts";
 
 export interface WorkgroupSelectProps {

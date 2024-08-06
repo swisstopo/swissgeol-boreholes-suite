@@ -3,7 +3,7 @@ import { useLocation, withRouter } from "react-router-dom";
 import MainSideNav from "./layout/mainSideNav.tsx";
 import MapView from "./layout/mapView.jsx";
 import { SideDrawer } from "./layout/sideDrawer.tsx";
-import FilterComponent from "../../commons/search/filterComponent.jsx";
+import FilterComponent from "../../commons/filter/filterComponent.jsx";
 import NewBoreholePanel from "../../commons/menu/mainView/sidePanelContent/newBoreholePanel.tsx";
 import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";

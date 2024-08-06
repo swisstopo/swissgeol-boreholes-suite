@@ -12,7 +12,7 @@ import LayersIcon from "../../../assets/icons/layers.svg?react";
 import { theme } from "../../../AppTheme.ts";
 import ImportModal from "../../../commons/menu/mainView/actions/importModal.tsx";
 import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
-import { ErrorResponse, MainSideNavProps } from "../../../commons/search/menuItemsInterfaces.ts";
+import { ErrorResponse, MainSideNavProps } from "../../../commons/filter/menuItemsInterfaces.ts";
 import { ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { FilterContext } from "../../../components/filter/filterContext.tsx";
 import { useTranslation } from "react-i18next";

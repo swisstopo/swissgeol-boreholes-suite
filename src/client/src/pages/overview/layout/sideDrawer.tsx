@@ -1,5 +1,5 @@
 import { Box, Collapse, Paper } from "@mui/material";
-import { SideDrawerProps } from "../../../commons/search/menuItemsInterfaces.ts";
+import { SideDrawerProps } from "../../../commons/filter/menuItemsInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 
 export const SideDrawer = ({ drawerOpen, drawerContent }: SideDrawerProps) => {

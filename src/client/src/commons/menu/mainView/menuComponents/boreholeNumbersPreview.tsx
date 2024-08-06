@@ -1,7 +1,7 @@
 import { NumericFormat } from "react-number-format";
 import TranslationText from "../../../../components/legacyComponents/translationText";
 import { Icon } from "semantic-ui-react";
-import { BoreholeNumbersPreviewProps } from "../../../search/menuItemsInterfaces.ts";
+import { BoreholeNumbersPreviewProps } from "../../../filter/menuItemsInterfaces.ts";
 
 export const BoreholeNumbersPreview: React.FC<BoreholeNumbersPreviewProps> = ({ boreholes }) => {
   return (
