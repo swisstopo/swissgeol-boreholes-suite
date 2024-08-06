@@ -120,8 +120,6 @@ export const deleteFaciesDescription = async id => {
   return await fetchApiV2(`faciesdescription?id=${id}`, "DELETE");
 };
 
-export const fetchUsers = async () => await fetchApiV2("user", "GET");
-
 // stratigraphy
 export const fetchStratigraphy = async id => {
   return await fetchApiV2(`stratigraphy/${id}`, "GET");

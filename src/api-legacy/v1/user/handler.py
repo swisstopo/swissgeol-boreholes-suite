@@ -11,7 +11,7 @@ class UserHandler(Viewer):
         action = request.pop('action', None)
 
         if action in [
-            'GET', 'RELOAD'
+            'GET'
         ]:
 
             workgroups = []

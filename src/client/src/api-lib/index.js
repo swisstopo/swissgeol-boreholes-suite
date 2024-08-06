@@ -4,41 +4,32 @@ import { loadSettings, patchSettings } from "./actions/settings";
 
 import { acceptTerms, draftTerms, getTerms, getTermsDraft, publishTerms } from "./actions/terms";
 
-import {
-  setAuthentication,
-  unsetAuthentication,
-  loadUser,
-  reloadUser,
-  updateUser,
-  disableUser,
-  deleteUser,
-  enableUser,
-} from "./actions/user";
+import { loadUser, setAuthentication, unsetAuthentication } from "./actions/user";
 
 import {
   createWorkgroup,
-  enableWorkgroup,
-  disableWorkgroup,
   deleteWorkgroup,
+  disableWorkgroup,
+  enableWorkgroup,
   listWorkgroups,
   setRole,
   updateWorkgroup,
 } from "./actions/workgroups";
 
 import {
-  updateBorehole,
-  loadBorehole,
-  loadBoreholes,
-  getdBoreholeIds,
-  loadEditingBoreholes,
   createBorehole,
-  lockBorehole,
-  unlockBorehole,
   deleteBorehole,
   deleteBoreholes,
+  getdBoreholeIds,
+  getGeojson,
+  loadBorehole,
+  loadBoreholes,
+  loadEditingBoreholes,
+  lockBorehole,
   patchBorehole,
   patchBoreholes,
-  getGeojson,
+  unlockBorehole,
+  updateBorehole,
 } from "./actions/borehole";
 
 import { addIdentifier, removeIdentifier } from "./actions/identifier";
@@ -46,10 +37,10 @@ import { addIdentifier, removeIdentifier } from "./actions/identifier";
 import {
   loadWorkflows,
   patchWorkflow,
-  updateWorkflow,
-  submitWorkflow,
   rejectWorkflow,
   resetWorkflow,
+  submitWorkflow,
+  updateWorkflow,
 } from "./actions/workflow";
 
 import { createLayer, deleteLayer, gapLayer } from "./actions/stratigraphy";
@@ -60,7 +51,7 @@ import { loadDomains, patchCodeConfig } from "./actions/domains";
 
 import { getWms } from "./actions/geoapi";
 
-import store, { injectReducer, configureStore, createReducer } from "./reducers";
+import store, { configureStore, createReducer, injectReducer } from "./reducers";
 
 export {
   getHeight,
@@ -74,11 +65,6 @@ export {
   setAuthentication,
   unsetAuthentication,
   loadUser,
-  reloadUser,
-  updateUser,
-  disableUser,
-  deleteUser,
-  enableUser,
   createWorkgroup,
   enableWorkgroup,
   disableWorkgroup,
