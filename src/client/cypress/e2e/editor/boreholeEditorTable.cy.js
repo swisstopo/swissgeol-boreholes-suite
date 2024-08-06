@@ -27,6 +27,7 @@ describe("Borehole editor table tests", () => {
     returnToOverview();
 
     // verify current page is 2
+    cy.get('[data-cy="showTableButton"]').click();
     cy.get("a").should("have.class", "active item").contains("2");
     cy.get("tbody").children().eq(0).contains("td", "Andres Miller");
     cy.get("tbody").children().eq(1).contains("td", "Andres Renner");

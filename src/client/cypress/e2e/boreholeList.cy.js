@@ -139,6 +139,7 @@ describe("Borehole list tests", () => {
     returnToOverview();
 
     // verify current page is still 4
+    cy.get('[data-cy="showTableButton"]').click();
     cy.get("a").should("have.class", "active item").contains("4");
     cy.get("tbody").children().eq(0).contains("td", "Christine Schuster");
     cy.get("tbody").children().eq(1).contains("td", "Christine Wilderman");
