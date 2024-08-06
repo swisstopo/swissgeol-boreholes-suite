@@ -73,7 +73,7 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v2", new OpenApiInfo
     {
         Version = "v2",
-        Title = "BDMS REST API v2",
+        Title = "Boreholes REST API v2",
     });
     options.AddSecurityDefinition("OpenIdConnect", new OpenApiSecurityScheme
     {
