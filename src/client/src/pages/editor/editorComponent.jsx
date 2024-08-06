@@ -1,20 +1,20 @@
 import { useContext, useEffect, useState } from "react";
 import { Route, Switch, useLocation, withRouter } from "react-router-dom";
-import MainSideNav from "./layout/mainSideNav.tsx";
-import MapView from "./layout/mapView.jsx";
-import { SideDrawer } from "./layout/sideDrawer.tsx";
-import FilterComponent from "./sidePanelContent/filter/filterComponent.jsx";
-import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
-import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
-import { AlertContext } from "../../components/alert/alertContext.tsx";
-import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel.jsx";
-import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.js";
-import HeaderComponent from "../../components/header/headerComponent";
-import DetailHeader from "../detail/detailHeader";
-import { styled } from "@mui/material/styles";
+import BoreholeForm from "../../commons/form/borehole/boreholeForm";
+import MainSideNav from "../../commons/menu/mainView/mainSideNav.tsx";
+import DetailSideNav from "../../commons/menu/detailView/detailSideNav.jsx";
+import HeaderComponent from "../../commons/menu/headerComponent";
+import MapView from "../../commons/menu/mainView/mapView.jsx";
+import { SideDrawer } from "../../commons/menu/mainView/sideDrawer.tsx";
 import { Box } from "@mui/material";
-import DetailSideNav from "../detail/detailSideNav";
-import BoreholeForm from "../detail/form/borehole/boreholeForm";
+import { styled } from "@mui/material/styles";
+import { theme } from "../../AppTheme";
+import FilterComponent from "../../commons/search/editor/filterComponent.jsx";
+import NewBoreholePanel from "../../commons/menu/mainView/sidePanelContent/newBoreholePanel.tsx";
+import { DrawerContentTypes } from "./editorComponentInterfaces.ts";
+import { AlertContext } from "../../components/alert/alertContext.tsx";
+import CustomLayersPanel from "../../commons/menu/mainView/sidePanelContent/customLayers/customLayersPanel.jsx";
+import DetailHeader from "../../commons/menu/detailView/detailHeader.tsx";
 
 const AppBox = styled(Box)({
   display: "flex",
@@ -22,7 +22,23 @@ const AppBox = styled(Box)({
   height: "100%",
 });
 
-const OverviewPage = props => {
+const LayoutBox = styled(Box)({ flex: "1 1 100%", display: "flex", flexDirection: "row", overflow: "hidden" });
+
+const SidebarBox = styled(Box)(() => ({
+  flexShrink: 0,
+  borderRight: "1px solid " + theme.palette.boxShadow,
+  position: "relative",
+}));
+
+const MainContentBox = styled(Box)({
+  flex: "1 1 0%",
+  display: "flex",
+  flexDirection: "column",
+  overflow: "hidden",
+  position: "relative",
+});
+
+const EditorComponent = props => {
   const [sort, setSort] = useState(null);
   const [sideDrawerOpen, setSideDrawerOpen] = useState(false);
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
@@ -111,5 +127,5 @@ const OverviewPage = props => {
   );
 };
 
-const OverviewPageWithRouter = withRouter(OverviewPage);
-export default OverviewPageWithRouter;
+const EditorComponentWithRouter = withRouter(EditorComponent);
+export default EditorComponentWithRouter;
