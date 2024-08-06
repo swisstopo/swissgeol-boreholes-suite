@@ -1,9 +1,10 @@
 import React from "react";
-import { Boreholes, Workgroup } from "../../../../api-lib/ReduxStateInterfaces";
+import { Workgroup } from "../../../../api-lib/ReduxStateInterfaces";
 import { DrawerContentTypes } from "../../../../pages/editor/editorComponentInterfaces";
 
 export interface BoreholeNumbersPreviewProps {
-  boreholes: Boreholes;
+  isFetching: boolean;
+  boreholeCount: number;
 }
 
 export interface ErrorResponse {
@@ -30,7 +31,10 @@ export interface SideDrawerProps {
 export interface BottomBarProps {
   toggleBottomDrawer: (open: boolean) => void;
   bottomDrawerOpen: boolean;
-  boreholes: Boreholes;
+  deleteSelected: () => void;
+  duplicateSelected: () => void;
+  downloadSelected: () => void;
+  bulkEditSelected: () => void;
 }
 
 export interface MainSideNavProps {

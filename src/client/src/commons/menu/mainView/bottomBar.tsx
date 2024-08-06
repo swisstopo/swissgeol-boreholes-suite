@@ -5,9 +5,20 @@ import { BottomBarProps } from "./menuComponents/menuComponentInterfaces";
 import { BoreholeNumbersPreview } from "./menuComponents/boreholeNumbersPreview";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../AppTheme";
+import { CopyButton, DeleteButton, EditButton } from "../../../components/buttons/buttons.tsx";
+import { useContext } from "react";
+import { BoreholesContext } from "../../../pages/boreholesContext.tsx";
 
-const BottomBar = ({ toggleBottomDrawer, bottomDrawerOpen, boreholes }: BottomBarProps) => {
+const BottomBar = ({
+  toggleBottomDrawer,
+  bottomDrawerOpen,
+  deleteSelected,
+  duplicateSelected,
+  bulkEditSelected,
+}: BottomBarProps) => {
   const { t } = useTranslation();
+  const { isFetching, boreholeCount, selectionModel } = useContext(BoreholesContext);
+
   return (
     <Box
       sx={{
@@ -22,7 +33,16 @@ const BottomBar = ({ toggleBottomDrawer, bottomDrawerOpen, boreholes }: BottomBa
         justifyContent: "space-between",
         alignItems: "center",
       }}>
-      <BoreholeNumbersPreview boreholes={boreholes} />
+      {selectionModel.length > 0 ? (
+        <>
+          <DeleteButton onClick={deleteSelected} />
+          {selectionModel.length === 1 && <CopyButton onClick={duplicateSelected} />}
+          <EditButton label={"bulkEdit"} onClick={bulkEditSelected} />
+          {t("selectedCount", { count: selectionModel.length })}
+        </>
+      ) : (
+        <BoreholeNumbersPreview isFetching={isFetching} boreholeCount={boreholeCount} />
+      )}
       <Box sx={{ flex: 1 }}></Box>
       <Button
         onClick={() => toggleBottomDrawer(!bottomDrawerOpen)}

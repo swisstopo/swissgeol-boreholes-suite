@@ -1,18 +1,19 @@
 import { NumericFormat } from "react-number-format";
 import TranslationText from "../../../form/translationText";
-import { Icon } from "semantic-ui-react";
 import { BoreholeNumbersPreviewProps } from "./menuComponentInterfaces";
+import { FC } from "react";
+import { CircularProgress } from "@mui/material";
 
-export const BoreholeNumbersPreview: React.FC<BoreholeNumbersPreviewProps> = ({ boreholes }) => {
+export const BoreholeNumbersPreview: FC<BoreholeNumbersPreviewProps> = ({ isFetching, boreholeCount }) => {
   return (
     <>
       <TranslationText firstUpperCase id="boreholes" />:{" "}
-      {boreholes.isFetching ? (
-        <Icon loading name="spinner" />
+      {isFetching ? (
+        <CircularProgress sx={{ marginLeft: "15px", width: "15px !important", height: "15px !important" }} />
       ) : (
         <NumericFormat
           data-cy="boreholes-number-preview"
-          value={boreholes.length}
+          value={boreholeCount}
           thousandSeparator="'"
           displayType="text"
           style={{ marginLeft: "0.5em" }}
