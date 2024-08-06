@@ -3,30 +3,39 @@ import ArrowDownIcon from "../../../assets/icons/arrow_down.svg?react";
 import ArrowUpIcon from "../../../assets/icons/arrow_up.svg?react";
 import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 import { useTranslation } from "react-i18next";
-import { theme } from "../../../AppTheme";
+import { theme } from "../../../AppTheme.ts";
 import { Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { CopyButton, DeleteButton, EditButton } from "../../../components/buttons/buttons.tsx";
-import { useContext } from "react";
-import { BoreholesContext } from "../../boreholesContext.tsx";
+import { GridRowSelectionModel } from "@mui/x-data-grid";
 
 interface BottomBarProps {
   toggleBottomDrawer: (open: boolean) => void;
   bottomDrawerOpen: boolean;
   boreholes: Boreholes;
-  deleteSelected: () => void;
-  duplicateSelected:  () => void;
-  bulkEditSelected: () => void;
+  selectionModel: GridRowSelectionModel;
+  // deleteSelected: () => void;
+  // duplicateSelected: () => void;
+  // bulkEditSelected: () => void;
 }
 
 const BottomBar = ({
   toggleBottomDrawer,
   bottomDrawerOpen,
-  deleteSelected,
-  duplicateSelected,
-  bulkEditSelected,
+  selectionModel,
+  // deleteSelected,
+  // duplicateSelected,
+  // bulkEditSelected,
+  boreholes,
 }: BottomBarProps) => {
   const { t } = useTranslation();
-  const { isFetching, boreholeCount, selectionModel } = useContext(BoreholesContext);
+
+  function deleteSelected() {
+    console.log("deleteSelected");
+  }
+
+  function bulkEditSelected() {}
+
+  function duplicateSelected() {}
 
   return (
     <Box
@@ -44,13 +53,13 @@ const BottomBar = ({
       }}>
       {selectionModel.length > 0 ? (
         <>
-          <DeleteButton onClick={deleteSelected} />
+          <DeleteButton label="delete" onClick={deleteSelected} />
           {selectionModel.length === 1 && <CopyButton onClick={duplicateSelected} />}
           <EditButton label={"bulkEdit"} onClick={bulkEditSelected} />
           {t("selectedCount", { count: selectionModel.length })}
         </>
       ) : (
-        <BoreholeNumbersPreview isFetching={isFetching} boreholeCount={boreholeCount} />
+        <BoreholeNumbersPreview isFetching={boreholes.isFetching} boreholeCount={boreholes.length} />
       )}
       <Box sx={{ flex: 1 }}></Box>
       <Button

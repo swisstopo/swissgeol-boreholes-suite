@@ -98,15 +98,18 @@ class ListEditingBorehole(Action):
                 precision_location_y,
                 precision_location_x_lv03,
                 precision_location_y_lv03,
+                reference_elevation_bho as reference_elevation,
                 srs_id_cli as spatial_reference_system,
                 elevation_z_bho as elevation_z,
                 hrs_id_cli as height_reference_system,
                 total_depth_bho as total_depth,
+
                 (
                     select row_to_json(t)
                     FROM (
                         SELECT
-                            status_id_cli as status
+                            status_id_cli as status,
+                            purpose_id_cli as purpose
                     ) t
                 ) as extended,
                 stratigraphy as stratigraphy,
