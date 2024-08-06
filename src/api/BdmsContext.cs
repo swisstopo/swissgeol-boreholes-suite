@@ -18,6 +18,11 @@ public class BdmsContext : DbContext
     public DbSet<Stratigraphy> Stratigraphies { get; set; }
     public DbSet<Term> Terms { get; set; }
     public DbSet<User> Users { get; set; }
+    public IQueryable<User> UsersWithIncludes => Users
+        .Include(u => u.WorkgroupRoles)
+        .ThenInclude(wr => wr.Workgroup)
+        .Include(u => u.TermsAccepted)
+        .ThenInclude(ta => ta.Term);
     public DbSet<UserWorkgroupRole> UserWorkgroupRoles { get; set; }
     public DbSet<Workflow> Workflows { get; set; }
     public DbSet<Workgroup> Workgroups { get; set; }
@@ -88,6 +93,7 @@ public class BdmsContext : DbContext
     {
         modelBuilder.HasDefaultSchema("bdms");
         modelBuilder.Entity<UserWorkgroupRole>().HasKey(k => new { k.UserId, k.WorkgroupId, k.Role });
+        modelBuilder.Entity<TermsAccepted>().HasKey(k => new { k.UserId, k.TermId });
 
         modelBuilder.Entity<Borehole>()
             .HasMany(b => b.Files)

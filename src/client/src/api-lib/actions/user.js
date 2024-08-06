@@ -20,38 +20,3 @@ export function loadUser() {
     type: "GET",
   });
 }
-
-export function reloadUser() {
-  return fetch("/user", {
-    type: "RELOAD",
-  });
-}
-
-export function updateUser(id, admin = false) {
-  return fetch("/user/edit", {
-    action: "UPDATE",
-    user_id: id,
-    admin: admin,
-  });
-}
-
-export function enableUser(id) {
-  return fetch("/user/edit", {
-    action: "ENABLE",
-    id: id,
-  });
-}
-
-export function disableUser(id) {
-  return fetch("/user/edit", {
-    action: "DISABLE",
-    id: id,
-  });
-}
-
-export function deleteUser(id) {
-  return fetch("/user/edit", {
-    action: "DELETE",
-    id: id,
-  });
-}
