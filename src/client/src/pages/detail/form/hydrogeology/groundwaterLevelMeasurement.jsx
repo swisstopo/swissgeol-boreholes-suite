@@ -2,7 +2,7 @@ import GroundwaterLevelMeasurementInput from "./groundwaterLevelMeasurementInput
 import GroundwaterLevelMeasurementDisplay from "./groundwaterLevelMeasurementDisplay";
 import DataCards from "../../../../components/dataCard/dataCards.jsx";
 import { getGroundwaterLevelMeasurements } from "../../../../api/fetchApiV2.js";
-import { sortByDepth } from "../../../../commons/sorter.jsx";
+import { sortByDepth } from "../sorter.jsx";
 
 const GroundwaterLevelMeasurement = ({ isEditable, boreholeId }) => {
   return (

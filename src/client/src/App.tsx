@@ -7,7 +7,7 @@ import { theme } from "./AppTheme";
 import OverviewPage from "./pages/overview/overviewPage";
 import SettingCmp from "./pages/settings/settingsPage";
 import { DataLoader } from "./pages/settings/dataLoader";
-import AcceptTerms from "./commons/term/accept";
+import AcceptTerms from "./term/accept";
 import { AlertProvider } from "./components/alert/alertContext";
 import { AlertBanner } from "./components/alert/alertBanner";
 import { DataCardProvider } from "./components/dataCard/dataCardContext.jsx";

@@ -5,7 +5,7 @@ import { withTranslation } from "react-i18next";
 import Markdown from "markdown-to-jsx";
 import { Button, Form, Modal, TextArea } from "semantic-ui-react";
 
-import TranslationKeys from "../../commons/auth/translationKeys";
+import TranslationKeys from "../../auth/translationKeys";
 
 import { draftTerms, getTermsDraft, publishTerms } from "../../api-lib/index";
 

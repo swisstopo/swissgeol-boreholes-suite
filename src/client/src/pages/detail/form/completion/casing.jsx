@@ -3,7 +3,7 @@ import DataCards from "../../../../components/dataCard/dataCards.jsx";
 import CasingInput from "./casingInput.jsx";
 import CasingDisplay from "./casingDisplay.jsx";
 import { extractCasingDepth } from "./casingUtils.jsx";
-import { sortByDepth } from "../../../../commons/sorter.jsx";
+import { sortByDepth } from "../sorter.jsx";
 
 const Casing = ({ isEditable, completionId }) => {
   return (

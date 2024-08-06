@@ -3,7 +3,7 @@ import { Stack, Typography } from "@mui/material";
 import styled from "@mui/material/styles/styled";
 import TranslationKeys from "./translationKeys";
 import { useTranslation } from "react-i18next";
-import { theme } from "../../AppTheme";
+import { theme } from "../AppTheme.ts";
 
 interface AuthOverlayProps {
   children?: React.ReactNode;

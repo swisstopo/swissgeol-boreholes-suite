@@ -1,6 +1,11 @@
 import React from "react";
-import { ErrorResponse } from "../../../../commons/errorResponseInterface";
 import { Workgroup } from "../../../../api-lib/ReduxStateInterfaces";
+
+export interface ErrorResponse {
+  detail: string;
+  errors: object;
+  message: string;
+}
 
 export interface WorkgroupSelectProps {
   workgroup: number | null;

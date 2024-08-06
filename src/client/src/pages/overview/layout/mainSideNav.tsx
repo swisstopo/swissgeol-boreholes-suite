@@ -12,11 +12,11 @@ import LayersIcon from "../../../assets/icons/layers.svg?react";
 import { theme } from "../../../AppTheme.ts";
 import ImportModal from "../sidePanelContent/importer/importModal.tsx";
 import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
-import { ErrorResponse } from "../../../commons/errorResponseInterface.ts";
 import { ReduxRootState, User, Workgroup } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { useTranslation } from "react-i18next";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
+import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
 
 export interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;

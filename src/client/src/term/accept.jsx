@@ -3,8 +3,8 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withTranslation } from "react-i18next";
 import { Button } from "semantic-ui-react";
-import { acceptTerms, getTerms } from "../../api-lib";
-import { theme } from "../../AppTheme";
+import { acceptTerms, getTerms } from "../api-lib";
+import { theme } from "../AppTheme";
 
 import Markdown from "markdown-to-jsx";
 import TranslationKeys from "../auth/translationKeys";

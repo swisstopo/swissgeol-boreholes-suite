@@ -2,7 +2,7 @@ import { getBackfills } from "../../../../api/fetchApiV2.js";
 import DataCards from "../../../../components/dataCard/dataCards.jsx";
 import BackfillInput from "./backfillInput.jsx";
 import BackfillDisplay from "./backfillDisplay.jsx";
-import { sortByDepth } from "../../../../commons/sorter.jsx";
+import { sortByDepth } from "../sorter.jsx";
 
 const Backfill = ({ isEditable, completionId }) => {
   return (

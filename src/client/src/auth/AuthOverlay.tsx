@@ -3,8 +3,8 @@ import { useAuth } from "react-oidc-context";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Alert, Button, CircularProgress } from "@mui/material";
-import { loadUser } from "../../api-lib";
-import { SplashScreen } from "./SplashScreen";
+import { loadUser } from "../api-lib";
+import { SplashScreen } from "./SplashScreen.tsx";
 
 interface AuthOverlayProps {
   children?: React.ReactNode;
