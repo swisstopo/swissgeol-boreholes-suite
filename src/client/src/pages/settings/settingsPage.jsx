@@ -1,7 +1,6 @@
 import { withTranslation } from "react-i18next";
 import { Route, Switch, withRouter } from "react-router-dom";
 import MenuSettings from "./menuSettings";
-import HeaderComponent from "../../components/header/headerComponent.tsx";
 import EditorSettings from "./editorSettings";
 import AdminSettings from "./admin/adminSettings";
 import AboutSettings from "./aboutSettings";
@@ -16,7 +15,6 @@ const SettingsPage = () => {
         flexDirection: "column",
         height: "100%",
       }}>
-      <HeaderComponent />
       <div
         style={{
           flex: "1 1 100%",

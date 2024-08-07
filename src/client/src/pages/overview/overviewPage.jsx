@@ -9,18 +9,9 @@ import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
 import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel.jsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.js";
-import HeaderComponent from "../../components/header/headerComponent";
 import DetailHeader from "../detail/detailHeader";
-import { styled } from "@mui/material/styles";
-import { Box } from "@mui/material";
 import DetailSideNav from "../detail/detailSideNav";
 import BoreholeForm from "../detail/form/borehole/boreholeForm";
-
-const AppBox = styled(Box)({
-  display: "flex",
-  flexDirection: "column",
-  height: "100%",
-});
 
 const OverviewPage = props => {
   const [sort, setSort] = useState(null);
@@ -59,8 +50,7 @@ const OverviewPage = props => {
   }, [location.pathname]);
 
   return (
-    <AppBox>
-      <HeaderComponent />
+    <>
       <Route exact={false} path={"/:id"} render={() => <DetailHeader />} />
       <LayoutBox>
         <SidebarBox>
@@ -107,7 +97,7 @@ const OverviewPage = props => {
           </Switch>
         </MainContentBox>
       </LayoutBox>
-    </AppBox>
+    </>
   );
 };
 

@@ -24,6 +24,12 @@ export const TypographyWithBottomMargin = styled(Typography)(() => ({
   marginBottom: "1em",
 }));
 
+export const AppBox = styled(Box)({
+  display: "flex",
+  flexDirection: "column",
+  height: "100%",
+});
+
 export const LayoutBox = styled(Box)({ flex: "1 1 100%", display: "flex", flexDirection: "row", overflow: "hidden" });
 
 export const SidebarBox = styled(Box)(() => ({
